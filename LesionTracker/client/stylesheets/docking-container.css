@@ -1,0 +1,52 @@
+/*****************************/
+/* Toggle */
+/*****************************/
+* {
+    box-sizing: border-box;
+}
+.dockingContainer, .collapseVertical, .collapseHorizontal {
+    -moz-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.dockingContainer {
+    -moz-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.collapseVertical {
+    opacity: 0;
+    height: 0;
+    border: none;
+}
+
+.collapseHorizontal {
+    width: 30px;
+}
+
+.btnCollapse{
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid #e6e6e6;
+    background: #f6f6f6;
+    color: #666;
+    font-size: 0.875rem;
+    text-align: center;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.btnCollapseIcon-collapse{
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}

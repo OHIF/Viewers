@@ -1,0 +1,20 @@
+{
+  "dicomWeb" : {
+    "endpoints": [
+      {
+        "name": "Medken Orthanc",
+        "wadoUriRootNOTE" : "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
+        "wadoUriRoot" : "http://dicom-orthanc.medken.com/wado",
+        "qidoRoot": "http://dicom-orthanc.medken.com/dicom-web",
+        "wadoRoot": "http://dicom-orthanc.medken.com/dicom-web",
+        "qidoSupportsIncludeField": false,
+        "imageRendering" : "wadouri",
+        "requestOptions" : {
+          "logRequests" : false,
+          "logResponses" : false,
+          "logTiming" : true
+        }
+      }
+    ]
+  }
+}

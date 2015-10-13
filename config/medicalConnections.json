@@ -1,0 +1,19 @@
+{
+  "dicomWeb" : {
+    "endpoints": [
+      {
+        "name": "Medical Connections",
+        "wadoUriRoot" : "http://www.dicomserver.co.uk/wadouri",
+        "qidoRoot": "http://dicomserver.co.uk:81/qido",
+        "wadoRoot": "http://dicomserver.co.uk:81/wado",
+        "qidoSupportsIncludeField": false,
+        "imageRendering" : "wadouri",
+        "requestOptions" : {
+          "logRequests" : true,
+          "logResponses" : false,
+          "logTiming" : true
+        }
+      }
+    ]
+  }
+}

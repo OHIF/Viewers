@@ -1,0 +1,27 @@
+.imageViewerViewportOverlay
+  font-size: 13px
+  color: #e4ad00
+  line-height: 18px
+  display: none // Shown when an image is loaded
+  
+  .dicomTag
+    pointer-events: none // Necessary for drag/drop through to cornerstone element below
+    position: absolute
+
+  .topleft
+    top: 3px
+    left: 3px
+    
+  .topright
+    top: 3px
+    right: 3px
+    text-align: right
+    
+  .bottomleft
+    bottom: 3px
+    left: 3px
+    
+  .bottomright
+    bottom: 3px
+    right: 3px
+    text-align: right

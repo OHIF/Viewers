@@ -1,0 +1,31 @@
+.imageViewerLoadingIndicator
+  display: none
+  color: #ffa500
+
+.faded
+  opacity: 0.5
+  
+.imageViewerErrorLoadingIndicator
+  display: none
+  background-color: rgba(0,0,0,0.75)
+  
+  p, h4
+    text-align: center
+    color: #ffa500
+    padding: 4px 0px
+    
+  p
+    font-size: 11pt
+      
+.loadingIndicator
+  pointer-events: none // Necessary for click-through to cornerstone element below
+  width: 100%
+  height: 100%
+  font-size: 18px
+  z-index: 100
+  
+  .indicatorContents
+    position: absolute
+    top: 40%
+    width: 100%
+    text-align: center

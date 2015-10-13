@@ -1,0 +1,11 @@
+<template name="imageViewerViewports">
+    <div id='imageViewerViewports'>
+        {{ #each viewportArray }}
+        <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
+            <div class="removable">
+                {{ > imageViewerViewport}}
+            </div>
+        </div>
+        {{ /each }}
+    </div>
+</template>

@@ -1,0 +1,17 @@
+.layoutChooser
+  width: 75px
+  min-width: 75px // to override bootstrap's dropdown-menu class
+  height: 75px
+  
+  table
+    margin: 0 auto
+    
+    td
+      cursor: pointer
+      border: 2px solid black
+      width: 20px
+      height: 20px
+      transition: background-color 0.1s linear
+      
+      &:hover, &.hover // Add the hover class here to be triggered by mouseenter/mouseleave
+        background-color: gray

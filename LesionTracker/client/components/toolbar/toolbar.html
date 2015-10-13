@@ -1,0 +1,36 @@
+<template name="toolbar">
+    <div id="toolbar" class="toolbar">
+        <div id="toolbar-group" class="btn-group">
+            <!-- WW/WL -->
+            <button id="wwwc" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="WW/WC"><span class="fa fa-sun-o"></span></button>
+            <!-- Invert -->
+            <button id="invert" type="button" class="imageViewerCommand btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Invert"><span class="fa fa-adjust"></span></button>
+            <!-- Zoom -->
+            <button id="zoom" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Zoom"><span class="fa fa-search"></span></button>
+            <!-- Pan -->
+            <button id="pan" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Pan"><span class="fa fa-arrows"></span></button>
+            <!-- Stack scroll -->
+            <button id="stackScroll" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Stack Scroll"><span class="fa fa-bars"></span></button>
+            <!-- Play clip -->
+            <button id="playClip" type="button" class="imageViewerCommand btn btn-sm btn-default" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Play/Stop Clip">
+                {{ #if isPlaying }}
+                    <span class="fa fa-stop"></span>
+                {{ else }}
+                    <span class="fa fa-play"></span>
+                {{ /if }}
+            </button>
+            <!-- Angle measurement -->
+            <!--<button id="angle" type="button" class="imageViewerTool btn btn-sm btn-default" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Angle Measurement"><span class="fa fa-angle-left"></span></button>-->
+            <!-- Pixel probe -->
+            <button id="dragProbe" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Pixel Probe"><span class="fa fa-dot-circle-o"></span></button>
+            <!-- Length measurement -->
+            <button id="length" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Length Measurement"><span class="fa fa-arrows-v"></span></button>
+            <!-- Elliptical ROI -->
+            <button id="ellipticalRoi" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Elliptical ROI"><span class="fa fa-circle-o"></span></button>
+            <!-- Rectangle ROI -->
+            <button id="rectangleRoi" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Rectangle ROI"><span class="fa fa-square-o"></span></button>
+            <!-- Lesion Tool -->
+            <button id="lesion" type="button" class="imageViewerTool btn btn-sm btn-toolbar" data-container="body" data-toggle="tooltip" data-placement="bottom" title="Lesion Tool"><span class="fa fa-arrows-v"></span></button>
+        </div>
+    </div>
+</template>

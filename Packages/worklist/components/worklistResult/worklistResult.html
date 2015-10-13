@@ -1,0 +1,20 @@
+<template name="worklistResult">
+    <table id="tblStudyList" class="table table-striped">
+        <thead>
+        <tr>
+            <th>Patient Name</th>
+            <th>Patient ID</th>
+            <th>Accession#</th>
+            <th>Study Date</th>
+            <th>Modality</th>
+            <th>Study Description</th>
+            <th># Images</th>
+        </tr>
+        </thead>
+        <tbody id="studyListData">
+        {{#each studies}}
+            {{> worklistStudy }}
+        {{/each}}
+        </tbody>
+    </table>
+</template>

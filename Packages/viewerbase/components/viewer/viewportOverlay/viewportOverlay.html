@@ -1,0 +1,25 @@
+<template name="viewportOverlay">
+    <div class="imageViewerViewportOverlay noselect">
+        <div class="topleft dicomTag">
+            <div>{{patientName}}</div>
+            <div>{{patientId}}</div>
+            <div></div>
+        </div>
+        <div class="topright dicomTag">
+            <div>{{studyDescription}}</div>
+            <div>{{studyDate}} {{studyTime}}</div>
+        </div>
+        <div class="bottomright dicomTag">
+            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{compression}}</div>
+            <div>{{wwwc}}</div>
+        </div>
+        <div class="bottomleft dicomTag">
+            <div>Ser: {{seriesNumber}}</div>
+            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{frameRate}}</div>
+            <div>{{imageDimensions}}</div>
+            <div>{{seriesDescription}}</div>
+        </div>
+    </div>
+</template>
