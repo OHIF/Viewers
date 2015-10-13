@@ -71,8 +71,8 @@ function addNewTab (data) {
     contentID = contentId;
 }
 
-function insertContent () {
-
+function insertContent() {
+    console.log('Include imageViewer template');
     //Include imageViewer template
     UI.insert( UI.render( Template.viewer ), $( '#'+contentID ).get(0) );
 }

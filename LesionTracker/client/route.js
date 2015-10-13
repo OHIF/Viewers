@@ -28,7 +28,7 @@ Router.route('/viewer/:_id', {
       Session.set('studies', studies);
       //Session.set(activeTabId, studies);
       //Session.set('showContentInTab', true);
-      self.render('viewer');
+      //self.render('viewer');
     });
   }
 });

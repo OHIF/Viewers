@@ -1,14 +1,16 @@
 <template name="worklist">
     <div class="tabbable">
-        <ul id="tabs" class="nav nav-tabs" style="width:100%;">
+        <ul id="tabs" class="nav nav-tabs">
             <li class="active">
-                <a id="tabList" data-toggle="tab">Study List</a>
+                <a data-toggle="tab">Study List</a>
             </li>
         </ul>
         <div id="tabs-content" class="tab-content">
             <div id="contentList" class="tab-pane active">
-                {{> worklistSearch }}
-                {{> worklistResult }}
+                <div class="container">
+                    {{> worklistSearch }}
+                    {{> worklistResult }}
+                </div>
             </div>
         </div>
     </div>
