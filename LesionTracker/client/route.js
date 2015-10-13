@@ -1,5 +1,5 @@
 Router.configure({
-  layoutTemplate: 'layout',
+  layoutTemplate: 'lesionTrackerLayout',
   //loadingTemplate: '',
   notFoundTemplate: 'notFound'
 });
@@ -14,7 +14,7 @@ Router.route('/', function () {
 ViewerStudies = new Mongo.Collection(null);
 
 Router.route('/viewer/:_id', {
-  layoutTemplate: 'layout',
+  layoutTemplate: 'lesionTrackerLayout',
   name: 'viewer',
   onBeforeAction: function() {
     var self = this;

@@ -60,7 +60,7 @@ function resizeViewports() {
 
 Session.setDefault('ActiveViewport', 0);
 Session.setDefault('viewportRows', 1);
-Session.setDefault('viewportColumns', 1);
+Session.setDefault('viewportColumns', 2);
 
 // Avoid doing DOM manipulation during the resize handler
 // because it is fired very often.

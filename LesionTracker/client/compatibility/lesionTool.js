@@ -283,3 +283,8 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
     });
     return cornerstoneTools;
 }($, cornerstone, cornerstoneMath, cornerstoneTools));
+
+toolManager.addTool('lesion', {
+    mouse: cornerstoneTools.lesion,
+    touch: cornerstoneTools.lesionTouch
+});

@@ -1,16 +1,17 @@
 /*****************************/
 /* Toggle */
 /*****************************/
-* {
-    box-sizing: border-box;
-}
 .dockingContainer, .collapseVertical, .collapseHorizontal {
+    -o-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
     -moz-transition: all 0.3s ease-out;
     -webkit-transition: all 0.3s ease-out;
     transition: all 0.3s ease-out;
 }
 
 .dockingContainer {
+    -o-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
     -moz-transition: all 0.3s ease-out;
     -webkit-transition: all 0.3s ease-out;
     transition: all 0.3s ease-out;
@@ -47,6 +48,8 @@
 
 .btnCollapseIcon-collapse{
     -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
     -webkit-transform: rotate(180deg);
     transform: rotate(180deg);
 }

@@ -9,13 +9,9 @@ Template.toolbar.events({
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
-
-        // TODO = Add support for active viewports
-        //var element = getActiveViewportElement();
-        $('.imageViewer').each(function() {
-            var element = this;
-            OHIF.viewer.functionList[command](element);
-        });
+        var viewportIndex = Session.get('ActiveViewport');
+        var element = $('.imageViewerViewport').get(viewportIndex);
+        OHIF.viewer.functionList[command](element);
     }
 });
 
@@ -26,9 +22,12 @@ Template.toolbar.onRendered(function() {
     // Enable tooltips for the layout button
     var extraTooltipButtons = $('[rel="tooltip"]');
     extraTooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
+});
 
-    toolManager.addTool('lesion', {
-        mouse: cornerstoneTools.lesion,
-        touch: cornerstoneTools.lesionTouch
-    });
+Template.toolbar.helpers({
+    'isPlaying': function() {
+        Session.get('UpdateCINE');
+        var viewportIndex = Session.get('ActiveViewport');
+        return !!OHIF.viewer.isPlaying[viewportIndex];
+    }
 });
