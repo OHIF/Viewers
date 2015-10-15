@@ -1,17 +1,21 @@
 <template name="worklist">
-    <div class="tabbable">
-        <ul id="tabs" class="nav nav-tabs">
-            <li class="active">
-                <a data-toggle="tab">Study List</a>
-            </li>
-        </ul>
-        <div id="tabs-content" class="tab-content">
-            <div id="contentList" class="tab-pane active">
-                <div class="container">
-                    {{> worklistSearch }}
-                    {{> worklistResult }}
-                </div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a data-target="#worklistTab" role="tab" data-toggle="tab">Study List</a>
+        </li>
+        {{ #each tabs }}
+            {{ >tabTitle }}
+        {{ /each }}
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="worklistTab">
+            <div class="container">
+                {{> worklistSearch }}
+                {{> worklistResult }}
             </div>
         </div>
+        {{ #each tabs }}
+            {{ >tabContent }}
+        {{ /each }}
     </div>
 </template>

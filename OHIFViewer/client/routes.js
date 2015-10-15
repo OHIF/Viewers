@@ -7,27 +7,32 @@ Router.configure({
 
 
 Router.route('/', function () {
-  this.render('worklist', {
-  });
+    this.render('worklist', {});
 });
 
-ViewerStudies = new Mongo.Collection(null);
+tabs = new Meteor.Collection(null);
 
 Router.route('/viewer/:_id', {
-  layoutTemplate: 'layout',
-  name: 'viewer',
-  onBeforeAction: function() {
-    var self = this;
-    Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
-      //console.log(study);
-      sortStudy(study);
+    layoutTemplate: 'layout',
+    name: 'viewer',
+    onBeforeAction: function() {
+        var self = this;
 
-      var studies = [study];
-      Session.set('studies', studies);
+        Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
+            sortStudy(study);
 
-      self.render('viewer');
-    });
-  }
+            var studies = [study];
+            var title = study.seriesList[0].instances[0].patientName;
+            var contentid = generateUUID();
+
+            var newTabObject = {
+                title: title,
+                contentid: contentid,
+            };
+            tabs.insert(newTabObject);
+            Session.set('StudiesInTab#' + contentid, studies);
+
+            self.render('worklist');
+        });
+    }
 });
-
-

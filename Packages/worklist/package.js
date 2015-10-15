@@ -16,6 +16,12 @@ Package.onUse(function (api) {
     api.addFiles('components/worklist.js', 'client');
     api.addFiles('components/worklist.styl', 'client');
 
+    api.addFiles('components/tabTitle/tabTitle.html', 'client');
+    api.addFiles('components/tabTitle/tabTitle.js', 'client');
+    api.addFiles('components/tabTitle/tabTitle.styl', 'client');
+
+    api.addFiles('components/tabContent/tabContent.html', 'client');
+
     api.addFiles('components/worklistStudy/worklistStudy.html', 'client');
     api.addFiles('components/worklistStudy/worklistStudy.js', 'client');
     api.addFiles('components/worklistStudy/worklistStudy.styl', 'client');
@@ -27,5 +33,8 @@ Package.onUse(function (api) {
     api.addFiles('components/worklistSearch/worklistSearch.html', 'client');
     api.addFiles('components/worklistSearch/worklistSearch.js', 'client');
     api.addFiles('components/worklistSearch/worklistSearch.styl', 'client');
+
+    api.addFiles('lib/generateUUID.js', 'client');
+    api.export('generateUUID', 'client');
 });
 

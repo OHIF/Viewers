@@ -28,14 +28,30 @@ Template.layoutChooser.events({
     'click .layoutChooser table td': function(evt) {
         $('#imageViewerViewports').remove();
         var container = $(".viewerMain").get(0);
-        UI.render(Template.imageViewerViewports, container);
 
         var currentCell = $(evt.currentTarget);
         var rowIndex = currentCell.closest('tr').index();
         var columnIndex = currentCell.index();
 
+        var data = {};
+
         // Add 1 because the indices start from zero
-        Session.set('viewportRows', rowIndex + 1);
-        Session.set('viewportColumns', columnIndex + 1);
+        if (this.viewportRows) {
+            this.viewportRows.set(rowIndex + 1);
+            data.viewportRows = this.viewportRows;
+        } else {
+            data.viewportRows = 1;
+        }
+
+        if (this.viewportColumns) {
+            this.viewportColumns.set(columnIndex + 1);
+            data.viewportColumns = this.viewportColumns;
+        } else {
+            data.viewportColumns = 1;
+        }
+
+        data.studies = Template.parentData(2).studies;
+        data.activeViewport = Template.parentData(2).activeViewport;
+        UI.renderWithData(Template.imageViewerViewports, data, container);
     }
 });

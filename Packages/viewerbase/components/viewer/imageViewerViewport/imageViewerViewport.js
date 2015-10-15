@@ -158,13 +158,13 @@ function loadSeriesIntoViewport(data) {
             OHIF.viewer.updateImageSynchronizer.add(element);
         }
         
-        enablePrefetchOnElement();
+        //enablePrefetchOnElement();
         displayReferenceLines();
     });
 }
 
 Template.imageViewerViewport.onRendered(function() {
-    var studies = Session.get('studies');
+    var studies = this.data.studies;
     var viewport = this.find(".imageViewerViewport");
     var viewportIndex = $(".imageViewerViewport").index(viewport);
 

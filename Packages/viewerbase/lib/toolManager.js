@@ -77,7 +77,7 @@ toolManager = {
             toolManager.init();
         }
 
-        $('#toolRow .btn-group button').removeClass('active');
+        $('#toolbar .btn-group button').removeClass('active');
         var toolButton = document.getElementById(tool);
         toolButton.classList.add('active');
 

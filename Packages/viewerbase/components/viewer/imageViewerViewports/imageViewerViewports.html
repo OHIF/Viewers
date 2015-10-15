@@ -3,7 +3,7 @@
         {{ #each viewportArray }}
         <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
             <div class="removable">
-                {{ > imageViewerViewport}}
+                {{ >imageViewerViewport studies=studies activeViewport=activeViewport}}
             </div>
         </div>
         {{ /each }}

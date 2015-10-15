@@ -63,6 +63,17 @@ Package.onUse(function (api) {
     api.addFiles('components/viewer/layoutChooser/layoutChooser.js', 'client');
     api.addFiles('components/viewer/layoutChooser/layoutChooser.styl', 'client');
 
+    api.addFiles('components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
+
+    api.addFiles('components/viewer/playClipButton/playClipButton.html', 'client');
+    api.addFiles('components/viewer/playClipButton/playClipButton.js', 'client');
+
+    api.addFiles('components/viewer/layoutButton/layoutButton.html', 'client');
+
+    api.addFiles('components/viewer/toolbar/toolbar.html', 'client');
+    api.addFiles('components/viewer/toolbar/toolbar.js', 'client');
+    api.addFiles('components/viewer/toolbar/toolbar.styl', 'client');
+
     // Library functions
     api.addFiles('lib/accountsConfig.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');

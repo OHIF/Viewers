@@ -11,8 +11,6 @@ Router.route('/', function () {
   });
 });
 
-ViewerStudies = new Mongo.Collection(null);
-
 Router.route('/viewer/:_id', {
   layoutTemplate: 'lesionTrackerLayout',
   name: 'viewer',
@@ -29,6 +27,7 @@ Router.route('/viewer/:_id', {
       //Session.set(activeTabId, studies);
       //Session.set('showContentInTab', true);
       //self.render('viewer');
+      openNewTab(studies);
     });
   }
 });

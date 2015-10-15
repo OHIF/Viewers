@@ -1,6 +1,6 @@
 Template.viewerMain.helpers({
-  studies : function() {
-    var studies = Session.get('studies');
-    return studies;
-  }
+    studies : function() {
+        var studies = this.studies;
+        return studies;
+    }
 });

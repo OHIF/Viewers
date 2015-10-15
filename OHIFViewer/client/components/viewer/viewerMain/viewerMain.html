@@ -1,6 +1,6 @@
 <template name="viewerMain">
     <div class='viewerMain'>
-        {{ > toolbar }}
-        {{ > imageViewerViewports }}
+        {{ > toolbar activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
+        {{ > imageViewerViewports studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
     </div>
 </template>

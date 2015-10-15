@@ -1,0 +1,17 @@
+<template name="toolbar">
+    <div id='toolbar'>
+        <div class="btn-group">
+            {{ #each button }}
+                {{ >simpleToolbarButton }}
+            {{ /each }}
+
+            {{ #if includePlayClipButton }}
+                {{ > playClipButton activeViewport=activeViewport}}
+            {{ /if }}
+
+            {{ #if includeLayoutButton }}
+                {{ > layoutButton viewportRows=viewportRows viewportColumns=viewportColumns}}
+            {{ /if }}
+        </div>
+    </div>
+</template>
