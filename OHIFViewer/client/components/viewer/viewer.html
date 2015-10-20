@@ -1,7 +1,4 @@
 <template name="viewer">
-    <head>
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1,maximum-scale=1,user-scalable=no">
-    </head>
     <div id="viewer">
         {{> studyBrowser studies=studies activeViewport=activeViewport}}
         {{> viewerMain studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}

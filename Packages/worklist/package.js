@@ -36,5 +36,7 @@ Package.onUse(function (api) {
 
     api.addFiles('lib/generateUUID.js', 'client');
     api.export('generateUUID', 'client');
+
+    api.export('switchToTab', 'client');
 });
 

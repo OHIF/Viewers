@@ -1,21 +1,48 @@
-/***********************************************/
-/* CSS3 Close button */
-/***********************************************/
+body
+  background-color: #202020
+  
+#worklistTab
+  background-color: #202020
 
-.btnClose 
-  top: 0
-  right: 0
-  bottom: 0
-  width: 20px
-  height: 20px
-  text-decoration: none
-  border: none
-  background-color: #fcfcfc
-  -moz-border-radius: 10px
-  -webkit-border-radius: 10px
-  border-radius: 10px
-  margin-left: 5px
-  font-weight: bold
-
+#worklistContainer
+  background-color: #202020
+  color: white  
+  
 #tabs
   width: 100%
+  
+.nav-tabs
+  border-bottom: 1px solid #424242;
+  background-color: #202020
+  
+.tabTitle
+  background-color: #202020
+  border-color: #424242
+  padding: 3px 10px
+
+  &:hover
+    color: black
+    
+  &.active
+    background-color: #202020
+    color: white
+
+  a
+    color: #424242
+    padding: 0 5px
+    cursor: pointer
+    float: left
+
+    &.close
+      font-size: 16pt
+      padding: 0 5px
+      font-weight: normal
+      float: left
+
+.tab-content
+  width: 100%
+  height: calc(100% - 100px)
+  
+  .tab-pane
+    width: 100%
+    height: 100%

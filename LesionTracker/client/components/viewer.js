@@ -58,9 +58,11 @@ function resizeViewports() {
     }, 1);
 }
 
-Session.setDefault('ActiveViewport', 0);
-Session.setDefault('viewportRows', 1);
-Session.setDefault('viewportColumns', 2);
+Template.viewer.onCreated(function() {
+     this.data.activeViewport = new ReactiveVar(0);
+     this.data.viewportRows = new ReactiveVar(1);
+     this.data.viewportColumns = new ReactiveVar(2);
+});
 
 // Avoid doing DOM manipulation during the resize handler
 // because it is fired very often.
@@ -71,19 +73,4 @@ $(window).on('resize', function() {
     resizeTimer = setTimeout(function() {
         resizeViewports();
     }, 100);
-});
-
-Template.viewer.onRendered(function() {
-    var imageViewer = $("#viewer");
-    if (imageViewer) {
-        $('.navbar-default').css({
-            'background-color': '#000000',
-            'border-color': '#101010'
-        });
-        document.body.style.overflow = "hidden";
-        document.body.style.height = '100%';
-        document.body.style.width = '100%';
-        document.body.style.minWidth = 0;
-        document.body.style.position = 'fixed'; // Prevent overscroll on mobile devices
-    }
 });

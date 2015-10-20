@@ -1,7 +1,7 @@
 Router.configure({
-  layoutTemplate: 'layout',
-  //loadingTemplate: '',
-  notFoundTemplate: 'notFound'
+    layoutTemplate: 'layout',
+    //loadingTemplate: '',
+    notFoundTemplate: 'notFound'
 });
 
 
@@ -30,9 +30,11 @@ Router.route('/viewer/:_id', {
                 contentid: contentid,
             };
             tabs.insert(newTabObject);
-            Session.set('StudiesInTab#' + contentid, studies);
 
             self.render('worklist');
+            console.log('Setting studesInTab');
+            Session.set('StudiesInTab#' + contentid, studies);
+            Session.set('OpenNewTabEvent', contentid);
         });
     }
 });

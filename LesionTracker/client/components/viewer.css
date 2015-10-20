@@ -1,12 +1,7 @@
 .viewer {
     width: 100%;
-    height: calc(100% - 54px);
+    height: 100%;
     margin: 0;
     padding: 0;
     background-color: black;
-}
-
-.navbar {
-    margin-bottom: 0;
-    border-radius: 0;
 }

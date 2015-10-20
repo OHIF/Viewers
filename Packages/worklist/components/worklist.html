@@ -1,6 +1,6 @@
 <template name="worklist">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active">
+        <li role="presentation" class="tabTitle active">
             <a data-target="#worklistTab" role="tab" data-toggle="tab">Study List</a>
         </li>
         {{ #each tabs }}
@@ -9,7 +9,7 @@
     </ul>
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="worklistTab">
-            <div class="container">
+            <div id="worklistContainer" class="container">
                 {{> worklistSearch }}
                 {{> worklistResult }}
             </div>

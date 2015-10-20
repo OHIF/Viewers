@@ -1,7 +1,7 @@
 <template name="viewerMain">
     <div class="viewerMain">
-        {{ >toolbar toolbarOptions }}
-        {{ >imageViewerViewports}}
-        {{ >lesionTableContainer}}
+        {{ >toolbar toolbarOptions  activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
+        {{ >imageViewerViewports studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
+        {{ >lesionTableContainer studies=studies activeViewport=activeViewport}}
     </div>
 </template>

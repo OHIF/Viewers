@@ -1,33 +1,40 @@
 Router.configure({
-  layoutTemplate: 'lesionTrackerLayout',
-  //loadingTemplate: '',
-  notFoundTemplate: 'notFound'
+    layoutTemplate: 'layoutLesionTracker',
+    //loadingTemplate: '',
+    notFoundTemplate: 'notFound'
 });
 
 
 
 Router.route('/', function () {
-  this.render('worklist', {
-  });
+    this.render('worklist', {});
 });
 
-Router.route('/viewer/:_id', {
-  layoutTemplate: 'lesionTrackerLayout',
-  name: 'viewer',
-  onBeforeAction: function() {
-    var self = this;
-    //Session.set('openNewTabEvent', self);
-    
-    Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
-      //console.log(study);
-      sortStudy(study);
+tabs = new Meteor.Collection(null);
 
-      var studies = [study];
-      Session.set('studies', studies);
-      //Session.set(activeTabId, studies);
-      //Session.set('showContentInTab', true);
-      //self.render('viewer');
-      openNewTab(studies);
-    });
-  }
+Router.route('/viewer/:_id', {
+    layoutTemplate: 'layoutLesionTracker',
+    name: 'viewer',
+    onBeforeAction: function() {
+        var self = this;
+
+        Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
+            sortStudy(study);
+
+            var studies = [study];
+            var title = study.seriesList[0].instances[0].patientName;
+            var contentid = generateUUID();
+
+            var newTabObject = {
+                title: title,
+                contentid: contentid,
+            };
+            tabs.insert(newTabObject);
+
+            self.render('worklist');
+            console.log('Setting studesInTab');
+            Session.set('StudiesInTab#' + contentid, studies);
+            Session.set('OpenNewTabEvent', contentid);
+        });
+    }
 });
