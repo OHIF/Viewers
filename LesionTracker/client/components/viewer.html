@@ -1,5 +1,6 @@
 <template name="viewer">
     <div id="viewer" class="viewer">
+        {{ >lesionDialog studies=studies activeViewport=activeViewport}}
         {{ >hidingPanel studies=studies activeViewport=activeViewport}}
         {{ >viewerMain studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
         {{ >lesionMeasurementContainer studies=studies activeViewport=activeViewport}}

@@ -1,0 +1,20 @@
+<template name="lesionLocationDialog">
+    <div class="modal fade" id="lesionDialog" style=" background-color: transparent;">
+        <div id="modal-dialog-container" class="modal-dialog modal-sm" style="position: absolute; border: none; ">
+            <div class="modal-content" style="padding: 10px;">
+                 <div class="dialogHeader">
+                        <div style="float:left;"><h4>Select Lesion Location</h4></div>
+                        <div style="float:right;"><button class="btn" id="btnCloseLesionPopup" style="outline: 0; border: none; background-color: transparent;"><i class="fa fa-close"></i></button></div>
+                    </div>
+                    <div class="dialogContent" style="margin-bottom: 20px;">
+                        <div class="lesionLocation">
+                            <label>Lesion Location</label>
+                            <select id="selectLesionLocation" style="margin-top:5px;">
+                                <option value="-1"></option>
+                            </select>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</template>

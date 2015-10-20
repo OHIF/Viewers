@@ -22,7 +22,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
 
         //Listens LesionToolModified event and calls measurementModified function when lesion measurement is changed or updated.
         $(element).on("LesionToolModified", measurementModified);
-        $(element).trigger("LesionMeasurementCreated");
+        $(element).trigger("LesionMeasurementCreated", mouseEventData);
 
         // create the measurement data for this tool with the end handle activated
         var measurementData = {
@@ -283,8 +283,3 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
     });
     return cornerstoneTools;
 }($, cornerstone, cornerstoneMath, cornerstoneTools));
-
-toolManager.addTool('lesion', {
-    mouse: cornerstoneTools.lesion,
-    touch: cornerstoneTools.lesionTouch
-});
