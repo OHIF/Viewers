@@ -84,7 +84,7 @@ Template.toolbar.events({
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
-        var viewportIndex = Session.get('ActiveViewport');
+        var viewportIndex = Template.parentData(0).activeViewport.get();
         var element = $('.imageViewerViewport').get(viewportIndex);
         OHIF.viewer.functionList[command](element);
     }
@@ -101,20 +101,20 @@ Template.toolbar.onRendered(function() {
 
 Template.toolbar.helpers({
     'button': function() {
-        if (this.buttonData) {
-            return this.buttonData;
+        if (this.toolbarOptions && this.toolbarOptions.buttonData) {
+            return this.toolbarOptions.buttonData;
         }
         return getDefaultButtonData();
     },
     'includePlayClipButton': function() {
-        if (this.includePlayClipButton !== undefined) {
-            return this.includePlayClipButton;
+        if (this.toolbarOptions && this.toolbarOptions.includePlayClipButton !== undefined) {
+            return this.toolbarOptions.includePlayClipButton;
         }
         return true;
     },
     'includeLayoutButton': function() {
-        if (this.includeLayoutButton !== undefined) {
-            return this.includeLayoutButton;
+        if (this.toolbarOptions && this.toolbarOptions.includeLayoutButton !== undefined) {
+            return this.toolbarOptions.includeLayoutButton;
         }
         return true;
     }

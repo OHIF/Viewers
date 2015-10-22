@@ -2,15 +2,15 @@
     <div id='toolbar'>
         <div class="btn-group">
             {{ #each button }}
-                {{ >simpleToolbarButton }}
+                {{ >simpleToolbarButton}}
             {{ /each }}
 
             {{ #if includePlayClipButton }}
-                {{ > playClipButton activeViewport=activeViewport}}
+                {{ >playClipButton activeViewport=activeViewport}}
             {{ /if }}
 
             {{ #if includeLayoutButton }}
-                {{ > layoutButton viewportRows=viewportRows viewportColumns=viewportColumns}}
+                {{ >layoutButton viewportRows=viewportRows viewportColumns=viewportColumns}}
             {{ /if }}
         </div>
     </div>

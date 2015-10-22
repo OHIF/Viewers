@@ -19,7 +19,9 @@ Router.route('/viewer/:_id', {
         Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
             sortStudy(study);
 
-            var studies = [study];
+            var data = {
+                studies: [study]
+            };
             var title = study.seriesList[0].instances[0].patientName;
             var contentid = generateUUID();
 
@@ -30,8 +32,7 @@ Router.route('/viewer/:_id', {
             tabs.insert(newTabObject);
 
             self.render('worklist');
-            console.log('Setting studesInTab');
-            Session.set('StudiesInTab#' + contentid, studies);
+            Session.set('DataInTab#' + contentid, data);
             Session.set('OpenNewTabEvent', contentid);
         });
     }

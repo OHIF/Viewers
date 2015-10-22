@@ -5,10 +5,9 @@
  *
  * @param element
  */
-function enablePrefetchOnElement() {
-    var viewportIndex = Session.get('ActiveViewport');
+function enablePrefetchOnElement(viewportIndex) {
     var element = $('.imageViewerViewport').get(viewportIndex);
-    console.log('Enabling prefetch on new element');
+    //console.log('Enabling prefetch on new element');
 
     // Loop through all viewports and disable stackPrefetch
     $('.imageViewerViewport').each(function() {
@@ -25,9 +24,7 @@ function enablePrefetchOnElement() {
     }
 }
 
-function displayReferenceLines() {
-    console.log("Changing reference line display");
-    var viewportIndex = Session.get('ActiveViewport');
+function displayReferenceLines(viewportIndex) {
     var element = $('.imageViewerViewport').get(viewportIndex);
 
     $('.imageViewerViewport').each(function(index, element) {
@@ -157,9 +154,6 @@ function loadSeriesIntoViewport(data) {
         if (OHIF.viewer.refLinesEnabled && imagePlane && imagePlane.frameOfReferenceUID) {
             OHIF.viewer.updateImageSynchronizer.add(element);
         }
-        
-        //enablePrefetchOnElement();
-        displayReferenceLines();
     });
 }
 
@@ -222,9 +216,12 @@ Template.imageViewerViewport.onDestroyed(function() {
 
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
-        console.log('ActivateViewport: ' + e.viewportIndex);
-        Session.set('ActiveViewport', e.viewportIndex);
-        enablePrefetchOnElement();
-        displayReferenceLines();
+        if (this.viewportIndex === this.activeViewport.get()) {
+            return;
+        }
+        console.log('ActivateViewport index: ' + this.viewportIndex);
+        this.activeViewport.set(this.viewportIndex);
+        enablePrefetchOnElement(this.viewportIndex);
+        displayReferenceLines(this.viewportIndex);
     },
 });

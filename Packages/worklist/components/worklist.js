@@ -13,11 +13,8 @@ Template.worklist.events({
 });
 
 switchToTab = function(contentId) {
-    var studies = Session.get('StudiesInTab' + contentId);
-    var data = {
-        studies: studies
-    };
-
+    var data = Session.get('DataInTab' + contentId);
+    
     var newContentId = contentId.replace("#", "");
     //var tabObject = tabs.findOne({contentid: newContentId});
     //tabObject.active = true;

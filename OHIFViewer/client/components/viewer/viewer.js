@@ -59,9 +59,23 @@ function resizeViewports() {
 }
 
 Template.viewer.onCreated(function() {
-     this.data.activeViewport = new ReactiveVar(0);
-     this.data.viewportRows = new ReactiveVar(1);
-     this.data.viewportColumns = new ReactiveVar(1);
+    if (this.data.activeViewport === undefined) {
+        this.data.activeViewport = new ReactiveVar(0);
+    }
+    if (this.data.viewportRows === undefined) {
+        this.data.viewportRows = new ReactiveVar(1);
+    }
+    if (this.data.viewportColumns === undefined) {
+        this.data.viewportColumns = new ReactiveVar(1);
+    }
+
+    var viewportColumns = this.data.viewportColumns.get();
+    var viewportRows = this.data.viewportRows.get();
+    var activeViewport = this.data.activeViewport.get();
+    console.log('Reactive changes!');
+    console.log('viewportColumns: ' + viewportColumns);
+    console.log('viewportRows: ' + viewportRows);
+    console.log('activeViewport: ' + activeViewport);
 });
 
 // Avoid doing DOM manipulation during the resize handler
