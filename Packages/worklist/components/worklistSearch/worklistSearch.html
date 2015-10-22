@@ -1,82 +1,88 @@
 <template name="worklistSearch">
     <!--Search Panel-->
     <div id="worklistSearchPanel" class="panel panel-default">
-        <div class="panel-heading" id="search-panel-head">Search</div>
-        <div class="panel-body">
-            <div style="padding: 10px;">
-                <div class="row">
-                    <div class="col-lg-8 col-md-8 col-xs-12">
-                        <div class="row">
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="patientId">Patient ID</label>
-                                    <input type="text" class="form-control" id="patientId" placeholder="Patient ID">
+        <div class="panel-heading" id="search-panel-head">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" href="#searchPanel">Search</a>
+            </h4>
+        </div>
+        <div id="searchPanel" class="panel-collapse collapse">
+            <div class="panel-body">
+                <div style="padding: 10px;">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8 col-xs-12">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="patientId">Patient ID</label>
+                                        <input type="text" class="form-control" id="patientId" placeholder="Patient ID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="patientName">Name</label>
+                                        <input type="text" class="form-control" id="patientName" placeholder="Name">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="patientAccessionNumber">Accession #</label>
+                                        <input type="text" class="form-control" id="patientAccessionNumber" placeholder="Accession #">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="studyDescription">Study Description</label>
+                                        <input type="text" class="form-control" id="studyDescription" placeholder="Study Description">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="patientName">Name</label>
-                                    <input type="text" class="form-control" id="patientName" placeholder="Name">
+
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <!--Add calendar ui-->
+                                    <div class="form-group">
+                                        <label for="">Study Date(from)</label>
+                                        <p><input type="checkbox" id="checkFrom"><input id="studyDateFrom" type="date" class="form-control" style="padding-left: 30px;"></p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="patientAccessionNumber">Accession #</label>
-                                    <input type="text" class="form-control" id="patientAccessionNumber" placeholder="Accession #">
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="">Study Date(to)</label>
+                                        <p><input type="checkbox" id="checkTo"><input id="studyDateTo" type="date" class="form-control" style="padding-left:30px;"></p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="studyDescription">Study Description</label>
-                                    <input type="text" class="form-control" id="studyDescription" placeholder="Study Description">
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="referringPhysician">Referring Physician</label>
+                                        <input type="text" class="form-control" id="referringPhysician" placeholder="Referring Physician">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-xs-10">
+                                    <div class="form-group">
+                                        <label for="modality">Modality</label>
+                                        <input type="text" class="form-control" id="modality" placeholder="Modality">
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <!--Add calendar ui-->
-                                <div class="form-group">
-                                    <label for="">Study Date(from)</label>
-                                    <p><input type="checkbox" id="checkFrom"><input id="studyDateFrom" type="date" class="form-control" style="padding-left: 30px;"></p>
+                        <div class="col-lg-4 col-md-4 col-xs-12">
+                            <div class="row" style="margin-top: 25px;margin-bottom: 25px;">
+                                <div class="col-lg-4 col-md-6 col-xs-6">
+                                    <button class="btn btn-primary" id="btnSearch">Search</button>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-xs-6">
+                                    <button class="btn btn-primary" id="btnToday">Today</button>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="">Study Date(to)</label>
-                                    <p><input type="checkbox" id="checkTo"><input id="studyDateTo" type="date" class="form-control" style="padding-left:30px;"></p>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-6 col-xs-6">
+                                    <button class="btn btn-primary" id="btnClear">Clear</button>
                                 </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="referringPhysician">Referring Physician</label>
-                                    <input type="text" class="form-control" id="referringPhysician" placeholder="Referring Physician">
+                                <div class="col-lg-4 col-md-6 col-xs-6">
+                                    <button class="btn btn-primary" id="btnLastSevenDays">Last 7 Days</button>
                                 </div>
-                            </div>
-                            <div class="col-lg-3 col-md-3 col-xs-10">
-                                <div class="form-group">
-                                    <label for="modality">Modality</label>
-                                    <input type="text" class="form-control" id="modality" placeholder="Modality">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-4 col-xs-12">
-                        <div class="row" style="margin-top: 25px;margin-bottom: 25px;">
-                            <div class="col-lg-4 col-md-6 col-xs-6">
-                                <button class="btn btn-primary" id="btnSearch">Search</button>
-                            </div>
-                            <div class="col-lg-4 col-md-6 col-xs-6">
-                                <button class="btn btn-primary" id="btnToday">Today</button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-xs-6">
-                                <button class="btn btn-primary" id="btnClear">Clear</button>
-                            </div>
-                            <div class="col-lg-4 col-md-6 col-xs-6">
-                                <button class="btn btn-primary" id="btnLastSevenDays">Last 7 Days</button>
                             </div>
                         </div>
                     </div>

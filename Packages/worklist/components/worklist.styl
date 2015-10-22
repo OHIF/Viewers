@@ -10,38 +10,60 @@ body
   
 #tabs
   width: 100%
-  
-.nav-tabs
+
+#tablist
   border-bottom: 1px solid #424242;
   background-color: #202020
-  
-.tabTitle
-  background-color: #202020
-  border-color: #424242
-  padding: 3px 10px
+  height: 41px
 
-  &:hover
-    color: black
-    
-  &.active
+  a:hover
+    background-color: transparent
+
+  .tabTitle
     background-color: #202020
-    color: white
-
-  a
-    color: #424242
-    padding: 0 5px
-    cursor: pointer
+    border-color: #424242
     float: left
+    line-height:30px
 
-    &.close
-      font-size: 16pt
-      padding: 0 5px
-      font-weight: normal
-      float: left
+    &:hover
+      color: black
+      background-color: white
+            
+      button.close
+        color: black
+      
+    &.active
+      background-color: #424242
+      border-color: #424242
+      
+      &:hover
+        background-color: #424242
+      
+      a
+        color: white
+        
+      button.close
+        color: white
+
+    a
+      padding: 5px 15px
+      cursor: pointer
+      color: #424242
+      text-decoration: none
+      
+    button.close
+      margin: 4px 0 4px 8px
+      text-shadow: none
+      color: white
+      text-decoration: none
+      
+      &:hover
+        color: red
+        
 
 .tab-content
   width: 100%
-  height: calc(100% - 100px)
+  height: calc(100% - 91px)
   
   .tab-pane
     width: 100%
