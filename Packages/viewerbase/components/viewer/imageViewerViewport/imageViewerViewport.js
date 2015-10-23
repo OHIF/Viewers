@@ -28,7 +28,15 @@ function displayReferenceLines(viewportIndex) {
     var element = $('.imageViewerViewport').get(viewportIndex);
 
     $('.imageViewerViewport').each(function(index, element) {
-        if (!$(this).find('canvas').length) {
+        var imageId;
+        try {
+            var enabledElement = cornerstone.getEnabledElement(element);
+            imageId = enabledElement.image.imageId;
+        } catch(error) {
+            return;
+        }
+
+        if (!imageId || !$(this).find('canvas').length) {
             return;
         }
 
@@ -41,14 +49,16 @@ function displayReferenceLines(viewportIndex) {
 }
 
 function loadSeriesIntoViewport(data) {
-    if (!data.series || !data.viewport) {
+    if (!data.series || !data.element) {
         return;
     }
 
+    var contentId = $("#viewer").parents('.tab-pane.active').attr('id');
+
     var study = data.study;
     var series = data.series;
-    var element = data.viewport;
-    var viewportIndex = $(".imageViewerViewport").index(data.viewport);
+    var element = data.element;
+    var viewportIndex = $(".imageViewerViewport").index(element);
 
     var allEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
         'CornerstoneToolsMouseClick CornerstoneToolsMouseDrag CornerstoneToolsMouseUp ' +
@@ -72,7 +82,7 @@ function loadSeriesIntoViewport(data) {
     });
 
     var stack = {
-        currentImageIdIndex: 0,
+        currentImageIdIndex: data.currentImageIdIndex || 0,
         imageIds: imageIds
     };
 
@@ -86,13 +96,28 @@ function loadSeriesIntoViewport(data) {
     // If you have problems, replace it with this line instead:
     // cornerstone.enable(element);
 
+    var startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
+    var endLoadingHandler = cornerstoneTools.loadHandlerManager.getEndLoadHandler();
+    var errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
+
+    if (startLoadingHandler) {
+        startLoadingHandler(element);
+    }
+
     cornerstone.loadAndCacheImage(imageId).then(function(image) {
-        cornerstone.displayImage(element, image);
+        if (data.viewport) {
+            cornerstone.displayImage(element, image, data.viewport);
+        } else {
+            cornerstone.displayImage(element, image);
+        }
+        
+        if (endLoadingHandler) {
+            endLoadingHandler(element);
+        }
+
         element.classList.remove('empty');
         $(element).siblings('.viewportInstructions').hide();
         $(element).siblings('.imageViewerViewportOverlay').show();
-        
-        cornerstone.resize(element, true);
 
         var imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
 
@@ -118,6 +143,9 @@ function loadSeriesIntoViewport(data) {
 
         function onImageRendered(e, eventData) {
             Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
+            var viewport = cornerstone.getViewport(element);
+            ViewerData[contentId].viewer.imageViewerLoadedSeriesDictionary[viewportIndex].viewport = viewport;
+            Session.set('ViewerData', ViewerData);
         }
 
         $(element).off('CornerstoneImageRendered', onImageRendered);
@@ -129,13 +157,20 @@ function loadSeriesIntoViewport(data) {
             // This allows the template helpers to update reactively
             templateData.imageId = eventData.enabledElement.image.imageId;
             Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+
+            var stack = cornerstoneTools.getToolState(element, 'stack');
+            if (stack && stack.data.length && stack.data[0].imageIds.length > 1) {
+                var imageIdIndex = stack.data[0].imageIds.indexOf(templateData.imageId);
+                ViewerData[contentId].viewer.imageViewerLoadedSeriesDictionary[viewportIndex].currentImageIdIndex = imageIdIndex;
+                Session.set('ViewerData', ViewerData);
+            }
         }
 
         $(element).off('CornerstoneNewImage', onNewImage);
         $(element).on('CornerstoneNewImage', onNewImage);
 
         function sendActivationTrigger(e, eventData) {
-            var activeViewportIndex = Session.get('ActiveViewport');
+            var activeViewportIndex = data.activeViewport.curValue;
             var viewportIndex = $(".imageViewerViewport").index(eventData.element);
             if (viewportIndex === activeViewportIndex) {
                 return;
@@ -151,61 +186,62 @@ function loadSeriesIntoViewport(data) {
 
         Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
 
+        OHIF.viewer.imageViewerLoadedSeriesDictionary[viewportIndex] = {
+            studyInstanceUid: data.studyInstanceUid,
+            seriesInstanceUid: data.seriesInstanceUid,
+            currentImageIdIndex: data.currentImageIdIndex,
+            viewport: viewport
+        };
+        
         if (OHIF.viewer.refLinesEnabled && imagePlane && imagePlane.frameOfReferenceUID) {
             OHIF.viewer.updateImageSynchronizer.add(element);
+            displayReferenceLines(viewportIndex);
+        }
+
+    }, function(error) {
+        if (errorLoadingHandler) {
+            errorLoadingHandler(element, imageId, error);
         }
     });
 }
 
 Template.imageViewerViewport.onRendered(function() {
     var studies = this.data.studies;
-    var viewport = this.find(".imageViewerViewport");
-    var viewportIndex = $(".imageViewerViewport").index(viewport);
-
-    this.data.viewportIndex = viewportIndex;
+    var element = this.find(".imageViewerViewport");
 
     var data = {
-        viewport: viewport
+        element: element,
+        viewport: this.data.viewport,
+        currentImageIdIndex: this.data.currentImageIdIndex,
+        activeViewport: this.data.activeViewport,
+        studyInstanceUid: this.data.studyInstanceUid,
+        seriesInstanceUid: this.data.seriesInstanceUid
     };
 
-    if (this.data.seriesInstanceUid !== undefined && this.data.studyInstanceUid !== undefined) {
-        var studyInstanceUid = this.data.studyInstanceUid;
-        var seriesInstanceUid = this.data.seriesInstanceUid;
-
-        studies.every(function(study) {
-            if (study.studyInstanceUid === studyInstanceUid) {
-                data.study = study;
-                study.seriesList.every(function(series) {
-                    if (series.seriesInstanceUid === seriesInstanceUid) {
-                        data.series = series;
-                        return false;
-                    }
-                    return true;
-                });
-                return false;
-            }
-            return true;
-        });
-    } else {
-        var stacks = [];
-        studies.forEach(function(study) {
-            study.seriesList.forEach(function(series) {
-                var stack = {
-                    series: series,
-                    study: study
-                };
-                stacks.push(stack);
-            });
-        });
-      
-        if (viewportIndex >= stacks.length) {
-            viewport.classList.add('empty');
-            $(viewport).siblings('.viewportInstructions').show();
-            return;
-        }
-        data.series = stacks[viewportIndex].series;
-        data.study = stacks[viewportIndex].study;
+    if (this.data.seriesInstanceUid === undefined || this.data.studyInstanceUid === undefined) {
+        element.classList.add('empty');
+        $(element).siblings('.viewportInstructions').show();
+        return;
     }
+
+    var studyInstanceUid = this.data.studyInstanceUid;
+    var seriesInstanceUid = this.data.seriesInstanceUid;
+
+    studies.every(function(study) {
+        if (study.studyInstanceUid === studyInstanceUid) {
+            data.study = study;
+            study.seriesList.every(function(series) {
+                if (series.seriesInstanceUid === seriesInstanceUid) {
+                    data.series = series;
+                    return false;
+                }
+                return true;
+            });
+            return false;
+        }
+        return true;
+    });
+
     loadSeriesIntoViewport(data);
 });
 
@@ -216,11 +252,11 @@ Template.imageViewerViewport.onDestroyed(function() {
 
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
-        if (this.viewportIndex === this.activeViewport.get()) {
+        if (this.viewportIndex === this.activeViewport.curValue) {
             return;
         }
         console.log('ActivateViewport index: ' + this.viewportIndex);
-        this.activeViewport.set(this.viewportIndex);
+        this.activeViewport.curValue = this.viewportIndex;
         enablePrefetchOnElement(this.viewportIndex);
         displayReferenceLines(this.viewportIndex);
     },

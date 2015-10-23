@@ -17,11 +17,18 @@ Package.onUse(function (api) {
     api.addFiles('client/dicomParser.js', 'client', {bare: true});
     api.addFiles('client/hammer.js', 'client', {bare: true});
 
+    api.addFiles('client/hangingProtocol.js', 'client', {bare: true});
+    api.addFiles('client/measurementManager.js', 'client', {bare: true});
+    api.addFiles('client/measurementManagerExample.js', 'client', {bare: true});
+
     api.export("cornerstone", 'client');
     api.export("cornerstoneMath", 'client');
     api.export("cornerstoneTools", 'client');
     api.export("cornerstoneWADOImageLoader", 'client');
     api.export("cornerstoneWADORSImageLoader", 'client');
     api.export("dicomParser", 'client');
+
+    api.export("getHangingProtocol", 'client');
+    api.export("setHangingProtocol", 'client');
 });
 

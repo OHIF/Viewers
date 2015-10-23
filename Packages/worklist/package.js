@@ -38,5 +38,7 @@ Package.onUse(function (api) {
     api.export('generateUUID', 'client');
 
     api.export('switchToTab', 'client');
+    
+    api.export('ViewerData', 'client');
 });
 

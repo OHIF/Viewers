@@ -1,16 +1,30 @@
-OHIF = {
-    viewer: {}
-};
+function resizeViewports() {
+    // Handle resizing of image viewer viewports
+    // For some reason, this seems to need to be on
+    // another delay, or the resizing won't work properly
+    viewportResizeTimer = setTimeout(function() {
+        var elements = $('.imageViewerViewport');
+        elements.each(function(index) {
+            var element = this;
+            if (!element) {
+                return;
+            }
+            cornerstone.resize(element, true);
+        });
+    }, 1);
+}
 
-OHIF.viewer.imageViewerLoadedSeriesDictionary = {};
-OHIF.viewer.imageViewerCurrentImageIdIndexDictionary = {};
-OHIF.viewer.loadIndicatorDelay = 3000;
-OHIF.viewer.defaultTool = 'wwwc';
-OHIF.viewer.refLinesEnabled = true;
-OHIF.viewer.isPlaying = {};
+Template.viewer.onCreated(function() {
+    console.log("Image Viewer onCreated");
+    OHIF = {
+        viewer: {}
+    };
 
-Meteor.startup(function() {
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
+    OHIF.viewer.loadIndicatorDelay = 3000;
+    OHIF.viewer.defaultTool = 'wwwc';
+    OHIF.viewer.refLinesEnabled = true;
+    OHIF.viewer.isPlaying = {};
+
     OHIF.viewer.functionList = {
         invert: function(element) {
             var viewport = cornerstone.getViewport(element);
@@ -40,25 +54,7 @@ Meteor.startup(function() {
             trigger: 'hover'
         };
     }
-});
 
-function resizeViewports() {
-    // Handle resizing of image viewer viewports
-    // For some reason, this seems to need to be on
-    // another delay, or the resizing won't work properly
-    viewportResizeTimer = setTimeout(function() {
-        var elements = $('.imageViewerViewport');
-        elements.each(function(index) {
-            var element = this;
-            if (!element) {
-                return;
-            }
-            cornerstone.resize(element, true);
-        });
-    }, 1);
-}
-
-Template.viewer.onCreated(function() {
     if (this.data.activeViewport === undefined) {
         this.data.activeViewport = new ReactiveVar(0);
     }
@@ -69,13 +65,26 @@ Template.viewer.onCreated(function() {
         this.data.viewportColumns = new ReactiveVar(1);
     }
 
-    var viewportColumns = this.data.viewportColumns.get();
-    var viewportRows = this.data.viewportRows.get();
-    var activeViewport = this.data.activeViewport.get();
-    console.log('Reactive changes!');
-    console.log('viewportColumns: ' + viewportColumns);
-    console.log('viewportRows: ' + viewportRows);
-    console.log('activeViewport: ' + activeViewport);
+    var contentId = this.data.contentId;
+    
+    // Update the viewer data object
+    ViewerData[contentId].viewportColumns = this.data.viewportColumns;
+    ViewerData[contentId].viewportRows = this.data.viewportRows;
+    ViewerData[contentId].activeViewport = this.data.activeViewport;
+    Session.set('ViewerData', ViewerData);
+
+    if (ViewerData[contentId].viewer) {
+        OHIF.viewer = ViewerData[contentId].viewer;
+    } else {
+        OHIF.viewer.imageViewerLoadedSeriesDictionary = {};
+        ViewerData[contentId].viewer = OHIF.viewer;
+    }
+
+    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
+});
+
+Template.viewer.onDestroyed(function() {
+    OHIF.viewer.updateImageSynchronizer.destroy();
 });
 
 // Avoid doing DOM manipulation during the resize handler

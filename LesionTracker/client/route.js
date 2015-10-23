@@ -9,9 +9,21 @@ Router.route('/', function () {
 });
 
 tabs = new Meteor.Collection(null);
+Session.setDefault('ViewerData', {});
+Session.setDefault('ViewerDataUpdated', Random.id());
+
+Object.keys(ViewerData).forEach(function(contentId) {
+    var tabData = ViewerData[contentId];
+    var data = {
+        title: tabData.title,
+        contentid: tabData.contentId,
+    };
+    tabs.insert(data);
+});
+
 
 Router.route('/viewer/:_id', {
-    layoutTemplate: 'layoutLesionTracker',
+    layoutTemplate: 'layout',
     name: 'viewer',
     onBeforeAction: function() {
         var self = this;
@@ -19,21 +31,19 @@ Router.route('/viewer/:_id', {
         Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
             sortStudy(study);
 
-            var data = {
-                studies: [study]
-            };
             var title = study.seriesList[0].instances[0].patientName;
             var contentid = generateUUID();
 
-            var newTabObject = {
+            var data = {
                 title: title,
                 contentid: contentid,
             };
-            tabs.insert(newTabObject);
+            tabs.insert(data);
+
+            data.studies = [study];
 
             self.render('worklist');
-            Session.set('DataInTab#' + contentid, data);
-            Session.set('OpenNewTabEvent', contentid);
+            Session.set('OpenNewTabEvent', data);
         });
     }
 });

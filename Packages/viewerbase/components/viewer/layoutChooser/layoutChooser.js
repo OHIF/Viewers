@@ -37,14 +37,14 @@ Template.layoutChooser.events({
 
         // Add 1 because the indices start from zero
         if (this.viewportRows) {
-            this.viewportRows.set(rowIndex + 1);
+            this.viewportRows.curValue = rowIndex + 1;
             data.viewportRows = this.viewportRows;
         } else {
             data.viewportRows = 1;
         }
 
         if (this.viewportColumns) {
-            this.viewportColumns.set(columnIndex + 1);
+            this.viewportColumns.curValue = columnIndex + 1;
             data.viewportColumns = this.viewportColumns;
         } else {
             data.viewportColumns = 1;

@@ -1,3 +1,5 @@
+ViewerData = Session.get('ViewerData') || {};
+
 Template.worklist.helpers({
     'tabs': function() {
         console.log('Updating tabs');
@@ -7,29 +9,25 @@ Template.worklist.helpers({
 
 Template.worklist.events({
     'click a[data-toggle="tab"]': function(e) {
-        var contentId = $(e.currentTarget).data('target');
+        var contentId = $(e.currentTarget).data('target').replace("#", "");
         switchToTab(contentId);
     }
 });
 
 switchToTab = function(contentId) {
-    var data = Session.get('DataInTab' + contentId);
-    
-    var newContentId = contentId.replace("#", "");
-    //var tabObject = tabs.findOne({contentid: newContentId});
-    //tabObject.active = true;
+    var data = ViewerData[contentId];
 
     console.log("Switching to tab: " + contentId);
-    $('.tabTitle a[data-target="' + contentId + '"]').tab('show');
+    $('.tabTitle a[data-target="#' + contentId + '"]').tab('show');
 
     $("#viewer").remove();
 
-    var container = $('.tab-content').find(contentId).get(0);
+    var container = $('.tab-content').find("#" + contentId).get(0);
     if (!container) {
         return;
     }
 
-    if (contentId === '#worklistTab') {
+    if (contentId === 'worklistTab') {
         console.log('Switching to worklist');
         document.body.style.overflow = null;
         document.body.style.height = null;
@@ -50,9 +48,28 @@ switchToTab = function(contentId) {
 
 Template.worklist.onRendered(function() {
     this.autorun(function() {
-        var contentId = Session.get('OpenNewTabEvent');
-        if (contentId) {
-            switchToTab("#" + contentId);
+        var data = Session.get('OpenNewTabEvent');
+
+        // If we have no new tab data, stop here
+        // (e.g. if we are rendering the worklist)
+        if (!data) {
+            return;
         }
+
+        var contentId = data.contentid;
+        if (ViewerData.hasOwnProperty(contentId)) {
+            console.warn('Contentid already exists?');
+            return;
+        }
+
+        // Update the viewer data object
+        ViewerData[contentId] = {
+            contentId: contentId,
+            studies: data.studies,
+            title: data.title
+        };
+        Session.set('ViewerData', ViewerData);
+
+        switchToTab(contentId);
     });
 });

@@ -7,11 +7,13 @@ Template.tabTitle.events({
         var newActiveTabIndex = Math.max(tabIndex - 1, 0);
         var newActiveTab = $(".tabTitle").eq(newActiveTabIndex);
         var newActiveTabLink = newActiveTab.find("a[data-toggle=tab]");
-        var newContentId = newActiveTabLink.data("target");
+        var newContentId = newActiveTabLink.data("target").replace("#", "");
 
         switchToTab(newContentId);
         
         var tabObjectId = tabs.find({contentid: contentId}).fetch()[0]._id;
         tabs.remove(tabObjectId);
+
+        delete ViewerData[contentId];
     }
 });

@@ -14,14 +14,12 @@ rerenderViewportWithNewSeries = function(element, data) {
     // Update the dictionary of loaded series for the specified viewport
     OHIF.viewer.imageViewerLoadedSeriesDictionary[viewportIndex] = {
         seriesInstanceUid: data.seriesInstanceUid,
-        studyInstanceUid: data.studyInstanceUid
+        studyInstanceUid: data.studyInstanceUid,
+        currentImageIdIndex: 0
     };
 
     // Remove the hover styling
     $(element).find('canvas').not('.magnifyTool').removeClass("faded");
-
-    // Reset the current image index for this viewport
-    delete OHIF.viewer.imageViewerCurrentImageIdIndexDictionary[viewportIndex];
 
     // Remove the whole template, add in the new one
     var viewportContainer = $(element).parents('.removable');
