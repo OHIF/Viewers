@@ -828,6 +828,14 @@ if (typeof cornerstoneTools === 'undefined') {
                     data.active = !data.active;
                     imageNeedsUpdate = true;
                 }
+
+                //TODO: ayselafsar
+                //Check hover event for lesion tool text
+                if (mouseToolInterface.toolType === "lesion") {
+                    if ( mouseToolInterface.pointNearToolForText(eventData.element, data, coords) && !data.active) {
+                        data.active = !data.active;
+                    }
+                }
             }
 
             // Handle activation status changed, redraw the image
@@ -887,6 +895,19 @@ if (typeof cornerstoneTools === 'undefined') {
                         if (mouseToolInterface.pointNearTool(element, data, coords)) {
                             $(element).off('CornerstoneToolsMouseMove', mouseToolInterface.mouseMoveCallback || mouseMoveCallback);
                             cornerstoneTools.moveAllHandles(e, data, toolData, options, handleDoneMove);
+                            e.stopImmediatePropagation();
+                            return false;
+                        }
+                    }
+                }
+
+                //TODO: ayselafsar: Add check statement if mouse down location is on text callout. If so, call moveTextCallout function
+                if(toolData !== undefined && mouseToolInterface.pointNearToolForText !== undefined) {
+                    for(i=0; i < toolData.data.length; i++) {
+                        data = toolData.data[i];
+                        if(mouseToolInterface.pointNearToolForText(eventData.element, data, coords)) {
+                            $(eventData.element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                            cornerstoneTools.moveTextHandles(e, data, toolData, true);
                             e.stopImmediatePropagation();
                             return false;
                         }
@@ -6052,8 +6073,94 @@ if (typeof cornerstoneTools === 'undefined') {
         return true;
     }
 
+    //TODO:moveTextHandles-ayselafsar
+    function moveTextHandles(e, data, toolData, deleteIfHandleOutsideImage, preventHandleOutsideImage)
+    {
+        var mouseEventData = e;
+        var element = mouseEventData.element;
+
+        function mouseDragCallback(e, eventData)
+        {
+            for(var property in data.handles) {
+                var handle = data.linkedTextCoords[property];
+                handle.x += eventData.deltaPoints.image.x;
+                handle.y += eventData.deltaPoints.image.y;
+                if (preventHandleOutsideImage)
+                {
+                    if (handle.x < 0)
+                    {
+                        handle.x = 0;
+                    }
+                    if (handle.x > eventData.image.width)
+                    {
+                        handle.x = eventData.image.width;
+                    }
+                    if (handle.y < 0)
+                    {
+                        handle.y = 0;
+                    }
+                    if (handle.y > eventData.image.height)
+                    {
+                        handle.y = eventData.image.height;
+                    }
+                }
+            }
+            cornerstone.updateImage(element);
+            return false; // false = cases jquery to preventDefault() and stopPropagation() this event
+        }
+
+        $(element).on("CornerstoneToolsMouseDrag", mouseDragCallback);
+
+        function mouseUpCallback(e, eventData) {
+            data.moving = false;
+
+            $(element).off('CornerstoneToolsMouseDrag', mouseDragCallback);
+            $(element).off('CornerstoneToolsMouseUp', mouseUpCallback);
+
+            // If any handle is outside the image, delete the tool data
+
+            if(deleteIfHandleOutsideImage === true) {
+                var image = eventData.image;//.getEnabledElement(element).image;
+                var handleOutsideImage = false;
+                var rect = {
+                    top: 0,
+                    left: 0,
+                    width: image.width,
+                    height: image.height
+                };
+                for(var property in data.handles) {
+                    var handle = data.handles[property];
+                    if(cornerstoneMath.point.insideRect(handle, rect) === false)
+                    {
+                        handleOutsideImage = true;
+                    }
+                }
+
+                if(handleOutsideImage)
+                {
+                    // find this tool data
+                    var indexOfData = -1;
+                    for(var i = 0; i < toolData.data.length; i++) {
+                        if(toolData.data[i] === data)
+                        {
+                            indexOfData = i;
+                        }
+                    }
+                    if(indexOfData !== -1) {
+                        toolData.data.splice(indexOfData, 1);
+                    }
+                }
+            }
+            cornerstone.updateImage(element);
+        }
+        $(element).on("CornerstoneToolsMouseUp",mouseUpCallback);
+        return true;
+    }
+
+
     // module/private exports
     cornerstoneTools.moveAllHandles = moveAllHandles;
+    cornerstoneTools.moveTextHandles = moveTextHandles;
 
 })($, cornerstone, cornerstoneMath, cornerstoneTools);
  

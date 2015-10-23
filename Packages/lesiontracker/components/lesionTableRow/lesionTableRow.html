@@ -1,0 +1,11 @@
+<template name="lesionTableRow">
+    <tr>
+        <th class='lesionNumber'>{{lesionNumber}}</th>
+        <th class='target'>{{isTarget}}</th>
+        <th class='location'>{{location}}</th>
+        <!--Each time point as a column-->
+        {{ #each timepoints}}
+            {{ >lesionTableTimepointCell}}
+        {{ /each }}
+    </tr>
+</template>

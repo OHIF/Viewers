@@ -24,7 +24,7 @@ function setValidator(measurements) {
 
 // Or a remote call
 function remoteSetValidator(measurements) {
-    var deferred = $.Deferred;
+    var deferred = $.Deferred();
 
     var result = {
         isValid: true,
@@ -33,8 +33,8 @@ function remoteSetValidator(measurements) {
     
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
                 var response = JSON.parse(xhr.response);
                 if (response.isValid) {
                     deferred.resolve(xhr.responseText);

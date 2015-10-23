@@ -1,0 +1,24 @@
+<template name="lesionTable">
+    <div id="lesionTableContainer">
+        <table class="table table-bordered lesionTable" id="tblLesion">
+            <thead>
+                <tr>
+                    <th id="thNumber">Lesion #</th>
+                    <th id="thTarget">Target</th>
+                    <th id="thLocation">Location</th>
+                    <!--Each time point name as a column-->
+                    {{ #each timepointNames }}
+                        {{ >lesionTableTimepointHeader }}
+                    {{ /each }}
+                </tr>
+            </thead>
+            <tbody>
+                {{ #each measurement }}
+                    {{ >lesionTableRow }}
+                {{ /each }}
+                <!--Each measurement as row-->
+                <!--Each time point as a column-->
+            </tbody>
+        </table>
+    </div>
+</template>

@@ -72,7 +72,7 @@ Template.viewerMain.helpers({
 
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = true;
-        toolbarOptions.includeLayoutButton = false;
+        toolbarOptions.includeLayoutButton = true;
         return toolbarOptions;
     }
 });

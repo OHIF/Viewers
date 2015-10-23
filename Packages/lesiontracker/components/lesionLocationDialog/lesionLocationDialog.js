@@ -28,7 +28,7 @@ Template.lesionLocationDialog.events({
 
     'change select#selectLesionLocation': function (e) {
         var el = $(e.target);
-        var selectedLocationIndex = el.val();
+        var selectedLocationIndex = el.val()
         if(selectedLocationIndex !== "-1"){
 
             var locationObj = lesionLocationsArray[selectedLocationIndex];

@@ -5,3 +5,8 @@
     padding: 0;
     background-color: black;
 }
+
+#upperHalf {
+    height: 75%;
+    width: 100%;
+}
