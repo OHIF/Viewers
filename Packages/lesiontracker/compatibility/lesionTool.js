@@ -15,13 +15,26 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
         var element = mouseEventData.element;
         var lesionCounter = "";
 
-        //setting name of lesion
-        $(element).on("LesionNameSet", function(e,counter){
-            lesionCounter = counter;
+        // Subscribe CornerstoneMouseup event, when mouse is up, call lesionDialog
+        $(element).on("CornerstoneToolsMouseUp", function (e) {
+
+            // Unsubscribe CornerstoneToolsMouseUp event
+            $(element).off("CornerstoneToolsMouseUp");
+
+            // Show LesionDialog
+            $(document).trigger("ShowLesionDialog", e);
+
         });
 
-        //Listens LesionToolModified event and calls measurementModified function when lesion measurement is changed or updated.
+        // Set Lesion Name
+        $(element).on("LesionNameSet", function(e,lesionName){
+            lesionCounter = lesionName;
+        });
+
+        // Subscribe LesionToolModified and calls measurementModified function when lesion measurement is changed or updated.
         $(element).on("LesionToolModified", measurementModified);
+
+        // Subscribe LesionMeasurementCreated
         $(element).trigger("LesionMeasurementCreated");
 
         // create the measurement data for this tool with the end handle activated
