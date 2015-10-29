@@ -2,50 +2,6 @@ var measurementManagerDAL =  (function () {
     var trialPatientLocations = [];
     var timepoints = [];
 
-    // timepointID =  tabId + activeViewportIndex
-    /*timepoints = [
-        {
-            timepointID: "tp0",
-            rois: [
-                {
-                    UID: "345",
-                    number: 1,
-                    measurement: "22.34",
-                    locationUID: 12345
-                },
-                {
-                    UID: "245",
-                    number: 2,
-                    measurement: "22.34",
-                    locationUID: 1745
-                }
-            ]
-        },
-        {
-            timepointID: "tp1",
-            rois: [
-                {
-                    UID: "243",
-                    number: 1,
-                    measurement: "22.34",
-                    locationUID: 12345
-                }
-            ]
-        },
-        {
-            timepointID: "tp2",
-            rois: [
-                {
-                    UID: "253",
-                    number: 1,
-                    measurement: "0.34",
-                    locationUID: 12345
-                }
-            ]
-        }
-    ];
-    */
-
     // Returns trialPatientLocations array
     function getPatientLocations () {
         return trialPatientLocations;
@@ -76,13 +32,6 @@ var measurementManagerDAL =  (function () {
         return locationUID;
     }
 
-
-    // Insert Measurements Collection
-    function insertDataToMeasurementCollection (lesionData) {
-
-
-    }
-
     function getContentId () {
         return Session.get("activeContentId");
     }
@@ -93,9 +42,43 @@ var measurementManagerDAL =  (function () {
         return tabData[0].timepoints;
     }
 
-    // Adds new timepoint item to tiemepoints array
-    function addLesionData (lesionData) {
+    // Add timepoint data to Measurements collection
+    function addTimepointData(lesionData) {
 
+        var contentId = getContentId();
+        var timepointsOfTab = getTimepointsOfTab();
+        var timepointsArr = [];
+        for(var i=0; i< timepointsOfTab.length; i++) {
+            var timepointId = timepointsOfTab[i].timepointID;
+            var lesionTimepointId = lesionData.timepointID;
+
+            if (timepointId === lesionTimepointId) {
+                // Add real mesurement
+                var timepointObject =  {};
+                timepointObject[timepointId] = {longestDiameter: lesionData.measurementText};
+                timepointsArr.push(timepointObject);
+            } else {
+                // Add null measurement
+                var timepointObject =  {};
+                timepointObject[timepointId] = {longestDiameter: ""};
+                timepointsArr.push(timepointObject);
+
+            }
+        }
+
+        var lesionDataCollectionObject = {
+            lesionNumber: lesionData.lesionNumber,
+            isTarget: true,
+            locationUID: lesionData.locationUID,
+            location: getLocationName(lesionData.locationUID),
+            timepoints: timepointsArr
+        };
+
+        Measurements.insert({contentId: contentId, lesionData: lesionDataCollectionObject});
+    }
+
+    // Update timepoint data in Measurements collection
+    function updateTimepointData (lesionData) {
         var contentId = getContentId();
         var timepointID = lesionData.timepointID;
         var tabMeasurements = Measurements.find({contentId: contentId, "lesionData.lesionNumber": lesionData.lesionNumber}).fetch();
@@ -119,39 +102,31 @@ var measurementManagerDAL =  (function () {
                 }, {multi: true}
             );
 
-        } else {
-
-            // Add new measurement data
-            var timepointsOfTab = getTimepointsOfTab();
-            var timepointsArr = [];
-            for(var i=0; i< timepointsOfTab.length; i++) {
-                var timepointId = timepointsOfTab[i].timepointID;
-                var lesionTimepointId = lesionData.timepointID;
-
-                if (timepointId === lesionTimepointId) {
-                    // Add real mesurement
-                    var timepointObject =  {};
-                    timepointObject[timepointId] = {longestDiameter: lesionData.measurementText};
-                    timepointsArr.push(timepointObject);
-                } else {
-                    // Add null measurement
-                    var timepointObject =  {};
-                    timepointObject[timepointId] = {longestDiameter: ""};
-                    timepointsArr.push(timepointObject);
-
-                }
-            }
-
-            var lesionDataCollectionObject = {
-                lesionNumber: lesionData.lesionNumber,
-                isTarget: true,
-                location: getLocationName(lesionData.locationUID),
-                timepoints: timepointsArr
-            };
-
-            Measurements.insert({contentId: contentId, lesionData: lesionDataCollectionObject});
         }
-        
+    }
+
+    // Check timepointData is found in Measurements collection
+    function timepointDataIsFound (lesionNumber) {
+        var contentId = getContentId();
+        var timepointData = Measurements.findOne({contentId: contentId, "lesionData.lesionNumber": lesionNumber});
+        if (timepointData != undefined) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Adds new timepoint item to tiemepoints array
+    function addLesionData (lesionData) {
+        if(timepointDataIsFound(lesionData)) {
+            // Update data
+            updateTimepointData(lesionData);
+        } else{
+            // Insert data
+            addTimepointData(lesionData);
+        }
+
+        // TODO: This code block will be removed
         // Populate timepoints array
         var roi = {
             uid: lesionData.uid,
@@ -169,47 +144,48 @@ var measurementManagerDAL =  (function () {
             timepoints.push({timepointID: timepointID, rois: [roi]});
         }
 
-        insertDataToMeasurementCollection(lesionData);
-
     }
 
     // Returns new lesion number according to timepointID
     function getNewLesionNumber (timepointID) {
-        // Check timepoint is in timepoints array
-        for (var i=0; i< timepoints.length; i++) {
-            var timepoint = timepoints[i];
-            if(timepoint.timepointID === timepointID) {
-                return timepoint.rois.length + 1;
-            }
-        }
+        var contentId = getContentId();
+        var lesionNumberCounter = 0;
+        var timepointsData = Measurements.find({contentId: contentId}).fetch();
+        if(timepointsData.length > 0) {
+            for(var i=0; i< timepointsData.length; i++) {
+                var timepointData = timepointsData[i];
+                var timepoints = timepointData.lesionData.timepoints;
+                for(var j=0; j< timepoints.length; j++) {
+                    var timepoint = timepoints[j];
+                    var key = Object.keys(timepoint);
+                    if(key == timepointID) {
+                        if (timepoint[key].longestDiameter === "") {
+                            return timepointData.lesionData.lesionNumber;
 
-        // Add new time point
-        timepoints.push({timepointID: timepointID, rois: []});
+                        } else {
+                            lesionNumberCounter = lesionNumberCounter + 1;
+                        }
+                    }
+                }
+            }
+            console.log(lesionNumberCounter + 1);
+
+            return lesionNumberCounter + 1;
+        }
 
         return 1;
     }
 
     // If lesion number is added for any timepoint, returns lesion locationUID
     function isLesionNumberAdded (lesionNumber) {
+        if (timepointDataIsFound(lesionNumber)){
+            var contentId = getContentId();
+            var timepointData = Measurements.find({contentId: contentId, "lesionData.lesionNumber": lesionNumber}).fetch();
+            return timepointData[0].lesionData.locationUID;
 
-        for (var i=0; i< timepoints.length; i++) {
-            var timepoint = timepoints[i];
-            var rois = timepoint.rois;
-
-            for(var j=0; j<rois.length; j++) {
-                var roi = rois[j];
-                if (roi.number === lesionNumber) {
-                    return roi.locationUID;
-                }
-            }
         }
+        return null
 
-        return null;
-    }
-
-    // Adds lesion data to Measurements collection
-    function addLesionToMeasurementsCollection (lesionData){
-        Measurements.insert(lesionData);
     }
 
     return {
@@ -218,7 +194,8 @@ var measurementManagerDAL =  (function () {
         addLesionData: addLesionData,
         getLesionNumber: getNewLesionNumber,
         isLesionNumberAdded: isLesionNumberAdded,
-        getTimepoints: getTimepoints
+        getTimepoints: getTimepoints,
+        updateTimepointData: updateTimepointData
 
     };
 })();

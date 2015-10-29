@@ -17,7 +17,6 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
         var element = mouseEventData.element;
         timepointID = getActiveTimepointID(element);
         var lesionNumber = measurementManagerDAL.getLesionNumber(timepointID);
-        console.log(lesionNumber);
         var lesionCounter = "";
 
         // Subscribe CornerstoneMouseup event, when mouse is up, call lesionDialog
@@ -137,82 +136,14 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
     function updateLesionCollection(lesionData, currentElement) {
 
         if (lesionData.active) {
-            activeLesionMeasurementData = lesionData;
+            if(lesionData.timepointID != undefined && lesionData.timepointID != "") {
+                // Update Measurements Collection
+                measurementManagerDAL.updateTimepointData(lesionData);
+
+            } else {
+                activeLesionMeasurementData = lesionData;
+            }
         }
-
-        // TODO: Option1: Create a global variable like lesionMeasurementData
-        // TODO: Insert lesionData inside the lesionMeasurementData
-        // TODO: Send the lesionMeasurementData to lesionDialog by ShowLesionDialog event
-
-        /*if (lesionMeasurementData != undefined && lesionMeasurementData.lesionNumber === lesionData.index) {
-             lesionMeasurementData.timepoints.now.longestDiameter = lesionData.measurementText;
-             console.log(lesionMeasurementData.timepoints.now.longestDiameter);
-        } else {
-            lesionMeasurementData = {
-                lesionNumber: lesionData.index,
-                isTarget: true,
-                location: '',
-                timepoints: {
-                    "now": {
-                        imageId: "blah",
-                        timepointUid: "timepointX",
-                        date: 2010,
-                        isDirty: true,
-                        longestDiameter: lesionData.measurementText
-                    },
-                    "earlier": {
-                        imageId: "blah2",
-                        timepointUid: "timepointy",
-                        date: 2010,
-                        isDirty: true,
-                        longestDiameter: 8
-                    }
-                }
-            };
-        }*/
-
-        // TODO: Option2:
-        // Check collection has this lesionData
-        /*var isFound = Measurements.findOne({lesionNumber: lesionData.index});
-
-        // TODO: Decide which time point is changed
-        if (isFound) {
-            // Update measurement text
-            Measurements.update(
-                { lesionNumber: lesionData.index },
-                {
-                    $set: {
-                        "timepoints.now.longestDiameter": lesionData.measurementText
-                    }
-                }, {multi: true}
-            );
-
-            console.log(Measurements.find());
-        } else {
-            var lesionObject = {
-                lesionNumber: lesionData.index,
-                isTarget: true,
-                location: '',
-                isHidden: true,
-                timepoints: {
-                    "now": {
-                        imageId: "blah",
-                        timepointUid: "timepointX",
-                        date: 2010,
-                        isDirty: true,
-                        longestDiameter: lesionData.measurementText
-                    },
-                    "earlier": {
-                        imageId: "blah2",
-                        timepointUid: "timepointy",
-                        date: 2010,
-                        isDirty: true,
-                        longestDiameter: 8
-                    }
-                }
-            };
-            Measurements.insert(lesionObject);
-        }*/
     }
 
     function renderLesion(lesion, context, eventData){
