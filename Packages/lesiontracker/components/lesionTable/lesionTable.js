@@ -1,15 +1,14 @@
 Measurements = new Meteor.Collection(null);
-TimepointNames = new Meteor.Collection(null);
+TabsTimepoints = new Meteor.Collection(null);
 
 Template.lesionTable.helpers({
     'measurement': function() {
         var contentId = Session.get("activeContentId");
-        console.log(Measurements.find({contentId: contentId}));
         return Measurements.find({contentId: contentId});
     },
-    'timepointNames': function() {
+    'tabTimepoints': function() {
         var contentId = Session.get("activeContentId");
-        return Template.instance().timepointNamesDictionary.get(contentId);
+        return TabsTimepoints.find({contentId: contentId});
     },
     'lesionData': function() {
         var array = [];
@@ -23,26 +22,41 @@ Template.lesionTable.helpers({
 
 Template.lesionTable.onRendered(function() {
 
-    // TODO: Create seperate method
     var cols = Template.instance().data.viewportColumns.curValue;
     var rows = Template.instance().data.viewportRows.curValue;
 
     var totalViewports = cols * rows;
 
     var contentId = Session.get('activeContentId');
+    var timepointsArray = [];
     for(var i=0; i< totalViewports;  i++) {
-        var timepointNamesArray =  [];
-        if(Template.instance().timepointNamesDictionary.get(contentId) != undefined) {
-            timepointNamesArray = Template.instance().timepointNamesDictionary.get(contentId);
-        }
+
         var timepointID = contentId.toString()+ i.toString();
         var timepointName = "Baseline";
         if(i > 0) {
             timepointName = "Follow Up "+i;
         }
-        var timepointObject = {id: timepointID, name: timepointName};
-        timepointNamesArray.push(timepointObject);
-        Template.instance().timepointNamesDictionary.set(contentId, timepointNamesArray);
+        var timepointObject = {timepointID: timepointID, timepointName: timepointName};
+        timepointsArray.push(timepointObject);
+
+    }
+
+    // Prevent duplicate data when onRendered is called
+    var tabTimepoint = TabsTimepoints.find({contentId: contentId}).fetch();
+    if (tabTimepoint != undefined && tabTimepoint.length > 0) {
+        // Update timepoints
+        TabsTimepoints.update(
+            { contentId: contentId},
+            {
+                $set: {
+                    timepoints: timepointsArray
+                }
+            }, {multi: true}
+        );
+    } else {
+
+        // Insert new timepoints array
+        TabsTimepoints.insert({contentId: contentId, timepoints: timepointsArray});
     }
 
 });

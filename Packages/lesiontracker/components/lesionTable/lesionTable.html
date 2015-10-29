@@ -7,8 +7,10 @@
                     <th id="thTarget">Target</th>
                     <th id="thLocation">Location</th>
                     <!--Each time point name as a column-->
-                    {{ #each timepointNames }}
-                        {{ >lesionTableTimepointHeader }}
+                    {{ #each tabTimepoints }}
+                        {{ #each timepoints }}
+                             {{ >lesionTableTimepointHeader }}
+                        {{ /each }}
                     {{ /each }}
                 </tr>
             </thead>

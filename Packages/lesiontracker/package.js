@@ -31,8 +31,11 @@ Package.onUse(function (api) {
     api.addFiles('components/lesionTableRow/lesionTableRow.js', 'client');
 
     api.addFiles('components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
+    api.addFiles('components/lesionTableTimepointCell/lesionTableTimepointCell.js', 'client');
 
     api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.html', 'client');
+    api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.js', 'client');
+
 
     // Library functions
     api.addFiles('lib/getActiveTimepointID.js', 'client');
