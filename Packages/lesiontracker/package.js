@@ -15,6 +15,7 @@ Package.onUse(function (api) {
     api.use('cornerstone');
 
     api.addFiles('compatibility/lesionTool.js', 'client', {bare: true});
+    api.addFiles('compatibility/measurementManagerDAL.js', 'client', {bare: true});
 
     api.addFiles('components/lesionDialog/lesionDialog.html', 'client');
     api.addFiles('components/lesionDialog/lesionDialog.js', 'client');
@@ -32,4 +33,9 @@ Package.onUse(function (api) {
     api.addFiles('components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
 
     api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.html', 'client');
+
+    // Library functions
+    api.addFiles('lib/getActiveTimepointID.js', 'client');
+    api.addFiles('lib/uuid.js', 'client');
+
 });

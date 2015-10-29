@@ -18,6 +18,10 @@ switchToTab = function(contentId) {
     var data = ViewerData[contentId];
 
     console.log("Switching to tab: " + contentId);
+
+    // Set active tab
+    Session.set("activeContentId", contentId);
+
     $('.tabTitle a[data-target="#' + contentId + '"]').tab('show');
 
     $("#viewer").remove();
@@ -69,6 +73,7 @@ Template.worklist.onRendered(function() {
             title: data.title
         };
         Session.set('ViewerData', ViewerData);
+
 
         switchToTab(contentId);
     });

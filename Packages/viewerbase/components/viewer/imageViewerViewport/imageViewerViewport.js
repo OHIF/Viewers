@@ -255,6 +255,7 @@ Template.imageViewerViewport.events({
         if (this.viewportIndex === this.activeViewport.curValue) {
             return;
         }
+        Session.set("ActivateViewportIndex", this.viewportIndex);
         console.log('ActivateViewport index: ' + this.viewportIndex);
         this.activeViewport.curValue = this.viewportIndex;
         enablePrefetchOnElement(this.viewportIndex);

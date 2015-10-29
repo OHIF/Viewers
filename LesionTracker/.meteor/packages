@@ -34,4 +34,5 @@ stylus
 fortawesome:fontawesome
 random
 reactive-var
+reactive-dict
 lesiontracker

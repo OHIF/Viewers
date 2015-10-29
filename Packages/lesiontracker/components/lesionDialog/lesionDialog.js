@@ -1,13 +1,25 @@
 Template.lesionDialog.onRendered(function () {
     // Show Lesion Dialog
-    $(document).on("ShowLesionDialog", function (e, eventData) {
-        var dialogPointsOnPage = eventData.currentPoints.page;
-        $("#modal-dialog-container").css({
-            "top": dialogPointsOnPage.y,
-            "left": dialogPointsOnPage.x
-        });
+    $(document).on("ShowLesionDialog", function (e, eventData, activeLesionMeasurementData) {
 
-        $("#lesionDialog").modal("show");
+        var locationUID = measurementManagerDAL.isLesionNumberAdded(activeLesionMeasurementData.lesionNumber);
+
+        if(locationUID != null) {
+
+            activeLesionMeasurementData.locationUID = locationUID;
+            measurementManagerDAL.addLesionData(activeLesionMeasurementData);
+        }else{
+
+            // Show Dialog
+            var dialogPointsOnPage = eventData.currentPoints.page;
+            $("#modal-dialog-container").css({
+                "top": dialogPointsOnPage.y,
+                "left": dialogPointsOnPage.x
+            });
+
+            $("#lesionDialog").modal("show");
+        }
+
     });
 });
 

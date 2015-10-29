@@ -1,4 +1,6 @@
 var lineIndex = 0; //This holds drawn line index
+var activeLesionMeasurementData;
+var timepointID;
 var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     "use strict";
@@ -13,6 +15,9 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
     function createNewMeasurement(mouseEventData)
     {
         var element = mouseEventData.element;
+        timepointID = getActiveTimepointID(element);
+        var lesionNumber = measurementManagerDAL.getLesionNumber(timepointID);
+        console.log(lesionNumber);
         var lesionCounter = "";
 
         // Subscribe CornerstoneMouseup event, when mouse is up, call lesionDialog
@@ -21,8 +26,12 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
             // Unsubscribe CornerstoneToolsMouseUp event
             $(element).off("CornerstoneToolsMouseUp");
 
+            // Set lesionMeasurementData Session
+            activeLesionMeasurementData.timepointID = timepointID;
+            Session.set("lesionMeasurementData", activeLesionMeasurementData);
+
             // Show LesionDialog
-            $(document).trigger("ShowLesionDialog", e);
+            $(document).trigger("ShowLesionDialog", [e, activeLesionMeasurementData]);
 
         });
 
@@ -72,9 +81,11 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
                 },
                 init: false
             },
-            lesionName: "Target "+lesionCounter,
+            lesionName: "Target "+lesionNumber,
             isDeleted: false,
-            lineNumber:"" //Indicates line number on image
+            lineNumber:"", //Indicates line number on image
+            lesionNumber: lesionNumber,
+            uid: uuid.v4()
         };
         lineIndex++;
         return measurementData;
@@ -103,110 +114,201 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
 
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
-
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
         if (toolData === undefined) {
             return;
         }
 
+        updateLesions(toolData, eventData, e.currentTarget);
+    }
+
+    function updateLesions(toolData, eventData, currentElement) {
         // we have tool data for this element - iterate over each one and draw it
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
+
+        for (var i = 0; i < toolData.data.length; i++) {
+            renderLesion(toolData.data[i], context, eventData);
+            updateLesionCollection(toolData.data[i], currentElement);
+        }
+    }
+
+    function updateLesionCollection(lesionData, currentElement) {
+
+        if (lesionData.active) {
+            activeLesionMeasurementData = lesionData;
+        }
+
+        // TODO: Option1: Create a global variable like lesionMeasurementData
+        // TODO: Insert lesionData inside the lesionMeasurementData
+        // TODO: Send the lesionMeasurementData to lesionDialog by ShowLesionDialog event
+
+        /*if (lesionMeasurementData != undefined && lesionMeasurementData.lesionNumber === lesionData.index) {
+             lesionMeasurementData.timepoints.now.longestDiameter = lesionData.measurementText;
+             console.log(lesionMeasurementData.timepoints.now.longestDiameter);
+        } else {
+            lesionMeasurementData = {
+                lesionNumber: lesionData.index,
+                isTarget: true,
+                location: '',
+                timepoints: {
+                    "now": {
+                        imageId: "blah",
+                        timepointUid: "timepointX",
+                        date: 2010,
+                        isDirty: true,
+                        longestDiameter: lesionData.measurementText
+                    },
+                    "earlier": {
+                        imageId: "blah2",
+                        timepointUid: "timepointy",
+                        date: 2010,
+                        isDirty: true,
+                        longestDiameter: 8
+                    }
+                }
+            };
+        }*/
+
+        // TODO: Option2:
+        // Check collection has this lesionData
+        /*var isFound = Measurements.findOne({lesionNumber: lesionData.index});
+
+        // TODO: Decide which time point is changed
+        if (isFound) {
+            // Update measurement text
+            Measurements.update(
+                { lesionNumber: lesionData.index },
+                {
+                    $set: {
+                        "timepoints.now.longestDiameter": lesionData.measurementText
+                    }
+                }, {multi: true}
+            );
+
+            console.log(Measurements.find());
+        } else {
+            var lesionObject = {
+                lesionNumber: lesionData.index,
+                isTarget: true,
+                location: '',
+                isHidden: true,
+                timepoints: {
+                    "now": {
+                        imageId: "blah",
+                        timepointUid: "timepointX",
+                        date: 2010,
+                        isDirty: true,
+                        longestDiameter: lesionData.measurementText
+                    },
+                    "earlier": {
+                        imageId: "blah2",
+                        timepointUid: "timepointy",
+                        date: 2010,
+                        isDirty: true,
+                        longestDiameter: 8
+                    }
+                }
+            };
+            Measurements.insert(lesionObject);
+        }*/
+    }
+
+    function renderLesion(lesion, context, eventData){
+        context.save();
 
         var color;
         var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
         var font = cornerstoneTools.textStyle.getFont();
         var config = cornerstoneTools.length.getConfiguration();
 
-        for (var i = 0; i < toolData.data.length; i++) {
-            context.save();
-            // configurable shadow
-            if (config && config.shadow) {
-                context.shadowColor = '#000000';
-                context.shadowOffsetX = +1;
-                context.shadowOffsetY = +1;
-            }
-
-            var data = toolData.data[i];
-            if (data.active) {
-                color = cornerstoneTools.toolColors.getActiveColor();
-            } else {
-                color = cornerstoneTools.toolColors.getToolColor();
-            }
-
-            // draw the line
-            var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.start);
-            var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
-
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = lineWidth;
-            context.moveTo(handleStartCanvas.x, handleStartCanvas.y);
-            context.lineTo(handleEndCanvas.x, handleEndCanvas.y);
-            context.stroke();
-
-            // draw the handles
-            cornerstoneTools.drawHandles(context, eventData, data.handles, color);
-
-            //Set coordinates of text
-            var linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.start);
-            var linkedTextEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.end);
-            if(!data.linkedTextCoords.init){
-                data.linkedTextCoords.start.x = data.handles.start.x + 50;
-                data.linkedTextCoords.start.y = data.handles.start.y + 40;
-                linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.start);
-
-                //Set end point of linkedTextCoords
-                data.linkedTextCoords.end.x = data.linkedTextCoords.start.x + 50;
-                data.linkedTextCoords.end.y = data.linkedTextCoords.start.y + 30;
-                linkedTextEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.end);
-
-                //initialized coordinates of text
-                data.linkedTextCoords.init = true;
-            }
-
-            //Draw linked line as dashed
-            context.setLineDash([2,3]);
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = 1 / eventData.viewport.scale;
-            var mid = {
-                x:(handleStartCanvas.x + handleEndCanvas.x) / 2, y:(handleStartCanvas.y + handleEndCanvas.y) / 2
-            };
-
-            context.moveTo(mid.x, mid.y);
-            context.lineTo(linkedTextStartCanvas.x + 20, linkedTextStartCanvas.y + 20);
-            context.stroke();
-
-            // Draw the text
-            context.fillStyle = color;
-            context.font = font;
-            var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
-            var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
-            var length = Math.sqrt(dx * dx + dy * dy);
-
-            var suffix = ' mm';
-            if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
-                suffix = ' pixels';
-            }
-
-            var text = '' + length.toFixed(2) + suffix;
-            var textCoords = {
-                x:  linkedTextStartCanvas.x, y: linkedTextStartCanvas.y
-            };
-
-            cornerstoneTools.drawTextBox(context, data.lesionName, textCoords.x, textCoords.y, color);
-            cornerstoneTools.drawTextBox(context, text, textCoords.x, textCoords.y + 20, color);
-
-            //Set measurement text to show lesion table
-            data.measurementText = length.toFixed(2);
-            $(eventData.enabledElement.element).trigger("LesionTextChanged",data);
-
-            context.restore();
+        // configurable shadow from CornerstoneTools
+        if (config && config.shadow) {
+            context.shadowColor = '#000000';
+            context.shadowOffsetX = +1;
+            context.shadowOffsetY = +1;
         }
 
+        if (lesion.active) {
+            color = cornerstoneTools.toolColors.getActiveColor();
+        } else {
+            color = cornerstoneTools.toolColors.getToolColor();
+        }
+
+        // draw the line
+        var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.handles.start);
+        var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.handles.end);
+
+        context.beginPath();
+        context.strokeStyle = color;
+        context.lineWidth = lineWidth;
+        context.moveTo(handleStartCanvas.x, handleStartCanvas.y);
+        context.lineTo(handleEndCanvas.x, handleEndCanvas.y);
+        context.stroke();
+
+        // draw the handles
+        cornerstoneTools.drawHandles(context, eventData, lesion.handles, color);
+
+        //Set coordinates of text
+        var linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.start);
+        var linkedTextEndCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.end);
+        if(!lesion.linkedTextCoords.init){
+            lesion.linkedTextCoords.start.x = lesion.handles.start.x + 50;
+            lesion.linkedTextCoords.start.y = lesion.handles.start.y + 40;
+            linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.start);
+
+            //Set end point of linkedTextCoords
+            lesion.linkedTextCoords.end.x = lesion.linkedTextCoords.start.x + 50;
+            lesion.linkedTextCoords.end.y = lesion.linkedTextCoords.start.y + 30;
+            linkedTextEndCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.end);
+
+            //initialized coordinates of text
+            lesion.linkedTextCoords.init = true;
+        }
+
+        //Draw linked line as dashed
+        context.setLineDash([2,3]);
+        context.beginPath();
+        context.strokeStyle = color;
+        context.lineWidth = 1 / eventData.viewport.scale;
+        var mid = {
+            x:(handleStartCanvas.x + handleEndCanvas.x) / 2, y:(handleStartCanvas.y + handleEndCanvas.y) / 2
+        };
+
+        context.moveTo(mid.x, mid.y);
+        context.lineTo(linkedTextStartCanvas.x + 20, linkedTextStartCanvas.y + 20);
+        context.stroke();
+
+        // Draw the text
+        context.fillStyle = color;
+        context.font = font;
+        var dx = (lesion.handles.start.x - lesion.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
+        var dy = (lesion.handles.start.y - lesion.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
+        var length = Math.sqrt(dx * dx + dy * dy);
+
+        var suffix = ' mm';
+        if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
+            suffix = ' pixels';
+        }
+
+        var text = '' + length.toFixed(2) + suffix;
+        var textCoords = {
+            x:  linkedTextStartCanvas.x, y: linkedTextStartCanvas.y
+        };
+
+        cornerstoneTools.drawTextBox(context, lesion.lesionName, textCoords.x, textCoords.y, color);
+        cornerstoneTools.drawTextBox(context, text, textCoords.x, textCoords.y + 20, color);
+
+        //Set measurement text to show lesion table
+        lesion.measurementText = length.toFixed(2);
+
+        // Lesion Measurement is changed
+        $(eventData.enabledElement.element).trigger("LesionTextChanged",lesion);
+
+        context.restore();
     }
+
     ///////// END IMAGE RENDERING ///////
 
     //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active

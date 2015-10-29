@@ -1,3 +1,5 @@
+var lastAddedLesionData;
+
 //fill selectLesionLocation element
 var lesionLocationsArray = [
     {location:"Brain Brainstem",hasDescription:false, description:""},
@@ -8,6 +10,7 @@ var lesionLocationsArray = [
 ];
 
 Template.lesionLocationDialog.onRendered(function () {
+    console.log(this.data);
 
     function fillSelectLesionLocation () {
         var el = $("#selectLesionLocation");
@@ -19,11 +22,24 @@ Template.lesionLocationDialog.onRendered(function () {
 
     // Fill dropdown
     fillSelectLesionLocation();
+
+    // Observe Measurements Collection Changes
+    Measurements.find().observe({
+        added: function (lesionData) {
+            lastAddedLesionData = lesionData
+        },
+        changed: function(lesionData) {
+            console.log("lesionData is changed!");
+        }
+    });
 });
 
 Template.lesionLocationDialog.events({
     'click button#btnCloseLesionPopup': function (e) {
         $("#lesionDialog").modal("hide");
+        // TODO: Remove lastAddedLesionData from canvas
+        // TODO: Remove lastAddedLesionData from collection
+
     },
 
     'change select#selectLesionLocation': function (e) {
@@ -31,7 +47,20 @@ Template.lesionLocationDialog.events({
         var selectedLocationIndex = el.val()
         if(selectedLocationIndex !== "-1"){
 
+            // Get selected location data
             var locationObj = lesionLocationsArray[selectedLocationIndex];
+
+            // Gets active lesion measurement data that is latest added data
+            var activeLesionMeasurementData = Session.get("lesionMeasurementData");
+
+            // Adds location data to trialPatientLocations array and returns locationUID
+            var locationUID = measurementManagerDAL.addNewLocation(locationObj);
+
+            // Linkk locationUID with activeLesionMeasurementData
+            activeLesionMeasurementData.locationUID = locationUID;
+
+            // Adds lesion data to timepoints array
+            measurementManagerDAL.addLesionData(activeLesionMeasurementData);
 
             // Trigger location selected event
             $(document).trigger("lesionLocationSelected",locationObj);
