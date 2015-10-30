@@ -1,8 +1,8 @@
 <template name="lesionTableRow">
     <tr>
-        <th class='lesionNumber'>{{lesionData.lesionNumber}}</th>
-        <th class='target'>{{#if lesionData.isTarget}} Y {{else}} N {{/if}}</th>
-        <th class='location'>{{lesionData.location}}</th>
+        <td class='lesionNumber'>{{lesionData.lesionNumber}}</td>
+        <td class='location'>{{lesionData.location}}</td>
+        <td class='target'>{{#if lesionData.isTarget}} Y {{else}} N {{/if}}</td>
         <!--Each time point as a column-->
         {{# each timepoints }}
             {{> lesionTableTimepointCell }}

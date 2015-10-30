@@ -32,7 +32,7 @@ Template.lesionTable.onRendered(function() {
         var timepointID = contentId.toString() + i.toString();
         var timepointName = "Baseline";
         if (i > 0) {
-            timepointName = "Follow Up "+i;
+            timepointName = "Current"; //"Follow Up "+i;
         }
         var timepointObject = {timepointID: timepointID, timepointName: timepointName};
         timepointsArray.push(timepointObject);
