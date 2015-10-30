@@ -1,10 +1,10 @@
 <template name="viewer">
     <div id="viewer" class="viewer">
-        {{ >lesionDialog studies=studies activeViewport=activeViewport}}
+        {{ >lesionDialog }}
         <div id="upperHalf">
-            {{ >hidingPanel studies=studies activeViewport=activeViewport}}
-            {{ >viewerMain studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
+            {{ >hidingPanel }}
+            {{ >viewerMain }}
         </div>
-        {{ >lesionTable studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
+        {{ >lesionTable }}
     </div>
 </template>

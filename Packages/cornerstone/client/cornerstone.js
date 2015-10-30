@@ -2148,7 +2148,7 @@ if(typeof cornerstone === 'undefined'){
 
     function initShaders() {
         for (var id in cornerstone.webGL.shaders) {
-            console.log("WEBGL: Loading shader", id);
+            //console.log("WEBGL: Loading shader", id);
             var shader = cornerstone.webGL.shaders[ id ];
             shader.attributes = {};
             shader.uniforms = {};
@@ -2168,13 +2168,13 @@ if(typeof cornerstone === 'undefined'){
 
     function initRenderer() {
         if (cornerstone.webGL.isWebGLInitialized === true) {
-            console.log("WEBGL Renderer already initialized");
+            //console.log("WEBGL Renderer already initialized");
             return;
         }
         if ( initWebGL( renderCanvas ) ) {
             initBuffers();
             initShaders();
-            console.log("WEBGL Renderer initialized!");
+            //console.log("WEBGL Renderer initialized!");
             cornerstone.webGL.isWebGLInitialized = true;
         }
     }

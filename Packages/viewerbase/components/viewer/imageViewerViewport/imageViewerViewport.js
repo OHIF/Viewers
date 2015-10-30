@@ -6,8 +6,9 @@
  * @param element
  */
 function enablePrefetchOnElement(viewportIndex) {
+    log.info("imageViewerViewport enablePrefetchOnElement");
+
     var element = $('.imageViewerViewport').get(viewportIndex);
-    //console.log('Enabling prefetch on new element');
 
     // Loop through all viewports and disable stackPrefetch
     $('.imageViewerViewport').each(function() {
@@ -25,6 +26,8 @@ function enablePrefetchOnElement(viewportIndex) {
 }
 
 function displayReferenceLines(viewportIndex) {
+    log.info("imageViewerViewport displayReferenceLines");
+
     var element = $('.imageViewerViewport').get(viewportIndex);
 
     $('.imageViewerViewport').each(function(index, element) {
@@ -49,16 +52,21 @@ function displayReferenceLines(viewportIndex) {
 }
 
 function loadSeriesIntoViewport(data) {
+    log.info("imageViewerViewport loadSeriesIntoViewport");
+
     if (!data.series || !data.element) {
         return;
     }
 
-    var contentId = $("#viewer").parents('.tab-pane.active').attr('id');
+    var contentId = Session.get('activeContentId');
+    
 
     var study = data.study;
     var series = data.series;
     var element = data.element;
     var viewportIndex = $(".imageViewerViewport").index(element);
+
+    ViewerData[contentId].loadedSeriesData[viewportIndex] = {};
 
     var allEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
         'CornerstoneToolsMouseClick CornerstoneToolsMouseDrag CornerstoneToolsMouseUp ' +
@@ -115,6 +123,8 @@ function loadSeriesIntoViewport(data) {
             endLoadingHandler(element);
         }
 
+        cornerstone.resize(element, true);
+
         element.classList.remove('empty');
         $(element).siblings('.viewportInstructions').hide();
         $(element).siblings('.imageViewerViewportOverlay').show();
@@ -142,9 +152,11 @@ function loadSeriesIntoViewport(data) {
         cornerstoneTools.magnify.enable(element);
 
         function onImageRendered(e, eventData) {
+            log.info('imageViewerViewport onImageRendered');
+
             Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
             var viewport = cornerstone.getViewport(element);
-            ViewerData[contentId].viewer.imageViewerLoadedSeriesDictionary[viewportIndex].viewport = viewport;
+            ViewerData[contentId].loadedSeriesData[viewportIndex].viewport = viewport;
             Session.set('ViewerData', ViewerData);
         }
 
@@ -153,6 +165,8 @@ function loadSeriesIntoViewport(data) {
         Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
 
         function onNewImage(e, eventData) {
+            log.info('imageViewerViewport onNewImage');
+
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
             templateData.imageId = eventData.enabledElement.image.imageId;
@@ -161,7 +175,7 @@ function loadSeriesIntoViewport(data) {
             var stack = cornerstoneTools.getToolState(element, 'stack');
             if (stack && stack.data.length && stack.data[0].imageIds.length > 1) {
                 var imageIdIndex = stack.data[0].imageIds.indexOf(templateData.imageId);
-                ViewerData[contentId].viewer.imageViewerLoadedSeriesDictionary[viewportIndex].currentImageIdIndex = imageIdIndex;
+                ViewerData[contentId].loadedSeriesData[viewportIndex].currentImageIdIndex = imageIdIndex;
                 Session.set('ViewerData', ViewerData);
             }
         }
@@ -170,14 +184,17 @@ function loadSeriesIntoViewport(data) {
         $(element).on('CornerstoneNewImage', onNewImage);
 
         function sendActivationTrigger(e, eventData) {
-            var activeViewportIndex = data.activeViewport.curValue;
+            log.info('imageViewerViewport sendActivationTrigger');
+            var activeViewportIndex = Session.get('activeViewport');
             var viewportIndex = $(".imageViewerViewport").index(eventData.element);
             if (viewportIndex === activeViewportIndex) {
                 return;
             }
             eventData.viewportIndex = viewportIndex;
-            var customEvent = jQuery.Event('ActivateViewport', eventData);
-            customEvent.type = 'ActivateViewport'; // Need to overwrite the type set in the touch tools
+            var customEvent = $.Event('ActivateViewport', eventData);
+
+            // Need to overwrite the type set in the original event
+            customEvent.type = 'ActivateViewport';
             $(e.target).trigger(customEvent, eventData);
         }
 
@@ -186,7 +203,7 @@ function loadSeriesIntoViewport(data) {
 
         Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
 
-        OHIF.viewer.imageViewerLoadedSeriesDictionary[viewportIndex] = {
+        OHIF.viewer.loadedSeriesData[viewportIndex] = {
             studyInstanceUid: data.studyInstanceUid,
             seriesInstanceUid: data.seriesInstanceUid,
             currentImageIdIndex: data.currentImageIdIndex,
@@ -206,16 +223,19 @@ function loadSeriesIntoViewport(data) {
 }
 
 Template.imageViewerViewport.onRendered(function() {
-    var studies = this.data.studies;
+    log.info("imageViewerViewport onRendered");
+
+    var studies = Session.get('studies');
+    var activeViewport = Session.get('activeViewport');
     var element = this.find(".imageViewerViewport");
 
     var data = {
         element: element,
         viewport: this.data.viewport,
         currentImageIdIndex: this.data.currentImageIdIndex,
-        activeViewport: this.data.activeViewport,
         studyInstanceUid: this.data.studyInstanceUid,
-        seriesInstanceUid: this.data.seriesInstanceUid
+        seriesInstanceUid: this.data.seriesInstanceUid,
+        activeViewport: activeViewport
     };
 
     if (this.data.seriesInstanceUid === undefined || this.data.studyInstanceUid === undefined) {
@@ -246,18 +266,23 @@ Template.imageViewerViewport.onRendered(function() {
 });
 
 Template.imageViewerViewport.onDestroyed(function() {
+    log.info("imageViewerViewport onDestroyed");
+
     var element = this.find(".imageViewerViewport");
+    
+    try {
+        cornerstoneTools.stopClip(element);
+    } catch(error) {
+    }
+
     cornerstone.disable(element);
 });
 
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
-        if (this.viewportIndex === this.activeViewport.curValue) {
-            return;
-        }
-        Session.set("ActivateViewportIndex", this.viewportIndex);
-        console.log('ActivateViewport index: ' + this.viewportIndex);
-        this.activeViewport.curValue = this.viewportIndex;
+        log.info("imageViewerViewport ActivateViewport");
+
+        Session.set("activeViewport", this.viewportIndex);
         enablePrefetchOnElement(this.viewportIndex);
         displayReferenceLines(this.viewportIndex);
     },

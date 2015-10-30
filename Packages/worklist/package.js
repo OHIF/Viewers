@@ -11,6 +11,13 @@ Package.onUse(function (api) {
     api.use('jquery');
     api.use('stylus');
 
+    api.use('practicalmeteor:loglevel');
+
+    // Our custom package
+    api.use('dicomweb');
+
+    api.addFiles('log.js', 'client');
+
     // Components
     api.addFiles('components/worklist.html', 'client');
     api.addFiles('components/worklist.js', 'client');
@@ -37,6 +44,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/generateUUID.js', 'client');
     api.export('generateUUID', 'client');
 
+    api.export('openNewTab', 'client');
     api.export('switchToTab', 'client');
     
     api.export('ViewerData', 'client');

@@ -1,5 +1,5 @@
 Template.studyBrowser.helpers({
   studies : function() {
-    return this.studies;
+    return Session.get('studies');
   }
 });

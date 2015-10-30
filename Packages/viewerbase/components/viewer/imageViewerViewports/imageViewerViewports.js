@@ -1,49 +1,44 @@
 Template.imageViewerViewports.helpers({
     height: function() {
-        var viewportRows;
-        if (!Template.parentData(1).viewportRows) {
-            viewportRows = 1;
-        } else {
-            viewportRows = Template.parentData(1).viewportRows.curValue; //Having issues with .get(), not sure why?
-        }
+        var viewportRows = this.viewportRows || 1;
         return 100 / viewportRows;
     },
     width: function() {
-        var viewportColumns;
-        if (!Template.parentData(1).viewportColumns) {
-            viewportColumns = 1;
-        } else {
-            viewportColumns = Template.parentData(1).viewportColumns.curValue;  //Having issues with .get(), not sure why?
-        }
+        var viewportColumns = this.viewportColumns || 1;
         return 100 / viewportColumns;
     },
     viewportArray: function() {
-        // This is a really annoying thing to have to do, but Meteor
-        // doesn't want to let me use another type of helper.
-        var viewportRows;
-        if (!this.viewportRows) {
-            viewportRows = 1;
-        } else {
-            viewportRows = this.viewportRows.curValue; //Having issues with .get(), not sure why?
+        log.info("imageViewerViewports viewportArray");
+
+        var studies = Session.get('studies');
+
+        var viewportRows = this.viewportRows || 1;
+        var viewportColumns = this.viewportColumns || 1;
+
+        var contentId = this.contentId || $("#viewer").parents(".tab-pane.active").attr('id');
+        if (this.viewportRows && this.viewportColumns) {
+            viewportRows = this.viewportRows || 1;
+            viewportColumns = this.viewportColumns || 1;
+        } else if (ViewerData[contentId].viewportRows && ViewerData[contentId].viewportColumns) {
+            viewportRows = ViewerData[contentId].viewportRows;
+            viewportColumns = ViewerData[contentId].viewportColumns;
         }
 
-        var viewportColumns;
-        if (!this.viewportColumns) {
-            viewportColumns = 1;
-        } else {
-            viewportColumns = this.viewportColumns.curValue; //Having issues with .get(), not sure why?
-        }
-        
+        // Update viewerData
+        ViewerData[contentId].viewportRows = viewportRows;
+        ViewerData[contentId].viewportColumns = viewportColumns;
+        Session.set("ViewerData", ViewerData);
+
         var viewportData;
-        if (OHIF && OHIF.viewer && !$.isEmptyObject(OHIF.viewer.imageViewerLoadedSeriesDictionary)) {
-            viewportData = OHIF.viewer.imageViewerLoadedSeriesDictionary;
+        if (!$.isEmptyObject(ViewerData[contentId].loadedSeriesData)) {
+            viewportData = ViewerData[contentId].loadedSeriesData;
         }
 
         var hangingProtocol = getHangingProtocol();
         var inputData = {
             viewportColumns: viewportColumns,
             viewportRows: viewportRows,
-            studies: this.studies
+            studies: studies
         };
         var hangingProtocolViewportData = hangingProtocol(inputData);
         
@@ -52,8 +47,10 @@ Template.imageViewerViewports.helpers({
         for (var i=0; i < numViewports; ++i) {
             var data = {
                 viewportIndex: i,
-                studies: this.studies,
-                activeViewport: this.activeViewport
+                // These two are necessary because otherwise the width and height helpers
+                // don't get the right data context. Seems to be related to the "each" loop.
+                viewportColumns: viewportColumns,
+                viewportRows: viewportRows
             };
             if (viewportData && viewportData[i]) {
                 data.seriesInstanceUid = viewportData[i].seriesInstanceUid;

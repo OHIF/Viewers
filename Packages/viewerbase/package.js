@@ -11,8 +11,12 @@ Package.onUse(function (api) {
     api.use('jquery');
     api.use('stylus');
 
+    api.use('practicalmeteor:loglevel');
+
     // Our custom package
     api.use('cornerstone');
+
+    api.addFiles('log.js', 'client');
 
     // ---------- Components ----------
 

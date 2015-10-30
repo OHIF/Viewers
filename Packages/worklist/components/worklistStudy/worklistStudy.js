@@ -1,5 +1,5 @@
 Template.worklistStudy.events({
-    'click': function (){
-        Router.go('viewer', {_id: this.studyInstanceUid});
+    'click': function () {
+        openNewTab(this.studyInstanceUid);
     }
 });

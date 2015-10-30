@@ -12,7 +12,7 @@ rerenderViewportWithNewSeries = function(element, data) {
     data.viewportIndex = viewportIndex;
 
     // Update the dictionary of loaded series for the specified viewport
-    OHIF.viewer.imageViewerLoadedSeriesDictionary[viewportIndex] = {
+    OHIF.viewer.loadedSeriesData[viewportIndex] = {
         seriesInstanceUid: data.seriesInstanceUid,
         studyInstanceUid: data.studyInstanceUid,
         currentImageIdIndex: 0

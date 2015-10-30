@@ -3,7 +3,7 @@
         {{ #each viewportArray }}
         <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
             <div class="removable">
-                {{ >imageViewerViewport viewportIndex=viewportIndex studies=studies activeViewport=activeViewport seriesInstanceUid=seriesInstanceUid studyInstanceUid=studyInstanceUid currentImageIdIndex=currentImageIdIndex viewport=viewport}}
+                {{ >imageViewerViewport viewportIndex=viewportIndex seriesInstanceUid=seriesInstanceUid studyInstanceUid=studyInstanceUid currentImageIdIndex=currentImageIdIndex viewport=viewport}}
             </div>
         </div>
         {{ /each }}

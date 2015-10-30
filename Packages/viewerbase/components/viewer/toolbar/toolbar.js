@@ -84,8 +84,8 @@ Template.toolbar.events({
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
-        var viewportIndex = Template.parentData(0).activeViewport.get();
-        var element = $('.imageViewerViewport').get(viewportIndex);
+        var activeViewport = Session.get('activeViewport');
+        var element = $('.imageViewerViewport').get(activeViewport);
         OHIF.viewer.functionList[command](element);
     }
 });

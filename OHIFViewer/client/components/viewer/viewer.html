@@ -1,6 +1,9 @@
 <template name="viewer">
     <div id="viewer">
-        {{> studyBrowser studies=studies activeViewport=activeViewport}}
-        {{> viewerMain studies=studies activeViewport=activeViewport viewportRows=viewportRows viewportColumns=viewportColumns}}
+        {{> studyBrowser }}
+        <div class='viewerMain'>
+            {{ > toolbar }}
+            {{ > imageViewerViewports }}
+        </div>
     </div>
 </template>
