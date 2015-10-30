@@ -27,15 +27,20 @@ table.lesionTable > tbody > tr > td {
     line-height: 10px;
 }
 
-table.lesionTable tbody tr:hover{
-    background-color: #d1d1d1;
-}
-
 table.lesionTable tbody tr{
     background-color: #b3b3b3;
     color: #424242;
     line-height: 14px;
 }
+
+table.lesionTable tbody tr.lesionTableRow:nth-child(even) {background: #CCC}
+table.lesionTable tbody tr.lesionTableRow:nth-child(odd) {background: #DDD}
+
+table.lesionTable tbody tr.lesionTableRow:hover{
+        background-color: #009BD2
+        color: white
+}
+
 
 th#thNumber {
     width: 4%;

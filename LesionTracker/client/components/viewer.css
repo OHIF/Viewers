@@ -6,7 +6,8 @@
     background-color: black;
 }
 
-#upperHalf {
-    height: 75%;
-    width: 100%;
+#viewportAndLesionTable {
+    height: 100%;
+    width: calc(100% - 120px);
+    float: right;
 }
