@@ -3,22 +3,12 @@ TabsTimepoints = new Meteor.Collection(null);
 
 Template.lesionTable.helpers({
     'measurement': function() {
-<<<<<<< HEAD
-        var contentId = Session.get("activeContentId");
+        var contentId = this.contentId;
         return Measurements.find({contentId: contentId});
     },
     'tabTimepoints': function() {
-        var contentId = Session.get("activeContentId");
+        var contentId = this.contentId;
         return TabsTimepoints.find({contentId: contentId});
-=======
-        var contentId = this.contentId;
-        console.log(Measurements.find({contentId: contentId}));
-        return Measurements.find({contentId: contentId});
-    },
-    'timepointNames': function() {
-        var contentId = this.contentId;
-        return Template.instance().timepointNamesDictionary.get(contentId);
->>>>>>> Updates to improve reactivity, session storage, logging
     },
     'lesionData': function() {
         var array = [];
@@ -37,6 +27,7 @@ Template.lesionTable.onRendered(function() {
 
     var totalViewports = viewportColumns * viewportRows;
     
+    var timepointsArray = [];
     for(var i=0; i< totalViewports;  i++) {
         var timepointID = contentId.toString() + i.toString();
         var timepointName = "Baseline";
