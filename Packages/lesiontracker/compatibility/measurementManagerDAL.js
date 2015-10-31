@@ -69,6 +69,7 @@ var measurementManagerDAL =  (function () {
         var lesionDataCollectionObject = {
             lesionNumber: lesionData.lesionNumber,
             isTarget: true,
+            imageId: lesionData.imageId,
             locationUID: lesionData.locationUID,
             location: getLocationName(lesionData.locationUID),
             timepoints: timepointsArr

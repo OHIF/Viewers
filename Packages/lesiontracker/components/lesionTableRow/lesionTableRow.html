@@ -1,5 +1,5 @@
 <template name="lesionTableRow">
-    <tr class="lesionTableRow">
+    <tr id="{{lesionData.lesionNumber}}" class="lesionTableRow">
         <td class='lesionNumber'>{{lesionData.lesionNumber}}</td>
         <td class='location'>{{lesionData.location}}</td>
         <td class='target'>{{#if lesionData.isTarget}} Y {{else}} N {{/if}}</td>

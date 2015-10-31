@@ -45,6 +45,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
         // Subscribe LesionMeasurementCreated
         $(element).trigger("LesionMeasurementCreated");
 
+        console.log(mouseEventData.image.imageId);
         // create the measurement data for this tool with the end handle activated
         var measurementData = {
             visible : true,
@@ -64,6 +65,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
                 }
             },
             index: lineIndex,
+            imageId: mouseEventData.image.imageId,
             measurementText: "",
             linkedTextCoords: {
                 start : {
@@ -242,12 +244,11 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
 
     ///////// END IMAGE RENDERING ///////
 
-    //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active
-    function measurementModified(e, eventObject){
+    function activateLesion(e, eventObject) {
         var start = new Date();
 
         var enabledElement = eventObject.enabledElement;
-        var lineIndex = eventObject.lineIndex;
+        var lesionNumber = eventObject.lesionData.lesionNumber;
         var type = eventObject.type;
 
         // if we have no toolData for this element, return immediately as there is nothing to do
@@ -264,7 +265,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
                 var data = toolData.data[i];
 
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.index === eventObject.lineIndex && eventObject.type !== "active") {
+                if (data.lesionNumber === eventObject.lesionNumber && eventObject.type !== "active") {
                     data.visible = false;
                     deletedDataIndex = i;
                 }
@@ -276,9 +277,8 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
         } else {
             for (var i = 0; i < toolData.data.length; i++) {
                 var data = toolData.data[i];
-
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.index === eventObject.lineIndex && eventObject.type === "active") {
+                if (data.lesionNumber === eventObject.lesionData.lesionNumber && eventObject.type === "active") {
                     data.active = true;
                 } else{
                     data.active = false;
@@ -303,13 +303,31 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
             canvasContext: context,
             measurementText: "",
             renderTimeInMs : diff,
-            lineIndex : lineIndex,
+            lesionNumber : lesionNumber,
             type : type //Holds image will be deleted or active
         };
 
         enabledElement.invalid = false;
 
         onImageRendered(e, eventData);
+    }
+
+
+    function loadImage(e, eventObject) {
+        var stackToolDataSource = cornerstoneTools.getToolState(e.currentTarget, 'stack');
+        var stackData = stackToolDataSource.data[0];
+        var imageIdsArr = stackData.imageIds;
+        var indexOfImage = imageIdsArr.indexOf(eventObject.lesionData.imageId);
+        cornerstone.loadAndCacheImage(stackData.imageIds[indexOfImage]).then(function(image) {
+            cornerstone.displayImage(eventObject.enabledElement.element,image);
+            activateLesion(e, eventObject);
+
+        });
+    }
+
+    //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active
+    function measurementModified(e, eventObject){
+        loadImage(e,eventObject);
     }
 
     // module exports

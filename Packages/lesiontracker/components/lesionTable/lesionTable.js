@@ -21,6 +21,7 @@ Template.lesionTable.helpers({
 });
 
 Template.lesionTable.onRendered(function() {
+
     var contentId = this.data.contentId;
     var viewportColumns = ViewerData[contentId].viewportColumns;
     var viewportRows = ViewerData[contentId].viewportRows;
@@ -59,6 +60,28 @@ Template.lesionTable.onRendered(function() {
 
 });
 
-Template.lesionTable.onCreated(function() {
-    this.timepointNamesDictionary = new ReactiveDict();
+Template.lesionTable.events({
+    'click table#tblLesion tbody tr': function(e, template) {
+
+        // lesionNumber of measurement = id of row
+        var lesionNumber = parseInt($(e.currentTarget).attr("id"));
+        // TODO: Get all imageViewport elements in content
+        var contentId = Session.get("activeContentId");
+        var measurementData = Measurements.find({contentId:contentId,"lesionData.lesionNumber":lesionNumber}).fetch();
+        var lesionData = measurementData[0].lesionData;
+        console.log(lesionData);
+        var imageViewportElements = $("#"+contentId).find(".imageViewerViewport");
+        for( var i=0; i< imageViewportElements.length; i++) {
+            var imageViewportElement = imageViewportElements[i];
+            var eventObject = {
+                enabledElement: cornerstone.getEnabledElement(imageViewportElement),
+                lesionData: {lesionNumber: lesionNumber, imageId: lesionData.imageId},
+                type: "active"
+            };
+            $(imageViewportElement).trigger("LesionToolModified", eventObject);
+
+        }
+
+    }
 });
+
