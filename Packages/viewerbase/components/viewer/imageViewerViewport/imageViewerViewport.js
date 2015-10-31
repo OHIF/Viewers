@@ -250,6 +250,11 @@ Template.imageViewerViewport.onRendered(function() {
     var studies = Session.get('studies');
     var activeViewport = Session.get('activeViewport');
 
+    if (activeViewport === this.data.viewportIndex) {
+        $('#imageViewerViewports .viewportContainer').removeClass('active');
+        $(element).parents('.viewportContainer').addClass('active');
+    }
+
     var data = {
         element: element,
         viewport: this.data.viewport,
@@ -305,6 +310,9 @@ Template.imageViewerViewport.events({
         log.info("imageViewerViewport ActivateViewport");
 
         Session.set("activeViewport", this.viewportIndex);
+        $('#imageViewerViewports .viewportContainer').removeClass('active');
+        $(e.currentTarget).parents('.viewportContainer').addClass('active');
+
         enablePrefetchOnElement(this.viewportIndex);
         displayReferenceLines(this.viewportIndex);
     },
