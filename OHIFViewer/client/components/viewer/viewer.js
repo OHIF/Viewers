@@ -23,7 +23,7 @@ Template.viewer.onCreated(function() {
         viewer: {}
     };
 
-    OHIF.viewer.loadIndicatorDelay = 3000;
+    OHIF.viewer.loadIndicatorDelay = 500;
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.isPlaying = {};

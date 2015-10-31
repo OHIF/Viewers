@@ -59,3 +59,12 @@ errorLoadingHandler = function(element, imageId, error, source) {
         errorLoadingIndicator.find('.details').text("Details: " + error);
     }
 };
+
+Template.loadingIndicator.helpers({
+    'percentComplete': function(e) {
+        var percentComplete = Session.get('CornerstoneLoadProgress' + this.viewportIndex);
+        if (percentComplete && percentComplete !== 100) {
+            return percentComplete + '%';
+        }
+    }
+});

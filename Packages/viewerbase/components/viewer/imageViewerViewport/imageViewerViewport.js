@@ -104,13 +104,11 @@ function loadSeriesIntoViewport(data) {
     // If you have problems, replace it with this line instead:
     // cornerstone.enable(element);
 
-    var startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
+
     var endLoadingHandler = cornerstoneTools.loadHandlerManager.getEndLoadHandler();
     var errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
 
-    if (startLoadingHandler) {
-        startLoadingHandler(element);
-    }
+    ViewportLoading[viewportIndex] = imageId;
 
     cornerstone.loadAndCacheImage(imageId).then(function(image) {
         if (data.viewport) {
@@ -118,10 +116,9 @@ function loadSeriesIntoViewport(data) {
         } else {
             cornerstone.displayImage(element, image);
         }
+        delete ViewportLoading[viewportIndex];
         
-        if (endLoadingHandler) {
-            endLoadingHandler(element);
-        }
+        endLoadingHandler(element);
 
         cornerstone.resize(element, true);
 
@@ -216,18 +213,42 @@ function loadSeriesIntoViewport(data) {
         }
 
     }, function(error) {
-        if (errorLoadingHandler) {
-            errorLoadingHandler(element, imageId, error);
-        }
+        errorLoadingHandler(element, imageId, error);
     });
 }
+
+function getKeysByValue(object, value) {
+    // http://stackoverflow.com/questions/9907419/javascript-object-get-key-by-value
+    return Object.keys(object).filter(function(key) {
+        return object[key] === value;
+    });
+}
+
+Meteor.startup(function() {
+    ViewportLoading = {};
+    ThumbnailLoading = {};
+
+    $(cornerstone).on('CornerstoneImageLoadProgress', function(e, eventData) {
+        viewportIndices = getKeysByValue(ViewportLoading, eventData.imageId);
+        viewportIndices.forEach(function(viewportIndex) {
+            Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
+        });
+
+        thumbnailIndices = getKeysByValue(ThumbnailLoading, eventData.imageId);
+        thumbnailIndices.forEach(function(thumbnailIndex) {
+            Session.set('CornerstoneThumbnailLoadProgress' + thumbnailIndex, eventData.percentComplete);
+        });
+    });
+});
 
 Template.imageViewerViewport.onRendered(function() {
     log.info("imageViewerViewport onRendered");
 
+    var element = this.find(".imageViewerViewport");
+    $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
+
     var studies = Session.get('studies');
     var activeViewport = Session.get('activeViewport');
-    var element = this.find(".imageViewerViewport");
 
     var data = {
         element: element,
@@ -240,6 +261,7 @@ Template.imageViewerViewport.onRendered(function() {
 
     if (this.data.seriesInstanceUid === undefined || this.data.studyInstanceUid === undefined) {
         element.classList.add('empty');
+        $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
         $(element).siblings('.viewportInstructions').show();
         return;
     }
