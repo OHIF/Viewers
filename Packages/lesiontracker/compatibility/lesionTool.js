@@ -244,7 +244,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
 
     ///////// END IMAGE RENDERING ///////
 
-    function activateLesion(e, eventObject) {
+    function updateLesion(e, eventObject) {
         var start = new Date();
 
         var enabledElement = eventObject.enabledElement;
@@ -274,7 +274,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
             if (deletedDataIndex >= 0 && deletedDataIndex < toolData.data.length) {
                 toolData.data.splice(deletedDataIndex, 1);
             }
-        } else {
+        } else if(type === "active") {
             for (var i = 0; i < toolData.data.length; i++) {
                 var data = toolData.data[i];
                 //When click a row of table measurements, measurement will be active and color will be green
@@ -283,6 +283,12 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
                 } else{
                     data.active = false;
                 }
+            }
+        } else if(type === "inactive") {
+            for (var i = 0; i < toolData.data.length; i++) {
+                var data = toolData.data[i];
+                // Make inactive all lesions for the timepoint
+                data.active = false;
             }
         }
 
@@ -314,15 +320,26 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
 
 
     function loadImage(e, eventObject) {
-        var stackToolDataSource = cornerstoneTools.getToolState(e.currentTarget, 'stack');
-        var stackData = stackToolDataSource.data[0];
-        var imageIdsArr = stackData.imageIds;
-        var indexOfImage = imageIdsArr.indexOf(eventObject.lesionData.imageId);
-        cornerstone.loadAndCacheImage(stackData.imageIds[indexOfImage]).then(function(image) {
-            cornerstone.displayImage(eventObject.enabledElement.element,image);
-            activateLesion(e, eventObject);
 
-        });
+        // If type is active, load image and activate lesion
+        // If type is inactive, update lesions of enabledElement as inactive
+
+        if (eventObject.type === "active") {
+            var stackToolDataSource = cornerstoneTools.getToolState(e.currentTarget, 'stack');
+            var stackData = stackToolDataSource.data[0];
+            var imageIdsArr = stackData.imageIds;
+            var indexOfImage = imageIdsArr.indexOf(eventObject.lesionData.imageId);
+            if (indexOfImage > -1) {
+                cornerstone.loadAndCacheImage(stackData.imageIds[indexOfImage]).then(function(image) {
+                    cornerstone.displayImage(eventObject.enabledElement.element,image);
+                    updateLesion(e, eventObject);
+                });
+            }
+        } else if(eventObject.type === "inactive") {
+            updateLesion(e, eventObject);
+        }
+
+
     }
 
     //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active

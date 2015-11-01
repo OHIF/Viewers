@@ -60,28 +60,44 @@ Template.lesionTable.onRendered(function() {
 
 });
 
-Template.lesionTable.events({
-    'click table#tblLesion tbody tr': function(e, template) {
+// Activate selected lesions when lesion table row is clicked
+function activateLesions (e) {
 
-        // lesionNumber of measurement = id of row
-        var lesionNumber = parseInt($(e.currentTarget).attr("id"));
-        // TODO: Get all imageViewport elements in content
-        var contentId = Session.get("activeContentId");
-        var measurementData = Measurements.find({contentId:contentId,"lesionData.lesionNumber":lesionNumber}).fetch();
-        var lesionData = measurementData[0].lesionData;
-        console.log(lesionData);
-        var imageViewportElements = $("#"+contentId).find(".imageViewerViewport");
-        for( var i=0; i< imageViewportElements.length; i++) {
-            var imageViewportElement = imageViewportElements[i];
-            var eventObject = {
+    // lesionNumber of measurement = id of row
+    var lesionNumber = parseInt($(e.currentTarget).attr("id"));
+    var contentId = Session.get("activeContentId");
+    var measurementData = Measurements.find({contentId:contentId,"lesionData.lesionNumber":lesionNumber}).fetch();
+    var timepoints = measurementData[0].lesionData.timepoints;
+    var imageViewportElements = $("#"+contentId).find(".imageViewerViewport");
+
+    for( var i=0; i< imageViewportElements.length; i++) {
+        var timepointObject = timepoints[i];
+        var timepointKey = Object.keys(timepointObject);
+        var imageId = timepointObject[timepointKey].imageId;
+        var longestDiameter = timepointObject[timepointKey].longestDiameter;
+        var imageViewportElement = imageViewportElements[i];
+        var eventObject = {};
+
+        if(longestDiameter != "") {
+            eventObject = {
                 enabledElement: cornerstone.getEnabledElement(imageViewportElement),
-                lesionData: {lesionNumber: lesionNumber, imageId: lesionData.imageId},
+                lesionData: {lesionNumber: lesionNumber, imageId: imageId},
                 type: "active"
             };
-            $(imageViewportElement).trigger("LesionToolModified", eventObject);
-
+        } else {
+            eventObject = {
+                enabledElement: cornerstone.getEnabledElement(imageViewportElement),
+                lesionData: {lesionNumber: lesionNumber, imageId: imageId},
+                type: "inactive"
+            };
         }
+        $(imageViewportElement).trigger("LesionToolModified", eventObject);
+    }
+}
 
+Template.lesionTable.events({
+    'click table#tblLesion tbody tr': function(e) {
+        activateLesions(e);
     }
 });
 

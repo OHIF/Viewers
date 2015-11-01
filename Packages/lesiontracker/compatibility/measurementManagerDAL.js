@@ -55,12 +55,12 @@ var measurementManagerDAL =  (function () {
             if (timepointId === lesionTimepointId) {
                 // Add real mesurement
                 var timepointObject =  {};
-                timepointObject[timepointId] = {longestDiameter: lesionData.measurementText};
+                timepointObject[timepointId] = {longestDiameter: lesionData.measurementText, imageId: lesionData.imageId};
                 timepointsArr.push(timepointObject);
             } else {
                 // Add null measurement
                 var timepointObject =  {};
-                timepointObject[timepointId] = {longestDiameter: ""};
+                timepointObject[timepointId] = {longestDiameter: "", imageId: ""};
                 timepointsArr.push(timepointObject);
 
             }
@@ -69,7 +69,6 @@ var measurementManagerDAL =  (function () {
         var lesionDataCollectionObject = {
             lesionNumber: lesionData.lesionNumber,
             isTarget: true,
-            imageId: lesionData.imageId,
             locationUID: lesionData.locationUID,
             location: getLocationName(lesionData.locationUID),
             timepoints: timepointsArr
@@ -92,6 +91,8 @@ var measurementManagerDAL =  (function () {
                 var timepoint = timepointArr[i];
                 if(timepoint[timepointID] != undefined) {
                     timepoint[timepointID].longestDiameter = lesionData.measurementText;
+                    timepoint[timepointID].imageId = lesionData.imageId;
+
                 }
             }
             Measurements.update(
