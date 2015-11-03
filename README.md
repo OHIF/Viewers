@@ -1,6 +1,10 @@
 # Viewers
 This repo contains the OHIF DICOM Viewer and Lesion Trackers, and various shared meteor packages
 
+Community
+---------
+
+Have questions?  Try posting in the [OHIF forum](http://forum.ohif.org/).
 
 ### Docker usage
 #### Temporary data storage
