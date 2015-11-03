@@ -5,6 +5,8 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
+    api.use('http');
+
     api.addFiles('server/namespace.js', 'server');
     api.addFiles('server/getImageFrame.js', 'server');
     api.addFiles('server/getJSON.js', 'server');

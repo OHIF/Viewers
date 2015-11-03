@@ -10,6 +10,7 @@ Package.onUse(function (api) {
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
+    api.use('http');
 
     api.use('practicalmeteor:loglevel');
 
@@ -44,6 +45,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/generateUUID.js', 'client');
     api.export('generateUUID', 'client');
 
+    api.export('getStudyMetadata', 'client');
     api.export('openNewTab', 'client');
     api.export('switchToTab', 'client');
     

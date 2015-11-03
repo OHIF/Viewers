@@ -105,7 +105,7 @@ Template.worklist.helpers({
 });
 
 Template.worklist.events({
-    'click a[data-toggle="tab"]': function(e) {
+    'click #tablist a[data-toggle="tab"]': function(e) {
         var contentId = $(e.currentTarget).data('target').replace("#", "");
         switchToTab(contentId);
     }

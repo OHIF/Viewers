@@ -10,7 +10,9 @@ Package.onUse(function (api) {
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
-
+    api.use('accounts-password');
+    api.use('ian:accounts-ui-bootstrap-3');
+    api.use('http');
     api.use('practicalmeteor:loglevel');
 
     // Our custom package
