@@ -1,6 +1,70 @@
-.hidingPanel
-  width: 120px
-  height: 100%
-  padding-top: 35px
-  position: relative
-  float: left
+
+.hidingPanel,.hidingPanelCollapse, .toggleBtnContainer, .studyBrowserContainer, .studyBrowserContainerCollapse, #btnCollapse,.btnCollapseIcon, .btnCollapseIcon-collapse, .viewportStyle {
+
+  -o-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -webkit-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+}
+
+.hidingPanel {
+  width: 120px;
+  height: 100%;
+  position: relative;
+  float: left;
+}
+
+.hidingPanelCollapse{
+  width: 0px;
+}
+
+.toggleBtnContainer{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25px;
+  height: 25px;
+}
+
+.studyBrowserContainer {
+  position: absolute;
+  display: block;
+  margin-top: 30px;
+  height: calc(100% - 30px);
+  width: 100%;
+  opacity: 1;
+}
+
+.studyBrowserContainerCollapse {
+  opacity: 0;
+  width: 0px;
+
+}
+.studyBrowserContainerCollapseDisplay {
+  display: none;
+}
+
+#btnCollapse{
+  position: absolute;
+  display: block;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid #e6e6e6;
+  background: #f6f6f6;
+  color: #666;
+  font-size: 0.875rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btnCollapseIcon-collapse{
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+

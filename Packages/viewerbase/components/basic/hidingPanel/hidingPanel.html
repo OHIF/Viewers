@@ -1,5 +1,12 @@
 <template name="hidingPanel">
     <div class="hidingPanel">
-        {{> studyBrowser}}
+        <div class="toggleBtnContainer">
+            <button id="btnCollapse">
+                <i id="btnCollapseIcon" class="btnCollapseIcon fa fa-angle-left fa-lg"></i>
+            </button>
+        </div>
+        <div class="studyBrowserContainer">
+            {{> studyBrowser}}
+        </div>
     </div>
 </template>

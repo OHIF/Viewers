@@ -27,6 +27,7 @@ Package.onUse(function (api) {
     api.addFiles('components/basic/notFound/notFound.html', 'client');
 
     api.addFiles('components/basic/hidingPanel/hidingPanel.html', 'client');
+    api.addFiles('components/basic/hidingPanel/hidingPanel.js', 'client');
     api.addFiles('components/basic/hidingPanel/hidingPanel.styl', 'client');
 
     // Study Browser components
