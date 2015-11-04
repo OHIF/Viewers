@@ -39,9 +39,6 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
             lesionCounter = lesionName;
         });
 
-        // Subscribe LesionToolModified and calls measurementModified function when lesion measurement is changed or updated.
-        $(element).on("LesionToolModified", measurementModified);
-
         // Subscribe LesionMeasurementCreated
         $(element).trigger("LesionMeasurementCreated");
 
@@ -112,9 +109,20 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
 
     }
 
+    function suscribeLesionToolModifiedEvent (element) {
+        var elementEvents = $._data(element, "events" );
+        var index = Object.keys(elementEvents).indexOf("LesionToolModified");
+        if (index < 0) {
+            // Subscribe LesionToolModified and calls measurementModified function when lesion measurement is changed or updated.
+            $(element).on("LesionToolModified", measurementModified);
+        }
 
+    }
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
+
+        suscribeLesionToolModifiedEvent(e.currentTarget);
+
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
         if (toolData === undefined) {
