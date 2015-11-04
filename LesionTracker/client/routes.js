@@ -12,8 +12,8 @@ Object.keys(ViewerData).forEach(function(contentId) {
 });
 
 Router.configure({
-    layoutTemplate: 'layout',
-    loadingTemplate: 'layout',
+    layoutTemplate: 'layoutLesionTracker',
+    loadingTemplate: 'layoutLesionTracker',
     notFoundTemplate: 'notFound'
 });
 
@@ -25,7 +25,7 @@ Router.route('/', function () {
 
 
 Router.route('/viewer/:_id', {
-    layoutTemplate: 'layout',
+    layoutTemplate: 'layoutLesionTracker',
     name: 'viewer',
     onBeforeAction: function() {
         log.info('Router GetStudyMetadata');

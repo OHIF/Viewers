@@ -61,7 +61,7 @@ Template.lesionTable.onRendered(function() {
 });
 
 // Activate selected lesions when lesion table row is clicked
-function activateLesions (e) {
+function updateLesions (e) {
 
     // lesionNumber of measurement = id of row
     var lesionNumber = parseInt($(e.currentTarget).attr("id"));
@@ -97,7 +97,7 @@ function activateLesions (e) {
 
 Template.lesionTable.events({
     'click table#tblLesion tbody tr': function(e) {
-        activateLesions(e);
+        updateLesions(e);
     }
 });
 
