@@ -9,6 +9,14 @@ function defaultHangingProtocol(inputData) {
     var stacks = [];
     studies.forEach(function(study) {
         study.seriesList.forEach(function(series) {
+            
+            // Ensure that the series has image data
+            // (All images have rows)
+            var anInstance = series.instances[0];
+            if (!anInstance || !anInstance.rows) {
+                return;
+            }
+
             var stack = {
                 series: series,
                 study: study
