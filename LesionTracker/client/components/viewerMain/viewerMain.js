@@ -64,12 +64,12 @@ Template.viewerMain.helpers({
             id: 'lesion',
             title: 'Lesion Tool',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows-v'
+            iconClasses: 'fa fa-arrows-alt'
         });
 
         toolbarOptions.buttonData = buttonData;
-        toolbarOptions.includePlayClipButton = true;
-        toolbarOptions.includeLayoutButton = true;
+        toolbarOptions.includePlayClipButton = false;
+        toolbarOptions.includeLayoutButton = false;
         return toolbarOptions;
     }
 });
