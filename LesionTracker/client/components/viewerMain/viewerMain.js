@@ -5,6 +5,13 @@ Template.viewerMain.helpers({
         var buttonData = [];
 
         buttonData.push({
+            id: 'resetViewport',
+            title: 'Reset Viewport',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-undo'
+        });
+
+        buttonData.push({
             id: 'wwwc',
             title: 'WW/WC',
             classes: 'imageViewerTool',
@@ -44,13 +51,6 @@ Template.viewerMain.helpers({
             title: 'Lesion Tool',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows-alt'
-        });
-
-        buttonData.push({
-            id: 'resetViewport',
-            title: 'Reset Viewport',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-undo'
         });
 
         toolbarOptions.buttonData = buttonData;
