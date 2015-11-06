@@ -12,7 +12,9 @@
 
 #imageViewerViewports
   .viewportContainer
-    // Override the orange highlight in viewerbase
-    // for active viewports
-    &.active, &:hover.active
+    &.active
       border: 2px solid #777
+
+    &:hover, &:hover.active
+      border: 2px solid white
+
