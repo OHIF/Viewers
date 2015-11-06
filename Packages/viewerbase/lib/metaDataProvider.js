@@ -10,9 +10,10 @@ addMetaData = function(imageId, data) {
     var metaData = {};
 
     metaData.study = {
-        date: instanceMetaData.studyDate,
-        time: instanceMetaData.studyTime,
-        description: instanceMetaData.studyDescription
+        instanceUid: studyMetaData.studyInstanceUid,
+        date: studyMetaData.studyDate,
+        time: studyMetaData.studyTime,
+        description: studyMetaData.studyDescription
     };
 
     metaData.series = {
@@ -29,8 +30,8 @@ addMetaData = function(imageId, data) {
     };
 
     metaData.patient = {
-        name: instanceMetaData.patientName,
-        id: instanceMetaData.patientId
+        name: studyMetaData.patientName,
+        id: studyMetaData.patientId
     };
 
     // If there is sufficient information, populate

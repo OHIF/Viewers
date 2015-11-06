@@ -146,7 +146,7 @@ var cornerstoneTools = (function ($, cornerstone, cornerstoneMath, cornerstoneTo
     function updateLesionCollection(lesionData, currentElement) {
 
         if (lesionData.active) {
-            if(lesionData.timepointID != undefined && lesionData.timepointID != "") {
+            if(lesionData.timepointID !== undefined && lesionData.timepointID !== "") {
                 // Update Measurements Collection
                 measurementManagerDAL.updateTimepointData(lesionData);
 

@@ -12,6 +12,8 @@ createStacks = function(study) {
         if (!anInstance || !anInstance.rows) {
             return;
         }
+
+        series.studyInstanceUid = study.studyInstanceUid;
         stacks.push(series);
     });
     return stacks;

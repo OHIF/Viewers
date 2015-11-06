@@ -18,7 +18,7 @@ Package.onUse(function (api) {
     // Our custom package
     api.use('cornerstone');
 
-    api.addFiles('log.js', 'client');
+    api.addFiles('log.js', ['client', 'server']);
 
     // ---------- Components ----------
 

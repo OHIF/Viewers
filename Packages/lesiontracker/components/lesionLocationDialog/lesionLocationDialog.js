@@ -26,7 +26,7 @@ Template.lesionLocationDialog.onRendered(function () {
     // Observe Measurements Collection Changes
     Measurements.find().observe({
         added: function (lesionData) {
-            lastAddedLesionData = lesionData
+            lastAddedLesionData = lesionData;
         },
         changed: function(lesionData) {
             console.log("lesionData is changed!");
@@ -44,7 +44,7 @@ Template.lesionLocationDialog.events({
 
     'change select#selectLesionLocation': function (e) {
         var el = $(e.target);
-        var selectedLocationIndex = el.val()
+        var selectedLocationIndex = el.val();
         if(selectedLocationIndex !== "-1"){
 
             // Get selected location data

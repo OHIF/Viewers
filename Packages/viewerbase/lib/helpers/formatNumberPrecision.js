@@ -1,5 +1,5 @@
 UI.registerHelper('formatNumberPrecision', function(context, precision, options) {
-    if(context) {
+    if (context) {
         return parseFloat(context).toFixed(precision);
     }
 });

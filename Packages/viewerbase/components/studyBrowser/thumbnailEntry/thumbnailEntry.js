@@ -199,7 +199,7 @@ Template.thumbnailEntry.events({
     // Touch drag/drop events
     'touchstart .thumbnailEntry, mousedown .thumbnailEntry': function(e) {
         var data = Template.parentData(2);
-        data.studyInstanceUid = this.stack.instances[0].studyInstanceUid;
+        data.studyInstanceUid = this.stack.studyInstanceUid;
         data.seriesInstanceUid = this.stack.seriesInstanceUid;
         thumbnailDragStartHandler(e, data);
     },

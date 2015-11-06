@@ -104,7 +104,15 @@ Template.worklist.helpers({
 
 Template.worklist.events({
     'click #tablist a[data-toggle="tab"]': function(e) {
-        var contentId = $(e.currentTarget).data('target').replace("#", "");
+        // If this tab is already active, do nothing
+        var tabButton = $(e.currentTarget);
+        var tabTitle = tabButton.parents('.tabTitle');
+        if (tabTitle.hasClass("active")) {
+            return;
+        }
+
+        // Otherwise, switch to the tab
+        var contentId = tabButton.data('target').replace("#", "");
         switchToTab(contentId);
     }
 });
