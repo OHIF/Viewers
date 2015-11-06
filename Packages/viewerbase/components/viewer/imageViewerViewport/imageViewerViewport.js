@@ -294,6 +294,10 @@ function loadSeriesIntoViewport(data) {
             OHIF.viewer.updateImageSynchronizer.add(element);
             displayReferenceLines(element);
         }
+
+        if (viewportIndex === Session.get('activeViewport')) {
+            enablePrefetchOnElement(element);
+        }
     }, function(error) {
         // If something goes wrong while loading the image, fire the error handler.
         errorLoadingHandler(element, imageId, error);
