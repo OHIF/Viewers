@@ -54,6 +54,8 @@ switchToTab = function(contentId) {
 
         Session.set('studies', data.studies);
 
+        // Remove the loading text template that is inside by default
+        container.innerHTML = "";
         UI.renderWithData(Template.viewer, data, container);
         var imageViewer = $("#viewer");
         if (imageViewer) {
@@ -67,24 +69,20 @@ switchToTab = function(contentId) {
 };
 
 
-openNewTab = function(studyInstanceUid) {
-    getStudyMetadata(studyInstanceUid, function(study) {
-        var title = study.seriesList[0].instances[0].patientName;
-        var contentid = generateUUID();
+openNewTab = function(studyInstanceUid, title) {
+    var contentid = generateUUID();
+    var data = {
+        title: title,
+        contentid: contentid,
+    };
+    tabs.insert(data);
 
-        var data = {
-            title: title,
-            contentid: contentid,
-        };
-        tabs.insert(data);
-
-        ViewerData[contentid] = {
-            title: title,
-            contentid: contentid,
-            studyInstanceUid: studyInstanceUid
-        };
-        switchToTab(contentid);
-    });
+    ViewerData[contentid] = {
+        title: title,
+        contentid: contentid,
+        studyInstanceUid: studyInstanceUid
+    };
+    switchToTab(contentid);
 };
 
 Template.worklist.onRendered(function() {

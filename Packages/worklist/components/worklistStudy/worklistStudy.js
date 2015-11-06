@@ -1,5 +1,5 @@
 Template.worklistStudy.events({
     'click': function () {
-        openNewTab(this.studyInstanceUid);
+        openNewTab(this.studyInstanceUid, this.patientName);
     }
 });

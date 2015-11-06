@@ -5,6 +5,11 @@ function defaultHangingProtocol(inputData) {
     var viewportRows = inputData.viewportRows;
     var viewportColumns = inputData.viewportColumns;
 
+    if (!studies.length) {
+        log.warn("No studies provided to Hanging Protocol");
+        return;
+    }
+
     // This is the most basic hanging protocol.
     var stacks = [];
     studies.forEach(function(study) {
