@@ -284,6 +284,7 @@ function loadSeriesIntoViewport(data) {
             currentImageIdIndex: data.currentImageIdIndex,
             viewport: viewport
         };
+        ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
         
         // Check if image plane (orientation / loction) data is present for the current image
         var imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
@@ -446,5 +447,5 @@ Template.imageViewerViewport.events({
         var element = e.currentTarget;
         enablePrefetchOnElement(element);
         displayReferenceLines(element);
-    },
+    }
 });
