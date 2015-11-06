@@ -46,6 +46,13 @@ Template.viewerMain.helpers({
             iconClasses: 'fa fa-arrows-alt'
         });
 
+        buttonData.push({
+            id: 'resetViewport',
+            title: 'Reset Viewport',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-undo'
+        });
+
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;

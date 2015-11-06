@@ -70,6 +70,20 @@ function getDefaultButtonData() {
         classes: 'imageViewerTool',
         iconClasses: 'fa fa-square-o'
     });
+
+    buttonData.push({
+        id: 'resetViewport',
+        title: 'Reset Viewport',
+        classes: 'imageViewerCommand',
+        iconClasses: 'fa fa-undo'
+    });
+
+    buttonData.push({
+        id: 'clearTools',
+        title: 'Clear tools',
+        classes: 'imageViewerCommand',
+        iconClasses: 'fa fa-trash'
+    });
     return buttonData;
 }
 

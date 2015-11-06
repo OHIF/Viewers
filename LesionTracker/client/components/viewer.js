@@ -34,6 +34,9 @@ Template.viewer.onCreated(function() {
             viewport.invert = !viewport.invert;
             cornerstone.setViewport(element, viewport);
         },
+        resetViewport: function(element) {
+            cornerstone.reset(element);
+        },
         playClip: function(element) {
             var viewportIndex = $('.imageViewerViewport').index(element);
             var isPlaying = OHIF.viewer.isPlaying[viewportIndex] || false;
