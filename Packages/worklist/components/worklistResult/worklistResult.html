@@ -1,4 +1,5 @@
 <template name="worklistResult">
+    {{ #if studies.count }}
     <table id="tblStudyList" class="table table-striped">
         <thead>
         <tr>
@@ -13,8 +14,11 @@
         </thead>
         <tbody id="studyListData">
         {{#each studies}}
-            {{> worklistStudy }}
+            {{ >worklistStudy }}
         {{/each}}
         </tbody>
     </table>
+    {{ else }}
+        {{ >loadingText }}
+    {{ /if }}
 </template>
