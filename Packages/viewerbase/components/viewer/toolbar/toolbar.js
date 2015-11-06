@@ -9,6 +9,27 @@ function getDefaultButtonData() {
     });
 
     buttonData.push({
+        id: 'wwwcRegion',
+        title: 'Window by Region',
+        classes: 'imageViewerTool',
+        iconClasses: 'fa fa-square'
+    });
+
+    buttonData.push({
+        id: 'magnify',
+        title: 'Magnify',
+        classes: 'imageViewerTool',
+        iconClasses: 'fa fa-circle'
+    });
+
+    buttonData.push({
+        id: 'annotate',
+        title: 'Annotation',
+        classes: 'imageViewerTool',
+        iconClasses: 'fa fa-arrows-h'
+    });
+
+    buttonData.push({
         id: 'invert',
         title: 'Invert',
         classes: 'imageViewerCommand',

@@ -341,6 +341,13 @@ Meteor.startup(function() {
             Session.set('CornerstoneThumbnailLoadProgress' + thumbnailIndex, eventData.percentComplete);
         });
     });
+
+    var config = {
+        magnifySize: 300,
+        magnificationLevel: 3
+    };
+
+    cornerstoneTools.magnify.setConfiguration(config);
 });
 
 Template.imageViewerViewport.onRendered(function() {
