@@ -1,103 +1,78 @@
 Measurements = new Meteor.Collection(null);
-TabsTimepoints = new Meteor.Collection(null);
+Timepoints = new Meteor.Collection(null);
+
+// Activate selected lesions when lesion table row is clicked
+function updateLesions(e) {
+    // lesionNumber of measurement = id of row
+    var lesionNumber = parseInt($(e.currentTarget).attr("id"), 10);
+
+    // Find data for specific lesion
+    var measurementData = Measurements.find({
+        lesionNumber: lesionNumber
+    }).fetch()[0];
+
+    var timepoints = measurementData.timepoints;
+
+    $(".imageViewerViewport").each(function(index, element) {
+        // Get the timepointID related to the image viewer viewport
+        // from the DOM itself. This will be changed later when a
+        // real association between viewports and timepoints is created.
+        var timepointID = $(element).data('timepointID');
+        var timepointObject = timepoints[timepointID];
+
+        // Defines event data
+        var eventData = {
+            enabledElement: cornerstone.getEnabledElement(element),
+            lesionData: {
+                lesionNumber: lesionNumber,
+                imageId: timepointObject.imageId
+            },
+            type: "active"
+        };
+
+        if (timepointObject.longestDiameter === "") {
+            eventData.type = "inactive";
+        }
+
+        $(element).trigger("LesionToolModified", eventData);
+    });
+}
+
+Template.lesionTable.onRendered(function() {
+    // For the moment we will associate the timepoint
+    // with the viewport element by storing the timepointID
+    // inside the element's DOM data. This is temporary.
+    $(".imageViewerViewport").each(function(index, element) {
+        var timepointID = uuid.v4();
+
+        var timepointName = "Baseline";
+        if (index > 0) {
+            timepointName = "Current"; //"Follow Up "+i;
+        }
+
+
+        // FUTURE = On load series data into viewport, create a new timepoint
+        // unless it already exists
+        Timepoints.insert({
+            timepointID: timepointID,
+            timepointName: timepointName
+        });
+
+        $(element).data('timepointID', timepointID);
+    });
+});
 
 Template.lesionTable.helpers({
     'measurement': function() {
-        var contentId = this.contentId;
-        return Measurements.find({contentId: contentId});
+        return Measurements.find();
     },
-    'tabTimepoints': function() {
-        var contentId = this.contentId;
-        return TabsTimepoints.find({contentId: contentId});
-    },
-    'lesionData': function() {
-        var array = [];
-        var lesions = this.lesionData;
-        Object.keys(lesions).forEach(function(key) {
-            array.push(lesions[key]);
-        });
-        return array;
+    'timepoints': function() {
+        return Timepoints.find();
     }
 });
-
-Template.lesionTable.onRendered(function() {
-
-    var contentId = this.data.contentId;
-    var viewportColumns = ViewerData[contentId].viewportColumns;
-    var viewportRows = ViewerData[contentId].viewportRows;
-
-    var totalViewports = viewportColumns * viewportRows;
-    
-    var timepointsArray = [];
-    for(var i=0; i< totalViewports;  i++) {
-        var timepointID = contentId.toString() + i.toString();
-        var timepointName = "Baseline";
-        if (i > 0) {
-            timepointName = "Current"; //"Follow Up "+i;
-        }
-        var timepointObject = {timepointID: timepointID, timepointName: timepointName};
-        timepointsArray.push(timepointObject);
-
-    }
-
-    // Prevent duplicate data when onRendered is called
-    var tabTimepoint = TabsTimepoints.find({contentId: contentId}).fetch();
-    if (tabTimepoint !== undefined && tabTimepoint.length > 0) {
-        // Update timepoints
-        TabsTimepoints.update(
-            { contentId: contentId},
-            {
-                $set: {
-                    timepoints: timepointsArray
-                }
-            }, {multi: true}
-        );
-    } else {
-
-        // Insert new timepoints array
-        TabsTimepoints.insert({contentId: contentId, timepoints: timepointsArray});
-    }
-
-});
-
-// Activate selected lesions when lesion table row is clicked
-function updateLesions (e) {
-
-    // lesionNumber of measurement = id of row
-    var lesionNumber = parseInt($(e.currentTarget).attr("id"));
-    var contentId = Session.get("activeContentId");
-    var measurementData = Measurements.find({contentId:contentId,"lesionData.lesionNumber":lesionNumber}).fetch();
-    var timepoints = measurementData[0].lesionData.timepoints;
-    var imageViewportElements = $("#"+contentId).find(".imageViewerViewport");
-
-    for( var i=0; i< imageViewportElements.length; i++) {
-        var timepointObject = timepoints[i];
-        var timepointKey = Object.keys(timepointObject);
-        var imageId = timepointObject[timepointKey].imageId;
-        var longestDiameter = timepointObject[timepointKey].longestDiameter;
-        var imageViewportElement = imageViewportElements[i];
-        var eventObject = {};
-
-        if(longestDiameter != "") {
-            eventObject = {
-                enabledElement: cornerstone.getEnabledElement(imageViewportElement),
-                lesionData: {lesionNumber: lesionNumber, imageId: imageId},
-                type: "active"
-            };
-        } else {
-            eventObject = {
-                enabledElement: cornerstone.getEnabledElement(imageViewportElement),
-                lesionData: {lesionNumber: lesionNumber, imageId: imageId},
-                type: "inactive"
-            };
-        }
-        $(imageViewportElement).trigger("LesionToolModified", eventObject);
-    }
-}
 
 Template.lesionTable.events({
     'click table#tblLesion tbody tr': function(e) {
         updateLesions(e);
     }
 });
-

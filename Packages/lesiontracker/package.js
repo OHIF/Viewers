@@ -41,4 +41,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/getActiveTimepointID.js', 'client');
     api.addFiles('lib/uuid.js', 'client');
 
+    api.export('Measurements', 'client');
+    api.export('Timepoints', 'client');
+
 });

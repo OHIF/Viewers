@@ -7,21 +7,17 @@
                     <th id="thLocation">Location</th>
                     <th id="thTarget">Target</th>
                     <!--Each time point name as a column-->
-                    {{ #each tabTimepoints }}
-                        {{ #each timepoints }}
-                             {{ >lesionTableTimepointHeader }}
-                        {{ /each }}
+                    {{ #each timepoints }}
+                         {{ >lesionTableTimepointHeader }}
                     {{ /each }}
                     <th id="thSpacer"> </th>
                 </tr>
             </thead>
             <tbody>
+                <!--Each measurement as row-->
                 {{ #each measurement }}
                     {{ >lesionTableRow }}
                 {{ /each }}
-
-                <!--Each measurement as row-->
-                <!--Each time point as a column-->
             </tbody>
         </table>
     </div>

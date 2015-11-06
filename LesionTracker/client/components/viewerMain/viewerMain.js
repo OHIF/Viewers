@@ -12,13 +12,6 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
-            id: 'invert',
-            title: 'Invert',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-adjust'
-        });
-
-        buttonData.push({
             id: 'zoom',
             title: 'Zoom',
             classes: 'imageViewerTool',
@@ -44,20 +37,6 @@ Template.viewerMain.helpers({
             title: 'Length Measurement',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows-v'
-        });
-
-        buttonData.push({
-            id: 'angle',
-            title: 'Angle Measurement',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-angle-left'
-        });
-
-        buttonData.push({
-            id: 'dragProbe',
-            title: 'Pixel Probe',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-dot-circle-o'
         });
 
         buttonData.push({

@@ -1,15 +1,15 @@
 Template.lesionDialog.onRendered(function () {
-    // Show Lesion Dialog
-    $(document).on("ShowLesionDialog", function (e, eventData, activeLesionMeasurementData) {
+    // This event determines whether or not to show the lesion dialog
+    // If there already exists a lesion with this specific lesion number,
+    // related to the chosen location.
 
-        var locationUID = measurementManagerDAL.isLesionNumberAdded(activeLesionMeasurementData.lesionNumber);
-
-        if(locationUID != null) {
-
-            activeLesionMeasurementData.locationUID = locationUID;
-            measurementManagerDAL.updateTimepointData(activeLesionMeasurementData);
-        }else{
-
+    $(document).on("ShowLesionDialog", function (e, eventData, lesionData) {
+        var locationUID = measurementManagerDAL.isLesionNumberAdded(lesionData.lesionNumber);
+        
+        if (locationUID) {
+            lesionData.locationUID = locationUID;
+            measurementManagerDAL.updateTimepointData(lesionData);
+        } else {
             // Show Dialog
             var dialogPointsOnPage = eventData.currentPoints.page;
             $("#modal-dialog-container").css({
@@ -19,7 +19,6 @@ Template.lesionDialog.onRendered(function () {
 
             $("#lesionDialog").modal("show");
         }
-
     });
 });
 

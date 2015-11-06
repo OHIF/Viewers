@@ -1,11 +1,11 @@
 <template name="lesionTableRow">
-    <tr id="{{lesionData.lesionNumber}}" class="lesionTableRow">
-        <td class='lesionNumber'>{{lesionData.lesionNumber}}</td>
-        <td class='location'>{{lesionData.location}}</td>
-        <td class='target'>{{#if lesionData.isTarget}} Y {{else}} N {{/if}}</td>
+    <tr id="{{lesionNumber}}" class="lesionTableRow">
+        <td class='lesionNumber'>{{lesionNumber}}</td>
+        <td class='location'>{{location}}</td>
+        <td class='target'>{{#if isTarget}} Y {{else}} N {{/if}}</td>
         <!--Each time point as a column-->
         {{# each timepoints }}
-            {{> lesionTableTimepointCell }}
+            {{> lesionTableTimepointCell}}
         {{/ each }}
     </tr>
 </template>
