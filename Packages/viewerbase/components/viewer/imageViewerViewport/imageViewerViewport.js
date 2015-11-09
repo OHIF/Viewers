@@ -356,6 +356,7 @@ Template.imageViewerViewport.onRendered(function() {
     // When the imageViewerViewport template is rendered
     var element = this.find(".imageViewerViewport");
 
+
     // Display the loading indicator for this element
     $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
 

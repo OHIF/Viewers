@@ -4,7 +4,7 @@ Template.lesionDialog.onRendered(function () {
     // related to the chosen location.
 
     $(document).on("ShowLesionDialog", function (e, eventData, lesionData) {
-        var locationUID = measurementManagerDAL.isLesionNumberAdded(lesionData.lesionNumber);
+        var locationUID = measurementManagerDAL.isLesionNumberAdded(lesionData);
         
         if (locationUID) {
             lesionData.locationUID = locationUID;

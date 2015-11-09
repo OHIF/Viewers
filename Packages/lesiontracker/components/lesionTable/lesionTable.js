@@ -1,14 +1,51 @@
 Measurements = new Meteor.Collection(null);
 Timepoints = new Meteor.Collection(null);
 
+// When nonTarget lesion is added to image, insert data to lesion table
+function nonTargetToolAdded(e, eventData, lesionData) {
+    lesionData.timepointID = $(e.currentTarget).data('timepointID');
+
+    var locationUID = measurementManagerDAL.isLesionNumberAdded(lesionData);
+    if (locationUID) {
+        // location is selected and disable select location in dialog
+        lesionData.locationUID = locationUID;
+        var locationName = measurementManagerDAL.getLocationName(locationUID);
+        var locationIndex;
+        $("#selectNonTargetLesionLocation option").each(function()
+        {
+            if ($(this).text() === locationName) {
+                locationIndex = $(this).index();
+                return;
+            }
+        });
+        $("#selectNonTargetLesionLocation option").eq(locationIndex).attr("selected", "selected");
+       // $("#selectNonTargetLesionLocation").attr("disabled", "disabled");
+
+    }
+
+    // Save lesionData in Session to use after location and response are selected
+    Session.set("nonTargetLesionData", lesionData);
+
+    var dialogPointsOnPage = eventData.currentPoints.page;
+    $("#modal-dialog-container-nonTargetLesion").css({
+        "top": dialogPointsOnPage.y,
+        "left": dialogPointsOnPage.x
+    });
+
+    $("#nonTargetLesionLocationDialog").modal("show");
+
+}
+
 // Activate selected lesions when lesion table row is clicked
 function updateLesions(e) {
     // lesionNumber of measurement = id of row
     var lesionNumber = parseInt($(e.currentTarget).attr("id"), 10);
+    var isTarget = $(e.currentTarget).find('td').eq(2).html().trim() === 'N'?false:true;
 
     // Find data for specific lesion
     var measurementData = Measurements.find({
-        lesionNumber: lesionNumber
+        lesionNumber: lesionNumber,
+        isTarget: isTarget
     }).fetch()[0];
 
     var timepoints = measurementData.timepoints;
@@ -24,6 +61,7 @@ function updateLesions(e) {
         var eventData = {
             enabledElement: cornerstone.getEnabledElement(element),
             lesionData: {
+                isTarget: isTarget,
                 lesionNumber: lesionNumber,
                 imageId: timepointObject.imageId
             },
@@ -34,7 +72,11 @@ function updateLesions(e) {
             eventData.type = "inactive";
         }
 
+        if(!isTarget) {
+            $(element).trigger("nonTargetToolModified", eventData);
+        }
         $(element).trigger("LesionToolModified", eventData);
+
     });
 }
 
@@ -59,8 +101,12 @@ Template.lesionTable.onRendered(function() {
         });
 
         $(element).data('timepointID', timepointID);
+
+        // Listen NonTargetToolAdded Event
+        $(element).on("NonTargetToolAdded", nonTargetToolAdded);
     });
 });
+
 
 Template.lesionTable.helpers({
     'measurement': function() {

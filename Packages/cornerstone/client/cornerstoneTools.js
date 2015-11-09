@@ -831,7 +831,7 @@ if (typeof cornerstoneTools === 'undefined') {
 
                 //TODO: ayselafsar
                 //Check hover event for lesion tool text
-                if (mouseToolInterface.toolType === "lesion") {
+                if (mouseToolInterface.toolType === "lesion" || mouseToolInterface.toolType === "nonTarget") {
                     if ( mouseToolInterface.pointNearToolForText(eventData.element, data, coords) && !data.active) {
                         data.active = !data.active;
                     }

@@ -1,0 +1,40 @@
+<template name="nonTargetLesionDialog">
+    <div class="modal fade" id="nonTargetLesionLocationDialog">
+        <div id="modal-dialog-container-nonTargetLesion" class="modal-dialog modal-sm">
+            <div class="modal-content" style="padding: 10px;">
+                <div class="dialogHeader">
+                    <div style="float:left;"><h4>Select Lesion Location</h4></div>
+                    <div style="float:right;"><button class="btn" id="btnCloseNonTargetLesionPopup"><i class="fa fa-close"></i></button></div>
+                </div>
+                <div class="dialogContent">
+
+                    <div class="lesionLocation">
+                        <div class="elementContainer">
+                            <label>Lesion Location</label>
+                        </div>
+                        <div class="elementContainer">
+                            <select id="selectNonTargetLesionLocation">
+                                <option value="-1"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="locationResponse">
+                        <div class="elementContainer">
+                            <label>Response</label>
+                        </div>
+                        <div class="elementContainer">
+                            <select id="selectNonTargetLesionLocationResponse">
+                                <option value="-1"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="locationOK">
+                        <button class="btn" id="nonTargetLesionOK">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

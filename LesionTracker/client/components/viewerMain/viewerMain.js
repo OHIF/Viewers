@@ -53,6 +53,13 @@ Template.viewerMain.helpers({
             iconClasses: 'fa fa-arrows-alt'
         });
 
+        buttonData.push({
+            id: 'nonTarget',
+            title: 'Non-Target Tool',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-arrows-v'
+        });
+
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;

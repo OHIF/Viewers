@@ -41,7 +41,7 @@ var measurementManagerDAL = (function() {
                 // Add real mesurement
                 timepointObject = {
                     longestDiameter: lesionData.measurementText,
-                    imageId: lesionData.imageId
+                    imageId: lesionData.imageId,
                 };
             } else {
                 // Add null measurement
@@ -54,8 +54,9 @@ var measurementManagerDAL = (function() {
         }
 
         var lesionDataObject = {
+            lesionUID: uuid.v4(),
             lesionNumber: lesionData.lesionNumber,
-            isTarget: true,
+            isTarget: typeof lesionData.isTarget !== 'undefined'?lesionData.isTarget:true,
             locationUID: lesionData.locationUID,
             location: getLocationName(lesionData.locationUID),
             timepoints: timepointsObject
@@ -65,9 +66,13 @@ var measurementManagerDAL = (function() {
 
     // Update timepoint data in Measurements collection
     function updateTimepointData(lesionData) {
+        if(typeof lesionData.isTarget === 'undefined') {
+            lesionData.isTarget = true;
+        }
         // Find the specific lesion to be updated
         var measurement = Measurements.find({
-            lesionNumber: lesionData.lesionNumber
+            lesionNumber: lesionData.lesionNumber,
+            isTarget: lesionData.isTarget
         }).fetch()[0];
 
         // If no such lesion exists, stop here
@@ -84,7 +89,8 @@ var measurementManagerDAL = (function() {
         timepoints[timepointID].imageId = lesionData.imageId;
 
         Measurements.update({
-            lesionNumber: lesionData.lesionNumber
+            lesionNumber: lesionData.lesionNumber,
+            isTarget: lesionData.isTarget
         }, {
             $set: {
                 timepoints: timepoints
@@ -93,9 +99,10 @@ var measurementManagerDAL = (function() {
     }
 
     // Check timepointData is found in Measurements collection
-    function timepointDataIsFound(lesionNumber) {
+    function timepointDataIsFound(lesionData) {
         var timepointData = Measurements.findOne({
-            lesionNumber: lesionNumber
+            lesionNumber: lesionData.lesionNumber,
+            isTarget: typeof lesionData.isTarget!== 'undefined'?lesionData.isTarget:true
         });
         if (timepointData) {
             return true;
@@ -115,9 +122,13 @@ var measurementManagerDAL = (function() {
     }
 
     // Returns new lesion number according to timepointID
-    function getNewLesionNumber(timepointID) {
+    function getNewLesionNumber(timepointID, isTarget) {
+
+        if (typeof isTarget === 'undefined') {
+            isTarget = true;
+        }
         // Get all current lesion measurements
-        var measurements = Measurements.find().fetch();
+        var measurements = Measurements.find({isTarget: isTarget}).fetch();
 
         // If no measurements exist yet, start at 1
         if (!measurements.length) {
@@ -137,22 +148,26 @@ var measurementManagerDAL = (function() {
                 lesionNumberCounter = lesionNumberCounter + 1;
             }
         }
-        console.log(lesionNumberCounter + 1);
         return lesionNumberCounter + 1;
     }
 
     // If lesion number is added for any timepoint, returns lesion locationUID
-    function isLesionNumberAdded(lesionNumber) {
-        if (!timepointDataIsFound(lesionNumber)) {
+    function isLesionNumberAdded(lesionData) {
+        if (!timepointDataIsFound(lesionData)) {
             return;
         }
 
+        if(typeof isTarget === undefined) {
+            isTarget = true;
+        }
         var measurement = Measurements.find({
-            lesionNumber: lesionNumber
+            lesionNumber: lesionData.lesionNumber,
+            isTarget: lesionData.isTarget
         }).fetch()[0];
 
         return measurement.locationUID;
     }
+
 
     return {
         addNewLocation: addPatientLocation,
@@ -160,6 +175,7 @@ var measurementManagerDAL = (function() {
         addLesionData: addLesionData,
         getNewLesionNumber: getNewLesionNumber,
         isLesionNumberAdded: isLesionNumberAdded,
-        updateTimepointData: updateTimepointData
+        updateTimepointData: updateTimepointData,
+        getLocationName: getLocationName
     };
 })();

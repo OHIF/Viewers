@@ -14,7 +14,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     function createNewMeasurement(mouseEventData) {
         var element = mouseEventData.element;
         timepointID = $(element).data('timepointID');
-        var lesionNumber = measurementManagerDAL.getNewLesionNumber(timepointID);
+        var lesionNumber = measurementManagerDAL.getNewLesionNumber(timepointID, true);
         var lesionCounter = "";
 
         // Subscribe CornerstoneMouseup event, when mouse is up, call lesionDialog
@@ -78,6 +78,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             lesionName: "Target " + lesionNumber,
             isDeleted: false,
             lesionNumber: lesionNumber,
+            isTarget: true,
             uid: uuid.v4()
         };
         return measurementData;
@@ -253,6 +254,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var start = new Date();
 
         var enabledElement = eventObject.enabledElement;
+        var isTarget = eventObject.isTarget;
         var lesionNumber = eventObject.lesionData.lesionNumber;
         var type = eventObject.type;
 

@@ -3,4 +3,8 @@ Meteor.startup(function() {
         mouse: cornerstoneTools.lesion,
         touch: cornerstoneTools.lesionTouch
     });
+    toolManager.addTool('nonTarget', {
+        mouse: cornerstoneTools.nonTarget,
+        touch: cornerstoneTools.nonTargetTouch
+    });
 });

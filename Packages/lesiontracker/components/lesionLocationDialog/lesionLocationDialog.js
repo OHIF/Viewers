@@ -51,8 +51,6 @@ Template.lesionLocationDialog.onRendered(function() {
 Template.lesionLocationDialog.events({
     'click button#btnCloseLesionPopup': function(e) {
         $("#lesionDialog").modal("hide");
-        // TODO: Remove lastAddedLesionData from canvas
-        // TODO: Remove lastAddedLesionData from collection
     },
 
     'change select#selectLesionLocation': function(e) {
