@@ -185,7 +185,7 @@
         context.fill();
     }
 
-    function suscribenonTargetToolModifiedEvent(element) {
+    function suscribeNonTargetToolModifiedEvent(element) {
         var elementEvents = $._data(element, "events");
         var index = Object.keys(elementEvents).indexOf("nonTargetToolModified");
         if (index < 0) {
@@ -197,7 +197,7 @@
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
 
-        suscribenonTargetToolModifiedEvent(e.currentTarget);
+        suscribeNonTargetToolModifiedEvent(e.currentTarget);
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
@@ -205,93 +205,105 @@
             return;
         }
 
+        updateLesions(toolData, eventData);
+    }
+
+    function updateLesions(toolData, eventData) {
         // we have tool data for this element - iterate over each one and draw it
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
+
+        for (var i = 0; i < toolData.data.length; i++) {
+            renderLesion(toolData.data[i], context, eventData);
+        }
+    }
+
+    function renderLesion(lesion, context, eventData) {
+        context.save();
 
         var color;
         var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
         var font = cornerstoneTools.textStyle.getFont();
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
-        for (var i = 0; i < toolData.data.length; i++) {
-            context.save();
+        // configurable shadow from CornerstoneTools
+        if (config && config.shadow) {
+            context.shadowColor = '#000000';
+            context.shadowOffsetX = +1;
+            context.shadowOffsetY = +1;
+        }
 
-            var data = toolData.data[i];
+        if (lesion.active) {
+            color = cornerstoneTools.toolColors.getActiveColor();
+        } else {
+            color = cornerstoneTools.toolColors.getToolColor();
+        }
 
-            if (data.active) {
-                color = cornerstoneTools.toolColors.getActiveColor();
-            } else {
-                color = cornerstoneTools.toolColors.getToolColor();
-            }
+        // Draw the arrow
+        var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.handles.start);
+        var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.handles.end);
 
-            // Draw the arrow
-            var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.start);
-            var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
+        if (config.arrowFirst) {
+            drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
+        } else {
+            drawArrow(context, handleStartCanvas, handleEndCanvas, color, lineWidth);
+        }
 
-            if (config.arrowFirst) {
-                drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
-            } else {
-                drawArrow(context, handleStartCanvas, handleEndCanvas, color, lineWidth);
-            }
+        if (config.drawHandles) {
+            cornerstoneTools.drawHandles(context, eventData, lesion.handles, color);
+        } else if (config.drawHandlesOnHover && lesion.handles.start.active) {
+            cornerstoneTools.drawHandles(context, eventData, [ lesion.handles.start ], color);
+        } else if (config.drawHandlesOnHover && lesion.handles.end.active) {
+            cornerstoneTools.drawHandles(context, eventData, [ lesion.handles.end ], color);
+        }
 
-            if (config.drawHandles) {
-                cornerstoneTools.drawHandles(context, eventData, data.handles, color);
-            } else if (config.drawHandlesOnHover && data.handles.start.active) {
-                cornerstoneTools.drawHandles(context, eventData, [ data.handles.start ], color);
-            } else if (config.drawHandlesOnHover && data.handles.end.active) {
-                cornerstoneTools.drawHandles(context, eventData, [ data.handles.end ], color);
-            }
+        //Set coordinates of text
+        var linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.start);
+        if (!lesion.linkedTextCoords.init) {
+            lesion.linkedTextCoords.start.x = lesion.handles.start.x + 50;
+            lesion.linkedTextCoords.start.y = lesion.handles.start.y + 40;
+            linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.start);
 
-            //Set coordinates of text
-            var linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.start);
-            var linkedTextEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.end);
-            if (!data.linkedTextCoords.init) {
-                data.linkedTextCoords.start.x = data.handles.start.x + 50;
-                data.linkedTextCoords.start.y = data.handles.start.y + 40;
-                linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.start);
+            //Set end point of linkedTextCoords
+            lesion.linkedTextCoords.end.x = lesion.linkedTextCoords.start.x + 50;
+            lesion.linkedTextCoords.end.y = lesion.linkedTextCoords.start.y + 30;
 
-                //Set end point of linkedTextCoords
-                data.linkedTextCoords.end.x = data.linkedTextCoords.start.x + 50;
-                data.linkedTextCoords.end.y = data.linkedTextCoords.start.y + 30;
-                linkedTextEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.linkedTextCoords.end);
+            //initialized coordinates of text
+            lesion.linkedTextCoords.init = true;
+        }
 
-                //initialized coordinates of text
-                data.linkedTextCoords.init = true;
-            }
+        //Draw linked line as dashed
+        context.setLineDash([2, 3]);
+        context.beginPath();
+        context.strokeStyle = color;
+        context.lineWidth = 1 / eventData.viewport.scale;
+        var mid = {
+            x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
+            y: (handleStartCanvas.y + handleEndCanvas.y) / 2
+        };
 
-            //Draw linked line as dashed
-            context.setLineDash([2, 3]);
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = 1 / eventData.viewport.scale;
-            var mid = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2
+        context.moveTo(mid.x, mid.y);
+        context.lineTo(linkedTextStartCanvas.x + 20, linkedTextStartCanvas.y);
+        context.stroke();
+
+
+        // Draw the text
+        if (lesion.text && lesion.text !== '') {
+            context.font = font;
+
+            var textCoords = {
+                x: linkedTextStartCanvas.x,
+                y: linkedTextStartCanvas.y
             };
 
-            context.moveTo(mid.x, mid.y);
-            context.lineTo(linkedTextStartCanvas.x + 20, linkedTextStartCanvas.y);
-            context.stroke();
-
-
-            // Draw the text
-            if (data.text && data.text !== '') {
-                context.font = font;
-
-                var textCoords = {
-                    x: linkedTextStartCanvas.x,
-                    y: linkedTextStartCanvas.y
-                };
-
-                cornerstoneTools.drawTextBox(context, data.text, textCoords.x, textCoords.y, color);
-            }
-
-
-            context.restore();
+            cornerstoneTools.drawTextBox(context, lesion.text, textCoords.x, textCoords.y, color);
         }
+
+
+        context.restore();
+
     }
-    // ---- Touch tool ----
+        // ---- Touch tool ----
 
     ///////// BEGIN ACTIVE TOOL ///////
     function addNewMeasurementTouch(touchEventData) {
@@ -401,7 +413,7 @@
                 var data = toolData.data[i];
 
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventObject.lesionNumber && eventObject.type !== "active") {
+                if (data.lesionNumber === eventObject.lesionNumber && eventObject.type !== "active" && !isTarget) {
                     data.visible = false;
                     deletedDataIndex = i;
                 }
@@ -414,7 +426,7 @@
             for (var i = 0; i < toolData.data.length; i++) {
                 var data = toolData.data[i];
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventObject.lesionData.lesionNumber && eventObject.type === "active") {
+                if (data.lesionNumber === eventObject.lesionData.lesionNumber && eventObject.type === "active" && !isTarget) {
                     data.active = true;
                 } else {
                     data.active = false;
@@ -427,9 +439,6 @@
                 data.active = false;
             }
         }
-
-
-        enabledElement.image.render(enabledElement, true);
 
         var context = enabledElement.canvas.getContext('2d');
 
@@ -446,6 +455,7 @@
             measurementText: "",
             renderTimeInMs: diff,
             lesionNumber: lesionNumber,
+            isTarget: isTarget,
             type: type //Holds image will be deleted or active
         };
 

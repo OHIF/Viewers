@@ -12,17 +12,16 @@ function nonTargetToolAdded(e, eventData, lesionData) {
         // location is selected and disable select location in dialog
         lesionData.locationUID = locationUID;
         var locationName = measurementManagerDAL.getLocationName(locationUID);
-        var locationIndex;
+
         $("#selectNonTargetLesionLocation option").each(function()
         {
             if ($(this).text() === locationName) {
-                locationIndex = $(this).index();
+                // Select location in locations dropdown list
+                $("#selectNonTargetLesionLocation option").eq($(this).index()).attr("selected", "selected");
                 return;
             }
         });
 
-        // Select location in locations dropdown list
-        $("#selectNonTargetLesionLocation option").eq(locationIndex).attr("selected", "selected");
         $("#selectNonTargetLesionLocation").attr("disabled", "disabled");
     } else{
 
@@ -30,7 +29,7 @@ function nonTargetToolAdded(e, eventData, lesionData) {
         $("#selectNonTargetLesionLocation").removeAttr("disabled");
     }
 
-    // Save lesionData in Session to use after location and response are selected in nonTargetLesionDialog
+    // Save lesionData in Session to use after location and response are selected
     Session.set("nonTargetLesionData", lesionData);
 
     var dialogPointsOnPage = eventData.currentPoints.page;
@@ -81,6 +80,7 @@ function updateLesions(e) {
 
         if(!isTarget) {
             $(element).trigger("nonTargetToolModified", eventData);
+            return;
         }
         $(element).trigger("LesionToolModified", eventData);
 

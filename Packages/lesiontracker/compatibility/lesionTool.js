@@ -125,21 +125,21 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             return;
         }
 
-        updateLesions(toolData, eventData, e.currentTarget);
+        updateLesions(toolData, eventData);
     }
 
-    function updateLesions(toolData, eventData, currentElement) {
+    function updateLesions(toolData, eventData) {
         // we have tool data for this element - iterate over each one and draw it
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
 
         for (var i = 0; i < toolData.data.length; i++) {
             renderLesion(toolData.data[i], context, eventData);
-            updateLesionCollection(toolData.data[i], currentElement);
+            updateLesionCollection(toolData.data[i]);
         }
     }
 
-    function updateLesionCollection(lesionData, currentElement) {
+    function updateLesionCollection(lesionData) {
 
         if (lesionData.active) {
             if (lesionData.timepointID !== undefined && lesionData.timepointID !== "") {
@@ -254,7 +254,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var start = new Date();
 
         var enabledElement = eventObject.enabledElement;
-        var isTarget = eventObject.isTarget;
+        var isTarget = eventObject.lesionData.isTarget;
         var lesionNumber = eventObject.lesionData.lesionNumber;
         var type = eventObject.type;
 
@@ -272,7 +272,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 var data = toolData.data[i];
 
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventObject.lesionNumber && eventObject.type !== "active") {
+                if (data.lesionNumber === eventObject.lesionNumber && eventObject.type !== "active" && isTarget) {
                     data.visible = false;
                     deletedDataIndex = i;
                 }
@@ -285,7 +285,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             for (var i = 0; i < toolData.data.length; i++) {
                 var data = toolData.data[i];
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventObject.lesionData.lesionNumber && eventObject.type === "active") {
+                if (data.lesionNumber === eventObject.lesionData.lesionNumber && eventObject.type === "active" && isTarget) {
                     data.active = true;
                 } else {
                     data.active = false;
@@ -298,9 +298,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 data.active = false;
             }
         }
-
-
-        enabledElement.image.render(enabledElement, true);
 
         var context = enabledElement.canvas.getContext('2d');
 

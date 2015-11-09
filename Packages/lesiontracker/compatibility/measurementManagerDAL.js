@@ -55,6 +55,7 @@ var measurementManagerDAL = (function() {
 
         var lesionDataObject = {
             lesionUID: uuid.v4(),
+            number: Measurements.find().count() + 1,
             lesionNumber: lesionData.lesionNumber,
             isTarget: typeof lesionData.isTarget !== 'undefined'?lesionData.isTarget:true,
             locationUID: lesionData.locationUID,
