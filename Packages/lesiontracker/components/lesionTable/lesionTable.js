@@ -3,6 +3,8 @@ Timepoints = new Meteor.Collection(null);
 
 // When nonTarget lesion is added to image, insert data to lesion table
 function nonTargetToolAdded(e, eventData, lesionData) {
+
+    // Set timepointID
     lesionData.timepointID = $(e.currentTarget).data('timepointID');
 
     var locationUID = measurementManagerDAL.isLesionNumberAdded(lesionData);
@@ -18,12 +20,17 @@ function nonTargetToolAdded(e, eventData, lesionData) {
                 return;
             }
         });
-        $("#selectNonTargetLesionLocation option").eq(locationIndex).attr("selected", "selected");
-       // $("#selectNonTargetLesionLocation").attr("disabled", "disabled");
 
+        // Select location in locations dropdown list
+        $("#selectNonTargetLesionLocation option").eq(locationIndex).attr("selected", "selected");
+        $("#selectNonTargetLesionLocation").attr("disabled", "disabled");
+    } else{
+
+        // If selectNonTargetLesionLocation is disabled, make it enable
+        $("#selectNonTargetLesionLocation").removeAttr("disabled");
     }
 
-    // Save lesionData in Session to use after location and response are selected
+    // Save lesionData in Session to use after location and response are selected in nonTargetLesionDialog
     Session.set("nonTargetLesionData", lesionData);
 
     var dialogPointsOnPage = eventData.currentPoints.page;

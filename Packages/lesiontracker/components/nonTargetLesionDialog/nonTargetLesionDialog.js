@@ -96,8 +96,6 @@ Template.nonTargetLesionDialog.events({
     },
 
     'click button#nonTargetLesionOK': function() {
-        // Set activeModule parameters in index.html
-        $("#nonTargetLesionLocationDialog").modal("hide");
 
         var lesionData = Session.get("nonTargetLesionData");
         // Get selected location data
@@ -108,7 +106,13 @@ Template.nonTargetLesionDialog.events({
         // Get selected location data
         var locationObj = lesionLocationsArray[selectedLocationIndex];
         lesionData.location = $("#selectNonTargetLesionLocation :selected").text();
-        lesionData.measurementText = $("#selectNonTargetLesionLocationResponse").val();
+
+        var response = $("#selectNonTargetLesionLocationResponse").val();
+        if(response === "-1") {
+            return;
+        }
+        $("#nonTargetLesionLocationDialog").modal("hide");
+        lesionData.measurementText = response;
 
         // Select first option
         $("#selectNonTargetLesionLocation").val($("#selectNonTargetLesionLocation option:first").val());
@@ -119,12 +123,10 @@ Template.nonTargetLesionDialog.events({
             return;
         }
 
-
         // Adds location data to trialPatientLocations array and returns locationUID
         var locationUID = measurementManagerDAL.addNewLocation(locationObj);
-        // Linkk locationUID with activeLesionMeasurementData
+        // Link locationUID with activeLesionMeasurementData
         lesionData.locationUID = locationUID;
-
         measurementManagerDAL.addLesionData(lesionData);
 
 
