@@ -78,11 +78,19 @@ function updateLesions(e) {
             eventData.type = "inactive";
         }
 
-        if(!isTarget) {
-            $(element).trigger("nonTargetToolModified", eventData);
+        if (!isTarget) {
+            $(element).trigger("NonTargetToolSelected", eventData);
+
+            // Deactivate lesion tool measurements
+            eventData.type = "inactive";
+            $(element).trigger("LesionToolSelected", eventData);
             return;
         }
-        $(element).trigger("LesionToolModified", eventData);
+        $(element).trigger("LesionToolSelected", eventData);
+
+        // Deactivate nonTarget tool measurements
+        eventData.type = "inactive";
+        $(element).trigger("NonTargetToolSelected", eventData);
 
     });
 }

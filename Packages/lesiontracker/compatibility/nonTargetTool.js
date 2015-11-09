@@ -187,10 +187,10 @@
 
     function suscribeNonTargetToolModifiedEvent(element) {
         var elementEvents = $._data(element, "events");
-        var index = Object.keys(elementEvents).indexOf("nonTargetToolModified");
+        var index = Object.keys(elementEvents).indexOf("NonTargetToolSelected");
         if (index < 0) {
             // Subscribe LesionToolModified and calls measurementModified function when lesion measurement is changed or updated.
-            $(element).on("nonTargetToolModified", measurementModified);
+            $(element).on("NonTargetToolSelected", measurementModified);
         }
 
     }
@@ -303,7 +303,7 @@
         context.restore();
 
     }
-        // ---- Touch tool ----
+    // ---- Touch tool ----
 
     ///////// BEGIN ACTIVE TOOL ///////
     function addNewMeasurementTouch(touchEventData) {
@@ -345,6 +345,7 @@
             $(element).on('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
         });
     }
+
 
     function doubleClickCallback(e, eventData) {
         var element = eventData.element;

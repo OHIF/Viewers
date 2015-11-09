@@ -105,19 +105,19 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     }
 
-    function suscribeLesionToolModifiedEvent(element) {
+    function suscribeLesionToolSelectedEvent(element) {
         var elementEvents = $._data(element, "events");
-        var index = Object.keys(elementEvents).indexOf("LesionToolModified");
+        var index = Object.keys(elementEvents).indexOf("LesionToolSelected");
         if (index < 0) {
-            // Subscribe LesionToolModified and calls measurementModified function when lesion measurement is changed or updated.
-            $(element).on("LesionToolModified", measurementModified);
+            // Subscribe LesionToolSelected and calls measurementModified function when lesion measurement is changed or updated.
+            $(element).on("LesionToolSelected", measurementModified);
         }
 
     }
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
 
-        suscribeLesionToolModifiedEvent(e.currentTarget);
+        suscribeLesionToolSelectedEvent(e.currentTarget);
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);

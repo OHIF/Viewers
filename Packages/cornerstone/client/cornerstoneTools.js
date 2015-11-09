@@ -1104,7 +1104,7 @@ if (typeof cornerstoneTools === 'undefined') {
                     imageNeedsUpdate = true;
                 }
 
-                if ((mouseToolInterface.pointInsideRect(eventData.element, data, coords) && !data.active) || (!mouseToolInterface.pointInsideRect(eventData.element, data, coords) && data.active)) {
+                if (mouseToolInterface.pointInsideRect(eventData.element, data, coords) && !data.active || !mouseToolInterface.pointInsideRect(eventData.element, data, coords) && data.active) {
                     data.active = !data.active;
                     imageNeedsUpdate = true;
                 }
