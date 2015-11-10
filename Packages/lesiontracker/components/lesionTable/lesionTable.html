@@ -1,6 +1,6 @@
 <template name="lesionTable">
     <div id="lesionTableContainer">
-        <table class="table table-bordered lesionTable" id="tblLesion">
+        <table class="table table-striped noselect lesionTable" id="tblLesion">
             <thead>
                 <tr>
                     <th id="thNumber">Lesion #</th>
@@ -10,7 +10,8 @@
                     {{ #each timepoints }}
                          {{ >lesionTableTimepointHeader }}
                     {{ /each }}
-                    <th id="thSpacer"> </th>
+                    <!--What is this for?-->
+                    <!--<th id="thSpacer"> </th>-->
                 </tr>
             </thead>
             <tbody>

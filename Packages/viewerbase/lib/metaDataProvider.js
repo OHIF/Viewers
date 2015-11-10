@@ -20,11 +20,16 @@ addMetaData = function(imageId, data) {
         description: seriesMetaData.seriesDescription,
         number: seriesMetaData.seriesNumber,
         modality: seriesMetaData.modality,
-        instanceUid: seriesMetaData.instanceUid,
+        instanceUid: seriesMetaData.seriesInstanceUid,
         numImages: numImages
     };
 
     metaData.instance = {
+        wadouri: instanceMetaData.wadouri,
+        imageType: instanceMetaData.imageType,
+        photometricInterpretation: instanceMetaData.photometricInterpretation,
+        sopInstanceUid: instanceMetaData.sopInstanceUid,
+        sopClassUid: instanceMetaData.sopClassUid,
         number: instanceMetaData.instanceNumber,
         index: imageIndex
     };

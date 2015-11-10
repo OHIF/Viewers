@@ -86,11 +86,14 @@ toolManager = {
             if (!element.classList.contains('empty') && canvases.length > 0) {
                 // First, deactivate the current active tool
                 tools[activeTool].mouse.deactivate(element, 1);
-                tools[activeTool].touch.deactivate(element);
+
+                if (tools[activeTool].touch) {
+                    tools[activeTool].touch.deactivate(element);
+                }
 
                 // First, get the stack toolData
                 var toolData = cornerstoneTools.getToolState(element, 'stack');
-                if (toolData === undefined || toolData.data === undefined || toolData.data.length === 0) {
+                if (!toolData || !toolData.data || !toolData.data.length) {
                     return;
                 }
 
@@ -127,7 +130,10 @@ toolManager = {
                     // Activate the chosen tool
                     tools[tool].mouse.activate(element, 1);
                 }
-                tools[tool].touch.activate(element);
+
+                if (tools[tool].touch) {
+                    tools[tool].touch.activate(element);
+                }
 
                 cornerstoneTools.zoomTouchPinch.activate(element);
                 cornerstoneTools.panMultiTouch.activate(element);

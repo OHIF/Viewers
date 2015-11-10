@@ -14,6 +14,7 @@ Package.onUse(function (api) {
     api.use('ian:accounts-ui-bootstrap-3');
     api.use('http');
     api.use('practicalmeteor:loglevel');
+    api.use('momentjs:moment');
 
     // Our custom package
     api.use('cornerstone');
