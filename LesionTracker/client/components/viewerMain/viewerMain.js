@@ -40,15 +40,8 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
-            id: 'length',
-            title: 'Length Measurement',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows-v'
-        });
-
-        buttonData.push({
             id: 'lesion',
-            title: 'Lesion Tool',
+            title: 'Target Tool',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows-alt'
         });
@@ -57,7 +50,7 @@ Template.viewerMain.helpers({
             id: 'nonTarget',
             title: 'Non-Target Tool',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows-v'
+            iconClasses: 'fa fa-long-arrow-up'
         });
 
         toolbarOptions.buttonData = buttonData;
