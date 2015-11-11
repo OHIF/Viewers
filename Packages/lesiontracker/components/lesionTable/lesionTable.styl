@@ -31,7 +31,7 @@
             border-bottom-width: 0
             font-weight: normal
             color:white
-            line-height: 20px
+            line-height: 15px
             text-align: center
             margin: 0
             padding: 5px
@@ -50,13 +50,13 @@
           
       tbody
         display: block
-        height: 200px // Seems like this has to be fixed for overflow to work properly!
+        height: 150px // Seems like this has to be fixed for overflow to work properly!
         overflow: auto
         width: 100%
 
         tr.lesionTableRow
           width: 100%
-          
+
           &:nth-child(even)
               background: #888
           &:nth-child(odd)
@@ -70,6 +70,7 @@
                 border-bottom-width: 0
                 margin: 0
                 padding: 5px
+                line-height: 15px
 
                 &.lesionNumber,  &.target, &.lesionTableTimepointCell
                     text-align: center
