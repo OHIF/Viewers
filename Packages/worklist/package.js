@@ -59,5 +59,6 @@ Package.onUse(function (api) {
 
     // Export the WorklistTabs Collection
     api.export('WorklistTabs', 'client');
+    api.export('Studies', 'client');
 });
 

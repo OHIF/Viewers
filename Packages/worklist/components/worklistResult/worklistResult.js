@@ -2,6 +2,7 @@
 // This is a client-side only Collection which
 // Stores the list of studies in the Worklist
 Studies = new Mongo.Collection(null);
+PatientStudies = new Mongo.Collection(null);
 
 Template.worklistResult.helpers({
     /**
