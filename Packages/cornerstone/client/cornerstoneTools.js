@@ -6988,6 +6988,11 @@ if (typeof cornerstoneTools === 'undefined') {
         var targetImagePlane = cornerstoneTools.metaData.get('imagePlane', targetImage.imageId);
         var referenceImagePlane = cornerstoneTools.metaData.get('imagePlane', referenceImage.imageId);
 
+        // Make sure the target and reference actually have image plane metadata
+        if (!targetImagePlane || !referenceImagePlane) {
+            return;
+        }
+
         // the image planes must be in the same frame of reference
         if (targetImagePlane.frameOfReferenceUID !== referenceImagePlane.frameOfReferenceUID) {
             return;
