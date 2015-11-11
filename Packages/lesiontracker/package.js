@@ -18,11 +18,9 @@ Package.onUse(function (api) {
     api.addFiles('compatibility/nonTargetTool.js', 'client', {bare: true});
     api.addFiles('compatibility/measurementManagerDAL.js', 'client', {bare: true});
 
-    api.addFiles('components/lesionDialog/lesionDialog.html', 'client');
-    api.addFiles('components/lesionDialog/lesionDialog.js', 'client');
-
     api.addFiles('components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('components/lesionLocationDialog/lesionLocationDialog.js', 'client');
+    api.addFiles('components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
     
     api.addFiles('components/lesionTable/lesionTable.html', 'client');
     api.addFiles('components/lesionTable/lesionTable.styl', 'client');

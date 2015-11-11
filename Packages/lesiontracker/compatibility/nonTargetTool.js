@@ -1,4 +1,3 @@
-// Begin Source: src/imageTools/annotation.js
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     'use strict';
@@ -8,13 +7,12 @@
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getTextCallback(doneChangingTextCallback) {
-        doneChangingTextCallback(prompt('Enter your annotation:'));
+        doneChangingTextCallback(prompt('Add a non-target lesion name:'));
     }
 
     function changeTextCallback(data, doneChangingTextCallback) {
         doneChangingTextCallback(prompt('Change your annotation:'));
     }
-
 
     var configuration = {
         getTextCallback: getTextCallback,
@@ -141,16 +139,6 @@
         return (distanceToPoint < 25);
     }
 
-    function pointNearToolForText(element, data, coords) {
-        var lineSegment = {
-            start: cornerstone.pixelToCanvas(element, data.linkedTextCoords.start),
-            end: cornerstone.pixelToCanvas(element, data.linkedTextCoords.end)
-        };
-
-        var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
-        return (distanceToPoint < 30);
-    }
-
     function drawArrow(context, start, end, color, lineWidth) {
         //variables to be used when creating the arrow
         var headLength = 10;
@@ -185,7 +173,7 @@
         context.fill();
     }
 
-    function suscribeNonTargetToolModifiedEvent(element) {
+    function subcribeNonTargetToolModifiedEvent(element) {
         var elementEvents = $._data(element, "events");
         var index = Object.keys(elementEvents).indexOf("NonTargetToolSelected");
         if (index < 0) {
@@ -197,7 +185,7 @@
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
 
-        suscribeNonTargetToolModifiedEvent(e.currentTarget);
+        subcribeNonTargetToolModifiedEvent(e.currentTarget);
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
@@ -229,8 +217,8 @@
         // configurable shadow from CornerstoneTools
         if (config && config.shadow) {
             context.shadowColor = '#000000';
-            context.shadowOffsetX = +1;
-            context.shadowOffsetY = +1;
+            context.shadowOffsetX = 1;
+            context.shadowOffsetY = 1;
         }
 
         if (lesion.active) {
@@ -303,49 +291,6 @@
         context.restore();
 
     }
-    // ---- Touch tool ----
-
-    ///////// BEGIN ACTIVE TOOL ///////
-    function addNewMeasurementTouch(touchEventData) {
-        var element = touchEventData.element;
-
-        function doneChangingTextCallback(text) {
-            if (text !== null) {
-                measurementData.text = text;
-            } else {
-                cornerstoneTools.removeToolState(element, toolType, measurementData);
-            }
-
-            measurementData.active = false;
-            cornerstone.updateImage(element);
-        }
-
-        var measurementData = createNewMeasurement(touchEventData);
-        cornerstoneTools.addToolState(element, toolType, measurementData);
-        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
-        $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
-        $(element).off('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
-        cornerstone.updateImage(element);
-
-        cornerstoneTools.moveNewHandleTouch(touchEventData, measurementData.handles.end, function() {
-            cornerstone.updateImage(element);
-
-            if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
-                // delete the measurement
-                cornerstoneTools.removeToolState(element, toolType, measurementData);
-            }
-
-            var config = cornerstoneTools.nonTarget.getConfiguration();
-            if (measurementData.text === undefined) {
-                config.getTextCallback(doneChangingTextCallback);
-            }
-
-            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
-            $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
-            $(element).on('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
-        });
-    }
-
 
     function doubleClickCallback(e, eventData) {
         var element = eventData.element;
@@ -497,24 +442,10 @@
         createNewMeasurement: createNewMeasurement,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
-        pointNearToolForText: pointNearToolForText,
         toolType: toolType,
         mouseDoubleClickCallback: doubleClickCallback
     });
 
     cornerstoneTools.nonTarget.setConfiguration(configuration);
 
-    cornerstoneTools.nonTargetTouch = cornerstoneTools.touchTool({
-        addNewMeasurement: addNewMeasurementTouch,
-        createNewMeasurement: createNewMeasurement,
-        onImageRendered: onImageRendered,
-        pointNearTool: pointNearTool,
-        pointNearToolForText: pointNearToolForText,
-        toolType: toolType,
-        pressCallback: doubleClickCallback
-    });
-
-
 })($, cornerstone, cornerstoneMath, cornerstoneTools);
-
-// End Source; src/imageTools/annotation.js

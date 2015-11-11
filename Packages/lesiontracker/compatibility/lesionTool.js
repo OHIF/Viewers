@@ -8,41 +8,70 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         cornerstoneTools = {};
     }
 
+    var configuration = {
+        getLesionLocationCallback: getLesionLocationCallback,
+        changeLesionLocationCallback: changeLesionLocationCallback,
+    };
+
+    // Define a callback to get your text annotation
+    // This could be used, e.g. to open a modal
+    function getLesionLocationCallback(measurementData, eventData, doneCallback) {
+        doneCallback(prompt('Enter your lesion location:'));
+    }
+
+    function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
+        doneCallback(prompt('Change your lesion location:'));
+    }
+
     var toolType = "lesion";
 
     ///////// BEGIN ACTIVE TOOL ///////
-    function createNewMeasurement(mouseEventData) {
+
+    function addNewMeasurement(mouseEventData) {
         var element = mouseEventData.element;
-        timepointID = $(element).data('timepointID');
-        var lesionNumber = measurementManagerDAL.getNewLesionNumber(timepointID, true);
-        var lesionCounter = "";
 
+        function doneCallback(lesionNumber) {
+            measurementData.lesionName = "Target " + lesionNumber;
+            measurementData.lesionNumber = lesionNumber;
+            measurementData.active = false;
+            cornerstone.updateImage(element);
+        }
 
-        // ** This stuff should not be done here! We should do this inside addNewMeasurement!** //
+        var measurementData = createNewMeasurement(mouseEventData);
 
-        // Subscribe CornerstoneMouseup event, when mouse is up, call lesionDialog
-        $(element).on("CornerstoneToolsMouseUp", function(e) {
+        var eventData = {
+            mouseButtonMask: mouseEventData.which,
+        };
+        
+        // associate this data with this imageId so we can render it and manipulate it
+        cornerstoneTools.addToolState(element, toolType, measurementData);
+       
+        // since we are dragging to another place to drop the end point, we can just activate
+        // the end point and let the moveHandle move it for us.
+        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.lesion.mouseMoveCallback);
+        $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.lesion.mouseDownCallback);
+        $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.lesion.mouseDownActivateCallback);
 
-            // Unsubscribe CornerstoneToolsMouseUp event
-            $(element).off("CornerstoneToolsMouseUp");
+        cornerstone.updateImage(element);
+        cornerstoneTools.moveNewHandle(mouseEventData, measurementData.handles.end, function() {
+            if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
+                // delete the measurement
+                cornerstoneTools.removeToolState(element, toolType, measurementData);
+            } else {
+                // Set lesionMeasurementData Session
+                var config = cornerstoneTools.lesion.getConfiguration();
+                config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+            }
 
-            // Set lesionMeasurementData Session
-            activeLesionMeasurementData.timepointID = timepointID;
-            Session.set("lesionMeasurementData", activeLesionMeasurementData);
-
-            // Show LesionDialog
-            $(document).trigger("ShowLesionDialog", [e, activeLesionMeasurementData]);
+            $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.lesion.mouseMoveCallback);
+            $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.lesion.mouseDownCallback);
+            $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.lesion.mouseDownActivateCallback);
+            cornerstone.updateImage(element);
         });
+    }
 
-        // Set Lesion Name
-        $(element).on("LesionNameSet", function(e, lesionName) {
-            lesionCounter = lesionName;
-        });
-
-        // Subscribe LesionMeasurementCreated
-        $(element).trigger("LesionMeasurementCreated");
-
-        // create the measurement data for this tool with the end handle activated
+    function createNewMeasurement(mouseEventData) {
+        // Create the measurement data for this tool with the end handle activated
         var measurementData = {
             visible: true,
             active: true,
@@ -70,9 +99,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             },
             imageId: mouseEventData.image.imageId,
             measurementText: 0,
-            lesionName: "Target " + lesionNumber,
+            lesionName: '',
             isDeleted: false,
-            lesionNumber: lesionNumber,
             isTarget: true,
             uid: uuid.v4()
         };
@@ -136,15 +164,15 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     }
 
     function updateLesionCollection(lesionData) {
+        if (!lesionData.active) {
+            return;
+        }
 
-        if (lesionData.active) {
-            if (lesionData.timepointID !== undefined && lesionData.timepointID !== "") {
-                // Update Measurements Collection
-                measurementManagerDAL.updateTimepointData(lesionData);
-
-            } else {
-                activeLesionMeasurementData = lesionData;
-            }
+        if (lesionData.timepointID && lesionData.timepointID !== "") {
+            // Update Measurements Collection
+            measurementManagerDAL.updateTimepointData(lesionData);
+        } else {
+            activeLesionMeasurementData = lesionData;
         }
     }
 
@@ -230,62 +258,61 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     ///////// END IMAGE RENDERING ///////
 
     function updateLesion(e, eventData) {
-        var start = new Date();
-
         var enabledElement = eventData.enabledElement;
+        var element = eventData.enabledElement.element;
         var isTarget = eventData.lesionData.isTarget;
         var lesionNumber = eventData.lesionData.lesionNumber;
         var type = eventData.type;
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
-        if (toolData === undefined) {
+        if (!toolData) {
             return;
         }
 
         var data,
             i;
 
-        //If type is delete, remove measurement
-        if (type === "delete") {
-            var deletedDataIndex = -1;
+        switch (type) {
+            case "delete":
+                //If type is delete, remove measurement
+                var deletedDataIndex = -1;
 
-            for (i = 0; i < toolData.data.length; i++) {
-                data = toolData.data[i];
+                for (i = 0; i < toolData.data.length; i++) {
+                    data = toolData.data[i];
 
-                //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventData.lesionNumber && eventData.type !== "active" && isTarget) {
-                    data.visible = false;
-                    deletedDataIndex = i;
+                    //When click a row of table measurements, measurement will be active and color will be green
+                    if (data.lesionNumber === lesionNumber && eventData.type !== "active" && isTarget) {
+                        data.visible = false;
+                        deletedDataIndex = i;
+                    }
                 }
-            }
 
-            if (deletedDataIndex >= 0 && deletedDataIndex < toolData.data.length) {
-                toolData.data.splice(deletedDataIndex, 1);
-            }
-        } else if (type === "active") {
-            for (i = 0; i < toolData.data.length; i++) {
-                data = toolData.data[i];
-                //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventData.lesionData.lesionNumber && eventData.type === "active" && isTarget) {
-                    data.active = true;
-                } else {
+                if (deletedDataIndex >= 0 && deletedDataIndex < toolData.data.length) {
+                    toolData.data.splice(deletedDataIndex, 1);
+                }
+                break;
+
+            case "active":
+                for (i = 0; i < toolData.data.length; i++) {
+                    data = toolData.data[i];
+                    //When click a row of table measurements, measurement will be active and color will be green
+                    if (data.lesionNumber === lesionNumber && eventData.type === "active" && isTarget) {
+                        data.active = true;
+                    } else {
+                        data.active = false;
+                    }
+                }
+                break;
+
+            case "inactive":
+                for (i = 0; i < toolData.data.length; i++) {
+                    data = toolData.data[i];
+                    // Make inactive all lesions for the timepoint
                     data.active = false;
                 }
-            }
-        } else if (type === "inactive") {
-            for (i = 0; i < toolData.data.length; i++) {
-                data = toolData.data[i];
-                // Make inactive all lesions for the timepoint
-                data.active = false;
-            }
+                break;
         }
-
-        var context = enabledElement.canvas.getContext('2d');
-
-        var end = new Date();
-        var diff = end - start;
-        //console.log(diff + ' ms');
 
         cornerstone.updateImage(element);
     }
@@ -298,19 +325,19 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         if (eventData.type === "active") {
             var stackToolDataSource = cornerstoneTools.getToolState(e.currentTarget, 'stack');
             var stackData = stackToolDataSource.data[0];
-            var imageIdsArr = stackData.imageIds;
-            var indexOfImage = imageIdsArr.indexOf(eventData.lesionData.imageId);
-            if (indexOfImage > -1) {
-                cornerstone.loadAndCacheImage(stackData.imageIds[indexOfImage]).then(function(image) {
-                    cornerstone.displayImage(eventData.enabledElement.element, image);
-                    updateLesion(e, eventData);
-                });
+            var imageIds = stackData.imageIds;
+            var imageIdIndex = imageIds.indexOf(eventData.lesionData.imageId);
+            if (imageIdIndex < 0) {
+                return;
             }
+
+            cornerstone.loadAndCacheImage(imageIds[imageIdIndex]).then(function(image) {
+                cornerstone.displayImage(eventData.enabledElement.element, image);
+                updateLesion(e, eventData);
+            });
         } else if (eventData.type === "inactive") {
             updateLesion(e, eventData);
         }
-
-
     }
 
     //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active
@@ -321,6 +348,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     // module exports
     cornerstoneTools.lesion = cornerstoneTools.mouseButtonTool({
         createNewMeasurement: createNewMeasurement,
+        addNewMeasurement: addNewMeasurement,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
         toolType: toolType
@@ -328,10 +356,14 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     cornerstoneTools.lesionTouch = cornerstoneTools.touchTool({
         createNewMeasurement: createNewMeasurement,
+        //addNewMeasurement: addNewMeasurementTouch,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
         toolType: toolType
     });
+
+    cornerstoneTools.lesion.setConfiguration(configuration);
+
     return cornerstoneTools;
 
 }($, cornerstone, cornerstoneMath, cornerstoneTools));
