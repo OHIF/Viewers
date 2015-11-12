@@ -1,20 +1,16 @@
 #nonTargetLesionLocationDialog {
-    background: transparent;
-}
-
-#modal-dialog-container-nonTargetLesion {
+    display: none;
     position: absolute;
-    border: none;
-}
+    z-index: 100;
+    background: white;
+    padding: 10px 20px 10px 20px;
+    border-radius: 10px;
 
-#btnCloseNonTargetLesionPopup {
-    outline: 0;
-    border: none;
-    background-color: transparent;
+
 }
 
 #selectNonTargetLesionLocation, #selectNonTargetLesionLocationResponse {
-    width: 80%;
+    width: 100%;
 }
 
 .dialogContent, .lesionLocation, .locationResponse {
