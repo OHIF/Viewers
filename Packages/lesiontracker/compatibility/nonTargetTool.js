@@ -7,12 +7,13 @@
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getTextCallback(doneChangingTextCallback) {
-        doneChangingTextCallback(prompt('Add a non-target lesion name:'));
+        doneChangingTextCallback(prompt('Enter your annotation:'));
     }
 
     function changeTextCallback(data, doneChangingTextCallback) {
         doneChangingTextCallback(prompt('Change your annotation:'));
     }
+
 
     var configuration = {
         getTextCallback: getTextCallback,
@@ -102,22 +103,15 @@
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: false
+                },
+                textBox: {
+                    x: mouseEventData.currentPoints.image.x - 50,
+                    y: mouseEventData.currentPoints.image.y - 50,
+                    pointNearHandle: pointNearTextBox,
+                    active: false,
+                    movesIndependently: true,
+                    drawnIndependently: true
                 }
-            },
-            linkedTextCoords: {
-                start: {
-                    x: mouseEventData.currentPoints.image.x,
-                    y: mouseEventData.currentPoints.image.y,
-                    highlight: true,
-                    active: false
-                },
-                end: {
-                    x: mouseEventData.currentPoints.image.x,
-                    y: mouseEventData.currentPoints.image.y,
-                    highlight: true,
-                    active: true
-                },
-                init: false
             },
             imageId: mouseEventData.image.imageId,
             lesionNumber: lesionNumber,
@@ -134,9 +128,20 @@
             start: cornerstone.pixelToCanvas(element, data.handles.start),
             end: cornerstone.pixelToCanvas(element, data.handles.end)
         };
-
         var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
-        return (distanceToPoint < 25);
+
+        if (pointNearTextBox(element, data.handles.textBox, coords)) {
+            return true;
+        }
+
+        return distanceToPoint < 25;
+    }
+
+    function pointNearTextBox(element, handle, coords) {
+        if (!handle.boundingBox) {
+            return;
+        }
+        return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
     }
 
     function drawArrow(context, start, end, color, lineWidth) {
@@ -173,7 +178,7 @@
         context.fill();
     }
 
-    function subcribeNonTargetToolModifiedEvent(element) {
+    function suscribeNonTargetToolModifiedEvent(element) {
         var elementEvents = $._data(element, "events");
         var index = Object.keys(elementEvents).indexOf("NonTargetToolSelected");
         if (index < 0) {
@@ -185,7 +190,7 @@
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
 
-        subcribeNonTargetToolModifiedEvent(e.currentTarget);
+        suscribeNonTargetToolModifiedEvent(e.currentTarget);
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
@@ -217,8 +222,8 @@
         // configurable shadow from CornerstoneTools
         if (config && config.shadow) {
             context.shadowColor = '#000000';
-            context.shadowOffsetX = 1;
-            context.shadowOffsetY = 1;
+            context.shadowOffsetX = +1;
+            context.shadowOffsetY = +1;
         }
 
         if (lesion.active) {
@@ -230,6 +235,7 @@
         // Draw the arrow
         var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.handles.start);
         var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.handles.end);
+        var canvasTextLocation = cornerstone.pixelToCanvas(eventData.element, lesion.handles.textBox);
 
         if (config.arrowFirst) {
             drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
@@ -245,52 +251,79 @@
             cornerstoneTools.drawHandles(context, eventData, [ lesion.handles.end ], color);
         }
 
-        //Set coordinates of text
-        var linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.start);
-        if (!lesion.linkedTextCoords.init) {
-            lesion.linkedTextCoords.start.x = lesion.handles.start.x + 50;
-            lesion.linkedTextCoords.start.y = lesion.handles.start.y + 40;
-            linkedTextStartCanvas = cornerstone.pixelToCanvas(eventData.element, lesion.linkedTextCoords.start);
-
-            //Set end point of linkedTextCoords
-            lesion.linkedTextCoords.end.x = lesion.linkedTextCoords.start.x + 50;
-            lesion.linkedTextCoords.end.y = lesion.linkedTextCoords.start.y + 30;
-
-            //initialized coordinates of text
-            lesion.linkedTextCoords.init = true;
-        }
-
         //Draw linked line as dashed
+        var mid = {
+            x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
+            y: (handleStartCanvas.y + handleEndCanvas.y) / 2
+        };
         context.setLineDash([2, 3]);
         context.beginPath();
         context.strokeStyle = color;
         context.lineWidth = 1 / eventData.viewport.scale;
         var mid = {
-            x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-            y: (handleStartCanvas.y + handleEndCanvas.y) / 2
+            x: mid.x,
+            y: mid.y
         };
 
         context.moveTo(mid.x, mid.y);
-        context.lineTo(linkedTextStartCanvas.x + 20, linkedTextStartCanvas.y);
+        context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
         context.stroke();
 
 
         // Draw the text
         if (lesion.text && lesion.text !== '') {
             context.font = font;
-
-            var textCoords = {
-                x: linkedTextStartCanvas.x,
-                y: linkedTextStartCanvas.y
-            };
-
-            cornerstoneTools.drawTextBox(context, lesion.text, textCoords.x, textCoords.y, color);
+            var boundingBox = cornerstoneTools.drawTextBox(context, lesion.text, canvasTextLocation.x, canvasTextLocation.y, color);
+            lesion.handles.textBox.boundingBox = boundingBox;
         }
 
 
         context.restore();
 
     }
+    // ---- Touch tool ----
+
+    ///////// BEGIN ACTIVE TOOL ///////
+    function addNewMeasurementTouch(touchEventData) {
+        var element = touchEventData.element;
+
+        function doneChangingTextCallback(text) {
+            if (text !== null) {
+                measurementData.text = text;
+            } else {
+                cornerstoneTools.removeToolState(element, toolType, measurementData);
+            }
+
+            measurementData.active = false;
+            cornerstone.updateImage(element);
+        }
+
+        var measurementData = createNewMeasurement(touchEventData);
+        cornerstoneTools.addToolState(element, toolType, measurementData);
+        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
+        $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
+        $(element).off('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
+        cornerstone.updateImage(element);
+
+        cornerstoneTools.moveNewHandleTouch(touchEventData, measurementData.handles.end, function() {
+            cornerstone.updateImage(element);
+
+            if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
+                // delete the measurement
+                cornerstoneTools.removeToolState(element, toolType, measurementData);
+            }
+
+            var config = cornerstoneTools.nonTarget.getConfiguration();
+            if (measurementData.text === undefined) {
+                config.getTextCallback(doneChangingTextCallback);
+            }
+
+            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
+            $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
+            $(element).on('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
+        });
+    }
+
 
     function doubleClickCallback(e, eventData) {
         var element = eventData.element;
@@ -447,5 +480,15 @@
     });
 
     cornerstoneTools.nonTarget.setConfiguration(configuration);
+
+    cornerstoneTools.nonTargetTouch = cornerstoneTools.touchTool({
+        addNewMeasurement: addNewMeasurementTouch,
+        createNewMeasurement: createNewMeasurement,
+        onImageRendered: onImageRendered,
+        pointNearTool: pointNearTool,
+        toolType: toolType,
+        pressCallback: doubleClickCallback
+    });
+
 
 })($, cornerstone, cornerstoneMath, cornerstoneTools);
