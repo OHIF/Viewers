@@ -72,7 +72,7 @@
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
             }
 
-             config.getNonTargetLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+            config.getNonTargetLesionLocationCallback(measurementData, mouseEventData, doneCallback);
 
             $(mouseEventData.element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
             $(mouseEventData.element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
@@ -283,14 +283,10 @@
     function addNewMeasurementTouch(touchEventData) {
         var element = touchEventData.element;
 
-        function doneChangingTextCallback(text) {
-            if (text !== null) {
-                measurementData.text = text;
-            } else {
-                cornerstoneTools.removeToolState(element, toolType, measurementData);
-            }
-
-            measurementData.active = false;
+        function doneCallback(lesionNumber) {
+            measurementData.lesionName = "Non-Target "+lesionNumber;
+            measurementData.lesionNumber = lesionNumber;
+            measurementData.active = true;
             cornerstone.updateImage(element);
         }
 
@@ -299,6 +295,12 @@
         $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
         $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
         $(element).off('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
+        var config = cornerstoneTools.nonTarget.getConfiguration();
+
+        // Set lesion number and lesion name
+        if (measurementData.lesionName === undefined) {
+            config.setLesionNumberCallback(measurementData, touchEventData, doneCallback);
+        }
         cornerstone.updateImage(element);
 
         cornerstoneTools.moveNewHandleTouch(touchEventData, measurementData.handles.end, function() {
@@ -309,10 +311,8 @@
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             }
 
-            var config = cornerstoneTools.nonTarget.getConfiguration();
-            if (measurementData.text === undefined) {
-                config.getTextCallback(doneChangingTextCallback);
-            }
+            config.getNonTargetLesionLocationCallback(measurementData, touchEventData, doneCallback);
+
 
             $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
             $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
@@ -471,8 +471,8 @@
         createNewMeasurement: createNewMeasurement,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
-        toolType: toolType,
-        mouseDoubleClickCallback: doubleClickCallback
+        toolType: toolType
+        //mouseDoubleClickCallback: doubleClickCallback
     });
 
     cornerstoneTools.nonTarget.setConfiguration(configuration);
@@ -482,8 +482,8 @@
         createNewMeasurement: createNewMeasurement,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
-        toolType: toolType,
-        pressCallback: doubleClickCallback
+        toolType: toolType
+        // pressCallback: doubleClickCallback
     });
 
 

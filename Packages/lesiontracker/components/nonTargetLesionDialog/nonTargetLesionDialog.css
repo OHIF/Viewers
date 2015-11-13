@@ -5,8 +5,6 @@
     background: white;
     padding: 10px 20px 10px 20px;
     border-radius: 10px;
-
-
 }
 
 #selectNonTargetLesionLocation, #selectNonTargetLesionLocationResponse {
@@ -25,4 +23,10 @@
 
 .locationOK {
     text-align: center;
+}
+
+.btn{
+    background-color: #bbb;
+    border: 1px solid #888;
+    color: #000000;
 }

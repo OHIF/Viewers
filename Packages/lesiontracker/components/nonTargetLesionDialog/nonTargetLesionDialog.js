@@ -46,14 +46,14 @@ function getNonTargetLesionLocationCallback(measurementData, eventData, doneCall
         var locationName = measurementManagerDAL.getLocationName(locationUID);
         selectorLocation.find('option').each(function()
         {
-            if ($(this).text().trim() === locationName.trim()) {
+            if ($(this).text() === locationName) {
                 // Select location in locations dropdown list
-                selectorLocation.find('option').eq($(this).index()).attr("selected", "selected");
+                selectorLocation.find('option').eq($(this).index()).prop("selected", true);
                 return;
             }
         });
 
-        selectorLocation.attr("disabled", "disabled");
+        selectorLocation.prop("disabled", true);
     }
 
     // Enable selector location
@@ -159,9 +159,9 @@ LocationResponses = new Meteor.Collection(null);
 
 LocationResponses.insert(
     {
-    text: "Complete response",
-    code: "CR",
-    description: ""
+        text: "Complete response",
+        code: "CR",
+        description: ""
     }
 );
 LocationResponses.insert(
