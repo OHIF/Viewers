@@ -70,6 +70,45 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         });
     }
 
+    function addNewMeasurementTouch(touchEventData) {
+        var element = touchEventData.element;
+
+        function doneCallback(lesionNumber) {
+            measurementData.lesionName = "Target " + lesionNumber;
+            measurementData.lesionNumber = lesionNumber;
+            measurementData.active = false;
+            cornerstone.updateImage(element);
+        }
+
+        var measurementData = createNewMeasurement(touchEventData);
+
+        // associate this data with this imageId so we can render it and manipulate it
+        cornerstoneTools.addToolState(element, toolType, measurementData);
+
+        // since we are dragging to another place to drop the end point, we can just activate
+        // the end point and let the moveHandle move it for us.
+        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.lesion.touchMoveHandle);
+        $(element).off('CornerstoneToolsTap', cornerstoneTools.lesion.tapCallback);
+        $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.lesion.touchDownActivateCallback);
+
+        cornerstone.updateImage(element);
+        cornerstoneTools.moveNewHandleTouch(touchEventData, measurementData.handles.end, function() {
+            if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
+                // delete the measurement
+                cornerstoneTools.removeToolState(element, toolType, measurementData);
+            } else {
+                // Set lesionMeasurementData Session
+                var config = cornerstoneTools.lesion.getConfiguration();
+                config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
+            }
+
+            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.lesion.touchMoveHandle);
+            $(element).on('CornerstoneToolsTap', cornerstoneTools.lesion.tapCallback);
+            $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.lesion.touchDownActivateCallback);
+            cornerstone.updateImage(element);
+        });
+    }
+
     function createNewMeasurement(mouseEventData) {
         // Create the measurement data for this tool with the end handle activated
         var measurementData = {
@@ -356,7 +395,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     cornerstoneTools.lesionTouch = cornerstoneTools.touchTool({
         createNewMeasurement: createNewMeasurement,
-        //addNewMeasurement: addNewMeasurementTouch,
+        addNewMeasurement: addNewMeasurementTouch,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
         toolType: toolType

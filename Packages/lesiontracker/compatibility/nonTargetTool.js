@@ -292,7 +292,7 @@
 
         var measurementData = createNewMeasurement(touchEventData);
         cornerstoneTools.addToolState(element, toolType, measurementData);
-        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
+        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
         $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
         $(element).off('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
         var config = cornerstoneTools.nonTarget.getConfiguration();
@@ -314,7 +314,7 @@
             config.getNonTargetLesionLocationCallback(measurementData, touchEventData, doneCallback);
 
 
-            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveCallback);
+            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
             $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
             $(element).on('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
         });
