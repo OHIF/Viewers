@@ -1,5 +1,9 @@
 # Viewers
-This repo contains the OHIF DICOM Viewer and Lesion Trackers, and various shared meteor packages
+This repo contains the OHIF DICOM Viewer and Lesion Tracker, and various shared meteor packages
+
+### Demos
+[OHIF viewer](http://viewer.ohif.org/) - A prototype general-purpose radiology viewer with a variety of tools exposed.
+[Lesiontracker](http://lesiontracker.ohif.org/) - a prototype viewer focused on oncology metrics.
 
 Community
 ---------
