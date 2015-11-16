@@ -1,8 +1,22 @@
+/**
+ * Creates a URL for a WADO search
+ *
+ * @param server
+ * @param studyInstanceUid
+ * @returns {string}
+ */
 function buildUrl(server, studyInstanceUid) {
-    var url = server.wadoRoot + '/studies/' + studyInstanceUid + '/metadata';
-    return url;
+    return server.wadoRoot + '/studies/' + studyInstanceUid + '/metadata';
 }
 
+/**
+ * Parses the SourceImageSequence, if it exists, in order
+ * to return a ReferenceSOPInstanceUID. The ReferenceSOPInstanceUID
+ * is used to refer to this image in any accompanying DICOM-SR documents.
+ *
+ * @param instance
+ * @returns {String} The ReferenceSOPInstanceUID
+ */
 function getSourceImageInstanceUid(instance) {
     // TODO= Parse the whole Source Image Sequence
     // This is a really poor workaround for now.
@@ -13,6 +27,16 @@ function getSourceImageInstanceUid(instance) {
     }
 }
 
+/**
+ * Parses result data from a WADO search into Study MetaData
+ * Returns an object populated with study metadata, including the
+ * series list.
+ *
+ * @param server
+ * @param studyInstanceUid
+ * @param resultData
+ * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
+ */
 function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
     var seriesMap = {};
     var seriesList = [];
@@ -92,6 +116,12 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
     return studyData;
 }
 
+/**
+ * Retrieved Study MetaData from a DICOM server using a WADO call
+ * @param server
+ * @param studyInstanceUid
+ * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
+ */
 Services.WADO.RetrieveMetadata = function(server, studyInstanceUid) {
     var url = buildUrl(server, studyInstanceUid);
 

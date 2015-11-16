@@ -8,10 +8,11 @@
 encodeQueryData = function(data)
 {
   var ret = [];
+
   for (var d in data) {
-    if(data[d]) {
-      ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
-    }
+      if(data[d]) {
+         ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+      }
   }
   return ret.join("&");
 };

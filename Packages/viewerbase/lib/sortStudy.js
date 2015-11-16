@@ -1,3 +1,9 @@
+/**
+ * Sorts the series and instances inside a study instance by their series
+ * and instance numbers in ascending order.
+ *
+ * @param {Object} study The study instance
+ */
 sortStudy = function(study) {
     if (!study) {
         return;

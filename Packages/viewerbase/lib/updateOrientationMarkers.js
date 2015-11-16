@@ -1,5 +1,13 @@
-updateOrientationMarkers = function(element, viewport) {
-    // Updates the orientation labels on the viewport
+/**
+ * Updates the orientation labels on a Cornerstone-enabled Viewport element
+ * when the viewport settings change (e.g. when a horizontal flip or a rotation occurs)
+ *
+ * @param element The DOM element of the Cornerstone viewport
+ */
+updateOrientationMarkers = function(element) {
+    // Get the current viewport settings
+    var viewport = cornerstone.getViewport(element);
+
     var enabledElement = cornerstone.getEnabledElement(element);
     var imagePlane = cornerstoneTools.metaData.get('imagePlane', enabledElement.image.imageId);
     
@@ -14,7 +22,7 @@ updateOrientationMarkers = function(element, viewport) {
 
     var markers = {
         top: oppositeColumnString,
-        left: oppositeRowString,
+        left: oppositeRowString
     };
 
     // If any vertical or horizontal flips are applied, change the orientation strings ahead of

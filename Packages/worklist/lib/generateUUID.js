@@ -1,4 +1,7 @@
-//Generate UUID to create unique tabs
+/**
+ *
+ * @returns {string}
+ */
 generateUUID = function() {
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx'.replace(/[xy]/g, function(c) {

@@ -1,5 +1,5 @@
 /**
- * This function destroys and rerenders the imageViewerViewport template.
+ * This function destroys and re-renders the imageViewerViewport template.
  * It uses the data provided (object containing seriesIndex and studyIndex) to
  * load a new series into the produced viewport.
  *
@@ -7,8 +7,12 @@
  * @param data An object containing a seriesIndex and studyIndex for a study to load into this viewport
  */
 rerenderViewportWithNewSeries = function(element, data) {
+    // Get the container and index of the current viewport.
+    // The parent container is identified because it is later removed from the DOM
     var container = $(element).parents('.viewportContainer').get(0);
     var viewportIndex = $(container).index();
+
+    // Record the current viewportIndex so this can be passed into the re-rendering call
     data.viewportIndex = viewportIndex;
 
     // Update the dictionary of loaded series for the specified viewport

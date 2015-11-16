@@ -95,33 +95,24 @@ Package.onUse(function (api) {
     api.addFiles('lib/accountsConfig.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
     api.addFiles('lib/encodeQueryData.js', ['client', 'server']);
-    api.addFiles('lib/findIndexOfString.js', 'client');
-    api.addFiles('lib/getActiveViewportElement.js', 'client');
     api.addFiles('lib/getImageId.js', 'client');
     api.addFiles('lib/getWADORSImageId.js', 'client');
     api.addFiles('lib/isTouchDevice.js', 'client');
     api.addFiles('lib/metaDataProvider.js', 'client');
     api.addFiles('lib/rerenderViewportWithNewSeries.js', 'client');
     api.addFiles('lib/sortStudy.js', 'client');
-    api.addFiles('lib/stringToUint8Array.js', 'client');
     api.addFiles('lib/toolManager.js', 'client');
-    api.addFiles('lib/uint8ArrayToString.js', 'client');
-    api.addFiles('lib/updateOrientationMarkers.js', 'client');
 
     //api.export('accountsConfig', 'client');
     api.export('createStacks', 'client');
     api.export('encodeQueryData', ['client', 'server']);
-    api.export('findIndexOfString', 'client');
-    api.export('getActiveViewportElement', 'client');
     api.export('getImageId', 'client');
     api.export('getWADORSImageId', 'client');
     api.export('isTouchDevice', 'client');
     api.export('metaDataProvider', 'client');
     api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
-    api.export('stringToUint8Array', 'client');
     api.export('toolManager', 'client');
-    api.export('uint8ArrayToString', 'client');
     api.export('updateOrientationMarkers', 'client');
 
     // UI Helpers

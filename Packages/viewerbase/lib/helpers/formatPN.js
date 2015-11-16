@@ -1,7 +1,9 @@
-UI.registerHelper('formatPN', function (context, format, options) {
+/**
+ * A global Blaze UI helper to format a patient name for display purposes
+ */
+UI.registerHelper('formatPN', function (context) {
     if (!context) {
         return undefined;
     }
-    var patientName = context.replace('^', ', ');
-    return patientName;
+    return context.replace('^', ', ');
 });

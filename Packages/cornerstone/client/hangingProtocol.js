@@ -1,5 +1,16 @@
 var hangingProtocol;
 
+/**
+ * This is an example of a hanging protocol
+ * It takes in a set of studies, as well as the
+ * number of rows and columns in the layout.
+ *
+ * It returns an array of objects, one for each viewport, detailing
+ * which series should be loaded in the viewport.
+ *
+ * @param inputData
+ * @returns {Array}
+ */
 function defaultHangingProtocol(inputData) {
     var studies = inputData.studies;
     var viewportRows = inputData.viewportRows;

@@ -1,3 +1,9 @@
+/**
+ * Obtain an imageId for Cornerstone from an image instance
+ *
+ * @param instance
+ * @returns {string} The imageId to be used by Cornerstone
+ */
 getImageId = function(instance) {
     if (!instance) {
         return;

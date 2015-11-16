@@ -1,3 +1,10 @@
+/**
+ * Obtain an imageId for Cornerstone based on the WADO-RS scheme
+ *
+ * @param instance
+ * @returns {string} The imageId to be used by Cornerstone
+ */
+
 getWADORSImageId = function(instance) {
     var columnPixelSpacing = 1.0;
     var rowPixelSpacing = 1.0;

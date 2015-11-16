@@ -1,4 +1,3 @@
-tabs = new Meteor.Collection(null);
 Session.setDefault('ViewerData', {});
 
 // Re-add any tab data saved in the Session
@@ -8,7 +7,7 @@ Object.keys(ViewerData).forEach(function(contentId) {
         title: tabData.title,
         contentid: tabData.contentid,
     };
-    tabs.insert(data);
+    WorklistTabs.insert(data);
 });
 
 Router.configure({
@@ -34,7 +33,7 @@ Router.route('/viewer/:_id', {
         
         // Check if this study is already loaded in a tab
         // If it is, stop here so we don't keep adding tabs on hot-code reloads
-        var tab = tabs.find({'studyInstanceUid' : studyInstanceUid}).fetch();
+        var tab = WorklistTabs.find({'studyInstanceUid' : studyInstanceUid}).fetch();
         if (tab) {
             return;
         }

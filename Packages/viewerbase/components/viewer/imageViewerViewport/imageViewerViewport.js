@@ -190,9 +190,11 @@ function loadSeriesIntoViewport(data) {
         // Add stack state managers for the stack tool, CINE tool, and reference lines
         cornerstoneTools.addStackStateManager(element, [ 'stack', 'playClip', 'referenceLines' ]);
 
-        // Enable orientation markers, if applicable
+        // Get the current viewport settings
         var viewport = cornerstone.getViewport(element);
-        updateOrientationMarkers(element, viewport);
+
+        // Enable orientation markers, if applicable
+        updateOrientationMarkers(element);
 
         // Clear any old stack data
         cornerstoneTools.clearToolState(element, 'stack');

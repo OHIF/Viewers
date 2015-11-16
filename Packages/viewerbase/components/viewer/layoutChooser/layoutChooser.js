@@ -1,3 +1,10 @@
+/**
+ * Adds the 'hover' class to cells above and to the left of the current cell
+ * This is used to "fill in" the grid that the user will change the layout to,
+ * if they click on a specific table cell.
+ *
+ * @param currentCell
+ */
 function highlightCells(currentCell) {
     var cells = $('.layoutChooser table td');
     cells.removeClass('hover');

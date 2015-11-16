@@ -1,5 +1,17 @@
 var metaDataLookup = {};
 
+/**
+ * Cornerstone MetaData provider to store image meta data
+ * Data from instances, series, and studies are associated with
+ * imageIds to facilitate usage of this information by Cornerstone's Tools
+ *
+ * e.g. the imagePlane metaData object contains instance information about
+ * row/column pixel spacing, patient position, and patient orientation. It
+ * is used in CornerstoneTools to position reference lines and orientation markers.
+ *
+ * @param {String} imageId The Cornerstone ImageId
+ * @param {Object} data An object containing instance, series, and study metaData
+ */
 addMetaData = function(imageId, data) {
     var instanceMetaData = data.instance;
     var seriesMetaData = data.series;
@@ -72,6 +84,15 @@ addMetaData = function(imageId, data) {
     metaDataLookup[imageId] = metaData;
 };
 
+/**
+ * Looks up metaData for Cornerstone Tools given a specified type and imageId
+ * A type may be, e.g. 'study', or 'patient', or 'imagePlane'. These types
+ * are keys in the stored metaData objects.
+ *
+ * @param type
+ * @param imageId
+ * @returns {Object} Relevant metaData of the specified type
+ */
 function provider(type, imageId) {
     var imageMetaData = metaDataLookup[imageId];
     if (!imageMetaData) {

@@ -1,0 +1,37 @@
+// Run with jsdoc . -r -c conf.json -d docs
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc"]
+    },
+    "source": {
+        "include": ["Packages", "OHIFViewer", "LesionTracker"],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_",
+        "exclude": ["Packages/cornerstone/", "node_modules", "docs", "etc"]
+    },
+    "plugins": ["plugins/markdown"],
+    "templates": {
+        "logoFile": "",
+        "cleverLinks": false,
+        "monospaceLinks": false,
+        "dateFormat": "ddd MMM Do YYYY",
+        "outputSourceFiles": false,
+        "outputSourcePath": false,
+        "systemName": "OHIF Meteor Packages",
+        "footer": "OHIF",
+        "copyright": "Copyright © 2015 Open Health Imaging Foundation",
+        "navType": "vertical",
+        "theme": "flatly",
+        "linenums": true,
+        "collapseSymbols": false,
+        "inverseNav": true,
+        "highlightTutorialCode": true,
+        "protocol": "html://",
+        "methodHeadingReturns": false
+    },
+    "markdown": {
+        "parser": "gfm",
+        "hardwrap": true
+    }
+}
