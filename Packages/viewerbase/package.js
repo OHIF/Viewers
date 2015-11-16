@@ -32,6 +32,9 @@ Package.onUse(function (api) {
     api.addFiles('components/basic/loadingText/loadingText.html', 'client');
     api.addFiles('components/basic/loadingText/loadingText.styl', 'client');
 
+    api.addFiles('components/basic/removableBackdrop/removableBackdrop.html', 'client');
+    api.addFiles('components/basic/removableBackdrop/removableBackdrop.styl', 'client');
+
     api.addFiles('components/basic/hidingPanel/hidingPanel.html', 'client');
     api.addFiles('components/basic/hidingPanel/hidingPanel.js', 'client');
     api.addFiles('components/basic/hidingPanel/hidingPanel.styl', 'client');
