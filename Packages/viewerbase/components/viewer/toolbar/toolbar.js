@@ -9,6 +9,27 @@ function getDefaultButtonData() {
     });
 
     buttonData.push({
+        id: 'wwwcRegion',
+        title: 'Window by Region',
+        classes: 'imageViewerTool',
+        iconClasses: 'fa fa-square'
+    });
+
+    buttonData.push({
+        id: 'magnify',
+        title: 'Magnify',
+        classes: 'imageViewerTool',
+        iconClasses: 'fa fa-circle'
+    });
+
+    buttonData.push({
+        id: 'annotate',
+        title: 'Annotation',
+        classes: 'imageViewerTool',
+        iconClasses: 'fa fa-arrows-h'
+    });
+
+    buttonData.push({
         id: 'invert',
         title: 'Invert',
         classes: 'imageViewerCommand',
@@ -70,6 +91,20 @@ function getDefaultButtonData() {
         classes: 'imageViewerTool',
         iconClasses: 'fa fa-square-o'
     });
+
+    buttonData.push({
+        id: 'resetViewport',
+        title: 'Reset Viewport',
+        classes: 'imageViewerCommand',
+        iconClasses: 'fa fa-undo'
+    });
+
+    buttonData.push({
+        id: 'clearTools',
+        title: 'Clear tools',
+        classes: 'imageViewerCommand',
+        iconClasses: 'fa fa-trash'
+    });
     return buttonData;
 }
 
@@ -84,8 +119,8 @@ Template.toolbar.events({
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
-        var viewportIndex = Template.parentData(0).activeViewport.get();
-        var element = $('.imageViewerViewport').get(viewportIndex);
+        var activeViewport = Session.get('activeViewport');
+        var element = $('.imageViewerViewport').get(activeViewport);
         OHIF.viewer.functionList[command](element);
     }
 });

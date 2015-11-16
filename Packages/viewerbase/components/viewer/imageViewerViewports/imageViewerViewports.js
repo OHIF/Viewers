@@ -1,49 +1,55 @@
+Template.imageViewerViewports.onRendered(function() {
+    this.autorun(function() {
+        var studies = Session.get('studies');
+        var eventType = "ViewerBaseStudyLoaded";
+        var eventData = {
+            studies: studies
+        };
+        $(document).trigger(eventType, eventData);
+    });
+});
+
 Template.imageViewerViewports.helpers({
     height: function() {
-        var viewportRows;
-        if (!Template.parentData(1).viewportRows) {
-            viewportRows = 1;
-        } else {
-            viewportRows = Template.parentData(1).viewportRows.curValue; //Having issues with .get(), not sure why?
-        }
+        var viewportRows = this.viewportRows || 1;
         return 100 / viewportRows;
     },
     width: function() {
-        var viewportColumns;
-        if (!Template.parentData(1).viewportColumns) {
-            viewportColumns = 1;
-        } else {
-            viewportColumns = Template.parentData(1).viewportColumns.curValue;  //Having issues with .get(), not sure why?
-        }
+        var viewportColumns = this.viewportColumns || 1;
         return 100 / viewportColumns;
     },
     viewportArray: function() {
-        // This is a really annoying thing to have to do, but Meteor
-        // doesn't want to let me use another type of helper.
-        var viewportRows;
-        if (!this.viewportRows) {
-            viewportRows = 1;
-        } else {
-            viewportRows = this.viewportRows.curValue; //Having issues with .get(), not sure why?
+        log.info("imageViewerViewports viewportArray");
+
+        var studies = Session.get('studies');
+
+        var viewportRows = this.viewportRows || 1;
+        var viewportColumns = this.viewportColumns || 1;
+
+        var contentId = this.contentId || $("#viewer").parents(".tab-pane.active").attr('id');
+        if (this.viewportRows && this.viewportColumns) {
+            viewportRows = this.viewportRows || 1;
+            viewportColumns = this.viewportColumns || 1;
+        } else if (ViewerData[contentId].viewportRows && ViewerData[contentId].viewportColumns) {
+            viewportRows = ViewerData[contentId].viewportRows;
+            viewportColumns = ViewerData[contentId].viewportColumns;
         }
 
-        var viewportColumns;
-        if (!this.viewportColumns) {
-            viewportColumns = 1;
-        } else {
-            viewportColumns = this.viewportColumns.curValue; //Having issues with .get(), not sure why?
-        }
-        
+        // Update viewerData
+        ViewerData[contentId].viewportRows = viewportRows;
+        ViewerData[contentId].viewportColumns = viewportColumns;
+        Session.set("ViewerData", ViewerData);
+
         var viewportData;
-        if (OHIF && OHIF.viewer && !$.isEmptyObject(OHIF.viewer.imageViewerLoadedSeriesDictionary)) {
-            viewportData = OHIF.viewer.imageViewerLoadedSeriesDictionary;
+        if (!$.isEmptyObject(ViewerData[contentId].loadedSeriesData)) {
+            viewportData = ViewerData[contentId].loadedSeriesData;
         }
 
         var hangingProtocol = getHangingProtocol();
         var inputData = {
             viewportColumns: viewportColumns,
             viewportRows: viewportRows,
-            studies: this.studies
+            studies: studies
         };
         var hangingProtocolViewportData = hangingProtocol(inputData);
         
@@ -52,8 +58,10 @@ Template.imageViewerViewports.helpers({
         for (var i=0; i < numViewports; ++i) {
             var data = {
                 viewportIndex: i,
-                studies: this.studies,
-                activeViewport: this.activeViewport
+                // These two are necessary because otherwise the width and height helpers
+                // don't get the right data context. Seems to be related to the "each" loop.
+                viewportColumns: viewportColumns,
+                viewportRows: viewportRows
             };
             if (viewportData && viewportData[i]) {
                 data.seriesInstanceUid = viewportData[i].seriesInstanceUid;
@@ -70,4 +78,75 @@ Template.imageViewerViewports.helpers({
         }
         return array;
     },
+});
+
+var savedSeriesData,
+    savedViewportRows,
+    savedViewportColumns;
+
+Template.imageViewerViewports.events({
+    'dblclick .imageViewerViewport': function(e) {
+        var container = $(".viewerMain").get(0);
+        var data;
+        var contentId = this.contentId || $("#viewer").parents(".tab-pane.active").attr('id');
+
+        // If there is more than one viewport on screen
+        // And one of them is double-clicked, it should be rendered alone
+        // If it is double-clicked again, the viewer should revert to the previous layout
+        if ($(e.currentTarget).hasClass('zoomed')) {
+            // Revert to saved settings
+            ViewerData[contentId].loadedSeriesData = $.extend(true, {}, savedSeriesData);
+            ViewerData[contentId].viewportRows = savedViewportRows;
+            ViewerData[contentId].viewportColumns = savedViewportColumns;
+
+            savedViewportRows = 0;
+            savedViewportColumns = 0;
+
+            data = {
+                viewportRows: ViewerData[contentId].viewportRows,
+                viewportColumns: ViewerData[contentId].viewportColumns,
+            };
+
+            // Render the imageViewerViewports template with these settings
+            $('#imageViewerViewports').remove();
+            UI.renderWithData(Template.imageViewerViewports, data, container);
+
+            // Remove the 'zoomed' class from any viewports
+            $('.imageViewerViewport').removeClass('zoomed');
+        } else {
+            // Zoom to single viewport
+
+            // If only one viewport is on-screen, stop here
+            if (ViewerData[contentId].viewportRows === 1 &&
+                ViewerData[contentId].viewportColumns === 1) {
+                return;
+            }
+
+            // Save the current settings
+            savedSeriesData = $.extend(true, {}, ViewerData[contentId].loadedSeriesData);
+            savedViewportRows = ViewerData[contentId].viewportRows;
+            savedViewportColumns = ViewerData[contentId].viewportColumns;
+            
+            // Get the clicked-on viewport's index
+            var viewportIndex = this.viewportIndex;
+
+            // Set the first viewport's data to be the same as the currently clicked-on viewport
+            ViewerData[contentId].loadedSeriesData[0] = ViewerData[contentId].loadedSeriesData[viewportIndex];
+
+            // Set the basic template data
+            data = {
+                viewportRows: 1,
+                viewportColumns: 1,
+            };
+
+            // Render the imageViewerViewports template with these settings
+            $('#imageViewerViewports').remove();
+            UI.renderWithData(Template.imageViewerViewports, data, container);
+
+            // Add the 'zoomed' class to the lone remaining viewport
+            $('.imageViewerViewport').eq(0).addClass('zoomed');
+
+        }
+        log.info('dblclick');
+    }
 });

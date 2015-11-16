@@ -1,0 +1,32 @@
+#nonTargetLesionLocationDialog {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    background: white;
+    padding: 10px 20px 10px 20px;
+    border-radius: 10px;
+}
+
+#selectNonTargetLesionLocation, #selectNonTargetLesionLocationResponse {
+    width: 100%;
+}
+
+.dialogContent, .lesionLocation, .locationResponse {
+    margin-bottom: 20px;
+}
+
+.elementContainer {
+    width: 100%;
+    margin: 0 auto;
+    float: none;
+}
+
+.locationOK {
+    text-align: center;
+}
+
+.btn{
+    background-color: #bbb;
+    border: 1px solid #888;
+    color: #000000;
+}

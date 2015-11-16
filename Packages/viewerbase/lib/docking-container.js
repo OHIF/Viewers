@@ -1,6 +1,4 @@
 (function($) {
-
-
     //Collapse the container
     function collapseContainer ( container ) {
         container.toggleClass("collapseHorizontal");

@@ -1,7 +1,7 @@
 <template name="worklistStudy">
-    <tr class="worklistStudy">
+    <tr class="worklistStudy noselect">
         <td>
-            {{patientName}}
+            {{formatPN patientName}}
         </td>
         <td>
             {{patientId}}
@@ -10,7 +10,7 @@
             {{accessionNumber}}
         </td>
         <td>
-            {{studyDate}}
+            {{formatDA studyDate}}
         </td>
         <td>
             {{modalities}}

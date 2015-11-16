@@ -10,9 +10,16 @@ Package.onUse(function (api) {
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
+    api.use('accounts-password');
+    api.use('ian:accounts-ui-bootstrap-3');
+    api.use('http');
+    api.use('practicalmeteor:loglevel');
+    api.use('momentjs:moment');
 
     // Our custom package
     api.use('cornerstone');
+
+    api.addFiles('log.js', ['client', 'server']);
 
     // ---------- Components ----------
 
@@ -22,7 +29,14 @@ Package.onUse(function (api) {
     api.addFiles('components/basic/login/login.html', 'client');
     api.addFiles('components/basic/notFound/notFound.html', 'client');
 
+    api.addFiles('components/basic/loadingText/loadingText.html', 'client');
+    api.addFiles('components/basic/loadingText/loadingText.styl', 'client');
+
+    api.addFiles('components/basic/removableBackdrop/removableBackdrop.html', 'client');
+    api.addFiles('components/basic/removableBackdrop/removableBackdrop.styl', 'client');
+
     api.addFiles('components/basic/hidingPanel/hidingPanel.html', 'client');
+    api.addFiles('components/basic/hidingPanel/hidingPanel.js', 'client');
     api.addFiles('components/basic/hidingPanel/hidingPanel.styl', 'client');
 
     // Study Browser components
@@ -81,33 +95,24 @@ Package.onUse(function (api) {
     api.addFiles('lib/accountsConfig.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
     api.addFiles('lib/encodeQueryData.js', ['client', 'server']);
-    api.addFiles('lib/findIndexOfString.js', 'client');
-    api.addFiles('lib/getActiveViewportElement.js', 'client');
     api.addFiles('lib/getImageId.js', 'client');
     api.addFiles('lib/getWADORSImageId.js', 'client');
     api.addFiles('lib/isTouchDevice.js', 'client');
     api.addFiles('lib/metaDataProvider.js', 'client');
     api.addFiles('lib/rerenderViewportWithNewSeries.js', 'client');
     api.addFiles('lib/sortStudy.js', 'client');
-    api.addFiles('lib/stringToUint8Array.js', 'client');
     api.addFiles('lib/toolManager.js', 'client');
-    api.addFiles('lib/uint8ArrayToString.js', 'client');
-    api.addFiles('lib/updateOrientationMarkers.js', 'client');
 
     //api.export('accountsConfig', 'client');
     api.export('createStacks', 'client');
     api.export('encodeQueryData', ['client', 'server']);
-    api.export('findIndexOfString', 'client');
-    api.export('getActiveViewportElement', 'client');
     api.export('getImageId', 'client');
     api.export('getWADORSImageId', 'client');
     api.export('isTouchDevice', 'client');
     api.export('metaDataProvider', 'client');
     api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
-    api.export('stringToUint8Array', 'client');
     api.export('toolManager', 'client');
-    api.export('uint8ArrayToString', 'client');
     api.export('updateOrientationMarkers', 'client');
 
     // UI Helpers

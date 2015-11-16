@@ -26,13 +26,8 @@ function thumbnailDragStartHandler(e, data) {
     var imageThumbnail = $(targetThumbnail);
     
     // Store this data for use during drag and drop
-    OHIF.viewer.dragAndDropData = {
-        studyInstanceUid: imageThumbnail.data('studyInstanceUid'),
-        seriesInstanceUid: imageThumbnail.data('seriesInstanceUid')
-    };
+    OHIF.viewer.dragAndDropData = data;
 
-    $.extend(OHIF.viewer.dragAndDropData, data);
-    
     // Clone the image thumbnail
     var targetId = targetThumbnail.id + 'DragClone';
     var clone = cloneElement(targetThumbnail, targetId);
@@ -204,6 +199,8 @@ Template.thumbnailEntry.events({
     // Touch drag/drop events
     'touchstart .thumbnailEntry, mousedown .thumbnailEntry': function(e) {
         var data = Template.parentData(2);
+        data.studyInstanceUid = this.stack.studyInstanceUid;
+        data.seriesInstanceUid = this.stack.seriesInstanceUid;
         thumbnailDragStartHandler(e, data);
     },
     'touchmove .thumbnailEntry': function(e) {
@@ -216,9 +213,6 @@ Template.thumbnailEntry.events({
 
 Template.thumbnailEntry.helpers({
   seriesDescription : function() {
-    if (!this.seriesDescription) {
-        return '';
-    }
-    return this.seriesDescription;
+    return this.stack.seriesDescription || '';
   }
 });

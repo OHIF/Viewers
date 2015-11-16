@@ -1,10 +1,11 @@
 <template name="worklistResult">
-    <table id="tblStudyList" class="table table-striped">
+    {{ #if studies.count }}
+    <table id="tblStudyList" class="table table-striped noselect">
         <thead>
         <tr>
             <th>Patient Name</th>
             <th>Patient ID</th>
-            <th>Accession#</th>
+            <th>Accession #</th>
             <th>Study Date</th>
             <th>Modality</th>
             <th>Study Description</th>
@@ -13,8 +14,11 @@
         </thead>
         <tbody id="studyListData">
         {{#each studies}}
-            {{> worklistStudy }}
+            {{ >worklistStudy }}
         {{/each}}
         </tbody>
     </table>
+    {{ else }}
+        {{ >loadingText }}
+    {{ /if }}
 </template>

@@ -1,20 +1,9 @@
-UI.registerHelper('formatDA', function (context, format, options) {
+/**
+ * A global Blaze UI helper to format a patient name for display purposes
+ */
+UI.registerHelper('formatPN', function (context) {
     if (!context) {
         return undefined;
     }
-    var pn = context;
-    var str = '';
-    if(pn.prefix) {
-        str = pn.prefix + ' ';
-    }
-    str +=  (pn.familyName || '') + ', ';
-    str +=  (pn.givenName || '');
-    if(pn.middleName) {
-        str += ' ' + pn.middleName;
-    }
-    if(pn.suffix) {
-        str += ' ' + pn.suffix;
-    }
-
-    return str;
+    return context.replace('^', ', ');
 });

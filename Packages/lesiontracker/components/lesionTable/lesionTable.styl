@@ -1,44 +1,76 @@
 #lesionTableContainer
-  width: 100%
-  height: 25%
+    width: 100%
+    height: 16%
+    
+    .lesionTable
 
-table.lesionTable
-    thead
-        th
-            background-color: #424242
-            font-style: italic
+      td, th
+        border: 1px solid white
+        border-collapse: collapse
+
+      td.lesionNumber, th#thNumber
+        width: 70px
+      
+      td.location, th#thLocation
+        width: 250px
+      
+      td.target, th#thTarget
+        width: 70px
+        
+      td.lesionTableTimepointCell
+        width: 70px
+
+      thead
+        width: 100%
+        display: block
+        
+        tr
+          width: 100%
+            
+          th
+            border-bottom-width: 0
+            font-weight: normal
             color:white
+            line-height: 15px
             text-align: center
-            height: 15px
-            width: 20px
+            margin: 0
+            padding: 5px
+            background-color: #424242
+            width: 70px
 
-table.lesionTable > thead > tr > th {
-    padding: 4px;
-    margin: 0;
-    height: 25px;
-    line-height: 15px;
-}
+            #thTarget 
+                width: 1%
 
-table.lesionTable > tbody > tr > td {
-    padding: 4px;
-    margin: 0;
-    height: 25px;
-    line-height: 15px;
-}
+            #thLocation 
+                text-align: left
+                width: 15%
 
-table.lesionTable tbody tr:hover{
-    background-color: #d1d1d1;
-}
+            #thSpacer 
+                width: 61%
+          
+      tbody
+        display: block
+        height: 150px // Seems like this has to be fixed for overflow to work properly!
+        overflow: auto
+        width: 100%
 
-table.lesionTable tbody tr{
-    background-color: #b3b3b3;
-    color: #424242;
-    line-height: 14px;
-}
+        tr.lesionTableRow
+          width: 100%
 
+          &:nth-child(even)
+              background: #888
+          &:nth-child(odd)
+              background: #BBB
+          &:hover
+              cursor: pointer
+              background-color: #009BD2
+              color: white
 
-.btnRemove{
-    border: none;
-    outline:none;
-    background-color: transparent;
-}
+            td
+                border-bottom-width: 0
+                margin: 0
+                padding: 5px
+                line-height: 15px
+
+                &.lesionNumber,  &.target, &.lesionTableTimepointCell
+                    text-align: center

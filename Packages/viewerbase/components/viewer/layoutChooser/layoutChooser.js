@@ -1,3 +1,10 @@
+/**
+ * Adds the 'hover' class to cells above and to the left of the current cell
+ * This is used to "fill in" the grid that the user will change the layout to,
+ * if they click on a specific table cell.
+ *
+ * @param currentCell
+ */
 function highlightCells(currentCell) {
     var cells = $('.layoutChooser table td');
     cells.removeClass('hover');
@@ -27,31 +34,18 @@ Template.layoutChooser.events({
     },
     'click .layoutChooser table td': function(evt) {
         $('#imageViewerViewports').remove();
-        var container = $(".viewerMain").get(0);
 
         var currentCell = $(evt.currentTarget);
         var rowIndex = currentCell.closest('tr').index();
         var columnIndex = currentCell.index();
 
-        var data = {};
-
         // Add 1 because the indices start from zero
-        if (this.viewportRows) {
-            this.viewportRows.curValue = rowIndex + 1;
-            data.viewportRows = this.viewportRows;
-        } else {
-            data.viewportRows = 1;
-        }
-
-        if (this.viewportColumns) {
-            this.viewportColumns.curValue = columnIndex + 1;
-            data.viewportColumns = this.viewportColumns;
-        } else {
-            data.viewportColumns = 1;
-        }
-
-        data.studies = Template.parentData(2).studies;
-        data.activeViewport = Template.parentData(2).activeViewport;
+        var data = {
+            viewportRows: rowIndex + 1,
+            viewportColumns: columnIndex + 1,
+        };
+        
+        var container = $(".viewerMain").get(0);
         UI.renderWithData(Template.imageViewerViewports, data, container);
     }
 });

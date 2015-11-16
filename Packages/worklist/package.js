@@ -10,6 +10,17 @@ Package.onUse(function (api) {
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
+    api.use('http');
+
+    api.use('practicalmeteor:loglevel');
+
+    // Our custom packages
+    api.use('dicomweb');
+
+    // This sets the default logging level of the package using the
+    // loglevel package. It can be overridden in the JavaScript
+    // console for debugging purposes
+    api.addFiles('log.js', 'client');
 
     // Components
     api.addFiles('components/worklist.html', 'client');
@@ -21,6 +32,7 @@ Package.onUse(function (api) {
     api.addFiles('components/tabTitle/tabTitle.styl', 'client');
 
     api.addFiles('components/tabContent/tabContent.html', 'client');
+    api.addFiles('components/tabContent/tabContent.styl', 'client');
 
     api.addFiles('components/worklistStudy/worklistStudy.html', 'client');
     api.addFiles('components/worklistStudy/worklistStudy.js', 'client');
@@ -37,8 +49,15 @@ Package.onUse(function (api) {
     api.addFiles('lib/generateUUID.js', 'client');
     api.export('generateUUID', 'client');
 
+    // Export Worklist helper functions for usage in Routes
+    api.export('getStudyMetadata', 'client');
+    api.export('openNewTab', 'client');
     api.export('switchToTab', 'client');
-    
+
+    // Export the global ViewerData object
     api.export('ViewerData', 'client');
+
+    // Export the WorklistTabs Collection
+    api.export('WorklistTabs', 'client');
 });
 

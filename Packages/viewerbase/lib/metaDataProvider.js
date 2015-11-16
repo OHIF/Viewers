@@ -1,5 +1,17 @@
 var metaDataLookup = {};
 
+/**
+ * Cornerstone MetaData provider to store image meta data
+ * Data from instances, series, and studies are associated with
+ * imageIds to facilitate usage of this information by Cornerstone's Tools
+ *
+ * e.g. the imagePlane metaData object contains instance information about
+ * row/column pixel spacing, patient position, and patient orientation. It
+ * is used in CornerstoneTools to position reference lines and orientation markers.
+ *
+ * @param {String} imageId The Cornerstone ImageId
+ * @param {Object} data An object containing instance, series, and study metaData
+ */
 addMetaData = function(imageId, data) {
     var instanceMetaData = data.instance;
     var seriesMetaData = data.series;
@@ -10,27 +22,33 @@ addMetaData = function(imageId, data) {
     var metaData = {};
 
     metaData.study = {
-        date: instanceMetaData.studyDate,
-        time: instanceMetaData.studyTime,
-        description: instanceMetaData.studyDescription
+        instanceUid: studyMetaData.studyInstanceUid,
+        date: studyMetaData.studyDate,
+        time: studyMetaData.studyTime,
+        description: studyMetaData.studyDescription
     };
 
     metaData.series = {
         description: seriesMetaData.seriesDescription,
         number: seriesMetaData.seriesNumber,
         modality: seriesMetaData.modality,
-        instanceUid: seriesMetaData.instanceUid,
+        instanceUid: seriesMetaData.seriesInstanceUid,
         numImages: numImages
     };
 
     metaData.instance = {
+        wadouri: instanceMetaData.wadouri,
+        imageType: instanceMetaData.imageType,
+        photometricInterpretation: instanceMetaData.photometricInterpretation,
+        sopInstanceUid: instanceMetaData.sopInstanceUid,
+        sopClassUid: instanceMetaData.sopClassUid,
         number: instanceMetaData.instanceNumber,
         index: imageIndex
     };
 
     metaData.patient = {
-        name: instanceMetaData.patientName,
-        id: instanceMetaData.patientId
+        name: studyMetaData.patientName,
+        id: studyMetaData.patientId
     };
 
     // If there is sufficient information, populate
@@ -66,6 +84,15 @@ addMetaData = function(imageId, data) {
     metaDataLookup[imageId] = metaData;
 };
 
+/**
+ * Looks up metaData for Cornerstone Tools given a specified type and imageId
+ * A type may be, e.g. 'study', or 'patient', or 'imagePlane'. These types
+ * are keys in the stored metaData objects.
+ *
+ * @param type
+ * @param imageId
+ * @returns {Object} Relevant metaData of the specified type
+ */
 function provider(type, imageId) {
     var imageMetaData = metaDataLookup[imageId];
     if (!imageMetaData) {

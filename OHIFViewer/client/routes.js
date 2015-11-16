@@ -1,24 +1,25 @@
-Router.configure({
-    layoutTemplate: 'layout',
-    //loadingTemplate: '',
-    notFoundTemplate: 'notFound'
-});
-
-Router.route('/', function () {
-    this.render('worklist', {});
-});
-
-tabs = new Meteor.Collection(null);
 Session.setDefault('ViewerData', {});
-Session.setDefault('ViewerDataUpdated', Random.id());
 
+// Re-add any tab data saved in the Session
 Object.keys(ViewerData).forEach(function(contentId) {
     var tabData = ViewerData[contentId];
     var data = {
         title: tabData.title,
-        contentid: tabData.contentId,
+        contentid: tabData.contentid,
     };
-    tabs.insert(data);
+    WorklistTabs.insert(data);
+});
+
+Router.configure({
+    layoutTemplate: 'layout',
+    loadingTemplate: 'layout',
+    notFoundTemplate: 'notFound'
+});
+
+Router.onBeforeAction('loading');
+
+Router.route('/', function () {
+    this.render('worklist');
 });
 
 
@@ -26,24 +27,18 @@ Router.route('/viewer/:_id', {
     layoutTemplate: 'layout',
     name: 'viewer',
     onBeforeAction: function() {
-        var self = this;
+        log.info('Router GetStudyMetadata');
 
-        Meteor.call('GetStudyMetadata', this.params._id, function(error, study) {
-            sortStudy(study);
+        var studyInstanceUid = this.params._id;
+        
+        // Check if this study is already loaded in a tab
+        // If it is, stop here so we don't keep adding tabs on hot-code reloads
+        var tab = WorklistTabs.find({studyInstanceUid: studyInstanceUid}).fetch();
+        if (tab) {
+            return;
+        }
 
-            var title = study.seriesList[0].instances[0].patientName;
-            var contentid = generateUUID();
-
-            var data = {
-                title: title,
-                contentid: contentid,
-            };
-            tabs.insert(data);
-
-            data.studies = [study];
-
-            self.render('worklist');
-            Session.set('OpenNewTabEvent', data);
-        });
+        this.render('worklist');
+        openNewTab(studyInstanceUid);
     }
 });

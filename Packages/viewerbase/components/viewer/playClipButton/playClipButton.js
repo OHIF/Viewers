@@ -1,7 +1,7 @@
 Template.playClipButton.helpers({
     'isPlaying': function() {
         Session.get('UpdateCINE');
-        var viewportIndex = this.activeViewport.curValue;
-        return !!OHIF.viewer.isPlaying[viewportIndex];
+        var activeViewport = Session.get('activeViewport');
+        return !!OHIF.viewer.isPlaying[activeViewport];
     }
 });

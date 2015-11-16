@@ -3,7 +3,7 @@
         <li role="presentation" class="tabTitle active">
             <a data-target="#worklistTab" role="tab" data-toggle="tab">Study List</a>
         </li>
-        {{ #each tabs }}
+        {{ #each worklistTabs }}
             {{ >tabTitle }}
         {{ /each }}
     </ul>
@@ -14,7 +14,7 @@
                 {{> worklistResult }}
             </div>
         </div>
-        {{ #each tabs }}
+        {{ #each worklistTabs }}
             {{ >tabContent }}
         {{ /each }}
     </div>

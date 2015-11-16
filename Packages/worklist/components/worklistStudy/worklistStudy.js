@@ -1,5 +1,7 @@
 Template.worklistStudy.events({
-    'click': function (){
-        Router.go('viewer', {_id: this.studyInstanceUid});
+    'click': function () {
+        // Use the formatPN template helper to clean up the patient name
+        var title = Blaze._globalHelpers['formatPN'](this.patientName);
+        openNewTab(this.studyInstanceUid, title);
     }
 });

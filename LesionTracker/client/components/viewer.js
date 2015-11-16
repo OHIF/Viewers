@@ -1,4 +1,6 @@
 function resizeViewports() {
+    log.info("viewer resizeViewports");
+
     // Handle resizing of image viewer viewports
     // For some reason, this seems to need to be on
     // another delay, or the resizing won't work properly
@@ -15,7 +17,8 @@ function resizeViewports() {
 }
 
 Template.viewer.onCreated(function() {
-    console.log("Image Viewer onCreated");
+    log.info("viewer onCreated");
+
     OHIF = {
         viewer: {}
     };
@@ -30,6 +33,9 @@ Template.viewer.onCreated(function() {
             var viewport = cornerstone.getViewport(element);
             viewport.invert = !viewport.invert;
             cornerstone.setViewport(element, viewport);
+        },
+        resetViewport: function(element) {
+            cornerstone.reset(element);
         },
         playClip: function(element) {
             var viewportIndex = $('.imageViewerViewport').index(element);
@@ -55,35 +61,35 @@ Template.viewer.onCreated(function() {
         };
     }
 
-    if (this.data.activeViewport === undefined) {
-        this.data.activeViewport = new ReactiveVar(0);
-    }
-    if (this.data.viewportRows === undefined) {
-        this.data.viewportRows = new ReactiveVar(1);
-    }
-    if (this.data.viewportColumns === undefined) {
-        this.data.viewportColumns = new ReactiveVar(2);
-    }
-
     var contentId = this.data.contentId;
     
-    // Update the viewer data object
-    ViewerData[contentId].viewportColumns = this.data.viewportColumns;
-    ViewerData[contentId].viewportRows = this.data.viewportRows;
-    ViewerData[contentId].activeViewport = this.data.activeViewport;
-    Session.set('ViewerData', ViewerData);
+    if (ViewerData[contentId].loadedSeriesData) {
+        log.info('Reloading previous loadedSeriesData');
 
-    if (ViewerData[contentId].viewer) {
-        OHIF.viewer = ViewerData[contentId].viewer;
+        OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
+
     } else {
-        OHIF.viewer.imageViewerLoadedSeriesDictionary = {};
-        ViewerData[contentId].viewer = OHIF.viewer;
+        log.info('Setting default ViewerData');
+        OHIF.viewer.loadedSeriesData = {};
+        
+        ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
+
+        // Update the viewer data object
+        ViewerData[contentId].viewportColumns = 2;
+        ViewerData[contentId].viewportRows = 1;
+        ViewerData[contentId].activeViewport = 0;
+        Session.set('ViewerData', ViewerData);
     }
+
+    Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
+
+    Session.set("studies", this.data.studies);
 
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
 });
 
 Template.viewer.onDestroyed(function() {
+    log.info("onDestroyed");
     OHIF.viewer.updateImageSynchronizer.destroy();
 });
 

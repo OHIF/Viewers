@@ -1,0 +1,29 @@
+#viewer
+  width: 100%
+  height: 100%
+  margin: 0
+  padding: 0
+  background-color: black
+
+#viewportAndLesionTable
+  height: 100%
+  width: calc(100% - 120px)
+  float: left
+
+#imageViewerViewports
+  .viewportContainer
+    &.active
+      border: 2px solid #777
+
+    &:hover, &:hover.active
+      border: 2px solid white
+
+#btnCollapse
+  background-color: #333
+  border-color: black
+
+  &.active
+    border-color: #333
+
+.btnCollapseIcon
+  color: white

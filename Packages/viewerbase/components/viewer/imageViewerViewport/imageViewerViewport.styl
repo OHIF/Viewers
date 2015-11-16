@@ -21,3 +21,21 @@
   left: 0
   margin: auto
   height: 20px
+  
+/* These are some good CSS settings for a circular magnifying glass 
+   Try removing the border-radius to make a square magnifying glass */
+.magnifyTool{
+    border: 4px white solid;
+    box-shadow: 2px 2px 10px #1e1e1e;
+    border-radius: 50%;
+    display: none;
+    cursor: none;
+}
+/* prevents selection when left click dragging */
+.disable-selection {
+    -moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;
+}
+/* prevents cursor from changing to the i bar on the overlays*/
+.noIbar {
+    cursor:default;
+}
