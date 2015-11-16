@@ -144,18 +144,18 @@ function loadSeriesIntoViewport(data) {
     var endLoadingHandler = cornerstoneTools.loadHandlerManager.getEndLoadHandler();
     var errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
 
-    // Fire an event to give notice that a new series was loaded in the viewport
-    var eventType = "ViewerBaseSeriesLoaded";
-    var eventData = {
-        element: element,
-        stack: stack,
-        study: data.study,
-        series: data.series
-    };
-    $(document).trigger(eventType, eventData);
-
     // Start loading the image.
     cornerstone.loadAndCacheImage(imageId).then(function(image) {
+        // Fire an event to give notice that a new series was loaded in the viewport
+        var eventType = "ViewerBaseSeriesLoaded";
+        var eventData = {
+            element: element,
+            stack: stack,
+            study: data.study,
+            series: data.series
+        };
+        $(document).trigger(eventType, eventData);
+        
         // If there is a saved object containing Cornerstone viewport data
         // (e.g. scale, invert, window settings) in the input data, apply it now.
         //

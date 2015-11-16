@@ -1,3 +1,14 @@
+Template.imageViewerViewports.onRendered(function() {
+    this.autorun(function() {
+        var studies = Session.get('studies');
+        var eventType = "ViewerBaseStudyLoaded";
+        var eventData = {
+            studies: studies
+        };
+        $(document).trigger(eventType, eventData);
+    });
+});
+
 Template.imageViewerViewports.helpers({
     height: function() {
         var viewportRows = this.viewportRows || 1;

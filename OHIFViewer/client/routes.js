@@ -34,7 +34,7 @@ Router.route('/viewer/:_id', {
         
         // Check if this study is already loaded in a tab
         // If it is, stop here so we don't keep adding tabs on hot-code reloads
-        var tab = tabs.find({'studyInstanceUid' : studyInstanceUid}).fetch();
+        var tab = tabs.find({studyInstanceUid: studyInstanceUid}).fetch();
         if (tab) {
             return;
         }

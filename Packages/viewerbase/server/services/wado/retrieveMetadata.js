@@ -1,8 +1,16 @@
 function buildUrl(server, studyInstanceUid) {
-
     var url = server.wadoRoot + '/studies/' + studyInstanceUid + '/metadata';
-
     return url;
+}
+
+function getSourceImageInstanceUid(instance) {
+    // TODO= Parse the whole Source Image Sequence
+    // This is a really poor workaround for now.
+    // Later we should probably parse the whole sequence.
+    var SourceImageSequence = instance['00082112'];
+    if (SourceImageSequence && SourceImageSequence.Value && SourceImageSequence.Value.length) {
+        return SourceImageSequence.Value[0]['00081155'].Value[0];
+    }
 }
 
 function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
@@ -69,6 +77,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             windowWidth: DICOMWeb.getString(instance['00281051']),
             rescaleIntercept: DICOMWeb.getNumber(instance['00281052']),
             rescaleSlope: DICOMWeb.getNumber(instance['00281053']),
+            sourceImageInstanceUid: getSourceImageInstanceUid(instance)
         };
 
         if (server.imageRendering === 'wadouri') {
