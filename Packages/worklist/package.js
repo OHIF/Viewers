@@ -57,8 +57,8 @@ Package.onUse(function (api) {
     // Export the global ViewerData object
     api.export('ViewerData', 'client');
 
-    // Export the WorklistTabs Collection
+    // Export the Collections
     api.export('WorklistTabs', 'client');
-    api.export('Studies', 'client');
+    api.export('WorklistStudies', 'client');
 });
 

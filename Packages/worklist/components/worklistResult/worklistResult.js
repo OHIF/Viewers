@@ -10,6 +10,6 @@ Template.worklistResult.helpers({
      * by Patient name and Study Date in Ascending order.
      */
     studies : function() {
-        return Studies.find({}, {sort: {patientName : 1, studyDate : 1}});
+        return WorklistStudies.find({}, {sort: {patientName : 1, studyDate : 1}});
     }
 });

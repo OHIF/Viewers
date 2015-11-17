@@ -17,6 +17,9 @@ var StudyMetaData = {};
 // Create the WorklistTabs collection
 WorklistTabs = new Meteor.Collection(null);
 
+// Create the WorklistStudies collection
+WorklistStudies = new Meteor.Collection(null);
+
 /**
 * Retrieves study metadata using a server call, and fires a callback
 * when completed.
@@ -104,9 +107,6 @@ switchToTab = function(contentId) {
             contentId: contentId,
             studies: [study]
         };
-
-        // Update the Session variable with the loaded studies
-        Session.set('studies', data.studies);
 
         // Remove the loading text template that is inside the tab container by default
         container.innerHTML = "";

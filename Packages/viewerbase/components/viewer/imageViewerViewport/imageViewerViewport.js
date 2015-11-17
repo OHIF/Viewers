@@ -399,30 +399,31 @@ Template.imageViewerViewport.onRendered(function() {
         return;
     }
 
-    // Retrieve the current set of studies from the Meteor Session
-    var studies = Session.get('studies');
+    // Look through the ViewerStudies collection for a
+    // study with this studyInstanceUid
+    var study = ViewerStudies.findOne({
+        studyInstanceUid: this.data.studyInstanceUid
+    });
 
-    // Look through every study and their series' until we find the 
-    // series that matches the seriesInstanceUid and studyInstanceUid
-    var studyInstanceUid = this.data.studyInstanceUid;
+    // If we didn't find anything, stop here
+    if (!study) {
+        return;
+    }
+
+    data.study = study;
+
+    // Look through this study for a series with this seriesInstanceUid
     var seriesInstanceUid = this.data.seriesInstanceUid;
-    studies.every(function(study) {
-        if (study.studyInstanceUid === studyInstanceUid) {
-            data.study = study;
-            study.seriesList.every(function(series) {
-                if (series.seriesInstanceUid === seriesInstanceUid) {
-                    data.series = series;
-                    return false;
-                }
-                return true;
-            });
+    study.seriesList.every(function(series) {
+        if (series.seriesInstanceUid === seriesInstanceUid) {
+            data.series = series;
             return false;
         }
         return true;
     });
 
     // If we didn't find anything, stop here
-    if (!data.study || !data.series) {
+    if (!data.series) {
         return;
     }
 

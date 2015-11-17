@@ -6,16 +6,8 @@ Template.studyDateList.onCreated(function(){
     this.selectedDate = "";
 });
 
-function cleanTimepoints() {
-    var timepoints = Timepoints.find();
-    timepoints.forEach(function (timepoint) {
-        Timepoints.remove({_id: timepoint._id});
-    });
-}
 
 Template.studyDateList.onRendered(function(){
-    //cleanTimepoints();
-
     // Add Study dates to Timepoints
     this.patientStudies.forEach(function(study) {
         Timepoints.insert({
@@ -35,7 +27,12 @@ Template.studyDateList.helpers({
 
         var studyData = this.studies[0]; // study which is loaded in tab
         self.selectedDate = studyData.studyDate;
-        var studies = Studies.find().fetch(); // All studies list
+
+        // TODO= Fix this! This won't work to retrieve all studies
+        // related to this patient. We will need to do a real search
+        // since the WorklistStudies Collection only contains the studies on-screen
+
+        var studies = WorklistStudies.find({}).fetch(); // All studies list
         var patientStudies = []; // Holds studies of patient
 
         // Get all studies of patient with patientID
@@ -53,26 +50,31 @@ Template.studyDateList.helpers({
 
 Template.studyDateList.events({
     'change select#selectStudyDate': function(e, template) {
-        var selector = e.currentTarget;
-        var selectedStudyDate = $(selector).val();
-        var patientStudies = template.patientStudies;
-        var studies = []; // all studies that has the same date and get with studyInstanceUId
-        patientStudies.forEach(function(study) {
-            if(study.studyDate === selectedStudyDate) {
-                studies.push(study);
+        var studyInstanceUid = $(e.currentTarget).val();
+
+        Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
+            sortStudy(study);
+
+            // Set "Selected" to false for the entire collection
+            ViewerStudies.update({},
+                {$set: {selected: false}},
+                { multi: true });
+
+            // Check if this study already exists in the ViewerStudies collection
+            // of loaded studies. If it does, set it's 'selected' value to true.
+            var existingStudy = ViewerStudies.findOne({studyInstanceUid: studyInstanceUid});
+            if (existingStudy) {
+                // Set the current finding in the collection to true
+                ViewerStudies.update(existingStudy._id, {
+                    $set: {selected: true}
+                });
+                return;
             }
+
+            // If the study does not exist, add the 'selected' key to the object
+            // with the value True, and insert it into the ViewerStudies Collection
+            study.selected = true;
+            ViewerStudies.insert(study);
         });
-
-        studies.forEach(function(studyData) {
-            var studyInstanceUid = studyData.studyInstanceUid;
-            Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
-                sortStudy(study);
-                // TODO:
-                Session.set('studies', [study]);
-                // TODO: Change thumbnails only
-            });
-        });
-
-
     }
 });

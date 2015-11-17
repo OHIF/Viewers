@@ -12,7 +12,8 @@ var hangingProtocol;
  * @returns {Array}
  */
 function defaultHangingProtocol(inputData) {
-    var studies = inputData.studies;
+    // TODO = Update this to use Collection logic
+    var studies = inputData.studies.find().fetch();
     var viewportRows = inputData.viewportRows;
     var viewportColumns = inputData.viewportColumns;
 

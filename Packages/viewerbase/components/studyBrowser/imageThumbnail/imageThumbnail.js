@@ -1,6 +1,10 @@
 Template.imageThumbnail.onRendered(function() {
     var instance = this.data.stack.instances[0];
     var element = this.find('.imageThumbnail');
+
+    cornerstone.disable(element);
+    $(element).find('canvas').remove();
+
     cornerstone.enable(element);
 
     var imageId = getImageId(instance);

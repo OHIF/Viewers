@@ -69,7 +69,7 @@ function search() {
     var modality = replaceUndefinedColumnValue($('#modality').val());
 
     // Clear all current studies
-    Studies.remove({});
+    WorklistStudies.remove({});
 
     Meteor.call('WorklistSearch', filter, function(error, studies) {
         if (!studies) {
@@ -85,7 +85,7 @@ function search() {
                 (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0,0,0,0) || !checkTo)) {
 
                 // Insert any matching studies into the Studies Collection
-                Studies.insert(study);
+                WorklistStudies.insert(study);
             }
         });
     });

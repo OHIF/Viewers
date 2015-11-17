@@ -190,6 +190,7 @@ function thumbnailDragEndHandler(e, target) {
 }
 
 Template.thumbnailEntry.onRendered(function() {
+    console.log(this.data);
     var entry = this.find('.thumbnailEntry');
     $(entry).data('seriesInstanceUid', Template.parentData(0).seriesInstanceUid);
     $(entry).data('studyInstanceUid', Template.parentData(1).studyInstanceUid);

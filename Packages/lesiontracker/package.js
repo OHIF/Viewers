@@ -40,7 +40,6 @@ Package.onUse(function (api) {
     api.addFiles('components/nonTargetLesionDialog/nonTargetLesionDialog.js', 'client');
 
     api.addFiles('components/studyDateList/studyDateList.html', 'client');
-    api.addFiles('components/studyDateList/studyDateList.css', 'client');
     api.addFiles('components/studyDateList/studyDateList.js', 'client');
 
 
