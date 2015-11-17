@@ -2,6 +2,7 @@
 // This is a client-side only Collection which
 // Stores the list of studies in the Worklist
 Studies = new Mongo.Collection(null);
+PatientStudies = new Mongo.Collection(null);
 
 Template.worklistResult.helpers({
     /**
@@ -9,6 +10,6 @@ Template.worklistResult.helpers({
      * by Patient name and Study Date in Ascending order.
      */
     studies : function() {
-        return Studies.find({}, {sort: {patientName : 1, studyDate : 1}});
+        return WorklistStudies.find({}, {sort: {patientName : 1, studyDate : 1}});
     }
 });

@@ -83,7 +83,12 @@ Template.viewer.onCreated(function() {
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
-    Session.set("studies", this.data.studies);
+    // Update the ViewerStudies collection with the loaded studies
+    ViewerStudies = new Meteor.Collection(null);
+    this.data.studies.forEach(function(study) {
+        study.selected = true;
+        ViewerStudies.insert(study);
+    });
 
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
 });

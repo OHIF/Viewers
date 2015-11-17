@@ -21,8 +21,6 @@ Template.imageViewerViewports.helpers({
     viewportArray: function() {
         log.info("imageViewerViewports viewportArray");
 
-        var studies = Session.get('studies');
-
         var viewportRows = this.viewportRows || 1;
         var viewportColumns = this.viewportColumns || 1;
 
@@ -49,7 +47,7 @@ Template.imageViewerViewports.helpers({
         var inputData = {
             viewportColumns: viewportColumns,
             viewportRows: viewportRows,
-            studies: studies
+            studies: ViewerStudies
         };
         var hangingProtocolViewportData = hangingProtocol(inputData);
         
