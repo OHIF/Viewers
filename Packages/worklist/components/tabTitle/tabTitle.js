@@ -42,5 +42,46 @@ Template.tabTitle.events({
 
         // Remove any stored data related to this tab from the global ViewerData structure
         delete ViewerData[contentId];
+
     }
+});
+
+// Set tab width when a tab is added or removed
+function setTabWidth (){
+    var allTabTitles = $(".tabTitle");
+    var widthTabList = $("#tablist").width();
+    var totalTitleWidths = 0;
+
+    var tabCount = 0;
+    allTabTitles.each( function( index, tabItem ) {
+        totalTitleWidths += $(tabItem).width();
+        tabCount ++;
+    });
+
+    if(totalTitleWidths > widthTabList) {
+        var newTabWidth = widthTabList / tabCount;
+        allTabTitles.each( function( index, tabItem ) {
+            $(tabItem).css("width",newTabWidth+"px");
+        });
+    } else {
+        var newTabWidth = widthTabList / tabCount;
+        allTabTitles.each( function( index, tabItem ) {
+            if (index === 0) {
+                if(newTabWidth > 95) {
+                    $(tabItem).css("width","95px");
+                } else {
+                    $(tabItem).css("width",newTabWidth+"px");
+                }
+            } else {
+                if(newTabWidth > 130) {
+                    $(tabItem).css("width","130px");
+                } else {
+                    $(tabItem).css("width",newTabWidth+"px");
+                }
+            }
+
+        });
+    }
+}
+Template.tabTitle.onRendered(function(){
 });
