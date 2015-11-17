@@ -86,12 +86,30 @@ function getNonTargetLesionLocationCallback(measurementData, eventData, doneCall
         }
     }
 
-    // Show the lesion location dialog above
-    nonTargetlesionDialog.css({
+    // Show the nonTargetLesion dialog above
+    var dialogProperty =  {
         top: eventData.currentPoints.page.y,
         left: eventData.currentPoints.page.x,
         display: 'block'
-    });
+    };
+
+    // Device is touch device or not
+    // If device is touch device, set position center of screen vertically and horizontally
+    if (isTouchDevice()) {
+        // add dialogMobile class to provide a black,transparent background
+        $(nonTargetlesionDialog).addClass("dialogMobile");
+        dialogProperty.top = 0;
+        dialogProperty.left = 0;
+        dialogProperty.right = 0;
+        dialogProperty.bottom = 0;
+        $(".contentWrapper").css({
+            left: ($(window).width() - $(".contentWrapper").width()) / 2,
+            top: ($(window).height() - $(".contentWrapper").height()) / 2
+
+        });
+    }
+
+    nonTargetlesionDialog.css(dialogProperty);
 
     // Click OK button
     // Add lesion to lesion table

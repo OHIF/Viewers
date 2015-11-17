@@ -1,17 +1,19 @@
 <template name="lesionLocationDialog">
     <div id="lesionLocationDialog">
-        <div class="dialogHeader">
-            <h4>Select Lesion Location</h4>
-        </div>
-        <div class="dialogContent">
-            <div class="lesionLocation">
-                <label>Lesion Location</label>
-                <select id="selectLesionLocation">
-                    <option value="-1"></option>
-                    {{ #each lesionLocations}} 
+        <div class="lesionContentWrapper">
+            <div class="dialogHeader">
+                <h4>Select Lesion Location</h4>
+            </div>
+            <div class="dialogContent">
+                <div class="lesionLocation">
+                    <label>Lesion Location</label>
+                    <select id="selectLesionLocation">
+                        <option value="-1"></option>
+                        {{ #each lesionLocations}}
                         <option value='{{_id}}'>{{location}}</option>
-                    {{ /each}}
-                </select>
+                        {{ /each}}
+                    </select>
+                </div>
             </div>
         </div>
     </div>

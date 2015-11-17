@@ -62,11 +62,30 @@ function getLesionLocationCallback(measurementData, eventData, doneCallback) {
     }
 
     // Show the lesion location dialog above
-    lesionDialog.css({
+
+    var dialogProperty =  {
         top: eventData.currentPoints.page.y - lesionDialog.outerHeight() - 40,
         left: eventData.currentPoints.page.x - lesionDialog.outerWidth() / 2,
         display: 'block'
-    });
+    };
+
+    // Device is touch device or not
+    // If device is touch device, set position center of screen vertically and horizontally
+    if (isTouchDevice()) {
+        // add dialogMobile class to provide a black,transparent background
+        $(lesionDialog).addClass("dialogMobile");
+        dialogProperty.top = 0;
+        dialogProperty.left = 0;
+        dialogProperty.right = 0;
+        dialogProperty.bottom = 0;
+        $(".lesionContentWrapper").css({
+            left: ($(window).width() - $(".lesionContentWrapper").width()) / 2,
+            top: ($(window).height() - $(".lesionContentWrapper").height()) / 2
+
+        });
+    }
+
+    lesionDialog.css(dialogProperty);
 
     // Attach a callback for the select box
     selector.off('change');

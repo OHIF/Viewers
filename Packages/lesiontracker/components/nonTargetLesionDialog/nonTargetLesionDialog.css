@@ -2,9 +2,24 @@
     display: none;
     position: absolute;
     z-index: 100;
-    background: white;
-    padding: 10px 20px 10px 20px;
+}
+
+/* dialogMobile is added to #nonTargetLesionLocationDialog when touchDevices is detected */
+.dialogMobile {
+    margin: 0 auto;
+    float: none;
+    background-color: rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.contentWrapper {
+    position: absolute;
+    width: 250px;
+    height: 250px;
     border-radius: 10px;
+    padding: 10px 20px 10px 20px;
+    background-color: rgba(255,255,255,1);
+    text-align: left;
 }
 
 #selectNonTargetLesionLocation, #selectNonTargetLesionLocationResponse {
@@ -19,6 +34,7 @@
     width: 100%;
     margin: 0 auto;
     float: none;
+    text-align: left;
 }
 
 .locationOK {
