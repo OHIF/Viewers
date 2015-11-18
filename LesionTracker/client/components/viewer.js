@@ -16,6 +16,11 @@ function resizeViewports() {
     }, 1);
 }
 
+Template.viewer.helpers({
+    'studyDateIsShown':function(){
+        return {studyDateIsShown: true};
+    }
+});
 Template.viewer.onCreated(function() {
     log.info("viewer onCreated");
 

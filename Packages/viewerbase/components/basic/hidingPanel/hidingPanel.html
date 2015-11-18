@@ -6,6 +6,9 @@
             </button>
         </div>
         <div class="studyBrowserContainer">
+            {{#if studyDateIsShown}}
+                {{> studyDateList}}
+            {{/if}}
             {{> studyBrowser}}
         </div>
     </div>

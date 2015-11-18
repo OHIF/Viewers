@@ -8,6 +8,7 @@ Template.studyDateList.onCreated(function(){
 
 
 Template.studyDateList.onRendered(function(){
+
     // Add Study dates to Timepoints
     this.patientStudies.forEach(function(study) {
         Timepoints.insert({
@@ -16,8 +17,13 @@ Template.studyDateList.onRendered(function(){
         });
     });
 
-    // Selected date option
-    $('#selectStudyDate option[value="'+this.selectedDate+'"]').prop('selected', true);
+    // Selected date option in combobox
+    var self = this;
+    $('#selectStudyDate option').filter(function () {
+        if ($(this).html() === self.selectedDate) {
+            $(this).prop('selected', true);
+        }
+    });
 
 });
 

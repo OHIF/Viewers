@@ -39,6 +39,12 @@ Template.hidingPanel.events({
     }
 });
 
+Template.hidingPanel.helpers({
+    'studyDateIsShown': function() {
+        return true;
+    }
+});
+
 Template.hidingPanel.onCreated(function() {
     this.hidingPanelOpen =  new ReactiveVar(true);
     this.hidingPanelWidth = new ReactiveVar(0);

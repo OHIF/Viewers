@@ -1,7 +1,11 @@
 <template name="studyDateList">
-    <select id="selectStudyDate">
-        {{#each patientStudies}}
-            <option value="{{studyInstanceUid}}">{{studyDate}}</option>
-        {{/each}}
-    </select>
+    <div class="studyDateList">
+        <label>Study Date:</label>
+        <select id="selectStudyDate">
+            {{#each patientStudies}}
+                <option value="{{studyInstanceUid}}">{{studyDate}}</option>
+            {{/each}}
+        </select>
+    </div>
+
 </template>
