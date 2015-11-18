@@ -42,10 +42,6 @@ Package.onUse(function (api) {
     api.addFiles('components/worklistResult/worklistResult.js', 'client');
     api.addFiles('components/worklistResult/worklistResult.styl', 'client');
 
-    api.addFiles('components/worklistSearch/worklistSearch.html', 'client');
-    api.addFiles('components/worklistSearch/worklistSearch.js', 'client');
-    api.addFiles('components/worklistSearch/worklistSearch.styl', 'client');
-
     api.addFiles('lib/generateUUID.js', 'client');
     api.export('generateUUID', 'client');
 

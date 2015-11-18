@@ -3,19 +3,62 @@
     <table id="tblStudyList" class="table table-striped noselect">
         <thead>
         <tr>
-            <th>Patient Name</th>
-            <th>Patient ID</th>
-            {{#unless isTouchDevice}}
-                <th>Accession #</th>
-            {{/unless}}
-            <th>Study Date</th>
-            {{#unless isTouchDevice}}
-                <th>Modality</th>
-            {{/unless}}
-            <th>Study Description</th>
-            {{#unless isTouchDevice}}
-                <th># Images</th>
-            {{/unless}}
+            <th>
+                <div>
+                    Patient Name
+                </div>
+                <div class="patient-name-input">
+                     <input type="search" class="form-control worklist-search" id="patientName">
+                </div>
+            </th>
+            <th>
+                <div>
+                    Patient ID
+                </div>
+                <div class="patientid-input">
+                     <input type="search" class="form-control worklist-search" id="patientId">
+                </div>
+            </th>
+            <th>
+                <div>
+                    Accession #
+                </div>
+                <div class="worklist-input">
+                    <input type="search" class="form-control worklist-search" id="accessionNumber">
+                </div>
+            </th>
+            <th>
+                <div>
+                    Study Date
+                </div>
+                <div class="worklist-input">
+                    <input type="search" class="form-control worklist-search" id="studyDate">
+                </div>
+            </th>
+            <th>
+                <div>
+                    Modality
+                </div>
+                <div class="modality-input">
+                    <input type="search" class="form-control worklist-search" id="modality">
+                </div>
+            </th>
+            <th>
+                <div>
+                    StudyDescription
+                </div>
+                <div class="study-description-input">
+                    <input type="search" class="form-control worklist-search" id="studyDescription">
+                </div>
+            </th>
+            <th>
+                <div>
+                    # Images
+                </div>
+                <div class="worklist-input">
+                    <input type="search" class="form-control worklist-search" id="numberOfImages">
+                </div>
+            </th>
         </tr>
         </thead>
         <tbody id="studyListData">
