@@ -18,6 +18,7 @@ Package.onUse(function (api) {
 
     // Our custom package
     api.use('cornerstone');
+    api.use('hangingprotocols');
 
     api.addFiles('log.js', ['client', 'server']);
 
@@ -102,6 +103,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/rerenderViewportWithNewSeries.js', 'client');
     api.addFiles('lib/sortStudy.js', 'client');
     api.addFiles('lib/toolManager.js', 'client');
+    api.addFiles('lib/windowManager.js', 'client');
 
     //api.export('accountsConfig', 'client');
     api.export('createStacks', 'client');
@@ -112,8 +114,12 @@ Package.onUse(function (api) {
     api.export('metaDataProvider', 'client');
     api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
-    api.export('toolManager', 'client');
     api.export('updateOrientationMarkers', 'client');
+
+    // Viewer management objects
+    api.export('toolManager', 'client');
+    api.export('WindowManager', 'client');
+
 
     // UI Helpers
     api.addFiles('lib/helpers/formatDA.js', 'client');

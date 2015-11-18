@@ -43,13 +43,13 @@ Template.imageViewerViewports.helpers({
             viewportData = ViewerData[contentId].loadedSeriesData;
         }
 
-        var hangingProtocol = getHangingProtocol();
         var inputData = {
             viewportColumns: viewportColumns,
             viewportRows: viewportRows,
             studies: ViewerStudies
         };
-        var hangingProtocolViewportData = hangingProtocol(inputData);
+
+        var hangingProtocolViewportData = WindowManager.getHangingProtocol(inputData);
         
         var array = [];
         var numViewports = viewportRows * viewportColumns;
@@ -75,7 +75,7 @@ Template.imageViewerViewports.helpers({
             array.push(data);
         }
         return array;
-    },
+    }
 });
 
 var savedSeriesData,
@@ -134,7 +134,7 @@ Template.imageViewerViewports.events({
             // Set the basic template data
             data = {
                 viewportRows: 1,
-                viewportColumns: 1,
+                viewportColumns: 1
             };
 
             // Render the imageViewerViewports template with these settings
@@ -145,6 +145,5 @@ Template.imageViewerViewports.events({
             $('.imageViewerViewport').eq(0).addClass('zoomed');
 
         }
-        log.info('dblclick');
     }
 });

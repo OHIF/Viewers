@@ -1,0 +1,1487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dicom>
+    <!--SOP Class UID-->
+    <attr tag="00080016" vr="UI">1.2.840.10008.5.1.4.38.1</attr>
+    <!--SOP Instance UID-->
+    <attr tag="00080018" vr="UI">1.2.840.113986.2.664566.21121125.85669.969</attr>
+    <!--Hanging Protocol Name-->
+    <attr tag="00720002" vr="SH">NeurosurgeryPlan</attr>
+    <!--Hanging Protocol Description-->
+    <attr tag="00720004" vr="LO">Neurosurgery planning, requiring MR and CT of head</attr>
+    <!--Hanging Protocol Level-->
+    <attr tag="00720006" vr="CS">SITE</attr>
+    <!--Hanging Protocol Creator-->
+    <attr tag="00720008" vr="LO">Smith^Joseph</attr>
+    <!--Hanging Protocol Creation Datetime-->
+    <attr tag="0072000A" vr="DT">20020101104200</attr>
+    <!--Hanging Protocol Definition Sequence-->
+    <attr tag="0072000C" vr="SQ">
+        <item>
+            <!--Modality-->
+            <attr tag="00080060" vr="CS">MR</attr>
+            <!--Procedure Code Sequence-->
+            <attr tag="00081032" vr="SQ">
+                <item>
+                    <!--Code Value-->
+                    <attr tag="00080100">98765</attr>
+                    <!--Coding Scheme Designator-->
+                    <attr tag="00080102">99Local</attr>
+                    <!--Coding Scheme Version-->
+                    <attr tag="00080103">1.5</attr>
+                    <!--Code Meaning-->
+                    <attr tag="00080104">NeuroSurgery Plan Local5</attr>
+                </item>
+            </attr>
+            <!--Anatomic Region Sequence-->
+            <attr tag="00082218" vr="SQ">
+                <item>
+                    <!--Code Value-->
+                    <attr tag="00080100">T-D1100</attr>
+                    <!--Coding Scheme Designator-->
+                    <attr tag="00080102">SNM3</attr>
+                    <!--Code Meaning-->
+                    <attr tag="00080104">Head</attr>
+                </item>
+            </attr>
+            <!--Reason for Requested Procedure Code Sequence-->
+            <attr tag="0040100A" vr="SQ">
+                <item>
+                    <!--Code Value-->
+                    <attr tag="00080100">I67.1</attr>
+                    <!--Coding Scheme Designator-->
+                    <attr tag="00080102">I10</attr>
+                    <!--Code Meaning-->
+                    <attr tag="00080104">Cerebral aneurysm</attr>
+                </item>
+            </attr>
+            <!--Laterality-->
+            <attr tag="00200060"/>
+        </item>
+        <item>
+            <!--Modality-->
+            <attr tag="00080060" vr="CS">CT</attr>
+            <!--Procedure Code Sequence-->
+            <attr tag="00081032" vr="SQ">
+                <item>
+                    <!--Code Value-->
+                    <attr tag="00080100">98765</attr>
+                    <!--Coding Scheme Designator-->
+                    <attr tag="00080102">99Local</attr>
+                    <!--Coding Scheme Version-->
+                    <attr tag="00080103">1.5</attr>
+                    <!--Code Meaning-->
+                    <attr tag="00080104">NeuroSurgery Plan Local5</attr>
+                </item>
+            </attr>
+            <!--Anatomic Region Sequence-->
+            <attr tag="00082218" vr="SQ">
+                <item>
+                    <!--Code Value-->
+                    <attr tag="00080100">T-D1100</attr>
+                    <!--Coding Scheme Designator-->
+                    <attr tag="00080102">SNM3</attr>
+                    <!--Code Meaning-->
+                    <attr tag="00080104">Head</attr>
+                </item>
+            </attr>
+            <!--Reason for Requested Procedure Code Sequence-->
+            <attr tag="0040100A" vr="SQ">
+                <item>
+                    <!--Code Value-->
+                    <attr tag="00080100">I67.1</attr>
+                    <!--Coding Scheme Designator-->
+                    <attr tag="00080102">I10</attr>
+                    <!--Code Meaning-->
+                    <attr tag="00080104">Cerebral aneurysm</attr>
+                </item>
+            </attr>
+            <!--Laterality-->
+            <attr tag="00200060"/>
+        </item>
+    </attr>
+    <!--Hanging Protocol User Identification Code Sequence-->
+    <attr tag="0072000E" vr="SQ"/>
+    <!--Hanging Protocol User Group Name-->
+    <attr tag="00720010" vr="LO">ABC Hospital</attr>
+    <!--Number of Priors Referenced-->
+    <attr tag="00720014">1</attr>
+    <!--Image Sets Sequence-->
+    <attr tag="00720020" vr="SQ">
+        <item>
+            <!--Image Set Selector Sequence-->
+            <attr tag="00720022" vr="SQ">
+                <item>
+                    <!--Image Set Selector Usage Flag-->
+                    <attr tag="00720024" vr="CS">NO_MATCH</attr>
+                    <!--Selector Attribute-->
+                    <attr tag="00720026" vr="AT">00180015</attr>
+                    <!--Selector Value Number-->
+                    <attr tag="00720028" vr="US">1</attr>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">HEAD</attr>
+                </item>
+                <item>
+                    <!--Image Set Selector Usage Flag-->
+                    <attr tag="00720024" vr="CS">NO_MATCH</attr>
+                    <!--Selector Attribute-->
+                    <attr tag="00720026" vr="AT">00080060</attr>
+                    <!--Selector Value Number-->
+                    <attr tag="00720028" vr="US">1</attr>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">MR</attr>
+                </item>
+            </attr>
+            <!--Time Based Image Sets Sequence-->
+            <attr tag="00720030" vr="SQ">
+                <item>
+                    <!--Image Set Number-->
+                    <attr tag="00720032" vr="US">1</attr>
+                    <!--Image Set Selector Category-->
+                    <attr tag="00720034" vr="CS">RELATIVE_TIME</attr>
+                    <!--Relative Time-->
+                    <attr tag="00720038" vr="US">0\0</attr>
+                    <!--Relative Time Units-->
+                    <attr tag="0072003A" vr="CS">MINUTES</attr>
+                    <!--Image Set Label-->
+                    <attr tag="00720040" vr="LO">Current MR Head</attr>
+                </item>
+            </attr>
+        </item>
+        <item>
+            <!--Image Set Selector Sequence-->
+            <attr tag="00720022" vr="SQ">
+                <item>
+                    <!--Image Set Selector Usage Flag-->
+                    <attr tag="00720024" vr="CS">NO_MATCH</attr>
+                    <!--Selector Attribute-->
+                    <attr tag="00720026" vr="AT">00180015</attr>
+                    <!--Selector Value Number-->
+                    <attr tag="00720028" vr="US">1</attr>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">HEAD</attr>
+                </item>
+                <item>
+                    <!--Image Set Selector Usage Flag-->
+                    <attr tag="00720024" vr="CS">NO_MATCH</attr>
+                    <!--Selector Attribute-->
+                    <attr tag="00720026" vr="AT">00080060</attr>
+                    <!--Selector Value Number-->
+                    <attr tag="00720028" vr="US">1</attr>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">CT</attr>
+                </item>
+            </attr>
+            <!--Time Based Image Sets Sequence-->
+            <attr tag="00720030" vr="SQ">
+                <item>
+                    <!--Image Set Number-->
+                    <attr tag="00720032" vr="US">2</attr>
+                    <!--Image Set Selector Category-->
+                    <attr tag="00720034" vr="CS">RELATIVE_TIME</attr>
+                    <!--Relative Time-->
+                    <attr tag="00720038" vr="US">0\0</attr>
+                    <!--Relative Time Units-->
+                    <attr tag="0072003A" vr="CS">MINUTES</attr>
+                    <!--Image Set Label-->
+                    <attr tag="00720040" vr="LO">Current CT Head</attr>
+                </item>
+                <item>
+                    <!--Image Set Number-->
+                    <attr tag="00720032" vr="US">3</attr>
+                    <!--Image Set Selector Category-->
+                    <attr tag="00720034" vr="CS">ABSTRACT_PRIOR</attr>
+                    <!--Abstract Prior Value-->
+                    <attr tag="0072003C" vr="SS">1\1</attr>
+                    <!--Image Set Label-->
+                    <attr tag="00720040" vr="LO">Prior CT Head</attr>
+                </item>
+            </attr>
+        </item>
+    </attr>
+    <!--Number of Screens-->
+    <attr tag="00720100" vr="US">2</attr>
+    <!--Nominal Screen Definition Sequence-->
+    <attr tag="00720102" vr="SQ">
+        <item>
+            <!--Number of Vertical Pixels-->
+            <attr tag="00720104" vr="US">1024</attr>
+            <!--Number of Horizontal Pixels-->
+            <attr tag="00720106" vr="US">1024</attr>
+            <!--Display Environment Spatial Position-->
+            <attr tag="00720108" vr="FD">0.0\0.28\0.33\0.0</attr>
+            <!--Screen Minimum Color Bit Depth-->
+            <attr tag="0072010C" vr="US">8</attr>
+            <!--Application Maximum Repaint Time-->
+            <attr tag="0072010E" vr="US">70</attr>
+        </item>
+        <item>
+            <!--Number of Vertical Pixels-->
+            <attr tag="00720104" vr="US">2560</attr>
+            <!--Number of Horizontal Pixels-->
+            <attr tag="00720106" vr="US">2048</attr>
+            <!--Display Environment Spatial Position-->
+            <attr tag="00720108" vr="FD">0.33\1.0\1.0\0.0</attr>
+            <!--Screen Minimum Grayscale Bit Depth-->
+            <attr tag="0072010A" vr="US">8</attr>
+            <!--Application Maximum Repaint Time-->
+            <attr tag="0072010E" vr="US">10</attr>
+        </item>
+    </attr>
+    <!--Display Sets Sequence-->
+    <attr tag="00720200" vr="SQ">
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">1</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">1</attr>
+            <!--Display Set Presentation Group Description-->
+            <attr tag="00720206" vr="LO">Current CT only</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.2\0.166666667\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\F</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">2</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">1</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.4\0.166666667\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">SAGITAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">P\F</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">3</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">1</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.4\0.333333333\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">4</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">1</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.2\0.333333333\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">PROCESSED</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute-->
+                    <attr tag="00720026" vr="AT">00080008</attr>
+                    <!--Selector Value Number-->
+                    <attr tag="00720028" vr="US">3</attr>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">LOCALIZER</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">NOT_MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">3D_RENDERING</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--3D Rendering Type-->
+            <attr tag="00720520" vr="CS">VOLUME</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ"/>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">X\F</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">NO</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">5</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">1</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\1\1\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">4</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">VERTICAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">PAGE</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">6</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">2</attr>
+            <!--Display Set Presentation Group Description-->
+            <attr tag="00720206" vr="LO">MR only</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.2\0.166666667\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\F</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">7</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">2</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.4\0.166666667\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">SAGITAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">P\F</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">8</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">2</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.4\0.333333333\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">9</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">2</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.2\0.333333333\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">PROCESSED</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ"/>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">3D_RENDERING</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--3D Rendering Type-->
+            <attr tag="00720520" vr="CS">VOLUME</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ"/>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">X\F</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">10</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">2</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\1\1\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">4</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">VERTICAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">PAGE</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">11</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">3</attr>
+            <!--Display Set Presentation Group Description-->
+            <attr tag="00720206" vr="LO">MR &amp; CT combined</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.2\0.166666667\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\F</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">NO</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">12</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">3</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.4\0.166666667\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\F</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">NO</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">13</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">3</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.4\0.333333333\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">14</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">3</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.2\0.333333333\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">NO</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">15</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">3</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\1\1\0.75</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\0.5\1\0.25</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">2</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">1</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">16</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">3</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\0.75\1\0.5</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\0.25\1\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">2</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">NO</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">3</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">17</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">4</attr>
+            <!--Display Set Presentation Group Description-->
+            <attr tag="00720206" vr="LO">CT old &amp; CT new combined</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.2\0.166666667\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\F</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">18</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">4</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0\0.4\0.166666667\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Reformatting Operation Type-->
+            <attr tag="00720510" vr="CS">MPR</attr>
+            <!--Reformatting Thickness-->
+            <attr tag="00720512" vr="FD">5</attr>
+            <!--Reformatting Interval-->
+            <attr tag="00720514" vr="FD">5</attr>
+            <!--Reformatting Operation Initial View Direction-->
+            <attr tag="00720516" vr="CS">CORONAL</attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\F</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">19</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">4</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.4\0.333333333\0.2</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">3</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">20</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">4</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.166666667\0.2\0.333333333\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">STACK</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">2</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">21</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">4</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\1\1\0.75</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\0.5\1\0.25</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">2</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+        <item>
+            <!--Image Set Number-->
+            <attr tag="00720032" vr="US">3</attr>
+            <!--Display Set Number-->
+            <attr tag="00720202" vr="US">22</attr>
+            <!--Display Set Presentation Group-->
+            <attr tag="00720204" vr="US">4</attr>
+            <!--Image Boxes Sequence-->
+            <attr tag="00720300" vr="SQ">
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\0.75\1\0.5</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">1</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+                <item>
+                    <!--Display Environment Spatial Position-->
+                    <attr tag="00720108" vr="FD">0.333333333\0.25\1\0</attr>
+                    <!--Image Box Number-->
+                    <attr tag="00720302" vr="US">2</attr>
+                    <!--Image Box Layout Type-->
+                    <attr tag="00720304" vr="CS">TILED</attr>
+                    <!--Image Box Tile Horizontal Dimension-->
+                    <attr tag="00720306" vr="US">3</attr>
+                    <!--Image Box Tile Vertical Dimension-->
+                    <attr tag="00720308" vr="US">1</attr>
+                    <!--Image Box Scroll Direction-->
+                    <attr tag="00720310" vr="CS">HORIZONTAL</attr>
+                    <!--Image Box Small Scroll Type-->
+                    <attr tag="00720312" vr="CS">IMAGE</attr>
+                    <!--Image Box Small Scroll Amount-->
+                    <attr tag="00720314" vr="US">1</attr>
+                    <!--Image Box Large Scroll Type-->
+                    <attr tag="00720316" vr="CS">ROW_COLUMN</attr>
+                    <!--Image Box Large Scroll Amount-->
+                    <attr tag="00720318" vr="US">1</attr>
+                </item>
+            </attr>
+            <!--Filter Operations Sequence-->
+            <attr tag="00720400" vr="SQ">
+                <item>
+                    <!--Selector Attribute VR-->
+                    <attr tag="00720050" vr="CS">CS</attr>
+                    <!--Selector CS Value-->
+                    <attr tag="00720062" vr="CS">TRANSVERSE</attr>
+                    <!--Filter-by Category-->
+                    <attr tag="00720402" vr="CS">IMAGE_PLANE</attr>
+                    <!--Filter-by Operator-->
+                    <attr tag="00720406" vr="CS">MEMBER_OF</attr>
+                </item>
+            </attr>
+            <!--Sorting Operations Sequence-->
+            <attr tag="00720600" vr="SQ">
+                <item>
+                    <!--Sort-by Category-->
+                    <attr tag="00720602" vr="CS">ALONG_AXIS</attr>
+                    <!--Sorting Direction-->
+                    <attr tag="00720604" vr="CS">INCREASING</attr>
+                </item>
+            </attr>
+            <!--Display Set Patient Orientation-->
+            <attr tag="00720700" vr="CS">L\P</attr>
+            <!--VOI Type-->
+            <attr tag="00720702" vr="CS">BRAIN</attr>
+            <!--Show Graphic Annotation Flag-->
+            <attr tag="00720712" vr="CS">YES</attr>
+        </item>
+    </attr>
+    <!--Partial Data Display Handling-->
+    <attr tag="00720208" vr="CS">MAINTAIN_LAYOUT</attr>
+    <!--Synchronized Scrolling Sequence-->
+    <attr tag="00720210" vr="SQ">
+        <item>
+            <!--Display Set Scrolling Group-->
+            <attr tag="00720212" vr="US">15\16</attr>
+        </item>
+        <item>
+            <!--Display Set Scrolling Group-->
+            <attr tag="00720212" vr="US">21\22</attr>
+        </item>
+    </attr>
+    <!--Navigation Indicator Sequence-->
+    <attr tag="00720214" vr="SQ"/>
+</dicom>

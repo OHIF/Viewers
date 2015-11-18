@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dicom>
+<attr tag="00080008" vr="CS" len="22">ORIGINAL\PRIMARY\AXIAL</attr>
+<attr tag="00430010" vr="LO" len="12">GEMS_PARM_01</attr>
+<attr tag="00431012" vr="SS" len="6">14\2\3</attr>
+<attr tag="00431018" vr="DS" len="26">0.085000\1.102000\0.095000</attr>
+<attr tag="0043101A" vr="SL" len="4">7</attr>
+<attr tag="00431026" vr="US" len="12">0\1\1\0\0\0</attr>
+<attr tag="00431027" vr="SH" len="6">/1.0:1</attr>
+<attr tag="00431040" vr="FL" len="4">178.07993</attr>
+</dicom>

@@ -1,17 +1,17 @@
 Package.describe({
-  name: "weiwei:hangingprotocols",
-  summary: "DICOM Haning Protocols",
-  version: '0.0.1'
+    name: "hangingprotocols",
+    summary: "Support functions for using DICOM Hanging Protocols",
+    version: '0.0.1'
 });
 
 Package.onUse(function (api) {
-  api.use("weiwei:dicomservices");
+    api.use('cornerstone');;
 
-  api.addFiles('server/namespace.js', 'server');
+    api.addFiles('server/namespace.js', 'server');
+    api.addFiles('server/dataDictionary.js', 'server');
+    api.addFiles('server/instanceDataToJsObject.js', 'server');
 
-  api.export("DICOMHP", 'server');
-});
-
-Package.onTest(function (api){
-  api.use(["weiwei:hangingprotocols"]);
+    api.export('instanceDataToJsObject', 'server');
+    api.export('TAG_DICT', 'server');
+    api.export("DICOMHP", ['client', 'server']);
 });
