@@ -5,11 +5,17 @@
         <tr>
             <th>Patient Name</th>
             <th>Patient ID</th>
-            <th>Accession #</th>
+            {{#unless isTouchDevice}}
+                <th>Accession #</th>
+            {{/unless}}
             <th>Study Date</th>
-            <th>Modality</th>
+            {{#unless isTouchDevice}}
+                <th>Modality</th>
+            {{/unless}}
             <th>Study Description</th>
-            <th># Images</th>
+            {{#unless isTouchDevice}}
+                <th># Images</th>
+            {{/unless}}
         </tr>
         </thead>
         <tbody id="studyListData">

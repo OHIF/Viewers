@@ -6,20 +6,27 @@
         <td>
             {{patientId}}
         </td>
-        <td>
-            {{accessionNumber}}
-        </td>
+        {{#unless isTouchDevice}}
+            <td>
+                {{accessionNumber}}
+            </td>
+        {{/unless}}
+
         <td>
             {{formatDA studyDate}}
         </td>
-        <td>
-            {{modalities}}
-        </td>
+        {{#unless isTouchDevice}}
+            <td>
+                {{modalities}}
+            </td>
+        {{/unless}}
         <td>
             {{studyDescription}}
         </td>
-        <td>
-            {{imageCount}}
-        </td>
+        {{#unless isTouchDevice}}
+            <td>
+                {{imageCount}}
+            </td>
+        {{/unless}}
     </tr>
 </template>

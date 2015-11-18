@@ -5,3 +5,9 @@ Template.worklistStudy.events({
         openNewTab(this.studyInstanceUid, title);
     }
 });
+
+Template.worklistStudy.helpers({
+    isTouchDevice: function() {
+        return isTouchDevice();
+    }
+});
