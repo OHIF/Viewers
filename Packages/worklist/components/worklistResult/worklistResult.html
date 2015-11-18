@@ -1,5 +1,4 @@
 <template name="worklistResult">
-    {{ #if studies.count }}
     <table id="tblStudyList" class="table table-striped noselect">
         <thead>
         <tr>
@@ -40,7 +39,7 @@
                     Modality
                 </div>
                 <div class="modality-input">
-                    <input type="search" class="form-control worklist-search" id="modality">
+                    <input type="search" class="form-control worklist-search" id="modality" style="visibility: hidden; ">
                 </div>
             </th>
             <th>
@@ -48,7 +47,7 @@
                     StudyDescription
                 </div>
                 <div class="study-description-input">
-                    <input type="search" class="form-control worklist-search" id="studyDescription">
+                    <input type="search" class="form-control worklist-search" id="studyDescription" style="visibility: hidden; ">
                 </div>
             </th>
             <th>
@@ -56,7 +55,7 @@
                     # Images
                 </div>
                 <div class="worklist-input">
-                    <input type="search" class="form-control worklist-search" id="numberOfImages">
+                    <input type="search" class="form-control worklist-search" id="numberOfImages" style="visibility: hidden; ">
                 </div>
             </th>
         </tr>
@@ -67,7 +66,7 @@
         {{/each}}
         </tbody>
     </table>
-    {{ else }}
+    {{ #unless studies.count }}
         {{ >loadingText }}
-    {{ /if }}
+    {{ /unless }}
 </template>

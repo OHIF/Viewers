@@ -19,6 +19,7 @@ var studyDateFrom;
 var studyDateTo;
 var checkFrom = false;
 var checkTo = false;
+var filter;
 
 /**
  * Transforms an input string into a search filter for
@@ -72,7 +73,7 @@ function convertStringToStudyDate (dateStr) {
  */
 function search() {
     // Create the filters to be used for the Worklist Search
-    var filter = {
+    filter = {
         patientName: getFilter($('#patientName').val()),
         patientId: getFilter($('#patientId').val()),
         accessionNumber: getFilter($('#patientAccessionNumber').val())
@@ -103,7 +104,6 @@ function search() {
             }
         });
     });
-
 }
 
 Template.worklistResult.events({
@@ -112,5 +112,6 @@ Template.worklistResult.events({
     },
     'onsearch': function(event) {
         search();
+
     }
 });
