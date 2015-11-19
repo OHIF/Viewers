@@ -18,14 +18,18 @@
                      <input type="search" class="form-control worklist-search" id="patientId">
                 </div>
             </th>
-            <th>
-                <div>
-                    Accession #
-                </div>
-                <div class="worklist-input">
-                    <input type="search" class="form-control worklist-search" id="accessionNumber">
-                </div>
-            </th>
+
+            {{#unless isTouchDevice}}
+                <th>
+                    <div>
+                        Accession #
+                    </div>
+                    <div class="worklist-input">
+                        <input type="search" class="form-control worklist-search" id="accessionNumber">
+                    </div>
+                </th>
+            {{/unless}}
+
             <th>
                 <div>
                     Study Date
@@ -34,14 +38,17 @@
                     <input type="search" class="form-control worklist-search" id="studyDate">
                 </div>
             </th>
-            <th>
-                <div>
-                    Modality
-                </div>
-                <div class="modality-input">
-                    <input type="search" class="form-control worklist-search" id="modality" style="visibility: hidden; ">
-                </div>
-            </th>
+
+            {{#unless isTouchDevice}}
+                <th>
+                    <div>
+                        Modality
+                    </div>
+                    <div class="modality-input">
+                        <input type="search" class="form-control worklist-search" id="modality" style="visibility: hidden; ">
+                    </div>
+                </th>
+            {{/unless}}
             <th>
                 <div>
                     StudyDescription
@@ -50,14 +57,17 @@
                     <input type="search" class="form-control worklist-search" id="studyDescription" style="visibility: hidden; ">
                 </div>
             </th>
-            <th>
-                <div>
-                    # Images
-                </div>
-                <div class="worklist-input">
-                    <input type="search" class="form-control worklist-search" id="numberOfImages" style="visibility: hidden; ">
-                </div>
-            </th>
+
+            {{#unless isTouchDevice}}
+                <th>
+                    <div>
+                        # Images
+                    </div>
+                    <div class="worklist-input">
+                        <input type="search" class="form-control worklist-search" id="numberOfImages" style="visibility: hidden; ">
+                    </div>
+                </th>
+            {{/unless}}
         </tr>
         </thead>
         <tbody id="studyListData">

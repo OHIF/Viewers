@@ -1,71 +1,71 @@
 #lesionTableContainer
-    width: 100%
-    height: 16%
-    position: absolute
-    
-    .lesionTable
+  width: 100%
+  height: 16%
+  position: relative
 
-      td, th
-        border: 1px solid white
-        border-collapse: collapse
-        width: 100px
+  .lesionTable
 
-      td.lesionNumber, th#thNumber
-        width: 70px
-      
-      td.location, th#thLocation
-        width: 250px
-      
-      td.target, th#thTarget
-        width: 70px
+    td, th
+      border: 1px solid white
+      border-collapse: collapse
+      width: 100px
+
+    td.lesionNumber, th#thNumber
+      width: 70px
+
+    td.location, th#thLocation
+      width: 250px
+
+    td.target, th#thTarget
+      width: 70px
 
 
-      thead
+    thead
+      width: 100%
+      height: 25px
+      display: block
+
+      tr
         width: 100%
-        height: 25px
-        display: block
-        
-        tr
-          width: 100%
 
-          th
-            border-bottom-width: 0
-            font-weight: normal
-            color:white
-            line-height: 15px
+        th
+          border-bottom-width: 0
+          font-weight: normal
+          color:white
+          line-height: 15px
+          text-align: center
+          margin: 0
+          padding: 5px
+          background-color: #424242
+
+
+    tbody
+      display: block
+      position: absolute
+      top: 25px
+      left: 0
+      right: 0
+      bottom: 0
+      overflow: auto
+      width: 100%
+
+      tr.lesionTableRow
+        width: 100%
+
+        &:nth-child(even)
+          background: #888
+        &:nth-child(odd)
+          background: #BBB
+        &:hover
+          cursor: pointer
+          background-color: #009BD2
+          color: white
+
+        td
+          border-bottom-width: 0
+          margin: 0
+          padding: 5px
+          line-height: 15px
+
+          &.lesionNumber,  &.target, &.lesionTableTimepointCell
             text-align: center
-            margin: 0
-            padding: 5px
-            background-color: #424242
-
-          
-      tbody
-        display: block
-        position: absolute
-        top: 25px
-        left: 0
-        right: 0
-        bottom: 0
-        overflow: auto
-        width: 100%
-
-        tr.lesionTableRow
-          width: 100%
-
-          &:nth-child(even)
-              background: #888
-          &:nth-child(odd)
-              background: #BBB
-          &:hover
-              cursor: pointer
-              background-color: #009BD2
-              color: white
-
-            td
-                border-bottom-width: 0
-                margin: 0
-                padding: 5px
-                line-height: 15px
-
-                &.lesionNumber,  &.target, &.lesionTableTimepointCell
-                    text-align: center

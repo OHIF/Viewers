@@ -9,6 +9,10 @@ Template.worklistResult.helpers({
      */
     studies : function() {
         return WorklistStudies.find({}, {sort: {patientName : 1, studyDate : 1}});
+    },
+
+    isTouchDevice: function() {
+        return isTouchDevice();
     }
 });
 
