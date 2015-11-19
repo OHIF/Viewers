@@ -83,6 +83,27 @@ Template.studyDateList.events({
             // with the value True, and insert it into the ViewerStudies Collection
             study.selected = true;
             ViewerStudies.insert(study);
+
+            var timepointID = uuid.v4();
+
+            var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+            if (timepoint) {
+                log.warn("A timepoint with that study date already exists!");
+                return;
+            }
+
+            var testTimepoint = Timepoints.findOne({});
+            if (testTimepoint && testTimepoint.patientId !== study.patientId) {
+                log.warn("Timepoints collection related to the wrong subject");
+                return;
+            }
+
+            log.info('Inserting a new timepoint');
+            Timepoints.insert({
+                patientId: study.patientId,
+                timepointID: timepointID,
+                timepointName: study.studyDate
+            });
         });
     }
 });

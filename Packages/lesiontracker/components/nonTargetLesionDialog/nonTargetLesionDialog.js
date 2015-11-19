@@ -1,8 +1,16 @@
 // This event sets lesion number for new lesion
 
 function setLesionNumberCallback(measurementData, eventData, doneCallback) {
+    // Get the current element's timepointID from the study date metadata
+    var element = eventData.element;
+    var enabledElement = cornerstone.getEnabledElement(element);
+    var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
+    var timepoint = Timepoints.findOne({timepointName: study.date});
+    if (!timepoint) {
+        return;
+    }
+    measurementData.timepointID = timepoint.timepointID;
 
-    measurementData.timepointID = $(eventData.element).data('timepointID');
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint
     var lesionNumber = measurementManagerDAL.getNewLesionNumber(measurementData.timepointID, isTarget=false);
@@ -16,7 +24,7 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
 // If there already exists a lesion with this specific lesion number,
 // related to the chosen location.
 
-function getNonTargetLesionLocationCallback(measurementData, eventData, doneCallback) {
+function getNonTargetLesionLocationCallback(measurementData, eventData) {
 
     // Get the non-target lesion location dialog
     var nonTargetlesionDialog = $("#nonTargetLesionLocationDialog");

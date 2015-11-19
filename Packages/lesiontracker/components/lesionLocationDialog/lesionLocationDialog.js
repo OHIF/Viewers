@@ -174,20 +174,6 @@ LesionLocations.insert({
     description: ""
 });
 
-var lastAddedLesionData;
-
-Template.lesionLocationDialog.onRendered(function() {
-    // Observe Measurements Collection Changes
-    Measurements.find().observe({
-        added: function(lesionData) {
-            lastAddedLesionData = lesionData;
-        },
-        changed: function(lesionData) {
-            console.log("lesionData has changed!");
-        }
-    });
-});
-
 Template.lesionLocationDialog.helpers({
     'lesionLocations': function() {
         return LesionLocations.find();

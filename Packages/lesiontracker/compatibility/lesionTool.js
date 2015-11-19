@@ -1,5 +1,4 @@
 var activeLesionMeasurementData;
-var timepointID;
 var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     "use strict";
@@ -40,7 +39,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var measurementData = createNewMeasurement(mouseEventData);
 
         var eventData = {
-            mouseButtonMask: mouseEventData.which,
+            mouseButtonMask: mouseEventData.which
         };
         
         // associate this data with this imageId so we can render it and manipulate it
@@ -188,10 +187,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             return;
         }
 
-        updateLesions(toolData, eventData);
-    }
-
-    function updateLesions(toolData, eventData) {
         // we have tool data for this element - iterate over each one and draw it
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);

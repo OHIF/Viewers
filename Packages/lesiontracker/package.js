@@ -10,9 +10,12 @@ Package.onUse(function (api) {
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
+    api.use('practicalmeteor:loglevel');
 
     // Our custom package
     api.use('cornerstone');
+
+    api.addFiles('log.js', ['client', 'server']);
 
     api.addFiles('compatibility/lesionTool.js', 'client', {bare: true});
     api.addFiles('compatibility/nonTargetTool.js', 'client', {bare: true});
@@ -43,14 +46,15 @@ Package.onUse(function (api) {
     api.addFiles('components/studyDateList/studyDateList.styl', 'client');
     api.addFiles('components/studyDateList/studyDateList.js', 'client');
 
+    // Server functions
+    api.addFiles('server/collections.js', 'server');
 
-
-
+    // Both client and server functions
+    api.addFiles('both/collections.js', ['client', 'server']);
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
 
-    api.export('Measurements', 'client');
-    api.export('Timepoints', 'client');
-
+    api.export('Measurements', ['client', 'server']);
+    api.export('Timepoints', ['client', 'server']);
 });

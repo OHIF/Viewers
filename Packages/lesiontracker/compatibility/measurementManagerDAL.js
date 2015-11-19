@@ -9,6 +9,10 @@ var measurementManagerDAL = (function() {
     // Add timepoint data to Measurements collection
     function addTimepointData(lesionData) {
         var timepoints = Timepoints.find().fetch();
+
+        var study = cornerstoneTools.metaData.get('study', lesionData.imageId);
+        var series = cornerstoneTools.metaData.get('study', lesionData.imageId);
+
         var timepointsObject = {};
 
         for (var i = 0; i < timepoints.length; i++) {
@@ -17,10 +21,12 @@ var measurementManagerDAL = (function() {
 
             var timepointObject;
             if (timepointId === lesionTimepointId) {
-                // Add real mesurement
+                // Add real measurement
                 timepointObject = {
                     longestDiameter: lesionData.measurementText,
                     imageId: lesionData.imageId,
+                    studyInstanceUid: study.instanceUid,
+                    seriesInstanceUid: series.instanceUid
                 };
             } else {
                 // Add null measurement
@@ -33,6 +39,7 @@ var measurementManagerDAL = (function() {
         }
 
         var lesionDataObject = {
+            patientId: timepoints[0].patientId,
             lesionUID: uuid.v4(),
             number: Measurements.find().count() + 1,
             lesionNumber: lesionData.lesionNumber,
@@ -47,10 +54,10 @@ var measurementManagerDAL = (function() {
     // Update timepoint data in Measurements collection
     function updateTimepointData(lesionData) {
         // Find the specific lesion to be updated
-        var measurement = Measurements.find({
+        var measurement = Measurements.findOne({
             lesionNumber: lesionData.lesionNumber,
             isTarget: lesionData.isTarget
-        }).fetch()[0];
+        });
 
         // If no such lesion exists, stop here
         if (!measurement) {
@@ -65,10 +72,7 @@ var measurementManagerDAL = (function() {
         timepoints[timepointID].longestDiameter = lesionData.measurementText;
         timepoints[timepointID].imageId = lesionData.imageId;
 
-        Measurements.update({
-            lesionNumber: lesionData.lesionNumber,
-            isTarget: lesionData.isTarget
-        }, {
+        Measurements.update(measurement._id, {
             $set: {
                 timepoints: timepoints
             }
@@ -81,13 +85,14 @@ var measurementManagerDAL = (function() {
             lesionNumber: lesionData.lesionNumber,
             isTarget: lesionData.isTarget
         });
+
         if (timepointData) {
             return true;
         }
         return false;
     }
 
-    // Adds new timepoint item to tiemepoints array
+    // Adds new timepoint item to timepoints array
     function addLesionData(lesionData) {
         if (hasTimepointData(lesionData)) {
             // Update data
@@ -115,6 +120,10 @@ var measurementManagerDAL = (function() {
             var measurement = measurements[i];
             var timepoints = measurement.timepoints;
 
+            if (!timepoints[timepointID]) {
+                return;
+            }
+
             if (timepoints[timepointID].longestDiameter === '') {
                 return measurement.lesionNumber;
             } else {
@@ -130,10 +139,10 @@ var measurementManagerDAL = (function() {
             return;
         }
 
-        var measurement = Measurements.find({
+        var measurement = Measurements.findOne({
             lesionNumber: lesionData.lesionNumber,
             isTarget: lesionData.isTarget
-        }).fetch()[0];
+        });
 
         return measurement.locationUID;
     }

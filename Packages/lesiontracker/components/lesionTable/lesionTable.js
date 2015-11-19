@@ -1,17 +1,20 @@
-Measurements = new Meteor.Collection(null);
-Timepoints = new Meteor.Collection(null);
-
 // Activate selected lesions when lesion table row is clicked
 function updateLesions(e) {
     // lesionNumber of measurement = id of row
     var lesionNumber = parseInt($(e.currentTarget).attr("id"), 10);
+
+    // TODO= Clarify this
     var isTarget = $(e.currentTarget).find('td').eq(2).html().trim() === 'N'?false:true;
 
     // Find data for specific lesion
-    var measurementData = Measurements.find({
+    var measurementData = Measurements.findOne({
         lesionNumber: lesionNumber,
         isTarget: isTarget
-    }).fetch()[0];
+    });
+
+    if (!measurementData) {
+        return;
+    }
 
     var timepoints = measurementData.timepoints;
 
@@ -19,7 +22,14 @@ function updateLesions(e) {
         // Get the timepointID related to the image viewer viewport
         // from the DOM itself. This will be changed later when a
         // real association between viewports and timepoints is created.
-        var timepointID = $(element).data('timepointID');
+        var enabledElement = cornerstone.getEnabledElement(element);
+        var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
+        var timepoint = Timepoints.findOne({timepointName: study.date});
+        if (!timepoint) {
+            return;
+        }
+        var timepointID = timepoint.timepointID;
+
         var timepointObject = timepoints[timepointID];
 
         // Defines event data
@@ -53,28 +63,6 @@ function updateLesions(e) {
 
     });
 }
-
-Template.lesionTable.onRendered(function() {
-    // Observe ViewerStudies Collection Changes
-    // Note: This may not be the best place for this
-    ViewerStudies.find().observe({
-        added: function(study) {
-            log.info('ViewerStudies added to');
-            var timepointID = uuid.v4();
-
-            var timepoint = Timepoints.findOne({timepointName: study.studyDate});
-            if (timepoint) {
-                log.warn("A timepoint with that study date already exists!");
-                return;
-            }
-
-            Timepoints.insert({
-                timepointID: timepointID,
-                timepointName: study.studyDate
-            });
-        }
-    });
-});
 
 Template.lesionTable.helpers({
     'measurement': function() {

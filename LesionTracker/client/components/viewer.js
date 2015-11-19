@@ -16,12 +16,8 @@ function resizeViewports() {
     }, 1);
 }
 
-Template.viewer.helpers({
-    'studyDateIsShown':function(){
-        return {studyDateIsShown: true};
-    }
-});
 Template.viewer.onCreated(function() {
+    var self = this;
     log.info("viewer onCreated");
 
     OHIF = {
@@ -88,6 +84,7 @@ Template.viewer.onCreated(function() {
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
+
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies = new Meteor.Collection(null);
     this.data.studies.forEach(function(study) {
@@ -95,8 +92,52 @@ Template.viewer.onCreated(function() {
         ViewerStudies.insert(study);
     });
 
+    var patientId = this.data.studies[0].patientId;
+    Session.set('patientId', patientId);
+
+    timepointsAdded = false;
+    self.autorun(function() {
+        var patientId = Session.get('patientId');
+        self.subscribe('timepoints', patientId);
+        self.subscribe('measurements', patientId);
+
+        if (!self.subscriptionsReady()) {
+            return;
+        }
+
+        if (timepointsAdded === true) {
+            return;
+        }
+
+        ViewerStudies.find().forEach(function(study) {
+            var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+            if (timepoint) {
+                log.warn("A timepoint with that study date already exists!");
+                return;
+            }
+
+            var timepointID = uuid.v4();
+
+            var testTimepoint = Timepoints.findOne({});
+            if (testTimepoint && testTimepoint.patientId !== study.patientId) {
+                log.warn("Timepoints collection related to the wrong subject");
+                return;
+            }
+
+            log.info('Inserting a new timepoint');
+            Timepoints.insert({
+                patientId: study.patientId,
+                timepointID: timepointID,
+                timepointName: study.studyDate
+            });
+        });
+
+        timepointsAdded = true;
+    });
+
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
 });
+
 
 Template.viewer.onDestroyed(function() {
     log.info("onDestroyed");
