@@ -48,11 +48,9 @@ function getLesionLocationCallback(measurementData, eventData, doneCallback) {
         // Fire the doneCallback with the lesion number
         doneCallback(lesionNumber);
 
-        // Get the current value of the select option box
-        var currentValue = selector.find("option:selected").val();
-
         // Select the first option for the next time the dialog is opened
-        selector.val(currentValue);
+        selector.find("option:first").prop("selected", true);
+
     }
 
     // Attach keypress handlers so the user can close with the Enter button
