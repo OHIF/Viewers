@@ -151,5 +151,29 @@ Template.viewportOverlay.helpers({
     },
     numImages : function() {
         return getSeries.call(this, 'numImages');
+    },
+    prior : function() {
+        // This helper is updated whenever a new image is displayed in the viewport
+        Session.get('CornerstoneNewImage' + this.viewportIndex);
+        if (!this.imageId) {
+            return;
+        }
+
+        // Make sure there are more than two studies loaded in the viewer
+        //
+        // Here we sort the collection in ascending order by study date, so
+        // that we can obtain the oldest study as the first element of the array
+        //
+        // TODO= Find out if we should encode studyDate as a Date in the ViewerStudies Collection
+        var viewportStudies = ViewerStudies.find({}, {sort: {studyDate: 1}});
+        if (viewportStudies.count() < 2) {
+            return;
+        }
+
+        // Get study data
+        var study = cornerstoneTools.metaData.get('study', this.imageId);
+        if (study.instanceUid === viewportStudies.fetch()[0].studyInstanceUid) {
+            return 'Prior';
+        }
     }
 });
