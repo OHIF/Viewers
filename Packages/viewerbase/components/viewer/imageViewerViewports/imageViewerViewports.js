@@ -1,13 +1,4 @@
-Template.imageViewerViewports.onRendered(function() {
-    this.autorun(function() {
-        var studies = Session.get('studies');
-        var eventType = "ViewerBaseStudyLoaded";
-        var eventData = {
-            studies: studies
-        };
-        $(document).trigger(eventType, eventData);
-    });
-});
+ViewerWindows = new Meteor.Collection(null);
 
 Template.imageViewerViewports.helpers({
     height: function() {
@@ -18,7 +9,9 @@ Template.imageViewerViewports.helpers({
         var viewportColumns = this.viewportColumns || 1;
         return 100 / viewportColumns;
     },
-    viewportArray: function() {
+    viewerWindow: function() {
+        ViewerWindows = new Meteor.Collection(null);
+
         log.info("imageViewerViewports viewportArray");
 
         var viewportRows = this.viewportRows || 1;
@@ -45,13 +38,11 @@ Template.imageViewerViewports.helpers({
 
         var inputData = {
             viewportColumns: viewportColumns,
-            viewportRows: viewportRows,
-            studies: ViewerStudies
+            viewportRows: viewportRows
         };
 
         var hangingProtocolViewportData = WindowManager.getHangingProtocol(inputData);
-        
-        var array = [];
+
         var numViewports = viewportRows * viewportColumns;
         for (var i=0; i < numViewports; ++i) {
             var data = {
@@ -61,6 +52,7 @@ Template.imageViewerViewports.helpers({
                 viewportColumns: viewportColumns,
                 viewportRows: viewportRows
             };
+
             if (viewportData && viewportData[i]) {
                 data.seriesInstanceUid = viewportData[i].seriesInstanceUid;
                 data.studyInstanceUid = viewportData[i].studyInstanceUid;
@@ -72,9 +64,10 @@ Template.imageViewerViewports.helpers({
                 data.currentImageIdIndex = hangingProtocolViewportData[i].currentImageIdIndex;
                 data.viewport = hangingProtocolViewportData[i].viewport;
             }
-            array.push(data);
+
+            ViewerWindows.insert(data);
         }
-        return array;
+        return ViewerWindows.find();
     }
 });
 

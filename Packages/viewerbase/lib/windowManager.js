@@ -177,7 +177,7 @@ function findSeries(displaySet, study) {
 function applyDICOMHangingProtocol(hangingProtocol, inputData) {
     log.info('applyDICOMHangingProtocol');
     var presentationGroup = inputData.DisplaySetPresentationGroup || 1;
-    var studies = inputData.studies;
+    var studies = ViewerStudies;
     var currentDisplaySets = findSetsByPresentationGroup(hangingProtocol.DisplaySetsSequence, presentationGroup);
 
     var viewportData = [];
@@ -188,7 +188,7 @@ function applyDICOMHangingProtocol(hangingProtocol, inputData) {
 
         studyInstanceUid = findStudy(displaySet, studies);
 
-        var study = studies.findOne({studyInstanceUid: studyInstanceUid});
+        var study = ViewerStudies.findOne({studyInstanceUid: studyInstanceUid});
         seriesInstanceUid = findSeries(displaySet, study);
 
         viewportData[index] = {
@@ -213,7 +213,7 @@ function applyDICOMHangingProtocol(hangingProtocol, inputData) {
  * @returns {Array}
  */
 function defaultHangingProtocol(inputData) {
-    var studies = inputData.studies.find().fetch();
+    var studies = ViewerStudies.find().fetch();
     var viewportRows = inputData.viewportRows;
     var viewportColumns = inputData.viewportColumns;
 
@@ -259,7 +259,7 @@ var hangingProtocol;
 
 function getHangingProtocol(inputData) {
     // TODO = Update this to use Collection logic
-    var studies = inputData.studies.find().fetch();
+    var studies = ViewerStudies.find().fetch();
 
     if (!studies.length) {
         log.warn("No studies provided to Hanging Protocol");

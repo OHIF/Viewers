@@ -8,9 +8,15 @@ function getLesionLocationCallback(measurementData, eventData, doneCallback) {
     // Find the select option box
     var selector = lesionDialog.find("select#selectLesionLocation");
 
-    // Get the current element's timepointID
-    // TODO: Change this when we are no longer storing timepointID in the viewport element DOM data
-    measurementData.timepointID = $(eventData.element).data('timepointID');
+    // Get the current element's timepointID from the study date metadata
+    var element = eventData.element;
+    var enabledElement = cornerstone.getEnabledElement(element);
+    var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
+    var timepoint = Timepoints.findOne({timepointName: study.date});
+    if (!timepoint) {
+        return;
+    }
+    measurementData.timepointID = timepoint.timepointID;
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint

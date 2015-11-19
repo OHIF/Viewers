@@ -1,11 +1,11 @@
 <template name="studyDateList">
     <div class="studyDateList">
         <label>Study Date:</label>
+        <span class="loading"><i class="fa fa-spinner fa-spin"></i></span>
         <select id="selectStudyDate">
-            {{#each patientStudies}}
-                <option value="{{studyInstanceUid}}">{{studyDate}}</option>
+            {{#each relatedStudies}}
+                <option value="{{studyInstanceUid}}" selected={{selected}}>{{formatDA studyDate}}</option>
             {{/each}}
         </select>
     </div>
-
 </template>

@@ -1,65 +1,67 @@
-
-Template.studyDateList.onCreated(function(){
-
-    // All studies of this patient at different dates
-    this.patientStudies = [];
-    this.selectedDate = "";
-});
-
-
-Template.studyDateList.onRendered(function(){
-
-    // Add Study dates to Timepoints
-    this.patientStudies.forEach(function(study) {
-        Timepoints.insert({
-            timepointID: uuid.v4(),
-            timepointName: study.studyDate
-        });
-    });
-
-    // Selected date option in combobox
-    var self = this;
-    $('#selectStudyDate option').filter(function () {
-        if ($(this).html() === self.selectedDate) {
-            $(this).prop('selected', true);
-        }
-    });
-
-});
-
 Template.studyDateList.helpers({
-    patientStudies: function(){
-        var self = Template.instance();
-
-        var studyData = this.studies[0]; // study which is loaded in tab
-        self.selectedDate = studyData.studyDate;
-
+    /**
+     * Returns an array of studies that are related to the current study by patient ID.
+     * The value for 'selected' for the currently loaded study is set to true, so that
+     * this becomes the current option in the combo box.
+     *
+     * @returns {*}
+     */
+    relatedStudies: function() {
         // TODO= Fix this! This won't work to retrieve all studies
         // related to this patient. We will need to do a real search
         // since the WorklistStudies Collection only contains the studies on-screen
 
-        var studies = WorklistStudies.find({}).fetch(); // All studies list
-        var patientStudies = []; // Holds studies of patient
+        // Check which study is currently loaded into the study browser
+        var currentStudyInBrowser = ViewerStudies.findOne({selected: true});
 
-        // Get all studies of patient with patientID
-        studies.forEach(function(study) {
-            if (studyData.patientId === study.patientId) {
-                patientStudies.push(study);
+        // Find studies which have the same patientId as the currently selected study
+        var relatedStudies = WorklistStudies.find({patientId: currentStudyInBrowser.patientId}).fetch();
+
+        // Modify the array of related studies so the default option is the currently selected study
+        relatedStudies.forEach(function(study) {
+            // If the studyInstanceUid matches that of the current study in the browser,
+            // Set this to 'selected', so that it becomes the default option
+            if (study.studyInstanceUid === currentStudyInBrowser.studyInstanceUid) {
+                study.selected = true;
             }
         });
 
-        self.patientStudies = patientStudies;
-        return patientStudies;
+        // Use this array to populate the combo box
+        return relatedStudies;
     }
 });
 
 
 Template.studyDateList.events({
-    'change select#selectStudyDate': function(e, template) {
-        var studyInstanceUid = $(e.currentTarget).val();
+    /**
+     * When the study date selector combo box is changed, we will
+     * hide the select box, temporarily display a loading sign, and grab
+     * the selected study. Once the study has been retrieved it is added
+     * into the ViewerStudies collection and set as selected. This reactively
+     * populated the thumbnail browser.
+     *
+     * @param e The select box change event
+     */
+    'change select#selectStudyDate': function(e) {
+        var selectBox = $(e.currentTarget);
+
+        var studyInstanceUid = selectBox.val();
+
+        // Hide the select box
+        selectBox.css('display', 'none');
+
+        // Show the loading indicator
+        var loadingIndicator = selectBox.siblings('.loading');
+        loadingIndicator.css('display', 'block');
 
         Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
             sortStudy(study);
+
+            // Hide the loading indicator
+            loadingIndicator.css('display', 'none');
+
+            // Show the select box again
+            selectBox.css('display', 'block');
 
             // Set "Selected" to false for the entire collection
             ViewerStudies.update({},

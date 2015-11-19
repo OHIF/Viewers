@@ -1,9 +1,9 @@
 <template name="imageViewerViewports">
     <div id='imageViewerViewports'>
-        {{ #each viewportArray }}
+        {{ #each viewerWindow }}
         <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
             <div class="removable">
-                {{ >imageViewerViewport viewportIndex=viewportIndex seriesInstanceUid=seriesInstanceUid studyInstanceUid=studyInstanceUid currentImageIdIndex=currentImageIdIndex viewport=viewport}}
+                {{ >imageViewerViewport}}
             </div>
         </div>
         {{ /each }}

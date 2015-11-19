@@ -55,29 +55,26 @@ function updateLesions(e) {
 }
 
 Template.lesionTable.onRendered(function() {
-    // For the moment we will associate the timepoint
-    // with the viewport element by storing the timepointID
-    // inside the element's DOM data. This is temporary.
-    $(".imageViewerViewport").each(function(index, element) {
-        var timepointID = uuid.v4();
+    // Observe ViewerStudies Collection Changes
+    // Note: This may not be the best place for this
+    ViewerStudies.find().observe({
+        added: function(study) {
+            log.info('ViewerStudies added to');
+            var timepointID = uuid.v4();
 
-        var timepointName = "Baseline";
-        if (index > 0) {
-            timepointName = "Current"; //"Follow Up "+i;
+            var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+            if (timepoint) {
+                log.warn("A timepoint with that study date already exists!");
+                return;
+            }
+
+            Timepoints.insert({
+                timepointID: timepointID,
+                timepointName: study.studyDate
+            });
         }
-
-
-        // FUTURE = On load series data into viewport, create a new timepoint
-        // unless it already exists
-        Timepoints.insert({
-            timepointID: timepointID,
-            timepointName: timepointName
-        });
-
-        $(element).data('timepointID', timepointID);
     });
 });
-
 
 Template.lesionTable.helpers({
     'measurement': function() {
