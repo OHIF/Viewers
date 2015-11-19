@@ -67,6 +67,42 @@ Template.imageViewerViewports.helpers({
 
             ViewerWindows.insert(data);
         }
+
+
+        // Here we will find out if we need to load any other studies into the viewer
+
+        // We will make a list of unique studyInstanceUids
+        var uniqueStudyInstanceUids = [];
+
+        // Meteor doesn't support Mongo's 'distinct' function, so we have to do this in a loop
+        ViewerWindows.find().forEach(function(window) {
+            var studyInstanceUid = window.studyInstanceUid;
+            if (!studyInstanceUid) {
+                return;
+            }
+
+            // If this studyInstanceUid is already in the list, stop here
+            if (uniqueStudyInstanceUids.indexOf(studyInstanceUid) > -1) {
+                return;
+            }
+
+            // Otherwise, add it to the list
+            uniqueStudyInstanceUids.push(studyInstanceUid);
+
+            // If any of the associated studies is not already loaded, load it now
+            var loadedStudy = ViewerStudies.findOne({studyInstanceUid: studyInstanceUid});
+            if (!loadedStudy) {
+                // Load the study
+                Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
+                    // Sort the study's series and instances by series and instance number
+                    sortStudy(study);
+
+                    // Insert it into the ViewerStudies Collection
+                    ViewerStudies.insert(study);
+                });
+            }
+        });
+
         return ViewerWindows.find();
     }
 });
