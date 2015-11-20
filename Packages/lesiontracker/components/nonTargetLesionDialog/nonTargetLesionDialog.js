@@ -4,8 +4,10 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
     // Get the current element's timepointID from the study date metadata
     var element = eventData.element;
     var enabledElement = cornerstone.getEnabledElement(element);
-    var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
-    var timepoint = Timepoints.findOne({timepointName: study.date});
+    var imageId = enabledElement.image.imageId;
+
+    var study = cornerstoneTools.metaData.get('study', imageId);
+    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
     if (!timepoint) {
         return;
     }

@@ -28,10 +28,12 @@ function updateLesions(e) {
         if (!enabledElement) {
             return;
         }
-        var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
-        var series = cornerstoneTools.metaData.get('series', enabledElement.image.imageId);
 
-        var timepoint = Timepoints.findOne({timepointName: study.date});
+        var imageId = enabledElement.image.imageId;
+        var study = cornerstoneTools.metaData.get('study', imageId);
+        var series = cornerstoneTools.metaData.get('series', imageId);
+
+        var timepoint = Timepoints.findOne({timepointName: study.studyDate});
         if (!timepoint) {
             return;
         }
@@ -41,7 +43,7 @@ function updateLesions(e) {
 
         // TODO: Bring series in correct imageViewport
 
-        if (timepointObject.seriesInstanceUid !== series.instanceUid) {
+        if (timepointObject.seriesInstanceUid !== series.seriesInstanceUid) {
             console.log("not in same series");
             var newSeriesData  = {
                 seriesInstanceUid: timepointObject.seriesInstanceUid,

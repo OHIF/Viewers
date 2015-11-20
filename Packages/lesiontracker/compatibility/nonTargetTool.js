@@ -83,10 +83,15 @@
     }
 
     function createNewMeasurement(mouseEventData) {
+        var imageId = mouseEventData.image.imageId;
 
-        // Get seriesInstanceUId & studyInstanceUId
-        var seriesInstanceUid = cornerstoneTools.metaData.get('series', mouseEventData.image.imageId).instanceUid;
-        var studyInstanceUid = cornerstoneTools.metaData.get('study', mouseEventData.image.imageId).instanceUid;
+        // Get studyInstanceUid
+        var study = cornerstoneTools.metaData.get('study', imageId);
+        var studyInstanceUid = study.studyInstanceUid;
+
+        // Get seriesInstanceUid
+        var series = cornerstoneTools.metaData.get('series', imageId);
+        var seriesInstanceUid = series.seriesInstanceUid;
 
         // create the measurement data for this tool with the end handle activated
         var measurementData = {

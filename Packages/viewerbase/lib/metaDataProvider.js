@@ -22,17 +22,18 @@ addMetaData = function(imageId, data) {
     var metaData = {};
 
     metaData.study = {
-        instanceUid: studyMetaData.studyInstanceUid,
-        date: studyMetaData.studyDate,
-        time: studyMetaData.studyTime,
-        description: studyMetaData.studyDescription
+        patientId: studyMetaData.patientId,
+        studyInstanceUid: studyMetaData.studyInstanceUid,
+        studyDate: studyMetaData.studyDate,
+        studyTime: studyMetaData.studyTime,
+        studyDescription: studyMetaData.studyDescription
     };
 
     metaData.series = {
-        description: seriesMetaData.seriesDescription,
-        number: seriesMetaData.seriesNumber,
+        seriesDescription: seriesMetaData.seriesDescription,
+        seriesNumber: seriesMetaData.seriesNumber,
         modality: seriesMetaData.modality,
-        instanceUid: seriesMetaData.seriesInstanceUid,
+        seriesInstanceUid: seriesMetaData.seriesInstanceUid,
         numImages: numImages
     };
 
@@ -42,7 +43,7 @@ addMetaData = function(imageId, data) {
         photometricInterpretation: instanceMetaData.photometricInterpretation,
         sopInstanceUid: instanceMetaData.sopInstanceUid,
         sopClassUid: instanceMetaData.sopClassUid,
-        number: instanceMetaData.instanceNumber,
+        instanceNumber: instanceMetaData.instanceNumber,
         index: imageIndex
     };
 

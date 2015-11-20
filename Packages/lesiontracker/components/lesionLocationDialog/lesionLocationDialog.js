@@ -12,7 +12,7 @@ function getLesionLocationCallback(measurementData, eventData, doneCallback) {
     var element = eventData.element;
     var enabledElement = cornerstone.getEnabledElement(element);
     var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
-    var timepoint = Timepoints.findOne({timepointName: study.date});
+    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
     if (!timepoint) {
         return;
     }

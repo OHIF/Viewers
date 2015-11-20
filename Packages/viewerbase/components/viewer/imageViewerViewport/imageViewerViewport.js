@@ -264,8 +264,6 @@ function loadSeriesIntoViewport(data) {
         // This is used to update the value of the "active viewport", when the user interacts
         // with a new viewport element
         function sendActivationTrigger(e, eventData) {
-            log.info('imageViewerViewport sendActivationTrigger');
-
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
@@ -274,6 +272,8 @@ function loadSeriesIntoViewport(data) {
             if (viewportIndex === activeViewportIndex) {
                 return;
             }
+
+            log.info('imageViewerViewport sendActivationTrigger');
 
             // Otherwise, trigger an 'ActivateViewport' event to be handled by the Template event
             // handler

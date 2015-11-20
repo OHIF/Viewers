@@ -172,7 +172,7 @@ Template.viewportOverlay.helpers({
 
         // Get study data
         var study = cornerstoneTools.metaData.get('study', this.imageId);
-        if (study.instanceUid === viewportStudies.fetch()[0].studyInstanceUid) {
+        if (study.studyInstanceUid === viewportStudies.fetch()[0].studyInstanceUid) {
             return 'Prior';
         }
     }
