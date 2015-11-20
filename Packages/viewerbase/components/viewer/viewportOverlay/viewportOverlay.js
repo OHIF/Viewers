@@ -129,22 +129,22 @@ Template.viewportOverlay.helpers({
         return getPatient.call(this, 'id');
     },
     studyDate : function() {
-        return getStudy.call(this, 'date');
+        return getStudy.call(this, 'studyDate');
     },
     studyTime : function() {
-        return getStudy.call(this, 'time');
+        return getStudy.call(this, 'studyTime');
     },
     studyDescription : function() {
-        return getStudy.call(this, 'description');
+        return getStudy.call(this, 'studyDescription');
     },
     seriesDescription : function() {
-        return getSeries.call(this, 'description');
+        return getSeries.call(this, 'seriesDescription');
     },
     seriesNumber : function() {
-        return getSeries.call(this, 'number');
+        return getSeries.call(this, 'seriesNumber');
     },
     imageNumber : function() {
-        return getInstance.call(this, 'number');
+        return getInstance.call(this, 'instanceNumber');
     },
     imageIndex : function() {
         return getInstance.call(this, 'index');
