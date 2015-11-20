@@ -86,6 +86,9 @@ Package.onUse(function (api) {
     api.addFiles('components/viewer/playClipButton/playClipButton.html', 'client');
     api.addFiles('components/viewer/playClipButton/playClipButton.js', 'client');
 
+    api.addFiles('components/viewer/hangingProtocolButtons/hangingProtocolButtons.html', 'client');
+    api.addFiles('components/viewer/hangingProtocolButtons/hangingProtocolButtons.js', 'client');
+
     api.addFiles('components/viewer/layoutButton/layoutButton.html', 'client');
 
     api.addFiles('components/viewer/toolbar/toolbar.html', 'client');

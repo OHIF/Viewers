@@ -69,11 +69,44 @@ function getMammoHangingProtocol() {
         // Skip Nominal Screen Definition Sequence for now,
 
         // http://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.23.3.html
-        DisplaySetsSequence: [{
+        DisplaySetsSequence: [
+        {
             // Left side image (R MLO Current)
             ImageSetNumber: 1,
             DisplaySetNumber: 1,
             DisplaySetPresentationGroup: 1,
+            DisplaySetPresentationGroupDescription: 'Current Mediolateral only',
+            ImageBoxesSequence: [{
+                DisplayEnvironmentSpatialPosition: '0\0.2\0.16667\0',
+                ImageBoxNumber: 1,
+                ImageBoxLayoutType: 'STACK'
+            }],
+            FilterOperationsSequence: [{
+                SelectorAttributeVR: 'CS',
+                SelectorCSValue: 'R CC',
+                FilterByCategory: 'SERIES_DESCRIPTION',
+                FilterByOperator: 'MEMBER_OF'
+            }],
+        }, {
+            // Right side image (L MLO Current)
+            ImageSetNumber: 1,
+            DisplaySetNumber: 1,
+            DisplaySetPresentationGroup: 1,
+            ImageBoxesSequence: [{
+                ImageBoxNumber: 1,
+                ImageBoxLayoutType: 'STACK'
+            }],
+            FilterOperationsSequence: [{
+                SelectorAttributeVR: 'CS',
+                SelectorCSValue: 'L CC',
+                FilterByCategory: 'SERIES_DESCRIPTION',
+                FilterByOperator: 'MEMBER_OF'
+            }]
+        }, {
+            // Left side image (R MLO Current)
+            ImageSetNumber: 1,
+            DisplaySetNumber: 1,
+            DisplaySetPresentationGroup: 2,
             DisplaySetPresentationGroupDescription: 'Current Mediolateral only',
             ImageBoxesSequence: [{
                 DisplayEnvironmentSpatialPosition: '0\0.2\0.16667\0',
@@ -97,7 +130,7 @@ function getMammoHangingProtocol() {
             // Right side image (L MLO Current)
             ImageSetNumber: 1,
             DisplaySetNumber: 1,
-            DisplaySetPresentationGroup: 1,
+            DisplaySetPresentationGroup: 2,
             ImageBoxesSequence: [{
                 ImageBoxNumber: 1,
                 ImageBoxLayoutType: 'STACK'
@@ -254,8 +287,8 @@ function defaultHangingProtocol(inputData) {
     return viewportData;
 }
 
-var currentStage = 0;
 var hangingProtocol;
+var presentationGroup = 1;
 
 function getHangingProtocol(inputData) {
     // TODO = Update this to use Collection logic
@@ -278,9 +311,11 @@ function getHangingProtocol(inputData) {
 
     if (modalities.indexOf('MG') > -1) {
         var hangingProtocol = getMammoHangingProtocol();
+        Session.set('WindowManagerPresentationGroup', presentationGroup);
         return applyDICOMHangingProtocol(hangingProtocol, inputData);
     }
 
+    Session.set('WindowManagerPresentationGroup', undefined);
     return defaultHangingProtocol(inputData);
 }
 
@@ -288,9 +323,50 @@ function setHangingProtocol(protocol) {
     hangingProtocol = protocol;
 }
 
+function previousPresentationGroup() {
+    presentationGroup--;
+    presentationGroup = Math.max(1, presentationGroup);
+
+    log.info('previousPresentationGroup: ' + presentationGroup);
+    Session.set('WindowManagerPresentationGroup', presentationGroup);
+    Session.set('UseHangingProtocol', Random.id());
+}
+
+function nextPresentationGroup() {
+    var numPresentationGroups = getNumPresentationGroups();
+
+    presentationGroup++;
+    presentationGroup = Math.min(numPresentationGroups, presentationGroup);
+
+    log.info('nextPresentationGroup: ' + presentationGroup);
+    Session.set('WindowManagerPresentationGroup', presentationGroup);
+    Session.set('UseHangingProtocol', Random.id());
+}
+
+function getNumPresentationGroups() {
+    // TODO=Pull this information from the largest
+    // value of DisplaySetPresentationGroup in the DisplaySetsSequence
+    // after the DICOM-HP is parsed
+    return 2;
+}
+
+function getCurrentPresentationGroup() {
+    return presentationGroup;
+}
+
+function setCurrentPresentationGroup(groupNumber) {
+    // Unused for now
+    presentationGroup = groupNumber;
+}
+
 WindowManager = {
     setHangingProtocol: setHangingProtocol,
-    getHangingProtocol: getHangingProtocol
+    getHangingProtocol: getHangingProtocol,
+    getNumPresentationGroups: getNumPresentationGroups,
+    setCurrentPresentationGroup: setCurrentPresentationGroup,
+    getCurrentPresentationGroup: getCurrentPresentationGroup,
+    nextPresentationGroup: nextPresentationGroup,
+    previousPresentationGroup: previousPresentationGroup
 };
 
 WindowManager.setHangingProtocol(defaultHangingProtocol);

@@ -101,7 +101,9 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             windowWidth: DICOMWeb.getString(instance['00281051']),
             rescaleIntercept: DICOMWeb.getNumber(instance['00281052']),
             rescaleSlope: DICOMWeb.getNumber(instance['00281053']),
-            sourceImageInstanceUid: getSourceImageInstanceUid(instance)
+            sourceImageInstanceUid: getSourceImageInstanceUid(instance),
+            laterality: DICOMWeb.getString(instance['00200062']),
+            viewPosition: DICOMWeb.getString(instance['00185101']),
         };
 
         if (server.imageRendering === 'wadouri') {

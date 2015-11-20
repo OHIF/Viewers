@@ -44,6 +44,8 @@ addMetaData = function(imageId, data) {
         sopInstanceUid: instanceMetaData.sopInstanceUid,
         sopClassUid: instanceMetaData.sopClassUid,
         instanceNumber: instanceMetaData.instanceNumber,
+        laterality: instanceMetaData.laterality,
+        viewPosition: instanceMetaData.viewPosition,
         index: imageIndex
     };
 

@@ -152,5 +152,11 @@ Template.toolbar.helpers({
             return this.toolbarOptions.includeLayoutButton;
         }
         return true;
+    },
+    'includeHangingProtocolButtons': function() {
+        if (this.toolbarOptions && this.toolbarOptions.includeHangingProtocolButtons !== undefined) {
+            return this.toolbarOptions.includeHangingProtocolButtons;
+        }
+        return true;
     }
 });

@@ -41,7 +41,11 @@ Template.imageViewerViewports.helpers({
             viewportRows: viewportRows
         };
 
+        inputData.DisplaySetPresentationGroup = Session.get('WindowManagerPresentationGroup');
         var hangingProtocolViewportData = WindowManager.getHangingProtocol(inputData);
+        if (Session.get('UseHangingProtocol')) {
+            viewportData = hangingProtocolViewportData;
+        }
 
         var numViewports = viewportRows * viewportColumns;
         for (var i=0; i < numViewports; ++i) {

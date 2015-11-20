@@ -48,6 +48,12 @@ Template.viewer.onCreated(function() {
             }
             OHIF.viewer.isPlaying[viewportIndex] = !OHIF.viewer.isPlaying[viewportIndex];
             Session.set('UpdateCINE', Random.id());
+        },
+        previousPresentationGroup: function() {
+            WindowManager.previousPresentationGroup();
+        },
+        nextPresentationGroup: function() {
+            WindowManager.nextPresentationGroup();
         }
     };
 
