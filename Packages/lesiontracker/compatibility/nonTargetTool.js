@@ -83,6 +83,11 @@
     }
 
     function createNewMeasurement(mouseEventData) {
+
+        // Get seriesInstanceUId & studyInstanceUId
+        var seriesInstanceUid = cornerstoneTools.metaData.get('series', mouseEventData.image.imageId).instanceUid;
+        var studyInstanceUid = cornerstoneTools.metaData.get('study', mouseEventData.image.imageId).instanceUid;
+
         // create the measurement data for this tool with the end handle activated
         var measurementData = {
             visible: true,
@@ -110,6 +115,8 @@
                 }
             },
             imageId: mouseEventData.image.imageId,
+            seriesInstanceUid: seriesInstanceUid,
+            studyInstanceUid: studyInstanceUid,
             measurementText: '',
             isTarget: false,
             uid: uuid.v4()
@@ -372,6 +379,8 @@
         var enabledElement = eventObject.enabledElement;
         var isTarget = eventObject.lesionData.isTarget;
         var lesionNumber = eventObject.lesionData.lesionNumber;
+        var seriesInstanceUid = eventObject.lesionData.seriesInstanceUid;
+        var studyInstanceUid = eventObject.lesionData.studyInstanceUid;
         var type = eventObject.type;
 
         // if we have no toolData for this element, return immediately as there is nothing to do
@@ -388,7 +397,12 @@
                 var data = toolData.data[i];
 
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventObject.lesionNumber && eventObject.type !== "active" && !isTarget) {
+                if (data.lesionNumber === lesionNumber
+                    && eventObject.type !== "active"
+                    && !isTarget
+                    && data.seriesInstanceUid === seriesInstanceUid
+                    && data.studyInstanceUid === studyInstanceUid) {
+
                     data.visible = false;
                     deletedDataIndex = i;
                 }
@@ -401,7 +415,12 @@
             for (var i = 0; i < toolData.data.length; i++) {
                 var data = toolData.data[i];
                 //When click a row of table measurements, measurement will be active and color will be green
-                if (data.lesionNumber === eventObject.lesionData.lesionNumber && eventObject.type === "active" && !isTarget) {
+                if (data.lesionNumber === eventObject.lesionData.lesionNumber
+                    && eventObject.type === "active"
+                    && !isTarget
+                    && data.seriesInstanceUid === seriesInstanceUid
+                    && data.studyInstanceUid === studyInstanceUid) {
+
                     data.active = true;
                 } else {
                     data.active = false;

@@ -10,9 +10,6 @@ var measurementManagerDAL = (function() {
     function addTimepointData(lesionData) {
         var timepoints = Timepoints.find().fetch();
 
-        var study = cornerstoneTools.metaData.get('study', lesionData.imageId);
-        var series = cornerstoneTools.metaData.get('study', lesionData.imageId);
-
         var timepointsObject = {};
 
         for (var i = 0; i < timepoints.length; i++) {
@@ -25,14 +22,17 @@ var measurementManagerDAL = (function() {
                 timepointObject = {
                     longestDiameter: lesionData.measurementText,
                     imageId: lesionData.imageId,
-                    studyInstanceUid: study.instanceUid,
-                    seriesInstanceUid: series.instanceUid
+                    seriesInstanceUid: lesionData.seriesInstanceUid,
+                    studyInstanceUid: lesionData.studyInstanceUid
+
                 };
             } else {
                 // Add null measurement
                 timepointObject = {
                     longestDiameter: "",
-                    imageId: ""
+                    imageId: "",
+                    seriesInstanceUid: "",
+                    studyInstanceUid: ""
                 };
             }
             timepointsObject[timepointId] = timepointObject;
@@ -71,6 +71,8 @@ var measurementManagerDAL = (function() {
         var timepoints = measurement.timepoints;
         timepoints[timepointID].longestDiameter = lesionData.measurementText;
         timepoints[timepointID].imageId = lesionData.imageId;
+        timepoints[timepointID].seriesInstanceUid = lesionData.seriesInstanceUid;
+        timepoints[timepointID].studyInstanceUid = lesionData.studyInstanceUid;
 
         Measurements.update(measurement._id, {
             $set: {
