@@ -41,10 +41,16 @@ function updateLesions(e) {
 
         var timepointObject = timepoints[timepointID];
 
-        // TODO: Bring series in correct imageViewport
+        if (timepointObject === undefined) {
+            return;
+        }
 
-        if (timepointObject.seriesInstanceUid !== series.seriesInstanceUid) {
-            console.log("not in same series");
+        if (!timepointObject ) {
+            timepointObject = {}
+        }
+
+        if (timepointObject.seriesInstanceUid !== "") {
+
             var newSeriesData  = {
                 seriesInstanceUid: timepointObject.seriesInstanceUid,
                 studyInstanceUid: timepointObject.studyInstanceUid
@@ -55,6 +61,8 @@ function updateLesions(e) {
         }
 
         // Defines event data
+        console.log(element);
+        console.log(cornerstone.getEnabledElement(element));
         var eventData = {
             enabledElement: cornerstone.getEnabledElement(element),
             lesionData: {

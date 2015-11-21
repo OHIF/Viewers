@@ -69,6 +69,10 @@ var measurementManagerDAL = (function() {
 
         // Update timepoints from lesion data
         var timepoints = measurement.timepoints;
+        if (timepoints[timepointID] === undefined) {
+           timepoints[timepointID] = {};
+        }
+
         timepoints[timepointID].longestDiameter = lesionData.measurementText;
         timepoints[timepointID].imageId = lesionData.imageId;
         timepoints[timepointID].seriesInstanceUid = lesionData.seriesInstanceUid;
@@ -108,7 +112,7 @@ var measurementManagerDAL = (function() {
     // Returns new lesion number according to timepointID
     function getNewLesionNumber(timepointID, isTarget) {
         // Get all current lesion measurements
-        var measurements = Measurements.find({isTarget: isTarget}).fetch();
+        var measurements = Measurements.find({isTarget: isTarget},{sort: {lesionNumber: 1}}).fetch();
 
         // If no measurements exist yet, start at 1
         if (!measurements.length) {
@@ -123,7 +127,8 @@ var measurementManagerDAL = (function() {
             var timepoints = measurement.timepoints;
 
             if (!timepoints[timepointID]) {
-                return;
+                // Find lesion number for this timepointID
+                return measurement.lesionNumber
             }
 
             if (timepoints[timepointID].longestDiameter === '') {
