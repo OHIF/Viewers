@@ -198,7 +198,7 @@ function loadSeriesIntoViewport(data) {
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
         var activeTool = toolManager.getActiveTool();
-        toolManager.setActiveTool(activeTool);
+        toolManager.setActiveTool(activeTool, element);
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
@@ -382,6 +382,7 @@ Template.imageViewerViewport.onRendered(function() {
         currentImageIdIndex: this.data.currentImageIdIndex,
         studyInstanceUid: this.data.studyInstanceUid,
         seriesInstanceUid: this.data.seriesInstanceUid,
+        renderedCallback: this.data.renderedCallback,
         activeViewport: activeViewport
     };
 

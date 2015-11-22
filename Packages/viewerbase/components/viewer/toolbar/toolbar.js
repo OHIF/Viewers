@@ -112,7 +112,9 @@ Template.toolbar.events({
     'click .imageViewerTool': function(e) {
         var tool = e.currentTarget.id;
         console.log('Setting active tool to: ' + tool);
-        toolManager.setActiveTool(tool);
+
+        var elements = $('.imageViewerViewport');
+        toolManager.setActiveTool(tool, elements);
     },
     'click .imageViewerCommand': function(e) {
         var command = e.currentTarget.id;

@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.7 - 2015-11-21 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.7 - 2015-11-22 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -2111,40 +2111,6 @@ if (typeof cornerstoneTools === 'undefined') {
         }
     }
 
-    function drawArrow(context, start, end, color, lineWidth) {
-        //variables to be used when creating the arrow
-        var headLength = 10;
-
-        var angle = Math.atan2(end.y - start.y, end.x - start.x);
-
-        //starting path of the arrow from the start square to the end square and drawing the stroke
-        context.beginPath();
-        context.moveTo(start.x, start.y);
-        context.lineTo(end.x, end.y);
-        context.strokeStyle = color;
-        context.lineWidth = lineWidth;
-        context.stroke();
-
-        //starting a new path from the head of the arrow to one of the sides of the point
-        context.beginPath();
-        context.moveTo(end.x, end.y);
-        context.lineTo(end.x - headLength * Math.cos(angle - Math.PI / 7), end.y - headLength * Math.sin(angle - Math.PI / 7));
-
-        //path from the side point of the arrow, to the other side point
-        context.lineTo(end.x - headLength * Math.cos(angle + Math.PI / 7), end.y - headLength * Math.sin(angle + Math.PI / 7));
-
-        //path from the side point back to the tip of the arrow, and then again to the opposite side point
-        context.lineTo(end.x, end.y);
-        context.lineTo(end.x - headLength * Math.cos(angle - Math.PI / 7), end.y - headLength * Math.sin(angle - Math.PI / 7));
-
-        //draws the paths created above
-        context.strokeStyle = color;
-        context.lineWidth = lineWidth;
-        context.stroke();
-        context.fillStyle = color;
-        context.fill();
-    }
-
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
         // if we have no toolData for this element, return immediately as there is nothing to do
@@ -2184,9 +2150,9 @@ if (typeof cornerstoneTools === 'undefined') {
             var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
 
             if (config.arrowFirst) {
-                drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
+                cornerstoneTools.drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
             } else {
-                drawArrow(context, handleStartCanvas, handleEndCanvas, color, lineWidth);
+                cornerstoneTools.drawArrow(context, handleStartCanvas, handleEndCanvas, color, lineWidth);
             }
 
             if (config.drawHandles) {
@@ -9791,6 +9757,52 @@ Display scroll progress bar across bottom of image.
 })($, cornerstone, cornerstoneMath, cornerstoneTools);
  
 // End Source; src/util/copyPoints.js
+
+// Begin Source: src/util/drawArrow.js
+(function(cornerstoneTools) {
+
+    'use strict';
+
+    function drawArrow(context, start, end, color, lineWidth) {
+        //variables to be used when creating the arrow
+        var headLength = 10;
+
+        var angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+        //starting path of the arrow from the start square to the end square and drawing the stroke
+        context.beginPath();
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
+        context.strokeStyle = color;
+        context.lineWidth = lineWidth;
+        context.stroke();
+
+        //starting a new path from the head of the arrow to one of the sides of the point
+        context.beginPath();
+        context.moveTo(end.x, end.y);
+        context.lineTo(end.x - headLength * Math.cos(angle - Math.PI / 7), end.y - headLength * Math.sin(angle - Math.PI / 7));
+
+        //path from the side point of the arrow, to the other side point
+        context.lineTo(end.x - headLength * Math.cos(angle + Math.PI / 7), end.y - headLength * Math.sin(angle + Math.PI / 7));
+
+        //path from the side point back to the tip of the arrow, and then again to the opposite side point
+        context.lineTo(end.x, end.y);
+        context.lineTo(end.x - headLength * Math.cos(angle - Math.PI / 7), end.y - headLength * Math.sin(angle - Math.PI / 7));
+
+        //draws the paths created above
+        context.strokeStyle = color;
+        context.lineWidth = lineWidth;
+        context.stroke();
+        context.fillStyle = color;
+        context.fill();
+    }
+
+    // Module exports
+    cornerstoneTools.drawArrow = drawArrow;
+
+})(cornerstoneTools);
+ 
+// End Source; src/util/drawArrow.js
 
 // Begin Source: src/util/drawEllipse.js
 (function(cornerstoneTools) {

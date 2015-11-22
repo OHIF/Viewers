@@ -69,7 +69,7 @@ Template.viewer.onCreated(function() {
     }
 
     var contentId = this.data.contentId;
-    
+
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
 
@@ -78,7 +78,7 @@ Template.viewer.onCreated(function() {
     } else {
         log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
-        
+
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
@@ -90,7 +90,6 @@ Template.viewer.onCreated(function() {
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
-
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies = new Meteor.Collection(null);
     this.data.studies.forEach(function(study) {
@@ -101,7 +100,7 @@ Template.viewer.onCreated(function() {
     var patientId = this.data.studies[0].patientId;
     Session.set('patientId', patientId);
 
-    timepointsAdded = false;
+    initialized = false;
     self.autorun(function() {
         var patientId = Session.get('patientId');
         self.subscribe('timepoints', patientId);
@@ -111,7 +110,7 @@ Template.viewer.onCreated(function() {
             return;
         }
 
-        if (timepointsAdded === true) {
+        if (initialized === true) {
             return;
         }
 
@@ -138,11 +137,64 @@ Template.viewer.onCreated(function() {
             });
         });
 
-        timepointsAdded = true;
+        // This is used to re-add tools from the database into the
+        // Cornerstone ToolData structure
+        Measurements.find().observe({
+            added: function (data) {
+                if (data.toolDataInsertedManually === true) {
+                    return;
+                }
+
+                log.info('Measurement added');
+                addMeasurementAsToolData(data);
+            }
+        });
+
+        initialized = true;
     });
 
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
 });
+
+function addMeasurementAsToolData(data) {
+    // Check what toolType we should be adding this to, based on the isTarget value
+    // of the stored Measurement
+    var toolType = data.isTarget ? 'lesion' : 'nonTarget';
+    var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+
+    // Loop through the timepoint data for this measurement
+    Object.keys(data.timepoints).forEach(function(key) {
+        var storedData = data.timepoints[key];
+        var imageId = storedData.imageId;
+
+        if (!toolState[imageId]) {
+            toolState[imageId] = {};
+        }
+
+        if (!toolState[imageId][toolType]) {
+            toolState[imageId][toolType] = {
+                data: []
+            };
+        }
+
+        // Create measurementData structure based on the lesion data at this timepoint
+        // We will add this into the toolData for this imageId
+        var measurementData = storedData;
+        measurementData.isTarget = data.isTarget;
+        measurementData.lesionNumber = data.lesionNumber;
+        measurementData.measurementText = data.measurementText;
+        measurementData.lesionName = data.lesionName;
+        measurementData.isDeleted = data.isDeleted;
+        measurementData.location = data.location;
+        measurementData.locationUID = data.locationUID;
+        measurementData.patientId = patientId;
+        measurementData.visible = data.visible;
+        measurementData.active = data.active;
+        measurementData.uid = data.uid;
+
+        toolState[imageId][toolType].data.push(measurementData);
+    });
+}
 
 
 Template.viewer.onDestroyed(function() {

@@ -1,6 +1,6 @@
 var activeTool;
 
-var alwaysEnabledTools;
+var alwaysEnabledTools = [];
 
 var tools = {};
 
@@ -77,7 +77,72 @@ toolManager = {
     setAlwaysEnabledTools: function(tools) {
         alwaysEnabledTools = tools;
     },
-    setActiveTool: function(tool) {
+    setActiveToolForElement: function(tool, element) {
+        var canvases = $(element).find('canvas');
+        if (element.classList.contains('empty') || !canvases.length) {
+            return;
+        }
+
+        // First, deactivate the current active tool
+        tools[activeTool].mouse.deactivate(element, 1);
+
+        if (tools[activeTool].touch) {
+            tools[activeTool].touch.deactivate(element);
+        }
+
+        // Enable any tools set as 'Always enabled'
+        alwaysEnabledTools.forEach(function(toolType) {
+            cornerstoneTools[toolType].enable(element);
+        });
+
+        // Get the stack toolData
+        var toolData = cornerstoneTools.getToolState(element, 'stack');
+        if (!toolData || !toolData.data || !toolData.data.length) {
+            return;
+        }
+
+        // Get the imageIds for this element
+        var imageIds = toolData.data[0].imageIds;
+
+        // Deactivate all the middle mouse, right click, and scroll wheel tools
+        cornerstoneTools.pan.deactivate(element);
+        cornerstoneTools.zoom.deactivate(element);
+        cornerstoneTools.zoomWheel.deactivate(element);
+        cornerstoneTools.stackScrollWheel.deactivate(element);
+
+        // Reactivate the relevant scrollwheel tool for this element
+        if (imageIds.length > 1) {
+            // scroll is the default tool for middle mouse wheel for stacks
+            cornerstoneTools.stackScrollWheel.activate(element);
+        } else {
+            // zoom is the default tool for middle mouse wheel for single images (non stacks)
+            cornerstoneTools.zoomWheel.activate(element);
+        }
+
+        // This block ensures that the middle mouse and scroll tools keep working
+        if (tool === 'pan') {
+            cornerstoneTools.pan.activate(element, 3); // 3 means left mouse button and middle mouse button
+            cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+        } else if (tool === 'zoom') {
+            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+            cornerstoneTools.zoom.activate(element, 5); // 5 means left mouse button and right mouse button
+        } else {
+            // Reactivate the middle mouse and right click tools
+            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+            cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+
+            // Activate the chosen tool
+            tools[tool].mouse.activate(element, 1);
+        }
+
+        if (tools[tool].touch) {
+            tools[tool].touch.activate(element);
+        }
+
+        cornerstoneTools.zoomTouchPinch.activate(element);
+        cornerstoneTools.panMultiTouch.activate(element);
+    },
+    setActiveTool: function(tool, elements) {
         if (!initialized) {
             toolManager.init();
         }
@@ -86,70 +151,9 @@ toolManager = {
         var toolButton = document.getElementById(tool);
         toolButton.classList.add('active');
 
-        $('.imageViewerViewport').each(function(index, element) {
-            var canvases = $(element).find('canvas');
-            if (element.classList.contains('empty') || !canvases.length) {
-                return;
-            }
-
-            // First, deactivate the current active tool
-            tools[activeTool].mouse.deactivate(element, 1);
-
-            if (tools[activeTool].touch) {
-                tools[activeTool].touch.deactivate(element);
-            }
-
-            // Enable any tools set as 'Always enabled'
-            alwaysEnabledTools.forEach(function(toolType) {
-                cornerstoneTools[toolType].enable(element);
-            });
-
-            // Get the stack toolData
-            var toolData = cornerstoneTools.getToolState(element, 'stack');
-            if (!toolData || !toolData.data || !toolData.data.length) {
-                return;
-            }
-
-            // Get the imageIds for this element
-            var imageIds = toolData.data[0].imageIds;
-
-            // Deactivate all the middle mouse, right click, and scroll wheel tools
-            cornerstoneTools.pan.deactivate(element);
-            cornerstoneTools.zoom.deactivate(element);
-            cornerstoneTools.zoomWheel.deactivate(element);
-            cornerstoneTools.stackScrollWheel.deactivate(element);
-
-            // Reactivate the relevant scrollwheel tool for this element
-            if (imageIds.length > 1) {
-                // scroll is the default tool for middle mouse wheel for stacks
-                cornerstoneTools.stackScrollWheel.activate(element);
-            } else {
-                // zoom is the default tool for middle mouse wheel for single images (non stacks)
-                cornerstoneTools.zoomWheel.activate(element);
-            }
-
-            // This block ensures that the middle mouse and scroll tools keep working
-            if (tool === 'pan') {
-                cornerstoneTools.pan.activate(element, 3); // 3 means left mouse button and middle mouse button
-                cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-            } else if (tool === 'zoom') {
-                cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-                cornerstoneTools.zoom.activate(element, 5); // 5 means left mouse button and right mouse button
-            } else {
-                // Reactivate the middle mouse and right click tools
-                cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-                cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-
-                // Activate the chosen tool
-                tools[tool].mouse.activate(element, 1);
-            }
-
-            if (tools[tool].touch) {
-                tools[tool].touch.activate(element);
-            }
-
-            cornerstoneTools.zoomTouchPinch.activate(element);
-            cornerstoneTools.panMultiTouch.activate(element);
+        // Otherwise, set the active tool for all viewport elements
+        $(elements).each(function(index, element) {
+            toolManager.setActiveToolForElement(tool, element);
         });
         activeTool = tool;
     },

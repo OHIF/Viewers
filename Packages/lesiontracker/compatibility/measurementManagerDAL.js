@@ -23,8 +23,8 @@ var measurementManagerDAL = (function() {
                     longestDiameter: lesionData.measurementText,
                     imageId: lesionData.imageId,
                     seriesInstanceUid: lesionData.seriesInstanceUid,
-                    studyInstanceUid: lesionData.studyInstanceUid
-
+                    studyInstanceUid: lesionData.studyInstanceUid,
+                    handles: lesionData.handles
                 };
             } else {
                 // Add null measurement
@@ -32,22 +32,25 @@ var measurementManagerDAL = (function() {
                     longestDiameter: "",
                     imageId: "",
                     seriesInstanceUid: "",
-                    studyInstanceUid: ""
+                    studyInstanceUid: "",
+                    handles: undefined
                 };
             }
             timepointsObject[timepointId] = timepointObject;
         }
 
-        var lesionDataObject = {
-            patientId: timepoints[0].patientId,
-            lesionUID: uuid.v4(),
-            number: Measurements.find().count() + 1,
-            lesionNumber: lesionData.lesionNumber,
-            isTarget: lesionData.isTarget,
-            locationUID: lesionData.locationUID,
-            location: getLocationName(lesionData.locationUID),
-            timepoints: timepointsObject
-        };
+        var lesionDataObject = lesionData;
+
+        lesionDataObject.patientId = timepoints[0].patientId;
+        lesionDataObject.location = getLocationName(lesionData.locationUID);
+        lesionDataObject.timepoints = timepointsObject;
+
+        // Is there a use for this?
+        lesionDataObject.number =  Measurements.find().count() + 1;
+
+        // TODO=Fix this workaround to prevent the observe hook from adding another set of toolData
+        lesionDataObject.toolDataInsertedManually = true;
+
         Measurements.insert(lesionDataObject);
     }
 

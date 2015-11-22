@@ -1,75 +1,4 @@
 /**
- * Returns timepoint object based on timepoint id of the enabled element
- *
- * @param timepoints
- * @param enabledElement
- * @returns {*|{}} Timepoint object based on timepoint id of the enabled element (or an empty Object)
- */
-function getTimepointObject(imageId) {
-    var study = cornerstoneTools.metaData.get('study', imageId);
-
-    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
-    return timepoint;
-}
-
-/**
- * Switch to the image of the correct image index
- * Activate the selected measurement on the switched image (color to be green)
- * Deactivate all other measurements on the switched image (color to be white)
- */
-function activateMeasurements(element, measurementId) {
-    // TODO=Switch this to use the new CornerstoneToolMeasurementModified event,
-    // Once it has 'modified on activation' set up
-
-    var enabledElement = cornerstone.getEnabledElement(element);
-    var imageId = enabledElement.image.imageId;
-    var timepointData = getTimepointObject(imageId);
-    var measurementData = Measurements.findOne(measurementId);
-
-    var measurementAtTimepoint = measurementData.timepoints[timepointData.timepointID];
-    if (!measurementAtTimepoint) {
-        return;
-    }
-
-    // Defines event data
-    var eventData = {
-        enabledElement: enabledElement,
-        lesionData: {
-            id: measurementId,
-            isTarget: measurementData.isTarget,
-            lesionNumber: measurementData.lesionNumber,
-            imageId: imageId,
-            seriesInstanceUid: measurementAtTimepoint.seriesInstanceUid,
-            studyInstanceUid: measurementAtTimepoint.studyInstanceUid
-        },
-        type: "active"
-    };
-
-    // If isTarget = false, this measurement is nonTarget measurement
-    // Activate related nonTarget measurement
-    // Deactivate all target measurements to activate only nonTarget measurement
-    if (!isTarget) {
-        $(element).trigger("NonTargetToolSelected", eventData);
-
-        // Deactivate lesion tool measurements
-        eventData.type = "inactive";
-
-        $(element).trigger("LesionToolSelected", eventData);
-
-    } else {
-        // Trigger event for target measurements
-        $(element).trigger("LesionToolSelected", eventData);
-
-        // Deactivate nonTarget tool measurements
-        eventData.type = "inactive";
-
-        // Trigger event for nonTarget measurements
-        // Inactivate all nonTarget measurements if any measurement is active
-        $(element).trigger("NonTargetToolSelected", eventData);
-    }
-}
-
-/**
  * Activates a set of lesions when lesion table row is clicked
  *
  * @param measurementId The unique key for a specific Measurement
@@ -87,24 +16,44 @@ function activateLesion(measurementId) {
     // Get the timepoint data from this Measurement
     var timepoints = measurementData.timepoints;
 
+    // Get all non-dummy timepoint entries in the Measurement
+    // TODO=Re-evaluate this approach to populating viewports with timepoints
+    // What is the desired behaviour here?
+    var timepointsWithEntries = [];
+    Object.keys(timepoints).forEach(function(key) {
+        var timepoint = timepoints[key];
+
+        if (timepoint.imageId === "" ||
+           timepoint.studyInstanceUid === "" ||
+           timepoint.seriesInstanceUid === "") {
+           return;
+        }
+
+        timepointsWithEntries.push(timepoint);
+    });
+
+    // If there are no non-dummy timepoint entries, stop here
+    if (!timepointsWithEntries.length) {
+        return;
+    }
+
     // Loop through the viewports and display each timepoint
     $(".imageViewerViewport").each(function(viewportIndex, element) {
         // Stop if we run out of timepoints before viewports
-        if (viewportIndex >= Object.keys(timepoints).length) {
+        if (viewportIndex >= timepointsWithEntries.length) {
             return false;
         }
+
+        // Find measurements related to the Nth timepoint
+        // TODO=Re-evaluate this approach to populating viewports with timepoints
+        // What is the desired behaviour here?
+        var measurementAtTimepoint = timepointsWithEntries[viewportIndex];
 
         // Find the image that is currently in this viewport
         var enabledElement = cornerstone.getEnabledElement(element);
         if (!enabledElement || !enabledElement.image) {
             return;
         }
-
-        // Find measurements related to the Nth timepoint
-        // TODO=Re-evaluate this approach to populating viewports with timepoints
-        // What is the desired behaviour here?
-        var key = Object.keys(measurementData.timepoints)[viewportIndex];
-        var measurementAtTimepoint = measurementData.timepoints[key];
 
         // If there is no measurement data to display, stop here
         if (!measurementAtTimepoint) {
@@ -132,6 +81,115 @@ function activateLesion(measurementId) {
             activateMeasurements(element, measurementId);
         });
     });
+}
+
+/**
+ * Returns timepoint object based on timepoint id of the enabled element
+ *
+ * @param timepoints
+ * @param enabledElement
+ * @returns {*|{}} Timepoint object based on timepoint id of the enabled element (or an empty Object)
+ */
+function getTimepointObject(imageId) {
+    var study = cornerstoneTools.metaData.get('study', imageId);
+    return Timepoints.findOne({timepointName: study.studyDate});
+}
+
+/**
+ * Switch to the image of the correct image index
+ * Activate the selected measurement on the switched image (color to be green)
+ * Deactivate all other measurements on the switched image (color to be white)
+ */
+function activateMeasurements(element, measurementId) {
+    // TODO=Switch this to use the new CornerstoneToolMeasurementModified event,
+    // Once it has 'modified on activation' set up
+
+    var enabledElement = cornerstone.getEnabledElement(element);
+    var imageId = enabledElement.image.imageId;
+    var timepointData = getTimepointObject(imageId);
+    var measurementData = Measurements.findOne(measurementId);
+
+    var measurementAtTimepoint = measurementData.timepoints[timepointData.timepointID];
+    if (!measurementAtTimepoint) {
+        return;
+    }
+
+    // If type is active, load image and activate lesion
+    // If type is inactive, update lesions of enabledElement as inactive
+    var stackToolDataSource = cornerstoneTools.getToolState(element, 'stack');
+    var stackData = stackToolDataSource.data[0];
+    var imageIds = stackData.imageIds;
+    var imageIdIndex = imageIds.indexOf(measurementAtTimepoint.imageId);
+
+    if (imageIdIndex < 0) {
+        return;
+    }
+
+    if (imageIdIndex === stackData.currentImageIdIndex){
+        activateTool(element, measurementData, timepointData.timepointID);
+    } else {
+        cornerstone.loadAndCacheImage(imageIds[imageIdIndex]).then(function(image) {
+            cornerstone.displayImage(element, image);
+            activateTool(element, measurementData, timepointData.timepointID);
+        });
+    }
+}
+
+/**
+ * Activates a specific tool data instance and deactivates all other
+ * target and non-target measurement data
+ *
+ * @param element
+ * @param measurementData
+ * @param timepointID
+ */
+function activateTool(element, measurementData, timepointID) {
+    deactivateAllToolData(element, 'lesion');
+    deactivateAllToolData(element, 'nonTarget');
+
+    var toolType = measurementData.isTarget ? 'lesion' : 'nonTarget';
+    var toolData = cornerstoneTools.getToolState(element, toolType);
+    if (!toolData) {
+        return;
+    }
+
+    var measurementAtTimepoint = measurementData.timepoints[timepointID];
+
+    for (var i = 0; i < toolData.data.length; i++) {
+        data = toolData.data[i];
+
+        // When click a row of table measurements, measurement will be active and color will be green
+        // TODO= Remove this with the measurementId once it is in the tool data
+        if (data.seriesInstanceUid === measurementAtTimepoint.seriesInstanceUid &&
+            data.studyInstanceUid === measurementAtTimepoint.studyInstanceUid &&
+            data.lesionNumber === measurementData.lesionNumber &&
+            data.isTarget == measurementData.isTarget) {
+
+            data.active = true;
+            break;
+        }
+    }
+
+    cornerstone.updateImage(element);
+}
+
+/**
+ * Sets all tool data entries value for 'active' to false
+ * This is used to remove the active color on entire sets of tools
+ *
+ * @param element The Cornerstone element that is being used
+ * @param toolType The tooltype of the tools that will be deactivated
+ */
+function deactivateAllToolData(element, toolType) {
+    var toolData = cornerstoneTools.getToolState(element, toolType);
+    if (!toolData) {
+        return;
+    }
+
+    for (var i = 0; i < toolData.data.length; i++) {
+        var data = toolData.data[i];
+        data.active = false;
+    }
 }
 
 Template.lesionTable.helpers({
