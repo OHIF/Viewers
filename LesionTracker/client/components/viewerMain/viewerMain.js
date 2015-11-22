@@ -56,6 +56,7 @@ Template.viewerMain.helpers({
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;
+        toolbarOptions.includeHangingProtocolButtons = false;
         return toolbarOptions;
     }
 });
