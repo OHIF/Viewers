@@ -195,11 +195,7 @@
             var handleEndCanvas = cornerstone.pixelToCanvas(element, data.handles.end);
             var canvasTextLocation = cornerstone.pixelToCanvas(element, data.handles.textBox);
 
-            if (config.arrowFirst) {
-                cornerstoneTools.drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
-            } else {
-                cornerstoneTools.drawArrow(context, handleStartCanvas, handleEndCanvas, color, lineWidth);
-            }
+            cornerstoneTools.drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
 
             if (config.drawHandles) {
                 cornerstoneTools.drawHandles(context, eventData, data.handles, color);
