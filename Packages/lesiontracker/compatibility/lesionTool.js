@@ -109,6 +109,16 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     }
 
     function createNewMeasurement(mouseEventData) {
+        var imageId = mouseEventData.image.imageId;
+
+        // Get studyInstanceUid
+        var study = cornerstoneTools.metaData.get('study', imageId);
+        var studyInstanceUid = study.studyInstanceUid;
+
+        // Get seriesInstanceUid
+        var series = cornerstoneTools.metaData.get('series', imageId);
+        var seriesInstanceUid = series.seriesInstanceUid;
+
         // Create the measurement data for this tool with the end handle activated
         var measurementData = {
             visible: true,
@@ -135,7 +145,9 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     drawnIndependently: true
                 }
             },
-            imageId: mouseEventData.image.imageId,
+            imageId: imageId,
+            seriesInstanceUid: seriesInstanceUid,
+            studyInstanceUid: studyInstanceUid,
             measurementText: 0,
             lesionName: '',
             isDeleted: false,

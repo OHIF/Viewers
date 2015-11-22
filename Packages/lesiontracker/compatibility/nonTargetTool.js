@@ -119,7 +119,7 @@
                     drawnIndependently: true
                 }
             },
-            imageId: mouseEventData.image.imageId,
+            imageId: imageId,
             seriesInstanceUid: seriesInstanceUid,
             studyInstanceUid: studyInstanceUid,
             measurementText: '',
