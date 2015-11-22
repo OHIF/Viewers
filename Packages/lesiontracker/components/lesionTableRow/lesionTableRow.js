@@ -1,5 +1,5 @@
 Template.lesionTableRow.helpers({
     'timepoints': function() {
-        return Timepoints.find();
+        return Timepoints.find({}, {sort: {timepointName: 1}});
     }
 });

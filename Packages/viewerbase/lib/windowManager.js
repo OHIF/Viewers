@@ -86,7 +86,7 @@ function getMammoHangingProtocol() {
                 SelectorCSValue: 'R CC',
                 FilterByCategory: 'SERIES_DESCRIPTION',
                 FilterByOperator: 'MEMBER_OF'
-            }],
+            }]
         }, {
             // Right side image (L MLO Current)
             ImageSetNumber: 1,
@@ -102,7 +102,9 @@ function getMammoHangingProtocol() {
                 FilterByCategory: 'SERIES_DESCRIPTION',
                 FilterByOperator: 'MEMBER_OF'
             }]
-        }, {
+        },
+            // Stage 3
+            {
             // Left side image (R MLO Current)
             ImageSetNumber: 1,
             DisplaySetNumber: 1,

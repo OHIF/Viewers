@@ -8,4 +8,6 @@ Meteor.startup(function() {
         mouse: cornerstoneTools.nonTarget,
         touch: cornerstoneTools.nonTargetTouch
     });
+
+    toolManager.setAlwaysEnabledTools(['lesion', 'nonTarget']);
 });

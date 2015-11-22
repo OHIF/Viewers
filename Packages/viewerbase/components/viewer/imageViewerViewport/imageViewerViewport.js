@@ -146,16 +146,6 @@ function loadSeriesIntoViewport(data) {
 
     // Start loading the image.
     cornerstone.loadAndCacheImage(imageId).then(function(image) {
-        // Fire an event to give notice that a new series was loaded in the viewport
-        var eventType = "ViewerBaseSeriesLoaded";
-        var eventData = {
-            element: element,
-            stack: stack,
-            study: data.study,
-            series: data.series
-        };
-        $(document).trigger(eventType, eventData);
-        
         // If there is a saved object containing Cornerstone viewport data
         // (e.g. scale, invert, window settings) in the input data, apply it now.
         //
@@ -311,6 +301,11 @@ function loadSeriesIntoViewport(data) {
         if (viewportIndex === Session.get('activeViewport')) {
             enablePrefetchOnElement(element);
         }
+
+        // Run any renderedCallback that exists in the data context
+        if (data.renderedCallback && typeof data.renderedCallback === "function") {
+            data.renderedCallback(element);
+        }
     }, function(error) {
         // If something goes wrong while loading the image, fire the error handler.
         errorLoadingHandler(element, imageId, error);
@@ -392,7 +387,7 @@ Template.imageViewerViewport.onRendered(function() {
 
     // If no seriesInstanceUid or studyInstanceUid were supplied, display the drag/drop
     // instructions and then stop here since we don't know what to display in the viewport.
-    if (this.data.seriesInstanceUid === undefined || this.data.studyInstanceUid === undefined) {
+    if (!this.data.seriesInstanceUid || !this.data.studyInstanceUid) {
         element.classList.add('empty');
         $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
         $(element).siblings('.viewportInstructions').show();

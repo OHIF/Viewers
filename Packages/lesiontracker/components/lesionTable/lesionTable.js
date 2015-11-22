@@ -1,153 +1,137 @@
-// Get enabled elements in viewport
-// Returns enabled elements with associated elements as object array
-function getEnabledElementsInViewport() {
-    var enabledElementsInViewport = [];
+/**
+ * Returns timepoint object based on timepoint id of the enabled element
+ *
+ * @param timepoints
+ * @param enabledElement
+ * @returns {*|{}} Timepoint object based on timepoint id of the enabled element (or an empty Object)
+ */
+function getTimepointObject(imageId) {
+    var study = cornerstoneTools.metaData.get('study', imageId);
 
-    $(".imageViewerViewport").each(function(index, element) {
+    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+    return timepoint;
+}
+
+/**
+ * Switch to the image of the correct image index
+ * Activate the selected measurement on the switched image (color to be green)
+ * Deactivate all other measurements on the switched image (color to be white)
+ */
+function activateMeasurements(element, measurementId) {
+    // TODO=Switch this to use the new CornerstoneToolMeasurementModified event,
+    // Once it has 'modified on activation' set up
+
+    var enabledElement = cornerstone.getEnabledElement(element);
+    var imageId = enabledElement.image.imageId;
+    var timepointData = getTimepointObject(imageId);
+    var measurementData = Measurements.findOne(measurementId);
+
+    var measurementAtTimepoint = measurementData.timepoints[timepointData.timepointID];
+    if (!measurementAtTimepoint) {
+        return;
+    }
+
+    // Defines event data
+    var eventData = {
+        enabledElement: enabledElement,
+        lesionData: {
+            id: measurementId,
+            isTarget: measurementData.isTarget,
+            lesionNumber: measurementData.lesionNumber,
+            imageId: imageId,
+            seriesInstanceUid: measurementAtTimepoint.seriesInstanceUid,
+            studyInstanceUid: measurementAtTimepoint.studyInstanceUid
+        },
+        type: "active"
+    };
+
+    // If isTarget = false, this measurement is nonTarget measurement
+    // Activate related nonTarget measurement
+    // Deactivate all target measurements to activate only nonTarget measurement
+    if (!isTarget) {
+        $(element).trigger("NonTargetToolSelected", eventData);
+
+        // Deactivate lesion tool measurements
+        eventData.type = "inactive";
+
+        $(element).trigger("LesionToolSelected", eventData);
+
+    } else {
+        // Trigger event for target measurements
+        $(element).trigger("LesionToolSelected", eventData);
+
+        // Deactivate nonTarget tool measurements
+        eventData.type = "inactive";
+
+        // Trigger event for nonTarget measurements
+        // Inactivate all nonTarget measurements if any measurement is active
+        $(element).trigger("NonTargetToolSelected", eventData);
+    }
+}
+
+/**
+ * Activates a set of lesions when lesion table row is clicked
+ *
+ * @param measurementId The unique key for a specific Measurement
+ */
+function activateLesion(measurementId) {
+    // Find Measurement data for this lesion
+    var measurementData = Measurements.findOne(measurementId);
+
+    // If there is no measurement with this ID, stop here
+    if (!measurementData) {
+        log.warn('No Measurements entry associated to an ID in a lesion table row');
+        return;
+    }
+
+    // Get the timepoint data from this Measurement
+    var timepoints = measurementData.timepoints;
+
+    // Loop through the viewports and display each timepoint
+    $(".imageViewerViewport").each(function(viewportIndex, element) {
+        // Stop if we run out of timepoints before viewports
+        if (viewportIndex >= Object.keys(timepoints).length) {
+            return false;
+        }
+
+        // Find the image that is currently in this viewport
         var enabledElement = cornerstone.getEnabledElement(element);
-        if (!enabledElement) {
+        if (!enabledElement || !enabledElement.image) {
             return;
         }
 
-        enabledElementsInViewport.push({element: element, enabledElement: enabledElement});
-    });
+        // Find measurements related to the Nth timepoint
+        // TODO=Re-evaluate this approach to populating viewports with timepoints
+        // What is the desired behaviour here?
+        var key = Object.keys(measurementData.timepoints)[viewportIndex];
+        var measurementAtTimepoint = measurementData.timepoints[key];
 
-    return enabledElementsInViewport;
-}
-
-// Switch to the image of the correct image index
-// Activate the selected measurement on the switched image (color to be green)
-// Deactivate all other measurements on the switched image (color to be white)
-function activateMeasurementsInRelatedImages(timepoints, lesionNumber, isTarget) {
-
-    //TODO: This is a bad hack! We need to listen an event of the element and handle it when rendering of the element is completed
-    //TODO:  we can switch to the related image and activate the selected measurement on the switched image.
-    var intervalListener = setInterval(function() {
-        window.clearInterval(intervalListener);
-
-        var enabledElementsInViewport = getEnabledElementsInViewport();
-
-        for(var i = 0; i < enabledElementsInViewport.length; i++) {
-            var element = enabledElementsInViewport[i].element;
-            var enabledElement = enabledElementsInViewport[i].enabledElement;
-            var timepointObject = getTimepointObject(timepoints, enabledElement);
-
-            if (timepointObject === undefined) {
-                continue;
-            }
-
-            // Defines event data
-            var eventData = {
-                enabledElement: enabledElement,
-                lesionData: {
-                    isTarget: isTarget,
-                    lesionNumber: lesionNumber,
-                    imageId: timepointObject.imageId,
-                    seriesInstanceUid: timepointObject.seriesInstanceUid,
-                    studyInstanceUid: timepointObject.studyInstanceUid
-                },
-                type: "active"
-            };
-
-            // If isTarget = false, this measurement is nonTarget measurement
-            // Activate related nonTarget measurement
-            // Deactivate all target measurements to activate only nonTarget measurement
-            if (!isTarget) {
-                $(element).trigger("NonTargetToolSelected", eventData);
-
-                // Deactivate lesion tool measurements
-                eventData.type = "inactive";
-
-                $(element).trigger("LesionToolSelected", eventData);
-
-            } else {
-                // Trigger event for target measurements
-                $(element).trigger("LesionToolSelected", eventData);
-
-                // Deactivate nonTarget tool measurements
-                eventData.type = "inactive";
-
-                // Triggger event for nonTarget measurements
-                // Inactivate all nonTarget measurements if any measurement is active
-                $(element).trigger("NonTargetToolSelected", eventData);
-            }
-        }
-    }, 100);
-}
-
-// Returns timepoint object based on timepoint id of the enabled element
-function getTimepointObject(timepoints, enabledElement) {
-    var imageId = enabledElement.image.imageId;
-    var study = cornerstoneTools.metaData.get('study', imageId);
-    var series = cornerstoneTools.metaData.get('series', imageId);
-
-    // Get the timepointID related to the image viewer viewport
-    // from the DOM itself. This will be changed later when a
-    // real association between viewports and timepoints is created.
-    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
-    if (!timepoint) {
-        return;
-    }
-    var timepointID = timepoint.timepointID;
-
-    var timepointObject = timepoints[timepointID];
-
-    if (timepointObject === undefined) {
-        return;
-    }
-
-    if (!timepointObject ) {
-        timepointObject = {}
-    }
-
-    return timepointObject;
-}
-
-// Activate selected lesions when lesion table row is clicked
-function updateLesions(e) {
-    // lesionNumber of measurement = id of row
-    var lesionNumber = parseInt($(e.currentTarget).attr("id"), 10);
-
-    // TODO= Clarify this
-    // Get Target column value
-    // Search and update data according to target type
-    var isTarget = $(e.currentTarget).find('td').eq(2).html().trim() === 'N'?false:true;
-
-    // Find data for specific lesion
-    var measurementData = Measurements.findOne({
-        lesionNumber: lesionNumber,
-        isTarget: isTarget
-    });
-
-    if (!measurementData) {
-        return;
-    }
-
-    var timepoints = measurementData.timepoints;
-    var enabledElementsInViewport = getEnabledElementsInViewport();
-
-    //  Render related series
-    for(var i = 0; i < enabledElementsInViewport.length; i++) {
-        var element = enabledElementsInViewport[i].element;
-        var enabledElement = enabledElementsInViewport[i].enabledElement;
-
-        var timepointObject = getTimepointObject(timepoints, enabledElement);
-
-        if (timepointObject === undefined || timepointObject.seriesInstanceUid === "") {
-            continue;
+        // If there is no measurement data to display, stop here
+        if (!measurementAtTimepoint) {
+            return;
         }
 
-        var newSeriesData = {
-            seriesInstanceUid: timepointObject.seriesInstanceUid,
-            studyInstanceUid: timepointObject.studyInstanceUid
+        // Check which study and series are required to display the measurement at this timepoint
+        var requiredSeriesData = {
+            seriesInstanceUid: measurementAtTimepoint.seriesInstanceUid,
+            studyInstanceUid: measurementAtTimepoint.studyInstanceUid
         };
 
-        // Rerender the viewport using data for new series
-        rerenderViewportWithNewSeries(element, newSeriesData);
-    }
+        // Check if the study / series we need is already the one in the viewport
+        var currentSeriesData = OHIF.viewer.loadedSeriesData[viewportIndex];
+        if (currentSeriesData.seriesInstanceUid === measurementAtTimepoint.seriesInstanceUid &&
+            currentSeriesData.studyInstanceUid === measurementAtTimepoint.studyInstanceUid) {
+            // If it is, activate the measurements in this viewport and stop here
+            activateMeasurements(element, measurementId);
+            return;
+        }
 
-    // Activate selected measurements on the rendered series
-    activateMeasurementsInRelatedImages(timepoints, lesionNumber, isTarget);
+        // Otherwise, re-render the viewport with the required study/series, then
+        // add an onRendered callback to activate the measurements
+        rerenderViewportWithNewSeries(element, requiredSeriesData, function(element) {
+            activateMeasurements(element, measurementId);
+        });
+    });
 }
 
 Template.lesionTable.helpers({
@@ -155,12 +139,14 @@ Template.lesionTable.helpers({
         return Measurements.find({}, {sort: {number: 1}});
     },
     'timepoints': function() {
-        return Timepoints.find();
+        return Timepoints.find({}, {sort: {timepointName: 1}});
     }
 });
 
 Template.lesionTable.events({
     'click table#tblLesion tbody tr': function(e) {
-        updateLesions(e);
+        // Retrieve the lesion id from the DOM data for this row
+        var measurementId = $(e.currentTarget).data('measurementid');
+        activateLesion(measurementId);
     }
 });

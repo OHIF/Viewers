@@ -186,19 +186,18 @@
         context.fill();
     }
 
-    function suscribeNonTargetToolModifiedEvent(element) {
+    function subscribeNonTargetToolModifiedEvent(element) {
         var elementEvents = $._data(element, "events");
         var index = Object.keys(elementEvents).indexOf("NonTargetToolSelected");
         if (index < 0) {
-            // Subscribe LesionToolModified and calls measurementModified function when lesion measurement is changed or updated.
-            $(element).on("NonTargetToolSelected", measurementModified);
+            // Subscribe LesionToolModified and calls loadImage function when lesion measurement is changed or updated.
+            $(element).on("NonTargetToolSelected", loadImage);
         }
 
     }
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
-
-        suscribeNonTargetToolModifiedEvent(e.currentTarget);
+        subscribeNonTargetToolModifiedEvent(e.currentTarget);
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
@@ -268,7 +267,7 @@
         context.beginPath();
         context.strokeStyle = color;
         context.lineWidth = 1 / eventData.viewport.scale;
-        var mid = {
+         mid = {
             x: mid.x,
             y: mid.y
         };
@@ -390,7 +389,7 @@
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
-        if (toolData === undefined) {
+        if (!toolData) {
             return;
         }
 
@@ -463,31 +462,27 @@
         onImageRendered(e, eventData);
     }
 
-    function loadImage(e, eventObject) {
+    function loadImage(e, eventData) {
         // If type is active, load image and activate lesion
         // If type is inactive, update lesions of enabledElement as inactive
-
-        if (eventObject.type === "active") {
-            var stackToolDataSource = cornerstoneTools.getToolState(e.currentTarget, 'stack');
+        log.info('nonTargetTool loadImage');
+        var element = eventData.enabledElement.element;
+        var imageId = eventData.lesionData.imageId;
+        if (eventData.type === "active") {
+            var stackToolDataSource = cornerstoneTools.getToolState(element, 'stack');
             var stackData = stackToolDataSource.data[0];
-            var imageIdsArr = stackData.imageIds;
-            var indexOfImage = imageIdsArr.indexOf(eventObject.lesionData.imageId);
-            if (indexOfImage > -1) {
-                cornerstone.loadAndCacheImage(stackData.imageIds[indexOfImage]).then(function(image) {
-                    cornerstone.displayImage(eventObject.enabledElement.element, image);
-                    updateLesion(e, eventObject);
-                });
+            var imageIdIndex = stackData.imageIds.indexOf(imageId);
+            if (imageIdIndex < 0) {
+                return;
             }
-        } else if (eventObject.type === "inactive") {
-            updateLesion(e, eventObject);
+
+            cornerstone.loadAndCacheImage(stackData.imageIds[imageIdIndex]).then(function(image) {
+                cornerstone.displayImage(element, image);
+                updateLesion(e, eventData);
+            });
+        } else if (eventData.type === "inactive") {
+            updateLesion(e, eventData);
         }
-
-
-    }
-
-    //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active
-    function measurementModified(e, eventObject) {
-        loadImage(e, eventObject);
     }
 
     cornerstoneTools.nonTarget = cornerstoneTools.mouseButtonTool({

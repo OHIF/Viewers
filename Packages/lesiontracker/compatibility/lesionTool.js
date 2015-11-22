@@ -9,7 +9,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     var configuration = {
         getLesionLocationCallback: getLesionLocationCallback,
-        changeLesionLocationCallback: changeLesionLocationCallback,
+        changeLesionLocationCallback: changeLesionLocationCallback
     };
 
     // Define a callback to get your text annotation
@@ -179,19 +179,19 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
     }
 
-    function suscribeLesionToolSelectedEvent(element) {
+    function subscribeLesionToolSelectedEvent(element) {
         var elementEvents = $._data(element, "events");
         var index = Object.keys(elementEvents).indexOf("LesionToolSelected");
         if (index < 0) {
-            // Subscribe LesionToolSelected and calls measurementModified function when lesion measurement is changed or updated.
-            $(element).on("LesionToolSelected", measurementModified);
+            // Subscribe LesionToolSelected and calls loadImage when lesion measurement is changed or updated.
+            $(element).on("LesionToolSelected", loadImage);
         }
 
     }
     ///////// BEGIN IMAGE RENDERING ///////
     function onImageRendered(e, eventData) {
 
-        suscribeLesionToolSelectedEvent(e.currentTarget);
+        subscribeLesionToolSelectedEvent(e.currentTarget);
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
@@ -228,14 +228,13 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var color;
         var element = eventData.element;
         var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-        var font = cornerstoneTools.textStyle.getFont();
         var config = cornerstoneTools.lesion.getConfiguration();
 
         // configurable shadow from CornerstoneTools
         if (config && config.shadow) {
             context.shadowColor = '#000000';
-            context.shadowOffsetX = +1;
-            context.shadowOffsetY = +1;
+            context.shadowOffsetX = 1;
+            context.shadowOffsetY = 1;
         }
 
         if (data.active) {
@@ -364,31 +363,28 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     }
 
 
+    // TODO=Refactor because this function is repeated in nonTargetTool!
     function loadImage(e, eventData) {
         // If type is active, load image and activate lesion
         // If type is inactive, update lesions of enabledElement as inactive
-
+        log.info('lesionTool loadImage');
+        var element = eventData.enabledElement.element;
+        var imageId = eventData.lesionData.imageId;
         if (eventData.type === "active") {
-            var stackToolDataSource = cornerstoneTools.getToolState(e.currentTarget, 'stack');
+            var stackToolDataSource = cornerstoneTools.getToolState(element, 'stack');
             var stackData = stackToolDataSource.data[0];
-            var imageIds = stackData.imageIds;
-            var imageIdIndex = imageIds.indexOf(eventData.lesionData.imageId);
+            var imageIdIndex = stackData.imageIds.indexOf(imageId);
             if (imageIdIndex < 0) {
                 return;
             }
 
             cornerstone.loadAndCacheImage(imageIds[imageIdIndex]).then(function(image) {
-                cornerstone.displayImage(eventData.enabledElement.element, image);
+                cornerstone.displayImage(element, image);
                 updateLesion(e, eventData);
             });
         } else if (eventData.type === "inactive") {
             updateLesion(e, eventData);
         }
-    }
-
-    //This function is called from cornerstone-viewport.html and updates lesion measurement and makes the lesion active
-    function measurementModified(e, eventData) {
-        loadImage(e, eventData);
     }
 
     // module exports

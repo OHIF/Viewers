@@ -199,9 +199,10 @@ Template.thumbnailEntry.onRendered(function() {
 Template.thumbnailEntry.events({
     // Touch drag/drop events
     'touchstart .thumbnailEntry, mousedown .thumbnailEntry': function(e) {
-        var data = Template.parentData(2);
-        data.studyInstanceUid = this.stack.studyInstanceUid;
-        data.seriesInstanceUid = this.stack.seriesInstanceUid;
+        var data = {
+            studyInstanceUid: this.stack.studyInstanceUid,
+            seriesInstanceUid: this.stack.seriesInstanceUid
+        };
         thumbnailDragStartHandler(e, data);
     },
     'touchmove .thumbnailEntry': function(e) {

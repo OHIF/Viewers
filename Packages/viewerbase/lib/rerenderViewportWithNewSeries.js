@@ -5,8 +5,9 @@
  *
  * @param element
  * @param data An object containing a seriesIndex and studyIndex for a study to load into this viewport
+ * @function renderedCallback An optional callback to be executed after the new template is rendered
  */
-rerenderViewportWithNewSeries = function(element, data) {
+rerenderViewportWithNewSeries = function(element, data, renderedCallback) {
     // Get the container and index of the current viewport.
     // The parent container is identified because it is later removed from the DOM
     var container = $(element).parents('.viewportContainer').get(0);
@@ -36,6 +37,11 @@ rerenderViewportWithNewSeries = function(element, data) {
     viewportContainer.remove();
 
     container.appendChild(newViewportContainer);
+
+    // Pass the renderedCallback to the imageViewerViewport template
+    if (renderedCallback && typeof renderedCallback === "function") {
+        data.renderedCallback = renderedCallback;
+    }
 
     // Render and insert the template
     UI.renderWithData(Template.imageViewerViewport, data, newViewportContainer);
