@@ -48,10 +48,10 @@ Package.onUse(function (api) {
 
     // Server functions
     api.addFiles('server/collections.js', 'server');
+    api.addFiles('server/removeCollections.js', ['server']);
 
     // Both client and server functions
     api.addFiles('both/collections.js', ['client', 'server']);
-    api.addFiles('both/removeCollections.js', ['client', 'server']);
 
 
     // Library functions

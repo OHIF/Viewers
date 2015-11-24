@@ -70,25 +70,31 @@ Template.viewerMain.helpers({
 
 Template.viewerMain.events({
     'click button#clearTools': function(e, template) {
+        var contentId = template.data.contentId;
+        var patientId = template.data.studies[0].patientId;
         var toolTypes = ["lesion", "nonTarget"];
         var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
         var toolStateKeys = Object.keys(toolState).slice(0);
+
         toolStateKeys.forEach(function (imageId) {
             toolTypes.forEach(function (toolType) {
-                toolState[imageId][toolType] = {
-                    data: []
-                };
+                if(toolState[imageId][toolType]) {
+                    if(toolState[imageId][toolType].data[0].patientId === patientId) {
+                        toolState[imageId][toolType] = {
+                            data: []
+                        }
+                    }
+                }
             });
 
         });
 
         // Update imageViewerViewport elements
-        $(".imageViewerViewport").each(function(viewportIndex, element) {
+        $("#"+contentId+" .imageViewerViewport").each(function(viewportIndex, element) {
             cornerstone.updateImage(element);
         });
 
         // Remove patient's measurements
-        var patientId = template.data.studies[0].patientId;
         Meteor.call('removeMeasurementsByPatientId', patientId);
 
     }
