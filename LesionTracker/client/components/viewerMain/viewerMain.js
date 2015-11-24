@@ -53,10 +53,44 @@ Template.viewerMain.helpers({
             iconClasses: 'fa fa-long-arrow-up'
         });
 
+        buttonData.push({
+            id: 'clearTools',
+            title: 'Clear tools',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-trash'
+        });
+
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;
         toolbarOptions.includeHangingProtocolButtons = false;
         return toolbarOptions;
     }
+});
+
+Template.viewerMain.events({
+    'click button#clearTools': function(e, template) {
+        var toolTypes = ["lesion", "nonTarget"];
+        var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+        var toolStateKeys = Object.keys(toolState).slice(0);
+        toolStateKeys.forEach(function (imageId) {
+            toolTypes.forEach(function (toolType) {
+                toolState[imageId][toolType] = {
+                    data: []
+                };
+            });
+
+        });
+
+        // Update imageViewerViewport elements
+        $(".imageViewerViewport").each(function(viewportIndex, element) {
+            cornerstone.updateImage(element);
+        });
+
+        // Remove patient's measurements
+        var patientId = template.data.studies[0].patientId;
+        Meteor.call('removeMeasurementsByPatientId', patientId);
+
+    }
+
 });

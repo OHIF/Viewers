@@ -51,6 +51,8 @@ Package.onUse(function (api) {
 
     // Both client and server functions
     api.addFiles('both/collections.js', ['client', 'server']);
+    api.addFiles('both/removeCollections.js', ['client', 'server']);
+
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
