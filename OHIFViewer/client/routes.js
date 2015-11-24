@@ -5,7 +5,7 @@ Object.keys(ViewerData).forEach(function(contentId) {
     var tabData = ViewerData[contentId];
     var data = {
         title: tabData.title,
-        contentid: tabData.contentid,
+        contentid: tabData.contentid
     };
     WorklistTabs.insert(data);
 });
@@ -27,8 +27,6 @@ Router.route('/viewer/:_id', {
     layoutTemplate: 'layout',
     name: 'viewer',
     onBeforeAction: function() {
-        log.info('Router GetStudyMetadata');
-
         var studyInstanceUid = this.params._id;
         
         // Check if this study is already loaded in a tab

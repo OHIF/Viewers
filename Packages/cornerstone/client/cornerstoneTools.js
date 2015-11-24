@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.7 - 2015-11-22 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.7 - 2015-11-23 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -6078,6 +6078,10 @@ if (typeof cornerstoneTools === 'undefined') {
 
         Object.keys(handles).forEach(function(name) {
             var handle = handles[name];
+            if (handle.allowedOutsideImage === true) {
+                return;
+            }
+            
             if (cornerstoneMath.point.insideRect(handle, imageRect) === false) {
                 handleOutsideImage = true;
             }

@@ -110,6 +110,8 @@ function getDefaultButtonData() {
 
 Template.toolbar.events({
     'click .imageViewerTool': function(e) {
+        $(e.currentTarget).tooltip('hide');
+
         var tool = e.currentTarget.id;
         console.log('Setting active tool to: ' + tool);
 
@@ -117,6 +119,8 @@ Template.toolbar.events({
         toolManager.setActiveTool(tool, elements);
     },
     'click .imageViewerCommand': function(e) {
+        $(e.currentTarget).tooltip('hide');
+
         var command = e.currentTarget.id;
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;

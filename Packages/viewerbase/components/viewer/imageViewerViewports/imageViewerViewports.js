@@ -26,11 +26,6 @@ Template.imageViewerViewports.helpers({
             viewportColumns = ViewerData[contentId].viewportColumns;
         }
 
-        // Update viewerData
-        ViewerData[contentId].viewportRows = viewportRows;
-        ViewerData[contentId].viewportColumns = viewportColumns;
-        Session.set("ViewerData", ViewerData);
-
         var viewportData;
         if (!$.isEmptyObject(ViewerData[contentId].loadedSeriesData)) {
             viewportData = ViewerData[contentId].loadedSeriesData;
@@ -44,8 +39,18 @@ Template.imageViewerViewports.helpers({
         inputData.DisplaySetPresentationGroup = Session.get('WindowManagerPresentationGroup');
         var hangingProtocolViewportData = WindowManager.getHangingProtocol(inputData);
         if (Session.get('UseHangingProtocol')) {
-            viewportData = hangingProtocolViewportData;
+            viewportData = hangingProtocolViewportData.viewports;
+            viewportRows = hangingProtocolViewportData.viewportRows || viewportRows;
+            viewportColumns = hangingProtocolViewportData.viewportColumns || viewportColumns;
         }
+
+        // Update viewerData
+        ViewerData[contentId].viewportRows = viewportRows;
+        ViewerData[contentId].viewportColumns = viewportColumns;
+        Session.set("ViewerData", ViewerData);
+
+        this.viewportRows = viewportRows;
+        this.viewportColumns = viewportColumns;
 
         var numViewports = viewportRows * viewportColumns;
         for (var i=0; i < numViewports; ++i) {
@@ -57,16 +62,16 @@ Template.imageViewerViewports.helpers({
                 viewportRows: viewportRows
             };
 
-            if (viewportData && viewportData[i]) {
+            if (viewportData && !$.isEmptyObject(viewportData[i])) {
                 data.seriesInstanceUid = viewportData[i].seriesInstanceUid;
                 data.studyInstanceUid = viewportData[i].studyInstanceUid;
                 data.currentImageIdIndex = viewportData[i].currentImageIdIndex;
                 data.viewport = viewportData[i].viewport;
-            } else if (hangingProtocolViewportData && hangingProtocolViewportData[i]) {
-                data.seriesInstanceUid = hangingProtocolViewportData[i].seriesInstanceUid;
-                data.studyInstanceUid = hangingProtocolViewportData[i].studyInstanceUid;
-                data.currentImageIdIndex = hangingProtocolViewportData[i].currentImageIdIndex;
-                data.viewport = hangingProtocolViewportData[i].viewport;
+            } else if (hangingProtocolViewportData && !$.isEmptyObject(hangingProtocolViewportData.viewports[i])) {
+                data.seriesInstanceUid = hangingProtocolViewportData.viewports[i].seriesInstanceUid;
+                data.studyInstanceUid = hangingProtocolViewportData.viewports[i].studyInstanceUid;
+                data.currentImageIdIndex = hangingProtocolViewportData.viewports[i].currentImageIdIndex;
+                data.viewport = hangingProtocolViewportData.viewports[i].viewport;
             }
 
             ViewerWindows.insert(data);
