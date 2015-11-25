@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.7 - 2015-11-23 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.7 - 2015-11-25 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -2041,7 +2041,7 @@ if (typeof cornerstoneTools === 'undefined') {
         $(mouseEventData.element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.arrowAnnotate.mouseDownActivateCallback);
 
         cornerstone.updateImage(mouseEventData.element);
-        cornerstoneTools.moveNewHandle(mouseEventData, measurementData.handles.end, function() {
+        cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
             if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
@@ -4928,7 +4928,7 @@ if (typeof cornerstoneTools === 'undefined') {
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.simpleAngle.mouseDownActivateCallback);
         cornerstone.updateImage(element);
 
-        cornerstoneTools.moveNewHandle(mouseEventData, measurementData.handles.middle, function() {
+        cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.middle, function() {
             measurementData.active = false;
             if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
@@ -4938,7 +4938,7 @@ if (typeof cornerstoneTools === 'undefined') {
             measurementData.handles.end.active = true;
             cornerstone.updateImage(element);
 
-            cornerstoneTools.moveNewHandle(mouseEventData, measurementData.handles.end, function() {
+            cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
                 measurementData.active = false;
                 if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                     // delete the measurement
