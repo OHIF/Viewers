@@ -3,7 +3,7 @@
  *
  * @param measurementId The unique key for a specific Measurement
  */
-function activateLesion(measurementId) {
+function activateLesion(measurementId, templateData) {
     // Find Measurement data for this lesion
     var measurementData = Measurements.findOne(measurementId);
 
@@ -71,14 +71,14 @@ function activateLesion(measurementId) {
         if (currentSeriesData.seriesInstanceUid === measurementAtTimepoint.seriesInstanceUid &&
             currentSeriesData.studyInstanceUid === measurementAtTimepoint.studyInstanceUid) {
             // If it is, activate the measurements in this viewport and stop here
-            activateMeasurements(element, measurementId);
+            activateMeasurements(element, measurementId, templateData, viewportIndex);
             return;
         }
 
         // Otherwise, re-render the viewport with the required study/series, then
         // add an onRendered callback to activate the measurements
         rerenderViewportWithNewSeries(element, requiredSeriesData, function(element) {
-            activateMeasurements(element, measurementId);
+            activateMeasurements(element, measurementId, templateData, viewportIndex);
         });
     });
 }
@@ -100,7 +100,7 @@ function getTimepointObject(imageId) {
  * Activate the selected measurement on the switched image (color to be green)
  * Deactivate all other measurements on the switched image (color to be white)
  */
-function activateMeasurements(element, measurementId) {
+function activateMeasurements(element, measurementId, templateData, viewportIndex) {
     // TODO=Switch this to use the new CornerstoneToolMeasurementModified event,
     // Once it has 'modified on activation' set up
 
@@ -116,6 +116,12 @@ function activateMeasurements(element, measurementId) {
 
     // If type is active, load image and activate lesion
     // If type is inactive, update lesions of enabledElement as inactive
+    //TODO: !stackData.currentImageIdIndex returns incorrect value
+    // Get loadedSeriesData currentImageIdIndex from ViewerData
+    var contentId = templateData.contentId;
+    var viewerData = ViewerData[contentId];
+    var elementCurrentImageIdIndex = viewerData.loadedSeriesData[viewportIndex].currentImageIdIndex;
+
     var stackToolDataSource = cornerstoneTools.getToolState(element, 'stack');
     var stackData = stackToolDataSource.data[0];
     var imageIds = stackData.imageIds;
@@ -125,7 +131,7 @@ function activateMeasurements(element, measurementId) {
         return;
     }
 
-    if (imageIdIndex === stackData.currentImageIdIndex){
+    if (imageIdIndex === elementCurrentImageIdIndex){
         activateTool(element, measurementData, timepointData.timepointID);
     } else {
         cornerstone.loadAndCacheImage(imageIds[imageIdIndex]).then(function(image) {
@@ -202,9 +208,9 @@ Template.lesionTable.helpers({
 });
 
 Template.lesionTable.events({
-    'click table#tblLesion tbody tr': function(e) {
+    'click table#tblLesion tbody tr': function(e, template) {
         // Retrieve the lesion id from the DOM data for this row
         var measurementId = $(e.currentTarget).data('measurementid');
-        activateLesion(measurementId);
+        activateLesion(measurementId,template.data);
     }
 });
