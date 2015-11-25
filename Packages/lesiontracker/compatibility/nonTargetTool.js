@@ -60,7 +60,7 @@
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
         // Set lesion number and lesion name
-        if (measurementData.lesionName === undefined) {
+        if (measurementData.lesionNumber === undefined) {
             config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
         }
 
@@ -70,9 +70,10 @@
             if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
-            }
+            }else{
+                config.getNonTargetLesionLocationCallback(measurementData, mouseEventData, doneCallback);
 
-            config.getNonTargetLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+            }
 
             $(mouseEventData.element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
             $(mouseEventData.element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);

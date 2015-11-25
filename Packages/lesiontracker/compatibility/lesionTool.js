@@ -7,9 +7,17 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     }
 
     var configuration = {
+        setLesionNumberCallback: setLesionNumberCallback,
         getLesionLocationCallback: getLesionLocationCallback,
         changeLesionLocationCallback: changeLesionLocationCallback
     };
+
+    // Set lesion number
+    // Get Target lesions on image
+    function setLesionNumberCallback(measurementData, eventData, doneCallback) {
+        var lesionNumber = 1;
+        doneCallback(lesionNumber);
+    }
 
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
@@ -40,7 +48,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var eventData = {
             mouseButtonMask: mouseEventData.which
         };
-        
+        var config = cornerstoneTools.lesion.getConfiguration();
+
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(element, toolType, measurementData);
        
@@ -50,6 +59,11 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.lesion.mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.lesion.mouseDownActivateCallback);
 
+        // Set lesion number and lesion name
+        if (measurementData.lesionNumber === undefined) {
+            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        }
+
         cornerstone.updateImage(element);
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
             if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
@@ -57,8 +71,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             } else {
                 // Set lesionMeasurementData Session
-                var config = cornerstoneTools.lesion.getConfiguration();
-                config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+                config.getLesionLocationCallback(measurementData, mouseEventData);
             }
 
             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.lesion.mouseMoveCallback);
@@ -232,44 +245,43 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             // draw the handles
             cornerstoneTools.drawHandles(context, eventData, data.handles, color);
 
-            if (data.lesionName) {
-                //Draw linked line as dashed
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = lineWidth;
-                context.setLineDash([2, 3]);
+            //Draw linked line as dashed
+            context.beginPath();
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            context.setLineDash([2, 3]);
 
-                var mid = {
-                    x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                    y: (handleStartCanvas.y + handleEndCanvas.y) / 2
-                };
+            var mid = {
+                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
+                y: (handleStartCanvas.y + handleEndCanvas.y) / 2
+            };
 
-                context.moveTo(mid.x, mid.y);
-                context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
-                context.stroke();
+            context.moveTo(mid.x, mid.y);
+            context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
+            context.stroke();
 
-                // Draw the text
-                var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
-                var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
-                var length = Math.sqrt(dx * dx + dy * dy);
+            // Draw the text
+            var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
+            var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
+            var length = Math.sqrt(dx * dx + dy * dy);
 
-                var suffix = ' mm';
-                if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
-                    suffix = ' pixels';
-                }
-
-                var text = '' + length.toFixed(2) + suffix;
-                var textLines = [data.lesionName, text];
-
-                var boundingBox = cornerstoneTools.drawTextBox(context,
-                    textLines,
-                    canvasTextLocation.x, canvasTextLocation.y, color);
-
-                data.handles.textBox.boundingBox = boundingBox;
-
-                // Set measurement text to show lesion table
-                data.measurementText = length.toFixed(1);
+            var suffix = ' mm';
+            if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
+                suffix = ' pixels';
             }
+
+            var text = '' + length.toFixed(2) + suffix;
+            var textLines = [data.lesionName, text];
+
+            var boundingBox = cornerstoneTools.drawTextBox(context,
+                textLines,
+                canvasTextLocation.x, canvasTextLocation.y, color);
+
+            data.handles.textBox.boundingBox = boundingBox;
+
+            // Set measurement text to show lesion table
+            data.measurementText = length.toFixed(1);
+
 
             context.restore();
 
@@ -278,6 +290,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     }
 
     function updateLesionCollection(lesionData) {
+        console.log(lesionData.measurementText);
         // TODO = Remove this in favour of measurement events
         if (!lesionData.active) {
             return;

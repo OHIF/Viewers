@@ -1,27 +1,37 @@
-// This event determines whether or not to show the lesion dialog
-// If there already exists a lesion with this specific lesion number,
-// related to the chosen location.
-function getLesionLocationCallback(measurementData, eventData, doneCallback) {
-    // Get the lesion location dialog
-    var lesionDialog = $("#lesionLocationDialog");
+// This event sets lesion number for new lesion
 
-    // Find the select option box
-    var selector = lesionDialog.find("select#selectLesionLocation");
-
+function setLesionNumberCallback(measurementData, eventData, doneCallback) {
     // Get the current element's timepointID from the study date metadata
     var element = eventData.element;
     var enabledElement = cornerstone.getEnabledElement(element);
-    var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
+    var imageId = enabledElement.image.imageId;
+
+    var study = cornerstoneTools.metaData.get('study', imageId);
     var timepoint = Timepoints.findOne({timepointName: study.studyDate});
     if (!timepoint) {
         return;
     }
+
     measurementData.timepointID = timepoint.timepointID;
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint
     var lesionNumber = measurementManagerDAL.getNewLesionNumber(measurementData.timepointID, isTarget=true);
     measurementData.lesionNumber = lesionNumber;
+
+    // Set lesion number
+    doneCallback(lesionNumber);
+}
+
+// This event determines whether or not to show the lesion dialog
+// If there already exists a lesion with this specific lesion number,
+// related to the chosen location.
+function getLesionLocationCallback(measurementData, eventData) {
+    // Get the lesion location dialog
+    var lesionDialog = $("#lesionLocationDialog");
+
+    // Find the select option box
+    var selector = lesionDialog.find("select#selectLesionLocation");
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, stop here because we don't need the dialog.
@@ -44,9 +54,6 @@ function getLesionLocationCallback(measurementData, eventData, doneCallback) {
     function closeHandler() {
         // Hide the lesion dialog
         lesionDialog.css('display', 'none');
-
-        // Fire the doneCallback with the lesion number
-        doneCallback(lesionNumber);
 
         // Select the first option for the next time the dialog is opened
         selector.find("option:first").prop("selected", true);
@@ -135,6 +142,7 @@ function changeLesionLocationCallback(measurementData, eventData, doneCallback) 
 }
 
 var config = {
+    setLesionNumberCallback: setLesionNumberCallback,
     getLesionLocationCallback: getLesionLocationCallback,
     changeLesionLocationCallback: changeLesionLocationCallback
 };
