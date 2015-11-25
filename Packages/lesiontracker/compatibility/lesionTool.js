@@ -115,6 +115,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         // Get studyInstanceUid
         var study = cornerstoneTools.metaData.get('study', imageId);
         var studyInstanceUid = study.studyInstanceUid;
+        var patientId =  study.patientId;
 
         // Get seriesInstanceUid
         var series = cornerstoneTools.metaData.get('series', imageId);
@@ -149,6 +150,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             imageId: imageId,
             seriesInstanceUid: seriesInstanceUid,
             studyInstanceUid: studyInstanceUid,
+            patientId: patientId,
             measurementText: 0,
             lesionName: '',
             isDeleted: false,

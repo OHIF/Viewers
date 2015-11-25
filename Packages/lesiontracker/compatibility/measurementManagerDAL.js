@@ -80,6 +80,8 @@ var measurementManagerDAL = (function() {
         timepoints[timepointID].imageId = lesionData.imageId;
         timepoints[timepointID].seriesInstanceUid = lesionData.seriesInstanceUid;
         timepoints[timepointID].studyInstanceUid = lesionData.studyInstanceUid;
+        timepoints[timepointID].handles = lesionData.handles;
+
 
         Measurements.update(measurement._id, {
             $set: {

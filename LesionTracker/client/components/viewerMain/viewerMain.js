@@ -89,8 +89,7 @@ Template.viewerMain.events({
             });
         });
 
-
-        // Update imageViewerViewport elements
+        // Update imageViewerViewport elements to remove lesions on current image
         $(".imageViewerViewport").each(function(viewportIndex, element) {
             cornerstone.updateImage(element);
         });

@@ -88,6 +88,7 @@
         // Get studyInstanceUid
         var study = cornerstoneTools.metaData.get('study', imageId);
         var studyInstanceUid = study.studyInstanceUid;
+        var patientId = study.patientId;
 
         // Get seriesInstanceUid
         var series = cornerstoneTools.metaData.get('series', imageId);
@@ -122,6 +123,7 @@
             imageId: imageId,
             seriesInstanceUid: seriesInstanceUid,
             studyInstanceUid: studyInstanceUid,
+            patientId: patientId,
             measurementText: '',
             isTarget: false,
             uid: uuid.v4()
