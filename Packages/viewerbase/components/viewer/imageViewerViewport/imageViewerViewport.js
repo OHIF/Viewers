@@ -97,9 +97,9 @@ function loadSeriesIntoViewport(data) {
     // into the viewport overlays, and to calculate reference lines and orientation markers
     var series = data.series;
     var numImages = series.instances.length;
+    var imageId;
+
     series.instances.forEach(function(instance, imageIndex) {
-        var imageId = getImageId(instance);
-        imageIds.push(imageId);
         var metaData = {
             instance: instance,
             series: series,
@@ -108,7 +108,20 @@ function loadSeriesIntoViewport(data) {
             imageIndex: imageIndex + 1
         };
 
-        addMetaData(imageId, metaData);
+        var numFrames = instance.numFrames;
+        if (numFrames > 1) {
+            log.info('Multiframe image detected');
+            for (var i = 0; i < numFrames; i++) {
+                metaData.frame = i;
+                imageId = getImageId(instance, i);
+                imageIds.push(imageId);
+                addMetaData(imageId, metaData);
+            }
+        } else {
+            imageId = getImageId(instance);
+            imageIds.push(imageId);
+            addMetaData(imageId, metaData);
+        }
     });
 
     // Define the current image stack using the newly created image IDs

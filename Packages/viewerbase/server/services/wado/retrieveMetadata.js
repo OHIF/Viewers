@@ -104,6 +104,8 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             sourceImageInstanceUid: getSourceImageInstanceUid(instance),
             laterality: DICOMWeb.getString(instance['00200062']),
             viewPosition: DICOMWeb.getString(instance['00185101']),
+            numFrames: DICOMWeb.getNumber(instance['00280008']),
+            frameRate: DICOMWeb.getNumber(instance['00181063'])
         };
 
         if (server.imageRendering === 'wadouri') {
