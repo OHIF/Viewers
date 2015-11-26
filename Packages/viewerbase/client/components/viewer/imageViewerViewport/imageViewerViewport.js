@@ -138,13 +138,35 @@ function loadSeriesIntoViewport(data, templateData) {
 
         // If there is a saved object containing Cornerstone viewport data
         // (e.g. scale, invert, window settings) in the input data, apply it now.
-        //
-        // Otherwise, display the loaded image in the viewport element with the
-        // default viewport settings.
-        if (data.viewport) {
+
+        // Check if there are default viewport settings for this modality
+        enabledElement.image = image;
+        enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, image);
+        var modalityViewport = getModalityDefaultViewport(series, enabledElement, image.imageId);
+
+        // If no default viewport settings or modality-specific settings exists,
+        // display the loaded image in the viewport element with no loaded viewport
+        // settings.
+        if (modalityViewport) {
+            cornerstone.displayImage(element, image, modalityViewport);
+
+            // Mark that this element should not be fit to the window in the resize listeners
+            enabledElement.fitToWindow = false;
+
+            // Resize the canvas to fit the current viewport element size.
+            cornerstone.resize(element, false);
+
+        } else if (data.viewport) {
             cornerstone.displayImage(element, image, data.viewport);
+
+            // Resize the canvas to fit the current viewport element size.
+            cornerstone.resize(element, true);
         } else {
             cornerstone.displayImage(element, image);
+
+            // Resize the canvas to fit the current viewport element size. Fit the displayed
+            // image to the canvas dimensions.
+            cornerstone.resize(element, true);
         }
 
         // Remove the data for this viewport from the ViewportLoading object
@@ -154,10 +176,6 @@ function loadSeriesIntoViewport(data, templateData) {
         // Call the handler function that represents the end of the image loading phase
         // (e.g. hide the progress text box)
         endLoadingHandler(element);
-
-        // Resize the canvas to fit the current viewport element size. Fit the displayed
-        // image to the canvas dimensions.
-        cornerstone.resize(element, true);
 
         // Remove the 'empty' class from the viewport to hide any instruction text
         element.classList.remove('empty');

@@ -142,10 +142,13 @@ Package.onUse(function(api) {
     api.addFiles('lib/updateAllViewports.js', 'client');
     api.addFiles('lib/exportStudies.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
+    api.addFiles('lib/modalityDefaultViewport.js', 'client');
+    api.addFiles('lib/hangingprotocols.js', 'client');
 
     //api.export('accountsConfig', 'client');
-    api.export('resizeViewportElements', 'client');
-    api.export('handleResize', 'client');
+    api.export('addMetaData', 'client');
+    api.export('resizeViewportElements','client');
+    api.export('handleResize','client');
     api.export('enableHotkeys', 'client');
     api.export('enablePrefetchOnElement', 'client');
     api.export('displayReferenceLines', 'client');
@@ -161,6 +164,10 @@ Package.onUse(function(api) {
     api.export('updateAllViewports', 'client');
     api.export('exportStudies', 'client');
     api.export('encodeQueryData', 'server');
+    api.export('getMammoHangingProtocolObject', 'client');
+    api.export('getModalityDefaultViewport', 'client');
+    api.export('setModalityDefaultViewportFunction', 'client');
+    api.export('ViewerWindows', 'client');
 
     // Viewer management objects
     api.export('toolManager', 'client');
@@ -209,4 +216,3 @@ Package.onUse(function(api) {
 
     api.export('Services', 'server');
 });
-
