@@ -290,7 +290,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     }
 
     function updateLesionCollection(lesionData) {
-        console.log(lesionData.measurementText);
         // TODO = Remove this in favour of measurement events
         if (!lesionData.active) {
             return;

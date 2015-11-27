@@ -233,6 +233,101 @@ function loadSeriesIntoViewport(data) {
         $(element).off('CornerstoneImageRendered', onImageRendered);
         $(element).on('CornerstoneImageRendered', onImageRendered);
 
+        //TODO: ********************************************
+        //TODO: Delete a lesion
+        // TODO: Delete a lesion, if ctrl+d r del is pressed after lesion selected
+        //TODO: getTimepointObject should be global function to use everywhere
+
+        function getTimepointObject(imageId) {
+            var study = cornerstoneTools.metaData.get('study', imageId);
+            return Timepoints.findOne({timepointName: study.studyDate});
+        }
+
+        // ctrl+d is used to detect delete event if del key is not found on keyboard.
+        // Id key is down
+        var keyMap = {17: false, 68: false, 46: false};
+        function keyPressDownHandler(e, lesionData){
+            if (e.keyCode in keyMap) {
+                keyMap[e.keyCode] = true;
+                if (keyMap[46] || keyMap[17] && keyMap[68]) {
+                    var toolType = lesionData.isTarget ? 'lesion' : 'nonTarget';
+                    var imageId = lesionData.imageId;
+                    var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+                    Object.keys(toolState).forEach(function(imageIdKey){
+                        if(imageIdKey === imageId) {
+                            var toolStateArray = toolState[imageId][toolType].data;
+                            toolStateArray.forEach(function(data, index) {
+                                if(data.lesionNumber === lesionData.lesionNumber){
+                                    toolState[imageId][toolType].data.splice(index, 1);
+
+                                    // Remove from collection
+                                    var patientId = data.patientId;
+                                    var enabledElement = cornerstone.getEnabledElement(element);
+                                    var elementImageId = enabledElement.image.imageId;
+                                    var timepointData = getTimepointObject(elementImageId);
+                                    var lesionObject = {
+                                        patientId: patientId,
+                                        lesionNumber: lesionData.lesionNumber,
+                                        isTarget: lesionData.isTarget,
+                                        timepointId: timepointData.timepointID
+                                    };
+
+                                    // Remove patient measurement
+                                    Meteor.call('removePatientMeasurement', lesionObject);
+
+                                    //Update element
+                                    cornerstone.updateImage(element);
+                                }
+                            });
+
+
+                        }
+                    });
+
+                }
+            }
+        }
+
+        // When key is up
+        function keyPressUpHandler(e){
+            if (e.keyCode in keyMap) {
+                keyMap[e.keyCode] = false;
+            }
+        }
+
+        // CornerstoneToolsMouseDown event callback
+        function onMouseDown(e,eventData) {
+            var element = e.currentTarget;
+            var distanceSq = 25;
+            var coords = eventData.startPoints.canvas;
+            var toolTypes = ["lesion", "nonTarget"];
+            toolTypes.forEach(function(toolType){
+                var toolData = cornerstoneTools.getToolState(element, toolType);
+
+                // now check to see if there is a handle we can move
+                if (toolData) {
+                    for (i = 0; i < toolData.data.length; i++) {
+                        var data = toolData.data[i];
+                        var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
+                        if(handle) {
+                            $(document).off("keydown");
+                            $(document).on('keydown', function(e){
+                                keyPressDownHandler(e,data);
+                            });
+                            $(document).off("keyup");
+                            $(document).on('keyup',keyPressUpHandler);
+                        }
+                    }
+                }
+            });
+        }
+
+        $(element).on('CornerstoneToolsMouseDown', onMouseDown);
+        $(element).on('CornerstoneToolsMouseDown', onMouseDown);
+
+        //TODO: Delete a lesion ends
+        //TODO: ********************************************
+
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
 
