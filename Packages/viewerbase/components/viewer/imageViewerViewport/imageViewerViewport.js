@@ -234,8 +234,7 @@ function loadSeriesIntoViewport(data) {
         $(element).on('CornerstoneImageRendered', onImageRendered);
 
         //TODO: ********************************************
-        //TODO: Delete a lesion
-        // TODO: Delete a lesion, if ctrl+d r del is pressed after lesion selected
+        //TODO: Delete a lesion, if ctrl+d or del is pressed after lesion selected
         //TODO: getTimepointObject should be global function to use everywhere
 
         function getTimepointObject(imageId) {
@@ -298,7 +297,7 @@ function loadSeriesIntoViewport(data) {
         // CornerstoneToolsMouseDown event callback
         function onMouseDown(e,eventData) {
             var element = e.currentTarget;
-            var distanceSq = 25;
+            var distanceSq = 5;
             var coords = eventData.startPoints.canvas;
             var toolTypes = ["lesion", "nonTarget"];
             toolTypes.forEach(function(toolType){
@@ -306,16 +305,18 @@ function loadSeriesIntoViewport(data) {
 
                 // now check to see if there is a handle we can move
                 if (toolData) {
-                    for (i = 0; i < toolData.data.length; i++) {
+                    for (var i = 0; i < toolData.data.length; i++) {
                         var data = toolData.data[i];
                         var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
                         if(handle) {
                             $(document).off("keydown");
                             $(document).on('keydown', function(e){
                                 keyPressDownHandler(e,data);
+                                return;
                             });
                             $(document).off("keyup");
                             $(document).on('keyup',keyPressUpHandler);
+                            return;
                         }
                     }
                 }
