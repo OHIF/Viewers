@@ -153,31 +153,68 @@ cornerstoneTools.lesion.setConfiguration(config);
 LesionLocations = new Meteor.Collection(null);
 
 LesionLocations.insert({
-    location: "Brain Brainstem",
+    location: "Liver Left",
     hasDescription: false,
     description: ""
 });
 
 LesionLocations.insert({
-    location: "Brain Cerebellum Left",
+    location: "Liver Right",
     hasDescription: false,
     description: ""
 });
 
 LesionLocations.insert({
-    location: "Brain Cerebrum Left",
+    location: "Liver Caudate",
     hasDescription: false,
     description: ""
 });
 
 LesionLocations.insert({
-    location: "Brain Cerebrum Right",
+    location: "Lung LLL",
     hasDescription: false,
     description: ""
 });
 
 LesionLocations.insert({
-    location: "Brain Multiple Sites",
+    location: "Lung LUL",
+    hasDescription: false,
+    description: ""
+});
+
+LesionLocations.insert({
+    location: "Lung RLL",
+    hasDescription: false,
+    description: ""
+});
+LesionLocations.insert({
+    location: "Lung RML",
+    hasDescription: false,
+    description: ""
+});
+LesionLocations.insert({
+    location: "Lung RUL",
+    hasDescription: false,
+    description: ""
+});
+LesionLocations.insert({
+    location: "Pleura Left",
+    hasDescription: false,
+    description: ""
+});
+LesionLocations.insert({
+    location: "Pleura Right",
+    hasDescription: false,
+    description: ""
+});
+
+LesionLocations.insert({
+    location: "Kidney Left",
+    hasDescription: false,
+    description: ""
+});
+LesionLocations.insert({
+    location: "Kidney Right",
     hasDescription: false,
     description: ""
 });
