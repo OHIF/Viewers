@@ -65,7 +65,7 @@ var allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownA
  *
  * @param data {object} Object containing the study, series, and viewport element to be used
  */
-function loadSeriesIntoViewport(data) {
+function loadSeriesIntoViewport(data, templateData) {
     log.info("imageViewerViewport loadSeriesIntoViewport");
 
     // Make sure we have all the data required to render the series
@@ -135,7 +135,6 @@ function loadSeriesIntoViewport(data) {
 
     // Save the current image ID inside the template data so it can be
     // retrieved from the template helpers
-    var templateData = Template.currentData();
     templateData.imageId = imageId;
 
     // Save the current image ID inside the ViewportLoading object.
@@ -422,6 +421,33 @@ function loadSeriesIntoViewport(data) {
 }
 
 /**
+ * This function sets series for the study and calls LoadSeriesIntoViewport function
+ *
+ * @param data includes study data
+ * @param seriesInstanceUid series information which is loaded in Template
+ * @param templateData currentData of Template
+ *
+ */
+function setSeries(data,seriesInstanceUid, templateData){
+    var study = data.study;
+    study.seriesList.every(function(series) {
+        if (series.seriesInstanceUid === seriesInstanceUid) {
+            data.series = series;
+            return false;
+        }
+        return true;
+    });
+
+    // If we didn't find anything, stop here
+    if (!data.series) {
+        return;
+    }
+
+    // Otherwise, load pass the data object into loadSeriesIntoViewport
+    loadSeriesIntoViewport(data, templateData);
+}
+
+/**
  * This function searches an object to return the keys that contain a specific value
  *
  * @param object {object} The object to be searched
@@ -467,6 +493,8 @@ Meteor.startup(function() {
 });
 
 Template.imageViewerViewport.onRendered(function() {
+
+    var templateData = Template.currentData();
     log.info("imageViewerViewport onRendered");
 
     // When the imageViewerViewport template is rendered
@@ -509,31 +537,27 @@ Template.imageViewerViewport.onRendered(function() {
     var study = ViewerStudies.findOne({
         studyInstanceUid: this.data.studyInstanceUid
     });
+    var seriesInstanceUid = this.data.seriesInstanceUid;
 
-    // If we didn't find anything, stop here
+    // TODO: This code block might be refactored
+    // Load previous measurement study when reloading a patient
     if (!study) {
-        return;
+        Meteor.call('GetStudyMetadata', this.data.studyInstanceUid, function(error, study) {
+            // Once we have retrieved the data, we sort the series' by series
+            // and instance number in ascending order
+            if(!study){
+                return;
+            }
+            sortStudy(study);
+            data.study = study;
+            setSeries(data, seriesInstanceUid, templateData);
+            return;
+        });
     }
 
     data.study = study;
+    setSeries(data, seriesInstanceUid, templateData);
 
-    // Look through this study for a series with this seriesInstanceUid
-    var seriesInstanceUid = this.data.seriesInstanceUid;
-    study.seriesList.every(function(series) {
-        if (series.seriesInstanceUid === seriesInstanceUid) {
-            data.series = series;
-            return false;
-        }
-        return true;
-    });
-
-    // If we didn't find anything, stop here
-    if (!data.series) {
-        return;
-    }
-
-    // Otherwise, load pass the data object into loadSeriesIntoViewport
-    loadSeriesIntoViewport(data);
 });
 
 Template.imageViewerViewport.onDestroyed(function() {
