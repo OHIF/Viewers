@@ -111,8 +111,10 @@ function search() {
 }
 
 Template.worklistResult.events({
-    'search': function(event) {
-        search();
+    'keypress': function(event) {
+        if (event.keyCode === 13) { //  Enter
+            search();
+        }
     },
     'onsearch': function(event) {
         search();
