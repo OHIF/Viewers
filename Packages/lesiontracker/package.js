@@ -37,6 +37,7 @@ Package.onUse(function (api) {
 
     api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.html', 'client');
     api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.js', 'client');
+    api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.styl', 'client');
 
     api.addFiles('components/nonTargetLesionDialog/nonTargetLesionDialog.html', 'client');
     api.addFiles('components/nonTargetLesionDialog/nonTargetLesionDialog.css', 'client');
@@ -56,6 +57,7 @@ Package.onUse(function (api) {
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
+
 
     api.export('Measurements', ['client', 'server']);
     api.export('Timepoints', ['client', 'server']);

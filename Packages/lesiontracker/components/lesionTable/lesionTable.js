@@ -214,3 +214,55 @@ Template.lesionTable.events({
         activateLesion(measurementId,template.data);
     }
 });
+
+// Track ViewerData to get active timepoints
+// Put a visual indicator(<) in timepoint header in lesion table for active timepoints
+Tracker.autorun(function () {
+    var allViewerData = Session.get('ViewerData');
+    var contentId = Session.get('activeContentId');
+    if(allViewerData && contentId) {
+        var viewerData = allViewerData[contentId];
+        if (viewerData) {
+            // Get study dates of imageViewerViewport elements
+            var loadedStudyDates = {
+                patientId: "",
+                dates: []
+            };
+
+            $("#"+contentId+" .imageViewerViewport").each(function(viewportIndex, element) {
+                var enabledElement = cornerstone.getEnabledElement(element);
+                var imageId = enabledElement.image.imageId;
+                var study = cornerstoneTools.metaData.get('study', imageId);
+                var studyDate = study.studyDate;
+                var patientId = study.patientId;
+                loadedStudyDates.patientId = patientId;
+                // Check studyDate is added before
+                if (loadedStudyDates.dates.indexOf(studyDate) < 0) {
+                    loadedStudyDates.dates.push(studyDate);
+                }
+
+            });
+
+            // If study date is loaded into viewport, set timepointLoaded property in Timepoints collection as true
+            // Else set timepointLoaded property as false
+            if(loadedStudyDates.dates.length) {
+                var timepoints = Timepoints.find({patientId: loadedStudyDates.patientId}).fetch();
+                timepoints.forEach(function(timepoint){
+                    var timepointLoaded = false;
+                    if(loadedStudyDates.dates.indexOf(timepoint.timepointName) > -1) {
+                        timepointLoaded = true;
+                    }
+
+                    Timepoints.update(timepoint._id,{
+                        $set: {
+                            timepointLoaded: timepointLoaded
+                        }
+
+                    });
+                });
+            }
+        }
+    }
+
+});
+
