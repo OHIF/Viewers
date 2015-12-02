@@ -211,6 +211,10 @@ Template.lesionTable.events({
     'click table#tblLesion tbody tr': function(e, template) {
         // Retrieve the lesion id from the DOM data for this row
         var measurementId = $(e.currentTarget).data('measurementid');
+
+        // Set background color of selected row
+        $(e.currentTarget).addClass("selectedRow").siblings().removeClass("selectedRow");
+
         activateLesion(measurementId,template.data);
     }
 });
