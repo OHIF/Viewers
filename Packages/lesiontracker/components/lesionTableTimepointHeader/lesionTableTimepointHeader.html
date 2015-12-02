@@ -1,3 +1,9 @@
 <template name="lesionTableTimepointHeader">
-    <th class="lesionTableTimepointCell">{{formatDA timepointName "MM/DD/YYYY"}} {{ #if timepointLoaded }}<span class="timepointIndicator">&lt;</span> {{ /if }} </th>
+    <th class="lesionTableTimepointCell">
+        {{formatDA timepointName "MM/DD/YYYY"}}
+        {{#if timepointTextFound}}
+            {{timepointText}}
+        {{/if}}
+        {{#if timepointLoaded }}<span class="timepointIndicator">&lt;</span> {{/if}}
+    </th>
 </template>
