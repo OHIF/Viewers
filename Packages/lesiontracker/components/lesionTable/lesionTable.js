@@ -231,16 +231,19 @@ Tracker.autorun(function () {
 
             $("#"+contentId+" .imageViewerViewport").each(function(viewportIndex, element) {
                 var enabledElement = cornerstone.getEnabledElement(element);
-                var imageId = enabledElement.image.imageId;
-                var study = cornerstoneTools.metaData.get('study', imageId);
-                var studyDate = study.studyDate;
-                var patientId = study.patientId;
-                loadedStudyDates.patientId = patientId;
-                // Check studyDate is added before
-                if (loadedStudyDates.dates.indexOf(studyDate) < 0) {
-                    loadedStudyDates.dates.push(studyDate);
-                }
+                if(enabledElement && enabledElement.image){
+                    var imageId = enabledElement.image.imageId;
+                    var study = cornerstoneTools.metaData.get('study', imageId);
+                    var studyDate = study.studyDate;
+                    var patientId = study.patientId;
+                    loadedStudyDates.patientId = patientId;
+                    // Check studyDate is added before
+                    if (loadedStudyDates.dates.indexOf(studyDate) < 0) {
+                        loadedStudyDates.dates.push(studyDate);
+                    }
 
+
+                }
             });
 
             // If study date is loaded into viewport, set timepointLoaded property in Timepoints collection as true

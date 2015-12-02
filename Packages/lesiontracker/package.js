@@ -47,6 +47,9 @@ Package.onUse(function (api) {
     api.addFiles('components/studyDateList/studyDateList.styl', 'client');
     api.addFiles('components/studyDateList/studyDateList.js', 'client');
 
+    api.addFiles('components/timepointTextDialog/timepointTextDialog.html', 'client');
+    api.addFiles('components/timepointTextDialog/timepointTextDialog.styl', 'client');
+
     // Server functions
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', ['server']);
@@ -57,7 +60,6 @@ Package.onUse(function (api) {
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
-
 
     api.export('Measurements', ['client', 'server']);
     api.export('Timepoints', ['client', 'server']);
