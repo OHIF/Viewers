@@ -51,12 +51,6 @@ Template.viewer.onCreated(function() {
             }
             OHIF.viewer.isPlaying[viewportIndex] = !OHIF.viewer.isPlaying[viewportIndex];
             Session.set('UpdateCINE', Random.id());
-        },
-        previousPresentationGroup: function() {
-            WindowManager.previousPresentationGroup();
-        },
-        nextPresentationGroup: function() {
-            WindowManager.nextPresentationGroup();
         }
     };
 
@@ -103,7 +97,6 @@ Template.viewer.onCreated(function() {
     var patientId = this.data.studies[0].patientId;
     Session.set('patientId', patientId);
 
-    initialized = false;
     self.autorun(function() {
         var patientId = Session.get('patientId');
         self.subscribe('timepoints', patientId);
@@ -113,38 +106,35 @@ Template.viewer.onCreated(function() {
             return;
         }
 
-        if (initialized === true) {
-            return;
-        }
+        ViewerStudies.find().observe({
+            added: function(study) {
+                var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+                if (timepoint) {
+                    log.warn("A timepoint with that study date already exists!");
+                    return;
+                }
 
-        ViewerStudies.find().forEach(function(study) {
-            var timepoint = Timepoints.findOne({timepointName: study.studyDate});
-            if (timepoint) {
-                log.warn("A timepoint with that study date already exists!");
-                return;
+                var timepointID = uuid.v4();
+
+                var testTimepoint = Timepoints.findOne({});
+                if (testTimepoint && testTimepoint.patientId !== study.patientId) {
+                    log.warn("Timepoints collection related to the wrong subject");
+                    return;
+                }
+
+                log.info('Inserting a new timepoint');
+                Timepoints.insert({
+                    patientId: study.patientId,
+                    timepointID: timepointID,
+                    timepointName: study.studyDate
+                });
             }
-
-            var timepointID = uuid.v4();
-
-            var testTimepoint = Timepoints.findOne({});
-            if (testTimepoint && testTimepoint.patientId !== study.patientId) {
-                log.warn("Timepoints collection related to the wrong subject");
-                return;
-            }
-
-            log.info('Inserting a new timepoint');
-            Timepoints.insert({
-                patientId: study.patientId,
-                timepointID: timepointID,
-                timepointName: study.studyDate
-            });
         });
 
         // This is used to re-add tools from the database into the
         // Cornerstone ToolData structure
         Measurements.find().observe({
             added: function (data) {
-
                 if (data.toolDataInsertedManually === true) {
 
                     // Activate first measurements in image box as default if exists
@@ -156,18 +146,39 @@ Template.viewer.onCreated(function() {
                     }
                     return;
                 }
-
                 log.info('Measurement added');
 
                 addMeasurementAsToolData(data);
+
+                updateRelatedElements(data.imageId);
+            },
+            changed: function(data) {
+                log.info('Measurement changed');
+                updateRelatedElements(data.imageId);
+            },
+            removed: function(data) {
+                log.info('Measurement removed');
+                updateRelatedElements(data.imageId);
             }
         });
-
-        initialized = true;
     });
 
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
 });
+
+function updateRelatedElements(imageId) {
+    // Get all on-screen elements with this imageId
+    var enabledElements = cornerstone.getEnabledElementsByImageId(imageId);
+
+    // TODO=Check original event to prevent duplicate updateImage calls
+
+    // Loop through these elements
+    enabledElements.forEach(function(enabledElement) {
+        // Update the display so the tool is removed
+        var element = enabledElement.element;
+        cornerstone.updateImage(element)
+    });
+}
 
 function addMeasurementAsToolData(data) {
     // Check what toolType we should be adding this to, based on the isTarget value
@@ -184,10 +195,41 @@ function addMeasurementAsToolData(data) {
             toolState[imageId] = {};
         }
 
+        // This is probably not the best approach to prevent duplicates
+        if (toolState[imageId][toolType] && toolState[imageId][toolType].data) {
+            var measurementHasNoIdYet = false;
+            toolState[imageId][toolType].data.forEach(function(measurement) {
+                if (measurement.id === 'notready') {
+                    measurementHasNoIdYet = true;
+                    return false;
+                }
+            });
+
+            // Stop here if it appears that we are creating this measurement right now,
+            // and would not like this function to add another copy of it to the toolData
+            if (measurementHasNoIdYet === true) {
+                return;
+            }
+        }
+
         if (!toolState[imageId][toolType]) {
             toolState[imageId][toolType] = {
                 data: []
             };
+        } else {
+            var alreadyExists = false;
+            if (toolState[imageId][toolType].data.length) {
+                toolState[imageId][toolType].data.forEach(function(measurement) {
+                    if (measurement.id === data._id) {
+                        alreadyExists = true;
+                        return false;
+                    }
+                });
+            }
+
+            if (alreadyExists === true) {
+                return;
+            }
         }
 
         // Create measurementData structure based on the lesion data at this timepoint
@@ -204,6 +246,7 @@ function addMeasurementAsToolData(data) {
         measurementData.visible = data.visible;
         measurementData.active = data.active;
         measurementData.uid = data.uid;
+        measurementData.id = data._id;
 
         toolState[imageId][toolType].data.push(measurementData);
     });
@@ -214,6 +257,46 @@ Template.viewer.onDestroyed(function() {
     log.info("onDestroyed");
     OHIF.viewer.updateImageSynchronizer.destroy();
 });
+
+Template.viewer.events({
+    'CornerstoneToolsMeasurementModified .imageViewerViewport': function(e, template, eventData) {
+        handleMeasurementModified(e, eventData);
+    },
+    'CornerstoneToolsMeasurementRemoved .imageViewerViewport': function(e, template, eventData) {
+        handleMeasurementRemoved(e, eventData);
+    }
+});
+
+function handleMeasurementModified(e, eventData) {
+    log.info('CornerstoneToolsMeasurementModified');
+    var measurementData = eventData.measurementData;
+
+    switch (eventData.toolType) {
+        case 'nonTarget':
+        case 'lesion':
+            measurementManagerDAL.updateTimepointData(measurementData);
+            break;
+    }
+}
+
+function handleMeasurementRemoved(e, eventData) {
+    log.info('CornerstoneToolsMeasurementRemoved');
+    var measurementData = eventData.measurementData;
+    var databaseEntry;
+
+    switch (eventData.toolType) {
+        case 'nonTarget':
+        case 'lesion':
+            databaseEntry = Measurements.findOne(measurementData.id, {reactive: false});
+            if (!databaseEntry) {
+                return;
+            }
+
+            // TODO= Fix this when we have Findings that relate to more than one viewport
+            Measurements.remove(databaseEntry._id);
+            break;
+    }
+}
 
 // Avoid doing DOM manipulation during the resize handler
 // because it is fired very often.

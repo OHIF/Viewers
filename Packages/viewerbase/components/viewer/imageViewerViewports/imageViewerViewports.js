@@ -121,7 +121,7 @@ var savedSeriesData,
     savedViewportColumns;
 
 Template.imageViewerViewports.events({
-    'dblclick .imageViewerViewport': function(e) {
+    'CornerstoneMouseDoubleClick .imageViewerViewport': function(e) {
         var container = $(".viewerMain").get(0);
         var data;
         var contentId = this.contentId || $("#viewer").parents(".tab-pane.active").attr('id');
@@ -140,7 +140,7 @@ Template.imageViewerViewports.events({
 
             data = {
                 viewportRows: ViewerData[contentId].viewportRows,
-                viewportColumns: ViewerData[contentId].viewportColumns,
+                viewportColumns: ViewerData[contentId].viewportColumns
             };
 
             // Render the imageViewerViewports template with these settings
@@ -181,7 +181,6 @@ Template.imageViewerViewports.events({
 
             // Add the 'zoomed' class to the lone remaining viewport
             $('.imageViewerViewport').eq(0).addClass('zoomed');
-
         }
     }
 });

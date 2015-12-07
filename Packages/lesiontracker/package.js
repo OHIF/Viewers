@@ -17,38 +17,41 @@ Package.onUse(function (api) {
 
     api.addFiles('log.js', ['client', 'server']);
 
-    api.addFiles('compatibility/lesionTool.js', 'client', {bare: true});
-    api.addFiles('compatibility/nonTargetTool.js', 'client', {bare: true});
-    api.addFiles('compatibility/measurementManagerDAL.js', 'client', {bare: true});
+    api.addFiles('client/collections/LesionLocations.js', 'client');
+    api.addFiles('client/collections/LocationResponses.js', 'client');
 
-    api.addFiles('components/lesionLocationDialog/lesionLocationDialog.html', 'client');
-    api.addFiles('components/lesionLocationDialog/lesionLocationDialog.js', 'client');
-    api.addFiles('components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
+    api.addFiles('client/compatibility/lesionTool.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/nonTargetTool.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/measurementManagerDAL.js', 'client', {bare: true});
+
+    api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
+    api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
+    api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
     
-    api.addFiles('components/lesionTable/lesionTable.html', 'client');
-    api.addFiles('components/lesionTable/lesionTable.styl', 'client');
-    api.addFiles('components/lesionTable/lesionTable.js', 'client');
+    api.addFiles('client/components/lesionTable/lesionTable.html', 'client');
+    api.addFiles('client/components/lesionTable/lesionTable.styl', 'client');
+    api.addFiles('client/components/lesionTable/lesionTable.js', 'client');
 
-    api.addFiles('components/lesionTableRow/lesionTableRow.html', 'client');
-    api.addFiles('components/lesionTableRow/lesionTableRow.js', 'client');
+    api.addFiles('client/components/lesionTableRow/lesionTableRow.html', 'client');
+    api.addFiles('client/components/lesionTableRow/lesionTableRow.js', 'client');
 
-    api.addFiles('components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
-    api.addFiles('components/lesionTableTimepointCell/lesionTableTimepointCell.js', 'client');
+    api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
+    api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.js', 'client');
 
-    api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.html', 'client');
-    api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.js', 'client');
-    api.addFiles('components/lesionTableTimepointHeader/lesionTableTimepointHeader.styl', 'client');
+    api.addFiles('client/components/lesionTableTimepointHeader/lesionTableTimepointHeader.html', 'client');
+    api.addFiles('client/components/lesionTableTimepointHeader/lesionTableTimepointHeader.js', 'client');
+    api.addFiles('client/components/lesionTableTimepointHeader/lesionTableTimepointHeader.styl', 'client');
 
-    api.addFiles('components/nonTargetLesionDialog/nonTargetLesionDialog.html', 'client');
-    api.addFiles('components/nonTargetLesionDialog/nonTargetLesionDialog.css', 'client');
-    api.addFiles('components/nonTargetLesionDialog/nonTargetLesionDialog.js', 'client');
+    api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.html', 'client');
+    api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.styl', 'client');
+    api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.js', 'client');
 
-    api.addFiles('components/studyDateList/studyDateList.html', 'client');
-    api.addFiles('components/studyDateList/studyDateList.styl', 'client');
-    api.addFiles('components/studyDateList/studyDateList.js', 'client');
+    api.addFiles('client/components/studyDateList/studyDateList.html', 'client');
+    api.addFiles('client/components/studyDateList/studyDateList.styl', 'client');
+    api.addFiles('client/components/studyDateList/studyDateList.js', 'client');
 
-    api.addFiles('components/timepointTextDialog/timepointTextDialog.html', 'client');
-    api.addFiles('components/timepointTextDialog/timepointTextDialog.styl', 'client');
+    api.addFiles('client/components/timepointTextDialog/timepointTextDialog.html', 'client');
+    api.addFiles('client/components/timepointTextDialog/timepointTextDialog.styl', 'client');
 
     // Server functions
     api.addFiles('server/collections.js', 'server');
@@ -56,7 +59,6 @@ Package.onUse(function (api) {
 
     // Both client and server functions
     api.addFiles('both/collections.js', ['client', 'server']);
-
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
@@ -66,7 +68,14 @@ Package.onUse(function (api) {
     // Export lesionTable function for activate measurements
     api.export('activateLesion','client');
     api.export('resizeViewportElements','client');
+    api.export('measurementManagerDAL', 'client');
 
+    // Export client-side collections
+    api.export('LesionLocations', 'client');
+    api.export('LocationResponses', 'client');
+    api.export('PatientLocations', 'client');
+
+    // Export collections spanning both client and server
     api.export('Measurements', ['client', 'server']);
     api.export('Timepoints', ['client', 'server']);
 });

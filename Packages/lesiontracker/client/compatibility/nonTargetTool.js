@@ -118,7 +118,8 @@
                     pointNearHandle: pointNearTextBox,
                     active: false,
                     movesIndependently: true,
-                    drawnIndependently: true
+                    drawnIndependently: true,
+                    allowedOutsideImage: true
                 }
             },
             imageId: imageId,

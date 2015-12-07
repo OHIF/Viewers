@@ -46,12 +46,9 @@ var measurementManagerDAL = (function() {
         lesionDataObject.timepoints = timepointsObject;
 
         // Is there a use for this?
-        lesionDataObject.number =  Measurements.find().count() + 1;
+        lesionDataObject.number = Measurements.find().count() + 1;
 
-        // TODO=Fix this workaround to prevent the observe hook from adding another set of toolData
-        lesionDataObject.toolDataInsertedManually = true;
-
-        Measurements.insert(lesionDataObject);
+        lesionDataObject.id = Measurements.insert(lesionDataObject);
     }
 
     // Update timepoint data in Measurements collection
@@ -82,6 +79,7 @@ var measurementManagerDAL = (function() {
         timepoints[timepointID].studyInstanceUid = lesionData.studyInstanceUid;
         timepoints[timepointID].handles = lesionData.handles;
 
+        lesionData.id = measurement._id;
 
         Measurements.update(measurement._id, {
             $set: {
@@ -133,7 +131,7 @@ var measurementManagerDAL = (function() {
 
             if (!timepoints[timepointID]) {
                 // Find lesion number for this timepointID
-                return measurement.lesionNumber
+                return measurement.lesionNumber;
             }
 
             if (timepoints[timepointID].longestDiameter === '') {

@@ -71,7 +71,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             } else {
                 // Set lesionMeasurementData Session
-                config.getLesionLocationCallback(measurementData, mouseEventData);
+                config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
             }
 
             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.lesion.mouseMoveCallback);
@@ -157,7 +157,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     pointNearHandle: pointNearTextBox,
                     active: false,
                     movesIndependently: true,
-                    drawnIndependently: true
+                    drawnIndependently: true,
+                    allowedOutsideImage: true
                 }
             },
             imageId: imageId,
@@ -282,10 +283,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             // Set measurement text to show lesion table
             data.measurementText = length.toFixed(1);
 
-
             context.restore();
-
-            updateLesionCollection(toolData.data[i]);
         }
     }
 
@@ -301,7 +299,58 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         }
     }
 
-    ///////// END IMAGE RENDERING ///////
+    function doubleClickCallback(e, eventData) {
+        // Prevent other double click handlers from firing after this one
+        //e.stopImmediatePropagation();
+
+        var element = eventData.element;
+        var data;
+
+        function doneCallback(data, deleteTool) {
+            if (deleteTool === true) {
+                cornerstoneTools.removeToolState(element, toolType, data);
+                cornerstone.updateImage(element);
+                //return;
+            }
+
+            /*// TODO= Find a better way to do this! This is very messy
+            config.setLesionNumberCallback(data, eventData, function(lesionNumber) {
+                data.lesionName = "Target " + lesionNumber;
+                data.lesionNumber = lesionNumber;
+                data.active = false;
+                cornerstone.updateImage(element);
+            });*/
+        }
+
+        if (e.data && e.data.mouseButtonMask && !cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
+            return false;
+        }
+
+        var config = cornerstoneTools.lesion.getConfiguration();
+
+        var coords = eventData.currentPoints.canvas;
+        var toolData = cornerstoneTools.getToolState(element, toolType);
+
+        // now check to see if there is a handle we can move
+        if (!toolData) {
+            return false;
+        }
+
+        for (var i = 0; i < toolData.data.length; i++) {
+            data = toolData.data[i];
+            if (pointNearTool(element, data, coords)) {
+                data.active = true;
+                cornerstone.updateImage(element);
+                // Allow relabelling via a callback
+                config.changeLesionLocationCallback(data, eventData, doneCallback);
+
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }
+
+        return false; // false = causes jquery to preventDefault() and stopPropagation() this event
+    }
 
     // module exports
     cornerstoneTools.lesion = cornerstoneTools.mouseButtonTool({
@@ -309,6 +358,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         addNewMeasurement: addNewMeasurement,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
+        mouseDoubleClickCallback: doubleClickCallback,
         toolType: toolType
     });
 

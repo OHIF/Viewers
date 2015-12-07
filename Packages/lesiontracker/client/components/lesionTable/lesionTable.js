@@ -41,6 +41,11 @@ activateLesion =  function(measurementId, templateData) {
     $(".imageViewerViewport").each(function(viewportIndex, element) {
         // Stop if we run out of timepoints before viewports
         if (viewportIndex >= timepointsWithEntries.length) {
+            // Update the element anyway, to remove any other highlights that are present
+            deactivateAllToolData(element, 'lesion');
+            deactivateAllToolData(element, 'nonTarget');
+            cornerstone.updateImage(element);
+
             return false;
         }
 
@@ -57,6 +62,10 @@ activateLesion =  function(measurementId, templateData) {
 
         // If there is no measurement data to display, stop here
         if (!measurementAtTimepoint) {
+            // Update the element anyway, to remove any other highlights that are present
+            deactivateAllToolData(element, 'lesion');
+            deactivateAllToolData(element, 'nonTarget');
+            cornerstone.updateImage(element);
             return;
         }
 
@@ -247,7 +256,6 @@ Template.lesionTable.events({
 
         });
     }
-
 });
 
 Template.lesionTable.onCreated(function(){
@@ -275,14 +283,13 @@ Tracker.autorun(function () {
                 dates: []
             };
 
-            $("#"+contentId+" .imageViewerViewport").each(function(viewportIndex, element) {
+            $(".imageViewerViewport").each(function(viewportIndex, element) {
                 var enabledElement = cornerstone.getEnabledElement(element);
                 if(enabledElement && enabledElement.image){
                     var imageId = enabledElement.image.imageId;
                     var study = cornerstoneTools.metaData.get('study', imageId);
                     var studyDate = study.studyDate;
-                    var patientId = study.patientId;
-                    loadedStudyDates.patientId = patientId;
+                    loadedStudyDates.patientId = study.patientId;
                     // Check studyDate is added before
                     if (loadedStudyDates.dates.indexOf(studyDate) < 0) {
                         loadedStudyDates.dates.push(studyDate);
@@ -306,7 +313,6 @@ Tracker.autorun(function () {
                         $set: {
                             timepointLoaded: timepointLoaded
                         }
-
                     });
                 });
             }

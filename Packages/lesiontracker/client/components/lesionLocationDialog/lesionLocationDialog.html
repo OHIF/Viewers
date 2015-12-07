@@ -1,0 +1,37 @@
+<template name="lesionLocationDialog">
+    <div id="lesionLocationDialog">
+        <div class="dialogHeader">
+            <h4>Select Lesion Location</h4>
+        </div>
+        <div class="dialogContent">
+            <div class="lesionLocation">
+                <label>Lesion Location</label>
+                <select class="selectLesionLocation">
+                    <option value="-1"></option>
+                    {{ #each lesionLocations}}
+                    <option value='{{_id}}'>{{location}}</option>
+                    {{ /each}}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="lesionLocationRelabelDialog">
+        <div class="dialogHeader">
+            <h4>Change Lesion Location</h4>
+        </div>
+        <a></a>
+        <div class="dialogContent">
+            <div class="lesionLocation">
+                <label>Lesion Location</label>
+                <select class="selectLesionLocation">
+                    <option value="-1"></option>
+                    {{ #each lesionLocations}}
+                    <option value='{{_id}}' selected={{selected}}>{{location}}</option>
+                    {{ /each}}
+                </select>
+            </div>
+            <button id="removeLesion" class="btn btn-link">Remove</button>
+        </div>
+    </div>
+</template>
