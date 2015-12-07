@@ -3,7 +3,7 @@
  *
  * @param measurementId The unique key for a specific Measurement
  */
-function activateLesion(measurementId, templateData) {
+activateLesion =  function(measurementId, templateData) {
     // Find Measurement data for this lesion
     var measurementData = Measurements.findOne(measurementId);
 
@@ -216,11 +216,61 @@ Template.lesionTable.events({
         $(e.currentTarget).addClass("selectedRow").siblings().removeClass("selectedRow");
 
         activateLesion(measurementId,template.data);
+    },
+
+    'mousedown div#dragbar': function(e, template) {
+        var pY = e.pageY;
+        var draggableParent = $(e.currentTarget).parent();
+        var startHeight = draggableParent.height();
+        //e.preventDefault();
+        template.dragging.set(true);
+
+        $(document).on('mouseup', function(e) {
+            template.dragging.set(false);
+            console.log(e.pageY);
+            $(document).off('mouseup').off('mousemove');
+        });
+
+        $(document).on('mousemove', function(e) {
+            var topPosition = e.pageY - pY;
+            draggableParent.css({
+                top: topPosition,
+                height: startHeight - topPosition
+            });
+
+            var contentId = Session.get("activeContentId");
+            var viewportAndLesionTableHeight = $("#viewportAndLesionTable").height();
+            var newPercentageHeightofLesionTable = (startHeight - topPosition) / viewportAndLesionTableHeight * 100;
+            var newPercentageHeightofViewermain = 100 - newPercentageHeightofLesionTable;
+            $(".viewerMain").height(newPercentageHeightofViewermain+"%");
+
+            // Resize viewport
+            var elements = $('.imageViewerViewport');
+            elements.each(function(index) {
+                var element = this;
+                if (!element) {
+                    return;
+                }
+                cornerstone.resize(element, true);
+            });
+        });
     }
+
+});
+
+Template.lesionTable.onCreated(function(){
+     this.dragging = new ReactiveVar(false);
+    // Bind document mouse events
+    // $(document).on('mousemove', dragbarMove);
+});
+
+Template.lesionTable.onDestroyed(function(){
+
 });
 
 // Track ViewerData to get active timepoints
 // Put a visual indicator(<) in timepoint header in lesion table for active timepoints
+// timepointLoaded property is used to put indicator for loaded timepoints in viewport
 Tracker.autorun(function () {
     var allViewerData = Session.get('ViewerData');
     var contentId = Session.get('activeContentId');
@@ -272,4 +322,5 @@ Tracker.autorun(function () {
     }
 
 });
+
 

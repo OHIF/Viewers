@@ -1,25 +1,29 @@
 <template name="lesionTable">
     <div id="lesionTableContainer">
-        <table class="table table-striped noselect lesionTable" id="tblLesion">
-            <thead>
+        <div id="dragbar"></div>
+        <div id="lesionTableWrapper">
+            <table class="table table-striped noselect lesionTable" id="tblLesion">
+                <thead>
                 <tr>
                     <th id="thNumber">Lesion #</th>
                     <th id="thLocation">Location</th>
                     <th id="thTarget">Target</th>
                     <!--Each time point name as a column-->
                     {{ #each timepoints }}
-                         {{ >lesionTableTimepointHeader }}
+                    {{ >lesionTableTimepointHeader }}
                     {{ /each }}
                     <!--What is this for?-->
                     <!--<th id="thSpacer"> </th>-->
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <!--Each measurement as row-->
                 {{ #each measurement }}
-                    {{ >lesionTableRow }}
+                {{ >lesionTableRow }}
                 {{ /each }}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </template>

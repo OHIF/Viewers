@@ -1,12 +1,29 @@
 #lesionTableContainer
   width: 100%
   height: 16%
-  position: relative
+  background-color: #000000
+
+  #dragbar
+    width: 100%
+    height: 3px
+    postion: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background-color: #666666
+    cursor: col-resize
+
+  #lesionTableWrapper
+    position: relative
+    width: 100%
+    height: 100%
+    margin: 0 auto
 
   .lesionTable
 
     td, th
-      border: 1px solid white
+      border: 1px solid #FFFFFF
       border-collapse: collapse
       width: 100px
 
@@ -32,7 +49,7 @@
         th
           border-bottom-width: 0
           font-weight: normal
-          color:white
+          color: #FFFFFF
           line-height: 15px
           text-align: center
           margin: 0
@@ -53,7 +70,7 @@
 
       tr.selectedRow
         background: #F5F5F5 !important
-        color: black !important
+        color: #000000 !important
 
       tr.lesionTableRow
         width: 100%
