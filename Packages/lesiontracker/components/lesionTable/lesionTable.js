@@ -222,7 +222,6 @@ Template.lesionTable.events({
         var pY = e.pageY;
         var draggableParent = $(e.currentTarget).parent();
         var startHeight = draggableParent.height();
-        //e.preventDefault();
         template.dragging.set(true);
 
         $(document).on('mouseup', function(e) {
@@ -238,21 +237,14 @@ Template.lesionTable.events({
                 height: startHeight - topPosition
             });
 
-            var contentId = Session.get("activeContentId");
             var viewportAndLesionTableHeight = $("#viewportAndLesionTable").height();
             var newPercentageHeightofLesionTable = (startHeight - topPosition) / viewportAndLesionTableHeight * 100;
             var newPercentageHeightofViewermain = 100 - newPercentageHeightofLesionTable;
             $(".viewerMain").height(newPercentageHeightofViewermain+"%");
 
             // Resize viewport
-            var elements = $('.imageViewerViewport');
-            elements.each(function(index) {
-                var element = this;
-                if (!element) {
-                    return;
-                }
-                cornerstone.resize(element, true);
-            });
+            resizeViewportElements();
+
         });
     }
 

@@ -60,9 +60,12 @@ Package.onUse(function (api) {
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
+    api.addFiles('lib/resizeViewportElements.js', 'client');
+
 
     // Export lesionTable function for activate measurements
     api.export('activateLesion','client');
+    api.export('resizeViewportElements','client');
 
     api.export('Measurements', ['client', 'server']);
     api.export('Timepoints', ['client', 'server']);
