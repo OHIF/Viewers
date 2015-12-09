@@ -22,83 +22,85 @@ Package.onUse(function (api) {
 
     api.addFiles('log.js', ['client', 'server']);
 
+    // TODO= Find a meteor package for this
+    api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
+
     // ---------- Components ----------
 
     // Basic components
-    api.addFiles('components/basic/layout/layout.html', 'client');
-    api.addFiles('components/basic/layout/layout.styl', 'client');
-    api.addFiles('components/basic/login/login.html', 'client');
-    api.addFiles('components/basic/notFound/notFound.html', 'client');
+    api.addFiles('client/components/basic/layout/layout.html', 'client');
+    api.addFiles('client/components/basic/layout/layout.styl', 'client');
+    api.addFiles('client/components/basic/login/login.html', 'client');
+    api.addFiles('client/components/basic/notFound/notFound.html', 'client');
 
-    api.addFiles('components/basic/loadingText/loadingText.html', 'client');
-    api.addFiles('components/basic/loadingText/loadingText.styl', 'client');
+    api.addFiles('client/components/basic/loadingText/loadingText.html', 'client');
+    api.addFiles('client/components/basic/loadingText/loadingText.styl', 'client');
 
-    api.addFiles('components/basic/removableBackdrop/removableBackdrop.html', 'client');
-    api.addFiles('components/basic/removableBackdrop/removableBackdrop.styl', 'client');
+    api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.html', 'client');
+    api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.styl', 'client');
 
-    api.addFiles('components/basic/hidingPanel/hidingPanel.html', 'client');
-    api.addFiles('components/basic/hidingPanel/hidingPanel.js', 'client');
-    api.addFiles('components/basic/hidingPanel/hidingPanel.styl', 'client');
+    api.addFiles('client/components/basic/hidingPanel/hidingPanel.html', 'client');
+    api.addFiles('client/components/basic/hidingPanel/hidingPanel.js', 'client');
+    api.addFiles('client/components/basic/hidingPanel/hidingPanel.styl', 'client');
 
     // Study Browser components
-    api.addFiles('components/studyBrowser/studyBrowser/studyBrowser.html', 'client');
-    api.addFiles('components/studyBrowser/studyBrowser/studyBrowser.js', 'client');
-    api.addFiles('components/studyBrowser/studyBrowser/studyBrowser.styl', 'client');
+    api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.html', 'client');
+    api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.js', 'client');
+    api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.styl', 'client');
 
-    api.addFiles('components/studyBrowser/thumbnailEntry/thumbnailEntry.html', 'client');
-    api.addFiles('components/studyBrowser/thumbnailEntry/thumbnailEntry.js', 'client');
-    api.addFiles('components/studyBrowser/thumbnailEntry/thumbnailEntry.styl', 'client');
+    api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.html', 'client');
+    api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.js', 'client');
+    api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.styl', 'client');
 
-    api.addFiles('components/studyBrowser/thumbnails/thumbnails.html', 'client');
-    api.addFiles('components/studyBrowser/thumbnails/thumbnails.js', 'client');
+    api.addFiles('client/components/studyBrowser/thumbnails/thumbnails.html', 'client');
+    api.addFiles('client/components/studyBrowser/thumbnails/thumbnails.js', 'client');
 
-    api.addFiles('components/studyBrowser/imageThumbnail/imageThumbnail.html', 'client');
-    api.addFiles('components/studyBrowser/imageThumbnail/imageThumbnail.js', 'client');
-    api.addFiles('components/studyBrowser/imageThumbnail/imageThumbnail.styl', 'client');
+    api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.html', 'client');
+    api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.js', 'client');
+    api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.styl', 'client');
 
     // Viewer components
-    api.addFiles('components/viewer/imageViewerViewport/imageViewerViewport.html', 'client');
-    api.addFiles('components/viewer/imageViewerViewport/imageViewerViewport.js', 'client');
-    api.addFiles('components/viewer/imageViewerViewport/imageViewerViewport.styl', 'client');
+    api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.html', 'client');
+    api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.js', 'client');
+    api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.styl', 'client');
 
-    api.addFiles('components/viewer/imageViewerViewports/imageViewerViewports.html', 'client');
-    api.addFiles('components/viewer/imageViewerViewports/imageViewerViewports.js', 'client');
-    api.addFiles('components/viewer/imageViewerViewports/imageViewerViewports.styl', 'client');
+    api.addFiles('client/components/viewer/imageViewerViewports/imageViewerViewports.html', 'client');
+    api.addFiles('client/components/viewer/imageViewerViewports/imageViewerViewports.js', 'client');
+    api.addFiles('client/components/viewer/imageViewerViewports/imageViewerViewports.styl', 'client');
 
-    api.addFiles('components/viewer/loadingIndicator/loadingIndicator.html', 'client');
-    api.addFiles('components/viewer/loadingIndicator/loadingIndicator.js', 'client');
-    api.addFiles('components/viewer/loadingIndicator/loadingIndicator.styl', 'client');
+    api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.html', 'client');
+    api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.js', 'client');
+    api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.styl', 'client');
 
-    api.addFiles('components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.html', 'client');
-    api.addFiles('components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.js', 'client');
-    api.addFiles('components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.styl', 'client');
+    api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.html', 'client');
+    api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.js', 'client');
+    api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.styl', 'client');
 
-    api.addFiles('components/viewer/viewportOverlay/viewportOverlay.html', 'client');
-    api.addFiles('components/viewer/viewportOverlay/viewportOverlay.js', 'client');
-    api.addFiles('components/viewer/viewportOverlay/viewportOverlay.styl', 'client');
+    api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.html', 'client');
+    api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.js', 'client');
+    api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.styl', 'client');
 
-    api.addFiles('components/viewer/layoutChooser/layoutChooser.html', 'client');
-    api.addFiles('components/viewer/layoutChooser/layoutChooser.js', 'client');
-    api.addFiles('components/viewer/layoutChooser/layoutChooser.styl', 'client');
+    api.addFiles('client/components/viewer/layoutChooser/layoutChooser.html', 'client');
+    api.addFiles('client/components/viewer/layoutChooser/layoutChooser.js', 'client');
+    api.addFiles('client/components/viewer/layoutChooser/layoutChooser.styl', 'client');
 
-    api.addFiles('components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
+    api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
 
-    api.addFiles('components/viewer/playClipButton/playClipButton.html', 'client');
-    api.addFiles('components/viewer/playClipButton/playClipButton.js', 'client');
+    api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
+    api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
 
-    api.addFiles('components/viewer/hangingProtocolButtons/hangingProtocolButtons.html', 'client');
-    api.addFiles('components/viewer/hangingProtocolButtons/hangingProtocolButtons.js', 'client');
+    api.addFiles('client/components/viewer/hangingProtocolButtons/hangingProtocolButtons.html', 'client');
+    api.addFiles('client/components/viewer/hangingProtocolButtons/hangingProtocolButtons.js', 'client');
 
-    api.addFiles('components/viewer/layoutButton/layoutButton.html', 'client');
+    api.addFiles('client/components/viewer/layoutButton/layoutButton.html', 'client');
 
-    api.addFiles('components/viewer/toolbar/toolbar.html', 'client');
-    api.addFiles('components/viewer/toolbar/toolbar.js', 'client');
-    api.addFiles('components/viewer/toolbar/toolbar.styl', 'client');
+    api.addFiles('client/components/viewer/toolbar/toolbar.html', 'client');
+    api.addFiles('client/components/viewer/toolbar/toolbar.js', 'client');
+    api.addFiles('client/components/viewer/toolbar/toolbar.styl', 'client');
 
     // Library functions
     api.addFiles('lib/accountsConfig.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
-    api.addFiles('lib/encodeQueryData.js', ['client', 'server']);
     api.addFiles('lib/getImageId.js', 'client');
     api.addFiles('lib/getWADORSImageId.js', 'client');
     api.addFiles('lib/isTouchDevice.js', 'client');
@@ -110,15 +112,20 @@ Package.onUse(function (api) {
     api.addFiles('lib/enablePrefetchOnElement.js', 'client');
     api.addFiles('lib/displayReferenceLines.js', 'client');
     api.addFiles('lib/setActiveViewport.js', 'client');
-    //api.addFiles('lib/switchToImageByIndex.js', 'client');
-    //api.addFiles('lib/switchToImageRelative.js', 'client');
+    api.addFiles('lib/switchToImageByIndex.js', 'client');
+    api.addFiles('lib/switchToImageRelative.js', 'client');
+    api.addFiles('lib/enableHotkeys.js', 'client');
+    api.addFiles('lib/viewportFunctions.js', 'client');
+    api.addFiles('lib/WLPresets.js', 'client');
+
+    api.addFiles('lib/encodeQueryData.js', 'server');
 
     //api.export('accountsConfig', 'client');
+    api.export('enableHotkeys', 'client');
     api.export('enablePrefetchOnElement', 'client');
     api.export('displayReferenceLines', 'client');
     api.export('setActiveViewport', 'client');
     api.export('createStacks', 'client');
-    api.export('encodeQueryData', ['client', 'server']);
     api.export('getImageId', 'client');
     api.export('getWADORSImageId', 'client');
     api.export('isTouchDevice', 'client');
@@ -126,11 +133,14 @@ Package.onUse(function (api) {
     api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
     api.export('updateOrientationMarkers', 'client');
+    api.export('encodeQueryData', 'server');
 
     // Viewer management objects
     api.export('toolManager', 'client');
     api.export('WindowManager', 'client');
 
+    // Global data object
+    api.export('OHIF', 'client');
 
     // UI Helpers
     api.addFiles('lib/helpers/formatDA.js', 'client');

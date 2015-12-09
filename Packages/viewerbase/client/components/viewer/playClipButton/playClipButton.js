@@ -1,4 +1,13 @@
 toggleCinePlay = function(element) {
+    if (!element) {
+        var activeViewport = Session.get('activeViewport');
+        element = $('.imageViewerViewport').get(activeViewport);
+    }
+
+    if (!element) {
+        return;
+    }
+
     var viewportIndex = $('.imageViewerViewport').index(element);
     var isPlaying = OHIF.viewer.isPlaying[viewportIndex] || false;
     if (isPlaying === true) {
@@ -20,8 +29,6 @@ Template.playClipButton.helpers({
 
 Template.playClipButton.events({
     'click #playClip': function() {
-        var activeViewport = Session.get('activeViewport');
-        var element = $('.imageViewerViewport').get(activeViewport);
-        toggleCinePlay(element);
+        toggleCinePlay();
     }
 });

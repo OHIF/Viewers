@@ -17,13 +17,15 @@ function resizeViewports() {
 }
 
 Template.viewer.onCreated(function() {
+    enableHotkeys();
+
     var self = this;
 
     var firstMeasurementsActivated = false;
 
     log.info("viewer onCreated");
 
-    OHIF = {
+    OHIF = OHIF || {
         viewer: {}
     };
 

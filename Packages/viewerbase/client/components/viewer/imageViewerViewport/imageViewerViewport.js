@@ -154,7 +154,7 @@ function loadSeriesIntoViewport(data, templateData) {
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
         var activeTool = toolManager.getActiveTool();
-        toolManager.setActiveTool(activeTool, element);
+        toolManager.setActiveTool(activeTool, [element]);
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
@@ -527,14 +527,6 @@ Template.imageViewerViewport.onDestroyed(function() {
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
         log.info("imageViewerViewport ActivateViewport");
-
-        // When an ActivateViewport event is fired, update the Meteor Session
-        // with the viewport index that it was fired from.
-        Session.set("activeViewport", e.viewportIndex);
-
-        // Add the 'active' class to the parent container to highlight the active viewport
-        $('#imageViewerViewports .viewportContainer').removeClass('active');
-
         setActiveViewport(e.currentTarget);
     }
 });

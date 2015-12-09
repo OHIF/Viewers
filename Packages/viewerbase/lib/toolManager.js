@@ -1,4 +1,5 @@
-var activeTool;
+var activeTool = "wwwc";
+var defaultTool = "wwwc";
 
 var alwaysEnabledTools = [];
 
@@ -147,9 +148,15 @@ toolManager = {
             toolManager.init();
         }
 
+        if (!elements || !elements.length) {
+            elements = $('.imageViewerViewport');
+        }
+
         $('#toolbar .btn-group button').removeClass('active');
         var toolButton = document.getElementById(tool);
-        toolButton.classList.add('active');
+        if (toolButton) {
+            toolButton.classList.add('active');
+        }
 
         // Otherwise, set the active tool for all viewport elements
         $(elements).each(function(index, element) {
@@ -159,14 +166,14 @@ toolManager = {
     },
     getActiveTool: function() {
         if (!activeTool) {
-            activeTool = OHIF.viewer.defaultTool;
+            activeTool = defaultTool;
         }
         return activeTool;
     },
     setDefaultTool: function(tool) {
-        OHIF.viewer.defaultTool = tool;
+        defaultTool = tool;
     },
     getDefaultTool: function() {
-        return OHIF.viewer.defaultTool;
+        return defaultTool;
     }
 };
