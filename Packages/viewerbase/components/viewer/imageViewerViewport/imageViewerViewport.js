@@ -1,59 +1,3 @@
-/**
- * This function enables stack prefetching for a specified element (viewport)
- * It first disables any prefetching currently occurring on any other viewports.
- *
- * @param element {node} DOM Node representing the viewport element
- */
-function enablePrefetchOnElement(element) {
-    log.info("imageViewerViewport enablePrefetchOnElement");
-
-    // Loop through all viewports and disable stackPrefetch
-    $('.imageViewerViewport').each(function() {
-        if (!$(this).find('canvas').length) {
-            return;
-        }
-        cornerstoneTools.stackPrefetch.disable(this);
-    });
-
-    // Make sure there is a stack to fetch
-    var stack = cornerstoneTools.getToolState(element, 'stack');
-    if (stack && stack.data.length && stack.data[0].imageIds.length > 1) {
-        cornerstoneTools.stackPrefetch.enable(element);
-    }
-}
-
-/**
- * This function disables reference lines for a specific viewport element.
- * It also enables reference lines for all other viewports with the 
- * class .imageViewerViewport.
- *
- * @param element {node} DOM Node representing the viewport element
- */
-function displayReferenceLines(element) {
-    log.info("imageViewerViewport displayReferenceLines");
-
-    // Disable reference lines for the current element
-    cornerstoneTools.referenceLines.tool.disable(element);
-
-    // Loop through all other viewport elements and enable reference lines
-    $('.imageViewerViewport').not(element).each(function(index, element) {
-        var imageId;
-        try {
-            var enabledElement = cornerstone.getEnabledElement(element);
-            imageId = enabledElement.image.imageId;
-        } catch(error) {
-            return;
-        }
-
-        if (!imageId || !$(this).find('canvas').length) {
-            return;
-        }
-
-        cornerstoneTools.referenceLines.tool.enable(element, OHIF.viewer.updateImageSynchronizer);
-    });
-}
-
-
 var allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
     'CornerstoneToolsMouseClick CornerstoneToolsMouseDrag CornerstoneToolsMouseUp ' +
     'CornerstoneToolsMouseWheel CornerstoneToolsTap CornerstoneToolsTouchPress ' +
@@ -590,12 +534,7 @@ Template.imageViewerViewport.events({
 
         // Add the 'active' class to the parent container to highlight the active viewport
         $('#imageViewerViewports .viewportContainer').removeClass('active');
-        $(e.currentTarget).parents('.viewportContainer').addClass('active');
 
-        // Finally, enable stack prefetching and hide the reference lines from
-        // the newly activated viewport
-        var element = e.currentTarget;
-        enablePrefetchOnElement(element);
-        displayReferenceLines(element);
+        setActiveViewport(e.currentTarget);
     }
 });

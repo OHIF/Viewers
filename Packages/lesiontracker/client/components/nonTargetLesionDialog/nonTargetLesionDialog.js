@@ -36,7 +36,7 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
 // This event determines whether or not to show the Non-Target lesion dialog
 // If there already exists a lesion with this specific lesion number,
 // related to the chosen location.
-function getNonTargetLesionLocationCallback(measurementData, eventData) {
+function getLesionLocationCallback(measurementData, eventData) {
     Template.nonTargetLesionDialog.measurementData = measurementData;
 
     // Get the non-target lesion location dialog
@@ -49,11 +49,6 @@ function getNonTargetLesionLocationCallback(measurementData, eventData) {
     // Make sure the context menu is closed when the user clicks away
     $(".removableBackdrop").one('mousedown touchstart', function() {
         closeHandler(dialog);
-
-        if (doneCallback && typeof doneCallback === 'function') {
-            var deleteTool = true;
-            doneCallback(measurementData, deleteTool);
-        }
     });
 
     // Find the select option box
@@ -112,14 +107,63 @@ function getNonTargetLesionLocationCallback(measurementData, eventData) {
     dialog.css(dialogProperty);
 }
 
-function changeNonTargetLesionLocationCallback(measurementData, eventData, doneCallback) {
-    doneCallback(prompt('Change your lesion location:'));
+function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
+    Template.nonTargetLesionDialog.measurementData = measurementData;
+    Template.nonTargetLesionDialog.doneCallback = doneCallback;
+
+    // Get the non-target lesion location dialog
+    var dialog = $("#nonTargetLesionRelabelDialog");
+    Template.nonTargetLesionDialog.dialog = dialog;
+
+    // Show the backdrop
+    UI.render(Template.removableBackdrop, document.body);
+
+    // Make sure the context menu is closed when the user clicks away
+    $(".removableBackdrop").one('mousedown touchstart', function() {
+        closeHandler(dialog);
+
+        if (doneCallback && typeof doneCallback === 'function') {
+            var deleteTool = true;
+            doneCallback(measurementData, deleteTool);
+        }
+    });
+
+    // Find the select option box
+    var selectorLocation = dialog.find("select#selectNonTargetLesionLocation");
+    var selectorResponse = dialog.find("select#selectNonTargetLesionLocationResponse");
+
+    log.info(measurementData);
+    selectorLocation.find("option:first").prop("selected", "selected");
+    selectorResponse.find("option:first").prop("selected", "selected");
+
+    // Allow location selection
+    selectorLocation.removeAttr("disabled");
+
+    // Show the nonTargetLesion dialog above
+    var dialogProperty =  {
+        top: eventData.currentPoints.page.y,
+        left: eventData.currentPoints.page.x,
+        display: 'block'
+    };
+
+    // Device is touch device or not
+    // If device is touch device, set position center of screen vertically and horizontally
+    if (isTouchDevice()) {
+        // add dialogMobile class to provide a black,transparent background
+        dialog.addClass("dialogMobile");
+        dialogProperty.top = 0;
+        dialogProperty.left = 0;
+        dialogProperty.right = 0;
+        dialogProperty.bottom = 0;
+    }
+
+    dialog.css(dialogProperty);
 }
 
 var config = {
     setLesionNumberCallback: setLesionNumberCallback,
-    getNonTargetLesionLocationCallback: getNonTargetLesionLocationCallback,
-    changeNonTargetLesionLocationCallback: changeNonTargetLesionLocationCallback
+    getLesionLocationCallback: getLesionLocationCallback,
+    changeLesionLocationCallback: changeLesionLocationCallback
 };
 
 cornerstoneTools.nonTarget.setConfiguration(config);

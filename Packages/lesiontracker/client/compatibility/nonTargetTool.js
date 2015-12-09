@@ -6,8 +6,8 @@
 
     var configuration = {
         setLesionNumberCallback: setLesionNumberCallback,
-        getNonTargetLesionLocationCallback: getNonTargetLesionLocationCallback,
-        changeNonTargetLesionLocationCallback: changeNonTargetLesionLocationCallback,
+        getLesionLocationCallback: getLesionLocationCallback,
+        changeLesionLocationCallback: changeLesionLocationCallback,
         drawHandles: false,
         drawHandlesOnHover: true,
         arrowFirst: true
@@ -21,11 +21,11 @@
     }
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
-    function getNonTargetLesionLocationCallback(measurementData, eventData, doneCallback) {
+    function getLesionLocationCallback(measurementData, eventData, doneCallback) {
         doneCallback(prompt('Enter your lesion location:'));
     }
 
-    function changeNonTargetLesionLocationCallback(measurementData, eventData, doneCallback) {
+    function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
         doneCallback(prompt('Change your lesion location:'));
     }
 
@@ -71,7 +71,7 @@
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
             }else{
-                config.getNonTargetLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+                config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
 
             }
 
@@ -268,7 +268,7 @@
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             }
 
-            config.getNonTargetLesionLocationCallback(measurementData, touchEventData, doneCallback);
+            config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
 
 
             $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
@@ -282,11 +282,10 @@
         var element = eventData.element;
         var data;
 
-        function doneChangingTextCallback(data, updatedText, deleteTool) {
+        function doneCallback(data, deleteTool) {
             if (deleteTool === true) {
                 cornerstoneTools.removeToolState(element, toolType, data);
-            } else {
-                data.text = updatedText;
+                cornerstone.updateImage(element);
             }
 
             data.active = false;
@@ -313,7 +312,7 @@
                 data.active = true;
                 cornerstone.updateImage(element);
                 // Allow relabelling via a callback
-                config.changeTextCallback(data, doneChangingTextCallback);
+                config.changeLesionLocationCallback(data, eventData, doneCallback);
 
                 e.stopImmediatePropagation();
                 return false;
@@ -328,8 +327,8 @@
         createNewMeasurement: createNewMeasurement,
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
-        toolType: toolType
-        //mouseDoubleClickCallback: doubleClickCallback
+        toolType: toolType,
+        mouseDoubleClickCallback: doubleClickCallback
     });
 
     cornerstoneTools.nonTarget.setConfiguration(configuration);

@@ -107,8 +107,16 @@ Package.onUse(function (api) {
     api.addFiles('lib/sortStudy.js', 'client');
     api.addFiles('lib/toolManager.js', 'client');
     api.addFiles('lib/windowManager.js', 'client');
+    api.addFiles('lib/enablePrefetchOnElement.js', 'client');
+    api.addFiles('lib/displayReferenceLines.js', 'client');
+    api.addFiles('lib/setActiveViewport.js', 'client');
+    //api.addFiles('lib/switchToImageByIndex.js', 'client');
+    //api.addFiles('lib/switchToImageRelative.js', 'client');
 
     //api.export('accountsConfig', 'client');
+    api.export('enablePrefetchOnElement', 'client');
+    api.export('displayReferenceLines', 'client');
+    api.export('setActiveViewport', 'client');
     api.export('createStacks', 'client');
     api.export('encodeQueryData', ['client', 'server']);
     api.export('getImageId', 'client');
