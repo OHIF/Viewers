@@ -4,7 +4,10 @@
  * @param measurementId The unique key for a specific Measurement
  */
 activateLesion =  function(measurementId, templateData) {
-    // Find Measurement data for this lesion
+
+    // Set background color of selected row
+    $("tr[data-measurementid="+measurementId+"]").addClass("selectedRow").siblings().removeClass("selectedRow");
+
     var measurementData = Measurements.findOne(measurementId);
 
     // If there is no measurement with this ID, stop here
@@ -220,9 +223,6 @@ Template.lesionTable.events({
     'click table#tblLesion tbody tr': function(e, template) {
         // Retrieve the lesion id from the DOM data for this row
         var measurementId = $(e.currentTarget).data('measurementid');
-
-        // Set background color of selected row
-        $(e.currentTarget).addClass("selectedRow").siblings().removeClass("selectedRow");
 
         activateLesion(measurementId,template.data);
     },

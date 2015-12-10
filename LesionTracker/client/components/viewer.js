@@ -139,15 +139,17 @@ Template.viewer.onCreated(function() {
             added: function (data) {
                 if (data.toolDataInsertedManually === true) {
 
-                    // Activate first measurements in image box as default if exists
-                    if (!firstMeasurementsActivated) {
-                        var templateData = {contentId: Session.get("activeContentId")};
-                        // Activate measurement
-                        activateLesion(data._id, templateData);
-                        firstMeasurementsActivated = true;
-                    }
                     return;
                 }
+
+                // Activate first measurements in image box as default if exists
+                if (!firstMeasurementsActivated) {
+                    var templateData = {contentId: Session.get("activeContentId")};
+                    // Activate measurement
+                    activateLesion(data._id, templateData);
+                    firstMeasurementsActivated = true;
+                }
+
                 log.info('Measurement added');
 
                 addMeasurementAsToolData(data);
