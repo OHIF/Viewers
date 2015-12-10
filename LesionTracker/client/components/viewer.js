@@ -138,7 +138,6 @@ Template.viewer.onCreated(function() {
         Measurements.find().observe({
             added: function (data) {
                 if (data.toolDataInsertedManually === true) {
-
                     return;
                 }
 
