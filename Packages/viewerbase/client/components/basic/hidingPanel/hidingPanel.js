@@ -12,10 +12,10 @@ Template.hidingPanel.events({
             template.hidingPanelOpen.set(true);
 
             // Rotate Arrow Icon
-            $('.arrowIcon').toggleClass("arrowIconRotate");
+            $('.arrowIcon').css( {'transform': 'rotate(180deg)'});
 
             // Set panel content opacity
-            $(".hidingPanelContent").toggleClass("hidingPanelContentOpaque");
+            $(".hidingPanelContent").css("opacity", "1");
         }
     },
 
@@ -31,10 +31,10 @@ Template.hidingPanel.events({
             template.hidingPanelOpen.set(false);
 
             // Rotate Arrow Icon
-            $('.arrowIcon').toggleClass("arrowIconRotate");
+            $('.arrowIcon').css( {'transform': 'rotate(0deg)'});
 
             // Set panel content opacity
-            $(".hidingPanelContent").toggleClass("hidingPanelContentOpaque");
+            $(".hidingPanelContent").css("opacity", "0");
 
         }
     },
