@@ -5,6 +5,13 @@ var alwaysEnabledTools = [];
 
 var tools = {};
 
+var toolDefaultStates = {
+    activate: [],
+    deactivate: [],
+    enable: [],
+    disable: []
+};
+
 var initialized = false;
 
 function configureTools() {
@@ -75,8 +82,11 @@ toolManager = {
     addTool: function(name, base) {
         tools[name] = base;
     },
-    setAlwaysEnabledTools: function(tools) {
-        alwaysEnabledTools = tools;
+    setToolDefaultStates: function(states) {
+        toolDefaultStates = states;
+    },
+    getToolDefaultStates: function() {
+        return toolDefaultStates;
     },
     setActiveToolForElement: function(tool, element) {
         var canvases = $(element).find('canvas');
@@ -91,9 +101,22 @@ toolManager = {
             tools[activeTool].touch.deactivate(element);
         }
 
-        // Enable any tools set as 'Always enabled'
-        alwaysEnabledTools.forEach(function(toolType) {
-            cornerstoneTools[toolType].enable(element);
+        // Enable tools based on their default states
+        Object.keys(toolDefaultStates).forEach(function(action) {
+            var relevantTools = toolDefaultStates[action];
+            if (!relevantTools || !relevantTools.length) {
+                return;
+            }
+
+            relevantTools.forEach(function(toolType) {
+                if ((action === 'activate') ||
+                    (action === 'deactivate')) {
+                    tools[toolType].mouse[action](element, 1);
+                } else {
+                    tools[toolType].mouse[action](element);
+                }
+                tools[toolType].touch[action](element);
+            });
         });
 
         // Get the stack toolData

@@ -23,7 +23,6 @@ Meteor.startup(function() {
         flipH: "H",
         wwwc: "W",
         annotate: "T",
-        cineDialog: "C",
         cinePlay: "SPACE",
         rotateR: "F",
         rotateL: "G",

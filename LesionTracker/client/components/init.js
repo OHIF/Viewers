@@ -9,5 +9,8 @@ Meteor.startup(function() {
         touch: cornerstoneTools.nonTargetTouch
     });
 
-    toolManager.setAlwaysEnabledTools(['lesion', 'nonTarget']);
+    var states = toolManager.getToolDefaultStates();
+    states.deactivate.push('lesion');
+    states.deactivate.push('nonTarget');
+    toolManager.setToolDefaultStates(states);
 });
