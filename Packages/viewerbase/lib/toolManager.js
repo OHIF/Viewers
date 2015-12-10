@@ -1,8 +1,6 @@
 var activeTool = "wwwc";
 var defaultTool = "wwwc";
 
-var alwaysEnabledTools = [];
-
 var tools = {};
 
 var toolDefaultStates = {

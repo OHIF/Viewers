@@ -80,6 +80,10 @@ Package.onUse(function (api) {
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.js', 'client');
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.styl', 'client');
 
+    api.addFiles('client/components/viewer/imageControls/imageControls.html', 'client');
+    api.addFiles('client/components/viewer/imageControls/imageControls.js', 'client');
+    api.addFiles('client/components/viewer/imageControls/imageControls.styl', 'client');
+
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.html', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.js', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.styl', 'client');

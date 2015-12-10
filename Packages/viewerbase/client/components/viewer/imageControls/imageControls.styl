@@ -1,0 +1,103 @@
+.imageControls
+  position: absolute
+  top: 0
+  right: 0
+  height: 100%
+  padding: 5px
+  
+  #scrollbar
+    margin-top: 5px
+    width: 31px
+
+    #imageSlider
+      height: 2px
+      position: absolute
+      left: 20px
+
+      -webkit-appearance: none
+
+      transform: rotate(90deg)
+      -webkit-transform: rotate(90deg)
+      -moz-transform :rotate(90deg)
+      -o-transform: rotate(90deg)
+      -ms-transform: rotate(90deg)
+
+      transform-origin: top left
+      -webkit-transform-origin: top left
+      -moz-transform-origin: top left
+      -o-transform-origin: top left
+      -ms-transform-origin: top left
+
+      // Remove focus highlights on range input
+      &:focus
+        outline: none
+        -moz-box-shadow: none
+        -webkit-box-shadow: none
+        box-shadow: none
+
+      // Remove focus border in Firefox
+      &::-moz-focus-outer
+        border: none
+        
+      // --- Style the range track --- //
+      &::-webkit-slider-runnable-track
+        height: 2px
+        border: 2px solid #bdc3c7
+        background-color: darkgrey
+        z-index: 6
+
+      &::-moz-range-track
+        height: 1px
+        border: 1px solid #bdc3c7
+        background-color: darkgrey
+        z-index: 6
+
+      &::-ms-track
+        height: 2px
+        border: 1px solid #bdc3c7
+        background-color: darkgrey
+        z-index: 6
+
+      // Hide any fill IE tries to add
+      &::-ms-fill-lower
+        background: transparent
+
+      &::-ms-fill-upper
+        background: transparent
+
+      // --- Style the range thumb --- //
+      &::-webkit-slider-thumb
+        -webkit-appearance: none !important
+        background-color: rgb(169, 169, 169)
+        border: 2px solid rgb(169, 169, 169)
+        border-radius: 2px
+        height: 15px
+        width: 25px
+        cursor: pointer
+        margin-top: -7px
+
+        &:active
+          background-color: rgb(34, 126, 163)
+
+      &::-moz-range-thumb
+        background-color: rgb(169, 169, 169)
+        border: 2px solid rgb(169, 169, 169)
+        border-radius: 2px
+        height: 11px
+        width: 20px
+        cursor: pointer
+        z-index: 7
+
+        &:active
+          background-color: rgb(34, 126, 163)
+
+      &::-ms-thumb
+        background-color: rgb(169, 169, 169)
+        border: 2px solid rgb(169, 169, 169)
+        border-radius: 2px
+        height: 11px
+        width: 20px
+        cursor: pointer
+
+        &:active
+          background-color: rgb(34, 126, 163)
