@@ -12,17 +12,10 @@ Template.hidingPanel.events({
             template.hidingPanelOpen.set(true);
 
             // Rotate Arrow Icon
-            $('.arrowIcon').css( {'transform': 'rotate(180deg)'});
+            $('.arrowIcon').toggleClass("arrowIconRotate");
 
             // Set panel content opacity
-            $(".hidingPanelContent").css("opacity", "1");
-
-            // Calculate newWidth of viewportAndLesionTable
-            var viewerWidth = $("#viewer").width();
-            var newPercentageOfviewportAndLesionTable = 100 - 120 / viewerWidth *100;
-            $("#viewportAndLesionTable").css("width", newPercentageOfviewportAndLesionTable+"%");
-
-            resizeViewportElements();
+            $(".hidingPanelContent").toggleClass("hidingPanelContentOpaque");
         }
     },
 
@@ -38,15 +31,11 @@ Template.hidingPanel.events({
             template.hidingPanelOpen.set(false);
 
             // Rotate Arrow Icon
-            $('.arrowIcon').css( {'transform': 'rotate(0deg)'});
+            $('.arrowIcon').toggleClass("arrowIconRotate");
 
             // Set panel content opacity
-            $(".hidingPanelContent").css("opacity", "0");
+            $(".hidingPanelContent").toggleClass("hidingPanelContentOpaque");
 
-            // Calculate newWidth of viewportAndLesionTable
-            $("#viewportAndLesionTable").css("width", "99%");
-
-            resizeViewportElements();
         }
     },
 
@@ -54,6 +43,20 @@ Template.hidingPanel.events({
         var panelPinned = template.panelPinned.get();
         panelPinned = !panelPinned;
         template.panelPinned.set(panelPinned);
+        if(panelPinned) {
+            // Calculate newWidth of viewportAndLesionTable
+            var viewerWidth = $("#viewer").width();
+            var newPercentageOfviewportAndLesionTable = 100 - 120 / viewerWidth *100;
+            $("#viewportAndLesionTable").css("width", newPercentageOfviewportAndLesionTable+"%");
+
+            resizeViewportElements();
+        }else{
+
+            // Calculate newWidth of viewportAndLesionTable
+            $("#viewportAndLesionTable").css("width", "99%");
+
+            resizeViewportElements();
+        }
     }
 });
 

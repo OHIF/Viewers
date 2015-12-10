@@ -1,5 +1,5 @@
 
-.hidingPanel,.studyBrowserContainer, .arrowIcon
+.hidingPanel, .hidingPanelContent, .studyBrowserContainer, .arrowIcon, .arrowIconRotate, .hidingPanelContentOpaque
 
   -o-transition: all 0.3s ease-out
   -ms-transition: all 0.3s ease-out
@@ -11,8 +11,12 @@
 .hidingPanel
   width: 1%
   height: 100%
-  position: relative
-  float: left
+  position: absolute
+  left: 0px
+  top: 70px
+  bottom: 0px
+  z-index: 10
+  background-color: black
 
   .arrowIcon
     color: white
@@ -20,6 +24,11 @@
     margin-top: 8px
     margin-left: 2px;
     line-height: 12px
+
+  .arrowIconRotate
+    -ms-transform: rotate(180deg)
+    -webkit-transform: rotate(180deg)
+    transform: rotate(180deg)
 
   .hidingPanelContent
     width: 100%
@@ -70,5 +79,5 @@
       .pinInactive
         color: #424242
 
-
-
+  .hidingPanelContentOpaque
+    opacity: 1;
