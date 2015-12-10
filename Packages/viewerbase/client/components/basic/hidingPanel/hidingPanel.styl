@@ -1,70 +1,74 @@
 
-.hidingPanel,.hidingPanelCollapse, .toggleBtnContainer, .studyBrowserContainer, .studyBrowserContainerCollapse, #btnCollapse,.btnCollapseIcon, .btnCollapseIcon-collapse, .viewportStyle {
+.hidingPanel,.studyBrowserContainer, .arrowIcon
 
-  -o-transition: all 0.3s ease-out;
-  -ms-transition: all 0.3s ease-out;
-  -moz-transition: all 0.3s ease-out;
-  -webkit-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
-}
+  -o-transition: all 0.3s ease-out
+  -ms-transition: all 0.3s ease-out
+  -moz-transition: all 0.3s ease-out
+  -webkit-transition: all 0.3s ease-out
+  transition: all 0.3s ease-out
 
-.hidingPanel {
-  width: 120px;
-  height: 100%;
-  position: relative;
-  float: left;
-}
 
-.hidingPanelCollapse{
-  width: 0px;
-}
+.hidingPanel
+  width: 1%
+  height: 100%
+  position: relative
+  float: left
 
-.toggleBtnContainer{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 25px;
-  height: 25px;
-}
+  .arrowIcon
+    color: white
+    float: left
+    margin-top: 8px
+    margin-left: 2px;
+    line-height: 12px
 
-.studyBrowserContainer {
-  position: absolute;
-  display: block;
-  margin-top: 30px;
-  height: calc(100% - 30px);
-  width: 100%;
-  opacity: 1;
-}
+  .hidingPanelContent
+    width: 100%
+    height: 100%
+    margin: 0 auto
+    float: none
+    opacity: 0
+    border: 1px solid #666
 
-.studyBrowserContainerCollapse {
-  opacity: 0;
-  width: 0px;
+    .studyBrowserContainer
+      position: absolute
+      display: block
+      width: 100%
+      bottom: 0
+      left: 0
+      right: 0
+      top: 100px
 
-}
-.studyBrowserContainerCollapseDisplay {
-  display: none;
-}
+    .panelPinContainer
+      width: 100%
+      height: auto
+      text-align: right
+      vertical-align: center
+      padding: 0
+      margin: 0
+      border-bottom: 1px solid #666
 
-#btnCollapse{
-  position: absolute;
-  display: block;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
-  padding: 0;
-  border: 0;
-  border-top: 1px solid #e6e6e6;
-  background: #f6f6f6;
-  color: #666;
-  font-size: 0.875rem;
-  text-align: center;
-  cursor: pointer;
-}
+      .btnPin
+        margin: 1px
+        color: #424242
+        outline: none
+        background-color: #202020
+        border: solid 1px #424242
+        border-radius: 3px
 
-.btnCollapseIcon-collapse{
-  -moz-transform: rotate(180deg);
-  -webkit-transform: rotate(180deg);
-  transform: rotate(180deg);
-}
+      .btnPinActive
+        border-color: white
+
+      .btnPinInactive
+        border: solid 1px #424242
+
+      .btnPin:hover
+        border: solid 1px lightgray
+
+      .pinActive
+        color: #FFFFFF
+
+      .pinInactive
+        color: #424242
+
 
 

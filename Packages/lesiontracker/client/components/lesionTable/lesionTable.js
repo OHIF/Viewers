@@ -241,9 +241,16 @@ Template.lesionTable.events({
 
         $(document).on('mousemove', function(e) {
             var topPosition = e.pageY - pY;
+            var newHeight = startHeight - topPosition;
+
+            // Min lesion table height = 5px
+            if(newHeight < 5) {
+                return;
+            }
+
             draggableParent.css({
                 top: topPosition,
-                height: startHeight - topPosition
+                height: newHeight
             });
 
             var viewportAndLesionTableHeight = $("#viewportAndLesionTable").height();

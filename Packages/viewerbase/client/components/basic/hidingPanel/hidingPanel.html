@@ -1,15 +1,26 @@
 <template name="hidingPanel">
     <div class="hidingPanel">
-        <div class="toggleBtnContainer">
-            <button id="btnCollapse">
-                <i id="btnCollapseIcon" class="btnCollapseIcon fa fa-angle-left fa-lg"></i>
-            </button>
-        </div>
-        <div class="studyBrowserContainer">
+        <i class="arrowIcon fa fa-angle-double-right"></i>
+        <div class="hidingPanelContent">
+            <div class="panelPinContainer">
+                {{#if panelPinned}}
+                    <button class="btnPin btnPinActive">
+                        <i class="pinIcon pinActive fa fa-thumb-tack"></i>
+                    </button>
+                {{else}}
+                    <button class="btnPin btnPinInactive">
+                        <i class="pinIcon pinInactive fa fa-thumb-tack"></i>
+                    </button>
+                {{/if}}
+            </div>
+
             {{#if studyDateIsShown}}
                 {{> studyDateList}}
             {{/if}}
-            {{> studyBrowser}}
+
+            <div class="studyBrowserContainer">
+                {{> studyBrowser}}
+            </div>
         </div>
     </div>
 </template>

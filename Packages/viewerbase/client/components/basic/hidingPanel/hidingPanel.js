@@ -1,51 +1,75 @@
 Template.hidingPanel.events({
-    'click button#btnCollapse': function(e,template) {
+    'mouseover div.hidingPanel': function(e, template) {
 
-        // Check hidingPanel is open or not
-        var hidingPanelOpen = template.hidingPanelOpen.get();
-        hidingPanelOpen = !hidingPanelOpen;
-        template.hidingPanelOpen.set(hidingPanelOpen);
+        if (!template.panelPinned.get()) {
 
-        // Get hidingPanel width from hidingPanelWidth reactiveVar
-        var contentId = this.contentId;
-        var hidingPanelElement = $("#"+contentId).find(".hidingPanel");
-        var hidingPanelWidth = template.hidingPanelWidth.get();
-        if(hidingPanelWidth == 0) {
-            hidingPanelWidth = $(hidingPanelElement).width();
-            template.hidingPanelWidth.set(parseInt(hidingPanelWidth));
+            var hidingPanel = $(e.currentTarget);
+            hidingPanel.css({
+                width: "120px"
+            });
+
+            // Set panel as open
+            template.hidingPanelOpen.set(true);
+
+            // Rotate Arrow Icon
+            $('.arrowIcon').css( {'transform': 'rotate(180deg)'});
+
+            // Set panel content opacity
+            $(".hidingPanelContent").css("opacity", "1");
+
+            // Calculate newWidth of viewportAndLesionTable
+            var viewerWidth = $("#viewer").width();
+            var newPercentageOfviewportAndLesionTable = 100 - 120 / viewerWidth *100;
+            $("#viewportAndLesionTable").css("width", newPercentageOfviewportAndLesionTable+"%");
+
+            resizeViewportElements();
         }
+    },
 
-        $(hidingPanelElement).toggleClass("hidingPanelCollapse");
+    'mouseout div.hidingPanel': function(e, template) {
 
-        var studyBrowserContainerElement = $("#"+contentId).find(".studyBrowserContainer");
-        $(studyBrowserContainerElement).toggleClass("studyBrowserContainerCollapse");
+        if (!template.panelPinned.get()) {
+            var hidingPanel = $(e.currentTarget);
+            hidingPanel.css({
+                width: "1%"
+            });
 
-        var btnCollapseIconElement = $("#"+contentId).find("#btnCollapseIcon");
-        $(btnCollapseIconElement).toggleClass("btnCollapseIcon-collapse");
+            // Set panel as closed
+            template.hidingPanelOpen.set(false);
 
-        // Set viewportAndLesionTable width according to hiding panel status
-        if (hidingPanelOpen) {
-            var viewportAndLesionTableElement = $("#"+contentId).find("#viewportAndLesionTable");
-            var viewportAndLesionTableElementWidth = $(viewportAndLesionTableElement).width();
-            $(viewportAndLesionTableElement).width(viewportAndLesionTableElementWidth - hidingPanelWidth +"px");
+            // Rotate Arrow Icon
+            $('.arrowIcon').css( {'transform': 'rotate(0deg)'});
 
-        } else {
-            var viewportAndLesionTableElement = $("#"+contentId).find("#viewportAndLesionTable");
-            var viewportAndLesionTableElementWidth = $(viewportAndLesionTableElement).width();
-            $(viewportAndLesionTableElement).width(viewportAndLesionTableElementWidth + hidingPanelWidth +"px");
+            // Set panel content opacity
+            $(".hidingPanelContent").css("opacity", "0");
+
+            // Calculate newWidth of viewportAndLesionTable
+            $("#viewportAndLesionTable").css("width", "99%");
+
+            resizeViewportElements();
         }
+    },
 
-
+    'click button.btnPin': function(e, template) {
+        var panelPinned = template.panelPinned.get();
+        panelPinned = !panelPinned;
+        template.panelPinned.set(panelPinned);
     }
 });
 
 Template.hidingPanel.helpers({
     'studyDateIsShown': function() {
         return true;
+    },
+    'panelPinned': function() {
+        return Template.instance().panelPinned.get();
+    },
+    'hidingPanelOpen': function() {
+        return Template.instance().hidingPanelOpen.get();
     }
 });
 
 Template.hidingPanel.onCreated(function() {
-    this.hidingPanelOpen =  new ReactiveVar(true);
-    this.hidingPanelWidth = new ReactiveVar(0);
+    this.hidingPanelOpen =  new ReactiveVar(false);
+    this.panelPinned = new ReactiveVar(false);
 });
