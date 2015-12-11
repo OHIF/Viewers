@@ -1,5 +1,5 @@
 clearTools = function() {
-    var patientId = template.data.studies[0].patientId;
+    var patientId = Session.get("patientId");
     var toolTypes = ["lesion", "nonTarget"];
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
     var toolStateKeys = Object.keys(toolState).slice(0);
