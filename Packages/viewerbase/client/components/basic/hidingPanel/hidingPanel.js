@@ -5,7 +5,7 @@ Template.hidingPanel.events({
 
             var hidingPanel = $(e.currentTarget);
             hidingPanel.css({
-                width: "120px"
+                width: "122px"
             });
 
             // Set panel as open
@@ -46,7 +46,7 @@ Template.hidingPanel.events({
         if(panelPinned) {
             // Calculate newWidth of viewportAndLesionTable
             var viewerWidth = $("#viewer").width();
-            var newPercentageOfviewportAndLesionTable = 100 - 120 / viewerWidth *100;
+            var newPercentageOfviewportAndLesionTable = 100 - 122 / viewerWidth *100;
             $("#viewportAndLesionTable").css("width", newPercentageOfviewportAndLesionTable+"%");
 
             resizeViewportElements();
