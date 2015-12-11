@@ -433,10 +433,6 @@ Meteor.startup(function() {
             var tool = toolManager.getDefaultTool();
             toolManager.setActiveTool(tool);
         },
-        toggleTools: function() {
-            //TODO= Write this function in toolManager?
-            console.log("Show/hide all tools");
-        },
         toggleOverlayTags: function() {
             var dicomTags = $('.imageViewerViewportOverlay .dicomTag');
             if (dicomTags.eq(0).css('display') === 'none') {
@@ -501,28 +497,6 @@ function flashButton(button) {
     }, 100);
 }
 
-function setActiveViewportContainer(container) {
-    if (!container) {
-        return;
-    }
-
-    var container = $(container);
-    container.addClass('active');
-
-    var element = container.find(".imageViewerViewport").get(0);
-    if (!element) {
-        return;
-    }
-
-    var viewportIndex = $('.imageViewerViewport').index(element);
-    Session.set
-
-    // Finally, enable stack prefetching and hide the reference lines from
-    // the newly activated viewport
-    enablePrefetchOnElement(element);
-    displayReferenceLines(element);
-}
-
 function bindHotkey(hotkey, task) {
     var hotkeyFunctions = OHIF.viewer.hotkeyFunctions;
 
@@ -539,6 +513,12 @@ function bindHotkey(hotkey, task) {
         };
     } else {
         fn = hotkeyFunctions[task];
+
+        // If the function doesn't exist in the 
+        // hotkey function list, try the viewer-specific function list
+        if (!fn && OHIF.viewer && OHIF.viewer.functionList) {
+            fn = OHIF.viewer.functionList[task];
+        }
     }
 
     if (!fn) {

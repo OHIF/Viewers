@@ -60,43 +60,17 @@ Template.viewerMain.helpers({
             iconClasses: 'fa fa-trash'
         });
 
+        buttonData.push({
+            id: 'toggleLesionTrackerTools',
+            title: 'Show / hide tools',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-eye'
+        });
+
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;
         toolbarOptions.includeHangingProtocolButtons = false;
         return toolbarOptions;
     }
-});
-
-Template.viewerMain.events({
-    'click button#clearTools': function(e, template) {
-        var patientId = template.data.studies[0].patientId;
-        var toolTypes = ["lesion", "nonTarget"];
-        var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
-        var toolStateKeys = Object.keys(toolState).slice(0);
-
-        // Set null array for toolState data found by imageId and toolType
-        toolStateKeys.forEach(function (imageId) {
-            toolTypes.forEach(function (toolType) {
-                var toolTypeData = toolState[imageId][toolType];
-                if(toolTypeData && toolTypeData.data.length > 0) {
-                    if(toolTypeData.data[0].patientId === patientId) {
-                        toolState[imageId][toolType] = {
-                            data: []
-                        };
-                    }
-                }
-            });
-        });
-
-        // Update imageViewerViewport elements to remove lesions on current image
-        $(".imageViewerViewport").each(function(viewportIndex, element) {
-            cornerstone.updateImage(element);
-        });
-
-        // Remove patient's measurements
-        Meteor.call('removeMeasurementsByPatientId', patientId);
-
-    }
-
 });

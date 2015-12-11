@@ -1,23 +1,19 @@
-function resizeViewports() {
-    log.info("viewer resizeViewports");
+var resizeTimer;
 
-    // Handle resizing of image viewer viewports
-    // For some reason, this seems to need to be on
-    // another delay, or the resizing won't work properly
-    viewportResizeTimer = setTimeout(function() {
-        var elements = $('.imageViewerViewport');
-        elements.each(function(index) {
-            var element = this;
-            if (!element) {
-                return;
-            }
-            cornerstone.resize(element, true);
-        });
-    }, 1);
+// TODO= Move this and resizeViewportElements to viewerbase
+function handleResize() {
+    // Avoid doing DOM manipulation during the resize handler
+    // because it is fired very often.
+    // Resizing is therefore performed 100 ms after the resize event stops.
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        resizeViewportElements();
+    }, 100);
 }
 
 Template.viewer.onCreated(function() {
-    enableHotkeys();
+    // Attach the Window resize listener
+    $(window).on('resize', handleResize);
 
     var self = this;
 
@@ -53,9 +49,16 @@ Template.viewer.onCreated(function() {
             }
             OHIF.viewer.isPlaying[viewportIndex] = !OHIF.viewer.isPlaying[viewportIndex];
             Session.set('UpdateCINE', Random.id());
-        }
+        },
+        toggleLesionTrackerTools: toggleLesionTrackerTools,
+        clearTools: clearTools
     };
 
+    // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
+    OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = "Y";
+
+    // Enable hotkeys
+    enableHotkeys();
 
     if (isTouchDevice()) {
         OHIF.viewer.tooltipConfig = {
@@ -71,7 +74,6 @@ Template.viewer.onCreated(function() {
 
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
-
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
 
     } else {
@@ -179,7 +181,7 @@ function updateRelatedElements(imageId) {
     enabledElements.forEach(function(enabledElement) {
         // Update the display so the tool is removed
         var element = enabledElement.element;
-        cornerstone.updateImage(element)
+        cornerstone.updateImage(element);
     });
 }
 
@@ -258,6 +260,10 @@ function addMeasurementAsToolData(data) {
 
 Template.viewer.onDestroyed(function() {
     log.info("onDestroyed");
+
+    // Remove the Window resize listener
+    $(window).off('resize', handleResize);
+
     OHIF.viewer.updateImageSynchronizer.destroy();
 });
 
@@ -300,14 +306,3 @@ function handleMeasurementRemoved(e, eventData) {
             break;
     }
 }
-
-// Avoid doing DOM manipulation during the resize handler
-// because it is fired very often.
-// Resizing is therefore performed 100 ms after the resize event stops.
-var resizeTimer;
-$(window).on('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        resizeViewports();
-    }, 100);
-});

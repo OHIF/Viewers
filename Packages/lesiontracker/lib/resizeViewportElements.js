@@ -1,15 +1,9 @@
-
 // Resize viewport elements
 resizeViewportElements = function() {
     viewportResizeTimer = setTimeout(function() {
-        var elements = $('.imageViewerViewport');
-        elements.each(function(index) {
-            var element = this;
-            if (!element) {
-                return;
-            }
+        var elements = $('.imageViewerViewport').not('.empty');
+        elements.each(function(index, element) {
             cornerstone.resize(element, true);
         });
     }, 1);
-
 };

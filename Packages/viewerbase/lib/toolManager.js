@@ -171,6 +171,10 @@ toolManager = {
             toolManager.init();
         }
 
+        if (!tool) {
+            tool = defaultTool;
+        }
+
         if (!elements || !elements.length) {
             elements = $('.imageViewerViewport');
         }
