@@ -1,4 +1,5 @@
 applyWLPreset = function(presetName, element) {
+    console.log("Applying WL Preset: " + presetName);
     var viewport = cornerstone.getViewport(element);
 
     if (presetName === 'Default') {
