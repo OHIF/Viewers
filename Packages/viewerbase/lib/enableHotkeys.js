@@ -10,10 +10,8 @@ Meteor.startup(function() {
         defaultTool: "ESC",
         angle: "A",
         stackScroll: "S",
-        wwwcRegion: "R",
         pan: "P",
         magnify: "M",
-        length: "L",
         scrollDown: "DOWN",
         scrollUp: "UP",
         nextPanel: "RIGHT",
@@ -22,11 +20,10 @@ Meteor.startup(function() {
         flipV: "V",
         flipH: "H",
         wwwc: "W",
-        annotate: "T",
+        zoom: "Z",
         cinePlay: "SPACE",
-        rotateR: "F",
-        rotateL: "G",
-        toggleTools: 'TAB',
+        rotateR: "R",
+        rotateL: "L",
         toggleOverlayTags: 'SHIFT',
         WLPresetSoftTissue: ["NUMPAD1", "1"],
         WLPresetLung: ["NUMPAD2", "2"],
@@ -52,6 +49,9 @@ Meteor.startup(function() {
     OHIF.viewer.hotkeyFunctions = {
         wwwc: function() {
             toolManager.setActiveTool("wwwc");
+        },
+        zoom: function() {
+            toolManager.setActiveTool("zoom");
         },
         angle: function() {
             toolManager.setActiveTool("angle");

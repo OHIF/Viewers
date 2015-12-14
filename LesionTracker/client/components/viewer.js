@@ -51,11 +51,19 @@ Template.viewer.onCreated(function() {
             Session.set('UpdateCINE', Random.id());
         },
         toggleLesionTrackerTools: toggleLesionTrackerTools,
-        clearTools: clearTools
+        clearTools: clearTools,
+        lesion: function() {
+            toolManager.setActiveTool("lesion");
+        },
+        nonTarget: function() {
+            toolManager.setActiveTool("nonTarget");
+        },
     };
 
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
-    OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = "Y";
+    OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = "O";
+    OHIF.viewer.defaultHotkeys.lesion = "T"; // Target
+    OHIF.viewer.defaultHotkeys.nonTarget = "N"; // Non-target
 
     // Enable hotkeys
     enableHotkeys();
