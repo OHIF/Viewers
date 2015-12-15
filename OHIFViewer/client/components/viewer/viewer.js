@@ -1,25 +1,10 @@
-function resizeViewports() {
-    log.info("viewer resizeViewports");
-
-    // Handle resizing of image viewer viewports
-    // For some reason, this seems to need to be on
-    // another delay, or the resizing won't work properly
-    viewportResizeTimer = setTimeout(function() {
-        var elements = $('.imageViewerViewport');
-        elements.each(function(index) {
-            var element = this;
-            if (!element) {
-                return;
-            }
-            cornerstone.resize(element, true);
-        });
-    }, 1);
-}
-
 Template.viewer.onCreated(function() {
+    // Attach the Window resize listener
+    $(window).on('resize', handleResize);
+
     log.info("viewer onCreated");
 
-    OHIF = {
+    OHIF = window.OHIF || {
         viewer: {}
     };
 
@@ -96,15 +81,4 @@ Template.viewer.onCreated(function() {
 Template.viewer.onDestroyed(function() {
     log.info("onDestroyed");
     OHIF.viewer.updateImageSynchronizer.destroy();
-});
-
-// Avoid doing DOM manipulation during the resize handler
-// because it is fired very often.
-// Resizing is therefore performed 100 ms after the resize event stops.
-var resizeTimer;
-$(window).on('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        resizeViewports();
-    }, 100);
 });

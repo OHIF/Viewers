@@ -72,7 +72,10 @@ toolManager = {
             mouse: cornerstoneTools.arrowAnnotate,
             touch: cornerstoneTools.arrowAnnotateTouch
         });
-        activeTool = OHIF.viewer.defaultTool;
+
+        if (OHIF.viewer.defaultTool) {
+            activeTool = OHIF.viewer.defaultTool;
+        }
 
         configureTools();
         initialized = true;

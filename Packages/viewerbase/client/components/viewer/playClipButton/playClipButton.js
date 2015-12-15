@@ -23,6 +23,13 @@ Template.playClipButton.helpers({
     'isPlaying': function() {
         Session.get('UpdateCINE');
         var activeViewport = Session.get('activeViewport');
+
+        // TODO=Check best way to make sure this is always defined
+        // Right now it is initialized in enableHotkeys AND in 
+        // imageViewer onCreated, but this appears to break some things
+        if (!OHIF.viewer.isPlaying) {
+            return;
+        }
         return !!OHIF.viewer.isPlaying[activeViewport];
     }
 });

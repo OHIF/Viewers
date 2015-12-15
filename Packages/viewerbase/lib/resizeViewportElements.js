@@ -1,3 +1,15 @@
+var resizeTimer;
+
+handleResize = function() {
+    // Avoid doing DOM manipulation during the resize handler
+    // because it is fired very often.
+    // Resizing is therefore performed 100 ms after the resize event stops.
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        resizeViewportElements();
+    }, 100);
+};
+
 // Resize viewport elements
 resizeViewportElements = function() {
     viewportResizeTimer = setTimeout(function() {

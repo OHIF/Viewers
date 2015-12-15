@@ -121,10 +121,12 @@ Package.onUse(function (api) {
     api.addFiles('lib/enableHotkeys.js', 'client');
     api.addFiles('lib/viewportFunctions.js', 'client');
     api.addFiles('lib/WLPresets.js', 'client');
-
+    api.addFiles('lib/resizeViewportElements.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
     //api.export('accountsConfig', 'client');
+    api.export('resizeViewportElements','client');
+    api.export('handleResize','client');
     api.export('enableHotkeys', 'client');
     api.export('enablePrefetchOnElement', 'client');
     api.export('displayReferenceLines', 'client');
