@@ -252,7 +252,6 @@ function addMeasurementAsToolData(data) {
     });
 }
 
-
 Template.viewer.onDestroyed(function() {
     log.info("onDestroyed");
 

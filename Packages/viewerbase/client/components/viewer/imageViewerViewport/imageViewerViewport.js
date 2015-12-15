@@ -128,6 +128,14 @@ function loadSeriesIntoViewport(data, templateData) {
 
     // Start loading the image.
     cornerstone.loadAndCacheImage(imageId).then(function(image) {
+        var enabledElement;
+        try {
+            enabledElement = cornerstone.getEnabledElement(element);
+        } catch(error) {
+            log.warn('Viewport destroyed before loaded image could be displayed');
+            return;
+        }
+
         // If there is a saved object containing Cornerstone viewport data
         // (e.g. scale, invert, window settings) in the input data, apply it now.
         //
