@@ -42,6 +42,10 @@ getStudyMetadata = function(studyInstanceUid, doneCallback) {
     // If no study metadata is in the cache variable, we need to retrieve it from
     // the server with a call.
     Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
+        if (error) {
+            log.warn(error);
+            return;
+        }
         // Once we have retrieved the data, we sort the series' by series
         // and instance number in ascending order
         sortStudy(study);
@@ -107,6 +111,10 @@ switchToTab = function(contentId) {
             contentId: contentId,
             studies: [study]
         };
+
+        if (ViewerData[contentId].studies && ViewerData[contentId].studies.length) {
+            data.studies = ViewerData[contentId].studies;
+        }
 
         // Remove the loading text template that is inside the tab container by default
         container.innerHTML = "";
