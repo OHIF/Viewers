@@ -22,6 +22,7 @@ Package.onUse(function (api) {
 
     api.addFiles('client/compatibility/lesionTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/nonTargetTool.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/biDirectionalTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/measurementManagerDAL.js', 'client', {bare: true});
 
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
