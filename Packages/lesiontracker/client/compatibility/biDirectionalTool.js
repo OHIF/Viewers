@@ -414,6 +414,10 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
         var element = mouseEventData.element;
+        var distanceFromTool = {
+            x: handle.x - mouseEventData.currentPoints.image.x,
+            y: handle.y - mouseEventData.currentPoints.image.y
+        };
 
         function mouseDragCallback(e, eventData) {
             handle.active = true;
@@ -494,6 +498,11 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                         eventData.currentPoints.image.y = data.handles.perpendicularEnd.y;
                     }
                 }
+
+            } else {
+
+                handle.x = eventData.currentPoints.image.x + distanceFromTool.x;
+                handle.y = eventData.currentPoints.image.y + distanceFromTool.y;
 
             }
 
