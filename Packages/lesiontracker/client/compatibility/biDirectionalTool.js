@@ -55,8 +55,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
         // since we are dragging to another place to drop the end point, we can just activate
         // the end point and let the moveHandle move it for us.
-        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
-        $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.biDirectional.mouseDownCallback);
+        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.biDirectional.mouseMoveCallback);
+        $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.biDirectional.mouseDownActivateCallback);
 
         // Set lesion number and lesion name
@@ -75,8 +75,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             // perpendicular line is not connected to long-line
             measurementData.handles.perpendicularStart.locked = false;
 
-             $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
-             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.biDirectional.mouseDownCallback);
+             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.biDirectional.mouseMoveCallback);
+             $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
              $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.biDirectional.mouseDownActivateCallback);
              cornerstone.updateImage(element);
 
@@ -158,8 +158,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     index: 1
                 },
                 textBox: {
-                    x: mouseEventData.currentPoints.image.x - 70,
-                    y: mouseEventData.currentPoints.image.y - 100,
+                    x: mouseEventData.currentPoints.image.x - 50,
+                    y: mouseEventData.currentPoints.image.y - 70,
                     pointNearHandle: pointNearTextBox,
                     active: false,
                     movesIndependently: true,
@@ -173,7 +173,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     highlight: true,
                     active: false,
                     locked: true, // If perpendicular line is connected to long-line
-                    lineType: 'perpendicular',
                     index: 2
                 },
 
@@ -182,7 +181,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: false,
-                    lineType: 'perpendicular',
                     index: 3
                 }
 
@@ -412,6 +410,90 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         return true;
     }
 
+    // Sets position of handles(start, end, perpendicularStart, perpendicularEnd)
+    function setHandlesPosition (handle, eventData, data) {
+
+        if (handle.index === 0) {
+            // if long-axis start point is moved
+            var result = perpendicularBothFixedLeft(eventData, data);
+            if(result) {
+                handle.x = eventData.currentPoints.image.x;
+                handle.y = eventData.currentPoints.image.y;
+            } else {
+                eventData.currentPoints.image.x = handle.x;
+                eventData.currentPoints.image.y = handle.y;
+            }
+
+        } else if(handle.index === 1) {
+            // if long-axis end point is moved
+            var result = perpendicularBothFixedRight(eventData, data);
+            if(result) {
+                handle.x = eventData.currentPoints.image.x;
+                handle.y = eventData.currentPoints.image.y;
+            } else {
+                eventData.currentPoints.image.x = handle.x;
+                eventData.currentPoints.image.y = handle.y;
+            }
+
+        } else if(handle.index === 2) {
+            var outOfBounce = false;
+            // if perpendicular start point is moved
+
+            var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, eventData.currentPoints.image);
+            if (!intersection.intersected) {
+                intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
+
+                var d1 = getDistance(intersection, data.handles.start);
+                var d2 = getDistance(intersection, data.handles.end);
+
+                if (!intersection.intersected || d1 < 3 || d2 < 3) {
+                    outOfBounce = true;
+                }
+            }
+
+            var movedPoint = false;
+
+            if (!outOfBounce) {
+                movedPoint = perpendicularLeftFixedPoint(eventData, data);
+
+                if (!movedPoint) {
+                    eventData.currentPoints.image.x = data.handles.perpendicularStart.x;
+                    eventData.currentPoints.image.y = data.handles.perpendicularStart.y;
+                }
+            }
+
+        } else if(handle.index === 3) {
+
+            var outOfBounce = false;
+            // if perpendicular end point is moved
+
+            var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, eventData.currentPoints.image);
+            if (!intersection.intersected) {
+                intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
+
+                var d1 = getDistance(intersection, data.handles.start);
+                var d2 = getDistance(intersection, data.handles.end);
+
+                if (!intersection.intersected || d1 < 3 || d2 < 3) {
+                    outOfBounce = true;
+                }
+            }
+
+            var movedPoint = false;
+
+            if (!outOfBounce) {
+                movedPoint = perpendicularRightFixedPoint(eventData, data);
+
+                if (!movedPoint) {
+                    eventData.currentPoints.image.x = data.handles.perpendicularEnd.x;
+                    eventData.currentPoints.image.y = data.handles.perpendicularEnd.y;
+                }
+            }
+
+        }
+
+    }
+
     function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
         var element = mouseEventData.element;
         var distanceFromTool = {
@@ -422,88 +504,11 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         function mouseDragCallback(e, eventData) {
             handle.active = true;
 
-            if (handle.index === 0) {
-                // if long-axis start point is moved
-                var result = perpendicularBothFixedLeft(eventData, data);
-                if(result) {
-                    handle.x = eventData.currentPoints.image.x;
-                    handle.y = eventData.currentPoints.image.y;
-                } else {
-                    eventData.currentPoints.image.x = handle.x;
-                    eventData.currentPoints.image.y = handle.y;
-                }
-
-            } else if(handle.index === 1) {
-                // if long-axis end point is moved
-                var result = perpendicularBothFixedRight(eventData, data);
-                if(result) {
-                    handle.x = eventData.currentPoints.image.x;
-                    handle.y = eventData.currentPoints.image.y;
-                } else {
-                    eventData.currentPoints.image.x = handle.x;
-                    eventData.currentPoints.image.y = handle.y;
-                }
-
-            } else if(handle.index === 2) {
-                var outOfBounce = false;
-                // if perpendicular start point is moved
-
-                var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, eventData.currentPoints.image);
-                if (!intersection.intersected) {
-                    intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
-
-                    var d1 = getDistance(intersection, data.handles.start);
-                    var d2 = getDistance(intersection, data.handles.end);
-
-                    if (!intersection.intersected || d1 < 3 || d2 < 3) {
-                        outOfBounce = true;
-                    }
-                }
-
-                var movedPoint = false;
-
-                if (!outOfBounce) {
-                    movedPoint = perpendicularLeftFixedPoint(eventData, data);
-
-                    if (!movedPoint) {
-                        eventData.currentPoints.image.x = data.handles.perpendicularStart.x;
-                        eventData.currentPoints.image.y = data.handles.perpendicularStart.y;
-                    }
-                }
-
-            } else if(handle.index === 3) {
-
-                var outOfBounce = false;
-                // if perpendicular end point is moved
-
-                var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, eventData.currentPoints.image);
-                if (!intersection.intersected) {
-                    intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
-
-                    var d1 = getDistance(intersection, data.handles.start);
-                    var d2 = getDistance(intersection, data.handles.end);
-
-                    if (!intersection.intersected || d1 < 3 || d2 < 3) {
-                        outOfBounce = true;
-                    }
-                }
-
-                var movedPoint = false;
-
-                if (!outOfBounce) {
-                    movedPoint = perpendicularRightFixedPoint(eventData, data);
-
-                    if (!movedPoint) {
-                        eventData.currentPoints.image.x = data.handles.perpendicularEnd.x;
-                        eventData.currentPoints.image.y = data.handles.perpendicularEnd.y;
-                    }
-                }
-
-            } else {
-
+            if (handle.index === undefined || handle.index === null) {
                 handle.x = eventData.currentPoints.image.x + distanceFromTool.x;
                 handle.y = eventData.currentPoints.image.y + distanceFromTool.y;
-
+            } else {
+                setHandlesPosition(handle, eventData, data);
             }
 
             if (preventHandleOutsideImage) {
@@ -556,7 +561,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             }
 
             cornerstone.updateImage(element);
-            $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+            $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.biDirectional.mouseMoveCallback);
         }
 
         if (cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
@@ -572,7 +577,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     var distanceSq = 25;
                     var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
                     if (handle) {
-                        $(element).off('CornerstoneToolsMouseMove',mouseMoveCallback);
+                        $(element).off('CornerstoneToolsMouseMove',cornerstoneTools.biDirectional.mouseMoveCallback);
                         data.active = true;
                         moveHandle(eventData, toolType, data, handle, handleDoneMove);
                         e.stopImmediatePropagation();
@@ -592,7 +597,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 for (i = 0; i < toolData.data.length; i++) {
                     data = toolData.data[i];
                     if (pointNearTool(element, data, coords)) {
-                        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.biDirectional.mouseMoveCallback);
                         cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, handleDoneMove);
                         e.stopImmediatePropagation();
                         return false;
@@ -602,43 +607,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         }
     }
 
-    function mouseMoveCallback(e, eventData){
-        cornerstoneTools.toolCoordinates.setCoords(eventData);
-        // if a mouse button is down, do nothing
-        if (eventData.which !== 0) {
-            return;
-        }
-
-        // if we have no tool data for this element, do nothing
-        var toolData = cornerstoneTools.getToolState(eventData.element, toolType);
-        if (!toolData) {
-            return;
-        }
-
-        // We have tool data, search through all data
-        // and see if we can activate a handle
-        var imageNeedsUpdate = false;
-        for (var i = 0; i < toolData.data.length; i++) {
-            // get the cursor position in canvas coordinates
-            var coords = eventData.currentPoints.canvas;
-
-            var data = toolData.data[i];
-            if (cornerstoneTools.handleActivator(eventData.element, data.handles, coords) === true) {
-                imageNeedsUpdate = true;
-            }
-
-            if ((pointNearTool(eventData.element, data, coords) && !data.active) || (!pointNearTool(eventData.element, data, coords) && data.active)) {
-                data.active = !data.active;
-                imageNeedsUpdate = true;
-            }
-        }
-
-        // Handle activation status changed, redraw the image
-        if (imageNeedsUpdate === true) {
-            cornerstone.updateImage(eventData.element);
-        }
-    }
-
+    // draw perpendicular line
     function drawPerpendicularLine(context, eventData,element, data, color, lineWidth) {
 
         // mid point of long-axis line
@@ -679,6 +648,47 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         context.lineTo(perpendicularEndCanvas.x, perpendicularEndCanvas.y);
         context.stroke();
 
+    }
+
+
+    function findDottedLinePosition(data) {
+
+        var distancesArr = [];
+        var minDistance;
+
+        // Find distances between handles and textBox
+        var distanceToStart = getDistance(data.handles.start, data.handles.textBox);
+        distancesArr.push({distance: distanceToStart, point: data.handles.start});
+        minDistance = distanceToStart;
+
+        var distanceToEnd = getDistance(data.handles.end, data.handles.textBox);
+        distancesArr.push({distance: distanceToEnd, point: data.handles.end});
+        if(distanceToEnd < minDistance) {
+            minDistance = distanceToEnd;
+        }
+
+        if(data.handles.perpendicularStart.x && data.handles.perpendicularStart.y) {
+            var distanceToPerpendicularStart = getDistance(data.handles.perpendicularStart, data.handles.textBox);
+            distancesArr.push({distance: distanceToPerpendicularStart, point: data.handles.perpendicularStart});
+            if(distanceToPerpendicularStart < minDistance) {
+                minDistance = distanceToPerpendicularStart;
+            }
+
+        }
+
+        if(data.handles.perpendicularEnd.x && data.handles.perpendicularEnd.y) {
+            var distanceToPerpendicularEnd = getDistance(data.handles.perpendicularEnd, data.handles.textBox);
+            distancesArr.push({distance: distanceToPerpendicularEnd, point: data.handles.perpendicularEnd});
+            if(distanceToPerpendicularEnd < minDistance) {
+                minDistance = distanceToPerpendicularEnd;
+            }
+        }
+        for(var i=0; i< distancesArr.length; i++) {
+            var obj = distancesArr[i];
+            if (obj.distance === minDistance) {
+                return obj.point;
+            }
+        }
     }
 
     ///////// BEGIN IMAGE RENDERING ///////
@@ -740,9 +750,10 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             context.lineWidth = lineWidth;
             context.setLineDash([2, 3]);
 
-            var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularStart);
+            // Set position of text
+            var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, findDottedLinePosition(data));
             context.moveTo(perpendicularStartCanvas.x, perpendicularStartCanvas.y);
-            context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
+            context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 40);
             context.stroke();
 
             // Draw the Length text
@@ -850,7 +861,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
         mouseDoubleClickCallback: doubleClickCallback,
-        mouseMoveCallback: mouseMoveCallback,
         mouseDownCallback: mouseDownCallback,
         toolType: toolType
     });

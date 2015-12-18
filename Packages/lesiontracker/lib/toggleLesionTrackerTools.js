@@ -18,7 +18,7 @@ toggleLesionTrackerTools = function() {
             activate: [],
             deactivate: [],
             enable: [],
-            disable: ['lesion', 'nonTarget']
+            disable: ['lesion', 'nonTarget', 'biDirectional']
         };
 
         toolManager.setToolDefaultStates(toolDefaultStates);
