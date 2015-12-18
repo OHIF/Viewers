@@ -55,7 +55,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
         // since we are dragging to another place to drop the end point, we can just activate
         // the end point and let the moveHandle move it for us.
-        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.biDirectional.mouseMoveCallback);
+        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
         $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.biDirectional.mouseDownActivateCallback);
 
@@ -75,7 +75,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             // perpendicular line is not connected to long-line
             measurementData.handles.perpendicularStart.locked = false;
 
-             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.biDirectional.mouseMoveCallback);
+             $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
              $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
              $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.biDirectional.mouseDownActivateCallback);
              cornerstone.updateImage(element);
@@ -148,6 +148,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: false,
+                    drawnIndependently: false,
                     index: 0
                 },
                 end: {
@@ -155,6 +156,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: true,
+                    drawnIndependently: false,
                     index: 1
                 },
                 textBox: {
@@ -173,6 +175,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     highlight: true,
                     active: false,
                     locked: true, // If perpendicular line is connected to long-line
+                    drawnIndependently: false,
                     index: 2
                 },
 
@@ -181,6 +184,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: false,
+                    drawnIndependently: false,
                     index: 3
                 }
 
@@ -494,6 +498,10 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     }
 
+    //****************************************/
+    // Cornerstone Methods
+    //****************************************/
+
     function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
         var element = mouseEventData.element;
         var distanceFromTool = {
@@ -548,6 +556,53 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         $(element).on('CornerstoneToolsMouseClick', mouseUpCallback);
     }
 
+    // mouseMoveCallback is used to hide handles when mouse is away
+    function mouseMoveCallback(e, eventData) {
+        cornerstoneTools.toolCoordinates.setCoords(eventData);
+        // if a mouse button is down, do nothing
+        if (eventData.which !== 0) {
+            return;
+        }
+
+        // if we have no tool data for this element, do nothing
+        var toolData = cornerstoneTools.getToolState(eventData.element, toolType);
+        if (!toolData) {
+            return;
+        }
+
+        // We have tool data, search through all data
+        // and see if we can activate a handle
+        var imageNeedsUpdate = false;
+        for (var i = 0; i < toolData.data.length; i++) {
+            // get the cursor position in canvas coordinates
+            var coords = eventData.currentPoints.canvas;
+
+            var data = toolData.data[i];
+            if (cornerstoneTools.handleActivator(eventData.element, data.handles, coords) === true) {
+                imageNeedsUpdate = true;
+            }
+
+            if ((pointNearTool(eventData.element, data, coords) && !data.active) || (!pointNearTool(eventData.element, data, coords) && data.active)) {
+                data.active = !data.active;
+
+                // Set handles visibility
+                Object.keys(data.handles).forEach(function(name) {
+                    if(name !== "textBox") {
+                        var handle = data.handles[name];
+                        handle.drawnIndependently = !data.active;
+                    }
+                });
+                imageNeedsUpdate = true;
+            }
+        }
+
+        // Handle activation status changed, redraw the image
+        if (imageNeedsUpdate === true) {
+            cornerstone.updateImage(eventData.element);
+        }
+    }
+
+    // mouseDowCallback is used to restrict behaviour of perpendicular-line
     function mouseDownCallback(e, eventData) {
         var data;
         var element = eventData.element;
@@ -561,7 +616,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             }
 
             cornerstone.updateImage(element);
-            $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.biDirectional.mouseMoveCallback);
+            $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
         }
 
         if (cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
@@ -577,7 +632,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     var distanceSq = 25;
                     var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
                     if (handle) {
-                        $(element).off('CornerstoneToolsMouseMove',cornerstoneTools.biDirectional.mouseMoveCallback);
+                        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                         data.active = true;
                         moveHandle(eventData, toolType, data, handle, handleDoneMove);
                         e.stopImmediatePropagation();
@@ -597,7 +652,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 for (i = 0; i < toolData.data.length; i++) {
                     data = toolData.data[i];
                     if (pointNearTool(element, data, coords)) {
-                        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.biDirectional.mouseMoveCallback);
+                        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                         cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, handleDoneMove);
                         e.stopImmediatePropagation();
                         return false;
@@ -606,6 +661,10 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             }
         }
     }
+
+    //****************************************/
+    // Cornerstone Methods end
+    //****************************************/
 
     // draw perpendicular line
     function drawPerpendicularLine(context, eventData,element, data, color, lineWidth) {
@@ -862,6 +921,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         pointNearTool: pointNearTool,
         mouseDoubleClickCallback: doubleClickCallback,
         mouseDownCallback: mouseDownCallback,
+        mouseMoveCallback: mouseMoveCallback,
         toolType: toolType
     });
 
