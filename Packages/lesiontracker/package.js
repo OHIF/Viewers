@@ -65,12 +65,21 @@ Package.onUse(function (api) {
     api.addFiles('lib/uuid.js', 'client');
     api.addFiles('lib/toggleLesionTrackerTools.js', 'client');
     api.addFiles('lib/clearTools.js', 'client');
+    api.addFiles('lib/mathUtils.js', 'client');
+
 
     // Export lesionTable function for activate measurements
     api.export('activateLesion','client');
     api.export('toggleLesionTrackerTools', 'client');
     api.export('clearTools', 'client');
     api.export('measurementManagerDAL', 'client');
+
+    // Export mathUtils functions
+    api.export('sign','client');
+    api.export('getLineIntersection','client');
+    api.export('getDistance','client');
+    api.export('getDistanceFromPointToLine','client');
+
 
     // Export client-side collections
     api.export('LesionLocations', 'client');
