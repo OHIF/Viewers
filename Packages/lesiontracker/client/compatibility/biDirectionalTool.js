@@ -856,7 +856,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
         if (lesionData.timepointID && lesionData.timepointID !== "") {
             // Update Measurements Collection
-            measurementManagerDAL.updateTimepointData(lesionData);
+            LesionManager.updateLesionData(lesionData);
         }
     }
 

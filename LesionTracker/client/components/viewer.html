@@ -1,7 +1,9 @@
 <template name="viewer">
     <div id="viewer">
+        {{>confirmDeleteDialog}}
         {{>lesionLocationDialog}}
         {{>nonTargetLesionDialog}}
+        {{>nonTargetResponseDialog}}
         {{>timepointTextDialog}}
 
         {{>hidingPanel}}

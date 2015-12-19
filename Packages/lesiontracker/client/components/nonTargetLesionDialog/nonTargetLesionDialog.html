@@ -18,7 +18,11 @@
                 <select id="selectNonTargetLesionLocationResponse">
                     <option value="-1"></option>
                     {{ #each locationResponses}}
-                    <option value='{{code}}'>{{code}} - {{text}}</option>
+                    {{ #if code }}
+                        <option value='{{code}}'>{{code}} - {{text}}</option>
+                    {{ else }}
+                        <option value={{text}}}>{{text}}</option>
+                    {{ /if }}
                     {{ /each}}
                 </select>
             </div>
@@ -38,7 +42,7 @@
                 <select id="selectNonTargetLesionLocation">
                     <option value="-1"></option>
                     {{ #each lesionLocations}}
-                    <option value='{{_id}}'>{{location}}</option>
+                    <option value='{{_id}}' selected={{selected}}>{{location}}</option>
                     {{ /each}}
                 </select>
             </div>
@@ -47,13 +51,16 @@
                 <select id="selectNonTargetLesionLocationResponse">
                     <option value="-1"></option>
                     {{ #each locationResponses}}
-                    <option value='{{code}}'>{{code}} - {{text}}</option>
+                    {{ #if code }}
+                    <option value={{code}} selected={{selected}}>{{code}} - {{text}}</option>
+                    {{ else }}
+                    <option value={{text}}} selected={{selected}}>{{text}}</option>
+                    {{ /if }}
                     {{ /each}}
                 </select>
             </div>
             <div class="locationOK">
                 <button class="btn btn-link" id="removeLesion">Remove</button>
-
                 <button class="btn btn-primary" id="nonTargetLesionOK">OK</button>
             </div>
         </div>

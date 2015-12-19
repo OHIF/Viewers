@@ -78,8 +78,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.lesion.mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.lesion.mouseDownActivateCallback);
             cornerstone.updateImage(element);
-
-            updateLesionCollection(measurementData);
         });
     }
 
@@ -287,18 +285,6 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         }
     }
 
-    function updateLesionCollection(lesionData) {
-        // TODO = Remove this in favour of measurement events
-        if (!lesionData.active) {
-            return;
-        }
-
-        if (lesionData.timepointID && lesionData.timepointID !== "") {
-            // Update Measurements Collection
-            measurementManagerDAL.updateTimepointData(lesionData);
-        }
-    }
-
     function doubleClickCallback(e, eventData) {
         // Prevent other double click handlers from firing after this one
         //e.stopImmediatePropagation();
@@ -310,16 +296,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             if (deleteTool === true) {
                 cornerstoneTools.removeToolState(element, toolType, data);
                 cornerstone.updateImage(element);
-                //return;
             }
-
-            /*// TODO= Find a better way to do this! This is very messy
-            config.setLesionNumberCallback(data, eventData, function(lesionNumber) {
-                data.lesionName = "Target " + lesionNumber;
-                data.lesionNumber = lesionNumber;
-                data.active = false;
-                cornerstone.updateImage(element);
-            });*/
         }
 
         if (e.data && e.data.mouseButtonMask && !cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {

@@ -32,7 +32,6 @@
     /// --- Mouse Tool --- ///
     ///////// BEGIN ACTIVE TOOL ///////
     function addNewMeasurement(mouseEventData) {
-
         var element = mouseEventData.element;
 
         function doneCallback(lesionNumber) {
@@ -53,9 +52,9 @@
 
         // since we are dragging to another place to drop the end point, we can just activate
         // the end point and let the moveHandle move it for us.
-        $(mouseEventData.element).off('CornerstoneToolsMouseMove', cornerstoneTools.nonTarget.mouseMoveCallback);
-        $(mouseEventData.element).off('CornerstoneToolsMouseDown', cornerstoneTools.nonTarget.mouseDownCallback);
-        $(mouseEventData.element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.nonTarget.mouseDownActivateCallback);
+        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.nonTarget.mouseMoveCallback);
+        $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.nonTarget.mouseDownCallback);
+        $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.nonTarget.mouseDownActivateCallback);
 
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
@@ -75,9 +74,9 @@
 
             }
 
-            $(mouseEventData.element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
-            $(mouseEventData.element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
-            $(mouseEventData.element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
+            $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
+            $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
+            $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
 
             cornerstone.updateImage(mouseEventData.element);
         });
@@ -127,8 +126,7 @@
             studyInstanceUid: studyInstanceUid,
             patientId: patientId,
             measurementText: '',
-            isTarget: false,
-            uid: uuid.v4()
+            isTarget: false
         };
 
         return measurementData;
@@ -184,8 +182,8 @@
             // configurable shadow from CornerstoneTools
             if (config && config.shadow) {
                 context.shadowColor = '#000000';
-                context.shadowOffsetX = +1;
-                context.shadowOffsetY = +1;
+                context.shadowOffsetX = 1;
+                context.shadowOffsetY = 1;
             }
 
             if (data.active) {
@@ -286,6 +284,7 @@
             if (deleteTool === true) {
                 cornerstoneTools.removeToolState(element, toolType, data);
                 cornerstone.updateImage(element);
+                return;
             }
 
             data.active = false;

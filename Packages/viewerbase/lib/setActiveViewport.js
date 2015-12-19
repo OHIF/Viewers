@@ -17,4 +17,7 @@ setActiveViewport = function(element) {
     // the newly activated viewport
     enablePrefetchOnElement(element);
     displayReferenceLines(element);
+
+    // Set the div to focused, so keypress events are handled
+    $(element).focus();
 };

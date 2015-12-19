@@ -16,7 +16,7 @@ createStacks = function(study) {
 
     // TODO: Split by multi-frame, modality, image size, etc
     study.seriesList.forEach(function(series) {
-        // If the series has no instanced, skip it
+        // If the series has no instances, skip it
         if (!series.instances) {
             return;
         }

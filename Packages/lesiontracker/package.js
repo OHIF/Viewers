@@ -23,7 +23,8 @@ Package.onUse(function (api) {
     api.addFiles('client/compatibility/lesionTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/nonTargetTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/biDirectionalTool.js', 'client', {bare: true});
-    api.addFiles('client/compatibility/measurementManagerDAL.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/LesionManager.js', 'client', {bare: true});
 
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
@@ -37,6 +38,7 @@ Package.onUse(function (api) {
     api.addFiles('client/components/lesionTableRow/lesionTableRow.js', 'client');
 
     api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
+    api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.styl', 'client');
     api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.js', 'client');
 
     api.addFiles('client/components/lesionTableTimepointHeader/lesionTableTimepointHeader.html', 'client');
@@ -51,6 +53,14 @@ Package.onUse(function (api) {
     api.addFiles('client/components/studyDateList/studyDateList.styl', 'client');
     api.addFiles('client/components/studyDateList/studyDateList.js', 'client');
 
+    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
+    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
+    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
+
+    api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.html', 'client');
+    api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.styl', 'client');
+    api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.js', 'client');
+
     api.addFiles('client/components/timepointTextDialog/timepointTextDialog.html', 'client');
     api.addFiles('client/components/timepointTextDialog/timepointTextDialog.styl', 'client');
 
@@ -64,22 +74,32 @@ Package.onUse(function (api) {
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
     api.addFiles('lib/toggleLesionTrackerTools.js', 'client');
+    api.addFiles('lib/clearMeasurementTimepointData.js', 'client');
+    api.addFiles('lib/removeToolDataWithMeasurementId.js', 'client');
+    api.addFiles('lib/getTimepointObject.js', 'client');
+    api.addFiles('lib/activateMeasurements.js', 'client');
+    api.addFiles('lib/activateLesion.js', 'client');
+    api.addFiles('lib/deactivateAllToolData.js', 'client');
     api.addFiles('lib/clearTools.js', 'client');
     api.addFiles('lib/mathUtils.js', 'client');
 
 
     // Export lesionTable function for activate measurements
     api.export('activateLesion','client');
+    api.export('activateMeasurements','client');
+    api.export('deactivateAllToolData','client');
     api.export('toggleLesionTrackerTools', 'client');
+    api.export('clearMeasurementTimepointData', 'client');
+    api.export('removeToolDataWithMeasurementId', 'client');
+    api.export('getTimepointObject', 'client');
     api.export('clearTools', 'client');
-    api.export('measurementManagerDAL', 'client');
+    api.export('LesionManager', 'client');
 
     // Export mathUtils functions
     api.export('sign','client');
     api.export('getLineIntersection','client');
     api.export('getDistance','client');
     api.export('getDistanceFromPointToLine','client');
-
 
     // Export client-side collections
     api.export('LesionLocations', 'client');

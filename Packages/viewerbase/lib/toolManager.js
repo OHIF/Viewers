@@ -83,6 +83,9 @@ toolManager = {
     addTool: function(name, base) {
         tools[name] = base;
     },
+    getTools: function() {
+        return tools;
+    },
     setToolDefaultStates: function(states) {
         toolDefaultStates = states;
     },

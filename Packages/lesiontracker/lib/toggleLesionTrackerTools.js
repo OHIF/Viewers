@@ -15,7 +15,7 @@ toggleLesionTrackerTools = function() {
 
         // Hide the tools (set them all to disabled)
         var toolDefaultStates = {
-            activate: [],
+            activate: ['deleteLesionKeyboardTool'],
             deactivate: [],
             enable: [],
             disable: ['lesion', 'nonTarget', 'biDirectional']

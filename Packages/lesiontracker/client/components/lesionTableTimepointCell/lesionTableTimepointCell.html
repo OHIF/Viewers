@@ -1,3 +1,11 @@
 <template name="lesionTableTimepointCell">
-    <td class="lesionTableTimepointCell">{{longestDiameter}}</td>
+    {{ #if hasDataAtThisTimepoint }}
+        {{ #if isTarget }}
+            <td class="lesionTableTimepointCell target" tabindex="1">{{displayData}}</td>
+        {{ else }}
+            <td class="lesionTableTimepointCell nonTarget" tabindex="2">{{displayData}}</td>
+        {{ /if }}
+    {{ else }}
+    <td class="lesionTableTimepointCell empty"></td>
+    {{ /if }}
 </template>

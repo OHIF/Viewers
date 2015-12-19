@@ -180,10 +180,11 @@ function loadSeriesIntoViewport(data, templateData) {
         cornerstoneTools.clearToolState(element, 'stack');
         cornerstoneTools.addToolState(element, 'stack', stack);
 
-        // Enable mouse, mouseWheel, and touch input on the element
+        // Enable mouse, mouseWheel, touch, and keyboard input on the element
         cornerstoneTools.mouseInput.enable(element);
         cornerstoneTools.touchInput.enable(element);
         cornerstoneTools.mouseWheelInput.enable(element);
+        cornerstoneTools.keyboardInput.enable(element);
 
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
@@ -209,102 +210,6 @@ function loadSeriesIntoViewport(data, templateData) {
         // Attach the onImageRendered callback to the CornerstoneImageRendered event
         $(element).off('CornerstoneImageRendered', onImageRendered);
         $(element).on('CornerstoneImageRendered', onImageRendered);
-
-        //TODO: ********************************************
-        //TODO: Delete a lesion, if ctrl+d or del is pressed after lesion selected
-        //TODO: getTimepointObject should be global function to use everywhere
-
-        function getTimepointObject(imageId) {
-            var study = cornerstoneTools.metaData.get('study', imageId);
-            return Timepoints.findOne({timepointName: study.studyDate});
-        }
-
-        // ctrl+d is used to detect delete event if del key is not found on keyboard.
-        // Id key is down
-        var keyMap = {17: false, 68: false, 46: false};
-        function keyPressDownHandler(e, lesionData){
-            if (e.keyCode in keyMap) {
-                keyMap[e.keyCode] = true;
-                if (keyMap[46] || keyMap[17] && keyMap[68]) {
-                    var toolType = lesionData.isTarget ? 'lesion' : 'nonTarget';
-                    var imageId = lesionData.imageId;
-                    var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
-                    Object.keys(toolState).forEach(function(imageIdKey){
-                        if(imageIdKey === imageId) {
-                            var toolStateArray = toolState[imageId][toolType].data;
-                            toolStateArray.forEach(function(data, index) {
-                                if(data.lesionNumber === lesionData.lesionNumber){
-                                    toolState[imageId][toolType].data.splice(index, 1);
-
-                                    // Remove from collection
-                                    var patientId = data.patientId;
-                                    var enabledElement = cornerstone.getEnabledElement(element);
-                                    var elementImageId = enabledElement.image.imageId;
-                                    var timepointData = getTimepointObject(elementImageId);
-                                    var lesionObject = {
-                                        patientId: patientId,
-                                        lesionNumber: lesionData.lesionNumber,
-                                        isTarget: lesionData.isTarget,
-                                        timepointId: timepointData.timepointID
-                                    };
-
-                                    // Remove patient measurement
-                                    Meteor.call('removePatientMeasurement', lesionObject);
-
-                                    //Update element
-                                    cornerstone.updateImage(element);
-                                }
-                            });
-
-
-                        }
-                    });
-
-                }
-            }
-        }
-
-        // When key is up
-        function keyPressUpHandler(e){
-            if (e.keyCode in keyMap) {
-                keyMap[e.keyCode] = false;
-            }
-        }
-
-        // CornerstoneToolsMouseDown event callback
-        function onMouseDown(e,eventData) {
-            var element = e.currentTarget;
-            var distanceSq = 5;
-            var coords = eventData.startPoints.canvas;
-            var toolTypes = ["lesion", "nonTarget"];
-            toolTypes.forEach(function(toolType){
-                var toolData = cornerstoneTools.getToolState(element, toolType);
-
-                // now check to see if there is a handle we can move
-                if (toolData) {
-                    for (var i = 0; i < toolData.data.length; i++) {
-                        var data = toolData.data[i];
-                        var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
-                        if(handle) {
-                            $(document).off("keydown");
-                            $(document).on('keydown', function(e){
-                                keyPressDownHandler(e,data);
-                                return;
-                            });
-                            $(document).off("keyup");
-                            $(document).on('keyup',keyPressUpHandler);
-                            return;
-                        }
-                    }
-                }
-            });
-        }
-
-        $(element).on('CornerstoneToolsMouseDown', onMouseDown);
-        $(element).on('CornerstoneToolsMouseDown', onMouseDown);
-
-        //TODO: Delete a lesion ends
-        //TODO: ********************************************
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
@@ -365,8 +270,13 @@ function loadSeriesIntoViewport(data, templateData) {
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
+            var element = eventData.element;
             var activeViewportIndex = Session.get('activeViewport');
-            var viewportIndex = $(".imageViewerViewport").index(eventData.element);
+            var viewportIndex = $(".imageViewerViewport").index(element);
+
+            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
+            $(element).focus();
+
             if (viewportIndex === activeViewportIndex) {
                 return;
             }
@@ -403,11 +313,13 @@ function loadSeriesIntoViewport(data, templateData) {
         // that is used for updating reference lines, and enable reference lines for this viewport.
         if (OHIF.viewer.refLinesEnabled && imagePlane && imagePlane.frameOfReferenceUID) {
             OHIF.viewer.updateImageSynchronizer.add(element);
-            displayReferenceLines(element);
         }
 
+        // Set the active viewport based on the Session variable
+        // This is done to ensure that the active element has the current
+        // focus, so that keyboard events are triggered.
         if (viewportIndex === Session.get('activeViewport')) {
-            enablePrefetchOnElement(element);
+            setActiveViewport(element);
         }
 
         // Run any renderedCallback that exists in the data context
@@ -428,7 +340,7 @@ function loadSeriesIntoViewport(data, templateData) {
  * @param templateData currentData of Template
  *
  */
-function setSeries(data,seriesInstanceUid, templateData){
+function setSeries(data, seriesInstanceUid, templateData){
     var study = data.study;
     study.seriesList.every(function(series) {
         if (series.seriesInstanceUid === seriesInstanceUid) {
@@ -493,13 +405,11 @@ Meteor.startup(function() {
 });
 
 Template.imageViewerViewport.onRendered(function() {
-
     var templateData = Template.currentData();
     log.info("imageViewerViewport onRendered");
 
     // When the imageViewerViewport template is rendered
     var element = this.find(".imageViewerViewport");
-
 
     // Display the loading indicator for this element
     $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
@@ -507,10 +417,6 @@ Template.imageViewerViewport.onRendered(function() {
     // Get the current active viewport index, if this viewport has the same index,
     // add the CSS 'active' class to highlight this viewport.
     var activeViewport = Session.get('activeViewport');
-    if (activeViewport === this.data.viewportIndex) {
-        $('#imageViewerViewports .viewportContainer').removeClass('active');
-        $(element).parents('.viewportContainer').addClass('active');
-    }
 
     // Create a data object to pass to the series loading function (loadSeriesIntoViewport)
     var data = {
@@ -550,14 +456,13 @@ Template.imageViewerViewport.onRendered(function() {
             }
             sortStudy(study);
             data.study = study;
+
             setSeries(data, seriesInstanceUid, templateData);
-            return;
         });
     }
 
     data.study = study;
     setSeries(data, seriesInstanceUid, templateData);
-
 });
 
 Template.imageViewerViewport.onDestroyed(function() {

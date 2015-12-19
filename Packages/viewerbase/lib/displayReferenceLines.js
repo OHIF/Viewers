@@ -8,6 +8,15 @@
 displayReferenceLines = function(element) {
     log.info("imageViewerViewport displayReferenceLines");
 
+    // Check if image plane (orientation / loction) data is present for the current image
+    var enabledElement = cornerstone.getEnabledElement(element);
+    var imageId = enabledElement.image.imageId;
+    var imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+
+    if (!OHIF.viewer.refLinesEnabled || !imagePlane || !imagePlane.frameOfReferenceUID) {
+        return;
+    }
+
     // Disable reference lines for the current element
     cornerstoneTools.referenceLines.tool.disable(element);
 

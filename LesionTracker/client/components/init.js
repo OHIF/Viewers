@@ -14,9 +14,16 @@ Meteor.startup(function() {
         touch: cornerstoneTools.biDirectionalTouch
     });
 
+    toolManager.addTool('deleteLesionKeyboardTool', {
+        mouse: cornerstoneTools.deleteLesionKeyboardTool,
+        touch: cornerstoneTools.deleteLesionKeyboardTool
+    });
+
     var states = toolManager.getToolDefaultStates();
     states.deactivate.push('lesion');
     states.deactivate.push('nonTarget');
-
+    states.deactivate.push('biDirectional');
+    
+    states.activate.push('deleteLesionKeyboardTool');
     toolManager.setToolDefaultStates(states);
 });

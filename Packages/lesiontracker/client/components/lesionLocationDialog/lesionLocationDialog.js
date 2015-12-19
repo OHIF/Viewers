@@ -23,7 +23,7 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint
-    var lesionNumber = measurementManagerDAL.getNewLesionNumber(measurementData.timepointID, isTarget=true);
+    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointID, isTarget=true);
     measurementData.lesionNumber = lesionNumber;
 
     // Set lesion number
@@ -57,13 +57,13 @@ function getLesionLocationCallback(measurementData, eventData) {
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, stop here because we don't need the dialog.
-    var locationUID = measurementManagerDAL.lesionNumberExists(measurementData);
+    var locationUID = LesionManager.lesionNumberExists(measurementData);
     if (locationUID) {
         // Add an ID value to the tool data to link it to the Measurements collection
         measurementData.id = 'notready';
 
         measurementData.locationUID = locationUID;
-        measurementManagerDAL.updateTimepointData(measurementData);
+        LesionManager.updateLesionData(measurementData);
         closeHandler();
         return;
     }
@@ -90,7 +90,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     dialog.css(dialogProperty);
 }
 
-function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
+changeLesionLocationCallback = function(measurementData, eventData, doneCallback) {
     Template.lesionLocationDialog.measurementData = measurementData;
     Template.lesionLocationDialog.doneCallback = doneCallback;
 
@@ -107,21 +107,22 @@ function changeLesionLocationCallback(measurementData, eventData, doneCallback) 
     });
 
     // Show the lesion location dialog above
-    var dialogProperty =  {
-        top: eventData.currentPoints.page.y - dialog.outerHeight() - 40,
-        left: eventData.currentPoints.page.x - dialog.outerWidth() / 2,
+    var dialogProperty = {
         display: 'block'
     };
 
     // Device is touch device or not
     // If device is touch device, set position center of screen vertically and horizontally
-    if (isTouchDevice()) {
+    if (!eventData || isTouchDevice()) {
         // add dialogMobile class to provide a black,transparent background
         dialog.addClass("dialogMobile");
         dialogProperty.top = 0;
         dialogProperty.left = 0;
         dialogProperty.right = 0;
         dialogProperty.bottom = 0;
+    } else {
+        dialogProperty.top = eventData.currentPoints.page.y - dialog.outerHeight() - 40;
+        dialogProperty.left = eventData.currentPoints.page.x - dialog.outerWidth() / 2;
     }
 
     dialog.css(dialogProperty);
@@ -131,20 +132,24 @@ function changeLesionLocationCallback(measurementData, eventData, doneCallback) 
         return;
     }
 
+    LesionLocations.update({},
+        {$set: {selected: false}},
+        { multi: true });
+
     var currentLocation = LesionLocations.findOne({
         id: measurement.locationId
     });
 
-    LesionLocations.update({},
-        {$set: {selected: false}},
-        { multi: true });
+    if (!currentLocation) {
+        return;
+    }
 
     LesionLocations.update(currentLocation._id, {
         $set: {
             selected: true
         }
     });
-}
+};
 
 var config = {
     setLesionNumberCallback: setLesionNumberCallback,
@@ -189,6 +194,7 @@ Template.lesionLocationDialog.events({
             measurementData.id = 'notready';
 
             // Link locationUID with active lesion measurementData
+            measurementData.location = locationObj.location;
             measurementData.locationId = locationObj.id;
             measurementData.locationUID = id;
 
@@ -196,7 +202,7 @@ Template.lesionLocationDialog.events({
             measurementData.isTarget = true;
 
             // Adds lesion data to timepoints array
-            measurementManagerDAL.addLesionData(measurementData);
+            LesionManager.updateLesionData(measurementData);
         } else {
             Measurements.update(measurementData.id, {
                 $set: {
@@ -219,10 +225,12 @@ Template.lesionLocationDialog.events({
         var doneCallback = Template.lesionLocationDialog.doneCallback;
         var dialog = Template.lesionLocationDialog.dialog;
 
-        if (doneCallback && typeof doneCallback === 'function') {
-            var deleteTool = true;
-            doneCallback(measurementData, deleteTool);
-        }
+        showConfirmDialog(function() {
+            if (doneCallback && typeof doneCallback === 'function') {
+                var deleteTool = true;
+                doneCallback(measurementData, deleteTool);
+            }
+        });
 
         closeHandler(dialog);
     },
