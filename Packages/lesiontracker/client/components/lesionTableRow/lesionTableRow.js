@@ -15,6 +15,12 @@ function doneCallback(measurementData, deleteTool) {
     }
 }
 
+// Delete a lesion if Ctrl+D or DELETE is pressed while a lesion is selected
+var keys = {
+    D: 68,
+    DELETE: 46
+};
+
 Template.lesionTableRow.events({
     'dblclick .location': function() {
         log.info('Double clicked on Lesion Location cell');
@@ -26,16 +32,16 @@ Template.lesionTableRow.events({
 
         changeLesionLocationCallback(measurementData, null, doneCallback);
     },
-    'keypress .location': function(e) {
-        var keyCode = e.keyCode;
+    'keydown .location': function(e) {
+        var keyCode = e.which;
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
-            var currentMeasurement = Template.parentData(1);
-            var currentTimepointID = this.timepointID;
+            var currentMeasurement = this;
 
             showConfirmDialog(function() {
-                log.info('Removing Lesion: ' + currentMeasurement._id);
-                clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
+                Meteor.call("removeMeasurement", currentMeasurement._id, function(error, response) {
+                    console.log('Removed!');
+                });
             });
         }
     }

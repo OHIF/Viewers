@@ -70,21 +70,22 @@ Template.lesionTableTimepointCell.events({
 
         if (currentMeasurement.isTarget) {
             showConfirmDialog(function() {
-                log.info('Confirm clicked!');
                 clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
             });
         } else {
             changeNonTargetResponse(measurementData, null, doneCallback);
         }
     },
-    'keypress .lesionTableTimepointCell': function(e) {
-        var keyCode = e.keyCode;
+    'keydown .lesionTableTimepointCell': function(e) {
+        var keyCode = e.which;
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
             var currentMeasurement = Template.parentData(1);
-            log.info('Removing Lesion: ' + currentMeasurement._id);
-            // TODO = Add confirm dialog first!
-            clearMeasurementTimepointData(currentMeasurement._id, this.timepointID);
+            var currentTimepointID = this.timepointID;
+
+            showConfirmDialog(function() {
+                clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
+            });
         }
     }
 });

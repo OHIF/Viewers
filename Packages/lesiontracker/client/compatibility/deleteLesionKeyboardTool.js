@@ -70,7 +70,7 @@
     }
 
     function keyDownCallback(e, eventData) {
-        var keyCode = eventData.keyCode;
+        var keyCode = eventData.which;
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
