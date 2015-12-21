@@ -34,15 +34,22 @@ Template.lesionTableRow.events({
     },
     'keydown .location': function(e) {
         var keyCode = e.which;
+
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
             var currentMeasurement = this;
+            var options = {
+                keyPressAllowed: false
+            };
 
             showConfirmDialog(function() {
                 Meteor.call("removeMeasurement", currentMeasurement._id, function(error, response) {
-                    console.log('Removed!');
+                    if (error) {
+                        log.warn(error);
+                    }
+                    log.info(response);
                 });
-            });
+            }, options);
         }
     }
 });

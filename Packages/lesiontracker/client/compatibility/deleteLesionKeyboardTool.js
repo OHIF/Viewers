@@ -22,6 +22,7 @@
         });
     }
 
+    // TODO = Check if we have the same function already in Cornerstone Tools
     function getNearbyToolData(element, coords, toolTypes) {
         var allTools = toolManager.getTools();
         var pointNearTool = false;
@@ -77,11 +78,17 @@
             var toolTypes = ["lesion", "nonTarget"];
             var nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
 
-            if (nearbyToolData) {
-                removeMeasurementTimepoint(nearbyToolData.nearbyTool,
-                                           nearbyToolData.nearbyToolIndex,
-                                           nearbyToolData.nearbyToolType);
+            if (!nearbyToolData) {
+                return;
             }
+
+            // TODO= Refactor this so the confirmation dialog is an
+            // optional settable callback in the tool's configuration
+            showConfirmDialog(function() {
+                removeMeasurementTimepoint(nearbyToolData.nearbyTool,
+                    nearbyToolData.nearbyToolIndex,
+                    nearbyToolData.nearbyToolType);
+            });
         }
     }
 

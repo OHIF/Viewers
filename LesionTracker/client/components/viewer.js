@@ -44,7 +44,7 @@ Template.viewer.onCreated(function() {
         },
         nonTarget: function() {
             toolManager.setActiveTool("nonTarget");
-        },
+        }
     };
 
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])

@@ -37,7 +37,7 @@ var LesionManager = (function() {
 
         // Find the specific lesion to be updated
         var existingMeasurement;
-        if (lesionData.id) {
+        if (lesionData.id && lesionData.id !== 'notready') {
             existingMeasurement = Measurements.findOne(lesionData.id);
         } else {
             existingMeasurement = Measurements.findOne({
