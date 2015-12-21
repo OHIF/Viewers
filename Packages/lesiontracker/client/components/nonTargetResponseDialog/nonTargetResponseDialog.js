@@ -44,6 +44,14 @@ changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
     } else {
         dialogProperty.top = eventData.currentPoints.page.y - dialog.outerHeight() - 40;
         dialogProperty.left = eventData.currentPoints.page.x - dialog.outerWidth() / 2;
+
+        var pageHeight = $(window).height();
+        dialogProperty.top = Math.max(dialogProperty.top, 0);
+        dialogProperty.top = Math.min(dialogProperty.top, pageHeight - dialog.outerHeight());
+
+        var pageWidth = $(window).width();
+        dialogProperty.left = Math.max(dialogProperty.left, 0);
+        dialogProperty.left = Math.min(dialogProperty.left, pageWidth - dialog.outerWidth());
     }
 
     dialog.css(dialogProperty);
