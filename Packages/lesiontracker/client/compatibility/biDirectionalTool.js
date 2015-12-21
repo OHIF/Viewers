@@ -37,7 +37,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var element = mouseEventData.element;
 
         function doneCallback(lesionNumber) {
-            measurementData.lesionName = "Bi-Directional " + lesionNumber;
+            measurementData.lesionName = "Target " + lesionNumber;
             measurementData.lesionNumber = lesionNumber;
             measurementData.active = false;
             cornerstone.updateImage(element);
@@ -148,7 +148,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: false,
-                    drawnIndependently: false,
+                    drawnIndependently: true,
                     index: 0
                 },
                 end: {
@@ -156,7 +156,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: true,
-                    drawnIndependently: false,
+                    drawnIndependently: true,
                     index: 1
                 },
                 textBox: {
@@ -175,7 +175,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     highlight: true,
                     active: false,
                     locked: true, // If perpendicular line is connected to long-line
-                    drawnIndependently: false,
+                    drawnIndependently: true,
                     index: 2
                 },
 
@@ -184,7 +184,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: false,
-                    drawnIndependently: false,
+                    drawnIndependently: true,
                     index: 3
                 }
 
@@ -194,8 +194,9 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             studyInstanceUid: studyInstanceUid,
             patientId: patientId,
             measurementText: 0,
+            widthMeasurement: 0,
             perpendicularMeasurement: 0,
-            lesionName: 'Bi-Directional',
+            lesionName: 'Target',
             isDeleted: false,
             isTarget: true,
             uid: uuid.v4()
@@ -498,6 +499,16 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
     }
 
+    // Sets drawnIndependently property of control points(handles)
+    function setControlPoints(handles, value) {
+        Object.keys(handles).forEach(function(name) {
+            if(name !== "textBox") {
+                var handle = handles[name];
+                handle.drawnIndependently = value;
+            }
+        });
+    }
+
     //****************************************/
     // Cornerstone Methods
     //****************************************/
@@ -586,12 +597,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 data.active = !data.active;
 
                 // Set handles visibility
-                Object.keys(data.handles).forEach(function(name) {
-                    if(name !== "textBox") {
-                        var handle = data.handles[name];
-                        handle.drawnIndependently = !data.active;
-                    }
-                });
+                setControlPoints(data.handles, !data.active);
                 imageNeedsUpdate = true;
             }
         }
@@ -629,11 +635,14 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             if (toolData) {
                 for (i = 0; i < toolData.data.length; i++) {
                     data = toolData.data[i];
+                    // Hide control points
+                    setControlPoints(data.handles, true);
                     var distanceSq = 25;
                     var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
                     if (handle) {
                         $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                         data.active = true;
+
                         moveHandle(eventData, toolType, data, handle, handleDoneMove);
                         e.stopImmediatePropagation();
                         return false;
@@ -831,8 +840,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 suffix = ' pixels';
             }
 
-            var lengthText = ' L ' + length.toFixed(2) + suffix;
-            var widthText =  ' W ' + width.toFixed(2) + suffix;
+            var lengthText = ' L ' + length.toFixed(1) + suffix;
+            var widthText =  ' W ' + width.toFixed(1) + suffix;
             var textLines = [data.lesionName, lengthText, widthText];
 
             var boundingBox = cornerstoneTools.drawTextBox(context,
@@ -843,6 +852,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
             // Set measurement text to show lesion table
             data.measurementText = length.toFixed(1);
+            data.widthMeasurement = width.toFixed(1);
 
             context.restore();
         }
