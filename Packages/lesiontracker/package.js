@@ -22,7 +22,6 @@ Package.onUse(function (api) {
 
     api.addFiles('client/compatibility/lesionTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/nonTargetTool.js', 'client', {bare: true});
-    api.addFiles('client/compatibility/biDirectionalTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/LesionManager.js', 'client', {bare: true});
 

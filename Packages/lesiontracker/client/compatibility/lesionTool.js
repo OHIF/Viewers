@@ -22,11 +22,11 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getLesionLocationCallback(measurementData, eventData, doneCallback) {
-        doneCallback(prompt('Enter your lesion location:'));
+        //doneCallback(prompt('Enter your lesion location:'));
     }
 
     function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
-        doneCallback(prompt('Change your lesion location:'));
+        //doneCallback(prompt('Change your lesion location:'));
     }
 
     var toolType = "lesion";
@@ -52,11 +52,11 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(element, toolType, measurementData);
-       
+
         // since we are dragging to another place to drop the end point, we can just activate
         // the end point and let the moveHandle move it for us.
-        $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.lesion.mouseMoveCallback);
-        $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.lesion.mouseDownCallback);
+        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+        $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.lesion.mouseDownActivateCallback);
 
         // Set lesion number and lesion name
@@ -65,6 +65,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         }
 
         cornerstone.updateImage(element);
+
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
             if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
@@ -74,10 +75,15 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                 config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
             }
 
-            $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.lesion.mouseMoveCallback);
-            $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.lesion.mouseDownCallback);
+            // perpendicular line is not connected to long-line
+            measurementData.handles.perpendicularStart.locked = false;
+
+            $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+            $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.lesion.mouseDownActivateCallback);
             cornerstone.updateImage(element);
+
+            //updateLesionCollection(measurementData);
         });
     }
 
@@ -85,7 +91,7 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         var element = touchEventData.element;
 
         function doneCallback(lesionNumber) {
-            measurementData.lesionName = "Target " + lesionNumber;
+            measurementData.lesionName = "Bi-Directional " + lesionNumber;
             measurementData.lesionNumber = lesionNumber;
             measurementData.active = false;
             cornerstone.updateImage(element);
@@ -110,8 +116,11 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             } else {
                 // Set lesionMeasurementData Session
                 var config = cornerstoneTools.lesion.getConfiguration();
-                config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
+                //config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
             }
+
+            // perpendicular line is not connected to long-line
+            measurementData.handles.perpendicularStart.locked = false;
 
             $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.lesion.touchMoveHandle);
             $(element).on('CornerstoneToolsTap', cornerstoneTools.lesion.tapCallback);
@@ -141,30 +150,56 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
                     x: mouseEventData.currentPoints.image.x,
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
-                    active: false
+                    active: false,
+                    drawnIndependently: true,
+                    index: 0
                 },
                 end: {
                     x: mouseEventData.currentPoints.image.x,
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
-                    active: true
+                    active: true,
+                    drawnIndependently: true,
+                    index: 1
                 },
                 textBox: {
                     x: mouseEventData.currentPoints.image.x - 50,
-                    y: mouseEventData.currentPoints.image.y - 50,
+                    y: mouseEventData.currentPoints.image.y - 70,
                     pointNearHandle: pointNearTextBox,
                     active: false,
                     movesIndependently: true,
                     drawnIndependently: true,
                     allowedOutsideImage: true
+                },
+
+                perpendicularStart: {
+                    x: mouseEventData.currentPoints.image.x,
+                    y: mouseEventData.currentPoints.image.y,
+                    highlight: true,
+                    active: false,
+                    locked: true, // If perpendicular line is connected to long-line
+                    drawnIndependently: true,
+                    index: 2
+                },
+
+                perpendicularEnd: {
+                    x: mouseEventData.currentPoints.image.x,
+                    y: mouseEventData.currentPoints.image.y,
+                    highlight: true,
+                    active: false,
+                    drawnIndependently: true,
+                    index: 3
                 }
+
             },
             imageId: imageId,
             seriesInstanceUid: seriesInstanceUid,
             studyInstanceUid: studyInstanceUid,
             patientId: patientId,
             measurementText: 0,
-            lesionName: '',
+            widthMeasurement: 0,
+            perpendicularMeasurement: 0,
+            lesionName: 'Target',
             isDeleted: false,
             isTarget: true,
             uid: uuid.v4()
@@ -179,8 +214,12 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             end: cornerstone.pixelToCanvas(element, data.handles.end)
         };
         var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
-        
+
         if (pointNearTextBox(element, data.handles.textBox, coords)) {
+            return true;
+        }
+
+        if (pointNearPerpendicular(element, data.handles, coords)) {
             return true;
         }
 
@@ -192,6 +231,535 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             return;
         }
         return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
+    }
+
+    function pointNearPerpendicular(element, handles, coords) {
+        var lineSegment = {
+            start: cornerstone.pixelToCanvas(element, handles.perpendicularStart),
+            end: cornerstone.pixelToCanvas(element, handles.perpendicularEnd)
+        };
+        var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
+        return (distanceToPoint < 25);
+    }
+
+    // Move long-axis start point
+    function perpendicularBothFixedLeft(eventData, data) {
+
+        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+
+        var distanceFromPerpendicularP1 = getDistance(data.handles.perpendicularStart, intersection);
+        var distanceFromPerpendicularP2 = getDistance(data.handles.perpendicularEnd, intersection);
+
+        var distanceToLineP2 = getDistance(data.handles.end, intersection);
+        var newLineLength = getDistance(data.handles.end, eventData.currentPoints.image);
+
+        if(newLineLength <= distanceToLineP2) {
+            return false;
+        }
+
+        var dx = (data.handles.end.x - eventData.currentPoints.image.x) / newLineLength;
+        var dy = (data.handles.end.y - eventData.currentPoints.image.y) / newLineLength;
+
+        var k = distanceToLineP2 / newLineLength;
+
+        var newIntersection = { x: data.handles.end.x + ((eventData.currentPoints.image.x - data.handles.end.x) * k), y: data.handles.end.y + ((eventData.currentPoints.image.y - data.handles.end.y) * k)};
+
+        data.handles.perpendicularStart.x = newIntersection.x - distanceFromPerpendicularP1 * dy;
+        data.handles.perpendicularStart.y = newIntersection.y + distanceFromPerpendicularP1 * dx;
+
+        data.handles.perpendicularEnd.x = newIntersection.x + distanceFromPerpendicularP2 * dy;
+        data.handles.perpendicularEnd.y = newIntersection.y - distanceFromPerpendicularP2 * dx;
+
+        return true;
+
+    }
+
+    // Move long-axis end point
+    function perpendicularBothFixedRight(eventData, data) {
+
+        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+
+        var distanceFromPerpendicularP1 = getDistance(data.handles.perpendicularStart, intersection);
+        var distanceFromPerpendicularP2 = getDistance(data.handles.perpendicularEnd, intersection);
+
+        var distanceToLineP2 = getDistance(data.handles.start, intersection);
+        var newLineLength = getDistance(data.handles.start, eventData.currentPoints.image);
+
+        if(newLineLength <= distanceToLineP2) {
+            return false;
+        }
+
+        var dx = (data.handles.start.x - eventData.currentPoints.image.x) / newLineLength;
+        var dy = (data.handles.start.y - eventData.currentPoints.image.y) / newLineLength;
+
+        var k = distanceToLineP2 / newLineLength;
+
+        var newIntersection = { x: data.handles.start.x + ((eventData.currentPoints.image.x - data.handles.start.x) * k), y: data.handles.start.y + ((eventData.currentPoints.image.y - data.handles.start.y) * k)};
+
+        data.handles.perpendicularStart.x = newIntersection.x + distanceFromPerpendicularP1 * dy;
+        data.handles.perpendicularStart.y = newIntersection.y - distanceFromPerpendicularP1 * dx;
+
+        data.handles.perpendicularEnd.x = newIntersection.x - distanceFromPerpendicularP2 * dy;
+        data.handles.perpendicularEnd.y = newIntersection.y + distanceFromPerpendicularP2 * dx;
+
+        return true;
+
+    }
+
+    // Move perpendicular line start point
+    function perpendicularLeftFixedPoint(eventData, data) {
+        var fudgeFactor = 1;
+
+        var fixedPoint = data.handles.perpendicularEnd;
+        var movedPoint = eventData.currentPoints.image;
+
+        var nearestFromFixed = getDistanceFromPointToLine(fixedPoint, data.handles.start, data.handles.end);
+        var distanceFromFixed = nearestFromFixed.distance;
+        var nearestFromMoved = getDistanceFromPointToLine(movedPoint, data.handles.start, data.handles.end);
+        var distanceFromMoved = nearestFromMoved.distance;
+
+        var distanceBetweenPoints = getDistance(fixedPoint, movedPoint);
+
+        var total = distanceFromFixed + distanceFromMoved;
+
+        if (distanceBetweenPoints <= distanceFromFixed) {
+            return false;
+        }
+
+        var length = getDistance(data.handles.start, data.handles.end);
+        var dx = (data.handles.start.x - data.handles.end.x) / length;
+        var dy = (data.handles.start.y - data.handles.end.y) / length;
+
+        var adjustedLineP1 = {x: data.handles.start.x - fudgeFactor * dx, y: data.handles.start.y - fudgeFactor * dy};
+        var adjustedLineP2 = {x: data.handles.end.x + fudgeFactor * dx, y: data.handles.end.y + fudgeFactor * dy};
+
+        data.handles.perpendicularStart.x = movedPoint.x;
+        data.handles.perpendicularStart.y = movedPoint.y;
+        data.handles.perpendicularEnd.x = movedPoint.x - total * dy;
+        data.handles.perpendicularEnd.y = movedPoint.y + total * dx;
+
+        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+        if (!intersection.intersected) {
+            if (getDistance(movedPoint, data.handles.start) > getDistance(movedPoint, data.handles.end) ) {
+                data.handles.perpendicularStart.x = adjustedLineP2.x + distanceFromMoved * dy;
+                data.handles.perpendicularStart.y = adjustedLineP2.y - distanceFromMoved * dx;
+                data.handles.perpendicularEnd.x = data.handles.perpendicularStart.x - total * dy;
+                data.handles.perpendicularEnd.y = data.handles.perpendicularStart.y + total * dx;
+
+                return true;
+
+            } else {
+                data.handles.perpendicularStart.x = adjustedLineP1.x + distanceFromMoved * dy;
+                data.handles.perpendicularStart.y = adjustedLineP1.y - distanceFromMoved * dx;
+                data.handles.perpendicularEnd.x = data.handles.perpendicularStart.x - total * dy;
+                data.handles.perpendicularEnd.y = data.handles.perpendicularStart.y + total * dx;
+
+                return true;
+            }
+
+        }
+
+        return true;
+    }
+
+    // Move perpendicular line end point
+    function perpendicularRightFixedPoint(eventData, data) {
+        var fudgeFactor = 1;
+
+        var fixedPoint = data.handles.perpendicularStart;
+        var movedPoint = eventData.currentPoints.image;
+
+        var nearestFromFixed = getDistanceFromPointToLine(fixedPoint, data.handles.start, data.handles.end);
+        var distanceFromFixed = nearestFromFixed.distance;
+        var nearestFromMoved = getDistanceFromPointToLine(movedPoint, data.handles.start, data.handles.end);
+        var distanceFromMoved = nearestFromMoved.distance;
+
+        var distanceBetweenPoints = getDistance(fixedPoint, movedPoint);
+
+        var total = distanceFromFixed + distanceFromMoved;
+
+        if (distanceBetweenPoints <= distanceFromFixed) {
+            return false;
+        }
+
+        var length = getDistance(data.handles.start, data.handles.end);
+        var dx = (data.handles.start.x - data.handles.end.x) / length;
+        var dy = (data.handles.start.y - data.handles.end.y) / length;
+
+        var adjustedLineP1 = {x: data.handles.start.x - fudgeFactor * dx, y: data.handles.start.y - fudgeFactor * dy};
+        var adjustedLineP2 = {x: data.handles.end.x + fudgeFactor * dx, y: data.handles.end.y + fudgeFactor * dy};
+
+        data.handles.perpendicularStart.x = movedPoint.x + total * dy;
+        data.handles.perpendicularStart.y = movedPoint.y - total * dx;
+        data.handles.perpendicularEnd.x = movedPoint.x;
+        data.handles.perpendicularEnd.y = movedPoint.y;
+
+        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+        if (!intersection.intersected) {
+            if (getDistance(movedPoint, data.handles.start) > getDistance(movedPoint, data.handles.end) ) {
+                data.handles.perpendicularEnd.x = adjustedLineP2.x - distanceFromMoved * dy;
+                data.handles.perpendicularEnd.y = adjustedLineP2.y + distanceFromMoved * dx;
+                data.handles.perpendicularStart.x = data.handles.perpendicularEnd.x + total * dy;
+                data.handles.perpendicularStart.y = data.handles.perpendicularEnd.y - total * dx;
+
+                return true;
+
+            } else {
+                data.handles.perpendicularEnd.x = adjustedLineP1.x - distanceFromMoved * dy;
+                data.handles.perpendicularEnd.y = adjustedLineP1.y + distanceFromMoved * dx;
+                data.handles.perpendicularStart.x = data.handles.perpendicularEnd.x + total * dy;
+                data.handles.perpendicularStart.y = data.handles.perpendicularEnd.y - total * dx;
+
+                return true;
+            }
+
+        }
+
+        return true;
+    }
+
+    // Sets position of handles(start, end, perpendicularStart, perpendicularEnd)
+    function setHandlesPosition (handle, eventData, data) {
+
+        if (handle.index === 0) {
+            // if long-axis start point is moved
+            var result = perpendicularBothFixedLeft(eventData, data);
+            if(result) {
+                handle.x = eventData.currentPoints.image.x;
+                handle.y = eventData.currentPoints.image.y;
+            } else {
+                eventData.currentPoints.image.x = handle.x;
+                eventData.currentPoints.image.y = handle.y;
+            }
+
+        } else if(handle.index === 1) {
+            // if long-axis end point is moved
+            var result = perpendicularBothFixedRight(eventData, data);
+            if(result) {
+                handle.x = eventData.currentPoints.image.x;
+                handle.y = eventData.currentPoints.image.y;
+            } else {
+                eventData.currentPoints.image.x = handle.x;
+                eventData.currentPoints.image.y = handle.y;
+            }
+
+        } else if(handle.index === 2) {
+            var outOfBounce = false;
+            // if perpendicular start point is moved
+
+            var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, eventData.currentPoints.image);
+            if (!intersection.intersected) {
+                intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
+
+                var d1 = getDistance(intersection, data.handles.start);
+                var d2 = getDistance(intersection, data.handles.end);
+
+                if (!intersection.intersected || d1 < 3 || d2 < 3) {
+                    outOfBounce = true;
+                }
+            }
+
+            var movedPoint = false;
+
+            if (!outOfBounce) {
+                movedPoint = perpendicularLeftFixedPoint(eventData, data);
+
+                if (!movedPoint) {
+                    eventData.currentPoints.image.x = data.handles.perpendicularStart.x;
+                    eventData.currentPoints.image.y = data.handles.perpendicularStart.y;
+                }
+            }
+
+        } else if(handle.index === 3) {
+
+            var outOfBounce = false;
+            // if perpendicular end point is moved
+
+            var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, eventData.currentPoints.image);
+            if (!intersection.intersected) {
+                intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
+
+                var d1 = getDistance(intersection, data.handles.start);
+                var d2 = getDistance(intersection, data.handles.end);
+
+                if (!intersection.intersected || d1 < 3 || d2 < 3) {
+                    outOfBounce = true;
+                }
+            }
+
+            var movedPoint = false;
+
+            if (!outOfBounce) {
+                movedPoint = perpendicularRightFixedPoint(eventData, data);
+
+                if (!movedPoint) {
+                    eventData.currentPoints.image.x = data.handles.perpendicularEnd.x;
+                    eventData.currentPoints.image.y = data.handles.perpendicularEnd.y;
+                }
+            }
+
+        }
+
+    }
+
+    // Sets drawnIndependently property of control points(handles)
+    function setControlPoints(handles, value) {
+        Object.keys(handles).forEach(function(name) {
+            if(name !== "textBox") {
+                var handle = handles[name];
+                handle.drawnIndependently = value;
+            }
+        });
+    }
+
+    //****************************************/
+    // Cornerstone Methods
+    //****************************************/
+
+    function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
+        var element = mouseEventData.element;
+        var distanceFromTool = {
+            x: handle.x - mouseEventData.currentPoints.image.x,
+            y: handle.y - mouseEventData.currentPoints.image.y
+        };
+
+        function mouseDragCallback(e, eventData) {
+            handle.active = true;
+
+            if (handle.index === undefined || handle.index === null) {
+                handle.x = eventData.currentPoints.image.x + distanceFromTool.x;
+                handle.y = eventData.currentPoints.image.y + distanceFromTool.y;
+            } else {
+                setHandlesPosition(handle, eventData, data);
+            }
+
+            if (preventHandleOutsideImage) {
+                handle.x = Math.max(handle.x, 0);
+                handle.x = Math.min(handle.x, eventData.image.width);
+
+                handle.y = Math.max(handle.y, 0);
+                handle.y = Math.min(handle.y, eventData.image.height);
+            }
+
+            cornerstone.updateImage(element);
+
+            var eventType = 'CornerstoneToolsMeasurementModified';
+            var modifiedEventData = {
+                toolType: toolType,
+                element: element,
+                measurementData: data
+            };
+            $(element).trigger(eventType, modifiedEventData);
+        }
+
+        $(element).on('CornerstoneToolsMouseDrag', mouseDragCallback);
+
+        function mouseUpCallback() {
+            handle.active = false;
+            $(element).off('CornerstoneToolsMouseDrag', mouseDragCallback);
+            $(element).off('CornerstoneToolsMouseUp', mouseUpCallback);
+            $(element).off('CornerstoneToolsMouseClick', mouseUpCallback);
+            cornerstone.updateImage(element);
+
+            if (typeof doneMovingCallback === 'function') {
+                doneMovingCallback();
+            }
+        }
+
+        $(element).on('CornerstoneToolsMouseUp', mouseUpCallback);
+        $(element).on('CornerstoneToolsMouseClick', mouseUpCallback);
+    }
+
+    // mouseMoveCallback is used to hide handles when mouse is away
+    function mouseMoveCallback(e, eventData) {
+        cornerstoneTools.toolCoordinates.setCoords(eventData);
+        // if a mouse button is down, do nothing
+        if (eventData.which !== 0) {
+            return;
+        }
+
+        // if we have no tool data for this element, do nothing
+        var toolData = cornerstoneTools.getToolState(eventData.element, toolType);
+        if (!toolData) {
+            return;
+        }
+
+        // We have tool data, search through all data
+        // and see if we can activate a handle
+        var imageNeedsUpdate = false;
+        for (var i = 0; i < toolData.data.length; i++) {
+            // get the cursor position in canvas coordinates
+            var coords = eventData.currentPoints.canvas;
+
+            var data = toolData.data[i];
+            if (cornerstoneTools.handleActivator(eventData.element, data.handles, coords) === true) {
+                imageNeedsUpdate = true;
+            }
+
+            if ((pointNearTool(eventData.element, data, coords) && !data.active) || (!pointNearTool(eventData.element, data, coords) && data.active)) {
+                data.active = !data.active;
+
+                // Set handles visibility
+                setControlPoints(data.handles, !data.active);
+                imageNeedsUpdate = true;
+            }
+        }
+
+        // Handle activation status changed, redraw the image
+        if (imageNeedsUpdate === true) {
+            cornerstone.updateImage(eventData.element);
+        }
+    }
+
+    // mouseDowCallback is used to restrict behaviour of perpendicular-line
+    function mouseDownCallback(e, eventData) {
+        var data;
+        var element = eventData.element;
+
+        function handleDoneMove() {
+            data.active = false;
+            data.invalidated = true;
+            if (cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
+                // delete the measurement
+                cornerstoneTools.removeToolState(element, toolType, data);
+            }
+
+            cornerstone.updateImage(element);
+            $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+        }
+
+        if (cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
+            var coords = eventData.startPoints.canvas;
+            var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
+
+            var i;
+
+            // now check to see if there is a handle we can move
+            if (toolData) {
+                for (i = 0; i < toolData.data.length; i++) {
+                    data = toolData.data[i];
+                    // Hide control points
+                    setControlPoints(data.handles, true);
+                    var distanceSq = 25;
+                    var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
+                    if (handle) {
+                        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                        data.active = true;
+
+                        moveHandle(eventData, toolType, data, handle, handleDoneMove);
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+            }
+
+            // Now check to see if there is a line we can move
+            // now check to see if we have a tool that we can move
+            if (toolData && pointNearTool) {
+                var options = {
+                    deleteIfHandleOutsideImage: true,
+                    preventHandleOutsideImage: false
+                };
+
+                for (i = 0; i < toolData.data.length; i++) {
+                    data = toolData.data[i];
+                    if (pointNearTool(element, data, coords)) {
+                        $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                        cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, handleDoneMove);
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    //****************************************/
+    // Cornerstone Methods end
+    //****************************************/
+
+    // draw perpendicular line
+    function drawPerpendicularLine(context, eventData,element, data, color, lineWidth) {
+
+        // mid point of long-axis line
+        var mid = {
+            x: (data.handles.start.x + data.handles.end.x) / 2,
+            y: (data.handles.start.y + data.handles.end.y) / 2
+        };
+
+        // Length of long-axis
+        var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
+        var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
+        var length = Math.sqrt(dx * dx + dy * dy);
+
+        var vectorX = (data.handles.start.x - data.handles.end.x) / length;
+        var vectorY = (data.handles.start.y - data.handles.end.y) / length;
+
+        var perpendicularLineLength = length / 2;
+
+        var startX = mid.x + (perpendicularLineLength / 2) * vectorY;
+        var startY = mid.y - (perpendicularLineLength / 2) * vectorX;
+        var endX = mid.x - (perpendicularLineLength / 2) * vectorY;
+        var endY = mid.y + (perpendicularLineLength / 2) * vectorX;
+
+        if (data.handles.perpendicularStart.locked) {
+            data.handles.perpendicularStart.x = startX;
+            data.handles.perpendicularStart.y = startY;
+            data.handles.perpendicularEnd.x = endX;
+            data.handles.perpendicularEnd.y = endY;
+        }
+
+        // Draw perpendicular line
+        var perpendicularStartCanvas  = cornerstone.pixelToCanvas(element, data.handles.perpendicularStart);
+        var perpendicularEndCanvas  = cornerstone.pixelToCanvas(element, data.handles.perpendicularEnd);
+        context.beginPath();
+        context.strokeStyle = color;
+        context.lineWidth = lineWidth;
+        context.moveTo(perpendicularStartCanvas.x, perpendicularStartCanvas.y);
+        context.lineTo(perpendicularEndCanvas.x, perpendicularEndCanvas.y);
+        context.stroke();
+
+    }
+
+
+    function findDottedLinePosition(data) {
+
+        var distancesArr = [];
+        var minDistance;
+
+        // Find distances between handles and textBox
+        var distanceToStart = getDistance(data.handles.start, data.handles.textBox);
+        distancesArr.push({distance: distanceToStart, point: data.handles.start});
+        minDistance = distanceToStart;
+
+        var distanceToEnd = getDistance(data.handles.end, data.handles.textBox);
+        distancesArr.push({distance: distanceToEnd, point: data.handles.end});
+        if(distanceToEnd < minDistance) {
+            minDistance = distanceToEnd;
+        }
+
+        if(data.handles.perpendicularStart.x && data.handles.perpendicularStart.y) {
+            var distanceToPerpendicularStart = getDistance(data.handles.perpendicularStart, data.handles.textBox);
+            distancesArr.push({distance: distanceToPerpendicularStart, point: data.handles.perpendicularStart});
+            if(distanceToPerpendicularStart < minDistance) {
+                minDistance = distanceToPerpendicularStart;
+            }
+
+        }
+
+        if(data.handles.perpendicularEnd.x && data.handles.perpendicularEnd.y) {
+            var distanceToPerpendicularEnd = getDistance(data.handles.perpendicularEnd, data.handles.textBox);
+            distancesArr.push({distance: distanceToPerpendicularEnd, point: data.handles.perpendicularEnd});
+            if(distanceToPerpendicularEnd < minDistance) {
+                minDistance = distanceToPerpendicularEnd;
+            }
+        }
+        for(var i=0; i< distancesArr.length; i++) {
+            var obj = distancesArr[i];
+            if (obj.distance === minDistance) {
+                return obj.point;
+            }
+        }
     }
 
     ///////// BEGIN IMAGE RENDERING ///////
@@ -241,6 +809,9 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             context.lineTo(handleEndCanvas.x, handleEndCanvas.y);
             context.stroke();
 
+            // Draw perpendicular line
+            drawPerpendicularLine(context,eventData, element, data, color, lineWidth);
+
             // draw the handles
             cornerstoneTools.drawHandles(context, eventData, data.handles, color);
 
@@ -250,27 +821,31 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             context.lineWidth = lineWidth;
             context.setLineDash([2, 3]);
 
-            var mid = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2
-            };
-
-            context.moveTo(mid.x, mid.y);
-            context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
+            // Set position of text
+            var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, findDottedLinePosition(data));
+            context.moveTo(perpendicularStartCanvas.x, perpendicularStartCanvas.y);
+            context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 40);
             context.stroke();
 
-            // Draw the text
+            // Draw the Length text
             var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
             var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
             var length = Math.sqrt(dx * dx + dy * dy);
+
+            // Draw the Length text
+            var wx = (data.handles.perpendicularStart.x - data.handles.perpendicularEnd.x) * (eventData.image.columnPixelSpacing || 1);
+            var wy = (data.handles.perpendicularStart.y - data.handles.perpendicularEnd.y) * (eventData.image.rowPixelSpacing || 1);
+            var width = Math.sqrt(wx * wx + wy * wy);
+
 
             var suffix = ' mm';
             if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
                 suffix = ' pixels';
             }
 
-            var text = '' + length.toFixed(2) + suffix;
-            var textLines = [data.lesionName, text];
+            var lengthText = ' L ' + length.toFixed(1) + suffix;
+            var widthText =  ' W ' + width.toFixed(1) + suffix;
+            var textLines = [data.lesionName, lengthText, widthText];
 
             var boundingBox = cornerstoneTools.drawTextBox(context,
                 textLines,
@@ -280,8 +855,21 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
 
             // Set measurement text to show lesion table
             data.measurementText = length.toFixed(1);
+            data.widthMeasurement = width.toFixed(1);
 
             context.restore();
+        }
+    }
+
+    function updateLesionCollection(lesionData) {
+        // TODO = Remove this in favour of measurement events
+        if (!lesionData.active) {
+            return;
+        }
+
+        if (lesionData.timepointID && lesionData.timepointID !== "") {
+            // Update Measurements Collection
+            LesionManager.updateLesionData(lesionData);
         }
     }
 
@@ -296,7 +884,16 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
             if (deleteTool === true) {
                 cornerstoneTools.removeToolState(element, toolType, data);
                 cornerstone.updateImage(element);
+                //return;
             }
+
+            /*// TODO= Find a better way to do this! This is very messy
+             config.setLesionNumberCallback(data, eventData, function(lesionNumber) {
+             data.lesionName = "Target " + lesionNumber;
+             data.lesionNumber = lesionNumber;
+             data.active = false;
+             cornerstone.updateImage(element);
+             });*/
         }
 
         if (e.data && e.data.mouseButtonMask && !cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
@@ -336,6 +933,8 @@ var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneToo
         onImageRendered: onImageRendered,
         pointNearTool: pointNearTool,
         mouseDoubleClickCallback: doubleClickCallback,
+        mouseDownCallback: mouseDownCallback,
+        mouseMoveCallback: mouseMoveCallback,
         toolType: toolType
     });
 

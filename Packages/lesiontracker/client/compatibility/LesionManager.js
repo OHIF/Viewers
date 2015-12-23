@@ -57,6 +57,7 @@ var LesionManager = (function() {
 
         if (lesionData.isTarget === true) {
             // TODO = Add short axis
+            timepointData.shortestDiameter = lesionData.widthMeasurement;
             timepointData.longestDiameter = lesionData.measurementText;
         } else {
             timepointData.response = lesionData.response;

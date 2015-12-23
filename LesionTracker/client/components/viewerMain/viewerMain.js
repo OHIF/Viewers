@@ -67,14 +67,6 @@ Template.viewerMain.helpers({
             iconClasses: 'fa fa-eye'
         });
 
-        buttonData.push({
-            id: 'biDirectional',
-            title: 'Bi-Directional Tool',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows-alt'
-        });
-
-
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;
