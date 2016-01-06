@@ -9,6 +9,10 @@ Meteor.startup(function() {
         touch: cornerstoneTools.nonTargetTouch
     });
 
+    toolManager.addTool('scaleOverlayTool', {
+        mouse: cornerstoneTools.scaleOverlayTool
+    });
+
     toolManager.addTool('deleteLesionKeyboardTool', {
         mouse: cornerstoneTools.deleteLesionKeyboardTool,
         touch: cornerstoneTools.deleteLesionKeyboardTool

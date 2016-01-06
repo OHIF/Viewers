@@ -22,6 +22,7 @@ Package.onUse(function (api) {
 
     api.addFiles('client/compatibility/lesionTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/nonTargetTool.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/scaleOverlayTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {bare: true});
     api.addFiles('client/compatibility/LesionManager.js', 'client', {bare: true});
 
@@ -83,7 +84,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/mathUtils.js', 'client');
 
 
-    // Export lesionTable function for activate measurements
+    // Export gloabal functions
     api.export('activateLesion','client');
     api.export('activateMeasurements','client');
     api.export('deactivateAllToolData','client');

@@ -16,6 +16,8 @@ Template.viewer.onCreated(function() {
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.isPlaying = {};
+    var contentId = this.data.contentId;
+
 
     OHIF.viewer.functionList = {
         invert: function(element) {
@@ -44,6 +46,22 @@ Template.viewer.onCreated(function() {
         },
         nonTarget: function() {
             toolManager.setActiveTool("nonTarget");
+        },
+        scaleOverlayTool: function() {
+
+            // scaleOverlayToolShown property checks visibility of scale overlay tool between tabs
+            if(ViewerData[contentId].scaleOverlayToolShown === true) {
+                $('.imageViewerViewport').each(function(index, element) {
+                    cornerstoneTools.scaleOverlayTool.disable(element);
+                });
+                ViewerData[contentId].scaleOverlayToolShown = false;
+
+            }else{
+                $('.imageViewerViewport').each(function(index, element) {
+                    cornerstoneTools.scaleOverlayTool.enable(element);
+                });
+                ViewerData[contentId].scaleOverlayToolShown = true;
+            }
         }
     };
 
@@ -62,7 +80,6 @@ Template.viewer.onCreated(function() {
         };
     }
 
-    var contentId = this.data.contentId;
 
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');

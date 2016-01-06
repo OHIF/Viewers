@@ -40,6 +40,20 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
+            id: 'scaleOverlayTool',
+            title: 'Scale Overlay',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-arrows-h'
+        });
+
+        buttonData.push({
+            id: 'length',
+            title: 'Length Measurement',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-arrows-v'
+        });
+
+        buttonData.push({
             id: 'lesion',
             title: 'Target Tool',
             classes: 'imageViewerTool',
