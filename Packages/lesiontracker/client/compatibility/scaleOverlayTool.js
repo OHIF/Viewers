@@ -199,8 +199,8 @@
     canvasBounds = {
       left: canvasBounds.left + hReduction,
       top: canvasBounds.top + vReduction,
-      right: canvasBounds.left + hReduction + canvasBounds.width - 2 * hReduction,
-      bottom: canvasBounds.top + vReduction + canvasBounds.height - 2 * vReduction,
+      right: (canvasBounds.left + hReduction) + (canvasBounds.width - 2 * hReduction),
+      bottom: (canvasBounds.top + vReduction) + (canvasBounds.height - 2 * vReduction),
       width: canvasBounds.width - 2 * hReduction,
       height: canvasBounds.height - 2 * vReduction
     };
@@ -220,8 +220,8 @@
     imageBounds = {
       left: imageBounds.left + hReduction,
       top: imageBounds.top + vReduction,
-      right: imageBounds.left + hReduction + imageBounds.width - 2 * hReduction,
-      bottom: imageBounds.top + vReduction + imageBounds.height - 2 * vReduction,
+      right: (imageBounds.left + hReduction) + (imageBounds.width - 2 * hReduction),
+      bottom: (imageBounds.top + vReduction) + (imageBounds.height - 2 * vReduction),
       width: imageBounds.width - 2 * hReduction,
       height: imageBounds.height - 2 * vReduction
 
@@ -234,8 +234,8 @@
   function getStartPointOfImage(eventData, canvasSize, imageSize) {
     // TODO: Start point must come from cornerstone!
     var startPoint= {};
-    startPoint.x = (canvasSize.width - imageSize.width) / 2 + eventData.enabledElement.viewport.translation.x;
-    startPoint.y = (canvasSize.height - imageSize.height) / 2 + eventData.enabledElement.viewport.translation.y;
+    startPoint.x = (canvasSize.width - imageSize.width) / 2  + eventData.viewport.translation.x * eventData.viewport.scale;
+    startPoint.y = (canvasSize.height - imageSize.height) / 2  + eventData.viewport.translation.y * eventData.viewport.scale;
 
     return startPoint;
 
@@ -243,14 +243,22 @@
 
   function onImageRendered(e, eventData) {
 
+    // Check whether pixel spacing is defined
+    if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
+      return;
+    }
+
     var viewport = cornerstone.getViewport(eventData.enabledElement.element);
     if (!viewport) {
-      console.log("viewport is null");
+      return;
     }
+
+    console.log(eventData);
 
     var canvasSize = { width: eventData.enabledElement.canvas.width, height: eventData.enabledElement.canvas.height};
     var imageSize = {width: eventData.enabledElement.image.width , height: eventData.enabledElement.image.height};
 
+    // Distance between intervals is 10mm
     var intervalScale = viewport.scale * 10.0;
 
     if (!canvasSize.width || !canvasSize.height || !imageSize.width || !imageSize.height ) {
@@ -260,24 +268,22 @@
     imageSize.width = imageSize.width * viewport.scale;
     imageSize.height = imageSize.height * viewport.scale;
 
+    // 0.1 and 0.05 gives margin to horizontal and vertical lines
     var hscaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.1, 0.05);
-    var vScaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.05, 0.1);
-
-    console.log(hscaleBounds);
-    console.log(vScaleBounds);
+    var vscaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.05, 0.1);
 
     var config = {
       width: imageSize.width,
       height: imageSize.height,
       hscaleBounds: hscaleBounds,
-      vscaleBounds: vScaleBounds,
+      vscaleBounds: vscaleBounds,
       minorTick: intervalScale,
       majorTick: 5 * intervalScale,
       minorTickLength: 12.5,
       majorTickLength: 25,
       verticalLine: {
-        start: {x: vScaleBounds.right , y: vScaleBounds.top},
-        end: {x: vScaleBounds.right, y: vScaleBounds.bottom}
+        start: {x: vscaleBounds.right , y: vscaleBounds.top},
+        end: {x: vscaleBounds.right, y: vscaleBounds.bottom}
       },
       horizontalLine: {
         start: {x: hscaleBounds.left, y: hscaleBounds.bottom},
