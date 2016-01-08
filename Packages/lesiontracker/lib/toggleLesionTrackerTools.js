@@ -18,7 +18,7 @@ toggleLesionTrackerTools = function() {
             activate: ['deleteLesionKeyboardTool'],
             deactivate: [],
             enable: [],
-            disable: ['lesion', 'nonTarget']
+            disable: ['lesion', 'nonTarget', 'scaleOverlayTool']
         };
 
         toolManager.setToolDefaultStates(toolDefaultStates);

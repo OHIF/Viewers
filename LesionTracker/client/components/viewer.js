@@ -46,23 +46,8 @@ Template.viewer.onCreated(function() {
         },
         nonTarget: function() {
             toolManager.setActiveTool("nonTarget");
-        },
-        scaleOverlayTool: function() {
-
-            // scaleOverlayToolShown property checks visibility of scale overlay tool between tabs
-            if(ViewerData[contentId].scaleOverlayToolShown === true) {
-                $('.imageViewerViewport').each(function(index, element) {
-                    cornerstoneTools.scaleOverlayTool.disable(element);
-                });
-                ViewerData[contentId].scaleOverlayToolShown = false;
-
-            }else{
-                $('.imageViewerViewport').each(function(index, element) {
-                    cornerstoneTools.scaleOverlayTool.enable(element);
-                });
-                ViewerData[contentId].scaleOverlayToolShown = true;
-            }
         }
+
     };
 
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])

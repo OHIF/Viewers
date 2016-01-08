@@ -10,7 +10,8 @@ Meteor.startup(function() {
     });
 
     toolManager.addTool('scaleOverlayTool', {
-        mouse: cornerstoneTools.scaleOverlayTool
+        mouse: cornerstoneTools.scaleOverlayTool,
+        touch: cornerstoneTools.scaleOverlayTool
     });
 
     toolManager.addTool('deleteLesionKeyboardTool', {
@@ -23,5 +24,7 @@ Meteor.startup(function() {
     states.deactivate.push('nonTarget');
 
     states.activate.push('deleteLesionKeyboardTool');
+
+    states.enable.push('scaleOverlayTool');
     toolManager.setToolDefaultStates(states);
 });
