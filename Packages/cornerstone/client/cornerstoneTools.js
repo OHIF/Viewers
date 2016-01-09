@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.7 - 2015-12-18 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.7 - 2016-01-09 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -901,7 +901,7 @@ if (typeof cornerstoneTools === 'undefined') {
             }
 
             var preventHandleOutsideImage;
-            if (mouseToolInterface.options.preventHandleOutsideImage !== undefined) {
+            if (mouseToolInterface.options && mouseToolInterface.options.preventHandleOutsideImage !== undefined) {
                 preventHandleOutsideImage = mouseToolInterface.options.preventHandleOutsideImage;
             } else {
                 preventHandleOutsideImage = false;
@@ -1608,7 +1608,7 @@ if (typeof cornerstoneTools === 'undefined') {
             if (toolData) {
                 for (i = 0; i < toolData.data.length; i++) {
                     data = toolData.data[i];
-                    var distanceSq = 75; // Should probably make this a settable property later
+                    var distanceSq = 25; // Should probably make this a settable property later
                     var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
                     if (handle) {
                         $(element).off('CornerstoneToolsTouchStartActive', touchToolInterface.touchDownActivateCallback || touchDownActivateCallback);
@@ -1674,7 +1674,7 @@ if (typeof cornerstoneTools === 'undefined') {
 
             // now check to see if there is a handle we can move
             var distanceFromTouch = cornerstoneTools.touchSettings.getToolDistanceFromTouch();
-            var distanceSq = Math.pow(Math.max(Math.abs(distanceFromTouch.x), Math.abs(distanceFromTouch.y)), 2);
+            var distanceSq = Math.max(Math.abs(distanceFromTouch.x), Math.abs(distanceFromTouch.y));
             if (toolData) {
                 for (i = 0; i < toolData.data.length; i++) {
                     data = toolData.data[i];
@@ -5415,7 +5415,7 @@ if (typeof cornerstoneTools === 'undefined') {
             return {
                 min: globalMin,
                 max: globalMax,
-                mean: globalMin
+                mean: (globalMin + globalMax) / 2
             };
         }
 
@@ -6739,7 +6739,6 @@ if (typeof cornerstoneTools === 'undefined') {
             handle.active = false;
             $(element).off('CornerstoneToolsTouchDrag', touchDragCallback);
             $(element).off('CornerstoneToolsTouchPinch', touchEndCallback);
-            $(element).off('CornerstoneToolsTouchPress', touchEndCallback);
             $(element).off('CornerstoneToolsTouchEnd', touchEndCallback);
             $(element).off('CornerstoneToolsDragEnd', touchEndCallback);
             $(element).off('CornerstoneToolsTap', touchEndCallback);
@@ -6751,7 +6750,6 @@ if (typeof cornerstoneTools === 'undefined') {
         }
 
         $(element).on('CornerstoneToolsTouchPinch', touchEndCallback);
-        $(element).on('CornerstoneToolsTouchPress', touchEndCallback);
         $(element).on('CornerstoneToolsTouchEnd', touchEndCallback);
         $(element).on('CornerstoneToolsDragEnd', touchEndCallback);
         $(element).on('CornerstoneToolsTap', touchEndCallback);
@@ -10031,17 +10029,18 @@ Display scroll progress bar across bottom of image.
         x = Math.round(x);
         y = Math.round(y);
         var enabledElement = cornerstone.getEnabledElement(element);
+        var image = enabledElement.image;
         var luminance = [];
         var index = 0;
-        var pixelData = enabledElement.image.getPixelData();
+        var pixelData = image.getPixelData();
         var spIndex,
             row,
             column;
 
-        if (enabledElement.image.color) {
+        if (image.color) {
             for (row = 0; row < height; row++) {
                 for (column = 0; column < width; column++) {
-                    spIndex = (((row + y) * enabledElement.image.columns) + (column + x)) * 4;
+                    spIndex = (((row + y) * image.columns) + (column + x)) * 4;
                     var red = pixelData[spIndex];
                     var green = pixelData[spIndex + 1];
                     var blue = pixelData[spIndex + 2];
@@ -10051,8 +10050,8 @@ Display scroll progress bar across bottom of image.
         } else {
             for (row = 0; row < height; row++) {
                 for (column = 0; column < width; column++) {
-                    spIndex = ((row + y) * enabledElement.image.columns) + (column + x);
-                    luminance[index++] = pixelData[spIndex];
+                    spIndex = ((row + y) * image.columns) + (column + x);
+                    luminance[index++] = pixelData[spIndex] * image.slope + image.intercept;
                 }
             }
         }

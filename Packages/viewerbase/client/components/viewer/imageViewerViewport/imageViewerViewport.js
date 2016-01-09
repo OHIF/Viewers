@@ -25,7 +25,7 @@ function loadSeriesIntoViewport(data, templateData) {
     // Get the contentID of the current worklist tab, if the viewport is running
     // alongside the worklist package
     var contentId = Session.get('activeContentId');
-    
+
     // If the viewer is inside a tab, create an object related to the specified viewport
     // This data will be saved so that the tab can be reloaded to the same state after tabs
     // are switched
@@ -113,7 +113,7 @@ function loadSeriesIntoViewport(data, templateData) {
     // image is currently being loaded into them. This is useful so that we can
     // place progress (download %) for each image inside the proper viewports.
     ViewportLoading[viewportIndex] = imageId;
-    
+
     // Enable Cornerstone for the viewport element
     //
     // NOTE: This uses the experimental WebGL renderer for Cornerstone!
@@ -131,7 +131,7 @@ function loadSeriesIntoViewport(data, templateData) {
         var enabledElement;
         try {
             enabledElement = cornerstone.getEnabledElement(element);
-        } catch(error) {
+        } catch (error) {
             log.warn('Viewport destroyed before loaded image could be displayed');
             return;
         }
@@ -150,7 +150,7 @@ function loadSeriesIntoViewport(data, templateData) {
         // Remove the data for this viewport from the ViewportLoading object
         // This will stop the loading percentage complete from being displayed.
         delete ViewportLoading[viewportIndex];
-        
+
         // Call the handler function that represents the end of the image loading phase
         // (e.g. hide the progress text box)
         endLoadingHandler(element);
@@ -168,7 +168,7 @@ function loadSeriesIntoViewport(data, templateData) {
         $(element).siblings('.imageViewerViewportOverlay').show();
 
         // Add stack state managers for the stack tool, CINE tool, and reference lines
-        cornerstoneTools.addStackStateManager(element, [ 'stack', 'playClip', 'referenceLines' ]);
+        cornerstoneTools.addStackStateManager(element, ['stack', 'playClip', 'referenceLines']);
 
         // Get the current viewport settings
         var viewport = cornerstone.getViewport(element);
@@ -305,7 +305,7 @@ function loadSeriesIntoViewport(data, templateData) {
             viewport: viewport
         };
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
-        
+
         // Check if image plane (orientation / loction) data is present for the current image
         var imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
 
@@ -340,8 +340,12 @@ function loadSeriesIntoViewport(data, templateData) {
  * @param templateData currentData of Template
  *
  */
-function setSeries(data, seriesInstanceUid, templateData){
+function setSeries(data, seriesInstanceUid, templateData) {
     var study = data.study;
+    if (!study || !study.seriesList) {
+        return;
+    }
+
     study.seriesList.every(function(series) {
         if (series.seriesInstanceUid === seriesInstanceUid) {
             data.series = series;
@@ -451,7 +455,7 @@ Template.imageViewerViewport.onRendered(function() {
         Meteor.call('GetStudyMetadata', this.data.studyInstanceUid, function(error, study) {
             // Once we have retrieved the data, we sort the series' by series
             // and instance number in ascending order
-            if(!study){
+            if (!study) {
                 return;
             }
             sortStudy(study);
@@ -470,12 +474,12 @@ Template.imageViewerViewport.onDestroyed(function() {
 
     // When a viewport element is being destroyed
     var element = this.find(".imageViewerViewport");
-    
+
     // Try to stop any currently playing clips
     // Otherwise the interval will continuously throw errors
     try {
         cornerstoneTools.stopClip(element);
-    } catch(error) {
+    } catch (error) {
         log.warn(error);
     }
 

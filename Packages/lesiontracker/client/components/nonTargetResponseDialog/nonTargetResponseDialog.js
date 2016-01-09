@@ -4,6 +4,9 @@ function closeHandler(dialog) {
 
     // Remove the backdrop
     $(".removableBackdrop").remove();
+
+    // Restore the focus to the active viewport
+    setFocusToActiveViewport();
 }
 
 changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
@@ -55,6 +58,7 @@ changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
     }
 
     dialog.css(dialogProperty);
+    dialog.focus();
 
     var measurement = Measurements.findOne(measurementData.id);
     if (!measurement) {
@@ -136,9 +140,10 @@ Template.nonTargetResponseDialog.events({
     'keydown #nonTargetResponseDialog': function(e) {
         var dialog = Template.nonTargetResponseDialog.dialog;
 
-        // If Enter is pressed, close the dialog
-        if (e.which === 13) {
+        // If Esc or Enter are pressed, close the dialog
+        if (e.which === keys.ESC || e.which === keys.ENTER) {
             closeHandler(dialog);
+            return false;
         }
     }
 });

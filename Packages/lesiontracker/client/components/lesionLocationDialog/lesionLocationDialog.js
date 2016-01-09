@@ -4,6 +4,9 @@ function closeHandler(dialog) {
 
     // Remove the backdrop
     $(".removableBackdrop").remove();
+
+    // Restore the focus to the active viewport
+    setFocusToActiveViewport();
 }
 
 // This event sets lesion number for new lesion
@@ -96,6 +99,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     }
 
     dialog.css(dialogProperty);
+    dialog.focus();
 }
 
 changeLesionLocationCallback = function(measurementData, eventData, doneCallback) {
@@ -134,6 +138,7 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
     }
 
     dialog.css(dialogProperty);
+    dialog.focus();
 
     var measurement = Measurements.findOne(measurementData.id);
     if (!measurement) {
@@ -249,9 +254,10 @@ Template.lesionLocationDialog.events({
     'keydown #lesionLocationDialog, keydown #lesionLocationRelabelDialog': function(e) {
         var dialog = Template.lesionLocationDialog.dialog;
 
-        // If Enter is pressed, close the dialog
-        if (e.which === 13) {
+        // If Esc or Enter are pressed, close the dialog
+        if (e.which === keys.ESC || e.which === keys.ENTER) {
             closeHandler(dialog);
+            return false;
         }
     }
 });

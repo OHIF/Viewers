@@ -7,6 +7,9 @@ function closeHandler() {
 
     // Remove the callback from the template data
     delete Template.confirmDeleteDialog.doneCallback;
+
+    // Restore the focus to the active viewport
+    setFocusToActiveViewport();
 }
 
 showConfirmDialog = function(doneCallback, options) {
@@ -19,14 +22,17 @@ showConfirmDialog = function(doneCallback, options) {
         closeHandler();
     });
 
-    $("#confirmDeleteDialog").css('display', 'block');
+    var confirmDeleteDialog = $("#confirmDeleteDialog");
+    confirmDeleteDialog.css('display', 'block');
+    confirmDeleteDialog.focus();
 
     if (doneCallback && typeof doneCallback === 'function') {
         Template.confirmDeleteDialog.doneCallback = doneCallback;
     }
 };
 
-var keys = {
+// Global object of key names (TODO: put this somewhere else)
+keys = {
     ESC: 27,
     ENTER: 13
 };
@@ -46,6 +52,7 @@ Template.confirmDeleteDialog.events({
     'keydown #confirmDeleteDialog': function(e) {
         if (e.which === keys.ESC) {
             closeHandler();
+            return false;
         }
 
         if (this.keyPressAllowed === false) {

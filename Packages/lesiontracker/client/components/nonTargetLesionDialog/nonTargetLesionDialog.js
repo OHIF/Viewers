@@ -4,6 +4,9 @@ function closeHandler(dialog) {
 
     // Remove the backdrop
     $(".removableBackdrop").remove();
+
+    // Restore the focus to the active viewport
+    setFocusToActiveViewport();
 }
 
 // This event sets lesion number for new lesion
@@ -168,6 +171,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     }
 
     dialog.css(dialogProperty);
+    dialog.focus();
 
     var measurement = Measurements.findOne(measurementData.id);
     if (!measurement) {
@@ -311,9 +315,10 @@ Template.nonTargetLesionDialog.events({
     'keydown #lesionLocationDialog, keydown #lesionLocationRelabelDialog': function(e) {
         var dialog = Template.nonTargetLesionDialog.dialog;
 
-        // If Enter is pressed, close the dialog
-        if (e.which === 13) {
+        // If Esc or Enter are pressed, close the dialog
+        if (e.which === keys.ESC || e.which === keys.ENTER) {
             closeHandler(dialog);
+            return false;
         }
     }
 });

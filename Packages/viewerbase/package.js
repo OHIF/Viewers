@@ -122,6 +122,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/viewportFunctions.js', 'client');
     api.addFiles('lib/WLPresets.js', 'client');
     api.addFiles('lib/resizeViewportElements.js', 'client');
+    api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
     //api.export('accountsConfig', 'client');
@@ -139,6 +140,7 @@ Package.onUse(function (api) {
     api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
     api.export('updateOrientationMarkers', 'client');
+    api.export('setFocusToActiveViewport', 'client');
     api.export('encodeQueryData', 'server');
 
     // Viewer management objects
