@@ -127,15 +127,17 @@ var LesionManager = (function() {
             isTarget: isTarget
         }, {
             sort: {lesionNumber: 1}
-        });
+        }).fetch();
 
         // If measurements exist, find the last lesion number
         // from the given timepoint
         var lesionNumberCounter = 1;
 
-        // Search through Measurements to see which ones
-        // already have data for this Timepoint
-        measurements.forEach(function(measurement) {
+        // Search through every Measurement to see which ones
+        // already have data for this Timepoint, if we find one that
+        // doesn't have data, we will stop there and use that as the
+        // current Measurement
+        measurements.every(function(measurement) {
             // If this measurement has no data for this Timepoint,
             // use this as the current Measurement
             if (!measurement.timepoints[timepointID]) {
@@ -144,6 +146,7 @@ var LesionManager = (function() {
             }
 
             lesionNumberCounter++;
+            return true;
         });
         return lesionNumberCounter;
     }

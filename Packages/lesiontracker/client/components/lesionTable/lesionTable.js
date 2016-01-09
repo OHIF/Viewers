@@ -2,7 +2,7 @@ Template.lesionTable.helpers({
     'measurement': function() {
         return Measurements.find({}, {
             sort: {
-                lesionNumber: 1
+                lesionNumberAbsolute: 1
             }
         });
     },
