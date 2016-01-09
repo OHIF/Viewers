@@ -10,7 +10,9 @@ function doneCallback(measurementData, deleteTool) {
     // the specified Timepoint Cell
     if (deleteTool === true) {
         Meteor.call("removeMeasurement", measurementData.id, function(error, response) {
-            console.log('Removed!');
+            if (error) {
+                log.warn(error);
+            }
         });
     }
 }
@@ -47,7 +49,6 @@ Template.lesionTableRow.events({
                     if (error) {
                         log.warn(error);
                     }
-                    log.info(response);
                 });
             }, options);
         }

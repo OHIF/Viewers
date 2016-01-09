@@ -158,9 +158,7 @@ Template.viewer.onCreated(function() {
                     }
 
                     log.info('Measurement added');
-
-                    addMeasurementAsToolData(data);
-
+                    syncMeasurementAndToolData(data);
                     updateRelatedElements(data.imageId);
                 },
                 removed: function(data) {
@@ -174,33 +172,42 @@ Template.viewer.onCreated(function() {
                     var measurementId = data._id;
                     var toolType = data.isTarget ? 'lesion' : 'nonTarget';
 
-                    // Find the list of imageIds that needs to be updated
-                    var imageIds = [];
+                    // Remove the measurement from all the imageIds on which it exists
+                    // as toolData
                     Object.keys(data.timepoints).forEach(function(timepointID) {
                         // Clear the toolData for this timepoint
                         var imageId = data.timepoints[timepointID].imageId;
                         removeToolDataWithMeasurementId(imageId, toolType, measurementId);
-
-                        // Add this imageId to the list to be updated
-                        // (if they are currently displayed)
-                        imageIds.push(imageId);
                     });
 
-                    // Find the enabled Cornerstone elements currently displaying these image IDs
-                    var enabledElements = [];
-                    imageIds.forEach(function(imageId) {
-                        var elems = cornerstone.getEnabledElementsByImageId(imageId);
-                        enabledElements = enabledElements.concat(elems);
-                    });
-
-                    // Update each related viewport
-                    enabledElements.forEach(function(enabledElement) {
-                        // Skip thumbnails or other elements that are not primary viewports
-                        var element = enabledElement.element;
-                        if (!element.classList.contains('imageViewerViewport')) {
-                            return;
+                    // Update all Measurements to decrement the lesion numbers for those
+                    // that were created after the current lesion by 1
+                    Meteor.call('decrementLesionNumbers', data, function(error, response) {
+                        if (error) {
+                            log.warn(error)
                         }
-                        cornerstone.updateImage(element);
+
+                        // Sync database data with toolData for all the measurements
+                        // that have just been updated
+
+                        // Note that here we need to use greater than and equals to
+                        // find the Measurements, whereas on the server it's
+                        // only "greater than", since inside this callback the
+                        // Measurements have already been decremented.
+                        Measurements.find({
+                            patientId: data.patientId,
+                            lesionNumberAbsolute: {
+                                $gte: data.lesionNumberAbsolute
+                            }
+                        }).forEach(function(measurementData) {
+                            syncMeasurementAndToolData(measurementData);
+                        });
+
+                        // Update each displayed viewport
+                        var viewports = $('.imageViewerViewport').not('.empty');
+                        viewports.each(function(index, element) {
+                            cornerstone.updateImage(element);
+                        });
                     });
                 }
             });
@@ -224,7 +231,7 @@ function updateRelatedElements(imageId) {
     });
 }
 
-function addMeasurementAsToolData(data) {
+function syncMeasurementAndToolData(data) {
     // Check what toolType we should be adding this to, based on the isTarget value
     // of the stored Measurement
     var toolType = data.isTarget ? 'lesion' : 'nonTarget';
@@ -266,6 +273,9 @@ function addMeasurementAsToolData(data) {
                 toolState[imageId][toolType].data.forEach(function(measurement) {
                     if (measurement.id === data._id) {
                         alreadyExists = true;
+
+                        // Update the toolData lesionNumber from the Measurement
+                        measurement.lesionNumber = data.lesionNumber;
                         return false;
                     }
                 });
@@ -282,7 +292,6 @@ function addMeasurementAsToolData(data) {
         measurementData.isTarget = data.isTarget;
         measurementData.lesionNumber = data.lesionNumber;
         measurementData.measurementText = data.measurementText;
-        measurementData.lesionName = data.lesionName;
         measurementData.isDeleted = data.isDeleted;
         measurementData.location = data.location;
         measurementData.locationUID = data.locationUID;

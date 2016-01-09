@@ -1,14 +1,10 @@
 Meteor.publish('timepoints', function(patientId) {
-    console.log('Publish timepoints');
-    console.log('patientId ' + patientId);
     return Timepoints.find({
         patientId: patientId
     });
 });
 
 Meteor.publish('measurements', function(patientId) {
-    console.log('Publish measurements');
-    console.log('patientId ' + patientId);
     return Measurements.find({
         patientId: patientId
     });

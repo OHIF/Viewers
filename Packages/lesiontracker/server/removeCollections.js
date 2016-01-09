@@ -1,54 +1,44 @@
 Meteor.methods({
     "removeMeasurement": function(id) {
-        console.log(Measurements.find().fetch());
-        console.log("Removing: " + id);
         Measurements.remove(id);
-        console.log(Measurements.find().fetch());
     },
     "removeMeasurementsByPatientId": function(patientId) {
         Measurements.remove({patientId: patientId});
     },
-    // TODO= Check where this is used? Seems like nowhere.. 
-    "removePatientMeasurement": function(lesionObject) {
-        // Find patient data
-        var measurementData = Measurements.findOne({
-            patientId: lesionObject.patientId,
-            isTarget: lesionObject.isTarget,
-            lesionNumber: lesionObject.lesionNumber
-        });
+    "decrementLesionNumbers": function(lesionData) {
+        // Update all Measurements to decrement the lesion numbers for those
+        // that were created after the current lesion by 1
 
-        // Get timepoints
-        var timepoints = measurementData.timepoints;
-
-        // Create an array to hold keys of timepoints
-        var timepointsIds = Object.keys(timepoints).slice(0);
-
-        timepointsIds.forEach(function(timepointId) {
-            if (timepointId === lesionObject.timepointId) {
-                delete timepoints[timepointId];
+        // TODO: Update this when we have more criteria than patientId
+        // Decrement the absolute lesion number of all lesions with
+        // absolute lesion numbers greater than the current lesion by 1
+        Measurements.update({
+            patientId: lesionData.patientId,
+            lesionNumberAbsolute: {
+                $gt: lesionData.lesionNumberAbsolute
             }
+        }, {
+            $inc: {
+                lesionNumberAbsolute: -1
+            }
+        }, {
+            multi: true
         });
 
-        var newTimepointsIds = Object.keys(timepoints);
-        // If there is no timepoints object, remove measurement data
-        if (newTimepointsIds.length) {
-            //Update measurement timepoints
-            Measurements.update({
-                patientId: lesionObject.patientId,
-                isTarget: lesionObject.isTarget,
-                lesionNumber: lesionObject.lesionNumber
-            }, {
-                $set: {
-                    timepoints: timepoints
-                }
-            });
-        } else {
-            // Remove all data
-            Measurements.remove({
-                patientId: lesionObject.patientId,
-                isTarget: lesionObject.isTarget,
-                lesionNumber: lesionObject.lesionNumber
-            });
-        }
+        // Decrement the lesion number of all related (i.e. target or non-target)
+        // lesions with lesion numbers greater than the current lesion by 1
+        Measurements.update({
+            patientId: lesionData.patientId,
+            lesionNumber: {
+                $gt: lesionData.lesionNumber
+            },
+            isTarget: lesionData.isTarget
+        }, {
+            $inc: {
+                lesionNumber: -1
+            }
+        }, {
+            multi: true
+        });
     }
 });

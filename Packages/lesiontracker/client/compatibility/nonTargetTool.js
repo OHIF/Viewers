@@ -35,7 +35,6 @@
         var element = mouseEventData.element;
 
         function doneCallback(lesionNumber) {
-            measurementData.lesionName = "Non-Target " + lesionNumber;
             measurementData.lesionNumber = lesionNumber;
             measurementData.active = true;
             cornerstone.updateImage(element);
@@ -208,8 +207,8 @@
             }
 
             // Draw the text
-            if (data.lesionName && data.lesionName !== '') {
-                //Draw linked line as dashed
+            if (data.lesionNumber) {
+                // Draw linked line as dashed
                 var mid = {
                     x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
                     y: (handleStartCanvas.y + handleEndCanvas.y) / 2
@@ -224,7 +223,7 @@
                 context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                 context.stroke();
 
-                var boundingBox = cornerstoneTools.drawTextBox(context, data.lesionName, canvasTextLocation.x, canvasTextLocation.y, color);
+                var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.lesionNumber, canvasTextLocation.x, canvasTextLocation.y, color);
                 data.handles.textBox.boundingBox = boundingBox;
             }
 
@@ -239,7 +238,6 @@
         var element = touchEventData.element;
 
         function doneCallback(lesionNumber) {
-            measurementData.lesionName = "Non-Target " + lesionNumber;
             measurementData.lesionNumber = lesionNumber;
             measurementData.active = true;
             cornerstone.updateImage(element);
