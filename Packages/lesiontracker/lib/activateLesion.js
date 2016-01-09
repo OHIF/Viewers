@@ -41,7 +41,7 @@ activateLesion = function(measurementId, templateData) {
     }
 
     // Loop through the viewports and display each timepoint
-    $(".imageViewerViewport").each(function(viewportIndex, element) {
+    $(".imageViewerViewport").not('.empty').each(function(viewportIndex, element) {
         // Stop if we run out of timepoints before viewports
         if (viewportIndex >= timepointsWithEntries.length) {
             // Update the element anyway, to remove any other highlights that are present

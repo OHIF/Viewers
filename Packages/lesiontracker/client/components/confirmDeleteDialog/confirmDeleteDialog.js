@@ -43,7 +43,7 @@ Template.confirmDeleteDialog.events({
 
         closeHandler();
     },
-    'keypress #confirmDeleteDialog': function(e) {
+    'keydown #confirmDeleteDialog': function(e) {
         if (e.which === keys.ESC) {
             closeHandler();
         }

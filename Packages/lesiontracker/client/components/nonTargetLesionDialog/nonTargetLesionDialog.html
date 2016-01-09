@@ -9,7 +9,7 @@
                 <select id="selectNonTargetLesionLocation">
                     <option value="-1"></option>
                     {{ #each lesionLocations}}
-                    <option value='{{_id}}'>{{location}}</option>
+                    <option value={{_id}}>{{location}}</option>
                     {{ /each}}
                 </select>
             </div>
@@ -19,9 +19,9 @@
                     <option value="-1"></option>
                     {{ #each locationResponses}}
                     {{ #if code }}
-                        <option value='{{code}}'>{{code}} - {{text}}</option>
+                        <option value={{code}}>{{code}} - {{text}}</option>
                     {{ else }}
-                        <option value={{text}}}>{{text}}</option>
+                        <option value={{text}}>{{text}}</option>
                     {{ /if }}
                     {{ /each}}
                 </select>

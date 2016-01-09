@@ -133,7 +133,7 @@ Template.nonTargetResponseDialog.events({
         var dialog = Template.nonTargetResponseDialog.dialog;
         closeHandler(dialog);
     },
-    'keypress #nonTargetResponseDialog': function(e) {
+    'keydown #nonTargetResponseDialog': function(e) {
         var dialog = Template.nonTargetResponseDialog.dialog;
 
         // If Enter is pressed, close the dialog

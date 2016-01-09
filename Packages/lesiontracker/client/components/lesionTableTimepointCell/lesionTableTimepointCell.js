@@ -19,14 +19,11 @@ Template.lesionTableTimepointCell.helpers({
         var data = lesionData.timepoints[this.timepointID];
 
         if (lesionData.isTarget === true) {
-            // TODO = Add short axis data here
-            //return 'LD: ' + data.longestDiameter;
-            if(data.shortestDiameter) {
-                return data.longestDiameter +" x "+ data.shortestDiameter;
-
+            if (data.shortestDiameter) {
+                return data.longestDiameter + " x " + data.shortestDiameter;
             }
-            return data.longestDiameter;
 
+            return data.longestDiameter;
         } else {
             return data.response;
         }

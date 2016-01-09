@@ -56,7 +56,6 @@ var LesionManager = (function() {
         };
 
         if (lesionData.isTarget === true) {
-            // TODO = Add short axis
             timepointData.shortestDiameter = lesionData.widthMeasurement;
             timepointData.longestDiameter = lesionData.measurementText;
         } else {
@@ -86,8 +85,8 @@ var LesionManager = (function() {
             // Set a flag to prevent duplication of toolData
             measurement.toolDataInsertedManually = true;
 
-            // Increment and store the Lesion Number for this Measurement
-            measurement.lesionNumber = Measurements.find().count() + 1;
+            // Increment and store the absolute Lesion Number for this Measurement
+            measurement.lesionNumberAbsolute = Measurements.find().count() + 1;
 
             // Insert this into the Measurements Collection
             // Save the ID into the toolData (not sure if this works?)
@@ -114,36 +113,38 @@ var LesionManager = (function() {
      */
     function getNewLesionNumber(timepointID, isTarget) {
         // Get all current lesion measurements
+        var numMeasurements = Measurements.find({
+            isTarget: isTarget
+        }).count();
+
+        // If no measurements exist yet, start at 1
+        if (!numMeasurements) {
+            return 1;
+        }
+
+        // Find related measurements (i.e. target or non-target)
         var measurements = Measurements.find({
             isTarget: isTarget
         }, {
             sort: {lesionNumber: 1}
-        }).fetch();
-
-        // If no measurements exist yet, start at 1
-        if (!measurements.length) {
-            return 1;
-        }
+        });
 
         // If measurements exist, find the last lesion number
         // from the given timepoint
         var lesionNumberCounter = 1;
-        var numMeasurements = measurements.length;
 
         // Search through Measurements to see which ones
         // already have data for this Timepoint
-        for (var i = 0; i < numMeasurements; i++) {
-            var measurement = measurements[i];
-
+        measurements.forEach(function(measurement) {
             // If this measurement has no data for this Timepoint,
             // use this as the current Measurement
             if (!measurement.timepoints[timepointID]) {
-                return measurement.lesionNumber;
+                lesionNumberCounter = measurement.lesionNumber;
+                return false;
             }
 
             lesionNumberCounter++;
-        }
-
+        });
         return lesionNumberCounter;
     }
 

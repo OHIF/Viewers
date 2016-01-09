@@ -308,7 +308,7 @@ Template.nonTargetLesionDialog.events({
         var dialog = Template.nonTargetLesionDialog.dialog;
         closeHandler(dialog);
     },
-    'keypress #lesionLocationDialog, keypress #lesionLocationRelabelDialog': function(e) {
+    'keydown #lesionLocationDialog, keydown #lesionLocationRelabelDialog': function(e) {
         var dialog = Template.nonTargetLesionDialog.dialog;
 
         // If Enter is pressed, close the dialog
