@@ -238,12 +238,18 @@ Template.lesionLocationDialog.events({
         var doneCallback = Template.lesionLocationDialog.doneCallback;
         var dialog = Template.lesionLocationDialog.dialog;
 
+        var options = {
+            keyPressAllowed: false,
+            title: 'Remove measurement?',
+            text: 'Are you sure you would like to remove the entire measurement?'
+        };
+
         showConfirmDialog(function() {
             if (doneCallback && typeof doneCallback === 'function') {
                 var deleteTool = true;
                 doneCallback(measurementData, deleteTool);
             }
-        });
+        }, options);
 
         closeHandler(dialog);
     },

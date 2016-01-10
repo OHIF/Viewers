@@ -41,7 +41,9 @@ Template.lesionTableRow.events({
             (keyCode === keys.D && e.ctrlKey === true)) {
             var currentMeasurement = this;
             var options = {
-                keyPressAllowed: false
+                keyPressAllowed: false,
+                title: 'Remove measurement?',
+                text: 'Are you sure you would like to remove the entire measurement?'
             };
 
             showConfirmDialog(function() {

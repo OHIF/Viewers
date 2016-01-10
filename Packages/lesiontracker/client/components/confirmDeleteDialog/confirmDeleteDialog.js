@@ -17,12 +17,18 @@ showConfirmDialog = function(doneCallback, options) {
     options = options || {};
     UI.renderWithData(Template.removableBackdrop, options, document.body);
 
+    var confirmDeleteDialog = $("#confirmDeleteDialog");
+    confirmDeleteDialog.remove();
+
+    var viewer = document.getElementById('viewer');
+    UI.renderWithData(Template.confirmDeleteDialog, options, viewer);
+
     // Make sure the context menu is closed when the user clicks away
     $(".removableBackdrop").one('mousedown touchstart', function() {
         closeHandler();
     });
 
-    var confirmDeleteDialog = $("#confirmDeleteDialog");
+    confirmDeleteDialog = $("#confirmDeleteDialog");
     confirmDeleteDialog.css('display', 'block');
     confirmDeleteDialog.focus();
 
