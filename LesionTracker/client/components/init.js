@@ -22,6 +22,7 @@ Meteor.startup(function() {
     var states = toolManager.getToolDefaultStates();
     states.deactivate.push('lesion');
     states.deactivate.push('nonTarget');
+    states.deactivate.push('length');
 
     states.activate.push('deleteLesionKeyboardTool');
 

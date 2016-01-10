@@ -37,7 +37,7 @@ LocationResponses.insert({
 });
 
 LocationResponses.insert({
-    text: "Excluded",
+    text: "Excluded from Assessment",
     code: "EX",
     description: ""
 });
