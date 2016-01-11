@@ -214,7 +214,7 @@
             return true;
         }
 
-        return (distanceToPoint < 25);
+        return (distanceToPoint < 5);
     }
 
     function pointNearTextBox(element, handle, coords) {
@@ -231,7 +231,7 @@
             end: cornerstone.pixelToCanvas(element, handles.perpendicularEnd)
         };
         var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
-        return (distanceToPoint < 25);
+        return (distanceToPoint < 5);
     }
 
     // Move long-axis start point
@@ -431,9 +431,17 @@
     // Sets position of handles(start, end, perpendicularStart, perpendicularEnd)
     function setHandlesPosition(handle, eventData, data) {
 
+        var movedPoint,
+            outOfBounds,
+            result,
+            intersection,
+            d1,
+            d2;
+
+
         if (handle.index === 0) {
             // if long-axis start point is moved
-            var result = perpendicularBothFixedLeft(eventData, data);
+            result = perpendicularBothFixedLeft(eventData, data);
             if (result) {
                 handle.x = eventData.currentPoints.image.x;
                 handle.y = eventData.currentPoints.image.y;
@@ -444,7 +452,7 @@
 
         } else if (handle.index === 1) {
             // if long-axis end point is moved
-            var result = perpendicularBothFixedRight(eventData, data);
+            result = perpendicularBothFixedRight(eventData, data);
             if (result) {
                 handle.x = eventData.currentPoints.image.x;
                 handle.y = eventData.currentPoints.image.y;
@@ -454,24 +462,24 @@
             }
 
         } else if (handle.index === 2) {
-            var outOfBounce = false;
+            outOfBounds = false;
             // if perpendicular start point is moved
 
-            var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, eventData.currentPoints.image);
+            intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, eventData.currentPoints.image);
             if (!intersection.intersected) {
                 intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
 
-                var d1 = getDistance(intersection, data.handles.start);
-                var d2 = getDistance(intersection, data.handles.end);
+                d1 = getDistance(intersection, data.handles.start);
+                d2 = getDistance(intersection, data.handles.end);
 
                 if (!intersection.intersected || d1 < 3 || d2 < 3) {
-                    outOfBounce = true;
+                    outOfBounds = true;
                 }
             }
 
-            var movedPoint = false;
+            movedPoint = false;
 
-            if (!outOfBounce) {
+            if (!outOfBounds) {
                 movedPoint = perpendicularLeftFixedPoint(eventData, data);
 
                 if (!movedPoint) {
@@ -481,25 +489,24 @@
             }
 
         } else if (handle.index === 3) {
-
-            var outOfBounce = false;
+            outOfBounds = false;
             // if perpendicular end point is moved
 
-            var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, eventData.currentPoints.image);
+            intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, eventData.currentPoints.image);
             if (!intersection.intersected) {
                 intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
 
-                var d1 = getDistance(intersection, data.handles.start);
-                var d2 = getDistance(intersection, data.handles.end);
+                d1 = getDistance(intersection, data.handles.start);
+                d2 = getDistance(intersection, data.handles.end);
 
                 if (!intersection.intersected || d1 < 3 || d2 < 3) {
-                    outOfBounce = true;
+                    outOfBounds = true;
                 }
             }
 
-            var movedPoint = false;
+            movedPoint = false;
 
-            if (!outOfBounce) {
+            if (!outOfBounds) {
                 movedPoint = perpendicularRightFixedPoint(eventData, data);
 
                 if (!movedPoint) {
@@ -507,9 +514,7 @@
                     eventData.currentPoints.image.y = data.handles.perpendicularEnd.y;
                 }
             }
-
         }
-
     }
 
     // Sets drawnIndependently property of control points(handles)
@@ -650,8 +655,8 @@
                     data = toolData.data[i];
                     // Hide control points
                     setControlPoints(data.handles, true);
-                    var distanceSq = 25;
-                    var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distanceSq);
+                    var distance = 5;
+                    var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distance);
                     if (handle) {
                         $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                         data.active = true;
@@ -722,6 +727,7 @@
         // Draw perpendicular line
         var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularStart);
         var perpendicularEndCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularEnd);
+
         context.beginPath();
         context.strokeStyle = color;
         context.lineWidth = lineWidth;
@@ -732,7 +738,6 @@
     }
 
     function findDottedLinePosition(data) {
-
         var distancesArr = [];
         var minDistance;
 
@@ -749,9 +754,8 @@
             distance: distanceToEnd,
             point: data.handles.end
         });
-        if (distanceToEnd < minDistance) {
-            minDistance = distanceToEnd;
-        }
+
+        minDistance = Math.min(distanceToEnd, minDistance);
 
         if (data.handles.perpendicularStart.x && data.handles.perpendicularStart.y) {
             var distanceToPerpendicularStart = getDistance(data.handles.perpendicularStart, data.handles.textBox);
@@ -759,9 +763,8 @@
                 distance: distanceToPerpendicularStart,
                 point: data.handles.perpendicularStart
             });
-            if (distanceToPerpendicularStart < minDistance) {
-                minDistance = distanceToPerpendicularStart;
-            }
+
+            minDistance = Math.min(distanceToPerpendicularStart, minDistance);
 
         }
 
@@ -771,9 +774,8 @@
                 distance: distanceToPerpendicularEnd,
                 point: data.handles.perpendicularEnd
             });
-            if (distanceToPerpendicularEnd < minDistance) {
-                minDistance = distanceToPerpendicularEnd;
-            }
+
+            minDistance = Math.min(distanceToPerpendicularEnd, minDistance);
         }
 
         for (var i = 0; i < distancesArr.length; i++) {
@@ -849,16 +851,17 @@
             context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 40);
             context.stroke();
 
-            // Draw the Length text
+            // Calculate the long axis length
             var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
             var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
             var length = Math.sqrt(dx * dx + dy * dy);
 
-            // Draw the Length text
+            // Calculate the short axis length
             var wx = (data.handles.perpendicularStart.x - data.handles.perpendicularEnd.x) * (eventData.image.columnPixelSpacing || 1);
             var wy = (data.handles.perpendicularStart.y - data.handles.perpendicularEnd.y) * (eventData.image.rowPixelSpacing || 1);
             var width = Math.sqrt(wx * wx + wy * wy);
 
+            // Draw the textbox
             var suffix = ' mm';
             if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
                 suffix = ' pixels';

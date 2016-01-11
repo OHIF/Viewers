@@ -64,6 +64,9 @@ Template.lesionTable.onCreated(function() {
     this.dragging = new ReactiveVar(false);
 });
 
+// Temporary until we have a real window manager with events for series/study changed
+Session.setDefault('NewSeriesLoaded', false);
+
 Template.lesionTable.onRendered(function() {
     var self = this;
 
@@ -73,8 +76,8 @@ Template.lesionTable.onRendered(function() {
     self.autorun(function() {
         // Temporary until we have a real window manager with events for series/study changed
         Session.get('NewSeriesLoaded');
-
         console.log('ViewerData changed, check for displayed timepoints');
+
         // Get study dates of imageViewerViewport elements
         var loadedStudyDates = {
             patientId: '',

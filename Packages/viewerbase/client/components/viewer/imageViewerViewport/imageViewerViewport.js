@@ -321,6 +321,9 @@ function loadSeriesIntoViewport(data, templateData) {
             setActiveViewport(element);
         }
 
+        // Temporary until we have a real window manager with events for series/study changed
+        Session.set('NewSeriesLoaded', Random.id());
+
         // Run any renderedCallback that exists in the data context
         if (data.renderedCallback && typeof data.renderedCallback === 'function') {
             data.renderedCallback(element);
@@ -329,9 +332,6 @@ function loadSeriesIntoViewport(data, templateData) {
         // If something goes wrong while loading the image, fire the error handler.
         errorLoadingHandler(element, imageId, error);
     });
-
-    // Temporary until we have a real window manager with events for series/study changed
-    Session.set('NewSeriesLoaded', Random.id());
 }
 
 /**
