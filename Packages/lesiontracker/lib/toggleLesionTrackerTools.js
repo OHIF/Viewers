@@ -15,10 +15,10 @@ toggleLesionTrackerTools = function() {
 
         // Hide the tools (set them all to disabled)
         var toolDefaultStates = {
-            activate: ['deleteLesionKeyboardTool'],
+            activate: [ 'deleteLesionKeyboardTool' ],
             deactivate: [],
             enable: [],
-            disable: ['lesion', 'nonTarget', 'scaleOverlayTool', 'length']
+            disable: [ 'lesion', 'nonTarget', 'scaleOverlayTool', 'length' ]
         };
 
         toolManager.setToolDefaultStates(toolDefaultStates);

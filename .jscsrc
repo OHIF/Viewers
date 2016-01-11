@@ -1,0 +1,38 @@
+{
+    "requireCurlyBraces": [ "if", "else", "for", "while", "do" ],
+    "requireSpaceAfterKeywords": [ "if", "else", "for", "while", "do", "switch", "return" ],
+    "requireSpacesInFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
+    "disallowSpacesInFunctionExpression": {
+        "beforeOpeningRoundBrace": true
+    },
+    "disallowKeywordsOnNewLine": ["else"],
+    "disallowNewlineBeforeBlockStatements": true,
+    "requirePaddingNewLinesAfterUseStrict": true,
+    "requirePaddingNewLinesInObjects": true,
+    "requirePaddingNewLinesAfterBlocks": {
+        "allExcept": ["inCallExpressions", "inArrayExpressions", "inProperties"]
+    },
+    "requireObjectKeysOnNewLine": true,
+    "requireSemicolons": true,
+    "requireSpaceAfterBinaryOperators": true,
+    "requireSpaceBeforeObjectValues": true,
+    "requireSpacesInsideObjectBrackets": "all",
+    "requireSpacesInsideArrayBrackets": "all",
+    "requireLineBreakAfterVariableAssignment": true,
+    "requireSpaceBeforeBinaryOperators": ["+", "-", "/", "*", "=", "==", "===", "!=", "!=="],
+    "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-"],
+    "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+    "disallowKeywords": [ "with" ],
+    "disallowMultipleLineBreaks": true,
+    "disallowKeywordsOnNewLine": [ "else" ],
+    "requireLineFeedAtFileEnd": true,
+    "disallowSpaceAfterObjectKeys": true,
+    "disallowQuotedKeysInObjects": true,
+    "disallowMultipleSpaces": true,
+    "validateLineBreaks": "LF",
+    "validateIndentation": 4,
+    "validateQuoteMarks": { "mark": "'", "escape": true },
+    "validateParameterSeparator": ", "
+}

@@ -1,11 +1,13 @@
 Meteor.methods({
-    "removeMeasurement": function(id) {
+    removeMeasurement: function(id) {
         Measurements.remove(id);
     },
-    "removeMeasurementsByPatientId": function(patientId) {
-        Measurements.remove({patientId: patientId});
+    removeMeasurementsByPatientId: function(patientId) {
+        Measurements.remove({
+            patientId: patientId
+        });
     },
-    "decrementLesionNumbers": function(lesionData) {
+    decrementLesionNumbers: function(lesionData) {
         // Update all Measurements to decrement the lesion numbers for those
         // that were created after the current lesion by 1
 

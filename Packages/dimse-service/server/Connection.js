@@ -5,26 +5,27 @@ function time() {
 }
 
 var DEFAULT_MAX_PACKAGE_SIZE = 32768;
-var DEFAULT_SOURCE_AE = "OHIFDCM";
+var DEFAULT_SOURCE_AE = 'OHIFDCM';
 
 var Envelope = function(conn, command, dataset) {
     EventEmitter.call(this);
     this.command = command;
     this.dataset = dataset;
     this.conn = conn;
-}
+};
+
 util.inherits(Envelope, EventEmitter);
 
 Envelope.prototype.send = function() {
     return this;
-}
+};
 
 Connection = function(socket, options) {
     EventEmitter.call(this);
     this.socket = socket;
     this.options = Object.assign({
-        hostAE: "",
-        sourceAE: "OHIFDCM",
+        hostAE: '',
+        sourceAE: 'OHIFDCM',
         maxPackageSize: 32768,
         idle: 60,
         reconnect: true,
@@ -56,50 +57,53 @@ Connection = function(socket, options) {
 
     //register hooks
     var o = this;
-    this.socket.on("data", function(data) {
+    this.socket.on('data', function(data) {
         o.received(data);
     });
-    this.socket.on("close", function(he) {
+    this.socket.on('close', function(he) {
         o.closed(he);
-        o.emit("close", he);
+        o.emit('close', he);
     });
-    this.socket.on("error", function(he) {
+    this.socket.on('error', function(he) {
         o.error(he);
     });
-    this.socket.on("end", function() {
+    this.socket.on('end', function() {
         if (o.intervalId) {
             clearInterval(o.intervalId);
         }
+
         if (o.server) {
-            console.log("Closing server");
+            console.log('Closing server');
             o.server.close();
         }
+
         console.log('ended');
-    })
-    this.on("released", function() {
+    });
+    this.on('released', function() {
         this.released();
     });
     this.on('aborted', function() {
         this.released();
-    })
+    });
     this.on('message', function(pdvs) {
         this.receivedMessage(pdvs);
     });
-    this.on("init", this.ready);
+    this.on('init', this.ready);
 
     //this.pause();
     if (this.options.listenHost && this.options.listenPort) {
         this.server = net.createServer();
         this.server.listen(this.options.listenPort, this.options.listenHost);
         this.server.on('listening', function() {
-            console.log("listening on %j", this.address());
+            console.log('listening on %j', this.address());
         });
         this.server.on('connection', function(socket) {
 
         });
     }
-    this.emit("init");
-}
+
+    this.emit('init');
+};
 
 util.inherits(Connection, EventEmitter);
 
@@ -129,7 +133,7 @@ Connection.prototype.getSoureceAE = function() {
 };
 
 Connection.prototype.ready = function() {
-    console.log("Connection established");
+    console.log('Connection established');
     this.connected = true;
     this.started = time();
 
@@ -158,7 +162,7 @@ Connection.prototype.process = function(data) {
     //console.log("Data received");
     if (this.receiving === null) {
         if (this.minRecv) {
-            data = Buffer.concat([this.minRecv, data], this.minRecv.length + data.length);
+            data = Buffer.concat([ this.minRecv, data ], this.minRecv.length + data.length);
             this.minRecv = null;
         }
 
@@ -182,6 +186,7 @@ Connection.prototype.process = function(data) {
                 process = data.slice(0, len + 6);
                 remaining = data.slice(len + 6, cmp + 6);
             }
+
             this.resetReceive();
             this.interpret(new ReadStream(process));
             if (remaining) {
@@ -189,7 +194,7 @@ Connection.prototype.process = function(data) {
             }
         }
     } else {
-        var newData = Buffer.concat([this.receiving, data], this.receiving.length + data.length),
+        var newData = Buffer.concat([ this.receiving, data ], this.receiving.length + data.length),
             pduLength = newData.length - 6;
 
         if (pduLength < this.receiveLength) {
@@ -200,6 +205,7 @@ Connection.prototype.process = function(data) {
                 remaining = newData.slice(this.receiveLength + 6, pduLength + 6);
                 newData = newData.slice(0, this.receiveLength + 6);
             }
+
             this.resetReceive();
             this.interpret(new ReadStream(newData));
             if (remaining) {
@@ -207,6 +213,7 @@ Connection.prototype.process = function(data) {
             }
         }
     }
+
     return null;
 };
 
@@ -221,8 +228,9 @@ Connection.prototype.interpret = function(stream) {
             pdu.presentationContextItems.forEach(function(ctx) {
                 var requested = o.getContext(ctx.presentationContextID);
                 if (!requested) {
-                    throw "Accepted presentation context not found";
+                    throw 'Accepted presentation context not found';
                 }
+
                 o.negotiatedContexts[ctx.presentationContextID] = {
                     id: ctx.presentationContextID,
                     transferSyntax: ctx.transferSyntaxesItems[0].transferSyntaxName,
@@ -270,11 +278,13 @@ Connection.prototype.interpret = function(stream) {
                         break;
                     }
                 }
+
                 if (pdvs[i].isLast) {
                     this.emit('message', pdvs[i]);
                 } else {
-                    this.pendingPDVs = [pdvs[i]];
+                    this.pendingPDVs = [ pdvs[i] ];
                 }
+
                 i = j;
             } else {
                 this.emit('message', pdvs[i++]);
@@ -287,17 +297,17 @@ Connection.prototype.interpret = function(stream) {
 
 Connection.prototype.newMessageId = function() {
     return (++this.messageIdCounter) % 255;
-}
+};
 
 Connection.prototype.closed = function(had_error) {
     this.connected = false;
-    console.log("Connection closed", had_error);
+    console.log('Connection closed', had_error);
     //this.destroy();
-}
+};
 
 Connection.prototype.error = function(err) {
-    console.log("Error: ", err);
-}
+    console.log('Error: ', err);
+};
 
 Connection.prototype.send = function(pdu, afterCbk) {
     //console.log('SEND PDU-TYPE: ', pdu.type);
@@ -306,13 +316,13 @@ Connection.prototype.send = function(pdu, afterCbk) {
     this.socket.write(toSend, afterCbk ? afterCbk : function() {
         //console.log('Data written');
     });
-}
+};
 
 Connection.prototype.getSyntax = function(contextId) {
     if (!this.negotiatedContexts[contextId]) return null;
 
     return this.negotiatedContexts[contextId].transferSyntax;
-}
+};
 
 Connection.prototype.getContextByUID = function(uid) {
     for (var k in this.negotiatedContexts) {
@@ -321,22 +331,24 @@ Connection.prototype.getContextByUID = function(uid) {
             return ctx;
         }
     }
+
     return null;
-}
+};
 
 Connection.prototype.getContextId = function(contextId) {
     if (!this.negotiatedContexts[contextId]) return null;
 
     return this.negotiatedContexts[contextId].id;
-}
+};
 
 Connection.prototype.getContext = function(id) {
     for (var k in this.presentationContexts) {
         var ctx = this.presentationContexts[k];
         if (id == ctx.id) return ctx;
     }
+
     return null;
-}
+};
 
 Connection.prototype.setPresentationContexts = function(uids) {
     var contexts = [],
@@ -345,29 +357,29 @@ Connection.prototype.setPresentationContexts = function(uids) {
         contexts.push({
             id: ++id,
             abstractSyntax: uid,
-            transferSyntaxes: [C.IMPLICIT_LITTLE_ENDIAN, C.EXPLICIT_LITTLE_ENDIAN, C.EXPLICIT_BIG_ENDIAN]
+            transferSyntaxes: [ C.IMPLICIT_LITTLE_ENDIAN, C.EXPLICIT_LITTLE_ENDIAN, C.EXPLICIT_BIG_ENDIAN ]
         });
     });
     this.presentationContexts = contexts;
-}
+};
 
 Connection.prototype.verify = function() {
-    this.setPresentationContexts([C.SOP_VERIFICATION]);
+    this.setPresentationContexts([ C.SOP_VERIFICATION ]);
     this.startAssociationRequest(function() {
         //associated, we can release now
         this.release();
     });
-}
+};
 
 Connection.prototype.release = function() {
     var releaseRQ = new ReleaseRQ();
     this.send(releaseRQ);
-}
+};
 
 Connection.prototype.addService = function(service) {
     service.setConnection(this);
     this.services.push(service);
-}
+};
 
 Connection.prototype.receivedMessage = function(pdv) {
     var syntax = this.getSyntax(pdv.contextId),
@@ -380,9 +392,11 @@ Connection.prototype.receivedMessage = function(pdv) {
             if (msg.is(C.COMMAND_C_GET_RSP) || msg.is(C.COMMAND_C_MOVE_RSP)) {
                 //console.log('remaining', msg.getNumOfRemainingSubOperations(), msg.getNumOfCompletedSubOperations());
             }
+
             if (msg.failure()) {
                 //console.log("message failed with status ", msg.getStatus().toString(16));
             }
+
             if (msg.isFinal()) {
                 var replyId = msg.respondedTo();
                 if (this.messages[replyId].listener) {
@@ -408,7 +422,7 @@ Connection.prototype.receivedMessage = function(pdv) {
 
     } else {
         if (!this.lastCommand) {
-            throw "Only dataset?";
+            throw 'Only dataset?';
         } else if (!this.lastCommand.haveData()) {
             throw "Last command didn't indicate presence of data";
         }
@@ -418,7 +432,7 @@ Connection.prototype.receivedMessage = function(pdv) {
             if (this.messages[replyId].listener) {
                 var flag = this.lastCommand.failure() ? true : false;
 
-                this.messages[replyId].listener.emit("result", msg, flag);
+                this.messages[replyId].listener.emit('result', msg, flag);
 
                 if (this.lastCommand.failure()) {
                     delete this.messages[replyId];
@@ -434,14 +448,14 @@ Connection.prototype.receivedMessage = function(pdv) {
                     if (this.lastGets.length > 0) {
                         useId = this.lastGets[0];
                     } else {
-                        throw "Where does this c-store came from?";
+                        throw 'Where does this c-store came from?';
                     }
                 } else console.log('move ', moveMessageId);
                 //this.storeResponse(useId, msg);
             }
         }
     }
-}
+};
 
 Connection.prototype.storeResponse = function(messageId, msg) {
     var rq = this.messages[messageId];
@@ -456,10 +470,10 @@ Connection.prototype.storeResponse = function(messageId, msg) {
             replyMessage.setReplyMessageId(this.lastCommand.messageId);
             this.sendMessage(replyMessage, null, null, storeSr);
         } else {
-            throw "Missing store status";
+            throw 'Missing store status';
         }
     }
-}
+};
 
 Connection.prototype.sendMessage = function(context, command, dataset, listener) {
     var nContext = this.getContextByUID(context),
@@ -489,8 +503,9 @@ Connection.prototype.sendMessage = function(context, command, dataset, listener)
     if (command.is(C.COMMAND_C_GET_RQ)) {
         this.lastGets.push(messageId);
     }
+
     pdv.setMessage(command);
-    pdata.setPresentationDataValueItems([pdv]);
+    pdata.setPresentationDataValueItems([ pdv ]);
 
     msgData.command = command;
     this.messages[messageId] = msgData;
@@ -507,9 +522,10 @@ Connection.prototype.sendMessage = function(context, command, dataset, listener)
             dPdv = new PresentationDataValueItem(cid);
 
         dPdv.setMessage(dataset);
-        dsData.setPresentationDataValueItems([dPdv]);
+        dsData.setPresentationDataValueItems([ dPdv ]);
         this.send(dsData);
     }
+
     return msgData.listener;
 };
 
@@ -517,6 +533,7 @@ Connection.prototype.associate = function(options, callback) {
     if (callback) {
         this.once('associated', callback);
     }
+
     if (this.associated) {
         this.emit('associated');
         return;
@@ -525,7 +542,7 @@ Connection.prototype.associate = function(options, callback) {
     if (options.contexts) {
         this.setPresentationContexts(options.contexts);
     } else {
-        throw "No services attached";
+        throw 'No services attached';
     }
 
     var associateRQ = new AssociateRQ();
@@ -534,7 +551,7 @@ Connection.prototype.associate = function(options, callback) {
     associateRQ.setCallingAETitle(sourceAE);
     associateRQ.setApplicationContextItem(new ApplicationContextItem());
 
-    var contextItems = []
+    var contextItems = [];
     this.presentationContexts.forEach(function(context) {
         var contextItem = new PresentationContextItem(),
             syntaxes = [];
@@ -563,12 +580,12 @@ Connection.prototype.associate = function(options, callback) {
     maxLengthItem.setMaximumLengthReceived(packageSize);
 
     var userInfo = new UserInformationItem();
-    userInfo.setUserDataItems([maxLengthItem, classUIDItem, versionItem]);
+    userInfo.setUserDataItems([ maxLengthItem, classUIDItem, versionItem ]);
 
     associateRQ.setUserInformationItem(userInfo);
 
     this.send(associateRQ);
-}
+};
 
 Connection.prototype.wrapMessage = function(data) {
     if (data) {
@@ -576,60 +593,60 @@ Connection.prototype.wrapMessage = function(data) {
         datasetMessage.setElements(data);
         return datasetMessage;
     } else return data;
-}
+};
 
 Connection.prototype.setFindContext = function(ctx) {
     this.findContext = ctx;
-}
+};
 
 Connection.prototype.find = function(params, callback) {
     return this.sendMessage(this.findContext, new CFindRQ(), this.wrapMessage(params), callback);
-}
+};
 
 Connection.prototype.findPatients = function(params, callback) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_PATIENT,
-        0x00100010: "",
-        0x00100020: "",
-        0x00100030: "",
-        0x00100040: "",
+        0x00100010: '',
+        0x00100020: '',
+        0x00100030: '',
+        0x00100040: '',
     }, params);
 
     return this.find(sendParams, callback);
-}
+};
 
 Connection.prototype.findStudies = function(params, callback) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_STUDY,
-        0x00080020: "",
-        0x00100010: "",
-        0x00080061: "",
-        0x0020000D: ""
+        0x00080020: '',
+        0x00100010: '',
+        0x00080061: '',
+        0x0020000D: ''
     }, params);
 
     return this.find(sendParams, callback);
-}
+};
 
 Connection.prototype.findSeries = function(params, callback) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_SERIES,
-        0x00080020: "",
-        0x0020000E: "",
-        0x0008103E: "",
-        0x0020000D: ""
+        0x00080020: '',
+        0x0020000E: '',
+        0x0008103E: '',
+        0x0020000D: ''
     }, params);
 
     return this.find(sendParams, callback);
-}
+};
 
 Connection.prototype.findInstances = function(params, callback) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_IMAGE,
-        0x00080020: "",
-        0x0020000E: "",
-        0x0008103E: "",
-        0x0020000D: ""
+        0x00080020: '',
+        0x0020000E: '',
+        0x0008103E: '',
+        0x0020000D: ''
     }, params);
 
     return this.find(sendParams, callback);
-}
+};

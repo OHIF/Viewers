@@ -9,5 +9,8 @@ getTimepointObject = function(imageId) {
     if (!study) {
         return;
     }
-    return Timepoints.findOne({timepointName: study.studyDate});
+
+    return Timepoints.findOne({
+        timepointName: study.studyDate
+    });
 };

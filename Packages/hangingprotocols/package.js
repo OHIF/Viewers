@@ -1,10 +1,10 @@
 Package.describe({
-    name: "hangingprotocols",
-    summary: "Support functions for using DICOM Hanging Protocols",
+    name: 'hangingprotocols',
+    summary: 'Support functions for using DICOM Hanging Protocols',
     version: '0.0.1'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
     api.use('cornerstone');;
 
     api.addFiles('server/namespace.js', 'server');
@@ -13,5 +13,5 @@ Package.onUse(function (api) {
 
     api.export('instanceDataToJsObject', 'server');
     api.export('TAG_DICT', 'server');
-    api.export("DICOMHP", ['client', 'server']);
+    api.export('DICOMHP', [ 'client', 'server' ]);
 });

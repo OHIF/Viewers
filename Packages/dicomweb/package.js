@@ -1,10 +1,10 @@
 Package.describe({
-  name: "dicomweb",
-  summary: "DICOM Web Helper Functions",
-  version: '0.0.1'
+    name: 'dicomweb',
+    summary: 'DICOM Web Helper Functions',
+    version: '0.0.1'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
     api.use('http');
 
     // DICOMWeb API functions
@@ -19,6 +19,6 @@ Package.onUse(function (api) {
     api.addFiles('lib/findIndexOfString.js', 'server');
     api.addFiles('lib/uint8ArrayToString.js', 'server');
 
-    api.export("DICOMWeb", 'server');
+    api.export('DICOMWeb', 'server');
 });
 

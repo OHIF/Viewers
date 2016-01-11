@@ -1,5 +1,5 @@
 Template.viewerMain.helpers({
-    'toolbarOptions': function() {
+    toolbarOptions: function() {
         var toolbarOptions = {};
 
         var buttonData = [];

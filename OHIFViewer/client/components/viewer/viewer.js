@@ -2,7 +2,7 @@ Template.viewer.onCreated(function() {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
 
-    log.info("viewer onCreated");
+    log.info('viewer onCreated');
 
     OHIF = window.OHIF || {
         viewer: {}
@@ -34,7 +34,6 @@ Template.viewer.onCreated(function() {
             WindowManager.nextPresentationGroup();
         }
     };
-
 
     if (isTouchDevice()) {
         OHIF.viewer.tooltipConfig = {
@@ -75,10 +74,10 @@ Template.viewer.onCreated(function() {
         ViewerStudies.insert(study);
     });
 
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
+    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 });
 
 Template.viewer.onDestroyed(function() {
-    log.info("onDestroyed");
+    log.info('onDestroyed');
     OHIF.viewer.updateImageSynchronizer.destroy();
 });

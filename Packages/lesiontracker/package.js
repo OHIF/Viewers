@@ -1,10 +1,10 @@
 Package.describe({
-  name: "lesiontracker",
-  summary: "OHIF Lesion Tracker Tools",
-  version: '0.0.1'
+    name: 'lesiontracker',
+    summary: 'OHIF Lesion Tracker Tools',
+    version: '0.0.1'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
     api.versionsFrom('1.2.0.2');
 
     api.use('standard-app-packages');
@@ -15,16 +15,26 @@ Package.onUse(function (api) {
     // Our custom package
     api.use('cornerstone');
 
-    api.addFiles('log.js', ['client', 'server']);
+    api.addFiles('log.js', [ 'client', 'server' ]);
 
     api.addFiles('client/collections/LesionLocations.js', 'client');
     api.addFiles('client/collections/LocationResponses.js', 'client');
 
-    api.addFiles('client/compatibility/lesionTool.js', 'client', {bare: true});
-    api.addFiles('client/compatibility/nonTargetTool.js', 'client', {bare: true});
-    api.addFiles('client/compatibility/scaleOverlayTool.js', 'client', {bare: true});
-    api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {bare: true});
-    api.addFiles('client/compatibility/LesionManager.js', 'client', {bare: true});
+    api.addFiles('client/compatibility/lesionTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/nonTargetTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/scaleOverlayTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/LesionManager.js', 'client', {
+        bare: true
+    });
 
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
@@ -66,10 +76,10 @@ Package.onUse(function (api) {
 
     // Server functions
     api.addFiles('server/collections.js', 'server');
-    api.addFiles('server/removeCollections.js', ['server']);
+    api.addFiles('server/removeCollections.js', [ 'server' ]);
 
     // Both client and server functions
-    api.addFiles('both/collections.js', ['client', 'server']);
+    api.addFiles('both/collections.js', [ 'client', 'server' ]);
 
     // Library functions
     api.addFiles('lib/uuid.js', 'client');
@@ -82,7 +92,6 @@ Package.onUse(function (api) {
     api.addFiles('lib/deactivateAllToolData.js', 'client');
     api.addFiles('lib/clearTools.js', 'client');
     api.addFiles('lib/mathUtils.js', 'client');
-
 
     // Export gloabal functions
     api.export('activateLesion','client');
@@ -107,6 +116,6 @@ Package.onUse(function (api) {
     api.export('PatientLocations', 'client');
 
     // Export collections spanning both client and server
-    api.export('Measurements', ['client', 'server']);
-    api.export('Timepoints', ['client', 'server']);
+    api.export('Measurements', [ 'client', 'server' ]);
+    api.export('Timepoints', [ 'client', 'server' ]);
 });

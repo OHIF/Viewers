@@ -3,7 +3,7 @@ function closeHandler(dialog) {
     $(dialog).css('display', 'none');
 
     // Remove the backdrop
-    $(".removableBackdrop").remove();
+    $('.removableBackdrop').remove();
 
     // Restore the focus to the active viewport
     setFocusToActiveViewport();
@@ -17,7 +17,9 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
     var imageId = enabledElement.image.imageId;
 
     var study = cornerstoneTools.metaData.get('study', imageId);
-    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+    var timepoint = Timepoints.findOne({
+        timepointName: study.studyDate
+    });
     if (!timepoint) {
         return;
     }
@@ -26,7 +28,7 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint
-    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointID, isTarget=true);
+    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointID, isTarget = true);
     measurementData.lesionNumber = lesionNumber;
 
     // Set lesion number
@@ -43,20 +45,20 @@ function getLesionLocationCallback(measurementData, eventData) {
     Template.lesionLocationDialog.doneCallback = undefined;
 
     // Get the lesion location dialog
-    var dialog = $("#lesionLocationDialog");
+    var dialog = $('#lesionLocationDialog');
     Template.lesionLocationDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $(".removableBackdrop").one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler(dialog);
     });
 
     // Select the first option for now
-    var selector = dialog.find("select.selectLesionLocation");
-    selector.find("option:first").prop("selected", true);
+    var selector = dialog.find('select.selectLesionLocation');
+    selector.find('option:first').prop('selected', true);
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, stop here because we don't need the dialog.
@@ -73,7 +75,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     // If it isn't, continue to open the dialog and have the user choose a lesion location
 
     // Show the lesion location dialog above
-    var dialogProperty =  {
+    var dialogProperty = {
         top: eventData.currentPoints.page.y - dialog.outerHeight() - 40,
         left: eventData.currentPoints.page.x - dialog.outerWidth() / 2,
         display: 'block'
@@ -91,7 +93,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     // If device is touch device, set position center of screen vertically and horizontally
     if (isTouchDevice()) {
         // add dialogMobile class to provide a black,transparent background
-        dialog.addClass("dialogMobile");
+        dialog.addClass('dialogMobile');
         dialogProperty.top = 0;
         dialogProperty.left = 0;
         dialogProperty.right = 0;
@@ -107,14 +109,14 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
     Template.lesionLocationDialog.doneCallback = doneCallback;
 
     // Get the lesion location dialog
-    var dialog = $("#lesionLocationRelabelDialog");
+    var dialog = $('#lesionLocationRelabelDialog');
     Template.lesionLocationDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $(".removableBackdrop").one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler(dialog);
     });
 
@@ -127,7 +129,7 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
     // If device is touch device, set position center of screen vertically and horizontally
     if (!eventData || isTouchDevice()) {
         // add dialogMobile class to provide a black,transparent background
-        dialog.addClass("dialogMobile");
+        dialog.addClass('dialogMobile');
         dialogProperty.top = 0;
         dialogProperty.left = 0;
         dialogProperty.right = 0;
@@ -146,8 +148,14 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
     }
 
     LesionLocations.update({},
-        {$set: {selected: false}},
-        { multi: true });
+        {
+            $set: {
+                selected: false
+            }
+        },
+        {
+            multi: true
+        });
 
     var currentLocation = LesionLocations.findOne({
         id: measurement.locationId
@@ -188,10 +196,14 @@ Template.lesionLocationDialog.events({
         }
 
         // Get selected location data
-        var locationObj = LesionLocations.findOne({_id: selectedOptionId});
+        var locationObj = LesionLocations.findOne({
+            _id: selectedOptionId
+        });
 
         var id;
-        var existingLocation = PatientLocations.findOne({location: locationObj.location});
+        var existingLocation = PatientLocations.findOne({
+            location: locationObj.location
+        });
         if (existingLocation) {
             id = existingLocation._id;
         } else {
@@ -269,7 +281,7 @@ Template.lesionLocationDialog.events({
 });
 
 Template.lesionLocationDialog.helpers({
-    'lesionLocations': function() {
+    lesionLocations: function() {
         return LesionLocations.find();
     }
 });

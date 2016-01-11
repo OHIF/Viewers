@@ -1,6 +1,10 @@
 Template.lesionTableRow.helpers({
-    'timepoints': function() {
-        return Timepoints.find({}, {sort: {timepointName: 1}});
+    timepoints: function() {
+        return Timepoints.find({}, {
+            sort: {
+                timepointName: 1
+            }
+        });
     }
 });
 
@@ -9,7 +13,7 @@ function doneCallback(measurementData, deleteTool) {
     // opened by the Lesion Table, we should clear the data for
     // the specified Timepoint Cell
     if (deleteTool === true) {
-        Meteor.call("removeMeasurement", measurementData.id, function(error, response) {
+        Meteor.call('removeMeasurement', measurementData.id, function(error, response) {
             if (error) {
                 log.warn(error);
             }
@@ -47,7 +51,7 @@ Template.lesionTableRow.events({
             };
 
             showConfirmDialog(function() {
-                Meteor.call("removeMeasurement", currentMeasurement._id, function(error, response) {
+                Meteor.call('removeMeasurement', currentMeasurement._id, function(error, response) {
                     if (error) {
                         log.warn(error);
                     }

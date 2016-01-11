@@ -6,7 +6,7 @@ Template.viewer.onCreated(function() {
 
     var firstMeasurementsActivated = false;
 
-    log.info("viewer onCreated");
+    log.info('viewer onCreated');
 
     OHIF = OHIF || {
         viewer: {}
@@ -17,7 +17,6 @@ Template.viewer.onCreated(function() {
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.isPlaying = {};
     var contentId = this.data.contentId;
-
 
     OHIF.viewer.functionList = {
         invert: function(element) {
@@ -36,24 +35,25 @@ Template.viewer.onCreated(function() {
             } else {
                 cornerstoneTools.playClip(element);
             }
+
             OHIF.viewer.isPlaying[viewportIndex] = !OHIF.viewer.isPlaying[viewportIndex];
             Session.set('UpdateCINE', Random.id());
         },
         toggleLesionTrackerTools: toggleLesionTrackerTools,
         clearTools: clearTools,
         lesion: function() {
-            toolManager.setActiveTool("lesion");
+            toolManager.setActiveTool('lesion');
         },
         nonTarget: function() {
-            toolManager.setActiveTool("nonTarget");
+            toolManager.setActiveTool('nonTarget');
         }
 
     };
 
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
-    OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = "O";
-    OHIF.viewer.defaultHotkeys.lesion = "T"; // Target
-    OHIF.viewer.defaultHotkeys.nonTarget = "N"; // Non-target
+    OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = 'O';
+    OHIF.viewer.defaultHotkeys.lesion = 'T'; // Target
+    OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
 
     if (isTouchDevice()) {
         OHIF.viewer.tooltipConfig = {
@@ -64,7 +64,6 @@ Template.viewer.onCreated(function() {
             trigger: 'hover'
         };
     }
-
 
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
@@ -114,7 +113,7 @@ Template.viewer.onCreated(function() {
 
                     // If we do, stop here
                     if (timepoint) {
-                        log.warn("A timepoint with that study date already exists!");
+                        log.warn('A timepoint with that study date already exists!');
                         return;
                     }
 
@@ -124,7 +123,7 @@ Template.viewer.onCreated(function() {
                     // If it relates to another subject, we need to stop here as well
                     // because the tab may be changing.
                     if (testTimepoint && testTimepoint.patientId !== study.patientId) {
-                        log.warn("Timepoints collection related to the wrong subject");
+                        log.warn('Timepoints collection related to the wrong subject');
                         return;
                     }
 
@@ -149,7 +148,7 @@ Template.viewer.onCreated(function() {
                     // Activate first measurements in image box as default if exists
                     if (!firstMeasurementsActivated) {
                         var templateData = {
-                            contentId: Session.get("activeContentId")
+                            contentId: Session.get('activeContentId')
                         };
 
                         // Activate measurement
@@ -184,7 +183,7 @@ Template.viewer.onCreated(function() {
                     // that were created after the current lesion by 1
                     Meteor.call('decrementLesionNumbers', data, function(error, response) {
                         if (error) {
-                            log.warn(error)
+                            log.warn(error);
                         }
 
                         // Sync database data with toolData for all the measurements
@@ -214,7 +213,7 @@ Template.viewer.onCreated(function() {
         }
     });
 
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.updateImageSynchronizer);
+    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 });
 
 function updateRelatedElements(imageId) {
@@ -311,7 +310,7 @@ Template.viewer.onRendered(function() {
 });
 
 Template.viewer.onDestroyed(function() {
-    log.info("onDestroyed");
+    log.info('onDestroyed');
 
     // Remove the Window resize listener
     $(window).off('resize', handleResize);

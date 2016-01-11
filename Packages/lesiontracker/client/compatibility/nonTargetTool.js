@@ -68,7 +68,7 @@
             if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
-            }else{
+            }else {
                 config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
 
             }
@@ -150,6 +150,7 @@
         if (!handle.boundingBox) {
             return;
         }
+
         return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
     }
 
@@ -217,7 +218,7 @@
                 context.beginPath();
                 context.strokeStyle = color;
                 context.lineWidth = lineWidth;
-                context.setLineDash([2, 3]);
+                context.setLineDash([ 2, 3 ]);
 
                 context.moveTo(mid.x, mid.y);
                 context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
@@ -254,6 +255,7 @@
         if (measurementData.lesionName === undefined) {
             config.setLesionNumberCallback(measurementData, touchEventData, doneCallback);
         }
+
         cornerstone.updateImage(element);
 
         cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -266,13 +268,11 @@
 
             config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
 
-
             $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
             $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
             $(element).on('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
         });
     }
-
 
     function doubleClickCallback(e, eventData) {
         var element = eventData.element;
@@ -338,6 +338,5 @@
         toolType: toolType
         // pressCallback: doubleClickCallback
     });
-
 
 })($, cornerstone, cornerstoneMath, cornerstoneTools);

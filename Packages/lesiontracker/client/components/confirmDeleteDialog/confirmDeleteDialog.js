@@ -1,9 +1,9 @@
 function closeHandler() {
     // Hide the lesion dialog
-    $("#confirmDeleteDialog").css('display', 'none');
+    $('#confirmDeleteDialog').css('display', 'none');
 
     // Remove the backdrop
-    $(".removableBackdrop").remove();
+    $('.removableBackdrop').remove();
 
     // Remove the callback from the template data
     delete Template.confirmDeleteDialog.doneCallback;
@@ -17,18 +17,18 @@ showConfirmDialog = function(doneCallback, options) {
     options = options || {};
     UI.renderWithData(Template.removableBackdrop, options, document.body);
 
-    var confirmDeleteDialog = $("#confirmDeleteDialog");
+    var confirmDeleteDialog = $('#confirmDeleteDialog');
     confirmDeleteDialog.remove();
 
     var viewer = document.getElementById('viewer');
     UI.renderWithData(Template.confirmDeleteDialog, options, viewer);
 
     // Make sure the context menu is closed when the user clicks away
-    $(".removableBackdrop").one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler();
     });
 
-    confirmDeleteDialog = $("#confirmDeleteDialog");
+    confirmDeleteDialog = $('#confirmDeleteDialog');
     confirmDeleteDialog.css('display', 'block');
     confirmDeleteDialog.focus();
 

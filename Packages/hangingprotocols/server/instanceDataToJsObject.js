@@ -11,7 +11,7 @@ var valueRepresentationTypes = {
  * @param instance
  * @param options
  */
-instanceDataToJsObject = function (instance, dictionary) {
+instanceDataToJsObject = function(instance, dictionary) {
     if (!instance) {
         throw 'instanceDataToJsObject: missing required parameter dataSet';
     }

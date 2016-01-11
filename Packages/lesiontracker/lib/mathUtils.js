@@ -4,14 +4,13 @@ sign = function(x) {
     return typeof x === 'number' ? x ? x < 0 ? -1 : 1 : x === x ? 0 : NaN : NaN;
 };
 
-
 // Returns intersection points of lines and whether lines are intersected
-getLineIntersection = function (point1, point2, point3, point4) {
+getLineIntersection = function(point1, point2, point3, point4) {
 
     var intersectionPoint = {};
 
-    var x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 =  point2.y,
-        x3 = point3.x, y3 = point3.y, x4 = point4.x, y4 =  point4.y;
+    var x1 = point1.x, y1 = point1.y, x2 = point2.x, y2 = point2.y,
+        x3 = point3.x, y3 = point3.y, x4 = point4.x, y4 = point4.y;
 
     var a1, a2, b1, b2, c1, c2; // Coefficients of line equations
     var r1, r2, r3, r4; // Sign values
@@ -33,8 +32,7 @@ getLineIntersection = function (point1, point2, point3, point4) {
 
     if (r3 != 0 &&
         r4 != 0 &&
-        sign(r3) == sign(r4))
-    {
+        sign(r3) == sign(r4)) {
         intersectionPoint.x = 0;
         intersectionPoint.y = 0;
         intersectionPoint.intersected = false;
@@ -59,8 +57,7 @@ getLineIntersection = function (point1, point2, point3, point4) {
 
     if (r1 != 0 &&
         r2 != 0 &&
-        sign(r1) == sign(r2))
-    {
+        sign(r1) == sign(r2)) {
         intersectionPoint.x = 0;
         intersectionPoint.y = 0;
         intersectionPoint.intersected = false;
@@ -98,7 +95,7 @@ getDistance = function(point1, point2) {
 };
 
 // Returns distance from point to a line
-getDistanceFromPointToLine = function (ptTest, pt1, pt2) {
+getDistanceFromPointToLine = function(ptTest, pt1, pt2) {
     var ptNearest = {};
 
     // Point on line segment nearest to pt0
@@ -106,29 +103,23 @@ getDistanceFromPointToLine = function (ptTest, pt1, pt2) {
     var dy = pt2.y - pt1.y;
 
     // It's a point, not a line
-    if (dx == 0 && dy == 0)
-    {
+    if (dx == 0 && dy == 0) {
         ptNearest.x = pt1.x;
         ptNearest.y = pt1.y;
-    }
-    else
-    {
+    } else {
         // Parameter
         var t = ((ptTest.x - pt1.x) * dx + (ptTest.y - pt1.y) * dy) / (dx * dx + dy * dy);
 
         // Nearest point is pt1
-        if (t < 0)
-        {
+        if (t < 0) {
             ptNearest = pt1;
         }
         // Nearest point is pt2
-        else if (t > 1)
-        {
+        else if (t > 1) {
             ptNearest = pt2;
         }
         // Nearest point is on the line segment
-        else
-        {
+        else {
             // Parametric equation
             ptNearest.x = (pt1.x + t * dx);
             ptNearest.y = (pt1.y + t * dy);

@@ -6,21 +6,21 @@
  * @returns {*}
  */
 DICOMWeb.getName = function(element, defaultValue) {
-  if(!element) {
-    return defaultValue;
-  }
-  // Value is not present if the attribute has a zero length value
-  if(!element.Value) {
-    return defaultValue;
-  }
-  // Sanity check to make sure we have at least one entry in the array.
-  if(!element.Value.length) {
-    return defaultValue;
-  }
-  // Return the Alphabetic component group
-  if(element.Value[0].Alphabetic) {
-    return element.Value[0].Alphabetic;
-  }
-  // Orthanc does not return PN properly so this is a temporary workaround
-  return element.Value[0];
+    if (!element) {
+        return defaultValue;
+    }
+    // Value is not present if the attribute has a zero length value
+    if (!element.Value) {
+        return defaultValue;
+    }
+    // Sanity check to make sure we have at least one entry in the array.
+    if (!element.Value.length) {
+        return defaultValue;
+    }
+    // Return the Alphabetic component group
+    if (element.Value[0].Alphabetic) {
+        return element.Value[0].Alphabetic;
+    }
+    // Orthanc does not return PN properly so this is a temporary workaround
+    return element.Value[0];
 };

@@ -3,106 +3,106 @@ LesionLocations = new Meteor.Collection(null);
 LesionLocations.insert({
     id: 'liverLeft',
     group: 'liver',
-    location: "Liver Left",
+    location: 'Liver Left',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'liverRight',
     group: 'liver',
-    location: "Liver Right",
+    location: 'Liver Right',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'liverCaudate',
     group: 'liver',
-    location: "Liver Caudate",
+    location: 'Liver Caudate',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'lungLLL',
     group: 'lung',
-    location: "Lung LLL",
+    location: 'Lung LLL',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'lungLUL',
     group: 'lung',
-    location: "Lung LUL",
+    location: 'Lung LUL',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'lungRLL',
     group: 'lung',
-    location: "Lung RLL",
+    location: 'Lung RLL',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'lungRML',
     group: 'lung',
-    location: "Lung RML",
+    location: 'Lung RML',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'lungRUL',
     group: 'lung',
-    location: "Lung RUL",
+    location: 'Lung RUL',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'pleuraLeft',
     group: 'pleura',
-    location: "Pleura Left",
+    location: 'Pleura Left',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'pleuraRight',
     group: 'pleura',
-    location: "Pleura Right",
+    location: 'Pleura Right',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'kidneyLeft',
     group: 'kidney',
-    location: "Kidney Left",
+    location: 'Kidney Left',
     hasDescription: false,
-    description: "",
+    description: '',
     selected: false
 });
 
 LesionLocations.insert({
     id: 'kidneyRight',
     group: 'kidney',
-    location: "Kidney Right",
+    location: 'Kidney Right',
     hasDescription: false,
-    description: ""
+    description: ''
 });

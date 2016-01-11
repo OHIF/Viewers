@@ -1,5 +1,5 @@
 Template.lesionTableTimepointCell.helpers({
-    'hasDataAtThisTimepoint': function() {
+    hasDataAtThisTimepoint: function() {
         // This simple function just checks whether or not timepoint data
         // exists for this Measurement at this Timepoint
         var lesionData = Template.parentData(1);
@@ -7,7 +7,7 @@ Template.lesionTableTimepointCell.helpers({
             lesionData.timepoints &&
             lesionData.timepoints[this.timepointID]);
     },
-    'displayData': function() {
+    displayData: function() {
         // Search Measurements by lesion and timepoint
         var lesionData = Template.parentData(1);
         if (!lesionData ||
@@ -20,7 +20,7 @@ Template.lesionTableTimepointCell.helpers({
 
         if (lesionData.isTarget === true) {
             if (data.shortestDiameter) {
-                return data.longestDiameter + " x " + data.shortestDiameter;
+                return data.longestDiameter + ' x ' + data.shortestDiameter;
             }
 
             return data.longestDiameter;
@@ -28,7 +28,7 @@ Template.lesionTableTimepointCell.helpers({
             return data.response;
         }
     },
-    'isTarget': function() {
+    isTarget: function() {
         var lesionData = Template.parentData(1);
         return lesionData.isTarget;
     }

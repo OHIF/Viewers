@@ -31,7 +31,7 @@
             nearbyToolIndex,
             nearbyToolType;
 
-        toolTypes.forEach(function(toolType){
+        toolTypes.forEach(function(toolType) {
             var toolData = cornerstoneTools.getToolState(element, toolType);
             if (!toolData) {
                 return;
@@ -75,7 +75,7 @@
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
-            var toolTypes = ["lesion", "nonTarget"];
+            var toolTypes = [ 'lesion', 'nonTarget' ];
             var nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
 
             if (!nearbyToolData) {

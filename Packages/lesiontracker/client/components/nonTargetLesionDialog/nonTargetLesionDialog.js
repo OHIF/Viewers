@@ -3,7 +3,7 @@ function closeHandler(dialog) {
     $(dialog).css('display', 'none');
 
     // Remove the backdrop
-    $(".removableBackdrop").remove();
+    $('.removableBackdrop').remove();
 
     // Restore the focus to the active viewport
     setFocusToActiveViewport();
@@ -17,7 +17,9 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
     var imageId = enabledElement.image.imageId;
 
     var study = cornerstoneTools.metaData.get('study', imageId);
-    var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+    var timepoint = Timepoints.findOne({
+        timepointName: study.studyDate
+    });
     if (!timepoint) {
         return;
     }
@@ -29,7 +31,7 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint
-    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointID, isTarget=false);
+    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointID, isTarget = false);
     measurementData.lesionNumber = lesionNumber;
 
     // Set lesion number
@@ -43,26 +45,26 @@ function getLesionLocationCallback(measurementData, eventData) {
     Template.nonTargetLesionDialog.measurementData = measurementData;
 
     // Get the non-target lesion location dialog
-    var dialog = $("#nonTargetLesionLocationDialog");
+    var dialog = $('#nonTargetLesionLocationDialog');
     Template.nonTargetLesionDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $(".removableBackdrop").one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler(dialog);
     });
 
     // Find the select option box
-    var selectorLocation = dialog.find("select#selectNonTargetLesionLocation");
-    var selectorResponse = dialog.find("select#selectNonTargetLesionLocationResponse");
+    var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
+    var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
 
-    selectorLocation.find("option:first").prop("selected", "selected");
-    selectorResponse.find("option:first").prop("selected", "selected");
+    selectorLocation.find('option:first').prop('selected', 'selected');
+    selectorResponse.find('option:first').prop('selected', 'selected');
 
     // Allow location selection
-    selectorLocation.removeAttr("disabled");
+    selectorLocation.removeAttr('disabled');
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, disable selector location
@@ -83,15 +85,15 @@ function getLesionLocationCallback(measurementData, eventData) {
         selectorLocation.find('option').each(function() {
             if ($(this).text() === locationName) {
                 // Select location in locations dropdown list
-                selectorLocation.find('option').eq($(this).index()).prop("selected", true);
+                selectorLocation.find('option').eq($(this).index()).prop('selected', true);
             }
         });
 
-        selectorLocation.prop("disabled", true);
+        selectorLocation.prop('disabled', true);
     }
 
     // Show the nonTargetLesion dialog above
-    var dialogProperty =  {
+    var dialogProperty = {
         top: eventData.currentPoints.page.y - dialog.outerHeight() - 40,
         left: eventData.currentPoints.page.x - dialog.outerWidth() / 2,
         display: 'block'
@@ -109,7 +111,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     // If device is touch device, set position center of screen vertically and horizontally
     if (isTouchDevice()) {
         // add dialogMobile class to provide a black,transparent background
-        dialog.addClass("dialogMobile");
+        dialog.addClass('dialogMobile');
         dialogProperty.top = 0;
         dialogProperty.left = 0;
         dialogProperty.right = 0;
@@ -125,14 +127,14 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     Template.nonTargetLesionDialog.doneCallback = doneCallback;
 
     // Get the non-target lesion location dialog
-    var dialog = $("#nonTargetLesionRelabelDialog");
+    var dialog = $('#nonTargetLesionRelabelDialog');
     Template.nonTargetLesionDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $(".removableBackdrop").one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler(dialog);
 
         if (doneCallback && typeof doneCallback === 'function') {
@@ -142,17 +144,17 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     });
 
     // Find the select option box
-    var selectorLocation = dialog.find("select#selectNonTargetLesionLocation");
-    var selectorResponse = dialog.find("select#selectNonTargetLesionLocationResponse");
+    var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
+    var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
 
-    selectorLocation.find("option:first").prop("selected", "selected");
-    selectorResponse.find("option:first").prop("selected", "selected");
+    selectorLocation.find('option:first').prop('selected', 'selected');
+    selectorResponse.find('option:first').prop('selected', 'selected');
 
     // Allow location selection
-    selectorLocation.removeAttr("disabled");
+    selectorLocation.removeAttr('disabled');
 
     // Show the nonTargetLesion dialog above
-    var dialogProperty =  {
+    var dialogProperty = {
         display: 'block'
     };
 
@@ -160,7 +162,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     // If device is touch device, set position center of screen vertically and horizontally
     if (!eventData || isTouchDevice()) {
         // add dialogMobile class to provide a black,transparent background
-        dialog.addClass("dialogMobile");
+        dialog.addClass('dialogMobile');
         dialogProperty.top = 0;
         dialogProperty.left = 0;
         dialogProperty.right = 0;
@@ -179,8 +181,14 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     }
 
     LesionLocations.update({},
-        {$set: {selected: false}},
-        { multi: true });
+        {
+            $set: {
+                selected: false
+            }
+        },
+        {
+            multi: true
+        });
 
     var currentLocation = LesionLocations.findOne({
         id: measurement.locationId
@@ -197,8 +205,14 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     });
 
     LocationResponses.update({},
-        {$set: {selected: false}},
-        { multi: true });
+        {
+            $set: {
+                selected: false
+            }
+        },
+        {
+            multi: true
+        });
 
     var response = measurement.timepoints[measurementData.timepointID].response;
 
@@ -233,12 +247,12 @@ Template.nonTargetLesionDialog.events({
         var measurementData = Template.nonTargetLesionDialog.measurementData;
 
         // Find the select option box
-        var selectorLocation = dialog.find("select#selectNonTargetLesionLocation");
-        var selectorResponse = dialog.find("select#selectNonTargetLesionLocationResponse");
+        var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
+        var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
 
         // Get the current value of the selector
-        var selectedOptionId = selectorLocation.find("option:selected").val();
-        var responseOptionId = selectorResponse.find("option:selected").val();
+        var selectedOptionId = selectorLocation.find('option:selected').val();
+        var responseOptionId = selectorResponse.find('option:selected').val();
 
         // If the selected option is still the default (-1)
         // then stop here
@@ -253,15 +267,21 @@ Template.nonTargetLesionDialog.events({
         }
 
         // Get selected location data
-        var locationObj = LesionLocations.findOne({_id: selectedOptionId});
+        var locationObj = LesionLocations.findOne({
+            _id: selectedOptionId
+        });
 
         var id;
-        var existingLocation = PatientLocations.findOne({location: locationObj.location});
+        var existingLocation = PatientLocations.findOne({
+            location: locationObj.location
+        });
         if (existingLocation) {
             id = existingLocation._id;
         } else {
             // Adds location data to PatientLocation and retrieve the location ID
-            id = PatientLocations.insert({location: locationObj.location});
+            id = PatientLocations.insert({
+                location: locationObj.location
+            });
         }
 
         if (measurementData.id) {
@@ -323,12 +343,11 @@ Template.nonTargetLesionDialog.events({
     }
 });
 
-
 Template.nonTargetLesionDialog.helpers({
-    'lesionLocations': function() {
+    lesionLocations: function() {
         return LesionLocations.find();
     },
-    'locationResponses': function() {
+    locationResponses: function() {
         return LocationResponses.find();
     }
 });

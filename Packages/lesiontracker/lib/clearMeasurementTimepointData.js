@@ -20,7 +20,7 @@ clearMeasurementTimepointData = function(measurementId, timepointId) {
     delete data.timepoints[timepointId];
 
     if (Object.keys(data.timepoints).length === 0) {
-        Meteor.call("removeMeasurement", measurementId, function(error, response) {
+        Meteor.call('removeMeasurement', measurementId, function(error, response) {
             console.log('Removed!');
         });
     } else {

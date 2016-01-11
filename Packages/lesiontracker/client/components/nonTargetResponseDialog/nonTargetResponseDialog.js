@@ -3,7 +3,7 @@ function closeHandler(dialog) {
     $(dialog).css('display', 'none');
 
     // Remove the backdrop
-    $(".removableBackdrop").remove();
+    $('.removableBackdrop').remove();
 
     // Restore the focus to the active viewport
     setFocusToActiveViewport();
@@ -14,14 +14,14 @@ changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
     Template.nonTargetResponseDialog.doneCallback = doneCallback;
 
     // Get the non-target lesion location dialog
-    var dialog = $("#nonTargetResponseDialog");
+    var dialog = $('#nonTargetResponseDialog');
     Template.nonTargetResponseDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $(".removableBackdrop").one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler(dialog);
 
         if (doneCallback && typeof doneCallback === 'function') {
@@ -31,7 +31,7 @@ changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
     });
 
     // Show the nonTargetLesion dialog above
-    var dialogProperty =  {
+    var dialogProperty = {
         display: 'block'
     };
 
@@ -39,7 +39,7 @@ changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
     // If device is touch device, set position center of screen vertically and horizontally
     if (!eventData || isTouchDevice()) {
         // add dialogMobile class to provide a black,transparent background
-        dialog.addClass("dialogMobile");
+        dialog.addClass('dialogMobile');
         dialogProperty.top = 0;
         dialogProperty.left = 0;
         dialogProperty.right = 0;
@@ -90,10 +90,10 @@ Template.nonTargetResponseDialog.events({
         var measurementData = Template.nonTargetResponseDialog.measurementData;
 
         // Find the select option box
-        var selectorResponse = dialog.find("select#selectNonTargetLesionLocationResponse");
+        var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
 
         // Get the current value of the selector
-        var responseOptionId = selectorResponse.find("option:selected").val();
+        var responseOptionId = selectorResponse.find('option:selected').val();
 
         // If the selected response option is still the default (-1)
         // then stop here
@@ -148,9 +148,8 @@ Template.nonTargetResponseDialog.events({
     }
 });
 
-
 Template.nonTargetResponseDialog.helpers({
-    'locationResponses': function() {
+    locationResponses: function() {
         return LocationResponses.find();
     }
 });

@@ -1,8 +1,8 @@
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
-    "use strict";
+    'use strict';
 
-    var toolType = "lesion";
+    var toolType = 'lesion';
 
     var configuration = {
         setLesionNumberCallback: setLesionNumberCallback,
@@ -221,6 +221,7 @@
         if (!handle.boundingBox) {
             return;
         }
+
         return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
     }
 
@@ -514,7 +515,7 @@
     // Sets drawnIndependently property of control points(handles)
     function setControlPoints(handles, value) {
         Object.keys(handles).forEach(function(name) {
-            if (name !== "textBox") {
+            if (name !== 'textBox') {
                 var handle = handles[name];
                 handle.drawnIndependently = value;
             }
@@ -730,7 +731,6 @@
 
     }
 
-
     function findDottedLinePosition(data) {
 
         var distancesArr = [];
@@ -775,6 +775,7 @@
                 minDistance = distanceToPerpendicularEnd;
             }
         }
+
         for (var i = 0; i < distancesArr.length; i++) {
             var obj = distancesArr[i];
             if (obj.distance === minDistance) {
@@ -840,7 +841,7 @@
             context.beginPath();
             context.strokeStyle = color;
             context.lineWidth = lineWidth;
-            context.setLineDash([2, 3]);
+            context.setLineDash([ 2, 3 ]);
 
             // Set position of text
             var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, findDottedLinePosition(data));
@@ -858,7 +859,6 @@
             var wy = (data.handles.perpendicularStart.y - data.handles.perpendicularEnd.y) * (eventData.image.rowPixelSpacing || 1);
             var width = Math.sqrt(wx * wx + wy * wy);
 
-
             var suffix = ' mm';
             if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
                 suffix = ' pixels';
@@ -866,7 +866,7 @@
 
             var lengthText = ' L ' + length.toFixed(1) + suffix;
             var widthText = ' W ' + width.toFixed(1) + suffix;
-            var textLines = ['Target ' + data.lesionNumber, lengthText, widthText];
+            var textLines = [ 'Target ' + data.lesionNumber, lengthText, widthText ];
 
             var boundingBox = cornerstoneTools.drawTextBox(context,
                 textLines,

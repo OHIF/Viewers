@@ -1,5 +1,5 @@
 Template.lesionTable.helpers({
-    'measurement': function() {
+    measurement: function() {
         // All Targets shall be listed first followed by Non-Targets
         return Measurements.find({}, {
             sort: {
@@ -8,7 +8,7 @@ Template.lesionTable.helpers({
             }
         });
     },
-    'timepoints': function() {
+    timepoints: function() {
         return Timepoints.find({}, {
             sort: {
                 timepointName: 1
@@ -49,10 +49,10 @@ Template.lesionTable.events({
                 height: newHeight
             });
 
-            var viewportAndLesionTableHeight = $("#viewportAndLesionTable").height();
+            var viewportAndLesionTableHeight = $('#viewportAndLesionTable').height();
             var newPercentageHeightofLesionTable = (startHeight - topPosition) / viewportAndLesionTableHeight * 100;
             var newPercentageHeightofViewermain = 100 - newPercentageHeightofLesionTable;
-            $(".viewerMain").height(newPercentageHeightofViewermain + "%");
+            $('.viewerMain').height(newPercentageHeightofViewermain + '%');
 
             // Resize viewport
             resizeViewportElements();
@@ -71,19 +71,19 @@ Template.lesionTable.onRendered(function() {
     // Put a visual indicator (<) in timepoint header in lesion table for active timepoints
     // timepointLoaded property is used to put indicator for loaded timepoints in viewport
     self.autorun(function() {
-        var ViewerData = Session.get("ViewerData");
-        var contentId = Session.get("activeContentId");
+        var ViewerData = Session.get('ViewerData');
+        var contentId = Session.get('activeContentId');
         if (contentId) {
             var viewerData = ViewerData[contentId];
             if (viewerData) {
                 if (viewerData.loadedSeriesData) {
                     // Get study dates of imageViewerViewport elements
                     var loadedStudyDates = {
-                        patientId: "",
+                        patientId: '',
                         dates: []
                     };
 
-                    $(".imageViewerViewport").each(function(viewportIndex, element) {
+                    $('.imageViewerViewport').each(function(viewportIndex, element) {
                         var enabledElement = cornerstone.getEnabledElement(element);
                         if (!enabledElement || !enabledElement.image) {
                             return;

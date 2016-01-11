@@ -6,7 +6,7 @@
 activateLesion = function(measurementId, templateData) {
 
     // Set background color of selected row
-    $("tr[data-measurementid=" + measurementId + "]").addClass("selectedRow").siblings().removeClass("selectedRow");
+    $('tr[data-measurementid=' + measurementId + ']').addClass('selectedRow').siblings().removeClass('selectedRow');
 
     var measurementData = Measurements.findOne(measurementId);
 
@@ -26,9 +26,9 @@ activateLesion = function(measurementId, templateData) {
     Object.keys(timepoints).forEach(function(key) {
         var timepoint = timepoints[key];
 
-        if (timepoint.imageId === "" ||
-            timepoint.studyInstanceUid === "" ||
-            timepoint.seriesInstanceUid === "") {
+        if (timepoint.imageId === '' ||
+            timepoint.studyInstanceUid === '' ||
+            timepoint.seriesInstanceUid === '') {
             return;
         }
 
@@ -41,7 +41,7 @@ activateLesion = function(measurementId, templateData) {
     }
 
     // Loop through the viewports and display each timepoint
-    $(".imageViewerViewport").not('.empty').each(function(viewportIndex, element) {
+    $('.imageViewerViewport').not('.empty').each(function(viewportIndex, element) {
         // Stop if we run out of timepoints before viewports
         if (viewportIndex >= timepointsWithEntries.length) {
             // Update the element anyway, to remove any other highlights that are present

@@ -29,7 +29,9 @@ var LesionManager = (function() {
     function updateLesionData(lesionData) {
         // Find the related Timepoint from the Timepoints Collection
         var timepointID = lesionData.timepointID;
-        var timepoint = Timepoints.findOne({timepointID: timepointID});
+        var timepoint = Timepoints.findOne({
+            timepointID: timepointID
+        });
         if (!timepoint) {
             log.warn('Timepoint in an image is not present in the Timepoints Collection?');
             return;
@@ -126,7 +128,9 @@ var LesionManager = (function() {
         var measurements = Measurements.find({
             isTarget: isTarget
         }, {
-            sort: {lesionNumber: 1}
+            sort: {
+                lesionNumber: 1
+            }
         }).fetch();
 
         // If measurements exist, find the last lesion number

@@ -34,14 +34,14 @@ DIMSE.associate = function(contexts, callback) {
 DIMSE.retrievePatients = function(params) {
     //var start = new Date();
     var future = new Future;
-    DIMSE.associate([C.SOP_PATIENT_ROOT_FIND], function(pdu) {
+    DIMSE.associate([ C.SOP_PATIENT_ROOT_FIND ], function(pdu) {
         var defaultParams = {
-            0x00100010: "",
-            0x00100020: "",
-            0x00100030: "",
-            0x00100040: "",
-            0x00101010: "",
-            0x00101040: ""
+            0x00100010: '',
+            0x00100020: '',
+            0x00100030: '',
+            0x00100040: '',
+            0x00101010: '',
+            0x00101040: ''
         };
 
         this.setFindContext(C.SOP_PATIENT_ROOT_FIND);
@@ -68,18 +68,18 @@ DIMSE.retrievePatients = function(params) {
 DIMSE.retrieveStudies = function(params) {
     //var start = new Date();
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([ C.SOP_STUDY_ROOT_FIND ], function(pdu) {
         var defaultParams = {
-            0x0020000D: "",
-            0x00080060: "",
-            0x00080005: "",
-            0x00080020: "",
-            0x00080030: "",
-            0x00080090: "",
-            0x00100010: "",
-            0x00100020: "",
-            0x00200010: "",
-            0x00100030: ""
+            0x0020000D: '',
+            0x00080060: '',
+            0x00080005: '',
+            0x00080020: '',
+            0x00080030: '',
+            0x00080090: '',
+            0x00100010: '',
+            0x00100020: '',
+            0x00200010: '',
+            0x00100030: ''
         };
 
         this.setFindContext(C.SOP_STUDY_ROOT_FIND);
@@ -105,19 +105,19 @@ DIMSE.retrieveStudies = function(params) {
 
 DIMSE.retrieveSeries = function(studyInstanceUID, params) {
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([ C.SOP_STUDY_ROOT_FIND ], function(pdu) {
         var defaultParams = {
-            0x0020000D: studyInstanceUID ? studyInstanceUID : "",
-            0x00080005: "",
-            0x00080020: "",
-            0x00080030: "",
-            0x00080090: "",
-            0x00100010: "",
-            0x00100020: "",
-            0x00200010: "",
-            0x0008103E: "",
-            0x0020000E: "",
-            0x00200011: ""
+            0x0020000D: studyInstanceUID ? studyInstanceUID : '',
+            0x00080005: '',
+            0x00080020: '',
+            0x00080030: '',
+            0x00080090: '',
+            0x00100010: '',
+            0x00100020: '',
+            0x00200010: '',
+            0x0008103E: '',
+            0x0020000E: '',
+            0x00200011: ''
         };
 
         this.setFindContext(C.SOP_STUDY_ROOT_FIND);
@@ -142,26 +142,26 @@ DIMSE.retrieveSeries = function(studyInstanceUID, params) {
 
 DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params) {
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([ C.SOP_STUDY_ROOT_FIND ], function(pdu) {
         var defaultParams = {
-            0x0020000D: studyInstanceUID ? studyInstanceUID : "",
-            0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : "",
-            0x00080005: "",
-            0x00080020: "",
-            0x00080030: "",
-            0x00080090: "",
-            0x00100010: "",
-            0x00100020: "",
-            0x00200010: "",
-            0x0008103E: "",
-            0x00200011: "",
-            0x00080016: "",
-            0x00080018: "",
-            0x00200013: "",
-            0x00280010: "",
-            0x00280011: "",
-            0x00280100: "",
-            0x00280103: ""
+            0x0020000D: studyInstanceUID ? studyInstanceUID : '',
+            0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : '',
+            0x00080005: '',
+            0x00080020: '',
+            0x00080030: '',
+            0x00080090: '',
+            0x00100010: '',
+            0x00100020: '',
+            0x00200010: '',
+            0x0008103E: '',
+            0x00200011: '',
+            0x00080016: '',
+            0x00080018: '',
+            0x00200013: '',
+            0x00280010: '',
+            0x00280011: '',
+            0x00280100: '',
+            0x00280103: ''
         };
 
         this.setFindContext(C.SOP_STUDY_ROOT_FIND);

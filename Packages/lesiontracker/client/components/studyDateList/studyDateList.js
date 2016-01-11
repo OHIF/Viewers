@@ -12,10 +12,14 @@ Template.studyDateList.helpers({
         // since the WorklistStudies Collection only contains the studies on-screen
 
         // Check which study is currently loaded into the study browser
-        var currentStudyInBrowser = ViewerStudies.findOne({selected: true});
+        var currentStudyInBrowser = ViewerStudies.findOne({
+            selected: true
+        });
 
         // Find studies which have the same patientId as the currently selected study
-        var relatedStudies = WorklistStudies.find({patientId: currentStudyInBrowser.patientId}).fetch();
+        var relatedStudies = WorklistStudies.find({
+            patientId: currentStudyInBrowser.patientId
+        }).fetch();
 
         // Modify the array of related studies so the default option is the currently selected study
         relatedStudies.forEach(function(study) {
@@ -30,7 +34,6 @@ Template.studyDateList.helpers({
         return relatedStudies;
     }
 });
-
 
 Template.studyDateList.events({
     /**
@@ -65,16 +68,26 @@ Template.studyDateList.events({
 
             // Set "Selected" to false for the entire collection
             ViewerStudies.update({},
-                {$set: {selected: false}},
-                { multi: true });
+                {
+                    $set: {
+                        selected: false
+                    }
+                },
+                {
+                    multi: true
+                });
 
             // Check if this study already exists in the ViewerStudies collection
             // of loaded studies. If it does, set it's 'selected' value to true.
-            var existingStudy = ViewerStudies.findOne({studyInstanceUid: studyInstanceUid});
+            var existingStudy = ViewerStudies.findOne({
+                studyInstanceUid: studyInstanceUid
+            });
             if (existingStudy) {
                 // Set the current finding in the collection to true
                 ViewerStudies.update(existingStudy._id, {
-                    $set: {selected: true}
+                    $set: {
+                        selected: true
+                    }
                 });
                 return;
             }
@@ -86,15 +99,17 @@ Template.studyDateList.events({
 
             var timepointID = uuid.v4();
 
-            var timepoint = Timepoints.findOne({timepointName: study.studyDate});
+            var timepoint = Timepoints.findOne({
+                timepointName: study.studyDate
+            });
             if (timepoint) {
-                log.warn("A timepoint with that study date already exists!");
+                log.warn('A timepoint with that study date already exists!');
                 return;
             }
 
             var testTimepoint = Timepoints.findOne({});
             if (testTimepoint && testTimepoint.patientId !== study.patientId) {
-                log.warn("Timepoints collection related to the wrong subject");
+                log.warn('Timepoints collection related to the wrong subject');
                 return;
             }
 
