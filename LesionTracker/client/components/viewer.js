@@ -181,34 +181,26 @@ Template.viewer.onCreated(function() {
                         removeToolDataWithMeasurementId(imageId, toolType, measurementId);
                     });
 
-                    // Update all Measurements to decrement the lesion numbers for those
-                    // that were created after the current lesion by 1
-                    Meteor.call('decrementLesionNumbers', data, function(error, response) {
-                        if (error) {
-                            log.warn(error);
+                    // Sync database data with toolData for all the measurements
+                    // that have just been updated
+
+                    // Note that here we need to use greater than and equals to
+                    // find the Measurements, whereas on the server it's
+                    // only "greater than", since inside this callback the
+                    // Measurements have already been decremented.
+                    Measurements.find({
+                        patientId: data.patientId,
+                        lesionNumberAbsolute: {
+                            $gte: data.lesionNumberAbsolute
                         }
+                    }).forEach(function(measurementData) {
+                        syncMeasurementAndToolData(measurementData);
+                    });
 
-                        // Sync database data with toolData for all the measurements
-                        // that have just been updated
-
-                        // Note that here we need to use greater than and equals to
-                        // find the Measurements, whereas on the server it's
-                        // only "greater than", since inside this callback the
-                        // Measurements have already been decremented.
-                        Measurements.find({
-                            patientId: data.patientId,
-                            lesionNumberAbsolute: {
-                                $gte: data.lesionNumberAbsolute
-                            }
-                        }).forEach(function(measurementData) {
-                            syncMeasurementAndToolData(measurementData);
-                        });
-
-                        // Update each displayed viewport
-                        var viewports = $('.imageViewerViewport').not('.empty');
-                        viewports.each(function(index, element) {
-                            cornerstone.updateImage(element);
-                        });
+                    // Update each displayed viewport
+                    var viewports = $('.imageViewerViewport').not('.empty');
+                    viewports.each(function(index, element) {
+                        cornerstone.updateImage(element);
                     });
                 }
             });

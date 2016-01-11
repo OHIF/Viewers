@@ -1,13 +1,7 @@
 Meteor.methods({
     removeMeasurement: function(id) {
-        Measurements.remove(id);
-    },
-    removeMeasurementsByPatientId: function(patientId) {
-        Measurements.remove({
-            patientId: patientId
-        });
-    },
-    decrementLesionNumbers: function(lesionData) {
+        var lesionData = Measurements.findOne(id);
+
         // Update all Measurements to decrement the lesion numbers for those
         // that were created after the current lesion by 1
 
@@ -41,6 +35,13 @@ Meteor.methods({
             }
         }, {
             multi: true
+        });
+
+        Measurements.remove(id);
+    },
+    removeMeasurementsByPatientId: function(patientId) {
+        Measurements.remove({
+            patientId: patientId
         });
     }
 });
