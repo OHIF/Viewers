@@ -161,6 +161,8 @@ Template.viewer.onCreated(function() {
                     updateRelatedElements(data.imageId);
                 },
                 removed: function(data) {
+                    log.info('Measurement removed');
+
                     // Check that this Measurement actually contains timepoint data
                     if (!data.timepoints) {
                         return;

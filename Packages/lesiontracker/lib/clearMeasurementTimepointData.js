@@ -21,6 +21,9 @@ clearMeasurementTimepointData = function(measurementId, timepointId) {
 
     if (Object.keys(data.timepoints).length === 0) {
         Meteor.call('removeMeasurement', measurementId, function(error, response) {
+            if (error) {
+                log.warn(error);
+            }
             console.log('Removed!');
         });
     } else {
