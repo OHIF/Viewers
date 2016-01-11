@@ -4,8 +4,9 @@ This repo contains the OHIF DICOM Viewer and Lesion Tracker, and various shared 
 Documentation is available here: http://ohif.github.io/Viewers  
 
 ### Demos
-[OHIF viewer](http://viewer.ohif.org/) - A prototype general-purpose radiology viewer with a variety of tools exposed.
-[Lesiontracker](http://lesiontracker.ohif.org/) - a prototype viewer focused on oncology metrics.
+[OHIF Viewer](http://viewer.ohif.org/) - A general-purpose radiology viewer with a variety of tools exposed.
+
+[Lesion Tracker](http://lesiontracker.ohif.org/) - A prototype viewer focused on oncology metrics.
 
 Community
 ---------
