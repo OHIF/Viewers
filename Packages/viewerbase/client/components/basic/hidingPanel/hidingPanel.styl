@@ -1,81 +1,46 @@
+.hidingPanel
+  width: 1%
+  height: 100%
+  position: absolute
+  left: 0
+  top: 70px
+  bottom: 0
+  z-index: 10
+  background-color: black
+  border: 1px solid #666
 
-.hidingPanel, .hidingPanelContent, .studyBrowserContainer, .arrowIcon, .arrowIconRotate
+  &.pinned
+    border: 1px solid transparent
 
+  .iconContainer
+    width: 100%
+    height: 35px
+    overflow: hidden
+
+    .arrowIcon
+      color: white
+      margin: 0px 3px
+      font-size: 15pt
+      line-height: 35px
+
+    .btnPin
+      float: right
+      margin: 3px
+      outline: none
+
+  .hidingPanelContent
+    position: absolute
+    left: -130px
+    width: 100%
+    height: 100%
+    margin: 1px auto
+
+    .studyBrowserContainer
+      height: calc(100% - 150px)
+
+.hidingPanel, .arrowIcon
   -o-transition: all 0.3s ease-out
   -ms-transition: all 0.3s ease-out
   -moz-transition: all 0.3s ease-out
   -webkit-transition: all 0.3s ease-out
   transition: all 0.3s ease-out
-
-
-.hidingPanel
-  width: 1%
-  height: 100%
-  position: absolute
-  left: 0px
-  top: 70px
-  bottom: 0px
-  z-index: 10
-  background-color: black
-
-  .arrowIcon
-    color: white
-    float: left
-    margin-top: 8px
-    margin-left: 2px;
-    line-height: 12px
-
-  .arrowIconRotate
-    -ms-transform: rotate(180deg)
-    -webkit-transform: rotate(180deg)
-    transform: rotate(180deg)
-
-  .hidingPanelContent
-    width: 100%
-    height: 100%
-    margin: 1px auto
-    float: none
-    opacity: 0
-    border: 1px solid #666
-    text-align: center
-
-    .studyBrowserContainer
-      position: absolute
-      display: block
-      width: 120px
-      left: 0
-      right: 0
-      top: 100px
-      height: calc(100% - 150px)
-
-    .panelPinContainer
-      width: 100%
-      height: auto
-      text-align: right
-      vertical-align: center
-      padding: 0
-      margin: 0
-      border-bottom: 1px solid #666
-
-      .btnPin
-        margin: 1px
-        color: #424242
-        outline: none
-        background-color: #202020
-        border: solid 1px #424242
-        border-radius: 3px
-
-      .btnPinActive
-        border-color: white
-
-      .btnPinInactive
-        border: solid 1px #424242
-
-      .btnPin:hover
-        border: solid 1px lightgray
-
-      .pinActive
-        color: #FFFFFF
-
-      .pinInactive
-        color: #424242

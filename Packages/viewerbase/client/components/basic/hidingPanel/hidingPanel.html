@@ -1,23 +1,17 @@
 <template name="hidingPanel">
-    <div class="hidingPanel">
-        <i class="arrowIcon fa fa-angle-double-right"></i>
+    <div class="hidingPanel {{#if isPinned}}pinned{{/if}}">
+        <div class="iconContainer">
+            {{#unless isPinned}}
+            <i class="arrowIcon fa fa-angle-double-right"></i>
+            {{/unless}}
+            <button class="btn btn-sm btn-primary btnPin {{#if isPinned}}active{{/if}}">
+                <i class="fa fa-thumb-tack"></i>
+            </button>
+        </div>
         <div class="hidingPanelContent">
-            <div class="panelPinContainer">
-                {{#if panelPinned}}
-                    <button class="btnPin btnPinActive">
-                        <i class="pinIcon pinActive fa fa-thumb-tack"></i>
-                    </button>
-                {{else}}
-                    <button class="btnPin btnPinInactive">
-                        <i class="pinIcon pinInactive fa fa-thumb-tack"></i>
-                    </button>
-                {{/if}}
-            </div>
-
             {{#if studyDateIsShown}}
                 {{> studyDateList}}
             {{/if}}
-
             <div class="studyBrowserContainer">
                 {{> studyBrowser}}
             </div>
