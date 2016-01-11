@@ -75,7 +75,10 @@ Template.lesionTable.onRendered(function() {
     // timepointLoaded property is used to put indicator for loaded timepoints in viewport
     self.autorun(function() {
         // Temporary until we have a real window manager with events for series/study changed
-        Session.get('NewSeriesLoaded');
+        if (!Session.get('NewSeriesLoaded')) {
+            return;
+        }
+
         console.log('ViewerData changed, check for displayed timepoints');
 
         // Get study dates of imageViewerViewport elements
@@ -110,6 +113,8 @@ Template.lesionTable.onRendered(function() {
 
         var timepoints = Timepoints.find({
             patientId: loadedStudyDates.patientId
+        }, {
+            reactive: false
         });
 
         timepoints.forEach(function(timepoint) {
@@ -124,5 +129,8 @@ Template.lesionTable.onRendered(function() {
                 }
             });
         });
+
+        // Temporary until we have a real window manager with events for series/study changed
+        Session.set('NewSeriesLoaded', false);
     });
 });

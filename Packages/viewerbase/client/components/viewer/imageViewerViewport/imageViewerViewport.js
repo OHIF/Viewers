@@ -322,6 +322,7 @@ function loadSeriesIntoViewport(data, templateData) {
         }
 
         // Temporary until we have a real window manager with events for series/study changed
+        console.log('Set NewSeriesLoaded');
         Session.set('NewSeriesLoaded', Random.id());
 
         // Run any renderedCallback that exists in the data context

@@ -93,6 +93,13 @@ var LesionManager = (function() {
             // Insert this into the Measurements Collection
             // Save the ID into the toolData (not sure if this works?)
             measurement.id = Measurements.insert(measurement);
+
+            // Update the database entry so it can be readded next time the study is loaded
+            Measurements.update(measurement.id, {
+                $set: {
+                    toolDataInsertedManually: false
+                }
+            });
         } else {
             lesionData.id = existingMeasurement._id;
 
