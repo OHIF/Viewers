@@ -103,11 +103,17 @@
         Meteor: true,
         Template: true,
         UI: true,
+        Session: true,
 
         // loglevel package
         log: true,
 
         // OHIF-package specific Globals
+        OHIF: true,
+        toolManager: true,
+        ViewerData: true,
+        ViewerStudies: true,
+        LesionManager: true,
         Timepoints: true,
         Measurements: true
     }

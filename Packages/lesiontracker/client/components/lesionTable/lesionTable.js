@@ -71,58 +71,55 @@ Template.lesionTable.onRendered(function() {
     // Put a visual indicator (<) in timepoint header in lesion table for active timepoints
     // timepointLoaded property is used to put indicator for loaded timepoints in viewport
     self.autorun(function() {
-        var ViewerData = Session.get('ViewerData');
-        var contentId = Session.get('activeContentId');
-        if (contentId) {
-            var viewerData = ViewerData[contentId];
-            if (viewerData) {
-                if (viewerData.loadedSeriesData) {
-                    // Get study dates of imageViewerViewport elements
-                    var loadedStudyDates = {
-                        patientId: '',
-                        dates: []
-                    };
+        // Temporary until we have a real window manager with events for series/study changed
+        Session.get('NewSeriesLoaded');
 
-                    $('.imageViewerViewport').each(function(viewportIndex, element) {
-                        var enabledElement = cornerstone.getEnabledElement(element);
-                        if (!enabledElement || !enabledElement.image) {
-                            return;
-                        }
+        console.log('ViewerData changed, check for displayed timepoints');
+        // Get study dates of imageViewerViewport elements
+        var loadedStudyDates = {
+            patientId: '',
+            dates: []
+        };
 
-                        var imageId = enabledElement.image.imageId;
-                        var study = cornerstoneTools.metaData.get('study', imageId);
-                        var studyDate = study.studyDate;
-                        loadedStudyDates.patientId = study.patientId;
-
-                        // Check whether or not studyDate has been added before
-                        if (loadedStudyDates.dates.indexOf(studyDate) < 0) {
-                            loadedStudyDates.dates.push(studyDate);
-                        }
-                    });
-
-                    // If study date is loaded into viewport, set timepointLoaded property in Timepoints collection as true
-                    // Else set timepointLoaded property as false
-                    if (loadedStudyDates.dates.length) {
-                        var timepoints = Timepoints.find({
-                            patientId: loadedStudyDates.patientId
-                        }).fetch();
-
-                        timepoints.forEach(function(timepoint) {
-                            var timepointLoaded = false;
-                            if (loadedStudyDates.dates.indexOf(timepoint.timepointName) > -1) {
-                                timepointLoaded = true;
-                            }
-
-                            Timepoints.update(timepoint._id, {
-                                $set: {
-                                    timepointLoaded: timepointLoaded
-                                }
-                            });
-                        });
-                    }
-                }
+        var viewports = $('.imageViewerViewport').not('.empty');
+        viewports.each(function(index, element) {
+            var enabledElement = cornerstone.getEnabledElement(element);
+            if (!enabledElement || !enabledElement.image) {
+                return;
             }
+
+            var imageId = enabledElement.image.imageId;
+            var study = cornerstoneTools.metaData.get('study', imageId);
+            var studyDate = study.studyDate;
+            loadedStudyDates.patientId = study.patientId;
+
+            // Check whether or not studyDate has been added before
+            if (loadedStudyDates.dates.indexOf(studyDate) < 0) {
+                loadedStudyDates.dates.push(studyDate);
+            }
+        });
+
+        // If study date is loaded into viewport, set timepointLoaded property in Timepoints collection as true
+        // Else set timepointLoaded property as false
+        if (!loadedStudyDates.dates.length) {
+            return;
         }
 
+        var timepoints = Timepoints.find({
+            patientId: loadedStudyDates.patientId
+        });
+
+        timepoints.forEach(function(timepoint) {
+            var timepointLoaded = false;
+            if (loadedStudyDates.dates.indexOf(timepoint.timepointName) > -1) {
+                timepointLoaded = true;
+            }
+
+            Timepoints.update(timepoint._id, {
+                $set: {
+                    timepointLoaded: timepointLoaded
+                }
+            });
+        });
     });
 });

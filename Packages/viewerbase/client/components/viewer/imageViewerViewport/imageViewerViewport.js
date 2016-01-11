@@ -10,7 +10,7 @@ var allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownA
  * @param data {object} Object containing the study, series, and viewport element to be used
  */
 function loadSeriesIntoViewport(data, templateData) {
-    log.info("imageViewerViewport loadSeriesIntoViewport");
+    log.info('imageViewerViewport loadSeriesIntoViewport');
 
     // Make sure we have all the data required to render the series
     if (!data.study || !data.series || !data.element) {
@@ -20,7 +20,7 @@ function loadSeriesIntoViewport(data, templateData) {
     // Get the current element and it's index in the list of all viewports
     // The viewport index is often used to store information about a viewport element
     var element = data.element;
-    var viewportIndex = $(".imageViewerViewport").index(element);
+    var viewportIndex = $('.imageViewerViewport').index(element);
 
     // Get the contentID of the current worklist tab, if the viewport is running
     // alongside the worklist package
@@ -168,7 +168,7 @@ function loadSeriesIntoViewport(data, templateData) {
         $(element).siblings('.imageViewerViewportOverlay').show();
 
         // Add stack state managers for the stack tool, CINE tool, and reference lines
-        cornerstoneTools.addStackStateManager(element, ['stack', 'playClip', 'referenceLines']);
+        cornerstoneTools.addStackStateManager(element, [ 'stack', 'playClip', 'referenceLines' ]);
 
         // Get the current viewport settings
         var viewport = cornerstone.getViewport(element);
@@ -189,7 +189,7 @@ function loadSeriesIntoViewport(data, templateData) {
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
         var activeTool = toolManager.getActiveTool();
-        toolManager.setActiveTool(activeTool, [element]);
+        toolManager.setActiveTool(activeTool, [ element ]);
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
@@ -262,7 +262,6 @@ function loadSeriesIntoViewport(data, templateData) {
             $(element).on('CornerstoneStackScroll', OnStackScroll);
         }
 
-
         // Define a function to trigger an event whenever a new viewport is being used
         // This is used to update the value of the "active viewport", when the user interacts
         // with a new viewport element
@@ -272,7 +271,7 @@ function loadSeriesIntoViewport(data, templateData) {
             // If it was, no changes are necessary, so stop here.
             var element = eventData.element;
             var activeViewportIndex = Session.get('activeViewport');
-            var viewportIndex = $(".imageViewerViewport").index(element);
+            var viewportIndex = $('.imageViewerViewport').index(element);
 
             // Reset the focus, even if we don't need to re-enable reference lines or prefetching
             $(element).focus();
@@ -323,13 +322,16 @@ function loadSeriesIntoViewport(data, templateData) {
         }
 
         // Run any renderedCallback that exists in the data context
-        if (data.renderedCallback && typeof data.renderedCallback === "function") {
+        if (data.renderedCallback && typeof data.renderedCallback === 'function') {
             data.renderedCallback(element);
         }
     }, function(error) {
         // If something goes wrong while loading the image, fire the error handler.
         errorLoadingHandler(element, imageId, error);
     });
+
+    // Temporary until we have a real window manager with events for series/study changed
+    Session.set('NewSeriesLoaded', Random.id());
 }
 
 /**
@@ -351,6 +353,7 @@ function setSeries(data, seriesInstanceUid, templateData) {
             data.series = series;
             return false;
         }
+
         return true;
     });
 
@@ -377,7 +380,6 @@ function getKeysByValue(object, value) {
         return object[key] === value;
     });
 }
-
 
 Meteor.startup(function() {
     // On Meteor startup, define the global objects used to store loading imageIds
@@ -410,10 +412,10 @@ Meteor.startup(function() {
 
 Template.imageViewerViewport.onRendered(function() {
     var templateData = Template.currentData();
-    log.info("imageViewerViewport onRendered");
+    log.info('imageViewerViewport onRendered');
 
     // When the imageViewerViewport template is rendered
-    var element = this.find(".imageViewerViewport");
+    var element = this.find('.imageViewerViewport');
 
     // Display the loading indicator for this element
     $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
@@ -458,6 +460,7 @@ Template.imageViewerViewport.onRendered(function() {
             if (!study) {
                 return;
             }
+
             sortStudy(study);
             data.study = study;
 
@@ -470,10 +473,10 @@ Template.imageViewerViewport.onRendered(function() {
 });
 
 Template.imageViewerViewport.onDestroyed(function() {
-    log.info("imageViewerViewport onDestroyed");
+    log.info('imageViewerViewport onDestroyed');
 
     // When a viewport element is being destroyed
-    var element = this.find(".imageViewerViewport");
+    var element = this.find('.imageViewerViewport');
 
     // Try to stop any currently playing clips
     // Otherwise the interval will continuously throw errors
@@ -491,7 +494,7 @@ Template.imageViewerViewport.onDestroyed(function() {
 
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
-        log.info("imageViewerViewport ActivateViewport");
+        log.info('imageViewerViewport ActivateViewport');
         setActiveViewport(e.currentTarget);
     }
 });
