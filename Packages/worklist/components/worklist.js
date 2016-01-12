@@ -65,17 +65,17 @@ getStudyMetadata = function(studyInstanceUid, doneCallback) {
  * @param contentId The unique ID of the tab to be switched to
  */
 switchToTab = function(contentId) {
-    log.info("Switching to tab: " + contentId);
+    log.info('Switching to tab: ' + contentId);
 
     // Use Bootstrap's Tab JavaScript to show the contents of the current tab
     // Unless it is the worklist, it is currently an empty div
     $('.tabTitle a[data-target="#' + contentId + '"]').tab('show');
 
     // Remove any previous Viewers from the DOM
-    $("#viewer").remove();
+    $('#viewer').remove();
 
     // Update the 'activeContentId' variable in Session
-    Session.set("activeContentId", contentId);
+    Session.set('activeContentId', contentId);
 
     // If we are switching to the Worklist tab, reset any CSS styles
     // that have been applied to prevent scrolling in the Viewer.
@@ -90,7 +90,7 @@ switchToTab = function(contentId) {
 
     // Get tab content container given the contentId string
     // If no such container exists, stop here because something is wrong
-    var container = $('.tab-content').find("#" + contentId).get(0);
+    var container = $('.tab-content').find('#' + contentId).get(0);
     if (!container) {
         log.warn('No container present with the contentId: ' + contentId);
         return;
@@ -109,7 +109,7 @@ switchToTab = function(contentId) {
             viewportRows: ViewerData[contentId].viewportRows,
             viewportColumns: ViewerData[contentId].viewportColumns,
             contentId: contentId,
-            studies: [study]
+            studies: [ study ]
         };
 
         if (ViewerData[contentId].studies && ViewerData[contentId].studies.length) {
@@ -117,18 +117,18 @@ switchToTab = function(contentId) {
         }
 
         // Remove the loading text template that is inside the tab container by default
-        container.innerHTML = "";
+        container.innerHTML = '';
 
         // Use Blaze to render the Viewer Template into the container
         UI.renderWithData(Template.viewer, data, container);
 
         // Retrieve the DOM element of the viewer
-        var imageViewer = $("#viewer");
+        var imageViewer = $('#viewer');
 
         // If it is present in the DOM (it should be), then apply
         // styles to prevent page scrolling and overscrolling on mobile devices
         if (imageViewer) {
-            document.body.style.overflow = "hidden";
+            document.body.style.overflow = 'hidden';
             document.body.style.height = '100%';
             document.body.style.width = '100%';
             document.body.style.minWidth = 0;
@@ -171,21 +171,20 @@ openNewTab = function(studyInstanceUid, title) {
 Template.worklist.onRendered(function() {
     // If there is a tab set as active in the Session,
     // switch to that now.
-    var contentId = Session.get("activeContentId");
+    var contentId = Session.get('activeContentId');
     if (contentId) {
         switchToTab(contentId);
     }
 });
-
 
 Template.worklist.helpers({
     /**
      * Returns the current set of Worklist Tabs
      * @returns Meteor.Collection The current state of the WorklistTabs Collection
      */
-    'worklistTabs': function() {
+    worklistTabs: function() {
         return WorklistTabs.find();
-    }
+    },
 });
 
 Template.worklist.events({
@@ -193,12 +192,12 @@ Template.worklist.events({
         // If this tab is already active, do nothing
         var tabButton = $(e.currentTarget);
         var tabTitle = tabButton.parents('.tabTitle');
-        if (tabTitle.hasClass("active")) {
+        if (tabTitle.hasClass('active')) {
             return;
         }
 
         // Otherwise, switch to the tab
-        var contentId = tabButton.data('target').replace("#", "");
+        var contentId = tabButton.data('target').replace('#', '');
         switchToTab(contentId);
     }
 });

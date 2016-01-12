@@ -1,0 +1,28 @@
+<template name="studyContextMenu">
+    <div id="studyContextMenu" class="studyContextMenu noselect"
+         oncontextmenu='return false;'
+         unselectable='on'
+         onselectstart='return false;'>
+        <ul>
+            <li>
+                <!--<a id="deleteTool">Delete</a>-->
+                <!-- TODO: Make this dynamically accept options-->
+                <a id="launchStudyAssociation" type="button"
+                   data-toggle="modal"
+                   data-target="#associationModal"
+                   title="Launch Study Association">
+                    <i class="fa fa-calendar-plus-o fa-lg"></i>
+                    Associate
+                </a>
+                <a><span class="fa-stack fa-lg">
+                      <i class="fa fa-user fa-stack-1x"></i>
+                      <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                    </span> Anonymize
+                </a>
+                <a><i class="fa fa-trash fa-lg"></i> Delete</a>
+                <a><i class="fa fa-share fa-lg"></i> Share</a>
+                <a><i class="fa fa-download fa-lg"></i> Download</a>
+            </li>
+        </ul>
+    </div>
+</template>

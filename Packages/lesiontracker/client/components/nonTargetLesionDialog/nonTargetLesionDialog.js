@@ -24,9 +24,6 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
         return;
     }
 
-    // TODO: Get patientId
-    // TODO: add measurement data according to patientId to get correct lesion number for each patient
-
     measurementData.timepointID = timepoint.timepointID;
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously

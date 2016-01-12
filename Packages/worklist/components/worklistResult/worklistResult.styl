@@ -10,19 +10,24 @@ table#tblStudyList
     &:hover
       color: #888888
       
-  tbody > tr
-    padding: 4px
-    border: 1px solid #282828
-    background-color: black
+  tbody
+    tr
+      padding: 4px
+      border: 1px solid #282828
+      background-color: black
 
-    td
-      white-space:nowrap
+      &:hover, &:active, &.active
+        background-color: #009BD2
+        color: white
 
-    &:nth-of-type(odd)
-      background-color: #202020
+        td
+          // This selector is necessary to override bootstrap's 'table' class
+          color: white
+          background-color: #009BD2
 
-    &:hover
-      background-color: #009BD2
-      color: white
+      &:nth-of-type(odd)
+        background-color: #202020
 
+      td
+        white-space: nowrap
 

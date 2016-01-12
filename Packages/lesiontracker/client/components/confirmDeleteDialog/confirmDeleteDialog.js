@@ -12,6 +12,12 @@ function closeHandler() {
     setFocusToActiveViewport();
 }
 
+/**
+ * Displays the confirmation dialog template and the removable backdrop element
+ *
+ * @param doneCallback A callback
+ * @param options
+ */
 showConfirmDialog = function(doneCallback, options) {
     // Show the backdrop
     options = options || {};

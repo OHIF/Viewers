@@ -17,4 +17,8 @@
             {{ >tabContent }}
         {{ /each }}
     </div>
+    {{#each additionalTemplates}}
+        {{> UI.dynamic template=this}}
+    {{/each}}
+    {{ >studyContextMenu }}
 </template>

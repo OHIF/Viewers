@@ -7,8 +7,13 @@ Template.worklistResult.helpers({
      * Returns a sorted instance of the Studies Collection
      * by Patient name and Study Date in Ascending order.
      */
-    studies : function() {
-        return WorklistStudies.find({}, {sort: {patientName : 1, studyDate : 1}});
+    studies: function() {
+        return WorklistStudies.find({}, {
+            sort: {
+                patientName: 1,
+                studyDate: 1
+            }
+        });
     },
 
     isTouchDevice: function() {
@@ -33,9 +38,10 @@ var filter;
  * @returns {*}
  */
 function getFilter(filter) {
-    if(filter && filter.length && filter.substr(filter.length - 1) !== '*') {
+    if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
         filter += '*';
     }
+
     return filter;
 }
 
@@ -46,6 +52,7 @@ function isIndexOf(mainVal, searchVal) {
     if (mainVal === undefined || mainVal === '' || mainVal.indexOf(searchVal) > -1){
         return true;
     }
+
     return false;
 }
 
@@ -53,8 +60,8 @@ function isIndexOf(mainVal, searchVal) {
  * Replace object if undefined
  */
 function replaceUndefinedColumnValue (text) {
-    if (text == undefined || text === "undefined") {
-        return "";
+    if (text == undefined || text === 'undefined') {
+        return '';
     } else {
         return text;
     }
@@ -67,7 +74,7 @@ function convertStringToStudyDate (dateStr) {
     var y = dateStr.substring(0,4);
     var m = dateStr.substring(4,6);
     var d = dateStr.substring(6,8);
-    var newDateStr = y+"/"+m+"/"+d;
+    var newDateStr = y + '/' + m + '/' + d;
     return new Date(newDateStr);
 }
 
@@ -99,7 +106,7 @@ function search() {
         studies.forEach(function(study) {
 
             // Search the rest of the parameters that aren't done via the server call
-            if(isIndexOf(study.modalities, modality) &&
+            if (isIndexOf(study.modalities, modality) &&
                 (new Date(studyDateFrom).setHours(0,0,0,0) <= convertStringToStudyDate(study.studyDate) || !checkFrom) &&
                 (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0,0,0,0) || !checkTo)) {
 
@@ -111,13 +118,12 @@ function search() {
 }
 
 Template.worklistResult.events({
-    'keydown': function(event) {
+    'keydown input': function(event) {
         if (event.keyCode === 13) { //  Enter
             search();
         }
     },
-    'onsearch': function(event) {
+    'onsearch input': function(event) {
         search();
-
     }
 });

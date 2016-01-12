@@ -36,6 +36,10 @@ Package.onUse(function(api) {
         bare: true
     });
 
+    api.addFiles('client/components/associationModal/associationModal.html', 'client');
+    api.addFiles('client/components/associationModal/associationModal.styl', 'client');
+    api.addFiles('client/components/associationModal/associationModal.js', 'client');
+    
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
@@ -62,6 +66,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/studyDateList/studyDateList.html', 'client');
     api.addFiles('client/components/studyDateList/studyDateList.styl', 'client');
     api.addFiles('client/components/studyDateList/studyDateList.js', 'client');
+
+    api.addFiles('client/components/studyAssociationTable/studyAssociationTable.html', 'client');
+    api.addFiles('client/components/studyAssociationTable/studyAssociationTable.styl', 'client');
+    api.addFiles('client/components/studyAssociationTable/studyAssociationTable.js', 'client');
 
     api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
     api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');

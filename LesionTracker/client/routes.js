@@ -18,8 +18,18 @@ Router.configure({
 
 Router.onBeforeAction('loading');
 
+var data = {
+    additionalTemplates: [
+        'associationModal'
+    ]
+};
+
+var routerOptions = {
+    data: data
+};
+
 Router.route('/', function() {
-    this.render('worklist');
+    this.render('worklist', routerOptions);
 });
 
 Router.route('/viewer/:_id', {
@@ -39,7 +49,7 @@ Router.route('/viewer/:_id', {
             return;
         }
 
-        this.render('worklist');
+        this.render('worklist', routerOptions);
         openNewTab(studyInstanceUid);
     }
 });

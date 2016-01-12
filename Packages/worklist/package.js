@@ -42,6 +42,10 @@ Package.onUse(function (api) {
     api.addFiles('components/worklistResult/worklistResult.js', 'client');
     api.addFiles('components/worklistResult/worklistResult.styl', 'client');
 
+    api.addFiles('components/studyContextMenu/studyContextMenu.html', 'client');
+    api.addFiles('components/studyContextMenu/studyContextMenu.js', 'client');
+    api.addFiles('components/studyContextMenu/studyContextMenu.styl', 'client');
+
     api.addFiles('lib/generateUUID.js', 'client');
     api.export('generateUUID', 'client');
 
@@ -56,5 +60,6 @@ Package.onUse(function (api) {
     // Export the Collections
     api.export('WorklistTabs', 'client');
     api.export('WorklistStudies', 'client');
+    api.export('WorklistSelectedStudies', 'client');
 });
 

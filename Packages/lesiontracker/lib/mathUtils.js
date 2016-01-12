@@ -30,9 +30,9 @@ getLineIntersection = function(point1, point2, point3, point4) {
      * same side of line 1, the line segments do not intersect.
      */
 
-    if (r3 != 0 &&
-        r4 != 0 &&
-        sign(r3) == sign(r4)) {
+    if (r3 !== 0 &&
+        r4 !== 0 &&
+        sign(r3) === sign(r4)) {
         intersectionPoint.x = 0;
         intersectionPoint.y = 0;
         intersectionPoint.intersected = false;
@@ -55,9 +55,9 @@ getLineIntersection = function(point1, point2, point3, point4) {
      * not intersect.
      */
 
-    if (r1 != 0 &&
-        r2 != 0 &&
-        sign(r1) == sign(r2)) {
+    if (r1 !== 0 &&
+        r2 !== 0 &&
+        sign(r1) === sign(r2)) {
         intersectionPoint.x = 0;
         intersectionPoint.y = 0;
         intersectionPoint.intersected = false;
@@ -103,7 +103,7 @@ getDistanceFromPointToLine = function(ptTest, pt1, pt2) {
     var dy = pt2.y - pt1.y;
 
     // It's a point, not a line
-    if (dx == 0 && dy == 0) {
+    if (dx === 0 && dy === 0) {
         ptNearest.x = pt1.x;
         ptNearest.y = pt1.y;
     } else {
