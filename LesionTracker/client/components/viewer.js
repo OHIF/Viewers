@@ -301,6 +301,34 @@ function syncMeasurementAndToolData(data) {
 Template.viewer.onRendered(function() {
     // Enable hotkeys
     enableHotkeys();
+
+    // Set lesion tool buttons as disable if pixel spacing is not available for active element
+    this.autorun(function(){
+
+        if (!Session.get('ViewerData')) {
+            return;
+        }
+
+        // TODO: Set activeViewport for empty viewport element
+        var activeViewportIndex = Session.get('activeViewport');
+        if (activeViewportIndex === undefined) {
+            return;
+        }
+
+        var viewports = $(".imageViewerViewport");
+        var element =  viewports.get(activeViewportIndex);
+        var enabledElement = cornerstone.getEnabledElement(element);
+        console.log(enabledElement);
+        // Check value of rowPixelSpacing & columnPixelSpacing to define as unavailable
+        if (!enabledElement || !enabledElement.image || !enabledElement.image.rowPixelSpacing || !enabledElement.image.columnPixelSpacing) {
+            // Disable Lesion Buttons
+            setLesionToolButtonsDisable(true);
+        } else{
+            // Enable Lesion Buttons
+            setLesionToolButtonsDisable(false);
+        }
+
+    });
 });
 
 Template.viewer.onDestroyed(function() {
@@ -351,4 +379,12 @@ function handleMeasurementRemoved(e, eventData) {
             clearMeasurementTimepointData(measurement._id, measurementData.timepointID);
             break;
     }
+}
+
+// Set enablement of Lesion Tools Buttons
+function setLesionToolButtonsDisable (status) {
+    var buttons = [$("button#length"), $("button#lesion"), $("button#nonTarget")];
+    buttons.forEach(function(btn){
+        btn.prop("disabled", status);
+    });
 }
