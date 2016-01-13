@@ -4,6 +4,8 @@
             <div class="col-md-12">
                 <h4>Instructions</h4>
                 <p>Associate the selected studies with timepoints in the clinical trial.</p>
+                <p>We have automatically retrieved all studies within 14 days (<strong>{{formatDA earliestDate}}</strong> to <strong>{{formatDA latestDate}}</strong>) of your selected studies, in case you forgot to
+                select a study.</p>
             </div>
         </div>
 
@@ -12,6 +14,7 @@
                 <tr>
                     <th class="center">Include Study?</th>
                     <th class="center">Study Date</th>
+                    <th class="center">Patient Name</th>
                     <th class="center">Study Description</th>
                     <th class="center">Timepoint Type</th>
                 </tr>
@@ -21,25 +24,34 @@
                 {{ #each relevantStudies }}
                 <tr>
                     <td class="center">
-                        <input type="checkbox" class="includeStudy" checked/>
+                        <input type="checkbox" class="includeStudy" {{inlineIf autoselected false 'checked'}}/>
                     </td>
-                    <td class="center">
+                    <td class="center studyDataCell {{ #if autoselected }}disabled{{ /if }}">
                         {{ #if autoselected}}
                             <p class="studyDate autoselected"
-                                title="This study was automatically added to your list due to its
-                                       similarity with your other selected studies">
+                               data-toggle="tooltip"
+                               title="This study was autoselected.">
                                 {{formatDA studyDate}}
                             </p>
                         {{ else }}
                             <p class="studyDate">{{formatDA studyDate}}</p>
                         {{ /if }}
                     </td>
-                    <td>
+                    <td class="center studyDataCell {{ #if autoselected }}disabled{{ /if }}">
+                        <p>{{formatPN patientName}}</p>
+                    </td>
+                    <td class="studyDataCell {{ #if autoselected }}disabled{{ /if }}">
                         <p>{{studyDescription}}</p>
                     </td>
-                    <td class="timepointOptions center">
+                    <td class="timepointOptions center studyDataCell {{ #if autoselected }}disabled{{ /if }}">
                         {{ #each timepointOptions }}
-                            <label><input type="radio" name="{{_id}}" value={{type}}> {{name}}</label>
+                            <label>
+                                <input type="radio"
+                                          name="{{../_id}}"
+                                          value={{type}}
+                                          {{ inlineIf autoselected true 'disabled'}}>
+                                    {{name}}
+                            </label>
                         {{ /each }}
                     </td>
                 </tr>

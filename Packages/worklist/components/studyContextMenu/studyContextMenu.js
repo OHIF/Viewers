@@ -36,11 +36,11 @@ openStudyContextMenu = function(e, template) {
         dialogProperty.top = e.pageY;// - dialog.outerHeight() - 40;
         dialogProperty.left = e.pageX;// - dialog.outerWidth() / 2;
 
-        var pageHeight = $(window).height();
+        var pageHeight = $(document.body).height();
         dialogProperty.top = Math.max(dialogProperty.top, 0);
         dialogProperty.top = Math.min(dialogProperty.top, pageHeight - dialog.outerHeight());
 
-        var pageWidth = $(window).width();
+        var pageWidth = $(document.body).width();
         dialogProperty.left = Math.max(dialogProperty.left, 0);
         dialogProperty.left = Math.min(dialogProperty.left, pageWidth - dialog.outerWidth());
     }

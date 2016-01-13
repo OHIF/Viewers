@@ -155,6 +155,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/helpers/formatNumberPrecision.js', 'client');
     api.addFiles('lib/helpers/formatPN.js', 'client');
     api.addFiles('lib/helpers/formatTM.js', 'client');
+    api.addFiles('lib/helpers/inlineIf.js', 'client');
 
     // Server-side functions
     api.addFiles('server/seed.js', 'server');

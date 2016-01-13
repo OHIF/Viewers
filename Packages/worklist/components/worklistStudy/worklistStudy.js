@@ -33,21 +33,28 @@ function handleShiftClick(studyRow, data) {
         }
 
         // Loop through the rows in between current and previous selected studies
-        rowsInBetween.each(function(index, row) {
-            if ($(row).is(studyRow)) {
-                // When we reach the currently clicked-on row, stop
-                return false;
-            } else if ($(row).hasClass('active')) {
+        rowsInBetween.each(function() {
+            var row = $(this);
+
+            if (row.hasClass('active')) {
                 // If we find one that is already selected, do nothing
                 return;
             }
 
             // Get the relevant studyInstanceUid
-            var studyInstanceUid = $(row).attr('studyInstanceUid');
+            var studyInstanceUid = row.attr('studyInstanceUid');
+
+            // Retrieve the data context through Blaze
+            var data = Blaze.getData(this);
 
             // Set the current study as selected
             WorklistSelectedStudies.insert(data);
-            studyRow.addClass('active');
+            row.addClass('active');
+
+            // When we reach the currently clicked-on row, stop the loop
+            if (row.is(studyRow)) {
+                return false;
+            }
 
             return true;
         });
@@ -77,6 +84,7 @@ function handleCtrlClick(studyRow, data) {
         // Set this as the previously selected row, so the user can
         // use Shift to select from this point onwards
         Worklist.previouslySelected = studyRow;
+        log.info('Worklist PreviouslySelected set: ' + studyRow.index());
     }
 }
 
@@ -102,6 +110,7 @@ Template.worklistStudy.events({
 
             // Set the previous study to the currently clicked-on study
             Worklist.previouslySelected = studyRow;
+            log.info('Worklist PreviouslySelected set: ' + studyRow.index());
 
             // Set the current study as selected
             WorklistSelectedStudies.insert(data);
