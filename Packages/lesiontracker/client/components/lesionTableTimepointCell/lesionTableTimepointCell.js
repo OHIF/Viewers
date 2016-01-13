@@ -5,18 +5,18 @@ Template.lesionTableTimepointCell.helpers({
         var lesionData = Template.parentData(1);
         return (lesionData &&
             lesionData.timepoints &&
-            lesionData.timepoints[this.timepointID]);
+            lesionData.timepoints[this.timepointId]);
     },
     displayData: function() {
         // Search Measurements by lesion and timepoint
         var lesionData = Template.parentData(1);
         if (!lesionData ||
             !lesionData.timepoints ||
-            !lesionData.timepoints[this.timepointID]) {
+            !lesionData.timepoints[this.timepointId]) {
             return;
         }
 
-        var data = lesionData.timepoints[this.timepointID];
+        var data = lesionData.timepoints[this.timepointId];
 
         if (lesionData.isTarget === true) {
             if (data.shortestDiameter) {
@@ -40,7 +40,7 @@ function doneCallback(measurementData, deleteTool) {
     // the specified Timepoint Cell
     if (deleteTool === true) {
         log.info('Confirm clicked!');
-        clearMeasurementTimepointData(measurementData.id, measurementData.timepointID);
+        clearMeasurementTimepointData(measurementData.id, measurementData.timepointId);
     }
 }
 
@@ -57,12 +57,12 @@ Template.lesionTableTimepointCell.events({
         var currentMeasurement = Template.parentData(1);
 
         // Create some fake measurement data
-        var currentTimepointID = this.timepointID;
+        var currentTimepointID = this.timepointId;
 
         var timepointData = currentMeasurement.timepoints[currentTimepointID];
         var measurementData = {
             id: currentMeasurement._id,
-            timepointID: currentTimepointID,
+            timepointId: currentTimepointID,
             response: timepointData.response,
             imageId: timepointData.imageId,
             handles: timepointData.handles,
@@ -83,7 +83,7 @@ Template.lesionTableTimepointCell.events({
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
             var currentMeasurement = Template.parentData(1);
-            var currentTimepointID = this.timepointID;
+            var currentTimepointID = this.timepointId;
 
             showConfirmDialog(function() {
                 clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);

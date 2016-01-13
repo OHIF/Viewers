@@ -7,40 +7,55 @@ Meteor.startup(function() {
     }
 
     OHIF.viewer.defaultHotkeys = {
-        defaultTool: "ESC",
-        angle: "A",
-        stackScroll: "S",
-        pan: "P",
-        magnify: "M",
-        scrollDown: ["DOWN", "PAGEDOWN"],
-        scrollUp: ["UP", "PAGEUP"],
-        nextPanel: "RIGHT",
-        previousPanel: "LEFT",
-        invert: "I",
-        flipV: "V",
-        flipH: "H",
-        wwwc: "W",
-        zoom: "Z",
-        cinePlay: "SPACE",
-        rotateR: "R",
-        rotateL: "L",
+        defaultTool: 'ESC',
+        angle: 'A',
+        stackScroll: 'S',
+        pan: 'P',
+        magnify: 'M',
+        scrollDown: ['DOWN', 'PAGEDOWN'],
+        scrollUp: ['UP', 'PAGEUP'],
+        nextPanel: 'RIGHT',
+        previousPanel: 'LEFT',
+        invert: 'I',
+        flipV: 'V',
+        flipH: 'H',
+        wwwc: 'W',
+        zoom: 'Z',
+        cinePlay: 'SPACE',
+        rotateR: 'R',
+        rotateL: 'L',
         toggleOverlayTags: 'SHIFT',
-        WLPresetSoftTissue: ["NUMPAD1", "1"],
-        WLPresetLung: ["NUMPAD2", "2"],
-        WLPresetLiver: ["NUMPAD3", "3"],
-        WLPresetBone: ["NUMPAD4", "4"],
-        WLPresetBrain: ["NUMPAD5", "5"]
+        WLPresetSoftTissue: ['NUMPAD1', '1'],
+        WLPresetLung: ['NUMPAD2', '2'],
+        WLPresetLiver: ['NUMPAD3', '3'],
+        WLPresetBone: ['NUMPAD4', '4'],
+        WLPresetBrain: ['NUMPAD5', '5']
     };
     
     // For now
     OHIF.viewer.hotkeys = OHIF.viewer.defaultHotkeys;
 
     OHIF.viewer.defaultWLPresets = {
-        'SoftTissue' : {wc : 40, ww : 400},
-        'Lung' : {wc : -600, ww : 1500},
-        'Liver' : {wc : 90, ww : 150},
-        'Bone' : {wc: 480, ww : 2500},
-        'Brain' : {wc : 40, ww : 80}
+        SoftTissue: {
+            wc: 40,
+            ww: 400
+        },
+        Lung: {
+            wc: -600,
+            ww: 1500
+        },
+        Liver: {
+            wc: 90,
+            ww: 150
+        },
+        Bone: {
+            wc: 480,
+            ww: 2500
+        },
+        Brain: {
+            wc: 40,
+            ww: 80
+        }
     };
 
     // For now
@@ -48,53 +63,53 @@ Meteor.startup(function() {
 
     OHIF.viewer.hotkeyFunctions = {
         wwwc: function() {
-            toolManager.setActiveTool("wwwc");
+            toolManager.setActiveTool('wwwc');
         },
         zoom: function() {
-            toolManager.setActiveTool("zoom");
+            toolManager.setActiveTool('zoom');
         },
         angle: function() {
-            toolManager.setActiveTool("angle");
+            toolManager.setActiveTool('angle');
         },
         dragProbe: function() {
-            toolManager.setActiveTool("dragProbe");
+            toolManager.setActiveTool('dragProbe');
         },
         ellipticalRoi: function() {
-            toolManager.setActiveTool("ellipticalRoi");
+            toolManager.setActiveTool('ellipticalRoi');
         },
         magnify: function() {
-            toolManager.setActiveTool("magnify");
+            toolManager.setActiveTool('magnify');
         },
         annotate: function() {
-            toolManager.setActiveTool("annotate");
+            toolManager.setActiveTool('annotate');
         },
         stackScroll: function() {
-            toolManager.setActiveTool("stackScroll");
+            toolManager.setActiveTool('stackScroll');
         },
         pan: function() {
-            toolManager.setActiveTool("pan");
+            toolManager.setActiveTool('pan');
         },
         length: function() {
-            toolManager.setActiveTool("length");
+            toolManager.setActiveTool('length');
         },
         spine: function() {
-            toolManager.setActiveTool("spine");
+            toolManager.setActiveTool('spine');
         },
         wwwcRegion: function() {
-            toolManager.setActiveTool("wwwcRegion");
+            toolManager.setActiveTool('wwwcRegion');
         },
-        zoomIn: function () {
-            var button = document.getElementById("zoomIn");
+        zoomIn: function() {
+            var button = document.getElementById('zoomIn');
             flashButton(button);
             zoomIn();
         },
-        zoomOut: function () {
-            var button = document.getElementById("zoomOut");
+        zoomOut: function() {
+            var button = document.getElementById('zoomOut');
             flashButton(button);
             zoomOut();
         },
-        zoomToFit: function () {
-            var button = document.getElementById("zoomToFit");
+        zoomToFit: function() {
+            var button = document.getElementById('zoomToFit');
             flashButton(button);
             zoomToFit();
         },
@@ -134,27 +149,27 @@ Meteor.startup(function() {
             previousActivePanel();
         },
         invert: function() {
-            var button = document.getElementById("invert");
+            var button = document.getElementById('invert');
             flashButton(button);
             invert();
         },
         flipV: function() {
-            var button = document.getElementById("flipV");
+            var button = document.getElementById('flipV');
             flashButton(button);
             flipV();
         },
         flipH: function() {
-            var button = document.getElementById("flipH");
+            var button = document.getElementById('flipH');
             flashButton(button);
             flipH();
         },
         rotateR: function() {
-            var button = document.getElementById("rotateR");
+            var button = document.getElementById('rotateR');
             flashButton(button);
             rotateR();
         },
         rotateL: function() {
-            var button = document.getElementById("rotateL");
+            var button = document.getElementById('rotateL');
             flashButton(button);
             rotateL();
         },
@@ -174,6 +189,8 @@ Meteor.startup(function() {
             }
         }
     };
+
+    OHIF.viewer.loadedSeriesData = {};
 });
 
 // Define a jQuery reverse function
@@ -197,7 +214,6 @@ function previousActivePanel() {
 
     setActiveViewport(element);
 }
-
 
 function nextActivePanel() {
     log.info('nextActivePanel');
@@ -224,7 +240,7 @@ function flashButton(button) {
     }
 
     button.classList.add('active');
-    setTimeout(function () {
+    setTimeout(function() {
         button.classList.remove('active');
     }, 100);
 }
@@ -233,13 +249,13 @@ function bindHotkey(hotkey, task) {
     var hotkeyFunctions = OHIF.viewer.hotkeyFunctions;
 
     // Only bind defined, non-empty HotKeys
-    if (!hotkey || hotkey === "") {
+    if (!hotkey || hotkey === '') {
         return;
     }
 
     var fn;
-    if (task.indexOf("WLPreset") > -1) {
-        var presetName = task.replace("WLPreset", "");
+    if (task.indexOf('WLPreset') > -1) {
+        var presetName = task.replace('WLPreset', '');
         fn = function() {
             applyWLPresetToActiveElement(presetName);
         };

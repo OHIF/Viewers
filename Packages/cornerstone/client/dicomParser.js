@@ -1,4 +1,4 @@
-/*! dicom-parser - v1.2.0 - 2015-11-02 | (c) 2014 Chris Hafey | https://github.com/chafey/dicomParser */
+/*! dicom-parser - v1.2.1 - 2016-02-07 | (c) 2014 Chris Hafey | https://github.com/chafey/dicomParser */
 (function (root, factory) {
 
     // node.js
@@ -66,6 +66,7 @@ var dicomParser = (function(dicomParser) {
         function getDataSetByteStream(transferSyntax, position) {
             if(transferSyntax === '1.2.840.10008.1.2.1.99')
             {
+              // https://github.com/nodeca/pako
               if(typeof(pako) === "undefined") {
                 throw 'dicomParser.parseDicom: deflated transfer syntax encountered but pako not loaded';
               }
@@ -936,8 +937,9 @@ var dicomParser = (function (dicomParser)
         {
             throw "dicomParser.ByteStream: missing required parameter 'byteArray'";
         }
-        if((byteArray instanceof Uint8Array) === false) {
-            throw 'dicomParser.ByteStream: parameter byteArray is not of type Uint8Array';
+        if((byteArray instanceof Uint8Array) === false &&
+          (byteArray instanceof Buffer) === false ) {
+            throw 'dicomParser.ByteStream: parameter byteArray is not of type Uint8Array or Buffer';
         }
         if(position < 0)
         {
@@ -2253,7 +2255,7 @@ var dicomParser = (function (dicomParser)
     dicomParser = {};
   }
 
-  dicomParser.version = "1.2.0";
+  dicomParser.version = "1.2.1";
 
   return dicomParser;
 }(dicomParser));

@@ -43,13 +43,15 @@
                     <td class="studyDataCell {{ #if autoselected }}disabled{{ /if }}">
                         <p>{{studyDescription}}</p>
                     </td>
-                    <td class="timepointOptions center studyDataCell {{ #if autoselected }}disabled{{ /if }}">
+                    <td class="timepointOptions center studyDataCell noselect {{ #if autoselected }}disabled{{ /if }}">
                         {{ #each timepointOptions }}
-                            <label>
+                            <label class="noselect">
                                 <input type="radio"
-                                          name="{{../_id}}"
-                                          value={{type}}
-                                          {{ inlineIf autoselected true 'disabled'}}>
+                                      name="{{../_id}}"
+                                      value="{{value}}"
+                                      class="timepointOption"
+                                      {{ inlineIf checked true 'checked' }}
+                                      {{ inlineIf autoselected true 'disabled' }}>
                                     {{name}}
                             </label>
                         {{ /each }}

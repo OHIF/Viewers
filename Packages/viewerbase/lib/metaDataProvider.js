@@ -46,6 +46,7 @@ addMetaData = function(imageId, data) {
         instanceNumber: instanceMetaData.instanceNumber,
         laterality: instanceMetaData.laterality,
         viewPosition: instanceMetaData.viewPosition,
+        sliceThickness: instanceMetaData.sliceThickness,
         index: imageIndex
     };
 

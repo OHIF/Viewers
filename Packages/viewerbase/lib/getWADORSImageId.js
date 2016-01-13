@@ -29,8 +29,14 @@ getWADORSImageId = function(instance) {
         //maxPixelValue : 255,
         slope: instance.rescaleSlope,
         intercept: instance.rescaleIntercept,
-        windowCenter : windowCenter,
-        windowWidth : windowWidth,
+        samplesPerPixel: instance.samplesPerPixel,
+        imageOrientationPatient: instance.imageOrientationPatient,
+        imagePositionPatient: instance.imagePositionPatient,
+        sopClassUid: instance.sopClassUid,
+        instanceNumber: instance.instanceNumber,
+        frameOfReferenceUID: instance.frameOfReferenceUID,
+        windowCenter: windowCenter,
+        windowWidth: windowWidth,
         //render: cornerstone.renderColorImage,
         //getPixelData: getPixelData,
         //getImageData: getImageData,
@@ -47,6 +53,8 @@ getWADORSImageId = function(instance) {
         instance: instance
     };
 
-    var imageId = cornerstoneWADORSImageLoader.addImage(image);
+    var imageId = cornerstoneWADOImageLoader.imageManager.add(image);
+
+    console.log('WADO-RS ImageID: ' + imageId);
     return imageId;
 };

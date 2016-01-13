@@ -11,15 +11,17 @@ Object.keys(ViewerData).forEach(function(contentId) {
 });
 
 Router.configure({
-    layoutTemplate: 'layoutLesionTracker',
-    loadingTemplate: 'layoutLesionTracker'
+    layoutTemplate: 'lesionTrackerLayout',
+    loadingTemplate: 'lesionTrackerLayout',
+    notFoundTemplate: 'notFound'
 });
 
 Router.onBeforeAction('loading');
 
 var data = {
     additionalTemplates: [
-        'associationModal'
+        'associationModal',
+        'optionsModal'
     ]
 };
 
@@ -35,24 +37,22 @@ Router.route('/worklist', function() {
     this.render('worklist', routerOptions);
 });
 
-Router.route('/viewer/:_id', {
-    layoutTemplate: 'layoutLesionTracker',
+Router.route('/viewer/timepoints/:_id', {
+    layoutTemplate: 'lesionTrackerLayout',
     name: 'viewer',
     onBeforeAction: function() {
-        log.info('Router GetStudyMetadata');
+        var timepointId = this.params._id;
 
-        var studyInstanceUid = this.params._id;
-        
         // Check if this study is already loaded in a tab
         // If it is, stop here so we don't keep adding tabs on hot-code reloads
-        var tab = WorklistTabs.find({
-            studyInstanceUid: studyInstanceUid
-        }).fetch();
+        var tab = WorklistTabs.findOne({
+            timepointId: timepointId
+        });
         if (tab) {
             return;
         }
 
         this.render('worklist', routerOptions);
-        openNewTab(studyInstanceUid);
+        openNewTabWithTimepoint(timepointId);
     }
 });

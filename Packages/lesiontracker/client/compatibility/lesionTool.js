@@ -50,6 +50,11 @@
         };
         var config = cornerstoneTools.lesion.getConfiguration();
 
+        // Set lesion number and lesion name
+        if (measurementData.lesionNumber === undefined) {
+            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        }
+
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(element, toolType, measurementData);
 
@@ -75,11 +80,6 @@
 
         // Bind a one-time event listener for the Esc key
         $(element).one('keydown', cancelCallback);
-
-        // Set lesion number and lesion name
-        if (measurementData.lesionNumber === undefined) {
-            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
-        }
 
         cornerstone.updateImage(element);
 
@@ -217,8 +217,7 @@
             widthMeasurement: 0,
             perpendicularMeasurement: 0,
             isDeleted: false,
-            isTarget: true,
-            uid: uuid.v4()
+            isTarget: true
         };
         return measurementData;
     }

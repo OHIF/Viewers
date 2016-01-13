@@ -12,7 +12,7 @@ activateMeasurements = function(element, measurementId, templateData, viewportIn
     var timepointData = getTimepointObject(imageId);
     var measurementData = Measurements.findOne(measurementId);
 
-    var measurementAtTimepoint = measurementData.timepoints[timepointData.timepointID];
+    var measurementAtTimepoint = measurementData.timepoints[timepointData.timepointId];
     if (!measurementAtTimepoint) {
         return;
     }
@@ -35,11 +35,11 @@ activateMeasurements = function(element, measurementId, templateData, viewportIn
     }
 
     if (imageIdIndex === elementCurrentImageIdIndex) {
-        activateTool(element, measurementData, timepointData.timepointID);
+        activateTool(element, measurementData, timepointData.timepointId);
     } else {
         cornerstone.loadAndCacheImage(imageIds[imageIdIndex]).then(function(image) {
             cornerstone.displayImage(element, image);
-            activateTool(element, measurementData, timepointData.timepointID);
+            activateTool(element, measurementData, timepointData.timepointId);
         });
     }
 };
@@ -50,9 +50,9 @@ activateMeasurements = function(element, measurementId, templateData, viewportIn
  *
  * @param element
  * @param measurementData
- * @param timepointID
+ * @param timepointId
  */
-function activateTool(element, measurementData, timepointID) {
+function activateTool(element, measurementData, timepointId) {
     deactivateAllToolData(element, 'lesion');
     deactivateAllToolData(element, 'nonTarget');
 
@@ -62,7 +62,7 @@ function activateTool(element, measurementData, timepointID) {
         return;
     }
 
-    var measurementAtTimepoint = measurementData.timepoints[timepointID];
+    var measurementAtTimepoint = measurementData.timepoints[timepointId];
 
     for (var i = 0; i < toolData.data.length; i++) {
         data = toolData.data[i];

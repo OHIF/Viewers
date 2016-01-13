@@ -1,0 +1,7 @@
+<template name="conformanceCheckFeedback">
+    <div id="conformanceCheckFeedback">
+        {{ #each validationErrors }}
+            <p data-toggle=""><i class="fa fa-exclamation-triangle fa-lg"></i> {{prefix}}{{error}}</p>
+        {{ /each }}
+    </div>
+</template>

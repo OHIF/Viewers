@@ -11,6 +11,8 @@ getTimepointObject = function(imageId) {
     }
 
     return Timepoints.findOne({
-        timepointName: study.studyDate
+        studyInstanceUids: {
+            $in: [study.studyInstanceUid]
+        }
     });
 };

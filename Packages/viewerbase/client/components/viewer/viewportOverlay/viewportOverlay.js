@@ -10,7 +10,7 @@ function getElementIfNotEmpty(viewportIndex) {
         element = imageViewerViewports.get(viewportIndex),
         canvases = imageViewerViewports.eq(viewportIndex).find('canvas');
 
-    if (!element || $(element).hasClass("empty") || canvases.length === 0) {
+    if (!element || $(element).hasClass('empty') || canvases.length === 0) {
         return;
     }
 
@@ -20,6 +20,7 @@ function getElementIfNotEmpty(viewportIndex) {
     } catch(error) {
         return;
     }
+
     return element;
 }
 
@@ -28,10 +29,12 @@ function getPatient(property) {
     if (!this.imageId) {
         return false;
     }
+
     var patient = cornerstoneTools.metaData.get('patient', this.imageId);
     if (!patient) {
         return '';
     }
+
     return patient[property];
 }
 
@@ -40,10 +43,12 @@ function getStudy(property) {
     if (!this.imageId) {
         return false;
     }
+
     var study = cornerstoneTools.metaData.get('study', this.imageId);
     if (!study) {
         return '';
     }
+
     return study[property];
 }
 
@@ -52,10 +57,12 @@ function getSeries(property) {
     if (!this.imageId) {
         return false;
     }
+
     var series = cornerstoneTools.metaData.get('series', this.imageId);
     if (!series) {
         return '';
     }
+
     return series[property];
 }
 
@@ -64,10 +71,12 @@ function getInstance(property) {
     if (!this.imageId) {
         return false;
     }
+
     var instance = cornerstoneTools.metaData.get('instance', this.imageId);
     if (!instance) {
         return '';
     }
+
     return instance[property];
 }
 
@@ -76,15 +85,18 @@ function getImage(viewportIndex) {
     if (!element) {
         return false;
     }
+
     var enabledElement;
     try {
         enabledElement = cornerstone.getEnabledElement(element);
     } catch(error) {
         return false;
     }
+
     if (!enabledElement || !enabledElement.image) {
         return false;
     }
+
     return enabledElement.image;
 }
 
@@ -95,10 +107,12 @@ Template.viewportOverlay.helpers({
         if (!element) {
             return '';
         }
+
         var viewport = cornerstone.getViewport(element);
         if (!viewport) {
             return '';
         }
+
         return 'W ' + viewport.voi.windowWidth.toFixed(0) + ' L ' + viewport.voi.windowCenter.toFixed(0);
     },
     zoom: function() {
@@ -107,10 +121,12 @@ Template.viewportOverlay.helpers({
         if (!element) {
             return '';
         }
+
         var viewport = cornerstone.getViewport(element);
         if (!viewport) {
             return '';
         }
+
         return (viewport.scale * 100.0);
     },
     imageDimensions: function() {
@@ -118,41 +134,42 @@ Template.viewportOverlay.helpers({
 
         var image = getImage(this.viewportIndex);
         if (!image) {
-           return '';
+            return '';
         }
+
         return image.width + ' x ' + image.height;
     },
-    patientName : function() {
+    patientName: function() {
         return getPatient.call(this, 'name');
     },
-    patientId : function() {
+    patientId: function() {
         return getPatient.call(this, 'id');
     },
-    studyDate : function() {
+    studyDate: function() {
         return getStudy.call(this, 'studyDate');
     },
-    studyTime : function() {
+    studyTime: function() {
         return getStudy.call(this, 'studyTime');
     },
-    studyDescription : function() {
+    studyDescription: function() {
         return getStudy.call(this, 'studyDescription');
     },
-    seriesDescription : function() {
+    seriesDescription: function() {
         return getSeries.call(this, 'seriesDescription');
     },
-    seriesNumber : function() {
+    seriesNumber: function() {
         return getSeries.call(this, 'seriesNumber');
     },
-    imageNumber : function() {
+    imageNumber: function() {
         return getInstance.call(this, 'instanceNumber');
     },
-    imageIndex : function() {
+    imageIndex: function() {
         return getInstance.call(this, 'index');
     },
-    numImages : function() {
+    numImages: function() {
         return getSeries.call(this, 'numImages');
     },
-    prior : function() {
+    prior: function() {
         // This helper is updated whenever a new image is displayed in the viewport
         Session.get('CornerstoneNewImage' + this.viewportIndex);
         if (!this.imageId) {
@@ -165,14 +182,18 @@ Template.viewportOverlay.helpers({
         // that we can obtain the oldest study as the first element of the array
         //
         // TODO= Find out if we should encode studyDate as a Date in the ViewerStudies Collection
-        var viewportStudies = ViewerStudies.find({}, {sort: {studyDate: 1}});
+        var viewportStudies = ViewerStudies.find({}, {
+            sort: {
+                studyDate: 1
+            }
+        });
         if (viewportStudies.count() < 2) {
             return;
         }
 
         // Get study data
         var study = cornerstoneTools.metaData.get('study', this.imageId);
-        if (study.studyInstanceUid === viewportStudies.fetch()[0].studyInstanceUid) {
+        if (study.studyDate === viewportStudies.fetch()[0].studyDate) {
             return 'Prior';
         }
     }

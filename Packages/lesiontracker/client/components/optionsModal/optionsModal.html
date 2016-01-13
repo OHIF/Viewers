@@ -1,0 +1,83 @@
+<template name="optionsModal">
+    <div class="modal" id="optionsModal" tabindex="-1" role="dialog" aria-labelledby="optionsModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="optionsModalLabel">Clinical Trial Options</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Select a Trial Criteria Type</h4>
+                            <label for="recistCriteria" class="trialCriteriaLabel">
+                                <input type="radio" name="trialCriteria" checked="true" id="recistCriteria" value='RECIST' class="trialCriteria"> RECIST 1.1
+                            </label>
+                            <label for="irRCCriteria" class="trialCriteriaLabel">
+                                <input type="radio" name="trialCriteria" id="irRCCriteria" value='irRC' class="trialCriteria"> irRC
+                            </label>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Trial Criteria Descriptions</h4>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a href="#RECISTDescription" aria-controls="home" role="tab" data-toggle="tab">RECIST 1.1</a>
+                                </li>
+                                <li role="presentation">
+                                    <a href="#irRCDescription" aria-controls="profile" role="tab" data-toggle="tab">irRC</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane fade in active" id="RECISTDescription">
+                                    <h5>Baseline Checks</h5>
+                                    <ul>
+                                        <li>Extranodal lesions must be >= 10 mm long axis AND >= double the acquisition slice thickness by CT and MR</li>
+                                        <li>Extranodal lesions must be >= 20 mm on chest x-ray (although x-rays rarely used for clinical trial assessment)</li>
+                                        <li>Nodal lesions must be >= 15 mm short axis AND >= double the acquisition slice thickness by CT and MR</li>
+                                        <li>Up to a max of 2 target lesions per organ</li>
+                                        <li>Up to a max of 5 target lesions total</li>
+                                        <li>Non-targets can only be assessed as 'present'</li>
+                                        <li>Target lesions must have measurements (cannot be assessed as CR, UN/NE, EX)</li>
+                                    </ul>
+                                    <!-- Time Point Measurement Total = Sum of long axis measurements for extranodal target lesion + short axis measurements for nodal lesions</li>-->
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="irRCDescription">
+                                    <h5>Baseline Checks</h5>
+                                    <ul>
+                                        <li>Target lesions must be >= 10 X 10 mm AND >= double the acquisition slice thickness by CT and MR</li>
+                                        <li>Up to a max of 5 target lesions per organ</li>
+                                        <li>Up to a max of 10 target lesions total</li>
+                                        <li>Non-targets can only be assessed as 'present'</li>
+                                        <li>Target lesions must have measurements (cannot be assessed as CR, UN/NE, EX)</li>
+                                    </ul>
+                                    <h5>New Lesion Checks for Follow-ups</h5>
+                                    <ul>
+                                        <li>New target lesions must be >= 5 X 5 mm AND >= double the acquisition slice thickness by CT and MR</li>
+                                        <li>Up to a max of 5 target lesions per organ</li>
+                                        <li>Up to a max of 10 target lesions total</li>
+                                    </ul>
+                                    <!--Time Point Measurement Total = SPD target lesions + SPD new lesions (SPD = sum of product of long axis and short axis diameters)-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Additional Options</h4>
+                            <a type="button" class="btn btn-danger clearAllStudyTimepointAssociations">
+                                <i class="fa fa-trash"></i> Clear All Study/Timepoint Associations
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

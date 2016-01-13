@@ -1,8 +1,8 @@
 DICOMWeb.getJSON = function(url, options) {
     var getOptions = {
         headers: {
-        Accept: 'application/json'
-    },
+            Accept: 'application/json'
+        }
     };
 
     if (options.auth) {

@@ -11,24 +11,29 @@ function closeHandler(dialog) {
 
 // This event sets lesion number for new lesion
 function setLesionNumberCallback(measurementData, eventData, doneCallback) {
-    // Get the current element's timepointID from the study date metadata
+    // Get the current element's timepointId from the study date metadata
     var element = eventData.element;
     var enabledElement = cornerstone.getEnabledElement(element);
     var imageId = enabledElement.image.imageId;
 
     var study = cornerstoneTools.metaData.get('study', imageId);
+
+    // Find the relevant timepoint given the current study
     var timepoint = Timepoints.findOne({
-        timepointName: study.studyDate
+        studyInstanceUids: {
+            $in: [study.studyInstanceUid]
+        }
     });
+
     if (!timepoint) {
         return;
     }
 
-    measurementData.timepointID = timepoint.timepointID;
+    measurementData.timepointId = timepoint.timepointId;
 
     // Get a lesion number for this lesion, depending on whether or not the same lesion previously
     // exists at a different timepoint
-    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointID, isTarget = false);
+    var lesionNumber = LesionManager.getNewLesionNumber(measurementData.timepointId, isTarget = false);
     measurementData.lesionNumber = lesionNumber;
 
     // Set lesion number
@@ -211,7 +216,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
             multi: true
         });
 
-    var response = measurement.timepoints[measurementData.timepointID].response;
+    var response = measurement.timepoints[measurementData.timepointId].response;
 
     // TODO = Standardize this. Searching by code probably isn't the best, we should use
     // some sort of UID

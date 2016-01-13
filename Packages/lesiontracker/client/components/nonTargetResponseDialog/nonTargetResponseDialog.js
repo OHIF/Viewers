@@ -65,7 +65,7 @@ changeNonTargetResponse = function(measurementData, eventData, doneCallback) {
         return;
     }
 
-    var response = measurement.timepoints[measurementData.timepointID].response;
+    var response = measurement.timepoints[measurementData.timepointId].response;
 
     // TODO = Standardize this. Searching by code probably isn't the best, we should use
     // some sort of UID

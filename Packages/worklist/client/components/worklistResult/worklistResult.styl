@@ -1,0 +1,37 @@
+table#tblStudyList
+  color: #888888
+  border-collapse: collapse
+  border-color: gray
+
+  thead
+    background-color: black
+    white-space: nowrap
+    
+    &:hover
+      color: #888888
+
+    // TODO: Use padding instead of hidden inputs to keep titles
+    // at the same height in the header.
+    #numImages.worklist-search, #modality.worklist-search
+      visibility: hidden
+
+  tbody
+    tr
+      padding: 4px
+      border: 1px solid #282828
+      background-color: black
+
+      &:hover, &:active, &.active
+        background-color: #009BD2
+        color: white
+
+        td
+          // This selector is necessary to override bootstrap's 'table' class
+          color: white
+          background-color: #009BD2
+
+      &:nth-of-type(odd)
+        background-color: #202020
+
+      td
+        white-space: nowrap

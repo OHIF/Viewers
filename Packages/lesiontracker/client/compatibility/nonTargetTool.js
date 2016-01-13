@@ -51,6 +51,13 @@
             mouseButtonMask: mouseEventData.which
         };
 
+        var config = cornerstoneTools.nonTarget.getConfiguration();
+
+        // Set lesion number and lesion name
+        if (measurementData.lesionNumber === undefined) {
+            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        }
+
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(mouseEventData.element, toolType, measurementData);
 
@@ -77,13 +84,6 @@
         // Bind a one-time event listener for the Esc key
         $(element).one('keydown', cancelCallback);
 
-        var config = cornerstoneTools.nonTarget.getConfiguration();
-
-        // Set lesion number and lesion name
-        if (measurementData.lesionNumber === undefined) {
-            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
-        }
-
         cornerstone.updateImage(element);
 
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -100,6 +100,8 @@
             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
+
+            $(element).off('keydown', cancelCallback);
 
             cornerstone.updateImage(mouseEventData.element);
         });

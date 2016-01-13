@@ -11,8 +11,8 @@ Package.onUse(function (api) {
     api.use('jquery');
     api.use('stylus');
     api.use('http');
-
     api.use('practicalmeteor:loglevel');
+    api.use('rwatts:uuid');
 
     // Our custom packages
     api.use('dicomweb');
@@ -23,36 +23,44 @@ Package.onUse(function (api) {
     api.addFiles('log.js', 'client');
 
     // Components
-    api.addFiles('components/worklist.html', 'client');
-    api.addFiles('components/worklist.js', 'client');
-    api.addFiles('components/worklist.styl', 'client');
+    api.addFiles('client/components/worklist.html', 'client');
+    api.addFiles('client/components/worklist.js', 'client');
+    api.addFiles('client/components/worklist.styl', 'client');
 
-    api.addFiles('components/tabTitle/tabTitle.html', 'client');
-    api.addFiles('components/tabTitle/tabTitle.js', 'client');
-    api.addFiles('components/tabTitle/tabTitle.styl', 'client');
+    api.addFiles('client/components/tabTitle/tabTitle.html', 'client');
+    api.addFiles('client/components/tabTitle/tabTitle.js', 'client');
+    api.addFiles('client/components/tabTitle/tabTitle.styl', 'client');
 
-    api.addFiles('components/tabContent/tabContent.html', 'client');
-    api.addFiles('components/tabContent/tabContent.styl', 'client');
+    api.addFiles('client/components/tabContent/tabContent.html', 'client');
+    api.addFiles('client/components/tabContent/tabContent.styl', 'client');
 
-    api.addFiles('components/worklistStudy/worklistStudy.html', 'client');
-    api.addFiles('components/worklistStudy/worklistStudy.js', 'client');
-    api.addFiles('components/worklistStudy/worklistStudy.styl', 'client');
+    api.addFiles('client/components/worklistStudy/worklistStudy.html', 'client');
+    api.addFiles('client/components/worklistStudy/worklistStudy.js', 'client');
+    api.addFiles('client/components/worklistStudy/worklistStudy.styl', 'client');
 
-    api.addFiles('components/worklistResult/worklistResult.html', 'client');
-    api.addFiles('components/worklistResult/worklistResult.js', 'client');
-    api.addFiles('components/worklistResult/worklistResult.styl', 'client');
+    api.addFiles('client/components/worklistResult/worklistResult.html', 'client');
+    api.addFiles('client/components/worklistResult/worklistResult.js', 'client');
+    api.addFiles('client/components/worklistResult/worklistResult.styl', 'client');
 
-    api.addFiles('components/studyContextMenu/studyContextMenu.html', 'client');
-    api.addFiles('components/studyContextMenu/studyContextMenu.js', 'client');
-    api.addFiles('components/studyContextMenu/studyContextMenu.styl', 'client');
+    api.addFiles('client/components/studyContextMenu/studyContextMenu.html', 'client');
+    api.addFiles('client/components/studyContextMenu/studyContextMenu.js', 'client');
+    api.addFiles('client/components/studyContextMenu/studyContextMenu.styl', 'client');
 
-    api.addFiles('lib/generateUUID.js', 'client');
-    api.export('generateUUID', 'client');
+    // Library functions
+    api.addFiles('lib/getStudyMetadata.js', 'client');
+    api.addFiles('lib/getStudiesMetadata.js', 'client');
+    api.addFiles('lib/openNewTab.js', 'client');
+    api.addFiles('lib/switchToTab.js', 'client');
+    api.addFiles('lib/worklist.js', 'client');
 
     // Export Worklist helper functions for usage in Routes
+    api.export('getTimepointName', 'client');
     api.export('getStudyMetadata', 'client');
+    api.export('getStudiesMetadata', 'client');
     api.export('openNewTab', 'client');
+    api.export('setWorklistSubscriptions', 'client');
     api.export('switchToTab', 'client');
+    api.export('Worklist');
 
     // Export the global ViewerData object
     api.export('ViewerData', 'client');
@@ -62,4 +70,3 @@ Package.onUse(function (api) {
     api.export('WorklistStudies', 'client');
     api.export('WorklistSelectedStudies', 'client');
 });
-

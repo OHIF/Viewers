@@ -19,12 +19,11 @@ clearMeasurementTimepointData = function(measurementId, timepointId) {
 
     delete data.timepoints[timepointId];
 
-    if (Object.keys(data.timepoints).length === 0) {
+    if (!Object.keys(data.timepoints).length) {
         Meteor.call('removeMeasurement', measurementId, function(error, response) {
             if (error) {
                 log.warn(error);
             }
-            console.log('Removed!');
         });
     } else {
         // Update the Timepoint object of the Measurement document

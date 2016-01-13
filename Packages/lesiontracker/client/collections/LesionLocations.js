@@ -6,7 +6,8 @@ LesionLocations.insert({
     location: 'Liver Left',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -15,7 +16,8 @@ LesionLocations.insert({
     location: 'Liver Right',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -24,7 +26,8 @@ LesionLocations.insert({
     location: 'Liver Caudate',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -33,7 +36,8 @@ LesionLocations.insert({
     location: 'Lung LLL',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -42,7 +46,8 @@ LesionLocations.insert({
     location: 'Lung LUL',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -51,7 +56,8 @@ LesionLocations.insert({
     location: 'Lung RLL',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -60,7 +66,8 @@ LesionLocations.insert({
     location: 'Lung RML',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -69,7 +76,8 @@ LesionLocations.insert({
     location: 'Lung RUL',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -78,7 +86,8 @@ LesionLocations.insert({
     location: 'Pleura Left',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -87,7 +96,8 @@ LesionLocations.insert({
     location: 'Pleura Right',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -96,7 +106,8 @@ LesionLocations.insert({
     location: 'Kidney Left',
     hasDescription: false,
     description: '',
-    selected: false
+    selected: false,
+    isNodal: false
 });
 
 LesionLocations.insert({
@@ -104,5 +115,7 @@ LesionLocations.insert({
     group: 'kidney',
     location: 'Kidney Right',
     hasDescription: false,
-    description: ''
+    description: '',
+    selected: false,
+    isNodal: false
 });

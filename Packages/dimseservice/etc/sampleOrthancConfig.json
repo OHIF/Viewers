@@ -1,0 +1,5 @@
+// The list of the known DICOM modalities
+// If you are running Orthanc , you need to put the contents of this file in its Configuration file
+"DicomModalities" : {
+    "OHIFDCM" : [ "OHIFDCM", "localhost", 3000 ]
+},

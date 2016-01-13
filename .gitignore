@@ -3,3 +3,5 @@ docs/
 .meteor/local
 .meteor/meteorite
 node_modules
+Packages/active-entry/helloworld/
+LesionTracker/tests/nightwatch/reports/

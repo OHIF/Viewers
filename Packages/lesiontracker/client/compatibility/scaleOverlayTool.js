@@ -50,11 +50,10 @@
                 x: config.horizontalLine.start.x + i * config.horizontalMinorTick,
                 y: 0
             };
-            if (i% 5 === 0) {
 
+            if (i% 5 === 0) {
                 endPoint.y = config.horizontalLine.start.y - config.majorTickLength;
             } else {
-
                 endPoint.y = config.horizontalLine.start.y - config.minorTickLength;
             }
 

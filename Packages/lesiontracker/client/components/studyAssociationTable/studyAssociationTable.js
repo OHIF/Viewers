@@ -30,8 +30,13 @@ function getDateRange(selectedStudies, range) {
 }
 
 /**
+ * Selects all studies related to the currently input studies,
+ * based on various criteria. Returns the entire array of related studies.
  *
- * @returns {Array}
+ * (at the moment, this is only the date range +/- 14 days, with a matching patientId)
+ *
+ * @param selectedStudies A user-selected list of studies
+ * @returns {*} The entire array of related studies
  */
 function autoSelectStudies(selectedStudies) {
     if (!selectedStudies.length) {
@@ -40,6 +45,9 @@ function autoSelectStudies(selectedStudies) {
 
     var range = getDateRange(selectedStudies);
 
+    // Fetch autoselected studies based on the date range
+    // Note that we used MongoDB's fetch here so we have a mutable array,
+    // rather than a Cursor
     var autoselected = WorklistStudies.find({
         studyDate: {
             $gte: range.earliestDate.format('YYYYMMDD'),
@@ -82,8 +90,8 @@ Template.studyAssociationTable.helpers({
                     studyDate: 1
                 }
             }).fetch() || [];
-        var autoselected = autoSelectStudies(selectedStudies);
-        return autoselected;
+
+        return autoSelectStudies(selectedStudies);
     },
     /**
      * This helper returns the list of Timepoint types the user can set for this study
@@ -91,16 +99,15 @@ Template.studyAssociationTable.helpers({
      * @returns {Array.<T>}
      */
     timepointOptions: function() {
-        return [
-            {
+        return [{
                 value: 'baseline',
-                name: 'Baseline'
-            },
-            {
+                name: 'Baseline',
+                checked: true
+            }, {
                 value: 'followup',
-                name: 'Follow-up'
-            }
-        ];
+                name: 'Follow-up',
+                checked: false
+            }];
     },
     earliestDate: function() {
         var selectedStudies = WorklistSelectedStudies.find({}, {
@@ -108,12 +115,11 @@ Template.studyAssociationTable.helpers({
                 studyDate: 1
             }
         }).fetch();
-        var range = getDateRange(selectedStudies);
-        if (!range) {
-            return;
-        }
 
-        return range.earliestDate;
+        var range = getDateRange(selectedStudies);
+        if (range) {
+            return range.earliestDate;
+        }
     },
     latestDate: function() {
         var selectedStudies = WorklistSelectedStudies.find({}, {
@@ -121,12 +127,11 @@ Template.studyAssociationTable.helpers({
                 studyDate: 1
             }
         }).fetch();
-        var range = getDateRange(selectedStudies);
-        if (!range) {
-            return;
-        }
 
-        return range.latestDate;
+        var range = getDateRange(selectedStudies);
+        if (range) {
+            return range.latestDate;
+        }
     }
 });
 
@@ -143,12 +148,3 @@ Template.studyAssociationTable.events({
         }
     }
 });
-
-//trial criteria!
-/*There shall be Associate option in right-click dialog
-If associated, double-click shall go to image view.
-    If not associated, user shall be directed to Associate Time Points Dialog
-Use shall also be allowed to select multiple studies from study list to associate
-Associate Time Point dialog shall present selected studies and studies within defined time window of =/- 14 days of selected studies
-User should only be able to associate one time point at a time (user should not be able to select both BL and F/U for different studies in associate dialog)
-   */

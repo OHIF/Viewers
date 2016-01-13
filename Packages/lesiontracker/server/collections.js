@@ -1,10 +1,18 @@
-Meteor.publish('timepoints', function(patientId) {
+Meteor.publish('timepoints', function() {
+    return Timepoints.find();
+});
+
+Meteor.publish('singlePatientTimepoints', function(patientId) {
     return Timepoints.find({
         patientId: patientId
     });
 });
 
-Meteor.publish('measurements', function(patientId) {
+Meteor.publish('studies', function() {
+    return Studies.find();
+});
+
+Meteor.publish('singlePatientMeasurements', function(patientId) {
     return Measurements.find({
         patientId: patientId
     });

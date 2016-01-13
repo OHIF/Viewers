@@ -30,10 +30,10 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         // If no series data exists in the seriesMap cache variable,
         // process any available series data
-        if(!series) {
+        if (!series) {
             series = {
-                seriesInstanceUid : seriesInstanceUid,
-                seriesNumber : DICOMWeb.getString(instance['00200011']),
+                seriesInstanceUid: seriesInstanceUid,
+                seriesNumber: DICOMWeb.getString(instance['00200011']),
                 instances: []
             };
 
@@ -52,7 +52,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         // manually create a WADO-URI from the UIDs
         // NOTE: Haven't been able to get Orthanc's WADO-URI to work yet - maybe its not configured?
         var sopInstanceUid = DICOMWeb.getString(instance['00080018']);
-        var uri = server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + "&contentType=application%2Fdicom";
+        var uri = server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom';
 
         // Add this instance to the current series
         series.instances.push({
@@ -61,8 +61,8 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             uri: uri,
             instanceNumber: DICOMWeb.getString(instance['00200013'])
         });
-  });
-  return seriesList;
+    });
+    return seriesList;
 }
 
 /**

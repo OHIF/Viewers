@@ -1,9 +1,6 @@
 <template name="lesionTableTimepointHeader">
-    <th class="lesionTableTimepointCell">
-        {{formatDA timepointName "MM/DD/YYYY"}}
-        {{#if timepointTextFound}}
-            {{timepointText}}
-        {{/if}}
-        {{#if timepointLoaded }}<span class="timepointIndicator">&lt;</span> {{/if}}
+    <th class="lesionTableTimepointCell" title="Latest study date: {{formatDA latestDate "MM/DD/YYYY"}}"
+        data-toggle="tooltip" data-placement="top">
+        {{ timepointName }}
     </th>
 </template>

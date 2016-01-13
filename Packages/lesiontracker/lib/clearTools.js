@@ -35,4 +35,7 @@ clearTools = function() {
 
     // Remove patient's measurements
     Meteor.call('removeMeasurementsByPatientId', patientId);
+
+    // Clear all validation errors
+    ValidationErrors.remove({});
 };

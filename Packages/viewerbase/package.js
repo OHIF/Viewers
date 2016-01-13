@@ -16,7 +16,9 @@ Package.onUse(function (api) {
     api.use('practicalmeteor:loglevel');
     api.use('momentjs:moment');
 
-    // Our custom package
+    // Our custom packages
+    api.use('dicomweb');
+    api.use('dimseservice');
     api.use('cornerstone');
     api.use('hangingprotocols');
 
@@ -107,7 +109,6 @@ Package.onUse(function (api) {
     api.addFiles('lib/createStacks.js', 'client');
     api.addFiles('lib/getImageId.js', 'client');
     api.addFiles('lib/getWADORSImageId.js', 'client');
-    api.addFiles('lib/isTouchDevice.js', 'client');
     api.addFiles('lib/metaDataProvider.js', 'client');
     api.addFiles('lib/rerenderViewportWithNewSeries.js', 'client');
     api.addFiles('lib/sortStudy.js', 'client');
@@ -125,6 +126,7 @@ Package.onUse(function (api) {
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
+
     //api.export('accountsConfig', 'client');
     api.export('resizeViewportElements','client');
     api.export('handleResize','client');
@@ -135,7 +137,6 @@ Package.onUse(function (api) {
     api.export('createStacks', 'client');
     api.export('getImageId', 'client');
     api.export('getWADORSImageId', 'client');
-    api.export('isTouchDevice', 'client');
     api.export('metaDataProvider', 'client');
     api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
@@ -153,18 +154,31 @@ Package.onUse(function (api) {
     // UI Helpers
     api.addFiles('lib/helpers/formatDA.js', 'client');
     api.addFiles('lib/helpers/formatNumberPrecision.js', 'client');
-    api.addFiles('lib/helpers/formatPN.js', 'client');
     api.addFiles('lib/helpers/formatTM.js', 'client');
     api.addFiles('lib/helpers/inlineIf.js', 'client');
+
+    api.addFiles('lib/helpers/formatPN.js', 'client');
+    api.export('formatPN', 'client');
+
+    api.addFiles('lib/helpers/isTouchDevice.js', 'client');
+    api.export('isTouchDevice', 'client');
 
     // Server-side functions
     api.addFiles('server/seed.js', 'server');
     api.addFiles('server/lib/namespace.js', 'server');
     api.addFiles('server/methods/getStudyMetadata.js', 'server');
     api.addFiles('server/methods/worklistSearch.js', 'server');
+
+    // DICOMWeb instance, study, and metadata retrieval
     api.addFiles('server/services/qido/instances.js', 'server');
     api.addFiles('server/services/qido/studies.js', 'server');
     api.addFiles('server/services/wado/retrieveMetadata.js', 'server');
+
+    // DIMSE instance, study, and metadata retrieval
+    api.addFiles('server/services/dimse/instances.js', 'server');
+    api.addFiles('server/services/dimse/studies.js', 'server');
+    api.addFiles('server/services/dimse/retrieveMetadata.js', 'server');
+
     api.export('Services', 'server');
 });
 

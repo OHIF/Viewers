@@ -1,0 +1,54 @@
+<template name="worklistResult">
+    <table id="tblStudyList" class="table table-striped noselect">
+        <thead>
+        <tr>
+            <th>
+                <h5>Patient Name</h5>
+                <input type="text" class="form-control worklist-search" id="patientName">
+            </th>
+            <th>
+                <h5>Patient ID</h5>
+                <input type="text" class="form-control worklist-search" id="patientId">
+            </th>
+
+            {{#unless isTouchDevice}}
+                <th>
+                    <h5>Accession #</h5>
+                    <input type="text" class="form-control worklist-search" id="accessionNumber">
+                </th>
+            {{/unless}}
+
+            <th>
+                <h5>Study Date</h5>
+                <input type="text" class="form-control worklist-search" id="studyDate">
+            </th>
+
+            {{#unless isTouchDevice}}
+                <th>
+                    <h5>Modality</h5>
+                    <input type="text" class="form-control worklist-search" id="modality">
+                </th>
+            {{/unless}}
+            <th>
+                <h5>Study Description</h5>
+                <input type="text" class="form-control worklist-search" id="studyDescription">
+            </th>
+
+            {{#unless isTouchDevice}}
+            <th>
+                <h5># Images</h5>
+                <input type="text" class="form-control worklist-search" id="numImages">
+            </th>
+            {{/unless}}
+        </tr>
+        </thead>
+        <tbody id="studyListData">
+        {{#each studies}}
+            {{ >worklistStudy }}
+        {{/each}}
+        </tbody>
+    </table>
+    {{ #unless studies.count }}
+        {{ >loadingText }}
+    {{ /unless }}
+</template>

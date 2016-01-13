@@ -1,0 +1,31 @@
+<template name="lesionTrackerWorklistStudy">
+    <tr class="worklistStudy noselect">
+        <td>
+            {{formatPN patientName}}
+        </td>
+        <td>
+            {{patientId}}
+        </td>
+        {{#unless isTouchDevice}}
+        <td>
+            {{accessionNumber}}
+        </td>
+        {{/unless}}
+        <td>
+            {{formatDA studyDate}} {{ #if timepointName }}({{timepointName}}){{ /if }}
+        </td>
+        {{#unless isTouchDevice}}
+        <td>
+            {{modalities}}
+        </td>
+        {{/unless}}
+        <td>
+            {{studyDescription}}
+        </td>
+        {{#unless isTouchDevice}}
+        <td>
+            {{numberOfStudyRelatedInstances}}
+        </td>
+        {{/unless}}
+    </tr>
+</template>
