@@ -8,7 +8,7 @@
 
         var i = 0;
 
-        while (config.verticalLine.start.y + i * config.verticalMinorTick <= config.vscaleBounds.bottom) {
+        while (config.verticalLine.start.y + i * config.verticalMinorTick <= config.vscaleBounds.bottomRight.y) {
 
             var startPoint = {
                 x: config.verticalLine.start.x,
@@ -39,7 +39,7 @@
 
         i = 0;
 
-        while (config.horizontalLine.start.x + i * config.horizontalMinorTick <= config.hscaleBounds.right) {
+        while (config.horizontalLine.start.x + i * config.horizontalMinorTick <= config.hscaleBounds.bottomRight.x) {
 
             startPoint = {
                 x: config.horizontalLine.start.x + i * config.horizontalMinorTick,
@@ -207,22 +207,22 @@
             majorTickLength: 25,
             verticalLine: {
                 start: {
-                    x: vscaleBounds.right ,
-                    y: vscaleBounds.top
+                    x: vscaleBounds.bottomRight.x,
+                    y: vscaleBounds.topLeft.y
                 },
                 end: {
-                    x: vscaleBounds.right,
-                    y: vscaleBounds.bottom
+                    x: vscaleBounds.bottomRight.x,
+                    y: vscaleBounds.bottomRight.y
                 }
             },
             horizontalLine: {
                 start: {
-                    x: hscaleBounds.left,
-                    y: hscaleBounds.bottom
+                    x: hscaleBounds.topLeft.x,
+                    y: hscaleBounds.bottomRight.y
                 },
                 end: {
-                    x: hscaleBounds.right,
-                    y: hscaleBounds.bottom
+                    x: hscaleBounds.bottomRight.x,
+                    y: hscaleBounds.bottomRight.y
                 }
             },
             color: cornerstoneTools.toolColors.getToolColor(),

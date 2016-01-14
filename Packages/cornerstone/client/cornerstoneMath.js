@@ -986,7 +986,7 @@ var cornerstoneMath = (function (cornerstoneMath) {
         var a1, a2, b1, b2, c1, c2; // Coefficients of line equations
         var r1, r2, r3, r4; // Sign values
 
-        var denom, offset, num; //Intermediate values
+        var denom, num; //Intermediate values
 
         // Compute a1, b1, c1, where line joining points 1 and 2 is "a1 x  +  b1 y  +  c1  =  0"
         a1 = y2 - y1;
@@ -1004,10 +1004,7 @@ var cornerstoneMath = (function (cornerstoneMath) {
         if (r3 !== 0 &&
             r4 !== 0 &&
             cornerstoneMath.sign(r3) === cornerstoneMath.sign(r4)) {
-            intersectionPoint.x = 0;
-            intersectionPoint.y = 0;
-            intersectionPoint.intersected = false;
-            return intersectionPoint;
+            return;
         }
 
         /* Compute a2, b2, c2 */
@@ -1029,18 +1026,13 @@ var cornerstoneMath = (function (cornerstoneMath) {
         if (r1 !== 0 &&
             r2 !== 0 &&
             cornerstoneMath.sign(r1) === cornerstoneMath.sign(r2)) {
-            intersectionPoint.x = 0;
-            intersectionPoint.y = 0;
-            intersectionPoint.intersected = false;
-            return intersectionPoint;
+            return
         }
 
         /* Line segments intersect: compute intersection point.
          */
 
         denom = (a1 * b2) - (a2 * b1);
-
-        offset = denom < 0 ? -denom / 2 : denom / 2;
 
         /* The denom/2 is to get rounding instead of truncating.  It
          * is added or subtracted to the numerator, depending upon the
@@ -1055,7 +1047,6 @@ var cornerstoneMath = (function (cornerstoneMath) {
 
         intersectionPoint.x = x;
         intersectionPoint.y = y;
-        intersectionPoint.intersected = true;
 
         return intersectionPoint;
     }
@@ -1859,19 +1850,23 @@ var cornerstoneMath = (function (cornerstoneMath) {
         return minDistance;
     }
 
-    // Returns rectangle points
+    // Returns top-left and bottom-right of rectangle
     function rectToPoints (rect) {
         var rectPoints = {
-            top: rect.top,
-            left: rect.left,
-            right: rect.left + rect.width,
-            bottom: rect.top + rect.height
+            topLeft: {
+                x: rect.left,
+                y: rect.top
+            },
+            bottomRight: {
+                x: rect.left + rect.width,
+                y: rect.top + rect.height
+            }
         };
 
         return rectPoints;
     }
 
-    // Returns whether two rectangles are intersected
+    // Returns whether two non-rotated rectangles are intersected
     function doesIntersect (rect1, rect2) {
         var intersectLeftRight;
         var intersectTopBottom;
@@ -1881,34 +1876,37 @@ var cornerstoneMath = (function (cornerstoneMath) {
 
         if (rect1.width >= 0) {
             if (rect2.width >= 0)
-                intersectLeftRight = !((rect1Points.right <= rect2Points.left) || (rect2Points.right <= rect1Points.left));
+                intersectLeftRight = !((rect1Points.bottomRight.x <= rect2Points.topLeft.x) || (rect2Points.bottomRight.x <= rect1Points.topLeft.x));
             else
-                intersectLeftRight = !((rect1Points.right <= rect2Points.right) || (rect2Points.left <= rect1Points.left));
+                intersectLeftRight = !((rect1Points.bottomRight.x <= rect2Points.bottomRight.x) || (rect2Points.topLeft.x <= rect1Points.topLeft.x));
         } else {
             if (rect2.width >= 0)
-                intersectLeftRight = !((rect1Points.left <= rect2Points.left) || (rect2Points.right <= rect1Points.right));
+                intersectLeftRight = !((rect1Points.topLeft.x <= rect2Points.topLeft.x) || (rect2Points.bottomRight.x <= rect1Points.bottomRight.x));
             else
-                intersectLeftRight = !((rect1Points.left <= rect2Points.right) || (rect2Points.left <= rect1Points.right));
+                intersectLeftRight = !((rect1Points.topLeft.x <= rect2Points.bottomRight.x) || (rect2Points.topLeft.x <= rect1Points.bottomRight.x));
         }
 
         if (rect1.height >= 0) {
             if (rect2.height >= 0)
-                intersectTopBottom = !((rect1Points.bottom <= rect2Points.top) || (rect2Points.bottom <= rect1Points.top));
+                intersectTopBottom = !((rect1Points.bottomRight.y <= rect2Points.topLeft.y) || (rect2Points.bottomRight.y  <= rect1Points.topLeft.y));
             else
-                intersectTopBottom = !((rect1Points.bottom <= rect2Points.bottom) || (rect2Points.top <= rect1Points.top));
+                intersectTopBottom = !((rect1Points.bottomRight.y <= rect2Points.bottomRight.y ) || (rect2Points.topLeft.y <= rect1Points.topLeft.y));
         } else {
             if (rect2.height >= 0)
-                intersectTopBottom = !((rect1Points.top <= rect2Points.top) || (rect2Points.bottom <= rect1Points.bottom));
+                intersectTopBottom = !((rect1Points.topLeft.y <= rect2Points.topLeft.y) || (rect2Points.bottomRight.y  <= rect1Points.bottomRight.y ));
             else
-                intersectTopBottom = !((rect1Points.top <= rect2Points.bottom) || (rect2Points.top <= rect1Points.bottom));
+                intersectTopBottom = !((rect1Points.topLeft.y <= rect2Points.bottomRight.y ) || (rect2Points.top <= rect1Points.bottomRight.y ));
         }
 
         return intersectLeftRight && intersectTopBottom;
     }
 
-    // Returns intersection points of two rectangles
+    // Returns intersection points of two non-rotated rectangles
     function getIntersectionRect(rect1, rect2) {
-        var intersectPoints = {};
+        var intersectRect = {
+            topLeft: {},
+            bottomRight: {}
+        };
 
         if (!doesIntersect(rect1, rect2)) {
             return;
@@ -1919,41 +1917,42 @@ var cornerstoneMath = (function (cornerstoneMath) {
 
         if (rect1.width >= 0) {
             if (rect2.width >= 0) {
-                intersectPoints.left = Math.max(rect1Points.left, rect2Points.left);
-                intersectPoints.right = Math.min(rect1Points.right, rect2Points.right);
+                intersectRect.topLeft.x = Math.max(rect1Points.topLeft.x, rect2Points.topLeft.x);
+                intersectRect.bottomRight.x = Math.min(rect1Points.bottomRight.x, rect2Points.bottomRight.x);
             } else {
-                intersectPoints.left = Math.max(rect1Points.left, rect2Points.right);
-                intersectPoints.right = Math.min(rect1Points.right, rect2Points.left);
+                intersectRect.topLeft.x = Math.max(rect1Points.topLeft.x, rect2Points.bottomRight.x);
+                intersectRect.bottomRight.x = Math.min(rect1Points.bottomRight.x, rect2Points.topLeft.x);
             }
         } else {
             if (rect2.width >= 0) {
-                intersectPoints.left = Math.min(rect1Points.left, rect2Points.right);
-                intersectPoints.right = Math.max(rect1Points.right, rect2Points.left);
+                intersectRect.topLeft.x = Math.min(rect1Points.topLeft.x, rect2Points.bottomRight.x);
+                intersectRect.bottomRight.x = Math.max(rect1Points.bottomRight.x, rect2Points.topLeft.x);
             } else {
-                intersectPoints.left = Math.min(rect1Points.left, rect2Points.left);
-                intersectPoints.right = Math.max(rect1Points.right, rect2Points.right);
+                intersectRect.topLeft.x = Math.min(rect1Points.topLeft.x, rect2Points.topLeft.x);
+                intersectRect.bottomRight.x = Math.max(rect1Points.bottomRight.x, rect2Points.bottomRight.x);
             }
         }
 
         if (rect1.height >= 0) {
             if (rect2.height >= 0) {
-                intersectPoints.top = Math.max(rect1Points.top, rect2Points.top);
-                intersectPoints.bottom = Math.min(rect1Points.bottom, rect2Points.bottom);
+                intersectRect.topLeft.y = Math.max(rect1Points.topLeft.y, rect2Points.topLeft.y);
+                intersectRect.bottomRight.y = Math.min(rect1Points.bottomRight.y, rect2Points.bottomRight.y);
             } else {
-                intersectPoints.top = Math.max(rect1Points.top, rect2Points.bottom);
-                intersectPoints.bottom = Math.min(rect1Points.bottom, rect2Points.top);
+                intersectRect.topLeft.y = Math.max(rect1Points.topLeft.y, rect2Points.bottomRight.y);
+                intersectRect.bottomRight.y = Math.min(rect1Points.bottomRight.y, rect2Points.topLeft.y);
             }
         } else {
             if (rect2.height >= 0) {
-                intersectPoints.top = Math.min(rect1Points.top, rect2Points.bottom);
-                intersectPoints.bottom = Math.max(rect1Points.bottom, rect2Points.top);
+                intersectRect.topLeft.y = Math.min(rect1Points.topLeft.y, rect2Points.bottomRight.y);
+                intersectRect.bottomRight.y = Math.max(rect1Points.bottomRight.y, rect2Points.topLeft.y);
             } else {
-                intersectPoints.top = Math.min(rect1Points.top, rect2Points.top);
-                intersectPoints.bottom = Math.max(rect1Points.bottom, rect2Points.bottom);
+                intersectRect.topLeft.y = Math.min(rect1Points.topLeft.y, rect2Points.topLeft.y);
+                intersectRect.bottomRight.y = Math.max(rect1Points.bottomRight.y, rect2Points.bottomRight.y);
             }
         }
 
-        return intersectPoints;
+        // Returns top-left and bottom-right points of intersected rectangle
+        return intersectRect;
 
     }
 

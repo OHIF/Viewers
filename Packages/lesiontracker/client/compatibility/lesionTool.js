@@ -408,7 +408,7 @@
         };
 
         var intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
-        if (!intersection.intersected) {
+        if (!intersection) {
             if (cornerstoneMath.point.distance(movedPoint, data.handles.start) > cornerstoneMath.point.distance(movedPoint, data.handles.end)) {
                 data.handles.perpendicularStart.x = adjustedLineP2.x + distanceFromMoved * dy;
                 data.handles.perpendicularStart.y = adjustedLineP2.y - distanceFromMoved * dx;
@@ -490,7 +490,7 @@
         };
 
         var intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
-        if (!intersection.intersected) {
+        if (!intersection) {
             if (cornerstoneMath.point.distance(movedPoint, data.handles.start) > cornerstoneMath.point.distance(movedPoint, data.handles.end)) {
                 data.handles.perpendicularEnd.x = adjustedLineP2.x - distanceFromMoved * dy;
                 data.handles.perpendicularEnd.y = adjustedLineP2.y + distanceFromMoved * dx;
@@ -558,7 +558,7 @@
             perpendicularLine.end = {x: eventData.currentPoints.image.x, y: eventData.currentPoints.image.y};
 
             intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
-            if (!intersection.intersected) {
+            if (!intersection) {
                 perpendicularLine.end = {x: data.handles.perpendicularStart.x, y: data.handles.perpendicularStart.y};
 
                 intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
@@ -566,7 +566,7 @@
                 d1 = cornerstoneMath.point.distance(intersection, data.handles.start);
                 d2 = cornerstoneMath.point.distance(intersection, data.handles.end);
 
-                if (!intersection.intersected || d1 < 3 || d2 < 3) {
+                if (!intersection || d1 < 3 || d2 < 3) {
                     outOfBounds = true;
                 }
             }
@@ -593,7 +593,7 @@
             perpendicularLine.end = {x: eventData.currentPoints.image.x, y: eventData.currentPoints.image.y};
 
             intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
-            if (!intersection.intersected) {
+            if (!intersection) {
                 perpendicularLine.end = {x: data.handles.perpendicularEnd.x, y: data.handles.perpendicularEnd.y};
 
                 intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
@@ -601,7 +601,7 @@
                 d1 = cornerstoneMath.point.distance(intersection, data.handles.start);
                 d2 = cornerstoneMath.point.distance(intersection, data.handles.end);
 
-                if (!intersection.intersected || d1 < 3 || d2 < 3) {
+                if (!intersection || d1 < 3 || d2 < 3) {
                     outOfBounds = true;
                 }
             }
