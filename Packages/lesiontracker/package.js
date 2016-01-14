@@ -99,7 +99,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/activateLesion.js', 'client');
     api.addFiles('lib/deactivateAllToolData.js', 'client');
     api.addFiles('lib/clearTools.js', 'client');
-    api.addFiles('lib/mathUtils.js', 'client');
 
     // Export gloabal functions
     api.export('activateLesion','client');
@@ -111,12 +110,6 @@ Package.onUse(function(api) {
     api.export('getTimepointObject', 'client');
     api.export('clearTools', 'client');
     api.export('LesionManager', 'client');
-
-    // Export mathUtils functions
-    api.export('sign','client');
-    api.export('getLineIntersection','client');
-    api.export('getDistance','client');
-    api.export('getDistanceFromPointToLine','client');
 
     // Export client-side collections
     api.export('LesionLocations', 'client');

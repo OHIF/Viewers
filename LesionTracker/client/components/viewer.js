@@ -318,7 +318,6 @@ Template.viewer.onRendered(function() {
         var viewports = $(".imageViewerViewport");
         var element =  viewports.get(activeViewportIndex);
         var enabledElement = cornerstone.getEnabledElement(element);
-        console.log(enabledElement);
         // Check value of rowPixelSpacing & columnPixelSpacing to define as unavailable
         if (!enabledElement || !enabledElement.image || !enabledElement.image.rowPixelSpacing || !enabledElement.image.columnPixelSpacing) {
             // Disable Lesion Buttons

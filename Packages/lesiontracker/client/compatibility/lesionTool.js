@@ -237,13 +237,35 @@
     // Move long-axis start point
     function perpendicularBothFixedLeft(eventData, data) {
 
-        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+        var longLine = {
+            start: {
+                x: data.handles.start.x,
+                y: data.handles.start.y
+            },
+            end: {
+                x: data.handles.end.x,
+                y: data.handles. end.y
+            }
+        };
 
-        var distanceFromPerpendicularP1 = getDistance(data.handles.perpendicularStart, intersection);
-        var distanceFromPerpendicularP2 = getDistance(data.handles.perpendicularEnd, intersection);
+        var perpendicularLine = {
+            start: {
+                x: data.handles.perpendicularStart.x,
+                y: data.handles.perpendicularStart.y
+            },
+            end: {
+                x: data.handles.perpendicularEnd.x,
+                y: data.handles. perpendicularEnd.y
+            }
+        };
 
-        var distanceToLineP2 = getDistance(data.handles.end, intersection);
-        var newLineLength = getDistance(data.handles.end, eventData.currentPoints.image);
+        var intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
+
+        var distanceFromPerpendicularP1 = cornerstoneMath.point.distance(data.handles.perpendicularStart, intersection);
+        var distanceFromPerpendicularP2 = cornerstoneMath.point.distance(data.handles.perpendicularEnd, intersection);
+
+        var distanceToLineP2 = cornerstoneMath.point.distance(data.handles.end, intersection);
+        var newLineLength = cornerstoneMath.point.distance(data.handles.end, eventData.currentPoints.image);
 
         if (newLineLength <= distanceToLineP2) {
             return false;
@@ -272,13 +294,35 @@
     // Move long-axis end point
     function perpendicularBothFixedRight(eventData, data) {
 
-        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+        var longLine = {
+            start: {
+                x: data.handles.start.x,
+                y: data.handles.start.y
+            },
+            end: {
+                x: data.handles.end.x,
+                y: data.handles. end.y
+            }
+        };
 
-        var distanceFromPerpendicularP1 = getDistance(data.handles.perpendicularStart, intersection);
-        var distanceFromPerpendicularP2 = getDistance(data.handles.perpendicularEnd, intersection);
+        var perpendicularLine = {
+            start: {
+                x: data.handles.perpendicularStart.x,
+                y: data.handles.perpendicularStart.y
+            },
+            end: {
+                x: data.handles.perpendicularEnd.x,
+                y: data.handles. perpendicularEnd.y
+            }
+        };
 
-        var distanceToLineP2 = getDistance(data.handles.start, intersection);
-        var newLineLength = getDistance(data.handles.start, eventData.currentPoints.image);
+        var intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
+
+        var distanceFromPerpendicularP1 = cornerstoneMath.point.distance(data.handles.perpendicularStart, intersection);
+        var distanceFromPerpendicularP2 = cornerstoneMath.point.distance(data.handles.perpendicularEnd, intersection);
+
+        var distanceToLineP2 = cornerstoneMath.point.distance(data.handles.start, intersection);
+        var newLineLength = cornerstoneMath.point.distance(data.handles.start, eventData.currentPoints.image);
 
         if (newLineLength <= distanceToLineP2) {
             return false;
@@ -311,12 +355,11 @@
         var fixedPoint = data.handles.perpendicularEnd;
         var movedPoint = eventData.currentPoints.image;
 
-        var nearestFromFixed = getDistanceFromPointToLine(fixedPoint, data.handles.start, data.handles.end);
-        var distanceFromFixed = nearestFromFixed.distance;
-        var nearestFromMoved = getDistanceFromPointToLine(movedPoint, data.handles.start, data.handles.end);
-        var distanceFromMoved = nearestFromMoved.distance;
 
-        var distanceBetweenPoints = getDistance(fixedPoint, movedPoint);
+        var distanceFromFixed = cornerstoneMath.lineSegment.distanceToPoint(data.handles, fixedPoint);
+        var distanceFromMoved = cornerstoneMath.lineSegment.distanceToPoint(data.handles, movedPoint);
+
+        var distanceBetweenPoints = cornerstoneMath.point.distance(fixedPoint, movedPoint);
 
         var total = distanceFromFixed + distanceFromMoved;
 
@@ -324,7 +367,7 @@
             return false;
         }
 
-        var length = getDistance(data.handles.start, data.handles.end);
+        var length = cornerstoneMath.point.distance(data.handles.start, data.handles.end);
         var dx = (data.handles.start.x - data.handles.end.x) / length;
         var dy = (data.handles.start.y - data.handles.end.y) / length;
 
@@ -342,9 +385,31 @@
         data.handles.perpendicularEnd.x = movedPoint.x - total * dy;
         data.handles.perpendicularEnd.y = movedPoint.y + total * dx;
 
-        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+        var longLine = {
+            start: {
+                x: data.handles.start.x,
+                y: data.handles.start.y
+            },
+            end: {
+                x: data.handles.end.x,
+                y: data.handles.end.y
+            }
+        };
+
+        var perpendicularLine = {
+            start: {
+                x: data.handles.perpendicularStart.x,
+                y: data.handles.perpendicularStart.y
+            },
+            end: {
+                x: data.handles.perpendicularEnd.x,
+                y: data.handles.perpendicularEnd.y
+            }
+        };
+
+        var intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
         if (!intersection.intersected) {
-            if (getDistance(movedPoint, data.handles.start) > getDistance(movedPoint, data.handles.end)) {
+            if (cornerstoneMath.point.distance(movedPoint, data.handles.start) > cornerstoneMath.point.distance(movedPoint, data.handles.end)) {
                 data.handles.perpendicularStart.x = adjustedLineP2.x + distanceFromMoved * dy;
                 data.handles.perpendicularStart.y = adjustedLineP2.y - distanceFromMoved * dx;
                 data.handles.perpendicularEnd.x = data.handles.perpendicularStart.x - total * dy;
@@ -373,12 +438,10 @@
         var fixedPoint = data.handles.perpendicularStart;
         var movedPoint = eventData.currentPoints.image;
 
-        var nearestFromFixed = getDistanceFromPointToLine(fixedPoint, data.handles.start, data.handles.end);
-        var distanceFromFixed = nearestFromFixed.distance;
-        var nearestFromMoved = getDistanceFromPointToLine(movedPoint, data.handles.start, data.handles.end);
-        var distanceFromMoved = nearestFromMoved.distance;
+        var distanceFromFixed = cornerstoneMath.lineSegment.distanceToPoint(data.handles, fixedPoint);
+        var distanceFromMoved = cornerstoneMath.lineSegment.distanceToPoint(data.handles, movedPoint);
 
-        var distanceBetweenPoints = getDistance(fixedPoint, movedPoint);
+        var distanceBetweenPoints = cornerstoneMath.point.distance(fixedPoint, movedPoint);
 
         var total = distanceFromFixed + distanceFromMoved;
 
@@ -386,7 +449,7 @@
             return false;
         }
 
-        var length = getDistance(data.handles.start, data.handles.end);
+        var length = cornerstoneMath.point.distance(data.handles.start, data.handles.end);
         var dx = (data.handles.start.x - data.handles.end.x) / length;
         var dy = (data.handles.start.y - data.handles.end.y) / length;
 
@@ -404,9 +467,31 @@
         data.handles.perpendicularEnd.x = movedPoint.x;
         data.handles.perpendicularEnd.y = movedPoint.y;
 
-        var intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, data.handles.perpendicularEnd);
+        var longLine = {
+            start: {
+                x: data.handles.start.x,
+                y: data.handles.start.y
+            },
+            end: {
+                x: data.handles.end.x,
+                y: data.handles.end.y
+            }
+        };
+
+        var perpendicularLine = {
+            start: {
+                x: data.handles.perpendicularStart.x,
+                y: data.handles.perpendicularStart.y
+            },
+            end: {
+                x: data.handles.perpendicularEnd.x,
+                y: data.handles.perpendicularEnd.y
+            }
+        };
+
+        var intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
         if (!intersection.intersected) {
-            if (getDistance(movedPoint, data.handles.start) > getDistance(movedPoint, data.handles.end)) {
+            if (cornerstoneMath.point.distance(movedPoint, data.handles.start) > cornerstoneMath.point.distance(movedPoint, data.handles.end)) {
                 data.handles.perpendicularEnd.x = adjustedLineP2.x - distanceFromMoved * dy;
                 data.handles.perpendicularEnd.y = adjustedLineP2.y + distanceFromMoved * dx;
                 data.handles.perpendicularStart.x = data.handles.perpendicularEnd.x + total * dy;
@@ -438,6 +523,8 @@
             d1,
             d2;
 
+        var longLine = {},
+            perpendicularLine = {};
 
         if (handle.index === 0) {
             // if long-axis start point is moved
@@ -464,13 +551,20 @@
         } else if (handle.index === 2) {
             outOfBounds = false;
             // if perpendicular start point is moved
+            longLine.start =  {x: data.handles.start.x, y: data.handles.start.y};
+            longLine.end = {x: data.handles.end.x, y: data.handles.end.y};
 
-            intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, eventData.currentPoints.image);
+            perpendicularLine.start = {x: data.handles.perpendicularEnd.x, y: data.handles.perpendicularEnd.y};
+            perpendicularLine.end = {x: eventData.currentPoints.image.x, y: eventData.currentPoints.image.y};
+
+            intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
             if (!intersection.intersected) {
-                intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
+                perpendicularLine.end = {x: data.handles.perpendicularStart.x, y: data.handles.perpendicularStart.y};
 
-                d1 = getDistance(intersection, data.handles.start);
-                d2 = getDistance(intersection, data.handles.end);
+                intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
+
+                d1 = cornerstoneMath.point.distance(intersection, data.handles.start);
+                d2 = cornerstoneMath.point.distance(intersection, data.handles.end);
 
                 if (!intersection.intersected || d1 < 3 || d2 < 3) {
                     outOfBounds = true;
@@ -490,14 +584,22 @@
 
         } else if (handle.index === 3) {
             outOfBounds = false;
+
             // if perpendicular end point is moved
+            longLine.start =  {x: data.handles.start.x, y: data.handles.start.y};
+            longLine.end = {x: data.handles.end.x, y: data.handles.end.y};
 
-            intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularStart, eventData.currentPoints.image);
+            perpendicularLine.start = {x: data.handles.perpendicularStart.x, y: data.handles.perpendicularStart.y};
+            perpendicularLine.end = {x: eventData.currentPoints.image.x, y: eventData.currentPoints.image.y};
+
+            intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
             if (!intersection.intersected) {
-                intersection = getLineIntersection(data.handles.start, data.handles.end, data.handles.perpendicularEnd, data.handles.perpendicularStart);
+                perpendicularLine.end = {x: data.handles.perpendicularEnd.x, y: data.handles.perpendicularEnd.y};
 
-                d1 = getDistance(intersection, data.handles.start);
-                d2 = getDistance(intersection, data.handles.end);
+                intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
+
+                d1 = cornerstoneMath.point.distance(intersection, data.handles.start);
+                d2 = cornerstoneMath.point.distance(intersection, data.handles.end);
 
                 if (!intersection.intersected || d1 < 3 || d2 < 3) {
                     outOfBounds = true;
@@ -742,14 +844,14 @@
         var minDistance;
 
         // Find distances between handles and textBox
-        var distanceToStart = getDistance(data.handles.start, data.handles.textBox);
+        var distanceToStart = cornerstoneMath.point.distance(data.handles.start, data.handles.textBox);
         distancesArr.push({
             distance: distanceToStart,
             point: data.handles.start
         });
         minDistance = distanceToStart;
 
-        var distanceToEnd = getDistance(data.handles.end, data.handles.textBox);
+        var distanceToEnd = cornerstoneMath.point.distance(data.handles.end, data.handles.textBox);
         distancesArr.push({
             distance: distanceToEnd,
             point: data.handles.end
@@ -758,7 +860,7 @@
         minDistance = Math.min(distanceToEnd, minDistance);
 
         if (data.handles.perpendicularStart.x && data.handles.perpendicularStart.y) {
-            var distanceToPerpendicularStart = getDistance(data.handles.perpendicularStart, data.handles.textBox);
+            var distanceToPerpendicularStart = cornerstoneMath.point.distance(data.handles.perpendicularStart, data.handles.textBox);
             distancesArr.push({
                 distance: distanceToPerpendicularStart,
                 point: data.handles.perpendicularStart
@@ -769,7 +871,7 @@
         }
 
         if (data.handles.perpendicularEnd.x && data.handles.perpendicularEnd.y) {
-            var distanceToPerpendicularEnd = getDistance(data.handles.perpendicularEnd, data.handles.textBox);
+            var distanceToPerpendicularEnd = cornerstoneMath.point.distance(data.handles.perpendicularEnd, data.handles.textBox);
             distancesArr.push({
                 distance: distanceToPerpendicularEnd,
                 point: data.handles.perpendicularEnd
@@ -860,6 +962,9 @@
             var wx = (data.handles.perpendicularStart.x - data.handles.perpendicularEnd.x) * (eventData.image.columnPixelSpacing || 1);
             var wy = (data.handles.perpendicularStart.y - data.handles.perpendicularEnd.y) * (eventData.image.rowPixelSpacing || 1);
             var width = Math.sqrt(wx * wx + wy * wy);
+            if (!width) {
+               width = 0;
+            }
 
             // Draw the textbox
             var suffix = ' mm';
