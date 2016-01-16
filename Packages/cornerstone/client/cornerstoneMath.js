@@ -1026,7 +1026,7 @@ var cornerstoneMath = (function (cornerstoneMath) {
         if (r1 !== 0 &&
             r2 !== 0 &&
             cornerstoneMath.sign(r1) === cornerstoneMath.sign(r2)) {
-            return
+            return;
         }
 
         /* Line segments intersect: compute intersection point.

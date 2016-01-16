@@ -1,5 +1,5 @@
 Template.imageControls.events({
-    'input #imageSlider': function(e) {
+    'change #imageSlider': function(e) {
         // Using the slider in an inactive viewport
         // should cause that viewport to become active
         var slider = $(e.currentTarget);
