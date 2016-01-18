@@ -4,13 +4,12 @@
   right: 0
   height: 100%
   padding: 5px
-  
+
   #scrollbar
     margin-top: 5px
     width: 31px
 
     #imageSlider
-      height: 2px
       position: absolute
       left: 20px
 
@@ -53,17 +52,21 @@
         z-index: 6
 
       &::-ms-track
+        width: 100%
         height: 2px
-        border: 1px solid #bdc3c7
-        background-color: darkgrey
-        z-index: 6
+        cursor: pointer
+        animate: 0.2s
+        background: transparent
+        border-color: transparent
+        border-width: 15px 0
+        color: transparent
 
       // Hide any fill IE tries to add
       &::-ms-fill-lower
-        background: transparent
+        background: darkgrey
 
       &::-ms-fill-upper
-        background: transparent
+        background: darkgrey
 
       // --- Style the range thumb --- //
       &::-webkit-slider-thumb
@@ -101,3 +104,10 @@
 
         &:active
           background-color: rgb(34, 126, 163)
+
+    // Set left position in IE
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+      #imageSlider {
+        left: 50px
+      }
+    }
