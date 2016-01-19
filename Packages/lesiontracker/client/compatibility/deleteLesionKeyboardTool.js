@@ -8,8 +8,13 @@
         DELETE: 46
     };
 
-    function removeMeasurementTimepoint(data, index, toolType) {
+    function removeMeasurementTimepoint(data, index, toolType, element) {
         var imageId = data.imageId;
+        if (!imageId) {
+            var enabledElement = cornerstone.getEnabledElement(element);
+            imageId = enabledElement.image.imageId;
+        }
+
         var enabledElements = cornerstone.getEnabledElementsByImageId(imageId);
         enabledElements.forEach(function(enabledElement) {
             var element = enabledElement.element;
@@ -75,7 +80,7 @@
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
-            var toolTypes = [ 'lesion', 'nonTarget' ];
+            var toolTypes = [ 'lesion', 'nonTarget', 'length'];
             var nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
 
             if (!nearbyToolData) {
@@ -87,7 +92,9 @@
             showConfirmDialog(function() {
                 removeMeasurementTimepoint(nearbyToolData.nearbyTool,
                     nearbyToolData.nearbyToolIndex,
-                    nearbyToolData.nearbyToolType);
+                    nearbyToolData.nearbyToolType,
+                    eventData.element
+                );
             });
         }
     }
