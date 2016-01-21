@@ -442,10 +442,6 @@ Template.imageViewerViewport.onRendered(function() {
         element.classList.add('empty');
         $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
         $(element).siblings('.viewportInstructions').show();
-        $(element).click(function(){
-            var viewportIndex = $('.imageViewerViewport').index(element);
-            Session.set('activeViewport', viewportIndex);
-        });
         return;
     }
 
@@ -501,5 +497,9 @@ Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
         log.info('imageViewerViewport ActivateViewport');
         setActiveViewport(e.currentTarget);
+    },
+    'click .imageViewerViewport': function(e) {
+        var viewportIndex = $('.imageViewerViewport').index(e.currentTarget);
+        Session.set('activeViewport', viewportIndex);
     }
 });
