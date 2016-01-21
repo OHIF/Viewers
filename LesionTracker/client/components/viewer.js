@@ -9,8 +9,8 @@ Template.viewer.onCreated(function() {
     log.info('viewer onCreated');
 
     OHIF = OHIF || {
-        viewer: {}
-    };
+            viewer: {}
+        };
 
     OHIF.viewer.loadIndicatorDelay = 3000;
     OHIF.viewer.defaultTool = 'wwwc';
@@ -304,34 +304,44 @@ Template.viewer.onRendered(function() {
 
     // Set lesion tool buttons as disable if pixel spacing is not available for active element
     this.autorun(function(){
-
-        if (!Session.get('ViewerData')) {
+        if (!Session.get('ViewerData') || Session.get('activeViewport') === undefined) {
             return;
         }
 
-        // TODO: Set activeViewport for empty viewport element
         var activeViewportIndex = Session.get('activeViewport');
-        if (activeViewportIndex === undefined) {
-            return;
-        }
-
         var viewports = $(".imageViewerViewport");
         var element =  viewports.get(activeViewportIndex);
-        var enabledElement = cornerstone.getEnabledElement(element);
-        // Check value of rowPixelSpacing & columnPixelSpacing to define as unavailable
-        if (!enabledElement || !enabledElement.image || !enabledElement.image.rowPixelSpacing || !enabledElement.image.columnPixelSpacing) {
-            // Disable Lesion Buttons
+
+        // Check element has .empty class
+        if (element.classList.contains('empty')) {
             setLesionToolButtonsDisable(true);
-        } else{
-            // Enable Lesion Buttons
-            setLesionToolButtonsDisable(false);
+            return;
         }
 
+        try {
+            var enabledElement = cornerstone.getEnabledElement(element);
+            if (!enabledElement || !enabledElement.image ||
+                !enabledElement.image.rowPixelSpacing ||
+                !enabledElement.image.columnPixelSpacing) {
+                // Disable Lesion Tools and Buttons
+                toolManager.setActiveTool("wwwc", viewports);
+                cornerstoneTools.lesion.disable(element);
+                cornerstoneTools.nonTarget.disable(element);
+                setLesionToolButtonsDisable(true);
+            } else{
+                // Enable Lesion Buttons
+                setLesionToolButtonsDisable(false);
+            }
+        } catch(error) {
+            return;
+        }
     });
+
 });
 
 Template.viewer.onDestroyed(function() {
     log.info('onDestroyed');
+    console.log("viewer destroyed!");
 
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
@@ -382,7 +392,7 @@ function handleMeasurementRemoved(e, eventData) {
 
 // Set enablement of Lesion Tools Buttons
 function setLesionToolButtonsDisable (status) {
-    var buttons = [$("button#length"), $("button#lesion"), $("button#nonTarget")];
+    var buttons = [$("button#lesion"), $("button#nonTarget")];
     buttons.forEach(function(btn){
         btn.prop("disabled", status);
     });

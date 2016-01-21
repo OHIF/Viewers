@@ -442,6 +442,10 @@ Template.imageViewerViewport.onRendered(function() {
         element.classList.add('empty');
         $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
         $(element).siblings('.viewportInstructions').show();
+        $(element).click(function(){
+            var viewportIndex = $('.imageViewerViewport').index(element);
+            Session.set('activeViewport', viewportIndex);
+        });
         return;
     }
 

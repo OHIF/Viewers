@@ -17,9 +17,8 @@ Template.studyDateList.helpers({
         });
 
         // Find studies which have the same patientId as the currently selected study
-        var relatedStudies = WorklistStudies.find({
-            patientId: currentStudyInBrowser.patientId
-        }).fetch();
+        var relatedStudies = WorklistStudies.find({patientId: currentStudyInBrowser.patientId},
+                {sort: {studyDate: 1}}).fetch();
 
         // Modify the array of related studies so the default option is the currently selected study
         relatedStudies.forEach(function(study) {
