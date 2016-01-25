@@ -24,7 +24,6 @@ dicomweb
 accounts-password
 
 ian:accounts-ui-bootstrap-3
-iron:router
 twbs:bootstrap
 http
 arsnebula:reactive-promise
@@ -37,3 +36,14 @@ reactive-dict
 lesiontracker
 practicalmeteor:loglevel
 momentjs:moment
+
+clinical:router
+clinical:extended-api
+clinical:active-entry
+clinical:static-pages
+clinical:error-pages
+clinical:theming
+clinical:theming-ui
+clinical:fonts
+clinical:glass-ui
+clinical:hipaa-logger

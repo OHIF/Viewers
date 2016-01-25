@@ -100,7 +100,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/deactivateAllToolData.js', 'client');
     api.addFiles('lib/clearTools.js', 'client');
 
-    // Export gloabal functions
+    // Export global functions
     api.export('activateLesion','client');
     api.export('activateMeasurements','client');
     api.export('deactivateAllToolData','client');

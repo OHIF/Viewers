@@ -5,15 +5,14 @@ Object.keys(ViewerData).forEach(function(contentId) {
     var tabData = ViewerData[contentId];
     var data = {
         title: tabData.title,
-        contentid: tabData.contentid,
+        contentid: tabData.contentid
     };
     WorklistTabs.insert(data);
 });
 
 Router.configure({
     layoutTemplate: 'layoutLesionTracker',
-    loadingTemplate: 'layoutLesionTracker',
-    notFoundTemplate: 'notFound'
+    loadingTemplate: 'layoutLesionTracker'
 });
 
 Router.onBeforeAction('loading');
@@ -29,6 +28,10 @@ var routerOptions = {
 };
 
 Router.route('/', function() {
+    this.render('worklist', routerOptions);
+});
+
+Router.route('/worklist', function() {
     this.render('worklist', routerOptions);
 });
 

@@ -1,0 +1,61 @@
+## Customize the test machine
+machine:
+
+  # Timezone
+  timezone:
+    America/Los_Angeles # Set the timezone
+
+  # Add some environment variables
+  environment:
+    CIRCLE_ENV: test
+    CXX: g++-4.8
+    DISPLAY: :99.0
+    NPM_PREFIX: /home/ubuntu/nvm/v0.10.33
+
+
+## Customize checkout
+checkout:
+ post:
+   #- git submodule sync
+   #- git submodule update --init --recursive # use submodules
+
+#general:
+#  build_dir: helloworld
+
+## Customize dependencies
+dependencies:
+  cache_directories:
+    - "~/.meteor" # relative to the user's home directory
+
+  override:
+    - meteor || curl https://install.meteor.com | /bin/sh
+    - npm install starrynight -g
+    - meteor create --release METEOR@1.1.0.3 helloworld
+    - cd helloworld
+    - cd helloworld && ls -la
+    - cd helloworld && rm helloworld.*
+    - cd helloworld && meteor add anti:gagarin@0.4.11 accounts-base accounts-password session meteor-platform clinical:active-entry clinical:user-model
+    - cd helloworld && git clone http://github.com/clinical-meteor/clinical-active-entry packages/active-entry
+    - cd helloworld && starrynight autoconfig
+
+## Customize test commands
+test:
+  pre:
+    - cd helloworld && meteor:
+          background: true
+    - sleep 80
+  override:
+    - cd helloworld && starrynight run-tests --type package-verification
+
+## Customize deployment commands
+#deployment:
+#  production:
+#    branch: master
+#    commands:
+#      - printf "<Meteor username>\n<Meteor password>\n" | meteor deploy circlecivelocity.meteor.com
+
+## Custom notifications
+#notify:
+  #webhooks:
+    # A list of hashes representing hooks. Only the url field is supported.
+    #- url: https://someurl.com/hooks/circle
