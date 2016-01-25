@@ -36,7 +36,7 @@ function thumbnailDragStartHandler(e, data) {
     // Set pointerEvents to pass through the clone DOM element
     // This is necessary in order to identify what is below it
     // when using document.elementFromPoint
-    clone.style.pointerEvents = "none";
+    clone.style.pointerEvents = 'none';
 
     // Append the clone to the parent of the target
     targetThumbnail.parentNode.appendChild(clone);
@@ -63,7 +63,7 @@ function thumbnailDragStartHandler(e, data) {
     // relative to the thumbnail itself
     // 
     // i.e. Where did the user grab it from?
-    var position = imageThumbnail.offset();
+    var position = imageThumbnail.position();
     var left = position.left;
     var top = position.top;
 
@@ -120,13 +120,13 @@ function thumbnailDragHandler(e, target) {
     if (viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, fade it and change the cursor style
         viewportsDraggedOver.find('canvas').not('.magnifyTool').addClass('faded');
-        document.body.style.cursor = "copy";
+        document.body.style.cursor = 'copy';
     } else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, just change the cursor style
-        document.body.style.cursor = "copy";
+        document.body.style.cursor = 'copy';
     } else {
         // Otherwise, keep the cursor as no-drop style
-        document.body.style.cursor = "no-drop";
+        document.body.style.cursor = 'no-drop';
     }
 }
 
@@ -135,7 +135,7 @@ function thumbnailDragEndHandler(e, target) {
     $(document).off('mousemove mouseup');
 
     // Reset the cursor style to the default
-    document.body.style.cursor = "auto";
+    document.body.style.cursor = 'auto';
 
     // Get the cloned element
     var clone = $('#' + target.id + 'DragClone');
@@ -145,8 +145,8 @@ function thumbnailDragEndHandler(e, target) {
         return;
     }
 
-    var top = clone.offset().top;
-    var left = clone.offset().left;
+    var top = clone.position().top;
+    var left = clone.position().left;
 
     // Identify the element below the cloned element position
     var elemBelow = document.elementFromPoint(left + diffX, top + diffY);
@@ -208,13 +208,13 @@ Template.thumbnailEntry.events({
     'touchmove .thumbnailEntry': function(e) {
         thumbnailDragHandler(e, e.currentTarget);
     },
-    'touchend .thumbnailEntry': function(e){
+    'touchend .thumbnailEntry': function(e) {
         thumbnailDragEndHandler(e, e.currentTarget);
     }
 });
 
 Template.thumbnailEntry.helpers({
-  seriesDescription : function() {
-    return this.stack.seriesDescription || '';
-  }
+    seriesDescription: function() {
+        return this.stack.seriesDescription || '';
+    }
 });
