@@ -55,6 +55,21 @@ getStudyMetadata = function(studyInstanceUid, doneCallback) {
 
         // Finally, we fire the doneCallback with this study meta data
         doneCallback(study);
+
+        // Temporary: Testing out the Clinical Meteor HIPAA Audit log
+        if (Meteor.user()) {
+            log.info('Adding access to HIPAA Log');
+            var hipaaEvent = {
+              eventType: "access",
+              userId: Meteor.userId(),
+              userName: Meteor.user().profile.fullName,
+              collectionName: "Studies",
+              recordId: studyInstanceUid,
+              patientId: null,
+              patientName: null
+            };
+            HipaaLogger.logEvent(hipaaEvent);
+        }
     });
 };
 

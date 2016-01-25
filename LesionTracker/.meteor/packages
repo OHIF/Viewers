@@ -21,6 +21,7 @@ cornerstone
 worklist
 viewerbase
 dicomweb
+accounts-base
 accounts-password
 
 ian:accounts-ui-bootstrap-3
@@ -40,12 +41,10 @@ momentjs:moment
 clinical:router
 clinical:extended-api
 clinical:active-entry
-clinical:static-pages
 clinical:error-pages
 clinical:theming
-clinical:theming-ui
 clinical:fonts
-clinical:glass-ui
+clinical:hipaa-audit-log
 clinical:hipaa-logger
 anti:gagarin@=0.4.11
 check
