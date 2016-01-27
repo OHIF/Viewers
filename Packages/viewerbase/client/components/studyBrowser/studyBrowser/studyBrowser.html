@@ -1,7 +1,9 @@
 <template name="studyBrowser">
     <div class="studyBrowser">
+        <div class="scrollableStudyThumbnails">
         {{ #each studies }}
             {{ >thumbnails }}
         {{ /each }}
+        </div>
     </div>
 </template>
