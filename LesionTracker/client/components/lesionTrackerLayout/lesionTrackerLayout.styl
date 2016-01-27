@@ -7,38 +7,32 @@
   @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
     width: 15%
 
-  #userProfile
-    position: relative
-    float: right
+.navbar-brand
+    display: inline-block
+    padding: 0
+    margin-right: 5px
+    height: 100%
+    width: 100%
 
-    .dropdown-toggle
+    img
+      height: 30px
+      float: left
+      margin-right: 10px
+      margin-top: 5px;
+      /* Media queries for iPhone6*/
+      @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
+        height: 20px
+        margin-top: 10px
+        margin-bottom: 10px
+        margin-right: 5px
+
+    h4.name
+      float: left
+      margin: 10px 0;
+      font-family: "Sanchez"
       color: #C1C1C1
-
-  .navbar-brand
-      display: inline-block
-      padding: 0
-      margin-right: 5px
-      height: 100%
-
-      img
-        height: 30px
-        float: left
-        margin-right: 10px
-        margin-top: 5px;
-        /* Media queries for iPhone6*/
-        @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
-          height: 20px
-          margin-top: 10px
-          margin-bottom: 10px
-          margin-right: 5px
-
-      h4.name
-        float: left
-        margin: 10px 0;
-        font-family: "Sanchez"
-        color: #C1C1C1
-        @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
-          font-size: 0.3em
-          font-size: 0.3em
-          width: 50%;
+      @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
+        font-size: 0.3em
+        font-size: 0.3em
+        width: 50%;
 

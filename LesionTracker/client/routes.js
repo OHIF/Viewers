@@ -28,21 +28,11 @@ var routerOptions = {
 };
 
 Router.route('/', function() {
-    // Check user is logged in
-    if (!Meteor.user() || !Meteor.userId()) {
-        this.render('entrySignIn', routerOptions);
-    } else{
-        this.render('worklist', routerOptions);
-    }
+    this.render('worklist', routerOptions);
 });
 
 Router.route('/worklist', function() {
-    // Check user is logged in
-    if (!Meteor.user() || !Meteor.userId()) {
-        this.render('entrySignIn', routerOptions);
-    } else{
-        this.render('worklist', routerOptions);
-    }
+    this.render('worklist', routerOptions);
 });
 
 Router.route('/viewer/:_id', {
