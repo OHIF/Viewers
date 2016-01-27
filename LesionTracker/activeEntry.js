@@ -12,7 +12,7 @@ if (Meteor.isClient){
             destination: '/worklist'
         },
         themeColors: {
-            primary: 'black'
+            primary: ""
         }
     });
 }

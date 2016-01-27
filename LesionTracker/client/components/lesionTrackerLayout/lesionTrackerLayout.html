@@ -4,6 +4,19 @@
             <img src="/images/logo.png">
             <h4 class="name">Open Health Imaging Foundation</h4>
         </a>
+        {{#if currentUser}}
+            <div id="userProfile" class="row-fluid">
+                <div class="dropdown clearfix">
+                    <ul class="nav nav-pills pull-right">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{{fullName}}<b class="caret"></b></a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="#" id="logoutButton">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {{/if}}
     </div>
     {{> yield}}
 </template>
