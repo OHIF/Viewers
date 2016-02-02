@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.7 - 2016-01-09 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.7 - 2016-02-02 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -2256,7 +2256,7 @@ if (typeof cornerstoneTools === 'undefined') {
         $(element).off('CornerstoneToolsTap', cornerstoneTools.arrowAnnotateTouch.tapCallback);
         cornerstone.updateImage(element);
 
-        cornerstoneTools.moveNewHandleTouch(touchEventData, measurementData.handles.end, function() {
+        cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
             cornerstone.updateImage(element);
 
             if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
@@ -3764,7 +3764,7 @@ if (typeof cornerstoneTools === 'undefined') {
 
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
-        if (toolData === undefined) {
+        if (!toolData) {
             return;
         }
 
@@ -3772,33 +3772,27 @@ if (typeof cornerstoneTools === 'undefined') {
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
 
-        var color;
         var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-        var font = cornerstoneTools.textStyle.getFont();
         var config = cornerstoneTools.length.getConfiguration();
 
         for (var i = 0; i < toolData.data.length; i++) {
             context.save();
-            
+
             // configurable shadow
             if (config && config.shadow) {
                 context.shadowColor = config.shadowColor || '#000000';
                 context.shadowOffsetX = config.shadowOffsetX || 1;
                 context.shadowOffsetY = config.shadowOffsetY || 1;
             }
-            
+
             var data = toolData.data[i];
+            var color = cornerstoneTools.toolColors.getColorIfActive(data.active);
 
-            if (data.active) {
-                color = cornerstoneTools.toolColors.getActiveColor();
-            } else {
-                color = cornerstoneTools.toolColors.getToolColor();
-            }
-
-            // draw the line
+            // Get the handle positions in canvas coordinates
             var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.start);
             var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
 
+            // Draw the measurement line
             context.beginPath();
             context.strokeStyle = color;
             context.lineWidth = lineWidth;
@@ -3806,61 +3800,50 @@ if (typeof cornerstoneTools === 'undefined') {
             context.lineTo(handleEndCanvas.x, handleEndCanvas.y);
             context.stroke();
 
-            // draw the handles
+            // Draw the handles
             cornerstoneTools.drawHandles(context, eventData, data.handles, color);
 
             // Draw the text
             context.fillStyle = color;
-            context.font = font;
 
+            // Set rowPixelSpacing and columnPixelSpacing to 1 if they are undefined (or zero)
+            var dx = (data.handles.end.x - data.handles.start.x) * (eventData.image.columnPixelSpacing || 1);
+            var dy = (data.handles.end.y - data.handles.start.y) * (eventData.image.rowPixelSpacing || 1);
+
+            // Calculate the length, and create the text variable with the millimeters or pixels suffix            
+            var length = Math.sqrt(dx * dx + dy * dy);
+
+            // Set the length text suffix depending on whether or not pixelSpacing is available
             var suffix = ' mm';
             if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
                 suffix = ' pixels';
             }
 
-            var vector = {
-                x: handleStartCanvas.x - handleEndCanvas.x,
-                y: handleStartCanvas.y - handleEndCanvas.y,
-            };
-
-            var midpoint = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2
-            };
-
-            var magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-
-            var normal = {
-                x: -vector.y / magnitude,
-                y: vector.x / magnitude
-            };
-
-            // Set rowPixelSpacing and columnPixelSpacing to 1 if they are undefined (or zero)
-            var dx = (data.handles.end.x - data.handles.start.x) * (eventData.image.columnPixelSpacing || 1);
-            var dy = (data.handles.end.y - data.handles.start.y) * (eventData.image.rowPixelSpacing || 1);
-            
-            var length = Math.sqrt(dx * dx + dy * dy);
+            // Store the length measurement text
             var text = '' + length.toFixed(2) + suffix;
 
+            // Place the length measurement text next to the right-most handle
             var fontSize = cornerstoneTools.textStyle.getFontSize();
-            var textWidth = context.measureText(text).width;
-
-            var distance = {
-                x: Math.min(10, textWidth / 2),
-                y: Math.min(25, fontSize),
-            };
-
-            if (handleEndCanvas.y < handleStartCanvas.y) {
-                distance.x = -distance.x;
-                distance.y = -distance.y;
-            }
-        
             var textCoords = {
-                x: midpoint.x + normal.x * distance.x,
-                y: midpoint.y + normal.y * distance.y
+                x: Math.max(handleStartCanvas.x, handleEndCanvas.x),
             };
 
+            // Depending on which handle has the largest x-value, 
+            // set the y-value for the text box
+            if (textCoords.x === handleStartCanvas.x) {
+                textCoords.y = handleStartCanvas.y;
+            } else {
+                textCoords.y = handleEndCanvas.y;
+            }
+
+            // Move the textbox slightly to the right and upwards
+            // so that it sits beside the length tool handle
+            textCoords.x += 10;
+            textCoords.y -= fontSize / 2 + 7;
+
+            // Draw the textbox
             cornerstoneTools.drawTextBox(context, text, textCoords.x, textCoords.y, color);
+
             context.restore();
         }
     }
@@ -3873,6 +3856,7 @@ if (typeof cornerstoneTools === 'undefined') {
         pointNearTool: pointNearTool,
         toolType: toolType
     });
+
     cornerstoneTools.lengthTouch = cornerstoneTools.touchTool({
         createNewMeasurement: createNewMeasurement,
         onImageRendered: onImageRendered,
@@ -6488,14 +6472,22 @@ if (typeof cornerstoneTools === 'undefined') {
             }
         }
 
+        function measurementRemovedCallback(e, eventData) {
+            if (eventData.measurementData === data) {
+                moveEndCallback();
+            }
+        }
+
         $(element).on('CornerstoneToolsMouseDrag', whichMovement);
         $(element).on('CornerstoneToolsMouseMove', whichMovement);
-        
+        $(element).on('CornerstoneToolsMeasurementRemoved', measurementRemovedCallback);
+
         function moveEndCallback() {
             $(element).off('CornerstoneToolsMouseMove', moveCallback);
             $(element).off('CornerstoneToolsMouseDrag', moveCallback);
             $(element).off('CornerstoneToolsMouseClick', moveEndCallback);
             $(element).off('CornerstoneToolsMouseUp', moveEndCallback);
+            $(element).off('CornerstoneToolsMeasurementRemoved', measurementRemovedCallback);
 
             handle.active = false;
             cornerstone.updateImage(element);
@@ -8504,33 +8496,37 @@ Display scroll progress bar across bottom of image.
 
     'use strict';
 
-    function toolColorManager(){
+    function toolColorManager() {
         var defaultColor = 'white',
             activeColor = 'greenyellow',
             fillColor = 'transparent';
 
-        function setFillColor(color){
+        function setFillColor(color) {
             fillColor = color;
         }
 
-        function getFillColor(){
+        function getFillColor() {
             return fillColor;
         }
 
-        function setToolColor(color){
+        function setToolColor(color) {
             defaultColor = color;
         }
 
-        function getToolColor(){
+        function getToolColor() {
             return defaultColor;
         }
 
-        function setActiveToolColor(color){
+        function setActiveToolColor(color) {
             activeColor = color;
         }
 
-        function getActiveToolColor(){
+        function getActiveToolColor() {
             return activeColor;
+        }
+
+        function getColorIfActive(active) {
+            return active ? activeColor : defaultColor;
         }
 
         var toolColors = {
@@ -8539,7 +8535,8 @@ Display scroll progress bar across bottom of image.
             setToolColor: setToolColor,
             getToolColor: getToolColor,
             setActiveColor: setActiveToolColor,
-            getActiveColor: getActiveToolColor
+            getActiveColor: getActiveToolColor,
+            getColorIfActive: getColorIfActive
         };
 
         return toolColors;
@@ -8636,15 +8633,15 @@ Display scroll progress bar across bottom of image.
 
         if (indexOfData !== -1) {
             toolData.data.splice(indexOfData, 1);
-        }
 
-        var eventType = 'CornerstoneToolsMeasurementRemoved';
-        var eventData = {
-            toolType: toolType,
-            element: element,
-            measurementData: data
-        };
-        $(element).trigger(eventType, eventData);
+            var eventType = 'CornerstoneToolsMeasurementRemoved';
+            var eventData = {
+                toolType: toolType,
+                element: element,
+                measurementData: data
+            };
+            $(element).trigger(eventType, eventData);
+        }
     }
 
     function clearToolState(element, toolType) {

@@ -13,6 +13,11 @@
         arrowFirst: true
     };
 
+    // Used to cancel tool placement
+    var keys = {
+        ESC: 27
+    };
+
     // Set lesion number
     // Get Non-Target lesions on image
     function setLesionNumberCallback(measurementData, eventData, doneCallback) {
@@ -55,6 +60,23 @@
         $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.nonTarget.mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.nonTarget.mouseDownActivateCallback);
 
+        // Add a flag for using Esc to cancel tool placement
+        var cancelled = false;
+        function cancelCallback(e) {
+            // If the Esc key was pressed, set the flag to true
+            if (e.which === keys.ESC) {
+                cancelled = true;
+                cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
+            }
+
+            // Don't propagate this keydown event so it can't interfere
+            // with anything outside of this tool
+            return false;
+        }
+
+        // Bind a one-time event listener for the Esc key
+        $(element).one('keydown', cancelCallback);
+
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
         // Set lesion number and lesion name
@@ -65,13 +87,15 @@
         cornerstone.updateImage(element);
 
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
-            if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
+            if (cancelled || cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
-            }else {
+            } else {
                 config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
-
             }
+
+            // Unbind the Esc keydown hook
+            $(element).off('keydown', cancelCallback);
 
             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);

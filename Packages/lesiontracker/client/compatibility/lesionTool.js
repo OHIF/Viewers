@@ -10,6 +10,11 @@
         changeLesionLocationCallback: changeLesionLocationCallback
     };
 
+    // Used to cancel tool placement
+    var keys = {
+        ESC: 27
+    };
+
     // Set lesion number
     // Get Target lesions on image
     function setLesionNumberCallback(measurementData, eventData, doneCallback) {
@@ -54,6 +59,23 @@
         $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.lesion.mouseDownActivateCallback);
 
+        // Add a flag for using Esc to cancel tool placement
+        var cancelled = false;
+        function cancelCallback(e) {
+            // If the Esc key was pressed, set the flag to true
+            if (e.which === keys.ESC) {
+                cancelled = true;
+                cornerstoneTools.removeToolState(element, toolType, measurementData);
+            }
+
+            // Don't propagate this keydown event so it can't interfere
+            // with anything outside of this tool
+            return false;
+        }
+
+        // Bind a one-time event listener for the Esc key
+        $(element).one('keydown', cancelCallback);
+
         // Set lesion number and lesion name
         if (measurementData.lesionNumber === undefined) {
             config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
@@ -62,13 +84,16 @@
         cornerstone.updateImage(element);
 
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
-            if (cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
+            if (cancelled || cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             } else {
                 // Set lesionMeasurementData Session
                 config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
             }
+
+            // Unbind the Esc keydown hook
+            $(element).off('keydown', cancelCallback);
 
             // perpendicular line is not connected to long-line
             measurementData.handles.perpendicularStart.locked = false;
@@ -355,7 +380,6 @@
         var fixedPoint = data.handles.perpendicularEnd;
         var movedPoint = eventData.currentPoints.image;
 
-
         var distanceFromFixed = cornerstoneMath.lineSegment.distanceToPoint(data.handles, fixedPoint);
         var distanceFromMoved = cornerstoneMath.lineSegment.distanceToPoint(data.handles, movedPoint);
 
@@ -551,15 +575,30 @@
         } else if (handle.index === 2) {
             outOfBounds = false;
             // if perpendicular start point is moved
-            longLine.start =  {x: data.handles.start.x, y: data.handles.start.y};
-            longLine.end = {x: data.handles.end.x, y: data.handles.end.y};
+            longLine.start = {
+                x: data.handles.start.x,
+                y: data.handles.start.y
+            };
+            longLine.end = {
+                x: data.handles.end.x,
+                y: data.handles.end.y
+            };
 
-            perpendicularLine.start = {x: data.handles.perpendicularEnd.x, y: data.handles.perpendicularEnd.y};
-            perpendicularLine.end = {x: eventData.currentPoints.image.x, y: eventData.currentPoints.image.y};
+            perpendicularLine.start = {
+                x: data.handles.perpendicularEnd.x,
+                y: data.handles.perpendicularEnd.y
+            };
+            perpendicularLine.end = {
+                x: eventData.currentPoints.image.x,
+                y: eventData.currentPoints.image.y
+            };
 
             intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
             if (!intersection) {
-                perpendicularLine.end = {x: data.handles.perpendicularStart.x, y: data.handles.perpendicularStart.y};
+                perpendicularLine.end = {
+                    x: data.handles.perpendicularStart.x,
+                    y: data.handles.perpendicularStart.y
+                };
 
                 intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
 
@@ -586,15 +625,30 @@
             outOfBounds = false;
 
             // if perpendicular end point is moved
-            longLine.start =  {x: data.handles.start.x, y: data.handles.start.y};
-            longLine.end = {x: data.handles.end.x, y: data.handles.end.y};
+            longLine.start = {
+                x: data.handles.start.x,
+                y: data.handles.start.y
+            };
+            longLine.end = {
+                x: data.handles.end.x,
+                y: data.handles.end.y
+            };
 
-            perpendicularLine.start = {x: data.handles.perpendicularStart.x, y: data.handles.perpendicularStart.y};
-            perpendicularLine.end = {x: eventData.currentPoints.image.x, y: eventData.currentPoints.image.y};
+            perpendicularLine.start = {
+                x: data.handles.perpendicularStart.x,
+                y: data.handles.perpendicularStart.y
+            };
+            perpendicularLine.end = {
+                x: eventData.currentPoints.image.x,
+                y: eventData.currentPoints.image.y
+            };
 
             intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
             if (!intersection) {
-                perpendicularLine.end = {x: data.handles.perpendicularEnd.x, y: data.handles.perpendicularEnd.y};
+                perpendicularLine.end = {
+                    x: data.handles.perpendicularEnd.x,
+                    y: data.handles.perpendicularEnd.y
+                };
 
                 intersection = cornerstoneMath.lineSegment.intersectLine(longLine, perpendicularLine);
 
@@ -963,7 +1017,7 @@
             var wy = (data.handles.perpendicularStart.y - data.handles.perpendicularEnd.y) * (eventData.image.rowPixelSpacing || 1);
             var width = Math.sqrt(wx * wx + wy * wy);
             if (!width) {
-               width = 0;
+                width = 0;
             }
 
             // Draw the textbox
