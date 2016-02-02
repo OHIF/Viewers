@@ -51,7 +51,7 @@ ActiveEntry.verifyPassword = function (password) {
     ActiveEntry.errorMessages.set('password', 'Password is required');
     ActiveEntry.successMessages.set('password', null);
   } else if (!validatePassword(password)) {
-    ActiveEntry.errorMessages.set('password', 'Password is invalid');
+    ActiveEntry.errorMessages.set('password', 'Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.');
     ActiveEntry.successMessages.set('password', null);
   } else {
     //ActiveEntry.errorMessages.set('password', 'Password present');
@@ -65,6 +65,9 @@ ActiveEntry.verifyConfirmPassword = function (password, confirmPassword) {
     //ActiveEntry.errorMessages.set('confirm', 'Passwords match');
     ActiveEntry.errorMessages.set('confirm', null);
     ActiveEntry.successMessages.set('confirm', 'Passwords match');
+  } else{
+    ActiveEntry.errorMessages.set('confirm', 'Passwords do not match');
+    ActiveEntry.successMessages.set('confirm', null);
   }
 };
 ActiveEntry.verifyEmail = function (email) {
@@ -115,6 +118,7 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
   ActiveEntry.verifyPassword(passwordValue);
   ActiveEntry.verifyConfirmPassword(passwordValue, confirmPassword);
   ActiveEntry.verifyFullName(fullName);
+  ActiveEntry.errorMessages.set('signInError', null);
 
   var errorIsFound = false;
   Object.keys(ActiveEntry.errorMessages.keys).forEach(function(key) {
@@ -124,7 +128,6 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
   });
 
   if(errorIsFound) {
-    // TODO: Show error messages
     return;
   }
 
@@ -159,10 +162,12 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
   // });
 };
 ActiveEntry.signOut = function (){
+  ActiveEntry.reset();
   Meteor.logout();
 };
 
 ActiveEntry.reset = function (){
+  ActiveEntry.errorMessages.set('signInError', false);
   ActiveEntry.errorMessages.set('fullName', false);
   ActiveEntry.errorMessages.set('email', false);
   ActiveEntry.errorMessages.set('confirm', false);

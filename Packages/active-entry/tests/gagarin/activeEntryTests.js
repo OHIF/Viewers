@@ -61,7 +61,7 @@ describe('clinical:active-entry', function () {
       expect(ActiveEntry.errorMessages.get('password')).to.equal("Password is required");
 
       ActiveEntry.verifyPassword('kittens');
-      expect(ActiveEntry.errorMessages.get('password')).to.equal("Password is invalid");
+      expect(ActiveEntry.errorMessages.get('password')).to.equal("Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.");
 
       ActiveEntry.verifyPassword('K1tt#ns123');
       expect(ActiveEntry.successMessages.get('password')).to.equal("Password present");
@@ -71,6 +71,9 @@ describe('clinical:active-entry', function () {
   // ActiveEntry.verifyConfirmPassword
   it('Password match validation confirms that two passwords are the same.', function () {
     return client.execute(function (a) {
+      ActiveEntry.verifyConfirmPassword('K1tt#kittens', 'kittens');
+      expect(ActiveEntry.successMessages.get('confirm')).to.equal("Passwords do not match");
+
       ActiveEntry.verifyConfirmPassword('K1tt#ns123', 'K1tt#ns123');
       expect(ActiveEntry.successMessages.get('confirm')).to.equal("Passwords match");
     });

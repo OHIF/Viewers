@@ -57,7 +57,7 @@ Template.entrySignIn.helpers({
   getPasswordValidationStyling: function () {
     if (ActiveEntry.errorMessages.equals('password', "Password is required")) {
       return "border: 1px solid #a94442";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password is invalid")) {
+    } else if (ActiveEntry.errorMessages.equals('password', "Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.")) {
       return "border: 1px solid #f2dede";
     } else if (ActiveEntry.errorMessages.equals('password', "Password present")) {
       return "border: 1px solid green";
@@ -77,10 +77,12 @@ Template.entrySignIn.events({
   },
   'click #forgotPasswordButton': function (event) {
     event.preventDefault();
+    ActiveEntry.reset();
     Router.go('/forgotPassword');
   },
   "click #needAnAccountButton": function (event) {
     event.preventDefault();
+    ActiveEntry.reset();
     Router.go('/entrySignUp');
   },
   'keyup input[name="email"]': function (event, template) {
@@ -116,6 +118,7 @@ Template.entrySignIn.events({
   // },
   'click #signInToAppButton': function (event, template){
     console.log('click #signInToAppButton');
+    ActiveEntry.reset();
     // var emailValue = template.$('[name=email]').val();
     // var passwordValue = template.$('[name=password]').val();
     var emailValue = template.$('#signInPageEmailInput').val();
