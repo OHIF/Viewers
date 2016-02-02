@@ -45,7 +45,7 @@ module.exports = {
   "user should be able to request be able to create new account" : function (client) {
     client.verify.elementPresent("#signUpPageEmailInput")
       .verify.elementPresent("#signUpPagePasswordInput")
-      .verify.elementPresent("#signUpPagePasswordInput")
+      .verify.elementPresent("#signUpPagePasswordConfirmInput")
       .verify.elementPresent("#signUpPageJoinNowButton")
   },
 
@@ -56,14 +56,14 @@ module.exports = {
       .verify.cssProperty('#signUpPagePasswordInput', 'border', '1px solid gray')
       .setValue("#signUpPagePasswordInput", "jan")
       .verify.cssProperty('#signUpPagePasswordInput', 'border', '1px solid rgb(242, 222, 222)')
-      .setValue("#signUpPagePasswordInput", "icedoe123")
+      .setValue("#signUpPagePasswordInput", "iceD*e123")
       .verify.cssProperty('#signUpPagePasswordInput', 'border', '1px solid green')
 
       .verify.cssProperty('#signUpPagePasswordConfirmInput', 'border', '1px solid gray')
       .setValue("#signUpPagePasswordConfirmInput", "ja")
       .verify.cssProperty('#signUpPagePasswordConfirmInput', 'border', '1px solid rgb(242, 222, 222)')
       .clearValue("#signUpPagePasswordConfirmInput")
-      .setValue("#signUpPagePasswordConfirmInput", "janicedoe123")
+      .setValue("#signUpPagePasswordConfirmInput", "Janiced*e123")
       .verify.cssProperty('#signUpPagePasswordConfirmInput', 'border', '1px solid green')
   },
   "guest should be notified if passwords do not match" : function (client) {
@@ -74,10 +74,10 @@ module.exports = {
       .pause(500)
       .verify.cssProperty('#signUpPagePasswordInput', 'border', '1px solid gray')
       .verify.cssProperty('#signUpPagePasswordConfirmInput', 'border', '1px solid gray')
-      .setValue("#signUpPagePasswordInput", "janicedoe123")
+      .setValue("#signUpPagePasswordInput", "Janiced*e123")
       .verify.cssProperty('#signUpPagePasswordInput', 'border', '1px solid green')
       .verify.cssProperty('#signUpPagePasswordConfirmInput', 'border', '1px solid gray')
-      .setValue("#signUpPagePasswordConfirmInput", "janicedoe123")
+      .setValue("#signUpPagePasswordConfirmInput", "Janiced*e123")
       .verify.cssProperty('#signUpPagePasswordInput', 'border', '1px solid green')
       .verify.cssProperty('#signUpPagePasswordConfirmInput', 'border', '1px solid green')
   },
@@ -104,8 +104,8 @@ module.exports = {
 
       .setValue("#signUpPageFullNameInput", "Janice Doe")
       .setValue("#signUpPageEmailInput", "janicedoe@symptomatic.io")
-      .setValue("#signUpPagePasswordInput", "janicedoe123")
-      .setValue("#signUpPagePasswordConfirmInput", "janicedoe123")
+      .setValue("#signUpPagePasswordInput", "Janiced*e123")
+      .setValue("#signUpPagePasswordConfirmInput", "Janiced*e123")
 
       .click("#signUpPageJoinNowButton").pause(1000)
 
@@ -131,7 +131,7 @@ module.exports = {
       .url("http://localhost:3000/entrySignIn")
       .resizeWindow(1600, 1200)
       .verify.containsText("#usernameLink", "Sign In")
-      .signIn("janicedoe@symptomatic.io", "janicedoe123").pause(500)
+      .signIn("janicedoe@symptomatic.io", "Janiced*e123").pause(500)
       .verify.containsText("#usernameLink", "janicedoe@symptomatic.io")
       .click("#logoutButton").pause(200)
       .verify.containsText("#usernameLink", "Sign In")
@@ -141,7 +141,7 @@ module.exports = {
       .url("http://localhost:3000/entrySignIn")
       .resizeWindow(1024, 768)
       .verify.containsText("#usernameLink", "Sign In")
-      .signIn("janicedoe@symptomatic.io", "janicedoe123").pause(500)
+      .signIn("janicedoe@symptomatic.io", "Janiced*e123").pause(500)
       .verify.containsText("#usernameLink", "janicedoe@symptomatic.io")
       .click("#logoutButton").pause(200)
       .verify.containsText("#usernameLink", "Sign In")
@@ -151,7 +151,7 @@ module.exports = {
       .url("http://localhost:3000/entrySignIn")
       .resizeWindow(320, 960)
       // .verify.containsText("#usernameLink", "Sign In")
-      .signIn("janicedoe@symptomatic.io", "janicedoe123").pause(500)
+      .signIn("janicedoe@symptomatic.io", "Janiced*e123").pause(500)
       .click("#sidebarToggle").pause(300)
       .verify.containsText("#usernameLink", "janicedoe@symptomatic.io")
       .click("#logoutButton").pause(200)
@@ -171,7 +171,7 @@ module.exports = {
     client
       .url("http://localhost:3000/entrySignUp")
       .resizeWindow(1024, 768)
-      .signUp("janicedoe@symptomatic.io", "janicedoe123").pause(500)
+      .signUp("janicedoe@symptomatic.io", "Janiced*e123").pause(500)
       .click("#signUpPageEmailInput").pause(500)
       .verify.elementPresent("#signUpPageMessage")
       .verify.containsText("#signUpPageMessage", "Email already exists. [403]")

@@ -57,7 +57,7 @@ Template.entrySignIn.helpers({
   getPasswordValidationStyling: function () {
     if (ActiveEntry.errorMessages.equals('password', "Password is required")) {
       return "border: 1px solid #a94442";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password is weak")) {
+    } else if (ActiveEntry.errorMessages.equals('password', "Password is invalid")) {
       return "border: 1px solid #f2dede";
     } else if (ActiveEntry.errorMessages.equals('password', "Password present")) {
       return "border: 1px solid green";

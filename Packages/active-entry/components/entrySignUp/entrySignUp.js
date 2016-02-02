@@ -29,6 +29,20 @@ Template.entrySignUp.helpers({
       return Session.get('defaultSignInMessage');
     }
   },
+
+  entryErrorMessages: function () {
+    var errorMessages = [];
+    Object.keys(ActiveEntry.errorMessages.all()).forEach(function(key) {
+      if (key !== "signInError" && ActiveEntry.errorMessages.get(key) &&
+          ActiveEntry.errorMessages.get(key) !== "null" &&
+          ActiveEntry.errorMessages.get(key) !== undefined &&
+          ActiveEntry.errorMessages.get(key) !== null) {
+        errorMessages.push(ActiveEntry.errorMessages.get(key));
+      }
+    });
+    return errorMessages;
+  },
+
   getButtonText: function () {
     if (ActiveEntry.errorMessages.get('signInError')) {
       return ActiveEntry.errorMessages.get('signInError').message;
@@ -41,7 +55,7 @@ Template.entrySignUp.helpers({
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('email', "Email is poorly formatted")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('email', "Email present")) {
+    } else if (ActiveEntry.successMessages.equals('email', "Email present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -50,9 +64,9 @@ Template.entrySignUp.helpers({
   getPasswordStyling: function () {
     if (ActiveEntry.errorMessages.equals('password', "Password is required")) {
       return "border: 1px solid #a94442";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password is weak")) {
+    } else if (ActiveEntry.errorMessages.equals('password', "Password is invalid")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password present")) {
+    } else if (ActiveEntry.successMessages.equals('password', "Password present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -61,9 +75,9 @@ Template.entrySignUp.helpers({
   getConfirmPasswordStyling: function () {
     if (ActiveEntry.errorMessages.equals('confirm', "Password is required")) {
       return "border: 1px solid #a94442";
-    } else if (ActiveEntry.errorMessages.equals('confirm', "Password is weak")) {
+    } else if (ActiveEntry.errorMessages.equals('confirm', "Password is invalid")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('confirm', "Passwords match")) {
+    } else if (ActiveEntry.successMessages.equals('confirm', "Passwords match")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -74,7 +88,7 @@ Template.entrySignUp.helpers({
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('fullName', "Name is probably not complete")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('fullName', "Name present")) {
+    } else if (ActiveEntry.successMessages.equals('fullName', "Name present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -120,7 +134,7 @@ Template.entrySignUp.events({
     event.preventDefault();
 
     ActiveEntry.errorMessages.set('signInError', null);
-    ActiveEntry.verifyPassword(event, template);
+    //ActiveEntry.verifyPassword(event, template);
 
     var newUser = {
       fullName: template.$('[name="fullName"]').val(),
@@ -136,4 +150,9 @@ Template.entrySignUp.events({
       newUser.fullName
     );
   }
+});
+
+Template.entrySignUp.onRendered(function() {
+  // Password strength meter for password inputs
+  this.$(':password').pwstrength(pwstrengthOptions);
 });
