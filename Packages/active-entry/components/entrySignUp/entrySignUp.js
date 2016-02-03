@@ -29,7 +29,6 @@ Template.entrySignUp.helpers({
       return Session.get('defaultSignInMessage');
     }
   },
-
   entryErrorMessages: function () {
     var errorMessages = [];
     Object.keys(ActiveEntry.errorMessages.all()).forEach(function(key) {
@@ -39,7 +38,6 @@ Template.entrySignUp.helpers({
     });
     return errorMessages;
   },
-
   getButtonText: function () {
     if (ActiveEntry.errorMessages.get('signInError')) {
       return ActiveEntry.errorMessages.get('signInError').message;
@@ -127,30 +125,18 @@ Template.entrySignUp.events({
     ActiveEntry.verifyFullName(fullName);
     ActiveEntry.errorMessages.set('signInError', null);
   },
-  // TODO:  this is outdated, and should be changed to match the signature/pattern in entrySignIn
   'click #signUpPageJoinNowButton': function (event, template) {
-    event.preventDefault();
-
-    ActiveEntry.reset();
-    var newUser = {
-      fullName: template.$('[name="fullName"]').val(),
-      email: template.$('[name="email"]').val(),
-      password: template.$('[name="password"]').val(),
-      confirm: template.$('[name="confirm"]').val()
-    };
-
     ActiveEntry.signUp(
-      newUser.email,
-      newUser.password,
-      newUser.confirm,
-      newUser.fullName
+        $('#signUpPageEmailInput').val(),
+        $('#signUpPagePasswordInput').val(),
+        $('#signUpPagePasswordConfirmInput').val(),
+        $('#signUpPageFullNameInput').val()
     );
   }
 });
 
 Template.entrySignUp.onRendered(function() {
   // Password strength meter for password inputs
-  console.log(passwordValidationSettings)
   if (passwordValidationSettings.usePwstrength) {
     this.$('#signUpPagePasswordInput').pwstrength(passwordValidationSettings.pwstrengthOptions);
   }

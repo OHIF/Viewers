@@ -48,7 +48,7 @@ Template.entrySignIn.helpers({
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('email', "Email is poorly formatted")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('email', "Email present")) {
+    } else if (ActiveEntry.successMessages.equals('email', "Email present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -59,7 +59,7 @@ Template.entrySignIn.helpers({
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('password', "Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password present")) {
+    } else if (ActiveEntry.successMessages.equals('password', "Password present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";

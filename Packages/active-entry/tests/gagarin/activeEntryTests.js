@@ -72,7 +72,7 @@ describe('clinical:active-entry', function () {
   it('Password match validation confirms that two passwords are the same.', function () {
     return client.execute(function (a) {
       ActiveEntry.verifyConfirmPassword('K1tt#kittens', 'kittens');
-      expect(ActiveEntry.successMessages.get('confirm')).to.equal("Passwords do not match");
+      expect(ActiveEntry.errorMessages.get('confirm')).to.equal("Passwords do not match");
 
       ActiveEntry.verifyConfirmPassword('K1tt#ns123', 'K1tt#ns123');
       expect(ActiveEntry.successMessages.get('confirm')).to.equal("Passwords match");
@@ -97,8 +97,8 @@ describe('clinical:active-entry', function () {
   // ActiveEntry.signIn
   it('Newly created user record should have role, profile, and name set.', function () {
     return client.execute(function () {
-      ActiveEntry.signUp('janedoe@test.org', 'janedoe123', 'janedoe123', 'Jane Doe');
-      expect(ActiveEntry.errorMessages.get('fullName')).to.equal("Name present");
+      ActiveEntry.signUp('janedoe@test.org', 'Janed*e123', 'Janed*e123', 'Jane Doe');
+      expect(ActiveEntry.successMessages.get('fullName')).to.equal("Name present");
     }).then(function (){
       return server.wait(300, 'until account is created on the server', function () {
         return Meteor.users.findOne({'emails.address': 'janedoe@test.org'});
@@ -133,7 +133,7 @@ describe('clinical:active-entry', function () {
   it("Newly created user can sign in to the application.", function () {
     return client.execute(function () {
       expect(Meteor.userId()).to.not.exist;
-      ActiveEntry.signIn('janedoe@test.org', 'janedoe123');
+      ActiveEntry.signIn('janedoe@test.org', 'Janed*e123');
     }).then(function (){
       client.wait(3000, "for user to sign in", function (){
         expect(Meteor.userId()).to.exist;
@@ -143,7 +143,7 @@ describe('clinical:active-entry', function () {
   it("Newly created user can sign out of the application.", function () {
     return client.execute(function () {
       expect(Meteor.userId()).to.not.exist;
-      ActiveEntry.signIn('janedoe@test.org', 'janedoe123');
+      ActiveEntry.signIn('janedoe@test.org', 'Janed*e123');
     }).then(function (){
       client.wait(3000, "for user to sign in", function (){
         expect(Meteor.userId()).to.exist;

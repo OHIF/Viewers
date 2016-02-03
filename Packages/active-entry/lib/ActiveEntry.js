@@ -33,18 +33,13 @@ if (Meteor.isClient) {
 
   // Success messages
   ActiveEntry.successMessages = new ReactiveDict('successMessages');
-
 }
-
 
 ActiveEntry.configure = function (configObject) {
   if (Meteor.isClient) {
     Session.set('Photonic.ActiveEntry', configObject);
   }
 };
-
-
-
 
 ActiveEntry.verifyPassword = function (password) {
   if (password.length === 0) {
@@ -60,6 +55,7 @@ ActiveEntry.verifyPassword = function (password) {
   }
 
 };
+
 ActiveEntry.verifyConfirmPassword = function (password, confirmPassword) {
   if (confirmPassword === password) {
     //ActiveEntry.errorMessages.set('confirm', 'Passwords match');
@@ -70,6 +66,7 @@ ActiveEntry.verifyConfirmPassword = function (password, confirmPassword) {
     ActiveEntry.successMessages.set('confirm', null);
   }
 };
+
 ActiveEntry.verifyEmail = function (email) {
   if (email.length === 0) {
     ActiveEntry.errorMessages.set('email', 'Email is required');
@@ -83,6 +80,7 @@ ActiveEntry.verifyEmail = function (email) {
     ActiveEntry.successMessages.set('email', 'Email present');
   }
 };
+
 ActiveEntry.verifyFullName = function (fullName) {
   if (fullName.length === 0) {
     ActiveEntry.errorMessages.set('fullName', 'Name is required');
@@ -162,7 +160,6 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
   // });
 };
 ActiveEntry.signOut = function (){
-  ActiveEntry.reset();
   Meteor.logout();
 };
 
@@ -173,7 +170,8 @@ ActiveEntry.reset = function (){
   ActiveEntry.errorMessages.set('confirm', false);
   ActiveEntry.errorMessages.set('password', false);
 };
+
 ActiveEntry.logoIsDisplayed = function (){
   var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
   return ActiveEntryConfig.logo.displayed;
-}
+};
