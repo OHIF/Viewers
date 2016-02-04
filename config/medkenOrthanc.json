@@ -21,8 +21,6 @@
     "staleSessionInactivityTimeout": 1800000,
     "staleSessionHeartbeatInterval": 180000,
     "staleSessionPurgeInterval": 60000,
-    "staleSessionActivityEvents": "mousemove click keydown",
-    "usePwstrength": false,
-    "useZxcvbn": false
+    "staleSessionActivityEvents": "mousemove click keydown"
   }
 }

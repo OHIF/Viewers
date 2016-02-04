@@ -17,9 +17,9 @@ Router.route('/sign-up', {
 Template.entrySignUp.helpers({
   getSignUpMessageColor: function (){
     if (ActiveEntry.errorMessages.get('signInError')) {
-      return "color: #a94442; background-color: #f2dede; border-color: #ebccd1;"
+      return "color: #a94442; background-color: #f2dede; border-color: #ebccd1;";
     } else {
-      return "color: black;"
+      return "color: black;";
     }
   },
   getSignUpMessage: function (){
@@ -59,7 +59,7 @@ Template.entrySignUp.helpers({
   getPasswordStyling: function () {
     if (ActiveEntry.errorMessages.equals('password', "Password is required")) {
       return "border: 1px solid #a94442";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.")) {
+    } else if (ActiveEntry.errorMessages.equals('password', Session.get('passwordWarning'))) {
       return "border: 1px solid #f2dede";
     } else if (ActiveEntry.successMessages.equals('password', "Password present")) {
       return "border: 1px solid green";
@@ -93,8 +93,8 @@ Template.entrySignUp.helpers({
 
 Template.entrySignUp.events({
   "click #signUpPageSignInButton": function (event) {
-    ActiveEntry.reset();
     event.preventDefault();
+    ActiveEntry.reset();
     Router.go('/entrySignIn');
   },
   'change, keyup #signUpPageEmailInput': function (event, template) {
@@ -127,17 +127,39 @@ Template.entrySignUp.events({
   },
   'click #signUpPageJoinNowButton': function (event, template) {
     ActiveEntry.signUp(
-        $('#signUpPageEmailInput').val(),
-        $('#signUpPagePasswordInput').val(),
-        $('#signUpPagePasswordConfirmInput').val(),
-        $('#signUpPageFullNameInput').val()
+      $('#signUpPageEmailInput').val(),
+      $('#signUpPagePasswordInput').val(),
+      $('#signUpPagePasswordConfirmInput').val(),
+      $('#signUpPageFullNameInput').val()
     );
+  },
+  'keypress #entrySignUp': function(event, template) {
+    if(event.keyCode == 13) {
+      ActiveEntry.verifyFullName($("#signUpPageFullNameInput").val());
+      ActiveEntry.verifyEmail($("#signUpPageEmailInput").val());
+      ActiveEntry.verifyPassword($("#signUpPagePasswordInput").val());
+      ActiveEntry.verifyConfirmPassword($("#signUpPagePasswordInput").val(), $("#signUpPagePasswordConfirmInput").val());
+
+      if (!ActiveEntry.errorMessages.get('signInError') &&
+          ActiveEntry.successMessages.get('fullName') &&
+          ActiveEntry.successMessages.get('email') &&
+          ActiveEntry.successMessages.get('password') &&
+          ActiveEntry.successMessages.get('confirm')) {
+        $("#signUpPageJoinNowButton").click();
+      }
+    }
   }
 });
 
 Template.entrySignUp.onRendered(function() {
   // Password strength meter for password inputs
-  if (passwordValidationSettings.usePwstrength) {
+  if (passwordValidationSettings.requireStrongPasswords) {
     this.$('#signUpPagePasswordInput').pwstrength(passwordValidationSettings.pwstrengthOptions);
   }
+
+  // Update password warning message if zxcvbn is active
+  if(passwordValidationSettings.showPasswordStrengthIndicator) {
+    Session.set('passwordWarning', 'Password is weak');
+  }
 });
+

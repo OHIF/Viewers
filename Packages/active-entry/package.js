@@ -1,6 +1,6 @@
 Package.describe({
   name: 'clinical:active-entry',
-  version: '1.5.14',
+  version: '1.5.15',
   summary: 'SignIn, SignUp, and ForgotPassword pages for Clinical Framework.',
   git: 'https://github.com/clinical-meteor/clinical-active-entry',
   documentation: 'README.md'
@@ -37,7 +37,7 @@ Package.onUse(function (api) {
 
   api.addFiles([
     'lib/jquery.pwstrength.bootstrap.js',
-    'lib/validatePassword.js'
+    'lib/checkPasswordStrength.js'
   ], ['client']);
 
   api.imply('accounts-base');

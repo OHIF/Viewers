@@ -10,7 +10,7 @@
         <h1 id="signUpPageTitle" class="title-auth">Join.</h1>
         <div id="signUpPageMessage" class="subtitle-auth" style="{{getSignUpMessageColor}}">{{getSignUpMessage}}</div>
 
-        <form>
+        <form id="entrySignUpForm">
           <!--{{#if errorMessages}}
             <div id="errorMessages" class="list-errors">
               {{#each errorMessages}}
@@ -22,9 +22,9 @@
           {{#if entryErrorMessages}}
             <div id="errorMessages" class="list-errors">
               {{#each entryErrorMessages}}
-                  <div class="alert alert-danger list-item">{{this}}</div>
+                <div class="alert alert-danger list-item">{{this}}</div>
               {{/each}}
-          </div>
+            </div>
           {{/if}}
 
           <div class="input-symbol ">

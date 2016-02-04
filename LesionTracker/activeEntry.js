@@ -13,6 +13,10 @@ if (Meteor.isClient){
         },
         themeColors: {
             primary: ""
+        },
+        passwordOptions: {
+            requireStrongPasswords: true,
+            showPasswordStrengthIndicator: true
         }
     });
 }

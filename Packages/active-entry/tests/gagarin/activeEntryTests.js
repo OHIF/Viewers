@@ -61,7 +61,7 @@ describe('clinical:active-entry', function () {
       expect(ActiveEntry.errorMessages.get('password')).to.equal("Password is required");
 
       ActiveEntry.verifyPassword('kittens');
-      expect(ActiveEntry.errorMessages.get('password')).to.equal("Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.");
+      expect(ActiveEntry.errorMessages.get('password')).to.equal(Session.get('passwordWarning'));
 
       ActiveEntry.verifyPassword('K1tt#ns123');
       expect(ActiveEntry.successMessages.get('password')).to.equal("Password present");

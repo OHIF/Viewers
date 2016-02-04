@@ -22,6 +22,10 @@ if (Meteor.isClient) {
     },
     themeColors: {
       primary: ""
+    },
+    passwordOptions: {
+      requireStrongPasswords: false,
+      showPasswordStrengthIndicator: false
     }
   });
 }
@@ -33,6 +37,9 @@ if (Meteor.isClient) {
 
   // Success messages
   ActiveEntry.successMessages = new ReactiveDict('successMessages');
+
+  // Change password warning message according to whether zxcvbn is turned on
+  Session.set('passwordWarning', 'Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.');
 }
 
 ActiveEntry.configure = function (configObject) {
@@ -45,8 +52,8 @@ ActiveEntry.verifyPassword = function (password) {
   if (password.length === 0) {
     ActiveEntry.errorMessages.set('password', 'Password is required');
     ActiveEntry.successMessages.set('password', null);
-  } else if (!validatePassword(password)) {
-    ActiveEntry.errorMessages.set('password', 'Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.');
+  } else if (!checkPasswordStrength(password)) {
+    ActiveEntry.errorMessages.set('password', Session.get('passwordWarning'));
     ActiveEntry.successMessages.set('password', null);
   } else {
     //ActiveEntry.errorMessages.set('password', 'Password present');
