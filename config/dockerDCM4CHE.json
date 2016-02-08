@@ -6,11 +6,10 @@
         "wadoUriRootNOTE" : "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
         "wadoUriRoot" : "http://192.168.99.100:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
         "qidoRoot": "http://192.168.99.100:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-        "wadoRoot": "http://192.168.99.100:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-        "qidoSupportsIncludeField": false,
+        "wadoRoot": "http://192.168.99.100:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
+        "qidoSupportsIncludeField": true,
         "imageRendering" : "wadouri",
         "requestOptions" : {
-          "auth": "user:user",
           "logRequests" : true,
           "logResponses" : false,
           "logTiming" : true
