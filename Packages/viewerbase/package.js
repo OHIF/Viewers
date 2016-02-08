@@ -165,6 +165,9 @@ Package.onUse(function (api) {
     api.addFiles('server/services/qido/instances.js', 'server');
     api.addFiles('server/services/qido/studies.js', 'server');
     api.addFiles('server/services/wado/retrieveMetadata.js', 'server');
+    api.addFiles('server/services/remote/instances.js', 'server');
+    api.addFiles('server/services/remote/studies.js', 'server');
+    api.addFiles('server/services/remote/retrieveMetadata.js', 'server');    
     api.export('Services', 'server');
 });
 
