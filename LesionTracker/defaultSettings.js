@@ -1,4 +1,10 @@
 Meteor.startup(function() {
+    if (Meteor.settings) {
+        console.log('Using custom LesionTracker settings');
+        console.log(Meteor.settings);
+        return;
+    }
+
     Meteor.settings = {
         dicomWeb: {
             endpoints: [{
