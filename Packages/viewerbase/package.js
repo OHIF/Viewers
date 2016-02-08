@@ -187,6 +187,11 @@ Package.onUse(function(api) {
     api.addFiles('server/services/dimse/studies.js', 'server');
     api.addFiles('server/services/dimse/retrieveMetadata.js', 'server');
 
+    // Study, instance, and metadata retrieval from remote PACS via Orthanc as a proxy
+    api.addFiles('server/services/remote/instances.js', 'server');
+    api.addFiles('server/services/remote/studies.js', 'server');
+    api.addFiles('server/services/remote/retrieveMetadata.js', 'server');    
+
     api.export('Services', 'server');
 });
 
