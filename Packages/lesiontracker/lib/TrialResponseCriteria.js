@@ -293,6 +293,10 @@ function validateAll() {
             // - The acquisitionSliceThickness, for example, may be pulled from the image metadata
             // - The organ in question, e.g. Chest X-ray, may determine the exact specifications for the current trial criteria
             var currentConstraints = getTrialCriteriaConstraints(criteriaType, currentMeasurement.imageId);
+            if (!currentConstraints) {
+                log.warn('No relevant contraints could be applied');
+                return;
+            }
 
             // Run the single-measurement-specific conformance checks
             // If any messages exist, add them to the array of messages

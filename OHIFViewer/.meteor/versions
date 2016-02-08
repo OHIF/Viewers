@@ -25,6 +25,7 @@ ddp-server@1.2.2
 deps@1.0.9
 dicomweb@0.0.1
 diff-sequence@1.0.1
+dimseservice@0.0.1
 ecmascript@0.1.6
 ecmascript-runtime@0.2.6
 ejson@1.0.7
