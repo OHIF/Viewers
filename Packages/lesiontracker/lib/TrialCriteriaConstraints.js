@@ -197,13 +197,13 @@ function irRC(image) {
             longestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 10,
-                    message: '^Target lesions must be >= %{count} mm long axis.'
+                    //message: '^Target lesions must be >= %{count} mm long axis.'
                 }
             },
             shortestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 10,
-                    message: '^Target lesions must be >= %{count} mm short axis.'
+                    //message: '^Target lesions must be >= %{count} mm short axis.'
                 }
             }
         };
@@ -277,13 +277,13 @@ function irRC(image) {
             longestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 5,
-                    message: '^New target lesions must be >= %{count} mm long axis.'
+                    //message: '^New target lesions must be >= %{count} mm long axis.'
                 }
             },
             shortestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 5,
-                    message: '^New target lesions must be >= %{count} mm short axis.'
+                    //message: '^New target lesions must be >= %{count} mm short axis.'
                 }
             }
         };
@@ -293,13 +293,13 @@ function irRC(image) {
         numberOfLesionsPerOrgan: {
             numericality: {
                 lessThanOrEqualTo: 5,
-                message: '^A maximum of %{count} target lesions per organ are allowed at Followup.'
+                //message: '^A maximum of %{count} target lesions per organ are allowed at Followup.'
             }
         },
         totalNumberOfLesions: {
             numericality: {
                 lessThanOrEqualTo: 10,
-                message: '^A maximum of %{count} target lesions total are allowed at Followup.'
+                //message: '^A maximum of %{count} target lesions total are allowed at Followup.'
             }
         }
     };
@@ -309,7 +309,7 @@ function irRC(image) {
         totalLesionBurden: {
             numericality: {
                 greaterThanOrEqualTo: 100,
-                message: '^Total lesion burden (SPD target lesions + SPD new lesions) should be greater than %{count}.'
+                //message: '^Total lesion burden (SPD target lesions + SPD new lesions) should be greater than %{count}.'
             }
         }
     };
