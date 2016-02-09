@@ -12,6 +12,10 @@ activateMeasurements = function(element, measurementId, templateData, viewportIn
     var timepointData = getTimepointObject(imageId);
     var measurementData = Measurements.findOne(measurementId);
 
+    if (!timepointData) {
+        return;
+    }
+
     var measurementAtTimepoint = measurementData.timepoints[timepointData.timepointId];
     if (!measurementAtTimepoint) {
         return;

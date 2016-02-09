@@ -194,11 +194,10 @@
                     y: mouseEventData.currentPoints.image.y - 70,
                     pointNearHandle: pointNearTextBox,
                     active: false,
-                    movesIndependently: true,
+                    movesIndependently: false,
                     drawnIndependently: true,
                     allowedOutsideImage: true
                 },
-
                 perpendicularStart: {
                     x: mouseEventData.currentPoints.image.x,
                     y: mouseEventData.currentPoints.image.y,
@@ -208,7 +207,6 @@
                     drawnIndependently: true,
                     index: 2
                 },
-
                 perpendicularEnd: {
                     x: mouseEventData.currentPoints.image.x,
                     y: mouseEventData.currentPoints.image.y,
@@ -217,7 +215,6 @@
                     drawnIndependently: true,
                     index: 3
                 }
-
             },
             imageId: imageId,
             seriesInstanceUid: seriesInstanceUid,

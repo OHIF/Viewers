@@ -1,5 +1,6 @@
 // Create a client-only Collection to store our Validation Errors
 ValidationErrors = new Meteor.Collection(null);
+ValidationErrors._debugName = 'ValidationErrors';
 
 // Set Validate.js Library's default options
 validate.options = {
@@ -216,8 +217,8 @@ function validateSingleMeasurement(measurementData) {
     var criteriaType = Session.get('TrialResponseAssessmentCriteria');
     var currentConstraints = getTrialCriteriaConstraints(criteriaType, measurementData.imageId);
 
+    // If we have no relevant constraints, stop here
     if (!currentConstraints) {
-        log.warn('No relevant contraints could be applied');
         return;
     }
 
@@ -235,6 +236,11 @@ function validateSingleMeasurement(measurementData) {
 
     // Find the specific measurement data for this Measurement at this Timepoint
     var currentMeasurement = measurement.timepoints[timepointId];
+
+    // Return here if the measurement was removed during validation
+    if (!currentMeasurement) {
+        return;
+    }
 
     // Include target and nodal flags on the timepoint-specific data so it is easier to validate
     // TODO: Rethink what to pass to assessSingleMeasurement?
@@ -256,10 +262,11 @@ function validateGroups() {
     var criteriaType = Session.get('TrialResponseAssessmentCriteria');
 
     Timepoints.find().forEach(function(timepoint) {
-        // TODO: Criteria for the specific image are retrieved from the general set of criteria.
-        // - The acquisitionSliceThickness, for example, may be pulled from the image metadata
-        // - The organ in question, e.g. Chest X-ray, may determine the exact specifications for the current trial criteria
+        // Criteria for the specific image are retrieved from the general set of criteria.
         var currentConstraints = getTrialCriteriaConstraints(criteriaType);
+        if (!currentConstraints) {
+            return;
+        }
 
         // Retrieve the current constraints which apply to the specific Timepoint type
         // (e.g. baseline, followup) that this Measurement is being edited on.
@@ -289,12 +296,9 @@ function validateAll() {
             currentMeasurement.lesionNumber = measurement.lesionNumber;
             currentMeasurement._id = measurement._id;
 
-            // TODO: Criteria for the specific image are retrieved from the general set of criteria.
-            // - The acquisitionSliceThickness, for example, may be pulled from the image metadata
-            // - The organ in question, e.g. Chest X-ray, may determine the exact specifications for the current trial criteria
+            // Criteria for the specific image are retrieved from the general set of criteria.
             var currentConstraints = getTrialCriteriaConstraints(criteriaType, currentMeasurement.imageId);
             if (!currentConstraints) {
-                log.warn('No relevant contraints could be applied');
                 return;
             }
 

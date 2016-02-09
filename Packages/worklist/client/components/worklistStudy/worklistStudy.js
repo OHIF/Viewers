@@ -1,5 +1,6 @@
 // Maybe we should use regular Worklist collection?
 WorklistSelectedStudies = new Meteor.Collection(null);
+WorklistSelectedStudies._debugName = 'WorklistSelectedStudies';
 
 function handleShiftClick(studyRow, data) {
     log.info('shiftKey');

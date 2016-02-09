@@ -12,8 +12,6 @@ var StudyMetaData = {};
  * @param failCallback The callback function to be executed when the study retrieval has failed
  */
 getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
-    log.info('worklistStudy getStudyMetadata');
-
     // If the StudyMetaData cache already has data related to this
     // studyInstanceUid, then we should fire the doneCallback with this data
     // and stop here.
@@ -26,6 +24,8 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
     // If no study metadata is in the cache variable, we need to retrieve it from
     // the server with a call.
     Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
+        log.info('worklistStudy getStudyMetadata: ' + studyInstanceUid);
+
         if (error) {
             log.warn(error);
             failCallback(error);

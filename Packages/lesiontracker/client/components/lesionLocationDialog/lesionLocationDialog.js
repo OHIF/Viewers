@@ -205,20 +205,6 @@ Template.lesionLocationDialog.events({
             _id: selectedOptionId
         });
 
-        var id;
-        var existingLocation = PatientLocations.findOne({
-            location: locationObj.location
-        });
-        if (existingLocation) {
-            id = existingLocation._id;
-        } else {
-            // Adds location data to PatientLocation and retrieve the location ID
-            id = PatientLocations.insert({
-                location: locationObj.location,
-                locationId: locationObj._id
-            });
-        }
-
         // Add an ID value to the tool data to link it to the Measurements collection
         if (!measurementData.id) {
             measurementData.id = 'notready';
@@ -226,7 +212,6 @@ Template.lesionLocationDialog.events({
             // Link locationUID with active lesion measurementData
             measurementData.location = locationObj.location;
             measurementData.locationId = locationObj.id;
-            measurementData.locationUID = id;
 
             /// Set the isTarget value to true, since this is the target-lesion dialog callback
             measurementData.isTarget = true;
@@ -241,8 +226,7 @@ Template.lesionLocationDialog.events({
                 $set: {
                     location: locationObj.location,
                     locationId: locationObj.id,
-                    isNodal: locationObj.isNodal,
-                    locationUID: id
+                    isNodal: locationObj.isNodal
                 }
             });
         }

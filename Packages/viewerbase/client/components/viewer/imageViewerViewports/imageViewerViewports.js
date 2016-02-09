@@ -1,4 +1,5 @@
 ViewerWindows = new Meteor.Collection(null);
+ViewerWindows._debugName = 'ViewerWindows';
 
 Template.imageViewerViewports.helpers({
     height: function() {
@@ -10,14 +11,16 @@ Template.imageViewerViewports.helpers({
         return 100 / viewportColumns;
     },
     viewerWindow: function() {
-        ViewerWindows = new Meteor.Collection(null);
+        log.info('ViewerWindows');
+        //log.info(ViewerWindows.find().fetch());
+        ViewerWindows.remove({});
 
-        log.info("imageViewerViewports viewportArray");
+        log.info('imageViewerViewports viewportArray');
 
         var viewportRows = this.viewportRows || 1;
         var viewportColumns = this.viewportColumns || 1;
 
-        var contentId = this.contentId || $("#viewer").parents(".tab-pane.active").attr('id');
+        var contentId = this.contentId || $('#viewer').parents('.tab-pane.active').attr('id');
         if (this.viewportRows && this.viewportColumns) {
             viewportRows = this.viewportRows || 1;
             viewportColumns = this.viewportColumns || 1;
@@ -47,13 +50,13 @@ Template.imageViewerViewports.helpers({
         // Update viewerData
         ViewerData[contentId].viewportRows = viewportRows;
         ViewerData[contentId].viewportColumns = viewportColumns;
-        Session.set("ViewerData", ViewerData);
+        Session.set('ViewerData', ViewerData);
 
         this.viewportRows = viewportRows;
         this.viewportColumns = viewportColumns;
 
         var numViewports = viewportRows * viewportColumns;
-        for (var i=0; i < numViewports; ++i) {
+        for (var i = 0; i < numViewports; ++i) {
             var data = {
                 viewportIndex: i,
                 // These two are necessary because otherwise the width and height helpers
@@ -77,14 +80,17 @@ Template.imageViewerViewports.helpers({
             ViewerWindows.insert(data);
         }
 
-
         // Here we will find out if we need to load any other studies into the viewer
 
         // We will make a list of unique studyInstanceUids
         var uniqueStudyInstanceUids = [];
 
         // Meteor doesn't support Mongo's 'distinct' function, so we have to do this in a loop
-        ViewerWindows.find().forEach(function(window) {
+        var windows = ViewerWindows.find({}, {
+            reactive: false
+        }).fetch();
+
+        windows.forEach(function(window) {
             var studyInstanceUid = window.studyInstanceUid;
             if (!studyInstanceUid) {
                 return;
@@ -99,10 +105,17 @@ Template.imageViewerViewports.helpers({
             uniqueStudyInstanceUids.push(studyInstanceUid);
 
             // If any of the associated studies is not already loaded, load it now
-            var loadedStudy = ViewerStudies.findOne({studyInstanceUid: studyInstanceUid});
+            var loadedStudy = ViewerStudies.findOne({
+                studyInstanceUid: studyInstanceUid
+            }, {
+                reactive: false
+            });
+
             if (!loadedStudy) {
                 // Load the study
-                Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
+                getStudyMetadata(studyInstanceUid, function(study) {
+                    log.info("imageViewerViewports GetStudyMetadata: " + studyInstanceUid);
+
                     // Sort the study's series and instances by series and instance number
                     sortStudy(study);
 
@@ -112,7 +125,9 @@ Template.imageViewerViewports.helpers({
             }
         });
 
-        return ViewerWindows.find();
+        return ViewerWindows.find({}, {
+            reactive: false
+        }).fetch();
     }
 });
 
@@ -122,9 +137,9 @@ var savedSeriesData,
 
 Template.imageViewerViewports.events({
     'CornerstoneMouseDoubleClick .imageViewerViewport': function(e) {
-        var container = $(".viewerMain").get(0);
+        var container = $('.viewerMain').get(0);
         var data;
-        var contentId = this.contentId || $("#viewer").parents(".tab-pane.active").attr('id');
+        var contentId = this.contentId || $('#viewer').parents('.tab-pane.active').attr('id');
 
         // If there is more than one viewport on screen
         // And one of them is double-clicked, it should be rendered alone

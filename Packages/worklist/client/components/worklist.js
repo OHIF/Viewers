@@ -11,20 +11,13 @@ ViewerData = Session.get('ViewerData') || {};
 
 // Create the WorklistTabs collection
 WorklistTabs = new Meteor.Collection(null);
+WorklistTabs._debugName = 'WorklistTabs';
 
 // Define the WorklistStudies Collection
 // This is a client-side only Collection which
 // Stores the list of studies in the Worklist
 WorklistStudies = new Meteor.Collection(null);
-
-Template.worklist.onCreated(function() {
-    var self = this;
-    if (Worklist.subscriptions) {
-        Worklist.subscriptions.forEach(function(collectionName) {
-            self.subscribe(collectionName);
-        });
-    }
-});
+WorklistStudies._debugName = 'WorklistStudies';
 
 Template.worklist.onRendered(function() {
     // If there is a tab set as active in the Session,

@@ -31,10 +31,10 @@ function removeTimepointAssociations() {
             return;
         }
 
-        // Update the Studies Collection to remove the link to this Timepoint
-        Studies.update(study._id, {
-            unset: {
-                timepointId: ''
+        // Remove this entry from the Studies Collection
+        Meteor.call('removeAssociatedStudy', study._id, function(error) {
+            if (error) {
+                log.warn(error);
             }
         });
 

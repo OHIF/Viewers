@@ -1,10 +1,10 @@
 Template.hangingProtocolButtons.helpers({
-    'isNextAvailable': function() {
+    isNextAvailable: function() {
         var presentationGroup = Session.get('WindowManagerPresentationGroup');
         var numPresentationGroups = WindowManager.getNumPresentationGroups();
         return presentationGroup < numPresentationGroups;
     },
-    'isPreviousAvailable': function() {
+    isPreviousAvailable: function() {
         var presentationGroup = Session.get('WindowManagerPresentationGroup');
         return presentationGroup > 1;
     }

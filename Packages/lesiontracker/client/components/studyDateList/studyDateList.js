@@ -76,12 +76,7 @@ Template.studyDateList.events({
         var loadingIndicator = selectBox.siblings('.loading');
         loadingIndicator.css('display', 'block');
 
-        Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
-            if (error) {
-                log.warn(error);
-                return;
-            }
-
+        getStudyMetadata(studyInstanceUid, function(study) {
             sortStudy(study);
 
             // Hide the loading indicator

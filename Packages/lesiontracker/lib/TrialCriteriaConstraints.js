@@ -50,7 +50,7 @@ function RECIST(image) {
             shortestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 15,
-                    message: '^Nodal target lesions must be >= %{count} mm short axis'
+                    //message: '^Nodal target lesions must be >= %{count} mm short axis'
                 }
             }
         };
@@ -72,7 +72,7 @@ function RECIST(image) {
         totalLesionBurden: {
             numericality: {
                 greaterThanOrEqualTo: 2, // TODO: Check this, the value wasn't specified!
-                message: '^Total lesion burden (SPD target lesions + SPD new lesions) should be greater than %{count}.'
+                //message: '^Total lesion burden (SPD target lesions + SPD new lesions) should be greater than %{count}.'
             }
         }
     };
@@ -126,7 +126,7 @@ function RECIST(image) {
             longestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 20,
-                    message: '^Extranodal lesions must be >= %{count} mm on chest X-ray'
+                    //message: '^Extranodal lesions must be >= %{count} mm on chest X-ray'
                 }
             }
         };
@@ -135,7 +135,7 @@ function RECIST(image) {
             longestDiameter: {
                 numericality: {
                     greaterThanOrEqualTo: 10,
-                    message: '^Extranodal target lesions must be >= %{count} mm long axis'
+                    //message: '^Extranodal target lesions must be >= %{count} mm long axis'
                 }
             }
         };
@@ -340,6 +340,9 @@ getTrialCriteriaConstraints = function(criteriaType, imageId) {
 
     // Otherwise, retrieve the series metaData to identify the modality of the image
     var seriesMetaData = cornerstoneTools.metaData.get('series', imageId);
+    if (!seriesMetaData) {
+        return;
+    }
 
     // TODO: Get the rest of the metaData that has already been loaded by Cornerstone
     var image = {};
@@ -363,7 +366,6 @@ getTrialCriteriaConstraints = function(criteriaType, imageId) {
     });
 
     if (!study) {
-        log.warn('No study/timepoint association.');
         return;
     }
 

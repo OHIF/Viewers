@@ -8,6 +8,7 @@ switchToTab = function(contentId) {
     if (!contentId) {
         return;
     }
+
     log.info('Switching to tab: ' + contentId);
 
     // Use Bootstrap's Tab JavaScript to show the contents of the current tab
@@ -15,7 +16,8 @@ switchToTab = function(contentId) {
     $('.tabTitle a[data-target="#' + contentId + '"]').tab('show');
 
     // Remove any previous Viewers from the DOM
-    $('#viewer').remove();
+    $('.viewerContainer').remove();
+    $('.worklistContainer').remove();
 
     // Update the 'activeContentId' variable in Session
     Session.set('activeContentId', contentId);
@@ -23,7 +25,16 @@ switchToTab = function(contentId) {
     // If we are switching to the Worklist tab, reset any CSS styles
     // that have been applied to prevent scrolling in the Viewer.
     // Then stop here, since nothing needs to be re-rendered.
+    var container;
     if (contentId === 'worklistTab') {
+        container = $('.tab-content').find('#worklistTab').get(0);
+        var worklistContainer = document.createElement('div');
+        worklistContainer.classList.add('worklistContainer');
+        container.appendChild(worklistContainer);
+
+        // Use Blaze to render the WorklistResult Template into the container
+        Blaze.render(Template.worklistResult, worklistContainer);
+
         document.body.style.overflow = null;
         document.body.style.height = null;
         document.body.style.minWidth = null;
@@ -67,10 +78,13 @@ switchToTab = function(contentId) {
         }
 
         // Remove the loading text template that is inside the tab container by default
+        var viewerContainer = document.createElement('div');
+        viewerContainer.classList.add('viewerContainer');
         container.innerHTML = '';
+        container.appendChild(viewerContainer);
 
         // Use Blaze to render the Viewer Template into the container
-        UI.renderWithData(Template.viewer, data, container);
+        Blaze.renderWithData(Template.viewer, data, viewerContainer);
 
         // Retrieve the DOM element of the viewer
         var imageViewer = $('#viewer');

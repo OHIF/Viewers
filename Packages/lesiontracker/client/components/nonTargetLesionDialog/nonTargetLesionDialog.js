@@ -70,27 +70,28 @@ function getLesionLocationCallback(measurementData, eventData) {
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, disable selector location
-    var locationUID = LesionManager.lesionNumberExists(measurementData);
-    if (locationUID) {
+    var locationId = LesionManager.lesionNumberExists(measurementData);
+    if (locationId) {
         // Add an ID value to the tool data to link it to the Measurements collection
         measurementData.id = 'notready';
 
-        measurementData.locationUID = locationUID;
+        measurementData.locationId = locationId;
 
         // Disable the selection of a new location
-        disableLocationSelection(measurementData.locationUID);
+        disableLocationSelection(measurementData.locationId);
     }
 
     // Disable selector location to prevent selecting a new location
-    function disableLocationSelection(locationUID) {
-        var locationName = LesionManager.getLocationName(locationUID);
-        selectorLocation.find('option').each(function() {
-            if ($(this).text() === locationName) {
-                // Select location in locations dropdown list
-                selectorLocation.find('option').eq($(this).index()).prop('selected', true);
-            }
-        });
-
+    function disableLocationSelection(locationId) {
+        var locationObject = LesionLocations.findOne({
+                id: locationId
+            });
+        
+        if (!locationObject) {
+            return;
+        }
+        
+        selectorLocation.find('option[value="' + locationObject._id + '"]').prop('selected', true);
         selectorLocation.prop('disabled', true);
     }
 
@@ -273,35 +274,18 @@ Template.nonTargetLesionDialog.events({
             _id: selectedOptionId
         });
 
-        var id;
-        var existingLocation = PatientLocations.findOne({
-            location: locationObj.location
-        });
-        if (existingLocation) {
-            id = existingLocation._id;
-        } else {
-            // Adds location data to PatientLocation and retrieve the location ID
-            id = PatientLocations.insert({
-                location: locationObj.location
-            });
-        }
-
         if (measurementData.id) {
             // Update the location data
             Measurements.update(measurementData.id, {
                 $set: {
                     location: locationObj.location,
                     locationId: locationObj.id,
-                    locationUID: id
                 }
             });
         } else {
             // Add an ID value to the tool data to link it to the Measurements collection
             measurementData.id = 'notready';
         }
-
-        // Link locationUID with active lesion measurementData
-        measurementData.locationUID = id;
 
         /// Set the isTarget value to true, since this is the target-lesion dialog callback
         measurementData.isTarget = false;

@@ -59,18 +59,53 @@ Template.associationModal.events({
             // Sort the study dates, so we can get a range for these values
             studyDates = studyDates.sort();
 
-            // Create a new timepoint to represent the (baseline or follow-up) studies
-            var timepoint = {
-                timepointType: timepointType,
-                timepointId: uuid.new(),
-                studyInstanceUids: studyInstanceUids,
-                patientId: relatedStudies[0].patientId, // TODO: Revisit this (Should timepoints be related to patientId?)
-                earliestDate: studyDates[0].format('YYYYMMDD'),
-                latestDate: studyDates[studyDates.length - 1].format('YYYYMMDD')
-            };
+            // Check if these studies are already associated with an existing Timepoint
+            var existingTimepoint;
+            if (timepointType === 'baseline') {
+                // If we're trying to associate them to the Baseline, we don't need to
+                // check if the studyInstanceUids are already associated with anything else
+                existingTimepoint = Timepoints.findOne({
+                    patientId: relatedStudies[0].patientId,
+                    timepointType: 'baseline'
+                });
+            } else {
+                // If we're trying to associate them to a Follow-up, we should check if any
+                // of them are already part of a Follow-up (e.g. Follow-up 1), so that
+                // the rest will also be associated with Follow-up 1.
+                existingTimepoint = Timepoints.findOne({
+                    patientId: relatedStudies[0].patientId,
+                    studyInstanceUids: {
+                        $in: studyInstanceUids
+                    }
+                });
+            }
 
-            // Insert this timepoint into the Timepoints Collection
-            Timepoints.insert(timepoint);
+            var timepointId;
+            if (existingTimepoint) {
+                // If these studies are already associated with an existing Timepoint,
+                // and the desired timepoint type is the same (e.g. Follow-up), update
+                // this Timepoint instead of creating a new one
+                Timepoints.update(existingTimepoint._id, {
+                    $set: {
+                        studyInstanceUids: studyInstanceUids
+                    }
+                });
+                timepointId = existingTimepoint.timepointId;
+            } else {
+                // Create a new timepoint to represent the (baseline or follow-up) studies
+                var timepoint = {
+                    timepointType: timepointType,
+                    timepointId: uuid.new(),
+                    studyInstanceUids: studyInstanceUids,
+                    patientId: relatedStudies[0].patientId,
+                    earliestDate: studyDates[0].format('YYYYMMDD'),
+                    latestDate: studyDates[studyDates.length - 1].format('YYYYMMDD')
+                };
+
+                // Insert this timepoint into the Timepoints Collection
+                Timepoints.insert(timepoint);
+                timepointId = timepoint.timepointId;
+            }
 
             // Loop through these studies to associate them with the newly created timepoint
             relatedStudies.forEach(function(study) {
@@ -83,7 +118,7 @@ Template.associationModal.events({
                     // If a study already exists, update the entry with the new timepointId
                     Studies.update(existingStudy._id, {
                         $set: {
-                            timepointId: timepoint.timepointId
+                            timepointId: timepointId
                         }
                     });
                 } else {
@@ -93,7 +128,7 @@ Template.associationModal.events({
                     delete study._id;
 
                     // Attach the timepointId and insert it into the Studies Collection
-                    study.timepointId = timepoint.timepointId;
+                    study.timepointId = timepointId;
                     Studies.insert(study);
                 }
             });

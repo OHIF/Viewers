@@ -12,6 +12,12 @@ Meteor.publish('studies', function() {
     return Studies.find();
 });
 
+Meteor.publish('singlePatientAssociatedStudies', function(patientId) {
+    return Studies.find({
+        patientId: patientId
+    });
+});
+
 Meteor.publish('singlePatientMeasurements', function(patientId) {
     return Measurements.find({
         patientId: patientId

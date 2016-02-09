@@ -49,5 +49,8 @@ Meteor.methods({
     },
     removeTimepoint: function(id) {
         Timepoints.remove(id);
+    },
+    removeAssociatedStudy: function(id) {
+        Studies.remove(id);
     }
 });

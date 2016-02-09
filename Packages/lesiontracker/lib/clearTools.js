@@ -5,11 +5,15 @@ clearTools = function() {
     var toolStateKeys = Object.keys(toolState).slice(0);
 
     var viewportElements = $('.imageViewerViewport').not('.empty');
-    var seriesInstanceUIds = []; // Holds seriesInstanceUId of imageViewerViewport elements
+    var seriesInstanceUids = []; // Holds seriesInstanceUid of imageViewerViewport elements
     viewportElements.each(function(index, element) {
         var enabledElement = cornerstone.getEnabledElement(element);
         var series = cornerstoneTools.metaData.get('series', enabledElement.image.imageId);
-        seriesInstanceUIds.push(series.seriesInstanceUid);
+        if (!series) {
+            return;
+        }
+        
+        seriesInstanceUids.push(series.seriesInstanceUid);
     });
 
     // Set null array for toolState data found by imageId and toolType
@@ -18,8 +22,12 @@ clearTools = function() {
             var toolTypeData = toolState[imageId][toolType];
             if (toolTypeData && toolTypeData.data.length > 0) {
                 var series = cornerstoneTools.metaData.get('series', imageId);
-                // If seriesInstanceUid is found in seriesInstanceUIds, set toolState data as null
-                if (seriesInstanceUIds.indexOf(series.seriesInstanceUid) > -1) {
+                if (!series) {
+                    return;
+                }
+
+                // If seriesInstanceUid is found in seriesInstanceUids, set toolState data as null
+                if (seriesInstanceUids.indexOf(series.seriesInstanceUid) > -1) {
                     toolState[imageId][toolType] = {
                         data: []
                     };

@@ -29,7 +29,6 @@ Package.onUse(function(api) {
     // Client-side collections
     api.addFiles('client/collections/LesionLocations.js', 'client');
     api.addFiles('client/collections/LocationResponses.js', 'client');
-    api.addFiles('client/collections/PatientLocations.js', 'client');
 
     // Additional Custom Cornerstone Tools for Lesion Tracker
     api.addFiles('client/compatibility/lesionTool.js', 'client', {
@@ -108,9 +107,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.styl', 'client');
     api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.js', 'client');
 
-    api.addFiles('client/components/timepointTextDialog/timepointTextDialog.html', 'client');
-    api.addFiles('client/components/timepointTextDialog/timepointTextDialog.styl', 'client');
-
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.html', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.styl', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.js', 'client');
@@ -186,7 +182,6 @@ Package.onUse(function(api) {
     api.export('ValidationErrors', 'client');
     api.export('LesionLocations', 'client');
     api.export('LocationResponses', 'client');
-    api.export('PatientLocations', 'client');
 
     // Export collections spanning both client and server
     api.export('Measurements', [ 'client', 'server' ]);

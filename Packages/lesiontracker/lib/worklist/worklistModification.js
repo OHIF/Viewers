@@ -33,5 +33,8 @@ function dblClickOnStudy(data) {
         return;
     }
 
+    // Add the Timepoint name to the Patient name to create the tab title
+    title += ' ' + getTimepointName(timepoint);
+
     openNewTabWithTimepoint(timepoint.timepointId, title);
 }

@@ -1,4 +1,5 @@
 LocationResponses = new Meteor.Collection(null);
+LocationResponses._debugName = 'LocationResponses';
 
 LocationResponses.insert({
     text: 'Complete response',

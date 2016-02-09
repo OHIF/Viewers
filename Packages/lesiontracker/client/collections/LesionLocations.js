@@ -1,4 +1,5 @@
 LesionLocations = new Meteor.Collection(null);
+LesionLocations._debugName = 'LesionLocations';
 
 var organGroups = [
     'Abdominal/Chest Wall',

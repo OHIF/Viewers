@@ -1,21 +1,4 @@
 /**
- * Retrieve a location name (e.g. Liver Right) from the
- * PatientLocations Collection by id, if it exists. Otherwise,
- * return an empty string.
- *
- * @param id
- * @returns {*|string}
- */
-function getLocationName(id) {
-    var locationObject = PatientLocations.findOne(id);
-    if (!locationObject || !locationObject.location) {
-        return '';
-    }
-
-    return locationObject.location;
-}
-
-/**
  * Update the Timepoint object for a specific Measurement.
  * If no measurement exists yet, one will be created.
  *
@@ -32,7 +15,6 @@ function updateLesionData(lesionData) {
         log.warn('Study is not associated with a timepoint');
         return;
     }
-
 
     var timepoint = Timepoints.findOne({
         timepointId: study.timepointId
@@ -84,7 +66,7 @@ function updateLesionData(lesionData) {
 
         // Retrieve the location name given the locationUID
         if (lesionData.locationUID !== undefined) {
-            var locationObj = PatientLocations.findOne({
+            var locationObj = LesionLocations.findOne({
                 locationUID: lesionData.locationUID
             });
 
@@ -191,12 +173,11 @@ function lesionNumberExists(lesionData) {
         return;
     }
 
-    return measurement.locationUID;
+    return measurement.locationId;
 }
 
 LesionManager = {
     updateLesionData: updateLesionData,
     getNewLesionNumber: getNewLesionNumber,
-    lesionNumberExists: lesionNumberExists,
-    getLocationName: getLocationName
+    lesionNumberExists: lesionNumberExists
 };

@@ -1,8 +1,13 @@
 Session.setDefault('activeViewport', false);
 
+ViewerStudies = new Meteor.Collection(null);
+ViewerStudies._debugName = 'ViewerStudies';
+
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
+
+    ValidationErrors.remove({});
 
     var self = this;
     var firstMeasurementsActivated = false;
@@ -97,10 +102,11 @@ Template.viewer.onCreated(function() {
     Session.set('activeViewport', ViewerData[contentId].activeViewport || false);
 
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element
-    this.autorun(pixelSpacingAutorunCheck);
+    self.autorun(pixelSpacingAutorunCheck);
 
     // Update the ViewerStudies collection with the loaded studies
-    ViewerStudies = new Meteor.Collection(null);
+    ViewerStudies.remove({});
+
     this.data.studies.forEach(function(study) {
         study.selected = true;
         ViewerStudies.insert(study);
@@ -110,11 +116,17 @@ Template.viewer.onCreated(function() {
     Session.set('patientId', patientId);
 
     self.autorun(function() {
-        var patientId = Session.get('patientId');
-        self.subscribe('singlePatientTimepoints', patientId);
-        self.subscribe('singlePatientMeasurements', patientId);
+        var dataContext = Template.currentData();
+        self.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
+        self.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
+        self.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
 
-        if (self.subscriptionsReady()) {
+        var subscriptionsReady = self.subscriptionsReady();
+        console.log('autorun viewer.js. Ready: ' + subscriptionsReady);
+
+        if (subscriptionsReady) {
+            TrialResponseCriteria.validateAllDelayed();
+
             ViewerStudies.find().observe({
                 added: function(study) {
                     // Find the relevant timepoint given the newly added study
@@ -128,7 +140,7 @@ Template.viewer.onCreated(function() {
                         log.warn('Study added to Viewer has not been associated!');
                         return;
                     }
-                    
+
                     // Update the added document with its related timepointId
                     ViewerStudies.update(study._id, {
                         $set: {

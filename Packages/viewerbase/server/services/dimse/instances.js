@@ -59,7 +59,7 @@ function resultDataToStudyMetadata(resultData) {
  */
 Services.DIMSE.Instances = function(studyInstanceUid) {
     //var url = buildUrl(server, studyInstanceUid);
-    var result = DIMSE.retrieveInstances(studyInstanceUid);
+    var result = DIMSE.retrieveInstances(studyInstanceUid, null, {0x00080018 : ""});
 
     console.log("DIMSE Instance retrieval");
     console.log(result);

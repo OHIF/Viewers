@@ -28,7 +28,7 @@ Template.imageThumbnail.onRendered(function() {
 });
 
 Template.imageThumbnail.helpers({
-    'percentComplete': function() {
+    percentComplete: function() {
         var percentComplete = Session.get('CornerstoneThumbnailLoadProgress' + this.thumbnailIndex);
         if (percentComplete && percentComplete !== 100) {
             return percentComplete + '%';

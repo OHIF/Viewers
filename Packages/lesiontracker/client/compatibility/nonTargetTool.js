@@ -141,7 +141,7 @@
                     y: mouseEventData.currentPoints.image.y - 50,
                     pointNearHandle: pointNearTextBox,
                     active: false,
-                    movesIndependently: true,
+                    movesIndependently: false,
                     drawnIndependently: true,
                     allowedOutsideImage: true
                 }

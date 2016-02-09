@@ -1,10 +1,10 @@
 handleMeasurementAdded = function(e, eventData) {
-    log.info('CornerstoneToolsMeasurementAdded');
     var measurementData = eventData.measurementData;
 
     switch (eventData.toolType) {
         case 'nonTarget':
         case 'lesion':
+            log.info('CornerstoneToolsMeasurementAdded');
             LesionManager.updateLesionData(measurementData);
             TrialResponseCriteria.validateDelayed(measurementData);
             break;

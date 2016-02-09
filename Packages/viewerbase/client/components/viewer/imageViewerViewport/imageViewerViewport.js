@@ -411,6 +411,10 @@ Meteor.startup(function() {
     cornerstoneTools.magnify.setConfiguration(config);
 });
 
+Template.imageViewerViewport.onCreated(function() {
+   console.log('imageViewerViewport onCreated');
+});
+
 Template.imageViewerViewport.onRendered(function() {
     var templateData = Template.currentData();
     log.info('imageViewerViewport onRendered');
@@ -455,7 +459,7 @@ Template.imageViewerViewport.onRendered(function() {
     // TODO: This code block might be refactored
     // Load previous measurement study when reloading a patient
     if (!study) {
-        Meteor.call('GetStudyMetadata', this.data.studyInstanceUid, function(error, study) {
+        getStudyMetadata(this.data.studyInstanceUid, function(study) {
             // Once we have retrieved the data, we sort the series' by series
             // and instance number in ascending order
             if (!study) {
@@ -466,7 +470,7 @@ Template.imageViewerViewport.onRendered(function() {
             data.study = study;
 
             setSeries(data, seriesInstanceUid, templateData);
-        });
+        })
     }
 
     data.study = study;
@@ -482,7 +486,10 @@ Template.imageViewerViewport.onDestroyed(function() {
     // Try to stop any currently playing clips
     // Otherwise the interval will continuously throw errors
     try {
-        cornerstoneTools.stopClip(element);
+        var enabledElement = cornerstone.getEnabledElement(element);
+        if (enabledElement) {
+            cornerstoneTools.stopClip(element);
+        }
     } catch (error) {
         log.warn(error);
     }
