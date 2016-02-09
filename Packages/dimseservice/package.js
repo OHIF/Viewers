@@ -15,6 +15,7 @@ Package.onUse(function(api) {
     api.addFiles('server/Data.js', 'server');
     api.addFiles('server/Message.js', 'server');
     api.addFiles('server/PDU.js', 'server');
+    api.addFiles('server/CSocket.js', 'server');
     api.addFiles('server/Connection.js', 'server');
     api.addFiles('server/DIMSE.js', 'server');
 

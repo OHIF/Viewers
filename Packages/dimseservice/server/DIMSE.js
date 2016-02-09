@@ -1,61 +1,43 @@
-var net = Npm.require('net'),
-    Future = Npm.require('fibers/future');
+var Future = Npm.require('fibers/future');
 
 DIMSE = {};
 
+var conn = new Connection({
+    vr: {
+        split: false
+    }
+});
+
+Meteor.startup(function(){
+    var peers = Meteor.settings.dimse;
+    peers.forEach(function(peer){
+        conn.addPeer(peer);
+    });
+});
+
 DIMSE.associate = function(contexts, callback) {
-    var host = Meteor.settings.dimse.host,
-        port = Meteor.settings.dimse.port,
-        ae = Meteor.settings.dimse.hostAE;
-
-    console.log("Associating via DIMSE");
-    console.log(Meteor.settings.dimse);
-
-    var client = net.connect({
-        host: host,
-        port: port
-    });
-
-    client.on('connect', function() {
-        //'connect' listener
-        console.log('==Connected');
-
-        var conn = new Connection(client, {
-            vr: {
-                split: false
-            }
-        });
-
-        conn.associate({
-            contexts: contexts,
-            hostAE: ae
-        }, function(pdu) {
-            // associated
-            console.log('==Associated');
-
-            callback.call(conn, pdu);
-        });
-    });
-
-    client.on('error', function(error) {
-        throw error;
+    conn.associate({
+        contexts: contexts
+    }, function(pdu) {
+        // associated
+        console.log('==Associated');
+        callback.call(this, pdu);
     });
 };
 
 DIMSE.retrievePatients = function(params) {
     //var start = new Date();
     var future = new Future;
-    DIMSE.associate([ C.SOP_PATIENT_ROOT_FIND ], function(pdu) {
+    DIMSE.associate([C.SOP_PATIENT_ROOT_FIND], function(pdu) {
         var defaultParams = {
-            0x00100010: '',
-            0x00100020: '',
-            0x00100030: '',
-            0x00100040: '',
-            0x00101010: '',
-            0x00101040: ''
+            0x00100010: "",
+            0x00100020: "",
+            0x00100030: "",
+            0x00100040: "",
+            0x00101010: "",
+            0x00101040: ""
         };
 
-        this.setFindContext(C.SOP_PATIENT_ROOT_FIND);
         var result = this.findPatients(Object.assign(defaultParams, params)),
             o = this;
 
@@ -76,30 +58,32 @@ DIMSE.retrievePatients = function(params) {
     return future.wait();
 };
 
-DIMSE.retrieveStudies = function(params) {
+DIMSE.retrieveStudies = function(params, options) {
     //var start = new Date();
-    var future = new Future;
-    DIMSE.associate([ C.SOP_STUDY_ROOT_FIND ], function(pdu) {
+    var future = new Future, options = Object.assign({limit : 100}, options);
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = {
-            0x0020000D: '',
-            0x00080060: '',
-            0x00080005: '',
-            0x00080020: '',
-            0x00080030: '',
-            0x00080090: '',
-            0x00100010: '',
-            0x00100020: '',
-            0x00200010: '',
-            0x00100030: ''
+            0x0020000D: "",
+            0x00080060: "",
+            0x00080005: "",
+            0x00080020: "",
+            0x00080030: "",
+            0x00080090: "",
+            0x00100010: "",
+            0x00100020: "",
+            0x00200010: "",
+            0x00100030: ""
         };
 
-        this.setFindContext(C.SOP_STUDY_ROOT_FIND);
         var result = this.findStudies(Object.assign(defaultParams, params)),
             o = this;
 
         var studies = [];
         result.on('result', function(msg) {
             studies.push(msg);
+            if (options.limit && options.limit == studies.length) {
+                result.emit('cancel');
+            }
         });
 
         result.on('end', function() {
@@ -116,22 +100,21 @@ DIMSE.retrieveStudies = function(params) {
 
 DIMSE.retrieveSeries = function(studyInstanceUID, params) {
     var future = new Future;
-    DIMSE.associate([ C.SOP_STUDY_ROOT_FIND ], function(pdu) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = {
-            0x0020000D: studyInstanceUID ? studyInstanceUID : '',
-            0x00080005: '',
-            0x00080020: '',
-            0x00080030: '',
-            0x00080090: '',
-            0x00100010: '',
-            0x00100020: '',
-            0x00200010: '',
-            0x0008103E: '',
-            0x0020000E: '',
-            0x00200011: ''
+            0x0020000D: studyInstanceUID ? studyInstanceUID : "",
+            0x00080005: "",
+            0x00080020: "",
+            0x00080030: "",
+            0x00080090: "",
+            0x00100010: "",
+            0x00100020: "",
+            0x00200010: "",
+            0x0008103E: "",
+            0x0020000E: "",
+            0x00200011: ""
         };
 
-        this.setFindContext(C.SOP_STUDY_ROOT_FIND);
         var result = this.findSeries(Object.assign(defaultParams, params)),
             o = this;
 
@@ -151,37 +134,34 @@ DIMSE.retrieveSeries = function(studyInstanceUID, params) {
     return future.wait();
 };
 
-DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params) {
+DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, options) {
     var future = new Future;
-    DIMSE.associate([ C.SOP_STUDY_ROOT_FIND ], function(pdu) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = {
-            0x0020000D: studyInstanceUID ? studyInstanceUID : '',
-            0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : '',
-            0x00080005: '',
-            0x00080020: '',
-            0x00080030: '',
-            0x00080090: '',
-            0x00100010: '',
-            0x00100020: '',
-            0x00200010: '',
-            0x0008103E: '',
-            0x00200011: '',
-            0x00080016: '',
-            0x00080018: '', // sopInstanceUid. This is missing from the results?
-            0x00200013: '',
-            0x00280010: '',
-            0x00280011: '',
-            0x00280100: '',
-            0x00280103: ''
+            0x0020000D: studyInstanceUID ? studyInstanceUID : "",
+            0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : "",
+            0x00080005: "",
+            0x00080020: "",
+            0x00080030: "",
+            0x00080090: "",
+            0x00100010: "",
+            0x00100020: "",
+            0x00200010: "",
+            0x0008103E: "",
+            0x00200011: "",
+            0x00080016: "",
+            0x00080018: "",
+            0x00200013: "",
+            0x00280010: "",
+            0x00280011: "",
+            0x00280100: "",
+            0x00280103: ""
         };
-
-        this.setFindContext(C.SOP_STUDY_ROOT_FIND);
-        var result = this.findInstances(Object.assign(defaultParams, params)),
+        var result = this.findInstances(Object.assign(defaultParams, params), options),
             o = this;
 
         var instances = [];
         result.on('result', function(msg) {
-            console.log(msg);
             instances.push(msg);
         });
 
@@ -195,3 +175,14 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params) 
     });
     return future.wait();
 };
+
+DIMSE.moveInstances = function(studyInstanceUID, seriesInstanceUID, sopInstanceUID, sopClassUID, params) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_MOVE, sopClassUID], function() {
+        var defaultParams = {
+            0x0020000D: studyInstanceUID ? studyInstanceUID : "",
+            0x0020000E: seriesInstanceUID ? seriesInstanceUID : "",
+            0x00080018: sopInstanceUID ? sopInstanceUID : ""
+        }
+        this.moveInstances("OHIFDCM", Object.assign(defaultParams, params));
+    });
+}
