@@ -167,7 +167,7 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params) 
             0x0008103E: '',
             0x00200011: '',
             0x00080016: '',
-            0x00080018: '',
+            0x00080018: '', // sopInstanceUid. This is missing from the results?
             0x00200013: '',
             0x00280010: '',
             0x00280011: '',
@@ -181,6 +181,7 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params) 
 
         var instances = [];
         result.on('result', function(msg) {
+            console.log(msg);
             instances.push(msg);
         });
 

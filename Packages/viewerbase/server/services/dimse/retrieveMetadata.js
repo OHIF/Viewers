@@ -26,6 +26,7 @@ function getSourceImageInstanceUid(instance) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 function resultDataToStudyMetadata(studyInstanceUid, resultData) {
+    console.log('resultDataToStudyMetadata');
     var seriesMap = {};
     var seriesList = [];
 
@@ -69,7 +70,8 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         var sopInstanceUid = instance[0x00080018];
 
         log.info('instance');
-        log.info(instance);
+        //console.log('instance');
+        //console.log(instance);
         var instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
@@ -99,12 +101,9 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             frameRate: parseFloat(instance[0x00181063])
         };
 
-        var host = Meteor.settings.dimse.host,
-            port = Meteor.settings.dimse.port;
-
-        var serverRoot = host + ':' + port;
-
-        instanceSummary.wadorsuri = serverRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1';
+        // Retrieve the actual data over WADO-URI
+        var server = Meteor.settings.dicomWeb.endpoints[0];
+        instanceSummary.wadouri = server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + "&contentType=application%2Fdicom";
 
         series.instances.push(instanceSummary);
     });
@@ -156,7 +155,7 @@ Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
 
     study.studyInstanceUid = studyInstanceUid;
 
-    console.log(study);
-    console.log(study.seriesList[0].instances[0]);
+    //console.log(study);
+    //console.log(study.seriesList[0].instances[0]);
     return study;
 };

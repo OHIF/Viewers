@@ -1,4 +1,4 @@
-/*! cornerstone-wado-image-loader - v0.8.1 - 2016-02-07 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
+/*! cornerstone-wado-image-loader - v0.9.0 - 2016-02-08 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
 //
 // This is a cornerstone image loader for WADO-URI requests.  It has limited support for compressed
 // transfer syntaxes, check here to see what is currently supported:
@@ -85,10 +85,10 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         throw "no color space conversion for photometric interpretation " + photometricInterpretation;
       }
       deferred.resolve(imageData);
-      return deferred;
+      return deferred.promise();
     } catch (error) {
       deferred.reject(error);
-      return deferred;
+      return deferred.promise();
     }
   }
 
@@ -380,7 +380,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
       }
 
     };
-    return deferred;
+    return deferred.promise();
   }
 
   function isJPEGBaseline8Bit(dataSet) {
@@ -550,6 +550,11 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     else if( transferSyntax === "1.2.840.10008.1.2.1") {
       return cornerstoneWADOImageLoader.extractUncompressedPixels(dataSet, frame);
     }
+    // Explicit VR Big Endian (retired)
+    else if ( transferSyntax === "1.2.840.10008.1.2.2" )
+    {
+      return cornerstoneWADOImageLoader.extractUncompressedPixels(dataSet, frame, true);
+    }
     // JPEG 2000 Lossless
     else if(transferSyntax === "1.2.840.10008.1.2.4.90")
     {
@@ -599,6 +604,9 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     }
     else
     {
+      if(console && console.log) {
+        console.log("Image cannot be decoded due to Unsupported transfer syntax " + transferSyntax);
+      }
       throw "no decoder for transfer syntax " + transferSyntax;
     }
   }
@@ -3288,17 +3296,37 @@ var JpegImage = (function jpegImage() {
 (function ($, cornerstone, cornerstoneWADOImageLoader) {
 
   "use strict";
-  function extractUncompressedPixels(dataSet, frame)
+
+  function swap16(val) {
+    return ((val & 0xFF) << 8)
+      | ((val >> 8) & 0xFF);
+  }
+
+
+  function extractUncompressedPixels(dataSet, frame, bigEndian)
   {
     var pixelFormat = cornerstoneWADOImageLoader.getPixelFormat(dataSet);
+    var imageFrame = getImageFrame(dataSet, frame, pixelFormat);
+    // byte swap 16 bit data if bigEndian
+    if(bigEndian && (pixelFormat === 2 || pixelFormat === 3)) {
+      for(var i=0; i < imageFrame.length; i++) {
+        imageFrame[i] = swap16(imageFrame[i]);
+      }
+    }
+    return imageFrame;
+  }
+
+  function getImageFrame(dataSet, frame, pixelFormat) {
+    // Note - we may want to sanity check the rows * columns * bitsAllocated * samplesPerPixel against the buffer size
     var pixelDataElement = dataSet.elements.x7fe00010;
     var height = dataSet.uint16('x00280010');
     var width = dataSet.uint16('x00280011');
     var samplesPerPixel = dataSet.uint16('x00280002');
     var pixelDataOffset = pixelDataElement.dataOffset;
     var numPixels = width * height * samplesPerPixel;
-    // Note - we may want to sanity check the rows * columns * bitsAllocated * samplesPerPixel against the buffer size
-
+    if (!numPixels) {
+      throw "Sanity check failed when calculating the number of pixels";
+    }
     var frameOffset = 0;
     if(pixelFormat === 1) {
       frameOffset = pixelDataOffset + frame * numPixels;
@@ -3307,11 +3335,13 @@ var JpegImage = (function jpegImage() {
     else if(pixelFormat === 2) {
       frameOffset = pixelDataOffset + frame * numPixels * 2;
       return new Uint16Array(dataSet.byteArray.buffer, frameOffset, numPixels);
+      return imageFrame;
     }
     else if(pixelFormat === 3) {
       frameOffset = pixelDataOffset + frame * numPixels * 2;
       return new Int16Array(dataSet.byteArray.buffer, frameOffset, numPixels);
     }
+    throw "Unknown pixel format";
   }
 
   cornerstoneWADOImageLoader.extractUncompressedPixels = extractUncompressedPixels;
@@ -3373,26 +3403,28 @@ var JpegImage = (function jpegImage() {
 
     "use strict";
 
-    function getPixelSpacing(dataSet)
-    {
-        // NOTE - these are not required for all SOP Classes
-        // so we return them as undefined.  We also do not
-        // deal with the complexity associated with projection
-        // radiographs here and leave that to a higher layer
-        var pixelSpacing = dataSet.string('x00280030');
-        if(pixelSpacing && pixelSpacing.length > 0) {
-            var split = pixelSpacing.split('\\');
-            return {
-                row: parseFloat(split[0]),
-                column: parseFloat(split[1])
-            };
+    function getPixelSpacing(dataSet) {
+      // NOTE - these are not required for all SOP Classes
+      // so we return them as undefined.  We also do not
+      // deal with the complexity associated with projection
+      // radiographs here and leave that to a higher layer
+      var pixelSpacing = dataSet.string('x00280030');
+      if (pixelSpacing && pixelSpacing.length > 0) {
+        var split = pixelSpacing.split('\\');
+
+        // Make sure that neither pixel spacing value is 0 or undefined
+        if (parseFloat(split[0]) && parseFloat(split[1])) {
+          return {
+            row: parseFloat(split[0]),
+            column: parseFloat(split[1])
+          };
         }
-        else {
-            return {
-                row: undefined,
-                column: undefined
-            };
-        }
+      }
+
+      return {
+        row: undefined,
+        column: undefined
+      };
     }
     // module exports
     cornerstoneWADOImageLoader.getPixelSpacing = getPixelSpacing;
@@ -3411,8 +3443,8 @@ var JpegImage = (function jpegImage() {
         };
 
         if(dataSet.elements.x00281052 && dataSet.elements.x00281053) {
-          result.intercept = dataSet.floatString('x00281052');
-          result.slope = dataSet.floatString('x00281053');
+          result.intercept = dataSet.floatString('x00281052') || result.intercept;
+          result.slope = dataSet.floatString('x00281053') || result.slope;
         }
 
         return result;
@@ -3480,14 +3512,14 @@ var JpegImage = (function jpegImage() {
       }, function(error) {
         deferred.reject(error);
       });
-      return deferred;
+      return deferred.promise();
     }
 
     var fileIndex = parseInt(url);
     var file = cornerstoneWADOImageLoader.fileManager.get(fileIndex);
     if(file === undefined) {
       deferred.reject('unknown file index ' + url);
-      return deferred;
+      return deferred.promise();
     }
 
 
@@ -3508,19 +3540,19 @@ var JpegImage = (function jpegImage() {
         }, function(error) {
           deferred.reject(error);
         });
-        return deferred;
+        return deferred.promise();
       }
 
       var imagePromise = cornerstoneWADOImageLoader.createImageObject(dataSet, imageId, frame);
       imagePromise.then(function(image) {
         deferred.resolve(image);
-      }, function() {
-        deferred.reject();
+      }, function(error) {
+        deferred.reject(error);
       });
     };
     fileReader.readAsArrayBuffer(file);
 
-    return deferred;
+    return deferred.promise();
   }
 
   // registery dicomweb and wadouri image loader prefixes
@@ -3697,7 +3729,7 @@ var JpegImage = (function jpegImage() {
     };
     xhr.send();
 
-    return deferred;
+    return deferred.promise();
   };
 }(cornerstoneWADOImageLoader));
 /**
@@ -3746,7 +3778,7 @@ var JpegImage = (function jpegImage() {
     var image = cornerstoneWADOImageLoader.imageManager.get(index);
     if(image === undefined) {
       deferred.reject('unknown imageId');
-      return deferred;
+      return deferred.promise();
     }
 
     var mediaType;// = 'image/dicom+jp2';
@@ -3781,7 +3813,7 @@ var JpegImage = (function jpegImage() {
       deferred.reject(reason);
     });
 
-    return deferred;
+    return deferred.promise();
   }
 
   // registery dicomweb and wadouri image loader prefixes
@@ -4044,7 +4076,7 @@ var JpegImage = (function jpegImage() {
         }
         catch(err) {
           deferred.reject(err);
-          return deferred;
+          return deferred.promise();
         }
 
         imageDataPromise.then(function(imageData) {
@@ -4095,7 +4127,8 @@ var JpegImage = (function jpegImage() {
                 sharedCacheKey: sharedCacheKey
             };
 
-            if(image.windowCenter === undefined) {
+          if(image.windowCenter === undefined || isNaN(image.windowCenter) ||
+            image.windowWidth === undefined || isNaN(image.windowWidth)) {
                 image.windowWidth = 255;
                 image.windowCenter = 128;
             }
@@ -4104,7 +4137,7 @@ var JpegImage = (function jpegImage() {
             deferred.reject(error);
         });
 
-        return deferred;
+        return deferred.promise();
     }
 
     // module exports
@@ -4171,7 +4204,7 @@ var JpegImage = (function jpegImage() {
             bytesPerPixel = getBytesPerPixel(dataSet);
         } catch(error) {
             deferred.reject(error);
-            return deferred;
+            return deferred.promise();
         }
 
         var numPixels = rows * columns;
@@ -4188,7 +4221,7 @@ var JpegImage = (function jpegImage() {
         }
         catch(err) {
           deferred.reject(err);
-          return deferred;
+          return deferred.promise();
         }
 
         var minMax = cornerstoneWADOImageLoader.getMinMax(storedPixelData);
@@ -4241,7 +4274,8 @@ var JpegImage = (function jpegImage() {
         // TODO: deal with pixel padding and all of the various issues by setting it to min pixel value (or lower)
         // TODO: Mask out overlays embedded in pixel data above high bit
 
-        if(image.windowCenter === undefined) {
+        if(image.windowCenter === undefined || isNaN(image.windowCenter) ||
+           image.windowWidth === undefined || isNaN(image.windowWidth)) {
             var maxVoi = image.maxPixelValue * image.slope + image.intercept;
             var minVoi = image.minPixelValue * image.slope + image.intercept;
             image.windowWidth = maxVoi - minVoi;
@@ -4249,7 +4283,7 @@ var JpegImage = (function jpegImage() {
         }
 
         deferred.resolve(image);
-        return deferred;
+        return deferred.promise();
     }
 
     // module exports
@@ -4260,7 +4294,7 @@ var JpegImage = (function jpegImage() {
   "use strict";
 
   // module exports
-  cornerstoneWADOImageLoader.version = '0.8.1';
+  cornerstoneWADOImageLoader.version = '0.9.0';
 
 }(cornerstoneWADOImageLoader));
 (function ($, cornerstone, cornerstoneWADOImageLoader) {
@@ -4316,7 +4350,7 @@ var JpegImage = (function jpegImage() {
 
     xhr.send();
 
-    return deferred;
+    return deferred.promise();
   }
 
   cornerstoneWADOImageLoader.internal.xhrRequest = xhrRequest;

@@ -37,7 +37,7 @@ function resultDataToStudyMetadata(resultData) {
         var serverRoot = host + ':' + port;
 
         log.info('INSTANCE');
-        log.info(instance);
+        //log.info(instance);
         var sopInstanceUid = instance[0x00080018];
         var uri = serverRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1';
 

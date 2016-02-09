@@ -1,5 +1,5 @@
 Meteor.startup(function() {
-    if (Meteor.settings) {
+    if (Object.keys(Meteor.settings).length > 1) {
         console.log('Using custom LesionTracker settings');
         console.log(Meteor.settings);
         return;

@@ -17,7 +17,7 @@ Template.studyDateList.helpers({
             patientId: currentStudyInBrowser.patientId
         }, {
             sort: {
-                studyDate: 1
+                studyDate: -1
             }
         });
 
