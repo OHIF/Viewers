@@ -15,7 +15,11 @@ pixelSpacingAutorunCheck = function() {
         return;
     }
 
-    var enabledElement = cornerstone.getEnabledElement(element);
+    try {
+        var enabledElement = cornerstone.getEnabledElement(element);
+    } catch(error) {
+        return;
+    }
 
     // Check value of rowPixelSpacing & columnPixelSpacing to define as unavailable
     if (!enabledElement ||

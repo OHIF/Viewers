@@ -39,7 +39,7 @@ function RECIST(image) {
         criteria.baseline.target.nodal = {
             shortestDiameter: {
                 numericality: {
-                    greaterThanOrEqualTo: Math.min(15, 2 * acquisitionSliceThickness),
+                    greaterThanOrEqualTo: Math.max(15, 2 * acquisitionSliceThickness),
                     message: '^Nodal lesions must be >= 15 mm short axis AND >= double the acquisition slice thickness (' +
                              acquisitionSliceThickness + ' mm) for CT and MR.'
                 }
@@ -114,7 +114,7 @@ function RECIST(image) {
         criteria.baseline.target.extraNodal = {
             longestDiameter: {
                 numericality: {
-                    greaterThanOrEqualTo: Math.min(10, 2 * acquisitionSliceThickness),
+                    greaterThanOrEqualTo: Math.max(10, 2 * acquisitionSliceThickness),
                     message: '^Extranodal lesions must be >= 10 mm long axis AND >= double the acquisition slice thickness (' +
                     acquisitionSliceThickness + ' mm) for CT and MR.'
                 }
@@ -179,14 +179,14 @@ function irRC(image) {
         criteria.baseline.target.all = {
             longestDiameter: {
                 numericality: {
-                    greaterThanOrEqualTo: Math.min(10, acquisitionSliceThickness),
+                    greaterThanOrEqualTo: Math.max(10, acquisitionSliceThickness),
                     message: '^Target lesions must be >= 10 mm long axis AND >= double the acquisition slice thickness (' +
                     acquisitionSliceThickness + ' mm) for CT and MR.'
                 }
             },
             shortestDiameter: {
                 numericality: {
-                    greaterThanOrEqualTo: Math.min(10, acquisitionSliceThickness),
+                    greaterThanOrEqualTo: Math.max(10, acquisitionSliceThickness),
                     message: '^Target lesions must be >= 10 mm short axis AND >= double the acquisition slice thickness (' +
                     acquisitionSliceThickness + ' mm) for CT and MR.'
                 }
@@ -258,14 +258,14 @@ function irRC(image) {
             // - New target lesions must be >/= 5 X 5 mm AND >/= double the acquisition slice thickness by CT and MR
             longestDiameter: {
                 numericality: {
-                    greaterThanOrEqualTo: Math.min(5, 2 * acquisitionSliceThickness),
+                    greaterThanOrEqualTo: Math.max(5, 2 * acquisitionSliceThickness),
                     message: '^New target lesions must be >= 5 mm long axis AND >= double the acquisition slice thickness (' +
                     acquisitionSliceThickness + ' mm) for CT and MR.'
                 }
             },
             shortestDiameter: {
                 numericality: {
-                    greaterThanOrEqualTo: Math.min(5, 2 * acquisitionSliceThickness),
+                    greaterThanOrEqualTo: Math.max(5, 2 * acquisitionSliceThickness),
                     message: '^New target lesions must be >= 5 mm short axis AND >= double the acquisition slice thickness (' +
                     acquisitionSliceThickness + ' mm) for CT and MR.'
                 }
