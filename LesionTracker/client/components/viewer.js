@@ -1,3 +1,5 @@
+Session.setDefault('activeViewport', false);
+
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
@@ -92,7 +94,10 @@ Template.viewer.onCreated(function() {
         Session.set('ViewerData', ViewerData);
     }
 
-    Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
+    Session.set('activeViewport', ViewerData[contentId].activeViewport || false);
+
+    // Set lesion tool buttons as disabled if pixel spacing is not available for active element
+    this.autorun(pixelSpacingAutorunCheck);
 
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies = new Meteor.Collection(null);
@@ -218,9 +223,6 @@ Template.viewer.onCreated(function() {
 Template.viewer.onRendered(function() {
     // Enable hotkeys
     enableHotkeys();
-
-    // Set lesion tool buttons as disabled if pixel spacing is not available for active element
-    this.autorun(pixelSpacingAutorunCheck);
 });
 
 Template.viewer.onDestroyed(function() {

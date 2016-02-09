@@ -37,6 +37,11 @@
     function addNewMeasurement(mouseEventData) {
         var element = mouseEventData.element;
 
+        // LT-29 Disable Target Measurements when pixel spacing is not available
+        if (!mouseEventData.image.rowPixelSpacing || !mouseEventData.image.columnPixelSpacing) {
+            return;
+        }
+
         function doneCallback(lesionNumber) {
             measurementData.lesionNumber = lesionNumber;
             measurementData.active = false;
@@ -107,6 +112,11 @@
 
     function addNewMeasurementTouch(touchEventData) {
         var element = touchEventData.element;
+
+        // LT-29 Disable Target Measurements when pixel spacing is not available
+        if (!touchEventData.image.rowPixelSpacing || !touchEventData.image.columnPixelSpacing) {
+            return;
+        }
 
         function doneCallback(lesionNumber) {
             measurementData.lesionNumber = lesionNumber;
@@ -946,6 +956,11 @@
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
         if (!toolData) {
+            return;
+        }
+
+        // LT-29 Disable Target Measurements when pixel spacing is not available
+        if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
             return;
         }
 

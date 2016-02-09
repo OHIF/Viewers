@@ -1,8 +1,5 @@
 pixelSpacingAutorunCheck = function() {
     log.info('lesionTool button change autorun');
-    /*if (!Session.get('ViewerData')) {
-        return;
-    }*/
 
     // Get oncology tools
     var oncologyTools = $('button#lesion, button#nonTarget');
@@ -14,6 +11,10 @@ pixelSpacingAutorunCheck = function() {
     }
 
     var element = $('.imageViewerViewport').get(activeViewportIndex);
+    if (!element) {
+        return;
+    }
+
     var enabledElement = cornerstone.getEnabledElement(element);
 
     // Check value of rowPixelSpacing & columnPixelSpacing to define as unavailable
