@@ -1,121 +1,62 @@
 LesionLocations = new Meteor.Collection(null);
 
-LesionLocations.insert({
-    id: 'liverLeft',
-    group: 'liver',
-    location: 'Liver Left',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
+var organGroups = [
+    'Abdominal/Chest Wall',
+    'Adrenal',
+    'Bladder',
+    'Bone',
+    'Brain',
+    'Breast',
+    'Colon',
+    'Esophagus',
+    'Extremities',
+    'Gallbladder',
+    'Kidney',
+    'Liver',
+    'Lung',
+    'Lymph Node',
+    'Muscle',
+    'Neck',
+    'Other: Soft Tissue',
+    'Ovary',
+    'Pancreas',
+    'Pelvis',
+    'Peritoneum/Omentum',
+    'Prostate',
+    'Retroperitoneum',
+    'Small Bowel',
+    'Spleen',
+    'Stomach',
+    'Subcutaneous'];
 
-LesionLocations.insert({
-    id: 'liverRight',
-    group: 'liver',
-    location: 'Liver Right',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
+function nameToID(name) {
+    // http://stackoverflow.com/questions/29258016/remove-special-symbols-and-extra-spaces-and-make-it-camel-case-javascript
+    return name
+        .trim() //might need polyfill if you need to support older browsers
+        .toLowerCase() //lower case everything
+        .replace(/([^A-Z0-9]+)(.)/ig, //match multiple non-letter/numbers followed by any character
+            function(match) {
+                return arguments[2].toUpperCase(); //3rd index is the character we need to transform uppercase
+            }
+        );
+}
 
-LesionLocations.insert({
-    id: 'liverCaudate',
-    group: 'liver',
-    location: 'Liver Caudate',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
+organGroups.forEach(function(organGroup) {
+    var id = nameToID(organGroup);
 
-LesionLocations.insert({
-    id: 'lungLLL',
-    group: 'lung',
-    location: 'Lung LLL',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
+    // Check if the name has 'node' in it, if so, it is nodal
+    var isNodal = false;
+    if (id.toLowerCase().indexOf('node') > -1) {
+        isNodal = true;
+    }
 
-LesionLocations.insert({
-    id: 'lungLUL',
-    group: 'lung',
-    location: 'Lung LUL',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'lungRLL',
-    group: 'lung',
-    location: 'Lung RLL',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'lungRML',
-    group: 'lung',
-    location: 'Lung RML',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'lungRUL',
-    group: 'lung',
-    location: 'Lung RUL',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'pleuraLeft',
-    group: 'pleura',
-    location: 'Pleura Left',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'pleuraRight',
-    group: 'pleura',
-    location: 'Pleura Right',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'kidneyLeft',
-    group: 'kidney',
-    location: 'Kidney Left',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
-});
-
-LesionLocations.insert({
-    id: 'kidneyRight',
-    group: 'kidney',
-    location: 'Kidney Right',
-    hasDescription: false,
-    description: '',
-    selected: false,
-    isNodal: false
+    LesionLocations.insert({
+        id: id,
+        group: id, // Not really used for now
+        location: organGroup,
+        hasDescription: false,
+        description: '',
+        selected: false,
+        isNodal: isNodal
+    });
 });
