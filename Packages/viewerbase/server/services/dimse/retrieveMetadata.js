@@ -69,9 +69,6 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
 
         var sopInstanceUid = instance[0x00080018];
 
-        log.info('instance');
-        //console.log('instance');
-        //console.log(instance);
         var instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
@@ -117,36 +114,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
-    console.log('DIMSE RetrieveMetadata');
-
-    var result = DIMSE.retrieveInstances(studyInstanceUid, null, {
-        0x00080050: '',
-        0x00080061: '',
-        0x00081030: '',
-        0x00201208: '',
-        0x00080060: '',
-        0x00080008: '',
-        0x00200032: '',
-        0x00200037: '',
-        0x00200052: '',
-        0x00201041: '',
-        0x00280002: '',
-        0x00280004: '',
-        0x00280030: '',
-        0x00280100: '',
-        0x00280101: '',
-        0x00280102: '',
-        0x00280103: '',
-        0x00281050: '',
-        0x00281051: '',
-        0x00281052: '',
-        0x00281053: '',
-        0x00200062: '',
-        0x00185101: '',
-        0x00280008: '',
-        0x00181063: '',
-        0x00082112: ''
-    });
+    var result = DIMSE.retrieveInstances(studyInstanceUid);
 
     var study = resultDataToStudyMetadata(studyInstanceUid, result);
     if (!study) {
@@ -154,8 +122,5 @@ Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
     }
 
     study.studyInstanceUid = studyInstanceUid;
-
-    //console.log(study);
-    //console.log(study.seriesList[0].instances[0]);
     return study;
 };

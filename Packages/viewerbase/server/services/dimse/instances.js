@@ -36,8 +36,6 @@ function resultDataToStudyMetadata(resultData) {
 
         var serverRoot = host + ':' + port;
 
-        log.info('INSTANCE');
-        //log.info(instance);
         var sopInstanceUid = instance[0x00080018];
         var uri = serverRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1';
 
@@ -59,10 +57,8 @@ function resultDataToStudyMetadata(resultData) {
  */
 Services.DIMSE.Instances = function(studyInstanceUid) {
     //var url = buildUrl(server, studyInstanceUid);
-    var result = DIMSE.retrieveInstances(studyInstanceUid, null, {0x00080018 : ""});
+    var result = DIMSE.retrieveInstances(studyInstanceUid);
 
-    console.log("DIMSE Instance retrieval");
-    console.log(result);
     return {
         studyInstanceUid: studyInstanceUid,
         seriesList: resultDataToStudyMetadata(result)
