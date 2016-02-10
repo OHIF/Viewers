@@ -23,11 +23,12 @@ Meteor.startup(function() {
               }
             }]
         },
-        dimse: {
+        dimse: [{
             host: 'localhost',
             port: 4242,
-            hostAE: 'ORTHANC'
-        },
+            aeTitle: 'ORTHANC',
+            default: true
+        }],
         defaultServiceType: 'dicomWeb'
         //defaultServiceType: 'dimse'
     };

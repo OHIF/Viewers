@@ -10,9 +10,12 @@ var conn = new Connection({
 
 Meteor.startup(function(){
     var peers = Meteor.settings.dimse;
-    peers.forEach(function(peer){
-        conn.addPeer(peer);
-    });
+    console.log('Adding DIMSE peers');
+    if (peers && peers.length) {
+        peers.forEach(function(peer){
+            conn.addPeer(peer);
+        });
+    }
 });
 
 DIMSE.associate = function(contexts, callback) {
