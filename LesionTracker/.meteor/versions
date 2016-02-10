@@ -71,8 +71,6 @@ meteor-base@1.0.1
 meteor-platform@1.2.3
 minifiers@1.1.7
 minimongo@1.0.10
-mizzao:build-fetcher@0.2.0
-mizzao:jquery-ui@1.11.4
 mobile-experience@1.0.1
 mobile-status-bar@1.0.6
 momentjs:moment@2.11.2

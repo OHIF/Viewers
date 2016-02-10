@@ -17,9 +17,11 @@
     ]
   },
   "public": {
-    "staleSessionInactivityTimeout": 30000,
-    "staleSessionHeartbeatInterval": 3000,
-    "staleSessionPurgeInterval": 1000,
-    "staleSessionActivityEvents": "mousemove click keydown"
+    "staleSessionInactivityTimeout": 300000,
+    "staleSessionHeartbeatInterval": 30000,
+    "staleSessionPurgeInterval": 15000,
+    "staleSessionActivityEvents": "mousemove click keydown",
+    "showCountdownDialog": true,
+    "dialogTimeout": 30000
   }
 }

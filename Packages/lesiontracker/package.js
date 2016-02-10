@@ -79,6 +79,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.styl', 'client');
     api.addFiles('client/components/nonTargetResponseDialog/nonTargetResponseDialog.js', 'client');
 
+    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.html', 'client');
+    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.styl', 'client');
+    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.js', 'client');
+
     api.addFiles('client/components/timepointTextDialog/timepointTextDialog.html', 'client');
     api.addFiles('client/components/timepointTextDialog/timepointTextDialog.styl', 'client');
 
