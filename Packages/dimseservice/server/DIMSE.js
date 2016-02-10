@@ -18,17 +18,20 @@ Meteor.startup(function(){
     }
 });
 
-DIMSE.associate = function(contexts, callback) {
-    conn.associate({
+DIMSE.associate = function(contexts, callback, options) {
+    var defaults = {
         contexts: contexts
-    }, function(pdu) {
+    };
+    options = Object.assign(defaults, options);
+
+    conn.associate(options, function(pdu) {
         // associated
         console.log('==Associated');
         callback.call(this, pdu);
     });
 };
 
-DIMSE.retrievePatients = function(params) {
+DIMSE.retrievePatients = function(params, options) {
     //var start = new Date();
     var future = new Future;
     DIMSE.associate([C.SOP_PATIENT_ROOT_FIND], function(pdu) {
@@ -57,13 +60,13 @@ DIMSE.retrievePatients = function(params) {
             //var time = new Date() - start;console.log(time + 'ms taken');
             future.return(patients);
         });
-    });
+    }, options);
     return future.wait();
 };
 
 DIMSE.retrieveStudies = function(params, options) {
     //var start = new Date();
-    var future = new Future, options = Object.assign({limit : 100}, options);
+    var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = {
             0x0020000D: "",
@@ -84,9 +87,6 @@ DIMSE.retrieveStudies = function(params, options) {
         var studies = [];
         result.on('result', function(msg) {
             studies.push(msg);
-            if (options.limit && options.limit == studies.length) {
-                result.emit('cancel');
-            }
         });
 
         result.on('end', function() {
@@ -97,11 +97,11 @@ DIMSE.retrieveStudies = function(params, options) {
             //var time = new Date() - start;console.log(time + 'ms taken');
             future.return(studies);
         });
-    });
+    }, options);
     return future.wait();
 };
 
-DIMSE.retrieveSeries = function(studyInstanceUID, params) {
+DIMSE.retrieveSeries = function(studyInstanceUID, params, options) {
     var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = {
@@ -133,7 +133,7 @@ DIMSE.retrieveSeries = function(studyInstanceUID, params) {
         this.on('close', function() {
             future.return(series);
         });
-    });
+    }, options);
     return future.wait();
 };
 
@@ -160,7 +160,7 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, 
             0x00280100: "",
             0x00280103: ""
         };
-        var result = this.findInstances(Object.assign(defaultParams, params), options),
+        var result = this.findInstances(Object.assign(defaultParams, params)),
             o = this;
 
         var instances = [];
@@ -175,7 +175,7 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, 
         this.on('close', function() {
             future.return(instances);
         });
-    });
+    }, options);
     return future.wait();
 };
 

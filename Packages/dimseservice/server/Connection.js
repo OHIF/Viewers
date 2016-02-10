@@ -111,8 +111,11 @@ Connection.prototype.addSocket = function(ae, socket) {
 Connection.prototype.associate = function(options, callback) {
     var hostAE = options.hostAE ? options.hostAE : this.defaultPeer,
         sourceAE = options.sourceAE ? options.sourceAE : this.defaultServer;
-        peerInfo = this.selectPeer(hostAE), nativeSocket = new Socket();
-    
+    if (!hostAE || !sourceAE) {
+      throw "Peers not provided or no defaults in settings";
+    }
+
+    var peerInfo = this.selectPeer(hostAE), nativeSocket = new Socket();
     var socket = new CSocket(nativeSocket, this.options), o = this;
     if (callback) {
         socket.once('associated', callback);
