@@ -24,12 +24,15 @@ if (Meteor.isClient) {
       primary: ""
     },
     passwordOptions: {
-      requireStrongPasswords: false,
-      showPasswordStrengthIndicator: false
+      showPasswordStrengthIndicator: true,
+      requireRegexValidation: true
+      //requireStrongPasswords: false
     }
   });
 }
 
+// requireRegexValidation toggles regex
+// reqiureStrongPasswords toggles zxcvbn
 
 if (Meteor.isClient) {
   ActiveEntry.errorMessages = new ReactiveDict('errorMessages');
@@ -56,7 +59,6 @@ ActiveEntry.verifyPassword = function (password) {
     ActiveEntry.errorMessages.set('password', Session.get('passwordWarning'));
     ActiveEntry.successMessages.set('password', null);
   } else {
-    //ActiveEntry.errorMessages.set('password', 'Password present');
     ActiveEntry.errorMessages.set('password', null);
     ActiveEntry.successMessages.set('password', 'Password present');
   }
@@ -64,11 +66,15 @@ ActiveEntry.verifyPassword = function (password) {
 };
 
 ActiveEntry.verifyConfirmPassword = function (password, confirmPassword) {
-  if (confirmPassword === password) {
-    //ActiveEntry.errorMessages.set('confirm', 'Passwords match');
+  // we have two different logic checks happening in this function
+  // would be reasonable to separate them out into separate functions
+  if (confirmPassword === "") {
+    ActiveEntry.errorMessages.set('confirm', 'Password is required');
+    ActiveEntry.successMessages.set('confirm', null);
+  } else if (confirmPassword === password) {
     ActiveEntry.errorMessages.set('confirm', null);
     ActiveEntry.successMessages.set('confirm', 'Passwords match');
-  } else{
+  } else {
     ActiveEntry.errorMessages.set('confirm', 'Passwords do not match');
     ActiveEntry.successMessages.set('confirm', null);
   }

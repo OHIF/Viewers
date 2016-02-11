@@ -16,7 +16,7 @@ caching-compiler@1.0.0
 caching-html-compiler@1.0.2
 callback-hook@1.0.4
 check@1.1.0
-clinical:active-entry@1.5.15
+clinical:active-entry@1.5.16
 clinical:auto-resizing@0.1.2
 clinical:error-pages@0.1.1
 clinical:extended-api@2.2.2
@@ -28,7 +28,6 @@ clinical:router-location@2.0.14
 clinical:router-middleware-stack@2.0.13
 clinical:router-url@2.0.15
 clinical:theming@0.4.7
-codetheweb:zxcvbn@4.0.1
 coffeescript@1.0.11
 cornerstone@0.0.1
 ddp@1.2.2

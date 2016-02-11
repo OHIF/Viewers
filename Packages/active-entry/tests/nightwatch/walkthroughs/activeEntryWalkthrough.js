@@ -15,6 +15,7 @@
 // existing user should be able to sign in on desktop
 // existing user should be able to sign in on tablet
 // existing user should be able to sign in on phone
+// existing user should be able to change their password
 // company logo should display on sign//in page
 
 
@@ -48,7 +49,6 @@ module.exports = {
       .verify.elementPresent("#signUpPagePasswordInput")
       .verify.elementPresent("#signUpPageJoinNowButton");
   },
-
   "guest should be notified if password is insecure": function (client) {
     client
       .clearValue("input")
@@ -158,8 +158,44 @@ module.exports = {
       .click("#logoutButton").pause(200)
       .verify.containsText("#usernameLink", "Sign In");
   },
-  "if anonymous user tries to log in with non-existing account, a message is shown": function (
-    client) {
+  "existing user should be able to change their password" : function (client) {
+    client
+      .url("http://localhost:3000/entrySignIn")
+      .resizeWindow(1600, 1200)
+      .verify.containsText("#usernameLink", "Sign In")
+      .signIn("janicedoe@symptomatic.io", "janicedoe123").pause(500)
+      .verify.containsText("#usernameLink", "janicedoe@symptomatic.io")
+      .url("http://localhost:3000/changePassword")
+      .verify.elementPresent("#changePasswordPageOldPasswordInput")
+      .verify.elementPresent("#changePasswordPagePasswordInput")
+      .verify.elementPresent("#changePasswordPagePasswordConfirmInput")
+      .verify.elementPresent("#changePasswordButton")
+  },
+  "existing user should be notified if desired new password is insecure" : function (client) {
+    client
+      .url("http://localhost:3000/entrySignIn")
+      .resizeWindow(1600, 1200)
+      .verify.containsText("#usernameLink", "Sign In")
+      .signIn("janicedoe@symptomatic.io", "janicedoe123").pause(500)
+      .verify.containsText("#usernameLink", "janicedoe@symptomatic.io")
+      .url("http://localhost:3000/changePassword")
+      .verify.elementPresent("#changePasswordPageOldPasswordInput")
+      .verify.elementPresent("#changePasswordPagePasswordInput")
+      .verify.elementPresent("#changePasswordPagePasswordConfirmInput")
+      .verify.elementPresent("#changePasswordButton")
+      .verify.cssProperty('#changePasswordPagePasswordInput', 'border', '1px solid gray')
+      .setValue("#changePasswordPagePasswordInput", "jan")
+      .verify.cssProperty('#changePasswordPagePasswordInput', 'border', '1px solid rgb(242, 222, 222)')
+      .setValue("#changePasswordPagePasswordInput", "icedoe123")
+      .verify.cssProperty('#changePasswordPagePasswordInput', 'border', '1px solid green')
+      .verify.cssProperty('#changePasswordPagePasswordConfirmInput', 'border', '1px solid gray')
+      .setValue("#changePasswordPagePasswordConfirmInput", "ja")
+      .verify.cssProperty('#changePasswordPagePasswordConfirmInput', 'border', '1px solid rgb(242, 222, 222)')
+      .clearValue("#changePasswordPagePasswordConfirmInput")
+      .setValue("#changePasswordPagePasswordConfirmInput", "janicedoe123")
+      .verify.cssProperty('#changePasswordPagePasswordConfirmInput', 'border', '1px solid green')
+  },
+  "if anonymous user tries to log in with non-existing account, a message is shown" : function (client) {
     client
       .url("http://localhost:3000/entrySignIn")
       .resizeWindow(1024, 768)

@@ -71,6 +71,8 @@ Template.entrySignUp.helpers({
     if (ActiveEntry.errorMessages.equals('confirm', "Password is required")) {
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('confirm', "Passwords do not match")) {
+      return "border: 1px solid #a94442";
+    } else if (ActiveEntry.errorMessages.equals('confirm', "Password is weak")) {
       return "border: 1px solid #f2dede";
     } else if (ActiveEntry.successMessages.equals('confirm', "Passwords match")) {
       return "border: 1px solid green";
@@ -133,7 +135,7 @@ Template.entrySignUp.events({
       $('#signUpPageFullNameInput').val()
     );
   },
-  'keypress #entrySignUp': function(event, template) {
+  'keyup #entrySignUp': function(event, template) {
     if(event.keyCode == 13) {
       ActiveEntry.verifyFullName($("#signUpPageFullNameInput").val());
       ActiveEntry.verifyEmail($("#signUpPageEmailInput").val());
@@ -153,13 +155,12 @@ Template.entrySignUp.events({
 
 Template.entrySignUp.onRendered(function() {
   // Password strength meter for password inputs
-  if (passwordValidationSettings.requireStrongPasswords) {
+  if (passwordValidationSettings.showPasswordStrengthIndicator) {
     this.$('#signUpPagePasswordInput').pwstrength(passwordValidationSettings.pwstrengthOptions);
   }
 
-  // Update password warning message if zxcvbn is active
-  if(passwordValidationSettings.showPasswordStrengthIndicator) {
+  // Update password warning message if zxcvbn is active and zxcvbn function is defined
+  if(passwordValidationSettings.requireStrongPasswords) {
     Session.set('passwordWarning', 'Password is weak');
   }
 });
-

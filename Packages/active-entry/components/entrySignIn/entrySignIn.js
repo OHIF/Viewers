@@ -126,14 +126,13 @@ Template.entrySignIn.events({
     ActiveEntry.signIn(emailValue, passwordValue);
     event.preventDefault();
   },
-  'keypress #entrySignIn': function(event, template) {
+  'keyup #entrySignIn': function(event, template) {
     if(event.keyCode == 13) {
       ActiveEntry.verifyEmail($("#signInPageEmailInput").val());
-      ActiveEntry.verifyPassword($("#signInPagePasswordInput").val());
 
       if (!ActiveEntry.errorMessages.get('signInError') &&
           ActiveEntry.successMessages.get('email') &&
-          ActiveEntry.successMessages.get('password')) {
+          $("#signInPagePasswordInput").val()) {
         $("#signInToAppButton").click();
       }
     }

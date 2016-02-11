@@ -69,13 +69,20 @@ describe('clinical:active-entry', function () {
   });
 
   // ActiveEntry.verifyConfirmPassword
-  it('Password match validation confirms that two passwords are the same.', function () {
+  it('Password match confirms that two passwords are the same.', function () {
     return client.execute(function (a) {
       ActiveEntry.verifyConfirmPassword('K1tt#kittens', 'kittens');
       expect(ActiveEntry.errorMessages.get('confirm')).to.equal("Passwords do not match");
 
+      ActiveEntry.verifyConfirmPassword('kittens123', 'kittens');
+      expect(ActiveEntry.errorMessages.get('confirm')).to.equal("Passwords do not match");
+
+      ActiveEntry.verifyConfirmPassword('kittens123', 'kittens123');
+      expect(ActiveEntry.errorMessages.get('confirm')).to.equal("Passwords match");
+
       ActiveEntry.verifyConfirmPassword('K1tt#ns123', 'K1tt#ns123');
       expect(ActiveEntry.successMessages.get('confirm')).to.equal("Passwords match");
+
     });
   });
 
@@ -94,13 +101,28 @@ describe('clinical:active-entry', function () {
   });
 
 
+  // // ActiveEntry.signIn
+  // it('Newly created user record should have role, profile, and name set.', function () {
+  //   return client.execute(function () {
+  //     ActiveEntry.signUp('janedoe@test.org', 'Janed*e123', 'Janed*e123', 'Jane Doe');
+  //     expect(ActiveEntry.successMessages.get('fullName')).to.equal("Name present");
+  //   }).then(function (){
+  //     return server.wait(500, 'until account is created on the server', function () {
+  //       return Meteor.users.findOne({'emails.address': 'janedoe@test.org'});
+  //     }).then(function (user){
+  //       expect(user.role).to.equal('user');
+  //       expect(user.profile.fullName).to.equal('Jane Doe');
+  //     });
+  //   });
+  // });
   // ActiveEntry.signIn
   it('Newly created user record should have role, profile, and name set.', function () {
     return client.execute(function () {
-      ActiveEntry.signUp('janedoe@test.org', 'Janed*e123', 'Janed*e123', 'Jane Doe');
+      // ActiveEntry.signUp('janedoe@test.org', 'Janed*e123', 'Janed*e123', 'Jane Doe');
+      ActiveEntry.signUp('janedoe@test.org', 'Janedoe123', 'Janedoe123', 'Jane Doe');
       expect(ActiveEntry.successMessages.get('fullName')).to.equal("Name present");
     }).then(function (){
-      return server.wait(300, 'until account is created on the server', function () {
+      return server.wait(500, 'until account is created on the server', function () {
         return Meteor.users.findOne({'emails.address': 'janedoe@test.org'});
       }).then(function (user){
         expect(user.role).to.equal('user');
@@ -110,7 +132,6 @@ describe('clinical:active-entry', function () {
   });
 
 
-
   it("Newly created user should have fullName(), preferredName(), and familyName() methods.", function () {
     return server.execute(function () {
       var user = Meteor.users.findOne({'emails.address': 'janedoe@test.org'});
@@ -118,12 +139,12 @@ describe('clinical:active-entry', function () {
       expect(user.fullName()).to.equal('Jane Doe');
       expect(user.givenName()).to.equal('Jane');
       expect(user.familyName()).to.equal('Doe');
-    }).then(function(){
+    }).then(function (){
       // client.wait(500, "until user is logged out", function(){
       //   Meteor.logout();
       // });
       return client.promise(function (resolve){
-        Meteor.logout(function(error, result){
+        Meteor.logout(function (error, result){
           resolve();
         });
       });

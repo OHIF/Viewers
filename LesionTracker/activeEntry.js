@@ -15,8 +15,9 @@ if (Meteor.isClient){
             primary: ""
         },
         passwordOptions: {
-            requireStrongPasswords: true,
-            showPasswordStrengthIndicator: true
+            showPasswordStrengthIndicator: true,
+            requireRegexValidation: true
+            //requireStrongPasswords: false
         }
     });
 }
