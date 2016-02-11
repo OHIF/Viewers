@@ -55,6 +55,8 @@ function addValidationErrorsToCollection(validationErrors, prefix, type) {
  * @returns {Array} Array of error messages related to the input conformance checks
  */
 function assessGroupOfMeasurements(constraints) {
+    log.info('assessGroupOfMeasurements');
+
     // Retrieve the group-level constraints
     var groupConstraints = constraints.group;
 
@@ -97,6 +99,8 @@ function assessGroupOfMeasurements(constraints) {
  * @returns {Array} Array of error messages related to the input conformance checks
  */
 function assessMeasurementPerOrgan(constraints) {
+    log.info('assessMeasurementPerOrgan');
+
     // Retrieve the per-organ constraints
     var perOrganConstraints = constraints.perOrgan;
 
@@ -154,6 +158,8 @@ function assessMeasurementPerOrgan(constraints) {
  * @returns {Array} Array of error messages related to the input conformance checks
  */
 function assessSingleMeasurement(constraints, measurementData) {
+    log.info('assessSingleMeasurement');
+
     // Check whether this is a Target or Non-Target Measurement
     var targetType = measurementData.isTarget ? 'target' : 'nonTarget';
 
@@ -257,17 +263,25 @@ function validateSingleMeasurement(measurementData) {
 }
 
 function validateGroups() {
+    log.info('validateGroups');
+
     // Obtain the name of the current TrialResponseAssessmentCriteria that
     // we are using.
     var criteriaType = Session.get('TrialResponseAssessmentCriteria');
+    
+    // Criteria for the specific image are retrieved from the general set of criteria.
+    var currentConstraints = getTrialCriteriaConstraints(criteriaType);
+    if (!currentConstraints) {
+        return;
+    }
 
-    Timepoints.find().forEach(function(timepoint) {
-        // Criteria for the specific image are retrieved from the general set of criteria.
-        var currentConstraints = getTrialCriteriaConstraints(criteriaType);
-        if (!currentConstraints) {
-            return;
-        }
+    // TODO: Revisit this! We can't use the Timepoints collection inside ANY
+    // of these functions, since it causes an infinite loop, since Measurement
+    // validation is performed inside the observe:added hook for the Measurements
+    // Collection. 
 
+    var timepointTypes = ['baseline', 'followup'];
+    timepointTypes.forEach(function(timepoint) {
         // Retrieve the current constraints which apply to the specific Timepoint type
         // (e.g. baseline, followup) that this Measurement is being edited on.
         var timepointConstraints = currentConstraints[timepoint.timepointType];
@@ -284,6 +298,7 @@ function validateGroups() {
 }
 
 function validateAll() {
+    log.info('validateAll');
     // Obtain the name of the current TrialResponseAssessmentCriteria that
     // we are using.
     var criteriaType = Session.get('TrialResponseAssessmentCriteria');
@@ -307,6 +322,7 @@ function validateAll() {
             assessSingleMeasurement(currentConstraints, currentMeasurement);
         });
     });
+
     validateGroups();
 }
 
@@ -318,12 +334,14 @@ var validationTimeout = 400;
  * @param measurementData Input measurement data from CornerstoneTools
  */
 function validateDelayed(measurementData) {
+    log.info('validateAllDelayed');
+
     // Erase any currently-waiting validation call
-    clearTimeout(validationTimeout);
+    Meteor.clearTimeout(validationTimeout);
 
     // Set a timeout to run validation after a delay
     // Currently this is 400 milliseconds
-    setTimeout(function() {
+    Meteor.setTimeout(function() {
         validateSingleMeasurement(measurementData);
     }, validationTimeout);
 }
@@ -333,11 +351,11 @@ function validateDelayed(measurementData) {
  */
 function validateAllDelayed() {
     // Erase any currently-waiting validation call
-    clearTimeout(validationTimeout);
+    Meteor.clearTimeout(validationTimeout);
 
     // Set a timeout to run validation after a delay
     // Currently this is 400 milliseconds
-    setTimeout(function() {
+    Meteor.setTimeout(function() {
         validateAll();
     }, validationTimeout);
 }
