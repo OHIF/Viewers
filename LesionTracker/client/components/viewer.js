@@ -172,8 +172,6 @@ Template.viewer.onCreated(function() {
                     log.info('Measurement added');
                     syncMeasurementAndToolData(data);
                     updateRelatedElements(data.imageId);
-
-                    TrialResponseCriteria.validateAll();
                 },
                 changed: function(data) {
                     TrialResponseCriteria.validateAllDelayed();
