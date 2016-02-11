@@ -337,11 +337,11 @@ function validateDelayed(measurementData) {
     log.info('validateAllDelayed');
 
     // Erase any currently-waiting validation call
-    Meteor.clearTimeout(validationTimeout);
+    clearTimeout(validationTimeout);
 
     // Set a timeout to run validation after a delay
     // Currently this is 400 milliseconds
-    Meteor.setTimeout(function() {
+    setTimeout(function() {
         validateSingleMeasurement(measurementData);
     }, validationTimeout);
 }
@@ -351,11 +351,11 @@ function validateDelayed(measurementData) {
  */
 function validateAllDelayed() {
     // Erase any currently-waiting validation call
-    Meteor.clearTimeout(validationTimeout);
+    clearTimeout(validationTimeout);
 
     // Set a timeout to run validation after a delay
     // Currently this is 400 milliseconds
-    Meteor.setTimeout(function() {
+    setTimeout(function() {
         validateAll();
     }, validationTimeout);
 }
