@@ -86,25 +86,41 @@ function updateLesionData(lesionData) {
 
         // Insert this into the Measurements Collection
         // Save the ID into the toolData (not sure if this works?)
+        console.log('LesionManager inserting Measurement');
         measurement.id = Measurements.insert(measurement);
 
-        // Update the database entry so it can be readded next time the study is loaded
+        // Update the database entry so it can be re-added next time the study is loaded
         Measurements.update(measurement.id, {
             $set: {
                 toolDataInsertedManually: false
             }
+        }, function(error) {
+            if (error) {
+                log.warn(error);
+            }
+            OHIF.viewer.manuallyModifyingMeasurement = false;
         });
     } else {
         lesionData.id = existingMeasurement._id;
         lesionData.isNodal = existingMeasurement.isNodal;
 
+        if (_.isEqual(existingMeasurement.timepoints[timepoint.timepointId], timepointData)) {
+            return;
+        }
+
         // Update timepoints from lesion data
         existingMeasurement.timepoints[timepoint.timepointId] = timepointData;
 
+        console.log('LesionManager updating Measurement');
         Measurements.update(existingMeasurement._id, {
             $set: {
                 timepoints: existingMeasurement.timepoints
             }
+        }, function(error) {
+            if (error) {
+                log.warn(error);
+            }
+            OHIF.viewer.manuallyModifyingMeasurement = false;
         });
     }
 }

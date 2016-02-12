@@ -142,10 +142,6 @@
             if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
-            } else {
-                // Set lesionMeasurementData Session
-                var config = cornerstoneTools.lesion.getConfiguration();
-                //config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
             }
 
             // perpendicular line is not connected to long-line

@@ -152,6 +152,8 @@ Template.viewer.onCreated(function() {
 
             // This is used to re-add tools from the database into the
             // Cornerstone ToolData structure
+            var syncTimeout,
+                syncDelay = 50;
             Measurements.find().observe({
                 added: function(data) {
                     if (data.toolDataInsertedManually === true) {
@@ -171,9 +173,27 @@ Template.viewer.onCreated(function() {
 
                     log.info('Measurement added');
                     syncMeasurementAndToolData(data);
-                    updateRelatedElements(data.imageId);
+
+                    // Update each displayed viewport
+                    var viewports = $('.imageViewerViewport').not('.empty');
+                    viewports.each(function(index, element) {
+                        cornerstone.updateImage(element);
+                    });
                 },
                 changed: function(data) {
+                    if (OHIF.viewer.manuallyModifyingMeasurement === true) {
+                        return;
+                    }
+
+                    log.info('Measurement changed');
+                    syncMeasurementAndToolData(data);
+
+                    // Update each displayed viewport
+                    var viewports = $('.imageViewerViewport').not('.empty');
+                    viewports.each(function(index, element) {
+                        cornerstone.updateImage(element);
+                    });
+
                     TrialResponseCriteria.validateAllDelayed();
                 },
                 removed: function(data) {
@@ -204,13 +224,15 @@ Template.viewer.onCreated(function() {
                     // find the Measurements, whereas on the server it's
                     // only "greater than", since inside this callback the
                     // Measurements have already been decremented.
-                    Measurements.find({
+                    var measurements = Measurements.find({
                         patientId: data.patientId,
                         lesionNumberAbsolute: {
                             $gte: data.lesionNumberAbsolute
                         }
-                    }).forEach(function(measurementData) {
-                        syncMeasurementAndToolData(measurementData);
+                    });
+
+                    measurements.forEach(function(measurement) {
+                        syncMeasurementAndToolData(measurement);
                     });
 
                     // Update each displayed viewport

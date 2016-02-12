@@ -1,10 +1,11 @@
 handleMeasurementRemoved = function(e, eventData) {
-    log.info('CornerstoneToolsMeasurementRemoved');
     var measurementData = eventData.measurementData;
 
     switch (eventData.toolType) {
         case 'nonTarget':
         case 'lesion':
+            log.info('CornerstoneToolsMeasurementRemoved');
+
             var measurement = Measurements.findOne(measurementData.id, {
                 reactive: false
             });

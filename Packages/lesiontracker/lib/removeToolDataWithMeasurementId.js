@@ -1,4 +1,5 @@
 removeToolDataWithMeasurementId = function(imageId, toolType, measurementId) {
+    log.info('removeToolDataWithMeasurementId');
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
     
     // Find any related toolData
@@ -19,6 +20,9 @@ removeToolDataWithMeasurementId = function(imageId, toolType, measurementId) {
             return false;
         }
     });
+
+    console.log("Removing Indices: ");
+    console.log(toRemove);
 
     // If any toolData entries need to be removed, splice them from
     // the toolData array
