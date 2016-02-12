@@ -1,4 +1,4 @@
-/*! cornerstone - v0.9.0 - 2016-02-04 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstone */
+/*! cornerstone - v0.9.0 - 2016-02-12 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstone */
 if(typeof cornerstone === 'undefined'){
     cornerstone = {
         internal : {},
@@ -163,33 +163,38 @@ if(typeof cornerstone === 'undefined'){
 
     "use strict";
 
-    function enable(element, renderer) {
+    function enable(element, options) {
         if(element === undefined) {
             throw "enable: parameter element cannot be undefined";
         }
 
-        var canvas = document.createElement('canvas');
-        element.appendChild(canvas);
-
-        if (typeof renderer === 'string' && renderer.toLowerCase() === 'webgl') {
-            renderer = cornerstone.webGL.renderer.render;
-        }
-
-        if (renderer === cornerstone.webGL.renderer.render) {
-            if (!cornerstone.webGL.renderer.isWebGLAvailable()) {
-                console.error('WebGL not available, falling back to Canvas renderer');
-                renderer = undefined;
-            } else {
+        // If this enabled element has the option set for WebGL, we should
+        // check if this device actually supports it
+        if (options && options.renderer && options.renderer.toLowerCase() === 'webgl') {
+            if (cornerstone.webGL.renderer.isWebGLAvailable()) {
+                // If WebGL is available on the device, initialize the renderer
+                // and return the renderCanvas from the WebGL rendering path
+                console.log('Using WebGL rendering path');
+                
                 cornerstone.webGL.renderer.initRenderer();
+                options.renderer = 'webgl';
+            } else {
+                // If WebGL is not available on this device, we will fall back
+                // to using the Canvas renderer
+                console.error('WebGL not available, falling back to Canvas renderer');
+                delete options.renderer;
             }
         }
+
+        var canvas = document.createElement('canvas');
+        element.appendChild(canvas);
 
         var el = {
             element: element,
             canvas: canvas,
             image : undefined, // will be set once image is loaded
             invalid: false, // true if image needs to be drawn, false if not
-            render: renderer,
+            options: options,
             data : {}
         };
         cornerstone.addEnabledElement(el);
@@ -868,11 +873,7 @@ if(typeof cornerstone === 'undefined'){
 
         var start = new Date();
 
-        if (enabledElement.render) {
-            enabledElement.render(enabledElement, invalidated);
-        } else {
-            enabledElement.image.render(enabledElement, invalidated);
-        }
+        enabledElement.image.render(enabledElement, invalidated);
 
         var context = enabledElement.canvas.getContext('2d');
 
@@ -1650,7 +1651,17 @@ if(typeof cornerstone === 'undefined'){
         context.save();
         cornerstone.setToPixelCoordinateSystem(enabledElement, context);
 
-        var renderCanvas = getRenderCanvas(enabledElement, image, invalidated);
+        var renderCanvas;
+        if (enabledElement.options && enabledElement.options.renderer &&
+            enabledElement.options.renderer.toLowerCase() === 'webgl') {
+            // If this enabled element has the option set for WebGL, we should
+            // user it as our renderer.
+            renderCanvas = cornerstone.webGL.renderer.render(enabledElement);
+        } else {
+            // If no options are set we will retrieve the renderCanvas through the
+            // normal Canvas rendering path
+            renderCanvas = getRenderCanvas(enabledElement, image, invalidated);
+        }
 
         context.drawImage(renderCanvas, 0,0, image.width, image.height, 0, 0, image.width, image.height);
 
@@ -1709,7 +1720,7 @@ if(typeof cornerstone === 'undefined'){
         return false;
       }
       // check the unique ids
-      return (a.id !== b.id)
+      return (a.id !== b.id);
     }
 
     function getLut(image, viewport, invalidated)
@@ -1783,12 +1794,12 @@ if(typeof cornerstone === 'undefined'){
      * @param invalidated - true if pixel data has been invaldiated and cached rendering should not be used
      */
     function renderGrayscaleImage(enabledElement, invalidated) {
-
-        if(enabledElement === undefined) {
+        if (enabledElement === undefined) {
             throw "drawImage: enabledElement parameter must not be undefined";
         }
+
         var image = enabledElement.image;
-        if(image === undefined) {
+        if (image === undefined) {
             throw "drawImage: image must be loaded before it can be drawn";
         }
 
@@ -1810,10 +1821,20 @@ if(typeof cornerstone === 'undefined'){
             context.mozImageSmoothingEnabled = true;
         }
 
-        // save the canvas context state and apply the viewport properties
+        // Save the canvas context state and apply the viewport properties
         cornerstone.setToPixelCoordinateSystem(enabledElement, context);
 
-        var renderCanvas = getRenderCanvas(enabledElement, image, invalidated);
+        var renderCanvas;
+        if (enabledElement.options && enabledElement.options.renderer &&
+            enabledElement.options.renderer.toLowerCase() === 'webgl') {
+            // If this enabled element has the option set for WebGL, we should
+            // user it as our renderer.
+            renderCanvas = cornerstone.webGL.renderer.render(enabledElement);
+        } else {
+            // If no options are set we will retrieve the renderCanvas through the
+            // normal Canvas rendering path
+            renderCanvas = getRenderCanvas(enabledElement, image, invalidated);
+        }
 
         // Draw the render canvas half the image size (because we set origin to the middle of the canvas above)
         context.drawImage(renderCanvas, 0,0, image.width, image.height, 0, 0, image.width, image.height);
@@ -2228,7 +2249,8 @@ if(typeof cornerstone === 'undefined'){
             console.log("WEBGL Renderer already initialized");
             return;
         }
-        if ( initWebGL( renderCanvas ) ) {
+
+        if (initWebGL(renderCanvas)) {
             initBuffers();
             initShaders();
             console.log("WEBGL Renderer initialized!");
@@ -2318,7 +2340,7 @@ if(typeof cornerstone === 'undefined'){
         // choosing the shader based on the image datatype
         // console.log("Datatype: " + datatype);
         if (cornerstone.webGL.shaders.hasOwnProperty(datatype)) {
-            return cornerstone.webGL.shaders[ datatype ];
+            return cornerstone.webGL.shaders[datatype];
         }
 
         var shader = cornerstone.webGL.shaders.rgb;
@@ -2380,7 +2402,6 @@ if(typeof cornerstone === 'undefined'){
     }
 
     function initBuffers() {
- 
         positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -2401,8 +2422,7 @@ if(typeof cornerstone === 'undefined'){
         ]), gl.STATIC_DRAW);
     }
 
-    function renderQuad(shader, parameters, texture, width, height )
-    {
+    function renderQuad(shader, parameters, texture, width, height) {
         gl.clearColor(1.0,0.0,0.0,1.0);
         gl.viewport( 0, 0, width, height );
         
@@ -2444,36 +2464,10 @@ if(typeof cornerstone === 'undefined'){
     }
 
     function render(enabledElement) {
-
-        if (!enabledElement) {
-            throw "drawImage: enabledElement parameter must not be undefined";
-        }
-
-        var image = enabledElement.image;
-        if (!image) {
-            throw "drawImage: image must be loaded before it can be drawn";
-        }
-
         // Resize the canvas
+        var image = enabledElement.image;
         renderCanvas.width = image.width;
         renderCanvas.height = image.height;
-        
-        // Get the canvas context and reset the transform
-        var context = enabledElement.canvas.getContext('2d');
-        context.setTransform(1, 0, 0, 1, 0, 0);
-
-        // Clear the canvas
-        context.fillStyle = 'black';
-        context.fillRect(0,0, enabledElement.canvas.width, enabledElement.canvas.height);
-
-        // Turn off image smooth/interpolation if pixelReplication is set in the viewport
-        if (enabledElement.viewport.pixelReplication === true) {
-            context.imageSmoothingEnabled = false;
-            context.mozImageSmoothingEnabled = false; // firefox doesn't support imageSmoothingEnabled yet
-        } else {
-            context.imageSmoothingEnabled = true;
-            context.mozImageSmoothingEnabled = true;
-        }
 
         var viewport = enabledElement.viewport;
 
@@ -2482,21 +2476,16 @@ if(typeof cornerstone === 'undefined'){
         var texture = getImageTexture(image);
         var parameters = {
             "u_resolution": { type: "2f", value: [image.width, image.height] },
-            "wc": { type: "f", value: enabledElement.viewport.voi.windowCenter },
-            "ww": { type: "f", value: enabledElement.viewport.voi.windowWidth },
+            "wc": { type: "f", value: viewport.voi.windowCenter },
+            "ww": { type: "f", value: viewport.voi.windowWidth },
             "slope": { type: "f", value: image.slope },
             "intercept": { type: "f", value: image.intercept },
             //"minPixelValue": { type: "f", value: image.minPixelValue },
-            "invert": { type: "i", value: enabledElement.viewport.invert ? 1 : 0 },
+            "invert": { type: "i", value: viewport.invert ? 1 : 0 },
         };
         renderQuad(shader, parameters, texture, image.width, image.height );
 
-        // Save the canvas context state and apply the viewport properties
-        cornerstone.setToPixelCoordinateSystem(enabledElement, context);
-
-        // Copy pixels from the offscreen canvas to the onscreen canvas
-        context.drawImage(renderCanvas, 0,0, image.width, image.height, 0, 0, image.width, image.height);
-
+        return renderCanvas;
     }
 
     function isWebGLAvailable() {
