@@ -68,6 +68,7 @@
         $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
         $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.lesion.mouseDownActivateCallback);
+        $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
 
         // Add a flag for using Esc to cancel tool placement
         var cancelled = false;
@@ -106,6 +107,7 @@
             $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
             $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.lesion.mouseDownActivateCallback);
+            $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
             cornerstone.updateImage(element);
         });
     }

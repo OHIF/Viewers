@@ -66,6 +66,7 @@
         $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.nonTarget.mouseMoveCallback);
         $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.nonTarget.mouseDownCallback);
         $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.nonTarget.mouseDownActivateCallback);
+        $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
 
         // Add a flag for using Esc to cancel tool placement
         var cancelled = false;
@@ -100,6 +101,7 @@
             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
+            $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
 
             $(element).off('keydown', cancelCallback);
 
