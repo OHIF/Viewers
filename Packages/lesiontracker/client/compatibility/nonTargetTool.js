@@ -153,7 +153,8 @@
             studyInstanceUid: studyInstanceUid,
             patientId: patientId,
             response: '',
-            isTarget: false
+            isTarget: false,
+            measurementType: 'nonTarget'
         };
 
         return measurementData;

@@ -99,7 +99,8 @@
             longestDiameter: 0,
             shortestDiameter: 0,
             isDeleted: false,
-            isTarget: true
+            isTarget: true,
+            measurementType: 'bidirectional'
         };
         return measurementData;
     }

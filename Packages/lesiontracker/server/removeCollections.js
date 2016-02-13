@@ -44,6 +44,11 @@ Meteor.methods({
             patientId: patientId
         });
     },
+    removeImageMeasurementsByPatientId: function(patientId) {
+        ImageMeasurements.remove({
+            patientId: patientId
+        });
+    },
     clearAllTimepoints: function() {
         Timepoints.remove({});
     },

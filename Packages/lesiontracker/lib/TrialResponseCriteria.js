@@ -233,7 +233,6 @@ function validateSingleMeasurement(measurementData) {
 
     // If no such Measurement exists, stop here
     if (!measurement) {
-        log.warn('No Measurement found?');
         return;
     }
 

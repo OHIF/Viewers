@@ -1,10 +1,10 @@
 Package.describe({
-  name: "viewerbase",
-  summary: "Shared components and functions for Meteor DICOM Viewers",
-  version: '0.0.1'
+    name: 'viewerbase',
+    summary: 'Shared components and functions for Meteor DICOM Viewers',
+    version: '0.0.1'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
     api.versionsFrom('1.2.0.2');
 
     api.use('standard-app-packages');
@@ -26,7 +26,6 @@ Package.onUse(function (api) {
 
     // TODO= Find a meteor package for this
     api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
-
 
     // ---------- Collections ----------
     api.addFiles('client/collections.js', 'client');
@@ -128,12 +127,12 @@ Package.onUse(function (api) {
     api.addFiles('lib/WLPresets.js', 'client');
     api.addFiles('lib/resizeViewportElements.js', 'client');
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
+    api.addFiles('lib/updateAllViewports.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
-
     //api.export('accountsConfig', 'client');
-    api.export('resizeViewportElements','client');
-    api.export('handleResize','client');
+    api.export('resizeViewportElements', 'client');
+    api.export('handleResize', 'client');
     api.export('enableHotkeys', 'client');
     api.export('enablePrefetchOnElement', 'client');
     api.export('displayReferenceLines', 'client');
@@ -146,6 +145,7 @@ Package.onUse(function (api) {
     api.export('sortStudy', 'client');
     api.export('updateOrientationMarkers', 'client');
     api.export('setFocusToActiveViewport', 'client');
+    api.export('updateAllViewports', 'client');
     api.export('encodeQueryData', 'server');
 
     // Viewer management objects

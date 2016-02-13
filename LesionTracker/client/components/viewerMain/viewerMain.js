@@ -47,6 +47,13 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
+            id: 'ellipticalRoi',
+            title: 'Elliptical ROI Measurement',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-circle-o'
+        });
+
+        buttonData.push({
             id: 'lesion',
             title: 'Target Tool',
             classes: 'imageViewerTool',

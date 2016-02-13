@@ -15,13 +15,14 @@ removeToolDataWithMeasurementId = function(imageId, toolType, measurementId) {
     // Search toolData for entries linked to the specified Measurement
     var toRemove = [];
     toolData.forEach(function(measurement, index) {
-        if (measurement.id === measurementId) {
+        if (measurement.id === measurementId ||
+            measurement._id === measurementId) {
             toRemove.push(index);
             return false;
         }
     });
 
-    log.info("Removing Indices: ");
+    log.info('Removing Indices: ');
     log.info(toRemove);
 
     // If any toolData entries need to be removed, splice them from

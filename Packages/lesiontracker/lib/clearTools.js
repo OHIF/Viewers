@@ -1,6 +1,6 @@
 clearTools = function() {
     var patientId = Session.get('patientId');
-    var toolTypes = [ 'lesion', 'nonTarget', 'length' ];
+    var toolTypes = [ 'lesion', 'nonTarget', 'length', 'ellipticalRoi'];
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
     var toolStateKeys = Object.keys(toolState).slice(0);
 
@@ -43,6 +43,7 @@ clearTools = function() {
 
     // Remove patient's measurements
     Meteor.call('removeMeasurementsByPatientId', patientId);
+    Meteor.call('removeImageMeasurementsByPatientId', patientId);
 
     // Clear all validation errors
     ValidationErrors.remove({});

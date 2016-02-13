@@ -146,6 +146,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/calculateTotalLesionBurden.js', 'client');
 
     api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
+    api.addFiles('lib/syncImageMeasurementAndToolData.js', 'client');
     api.addFiles('lib/updateRelatedElements.js', 'client');
 
     api.addFiles('lib/handleMeasurementAdded.js', 'client');
@@ -159,6 +160,7 @@ Package.onUse(function(api) {
     api.export('handleMeasurementModified', 'client');
     api.export('handleMeasurementRemoved', 'client');
     api.export('syncMeasurementAndToolData', 'client');
+    api.export('syncImageMeasurementAndToolData', 'client');
     api.export('updateRelatedElements', 'client');
     api.export('openNewTabWithTimepoint', 'client');
     api.export('activateLesion', 'client');
@@ -184,6 +186,7 @@ Package.onUse(function(api) {
     api.export('LocationResponses', 'client');
 
     // Export collections spanning both client and server
+    api.export('ImageMeasurements', [ 'client', 'server' ]);
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);
     api.export('Timepoints', [ 'client', 'server' ]);

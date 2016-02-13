@@ -115,6 +115,7 @@ Template.viewer.onCreated(function() {
         self.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
         self.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
         self.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
+        self.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
 
         var subscriptionsReady = self.subscriptionsReady();
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
@@ -145,6 +146,39 @@ Template.viewer.onCreated(function() {
                 }
             });
 
+            ImageMeasurements.find().observe({
+                added: function(data) {
+                    if (data.clientId === ClientId) {
+                        return;
+                    }
+
+                    syncImageMeasurementAndToolData(data);
+
+                    // Update each displayed viewport
+                    updateAllViewports();
+                },
+                changed: function(data) {
+                    if (data.clientId === ClientId) {
+                        return;
+                    }
+
+                    syncImageMeasurementAndToolData(data);
+
+                    // Update each displayed viewport
+                    updateAllViewports();
+                },
+                removed: function(data) {
+                    if (data.clientId === ClientId) {
+                        return;
+                    }
+
+                    removeToolDataWithMeasurementId(data.imageId, data.toolType, data.id);
+
+                    // Update each displayed viewport
+                    updateAllViewports();
+                }
+            });
+
             Measurements.find().observe({
                 added: function(data) {
                     if (data.clientId === ClientId) {
@@ -170,10 +204,7 @@ Template.viewer.onCreated(function() {
                     }
 
                     // Update each displayed viewport
-                    var viewports = $('.imageViewerViewport').not('.empty');
-                    viewports.each(function(index, element) {
-                        cornerstone.updateImage(element);
-                    });
+                    updateAllViewports();
                 },
                 changed: function(data) {
                     if (data.clientId === ClientId) {
@@ -188,10 +219,7 @@ Template.viewer.onCreated(function() {
                     syncMeasurementAndToolData(data);
 
                     // Update each displayed viewport
-                    var viewports = $('.imageViewerViewport').not('.empty');
-                    viewports.each(function(index, element) {
-                        cornerstone.updateImage(element);
-                    });
+                    updateAllViewports();
 
                     TrialResponseCriteria.validateAllDelayed();
                 },
@@ -235,10 +263,7 @@ Template.viewer.onCreated(function() {
                     });
 
                     // Update each displayed viewport
-                    var viewports = $('.imageViewerViewport').not('.empty');
-                    viewports.each(function(index, element) {
-                        cornerstone.updateImage(element);
-                    });
+                    updateAllViewports();
 
                     ValidationErrors.remove({
                         measurementId: data._id

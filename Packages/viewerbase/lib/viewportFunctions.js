@@ -1,5 +1,5 @@
 getActiveViewportElement = function() {
-    var viewportIndex = Session.get("activeViewport");
+    var viewportIndex = Session.get("activeViewport") || 0;
     return $('.imageViewerViewport').get(viewportIndex);
 };
 

@@ -3136,6 +3136,8 @@ if (typeof cornerstoneTools === 'undefined') {
 
                 if (!isNaN(meanStdDev.mean) && !isNaN(meanStdDev.stdDev)) {
                     data.meanStdDev = meanStdDev;
+                    data.mean = meanStdDev.mean;
+                    data.stdev = meanStdDev.stdev;
                 }
             }
 
@@ -3984,6 +3986,9 @@ if (typeof cornerstoneTools === 'undefined') {
 
             // Calculate the length, and create the text variable with the millimeters or pixels suffix            
             var length = Math.sqrt(dx * dx + dy * dy);
+
+            // Store the length inside the tool for outside access
+            data.length = length;
 
             // Set the length text suffix depending on whether or not pixelSpacing is available
             var suffix = ' mm';
@@ -6646,7 +6651,7 @@ if (typeof cornerstoneTools === 'undefined') {
             // If any handle is outside the image, delete the tool data
             if (options.deleteIfHandleOutsideImage === true &&
                 cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
-                cornerstoneTools.toolState.removeToolState(element, toolType, data);
+                cornerstoneTools.removeToolState(element, toolType, data);
             }
 
             cornerstone.updateImage(element);

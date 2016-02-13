@@ -1,3 +1,17 @@
+measurementValuesByType = {
+    bidirectional: [
+        'shortestDiameter',
+        'longestDiameter'
+    ],
+    nonTarget: ['response'],
+    length: ['length'],
+    ellipticalRoi: [
+        'area',
+        'mean',
+        'stdev'
+    ]
+};
+
 /**
  * Update the Timepoint object for a specific Measurement.
  * If no measurement exists yet, one will be created.
@@ -46,12 +60,17 @@ function updateLesionData(lesionData) {
         imageId: lesionData.imageId
     };
 
-    if (lesionData.isTarget === true) {
-        timepointData.shortestDiameter = lesionData.shortestDiameter;
-        timepointData.longestDiameter = lesionData.longestDiameter;
-    } else {
-        timepointData.response = lesionData.response;
+    if (!lesionData.measurementType) {
+        // For debugging
+        log.warn('No MeasurementType available?');
     }
+
+    // Populate this timepoint's data with whichever values
+    // are stored for this Measurement type
+    var values = measurementValuesByType[lesionData.measurementType];
+    values.forEach(function(valueName) {
+        timepointData[valueName] = lesionData[valueName];
+    });
 
     // If no such lesion exists, we need to add one
     if (!existingMeasurement) {
