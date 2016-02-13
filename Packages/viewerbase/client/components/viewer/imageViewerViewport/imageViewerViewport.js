@@ -322,7 +322,7 @@ function loadSeriesIntoViewport(data, templateData) {
         }
 
         // Temporary until we have a real window manager with events for series/study changed
-        console.log('Set NewSeriesLoaded');
+        log.info('Set NewSeriesLoaded');
         Session.set('NewSeriesLoaded', Random.id());
 
         // Run any renderedCallback that exists in the data context
@@ -412,7 +412,7 @@ Meteor.startup(function() {
 });
 
 Template.imageViewerViewport.onCreated(function() {
-   console.log('imageViewerViewport onCreated');
+   log.info('imageViewerViewport onCreated');
 });
 
 Template.imageViewerViewport.onRendered(function() {

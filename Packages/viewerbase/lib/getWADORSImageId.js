@@ -55,6 +55,6 @@ getWADORSImageId = function(instance) {
 
     var imageId = cornerstoneWADOImageLoader.imageManager.add(image);
 
-    console.log('WADO-RS ImageID: ' + imageId);
+    log.info('WADO-RS ImageID: ' + imageId);
     return imageId;
 };

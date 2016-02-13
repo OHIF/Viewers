@@ -32,7 +32,7 @@ function resultDataToStudies(resultData) {
 
 
 Services.DIMSE.Studies = function(filter) {
-    console.log('Services.DIMSE.Studies');
+    log.info('Services.DIMSE.Studies');
     var parameters = {
         0x00100010: filter.patientName,
         0x00100020: filter.patientId,

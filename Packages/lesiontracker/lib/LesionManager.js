@@ -47,8 +47,8 @@ function updateLesionData(lesionData) {
     };
 
     if (lesionData.isTarget === true) {
-        timepointData.shortestDiameter = lesionData.widthMeasurement;
-        timepointData.longestDiameter = lesionData.measurementText;
+        timepointData.shortestDiameter = lesionData.shortestDiameter;
+        timepointData.longestDiameter = lesionData.longestDiameter;
     } else {
         timepointData.response = lesionData.response;
     }
@@ -79,27 +79,15 @@ function updateLesionData(lesionData) {
         measurement.timepoints[timepoint.timepointId] = timepointData;
 
         // Set a flag to prevent duplication of toolData
-        measurement.toolDataInsertedManually = true;
+        measurement.clientId = ClientId;
 
         // Increment and store the absolute Lesion Number for this Measurement
         measurement.lesionNumberAbsolute = Measurements.find().count() + 1;
 
         // Insert this into the Measurements Collection
         // Save the ID into the toolData (not sure if this works?)
-        console.log('LesionManager inserting Measurement');
+        log.info('LesionManager inserting Measurement');
         measurement.id = Measurements.insert(measurement);
-
-        // Update the database entry so it can be re-added next time the study is loaded
-        Measurements.update(measurement.id, {
-            $set: {
-                toolDataInsertedManually: false
-            }
-        }, function(error) {
-            if (error) {
-                log.warn(error);
-            }
-            OHIF.viewer.manuallyModifyingMeasurement = false;
-        });
     } else {
         lesionData.id = existingMeasurement._id;
         lesionData.isNodal = existingMeasurement.isNodal;
@@ -111,16 +99,12 @@ function updateLesionData(lesionData) {
         // Update timepoints from lesion data
         existingMeasurement.timepoints[timepoint.timepointId] = timepointData;
 
-        console.log('LesionManager updating Measurement');
+        log.info('LesionManager updating Measurement');
         Measurements.update(existingMeasurement._id, {
             $set: {
-                timepoints: existingMeasurement.timepoints
+                timepoints: existingMeasurement.timepoints,
+                clientId: ClientId
             }
-        }, function(error) {
-            if (error) {
-                log.warn(error);
-            }
-            OHIF.viewer.manuallyModifyingMeasurement = false;
         });
     }
 }

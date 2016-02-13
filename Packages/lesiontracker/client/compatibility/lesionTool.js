@@ -32,7 +32,77 @@
         //doneCallback(prompt('Change your lesion location:'));
     }
 
-    ///////// BEGIN ACTIVE TOOL ///////
+    function createNewMeasurement(mouseEventData) {
+        var imageId = mouseEventData.image.imageId;
+
+        // Get studyInstanceUid
+        var study = cornerstoneTools.metaData.get('study', imageId);
+        var studyInstanceUid = study.studyInstanceUid;
+        var patientId = study.patientId;
+
+        // Get seriesInstanceUid
+        var series = cornerstoneTools.metaData.get('series', imageId);
+        var seriesInstanceUid = series.seriesInstanceUid;
+
+        // Create the measurement data for this tool with the end handle activated
+        var measurementData = {
+            visible: true,
+            active: true,
+            handles: {
+                start: {
+                    x: mouseEventData.currentPoints.image.x,
+                    y: mouseEventData.currentPoints.image.y,
+                    highlight: true,
+                    active: false,
+                    drawnIndependently: true,
+                    index: 0
+                },
+                end: {
+                    x: mouseEventData.currentPoints.image.x,
+                    y: mouseEventData.currentPoints.image.y,
+                    highlight: true,
+                    active: true,
+                    drawnIndependently: true,
+                    index: 1
+                },
+                textBox: {
+                    x: mouseEventData.currentPoints.image.x - 50,
+                    y: mouseEventData.currentPoints.image.y - 70,
+                    active: false,
+                    movesIndependently: false,
+                    drawnIndependently: true,
+                    allowedOutsideImage: true,
+                    hasBoundingBox: true
+                },
+                perpendicularStart: {
+                    x: mouseEventData.currentPoints.image.x,
+                    y: mouseEventData.currentPoints.image.y,
+                    highlight: true,
+                    active: false,
+                    locked: true, // If perpendicular line is connected to long-line
+                    drawnIndependently: true,
+                    index: 2
+                },
+                perpendicularEnd: {
+                    x: mouseEventData.currentPoints.image.x,
+                    y: mouseEventData.currentPoints.image.y,
+                    highlight: true,
+                    active: false,
+                    drawnIndependently: true,
+                    index: 3
+                }
+            },
+            imageId: imageId,
+            seriesInstanceUid: seriesInstanceUid,
+            studyInstanceUid: studyInstanceUid,
+            patientId: patientId,
+            longestDiameter: 0,
+            shortestDiameter: 0,
+            isDeleted: false,
+            isTarget: true
+        };
+        return measurementData;
+    }
 
     function addNewMeasurement(mouseEventData) {
         var element = mouseEventData.element;
@@ -53,9 +123,9 @@
         var eventData = {
             mouseButtonMask: mouseEventData.which
         };
-        var config = cornerstoneTools.lesion.getConfiguration();
 
         // Set lesion number and lesion name
+        var config = cornerstoneTools.lesion.getConfiguration();
         if (measurementData.lesionNumber === undefined) {
             config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
         }
@@ -128,6 +198,12 @@
 
         var measurementData = createNewMeasurement(touchEventData);
 
+        // Set lesion number and lesion name
+        var config = cornerstoneTools.lesion.getConfiguration();
+        if (measurementData.lesionNumber === undefined) {
+            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        }
+
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(element, toolType, measurementData);
 
@@ -139,9 +215,12 @@
 
         cornerstone.updateImage(element);
         cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
-            if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
+            if (cancelled || cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
                 // delete the measurement
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
+            } else {
+                // Set lesionMeasurementData Session
+                config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
             }
 
             // perpendicular line is not connected to long-line
@@ -154,80 +233,6 @@
         });
     }
 
-    function createNewMeasurement(mouseEventData) {
-        var imageId = mouseEventData.image.imageId;
-
-        // Get studyInstanceUid
-        var study = cornerstoneTools.metaData.get('study', imageId);
-        var studyInstanceUid = study.studyInstanceUid;
-        var patientId = study.patientId;
-
-        // Get seriesInstanceUid
-        var series = cornerstoneTools.metaData.get('series', imageId);
-        var seriesInstanceUid = series.seriesInstanceUid;
-
-        // Create the measurement data for this tool with the end handle activated
-        var measurementData = {
-            visible: true,
-            active: true,
-            handles: {
-                start: {
-                    x: mouseEventData.currentPoints.image.x,
-                    y: mouseEventData.currentPoints.image.y,
-                    highlight: true,
-                    active: false,
-                    drawnIndependently: true,
-                    index: 0
-                },
-                end: {
-                    x: mouseEventData.currentPoints.image.x,
-                    y: mouseEventData.currentPoints.image.y,
-                    highlight: true,
-                    active: true,
-                    drawnIndependently: true,
-                    index: 1
-                },
-                textBox: {
-                    x: mouseEventData.currentPoints.image.x - 50,
-                    y: mouseEventData.currentPoints.image.y - 70,
-                    pointNearHandle: pointNearTextBox,
-                    active: false,
-                    movesIndependently: false,
-                    drawnIndependently: true,
-                    allowedOutsideImage: true
-                },
-                perpendicularStart: {
-                    x: mouseEventData.currentPoints.image.x,
-                    y: mouseEventData.currentPoints.image.y,
-                    highlight: true,
-                    active: false,
-                    locked: true, // If perpendicular line is connected to long-line
-                    drawnIndependently: true,
-                    index: 2
-                },
-                perpendicularEnd: {
-                    x: mouseEventData.currentPoints.image.x,
-                    y: mouseEventData.currentPoints.image.y,
-                    highlight: true,
-                    active: false,
-                    drawnIndependently: true,
-                    index: 3
-                }
-            },
-            imageId: imageId,
-            seriesInstanceUid: seriesInstanceUid,
-            studyInstanceUid: studyInstanceUid,
-            patientId: patientId,
-            measurementText: 0,
-            widthMeasurement: 0,
-            perpendicularMeasurement: 0,
-            isDeleted: false,
-            isTarget: true
-        };
-        return measurementData;
-    }
-    ///////// END ACTIVE TOOL ///////
-
     function pointNearTool(element, data, coords) {
         var lineSegment = {
             start: cornerstone.pixelToCanvas(element, data.handles.start),
@@ -235,7 +240,7 @@
         };
         var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
 
-        if (pointNearTextBox(element, data.handles.textBox, coords)) {
+        if (cornerstoneTools.pointInsideBoundingBox(data.handles.textBox, coords)) {
             return true;
         }
 
@@ -244,14 +249,6 @@
         }
 
         return (distanceToPoint < 5);
-    }
-
-    function pointNearTextBox(element, handle, coords) {
-        if (!handle.boundingBox) {
-            return;
-        }
-
-        return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
     }
 
     function pointNearPerpendicular(element, handles, coords) {
@@ -265,7 +262,6 @@
 
     // Move long-axis start point
     function perpendicularBothFixedLeft(eventData, data) {
-
         var longLine = {
             start: {
                 x: data.handles.start.x,
@@ -273,7 +269,7 @@
             },
             end: {
                 x: data.handles.end.x,
-                y: data.handles. end.y
+                y: data.handles.end.y
             }
         };
 
@@ -284,7 +280,7 @@
             },
             end: {
                 x: data.handles.perpendicularEnd.x,
-                y: data.handles. perpendicularEnd.y
+                y: data.handles.perpendicularEnd.y
             }
         };
 
@@ -322,7 +318,6 @@
 
     // Move long-axis end point
     function perpendicularBothFixedRight(eventData, data) {
-
         var longLine = {
             start: {
                 x: data.handles.start.x,
@@ -330,7 +325,7 @@
             },
             end: {
                 x: data.handles.end.x,
-                y: data.handles. end.y
+                y: data.handles.end.y
             }
         };
 
@@ -341,7 +336,7 @@
             },
             end: {
                 x: data.handles.perpendicularEnd.x,
-                y: data.handles. perpendicularEnd.y
+                y: data.handles.perpendicularEnd.y
             }
         };
 
@@ -1046,8 +1041,8 @@
             data.handles.textBox.boundingBox = boundingBox;
 
             // Set measurement text to show lesion table
-            data.measurementText = length.toFixed(1);
-            data.widthMeasurement = width.toFixed(1);
+            data.longestDiameter = length.toFixed(1);
+            data.shortestDiameter = width.toFixed(1);
 
             context.restore();
         }

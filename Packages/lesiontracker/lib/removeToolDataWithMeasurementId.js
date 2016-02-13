@@ -21,8 +21,8 @@ removeToolDataWithMeasurementId = function(imageId, toolType, measurementId) {
         }
     });
 
-    console.log("Removing Indices: ");
-    console.log(toRemove);
+    log.info("Removing Indices: ");
+    log.info(toRemove);
 
     // If any toolData entries need to be removed, splice them from
     // the toolData array

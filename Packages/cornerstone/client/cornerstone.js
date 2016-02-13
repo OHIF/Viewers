@@ -1,4 +1,4 @@
-/*! cornerstone - v0.8.4 - 2015-10-09 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstone */
+/*! cornerstone - v0.9.0 - 2016-02-04 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstone */
 if(typeof cornerstone === 'undefined'){
     cornerstone = {
         internal : {},
@@ -482,8 +482,11 @@ if(typeof cornerstone === 'undefined'){
 
     "use strict";
 
+    // dictionary of imageId to cachedImage objects
     var imageCache = {};
-
+    // dictionary of sharedCacheKeys to number of imageId's in cache with this shared cache key
+    var sharedCacheKeys = {};
+    // array of cachedImage objects
     var cachedImages = [];
 
     var maximumSizeInBytes = 1024 * 1024 * 1024; // 1 GB
@@ -549,6 +552,7 @@ if(typeof cornerstone === 'undefined'){
         var cachedImage = {
             loaded : false,
             imageId : imageId,
+            sharedCacheKey: undefined, // the sharedCacheKey for this imageId.  undefined by default
             imagePromise : imagePromise,
             timeStamp : new Date(),
             sizeInBytes: 0
@@ -566,8 +570,23 @@ if(typeof cornerstone === 'undefined'){
             if (image.sizeInBytes.toFixed === undefined) {
                 throw "putImagePromise: image.sizeInBytes is not a number";
             }
-            cachedImage.sizeInBytes = image.sizeInBytes;
-            cacheSizeInBytes += cachedImage.sizeInBytes;
+
+            // If this image has a shared cache key, reference count it and only
+            // count the image size for the first one added with this sharedCacheKey
+            if(image.sharedCacheKey) {
+              cachedImage.sizeInBytes = image.sizeInBytes;
+              cachedImage.sharedCacheKey = image.sharedCacheKey;
+              if(sharedCacheKeys[image.sharedCacheKey]) {
+                sharedCacheKeys[image.sharedCacheKey]++;
+              } else {
+                sharedCacheKeys[image.sharedCacheKey] = 1;
+                cacheSizeInBytes += cachedImage.sizeInBytes;
+              }
+            }
+            else {
+              cachedImage.sizeInBytes = image.sizeInBytes;
+              cacheSizeInBytes += cachedImage.sizeInBytes;
+            }
             purgeCacheIfNecessary();
         });
     }
@@ -595,8 +614,22 @@ if(typeof cornerstone === 'undefined'){
             throw "removeImagePromise: imageId must not be undefined";
         }
         cachedImages.splice( cachedImages.indexOf(cachedImage), 1);
-        cacheSizeInBytes -= cachedImage.sizeInBytes;
+
+        // If this is using a sharedCacheKey, decrement the cache size only
+        // if it is the last imageId in the cache with this sharedCacheKey
+        if(cachedImages.sharedCacheKey) {
+          if(sharedCacheKeys[cachedImages.sharedCacheKey] === 1) {
+            cacheSizeInBytes -= cachedImage.sizeInBytes;
+            delete sharedCacheKeys[cachedImages.sharedCacheKey];
+          } else {
+            sharedCacheKeys[cachedImages.sharedCacheKey]--;
+          }
+        } else {
+          cacheSizeInBytes -= cachedImage.sizeInBytes;
+        }
         delete imageCache[imageId];
+
+        decache(cachedImage.imagePromise, cachedImage.imageId);
 
         return cachedImage.imagePromise;
     }
@@ -609,13 +642,35 @@ if(typeof cornerstone === 'undefined'){
         };
     }
 
+    function decache(imagePromise, imageId) {
+      imagePromise.then(function(image) {
+        if(image.decache) {
+          image.decache();
+        }
+        imagePromise.reject();
+        delete imageCache[imageId];
+      }).always(function() {
+        delete imageCache[imageId];
+      });
+    }
+
     function purgeCache() {
         while (cachedImages.length > 0) {
-            var removedCachedImage = cachedImages.pop();
-            delete imageCache[removedCachedImage.imageId];
-            removedCachedImage.imagePromise.reject();
+          var removedCachedImage = cachedImages.pop();
+          decache(removedCachedImage.imagePromise, removedCachedImage.imageId);
         }
         cacheSizeInBytes = 0;
+    }
+
+    function changeImageIdCacheSize(imageId, newCacheSize) {
+      var cacheEntry = imageCache[imageId];
+      if(cacheEntry) {
+        cacheEntry.imagePromise.then(function(image) {
+          var cacheSizeDifference = newCacheSize - image.sizeInBytes;
+          image.sizeInBytes = newCacheSize;
+          cacheSizeInBytes += cacheSizeDifference;
+        });
+      }
     }
 
     // module exports
@@ -626,7 +681,8 @@ if(typeof cornerstone === 'undefined'){
         setMaximumSizeBytes: setMaximumSizeBytes,
         getCacheInfo : getCacheInfo,
         purgeCache: purgeCache,
-        cachedImages: cachedImages
+        cachedImages: cachedImages,
+        changeImageIdCacheSize: changeImageIdCacheSize
     };
 
 }(cornerstone));
@@ -1522,38 +1578,39 @@ if(typeof cornerstone === 'undefined'){
 
     function getRenderCanvas(enabledElement, image, invalidated)
     {
-        // apply the lut to the stored pixel data onto the render canvas
 
-        if(enabledElement.viewport.voi.windowWidth === enabledElement.image.windowWidth &&
-            enabledElement.viewport.voi.windowCenter === enabledElement.image.windowCenter &&
-            enabledElement.viewport.invert === false)
+        // The ww/wc is identity and not inverted - get a canvas with the image rendered into it for
+        // fast drawing
+        if(enabledElement.viewport.voi.windowWidth === 255 &&
+            enabledElement.viewport.voi.windowCenter === 128 &&
+            enabledElement.viewport.invert === false &&
+            image.getCanvas &&
+            image.getCanvas()
+        )
         {
-            // the color image voi/invert has not been modified, request the canvas that contains
-            // it so we can draw it directly to the display canvas
             return image.getCanvas();
         }
-        else
-        {
-            if(doesImageNeedToBeRendered(enabledElement, image) === false && invalidated !== true) {
-                return colorRenderCanvas;
-            }
 
-            // If our render canvas does not match the size of this image reset it
-            // NOTE: This might be inefficient if we are updating multiple images of different
-            // sizes frequently.
-            if(colorRenderCanvas.width !== image.width || colorRenderCanvas.height != image.height) {
-                initializeColorRenderCanvas(image);
-            }
-
-            // get the lut to use
-            var colorLut = getLut(image, enabledElement.viewport);
-
-            // the color image voi/invert has been modified - apply the lut to the underlying
-            // pixel data and put it into the renderCanvas
-            cornerstone.storedColorPixelDataToCanvasImageData(image, colorLut, colorRenderCanvasData.data);
-            colorRenderCanvasContext.putImageData(colorRenderCanvasData, 0, 0);
+        // apply the lut to the stored pixel data onto the render canvas
+        if(doesImageNeedToBeRendered(enabledElement, image) === false && invalidated !== true) {
             return colorRenderCanvas;
         }
+
+        // If our render canvas does not match the size of this image reset it
+        // NOTE: This might be inefficient if we are updating multiple images of different
+        // sizes frequently.
+        if(colorRenderCanvas.width !== image.width || colorRenderCanvas.height != image.height) {
+            initializeColorRenderCanvas(image);
+        }
+
+        // get the lut to use
+        var colorLut = getLut(image, enabledElement.viewport);
+
+        // the color image voi/invert has been modified - apply the lut to the underlying
+        // pixel data and put it into the renderCanvas
+        cornerstone.storedColorPixelDataToCanvasImageData(image, colorLut, colorRenderCanvasData.data);
+        colorRenderCanvasContext.putImageData(colorRenderCanvasData, 0, 0);
+        return colorRenderCanvas;
     }
 
     /**
@@ -2148,7 +2205,7 @@ if(typeof cornerstone === 'undefined'){
 
     function initShaders() {
         for (var id in cornerstone.webGL.shaders) {
-            //console.log("WEBGL: Loading shader", id);
+            console.log("WEBGL: Loading shader", id);
             var shader = cornerstone.webGL.shaders[ id ];
             shader.attributes = {};
             shader.uniforms = {};
@@ -2168,13 +2225,13 @@ if(typeof cornerstone === 'undefined'){
 
     function initRenderer() {
         if (cornerstone.webGL.isWebGLInitialized === true) {
-            //console.log("WEBGL Renderer already initialized");
+            console.log("WEBGL Renderer already initialized");
             return;
         }
         if ( initWebGL( renderCanvas ) ) {
             initBuffers();
             initShaders();
-            //console.log("WEBGL Renderer initialized!");
+            console.log("WEBGL Renderer initialized!");
             cornerstone.webGL.isWebGLInitialized = true;
         }
     }

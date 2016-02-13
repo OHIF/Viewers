@@ -79,7 +79,7 @@ Template.lesionTable.onRendered(function() {
             return;
         }
 
-        console.log('ViewerData changed, check for displayed timepoints');
+        log.info('ViewerData changed, check for displayed timepoints');
 
         // Get study dates of imageViewerViewport elements
         var loadedStudyDates = {

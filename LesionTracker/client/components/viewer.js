@@ -1,8 +1,5 @@
 Session.setDefault('activeViewport', false);
 
-ViewerStudies = new Meteor.Collection(null);
-ViewerStudies._debugName = 'ViewerStudies';
-
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
@@ -73,8 +70,6 @@ Template.viewer.onCreated(function() {
 
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 
-    log.info('viewer onCreated');
-
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
@@ -122,7 +117,7 @@ Template.viewer.onCreated(function() {
         self.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
 
         var subscriptionsReady = self.subscriptionsReady();
-        console.log('autorun viewer.js. Ready: ' + subscriptionsReady);
+        log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
 
         if (subscriptionsReady) {
             TrialResponseCriteria.validateAllDelayed();
@@ -150,15 +145,18 @@ Template.viewer.onCreated(function() {
                 }
             });
 
-            // This is used to re-add tools from the database into the
-            // Cornerstone ToolData structure
-            var syncTimeout,
-                syncDelay = 50;
             Measurements.find().observe({
                 added: function(data) {
-                    if (data.toolDataInsertedManually === true) {
+                    if (data.clientId === ClientId) {
+                        TrialResponseCriteria.validateAllDelayed();
                         return;
                     }
+
+                    log.info('Measurement added');
+
+                    // This is used to re-add tools from the database into the
+                    // Cornerstone ToolData structure
+                    syncMeasurementAndToolData(data);
 
                     // Activate first measurements in image box as default if exists
                     if (!firstMeasurementsActivated) {
@@ -171,9 +169,6 @@ Template.viewer.onCreated(function() {
                         firstMeasurementsActivated = true;
                     }
 
-                    log.info('Measurement added');
-                    syncMeasurementAndToolData(data);
-
                     // Update each displayed viewport
                     var viewports = $('.imageViewerViewport').not('.empty');
                     viewports.each(function(index, element) {
@@ -181,11 +176,15 @@ Template.viewer.onCreated(function() {
                     });
                 },
                 changed: function(data) {
-                    if (OHIF.viewer.manuallyModifyingMeasurement === true) {
+                    if (data.clientId === ClientId) {
+                        TrialResponseCriteria.validateAllDelayed();
                         return;
                     }
 
                     log.info('Measurement changed');
+
+                    // This is used to update changed tools from the database
+                    // in the Cornerstone ToolData structure
                     syncMeasurementAndToolData(data);
 
                     // Update each displayed viewport
@@ -258,9 +257,6 @@ Template.viewer.onRendered(function() {
 });
 
 Template.viewer.onDestroyed(function() {
-    log.info('onDestroyed');
-    console.log('viewer destroyed!');
-
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
 

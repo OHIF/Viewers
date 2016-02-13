@@ -141,18 +141,18 @@
                 textBox: {
                     x: mouseEventData.currentPoints.image.x - 50,
                     y: mouseEventData.currentPoints.image.y - 50,
-                    pointNearHandle: pointNearTextBox,
                     active: false,
                     movesIndependently: false,
                     drawnIndependently: true,
-                    allowedOutsideImage: true
+                    allowedOutsideImage: true,
+                    hasBoundingBox: true
                 }
             },
             imageId: imageId,
             seriesInstanceUid: seriesInstanceUid,
             studyInstanceUid: studyInstanceUid,
             patientId: patientId,
-            measurementText: '',
+            response: '',
             isTarget: false
         };
 
@@ -167,19 +167,11 @@
         };
         var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
 
-        if (pointNearTextBox(element, data.handles.textBox, coords)) {
+        if (cornerstoneTools.pointInsideBoundingBox(data.handles.textBox, coords)) {
             return true;
         }
 
         return distanceToPoint < 25;
-    }
-
-    function pointNearTextBox(element, handle, coords) {
-        if (!handle.boundingBox) {
-            return;
-        }
-
-        return cornerstoneMath.point.insideRect(coords, handle.boundingBox);
     }
 
     ///////// BEGIN IMAGE RENDERING ///////

@@ -116,17 +116,12 @@ function search() {
 }
 
 Template.worklistResult.onCreated(function() {
-    console.log('WorklistResult onCreated!');
     var self = this;
     if (Worklist.subscriptions) {
         Worklist.subscriptions.forEach(function(collectionName) {
             self.subscribe(collectionName);
         });
     }
-});
-
-Template.worklistResult.onDestroyed(function() {
-    console.log('WorklistResult onDestroyed!');
 });
 
 Template.worklistResult.events({

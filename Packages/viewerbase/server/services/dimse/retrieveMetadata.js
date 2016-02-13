@@ -26,7 +26,7 @@ function getSourceImageInstanceUid(instance) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 function resultDataToStudyMetadata(studyInstanceUid, resultData) {
-    console.log('resultDataToStudyMetadata');
+    log.info('resultDataToStudyMetadata');
     var seriesMap = {};
     var seriesList = [];
 

@@ -1,5 +1,5 @@
 syncMeasurementAndToolData = function(measurement) {
-    console.log('syncMeasurementAndToolData');
+    log.info('syncMeasurementAndToolData');
 
     // Check what toolType we should be adding this to, based on the isTarget value
     // of the stored Measurement
@@ -10,54 +10,48 @@ syncMeasurementAndToolData = function(measurement) {
         var timepointData = measurement.timepoints[key];
         var imageId = timepointData.imageId;
 
+        // Sync the Cornerstone ToolData with this Measurement's timepoint-specific data
         syncTimepointDataWithToolData(measurement, timepointData, imageId, toolType);
     });
 };
 
 function syncTimepointDataWithToolData(measurement, timepointData, imageId, toolType) {
+    // Get the global imageId-specific toolState from Cornerstone Tools
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
+    // If no tool state exists for this imageId, create an empty object to store it
     if (!toolState[imageId]) {
         toolState[imageId] = {};
     }
 
-    // This is probably not the best approach to prevent duplicates
-    if (toolState[imageId][toolType] && toolState[imageId][toolType].data) {
-        var measurementHasNoIdYet = false;
-        toolState[imageId][toolType].data.forEach(function(measurement) {
-            if (measurement.id !== 'notready') {
-                return;
-            }
+    // Check if we already have toolData for this imageId and toolType
+    if (toolState[imageId][toolType] &&
+        toolState[imageId][toolType].data &&
+        toolState[imageId][toolType].data.length) {
 
-            measurementHasNoIdYet = true;
-            return false;
-        });
-
-        // Stop here if it appears that we are creating this measurement right now,
-        // and would not like this function to add another copy of it to the toolData
-        if (measurementHasNoIdYet === true) {
-            return;
-        }
-    }
-
-    if (toolState[imageId][toolType]) {
-        var alreadyExists = false;
+        // If we have toolData, we should search it for any toolData
+        // related to the current Measurement
         var toolData = toolState[imageId][toolType].data;
-        if (!toolData.length) {
-            return;
-        }
 
+        // Create a flag so we know if we have successfully updated
+        // this Measurement's timepoint data in the toolData
+        var alreadyExists = false;
+
+        // Loop through the toolData to search for this Measurement's
+        // timepoint data
         toolData.forEach(function(tool) {
+            // Break the loop if this isn't the Measurement we are looking for
             if (tool.id !== measurement._id) {
                 return;
             }
 
+            // If we find the Measurement, set the flag to True
             alreadyExists = true;
 
-            // Update the toolData lesionNumber from the Measurement
+            // Update the toolData from the Measurement data and
+            // timepoint-specific data from this Measurement
             tool.lesionNumber = measurement.lesionNumber;
             tool.isTarget = measurement.isTarget;
-            
             tool.active = timepointData.active;
             tool.visible = timepointData.visible;
             tool.isDeleted = timepointData.isDeleted;
@@ -65,31 +59,30 @@ function syncTimepointDataWithToolData(measurement, timepointData, imageId, tool
             return false;
         });
 
+        // If we found the Measurement we intended to update, we can stop
+        // this function here
         if (alreadyExists === true) {
             return;
         }
     } else {
+        // If no toolData exists for this toolType, create an empty array to hold some
         toolState[imageId][toolType] = {
             data: []
         };
     }
 
-    // Create measurementData structure based on the lesion data at this timepoint
-    // We will add this into the toolData for this imageId
-    var measurementData = timepointData;
-    measurementData.isTarget = measurement.isTarget;
-    measurementData.lesionNumber = measurement.lesionNumber;
-    measurementData.measurementText = measurement.measurementText;
-    measurementData.isDeleted = measurement.isDeleted;
-    measurementData.location = measurement.location;
-    measurementData.locationUID = measurement.locationUID;
-    measurementData.patientId = measurement.patientId;
-    measurementData.visible = measurement.visible;
-    measurementData.active = measurement.active;
-    measurementData.uid = measurement.uid;
-    measurementData.id = measurement._id;
+    // If we have reached this point, it means we haven't found the Measurement we are
+    // looking for in the current toolData. This means we need to add it.
 
-    toolState[imageId][toolType].data.push(measurementData);
+    // First, create the measurementData structure based on the lesion data at this timepoint.
+    var tool = timepointData;
+    tool.lesionNumber = measurement.lesionNumber;
+    tool.isTarget = measurement.isTarget;
+    tool.location = measurement.location;
+    tool.locationUID = measurement.locationUID;
+    tool.patientId = measurement.patientId;
+    tool.id = measurement._id;
 
-    TrialResponseCriteria.validateSingleMeasurement(measurementData);
+    // Add the measurementData into the toolData for this imageId
+    toolState[imageId][toolType].data.push(tool);
 }

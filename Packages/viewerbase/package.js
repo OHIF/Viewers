@@ -27,6 +27,10 @@ Package.onUse(function (api) {
     // TODO= Find a meteor package for this
     api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
 
+
+    // ---------- Collections ----------
+    api.addFiles('client/collections.js', 'client');
+
     // ---------- Components ----------
 
     // Basic components
@@ -148,8 +152,12 @@ Package.onUse(function (api) {
     api.export('toolManager', 'client');
     api.export('WindowManager', 'client');
 
-    // Global data object
+    // Global objects
     api.export('OHIF', 'client');
+    api.export('ClientId', 'client');
+
+    // Collections
+    api.export('ViewerStudies', 'client');
 
     // UI Helpers
     api.addFiles('lib/helpers/formatDA.js', 'client');

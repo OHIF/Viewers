@@ -5,7 +5,6 @@ handleMeasurementAdded = function(e, eventData) {
         case 'nonTarget':
         case 'lesion':
             log.info('CornerstoneToolsMeasurementAdded');
-            OHIF.viewer.manuallyModifyingMeasurement = true;
             LesionManager.updateLesionData(measurementData);
             TrialResponseCriteria.validateDelayed(measurementData);
             break;

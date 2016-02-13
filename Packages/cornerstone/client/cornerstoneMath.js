@@ -1,4 +1,4 @@
-/*! cornerstoneMath - v0.1.2 - 2015-08-31 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneMath */
+/*! cornerstoneMath - v0.1.3 - 2016-02-04 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneMath */
 // Begin Source: src/vector3.js
 // Based on THREE.JS
 
@@ -1651,6 +1651,31 @@ var cornerstoneMath = (function (cornerstoneMath) {
         return true;
     }
 
+    /**
+     * Returns the closest source point to a target point
+     * given an array of source points.
+     *
+     * @param sources An Array of source Points
+     * @param target The target Point
+     * @returns Point The closest point from the points array
+     */
+    function findClosestPoint(sources, target) {
+        var distances = [];
+        var minDistance;
+        sources.forEach(function(source, index) {
+            var distance = cornerstoneMath.point.distance(source, target);
+            distances.push(distance);
+            
+            if (index === 0) {
+                minDistance = distance;
+            } else {
+                minDistance = Math.min(distance, minDistance);
+            }
+        });
+
+        var index = distances.indexOf(minDistance);
+        return sources[index];
+    }
 
     // module exports
     cornerstoneMath.point =
@@ -1660,7 +1685,8 @@ var cornerstoneMath = (function (cornerstoneMath) {
         pageToPoint: pageToPoint,
         distance: distance,
         distanceSquared: distanceSquared,
-        insideRect: insideRect
+        insideRect: insideRect,
+        findClosestPoint: findClosestPoint
     };
 
 
@@ -1836,7 +1862,6 @@ var cornerstoneMath = (function (cornerstoneMath) {
 
         return (distance < maxDistance);
     }
-
     function distanceToPoint(rect, point)
     {
         var minDistance = 655535;
@@ -1850,7 +1875,7 @@ var cornerstoneMath = (function (cornerstoneMath) {
         return minDistance;
     }
 
-    // Returns top-left and bottom-right of rectangle
+    // Returns top-left and bottom-right points of the rectangle
     function rectToPoints (rect) {
         var rectPoints = {
             topLeft: {
@@ -1959,11 +1984,12 @@ var cornerstoneMath = (function (cornerstoneMath) {
     // module exports
     cornerstoneMath.rect =
     {
-        rectToLineSegments : distanceToPoint,
+        distanceToPoint : distanceToPoint,
         getIntersectionRect : getIntersectionRect
+
     };
 
 
     return cornerstoneMath;
-}(cornerstoneMath));
+}(cornerstoneMath)); 
 // End Source; src/rect.js

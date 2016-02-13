@@ -290,8 +290,7 @@ Template.nonTargetLesionDialog.events({
         /// Set the isTarget value to true, since this is the target-lesion dialog callback
         measurementData.isTarget = false;
 
-        // measurementText is set from location response list
-        measurementData.measurementText = responseOptionId;
+        // Response is set from location response list
         measurementData.response = responseOptionId;
 
         // Adds lesion data to timepoints array
