@@ -1,14 +1,7 @@
 Template.lesionTable.helpers({
     measurement: function() {
         // All Targets shall be listed first followed by Non-Targets
-        return Measurements.find({
-            measurementType: {
-                $in: [
-                    'bidirectional',
-                    'nonTarget'
-                ]
-            }
-        }, {
+        return Measurements.find({}, {
             sort: {
                 isTarget: -1,
                 lesionNumberAbsolute: 1
