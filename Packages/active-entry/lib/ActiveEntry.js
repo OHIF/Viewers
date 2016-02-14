@@ -28,6 +28,7 @@ if (Meteor.isClient) {
       requireRegexValidation: true
       //requireStrongPasswords: false
     }
+
   });
 }
 
@@ -62,7 +63,6 @@ ActiveEntry.verifyPassword = function (password) {
     ActiveEntry.errorMessages.set('password', null);
     ActiveEntry.successMessages.set('password', 'Password present');
   }
-
 };
 
 ActiveEntry.verifyConfirmPassword = function (password, confirmPassword) {
@@ -88,7 +88,6 @@ ActiveEntry.verifyEmail = function (email) {
     ActiveEntry.errorMessages.set('email', 'Email is poorly formatted');
     ActiveEntry.successMessages.set('email', null);
   } else if (email.indexOf("@") >= 0){
-    //ActiveEntry.errorMessages.set('email', 'Email present');
     ActiveEntry.errorMessages.set('email', null);
     ActiveEntry.successMessages.set('email', 'Email present');
   }
@@ -111,17 +110,43 @@ ActiveEntry.verifyFullName = function (fullName) {
 ActiveEntry.signIn = function (emailValue, passwordValue){
   ActiveEntry.verifyPassword(passwordValue);
   ActiveEntry.verifyEmail(emailValue);
+  var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
+  var failedAttemptsLimit = ActiveEntryConfig && ActiveEntryConfig.passwordOptions && ActiveEntryConfig.passwordOptions.failedAttemptsLimit || 5;
 
-  Meteor.loginWithPassword({email: emailValue}, passwordValue, function (error, result) {
+  Meteor.call("getFailedAttemptsCount", emailValue, function(error, failedAttemptsCount) {
     if (error) {
-      ActiveEntry.errorMessages.set('signInError', error.message);
+      console.warn(error.message);
     } else {
-      console.log('result', result);
-      var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
-      console.log('ActiveEntryConfig', JSON.stringify(ActiveEntryConfig));
-      Router.go(ActiveEntryConfig.signIn.destination);
+      if (failedAttemptsCount != failedAttemptsLimit) {
+        Meteor.loginWithPassword({email: emailValue}, passwordValue, function (error, result) {
+          if (error) {
+            // Login failed
+            Meteor.call("updateFailedAttempts", [emailValue, failedAttemptsLimit], function(error, failedAttemptCount) {
+              if (error) {
+                console.warn(error);
+              } else {
+                if (failedAttemptCount == failedAttemptsLimit) {
+                  ActiveEntry.errorMessages.set('signInError', "Too many failed login attempts. Your account has been locked.");
+
+                } else {
+                  ActiveEntry.errorMessages.set('signInError', (failedAttemptsLimit - failedAttemptCount) + " attempts remaining.");
+
+                }
+              }
+            });
+          } else {
+            console.log('result', result);
+            Meteor.call("resetFailedAttempts", emailValue);
+            Router.go(ActiveEntryConfig.signIn.destination);
+          }
+        });
+      } else {
+        ActiveEntry.errorMessages.set('signInError', "Your account has been locked.");
+      }
     }
+
   });
+
 };
 
 ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullName){
@@ -147,12 +172,18 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
     password: passwordValue,
     profile: {
       fullName: fullName
+    },
+    testCase: {
+      createdAt: new Date()
     }
   }, function (error, result) {
     if (error) {
       console.log(error);
       ActiveEntry.errorMessages.set('signInError', error.message);
     } else {
+      // Add password in previous password field
+      ActiveEntry.insertHashedPassword(passwordValue);
+      ActiveEntry.updatePasswordCreatedDate();
       var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
       Router.go(ActiveEntryConfig.signUp.destination);
     }
@@ -172,6 +203,18 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
   //   Router.go(ActiveEntryConfig.signIn.destination);
   // });
 };
+
+// Insert hashed password in previousPasswords fields
+ActiveEntry.insertHashedPassword =  function(passwordValue) {
+  var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
+  var passwordHistoryCount = ActiveEntryConfig && ActiveEntryConfig.passwordOptions && ActiveEntryConfig.passwordOptions.passwordHistoryCount || 6;
+  Meteor.call("insertHashedPassword", [new String(passwordValue).hashCode(),passwordHistoryCount]);
+};
+
+ActiveEntry.updatePasswordCreatedDate = function() {
+  Meteor.call("updatePasswordCreatedDate");
+};
+
 ActiveEntry.signOut = function (){
   Meteor.logout();
 };

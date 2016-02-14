@@ -3,6 +3,9 @@ Template.layoutLesionTracker.events({
         Meteor.logout(function(){
             Router.go('/entrySignIn');
         });
+    },
+    'click #changePassword': function() {
+        Router.go('/changePassword');
     }
 });
 

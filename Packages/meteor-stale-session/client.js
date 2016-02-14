@@ -41,19 +41,13 @@ Meteor.startup(function() {
                     overdueTimestamp = overdueTimestamp - (overdueTimestamp % 1000);
                     console.log(overdueTimestamp);
                     var startTime = inactivityTimeout - dialogTimeout;
-                    if (overdueTimestamp <= inactivityTimeout) {
-                        var nextIntervalTime = overdueTimestamp + countdownHeartbeatInterval;
-                        if (nextIntervalTime <= inactivityTimeout && nextIntervalTime >= startTime) {
-                            if (Math.abs(startTime - overdueTimestamp) <= Math.abs(nextIntervalTime - startTime) && !dialogIsOpen) {
-                                // Open dialog
-                                var leftTime = Math.round((inactivityTimeout - overdueTimestamp) / 1000);
-                                $.event.trigger('TriggerOpenTimeoutCountdownDialog', leftTime);
-                                dialogIsOpen = true;
-                            }
-                        } else {
-                            // Event to close dialog
-                            $.event.trigger('TriggerCloseTimeoutCountdownDialog');
-                            dialogIsOpen = false;
+                    var nextIntervalTime = overdueTimestamp + countdownHeartbeatInterval;
+                    if (overdueTimestamp <= inactivityTimeout && nextIntervalTime <= inactivityTimeout && nextIntervalTime >= startTime) {
+                        if (Math.abs(startTime - overdueTimestamp) <= Math.abs(nextIntervalTime - startTime) && !dialogIsOpen) {
+                            // Open dialog
+                            var leftTime = Math.round((inactivityTimeout - overdueTimestamp) / 1000);
+                            $.event.trigger('TriggerOpenTimeoutCountdownDialog', leftTime);
+                            dialogIsOpen = true;
                         }
 
                     } else {

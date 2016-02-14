@@ -44,8 +44,19 @@ Template.changePassword.helpers({
     } else {
       return "border: 1px solid gray";
     }
+  },
+
+  entryErrorMessages: function() {
+    var errorMessages = [];
+    Object.keys(ActiveEntry.errorMessages.all()).forEach(function(key) {
+      if ((key === "password" || key === "confirm") &&  ActiveEntry.errorMessages.get(key)) {
+        errorMessages.push(ActiveEntry.errorMessages.get(key));
+      }
+    });
+    return errorMessages;
   }
 });
+
 
 Template.changePassword.events({
   'change, keyup #changePasswordPagePasswordInput': function (event, template) {
@@ -73,12 +84,37 @@ Template.changePassword.events({
     ActiveEntry.verifyConfirmPassword(password, confirmPassword);
     ActiveEntry.errorMessages.set('changePasswordError', null);
 
-    Accounts.changePassword(oldPassword, confirmPassword, function(error) {
-      if (error) {
-        console.warn(error);
-        return;
-      }
-      console.log('Password changed!');
-    });
+
+    if (ActiveEntry.successMessages.get('password') && ActiveEntry.successMessages.get('confirm') && oldPassword) {
+      Meteor.call("checkPasswordExistence", new String(password).hashCode(), function(error, result) {
+        if (error) {
+          console.warn(error.message);
+          ActiveEntry.errorMessages.set('changePasswordError', error.message);
+
+        } else {
+          if (result) {
+            ActiveEntry.errorMessages.set('changePasswordError', 'Password is used before. Please change your new password.');
+          } else {
+            ActiveEntry.errorMessages.set('changePasswordError', null);
+
+            // If password is not found in password history, change the password
+            Accounts.changePassword(oldPassword, confirmPassword, function(error) {
+              if (error) {
+                console.warn(error);
+                ActiveEntry.errorMessages.set('changePasswordError', error.message);
+              } else {
+                // Save the new password
+                ActiveEntry.insertHashedPassword(confirmPassword);
+                // Logout
+                ActiveEntry.signOut();
+                // Go to signIn page for new entry
+                Router.go('/entrySignIn');
+              }
+            });
+          }
+        }
+      });
+    }
+
   }
 });

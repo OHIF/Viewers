@@ -65,8 +65,8 @@ Template.entrySignIn.helpers({
       return "border: 1px solid gray";
     }
   }
-});
 
+});
 
 //==================================================================================================
 // COMPONENT OUTPUTS
@@ -90,24 +90,28 @@ Template.entrySignIn.events({
 
     ActiveEntry.verifyEmail(email);
     ActiveEntry.errorMessages.set('signInError', null);
+    setSignInButtonStyling();
   },
   'change input[name="email"]': function (event, template) {
     var email = $('input[name="email"]').val();
 
     ActiveEntry.verifyEmail(email);
     ActiveEntry.errorMessages.set('signInError', null);
+    setSignInButtonStyling();
   },
   'keyup #signInPagePasswordInput': function (event, template) {
     var password = $('input[name="password"]').val();
 
     ActiveEntry.verifyPassword(password);
     ActiveEntry.errorMessages.set('signInError', null);
+    setSignInButtonStyling();
   },
   'change #signInPagePasswordInput': function (event, template) {
     var password = $('input[name="password"]').val();
 
     ActiveEntry.verifyPassword(password);
     ActiveEntry.errorMessages.set('signInError', null);
+    setSignInButtonStyling();
   },
   // 'submit': function (event, template) {
   //   event.preventDefault();
@@ -128,13 +132,7 @@ Template.entrySignIn.events({
   },
   'keyup #entrySignIn': function(event, template) {
     if(event.keyCode == 13) {
-      ActiveEntry.verifyEmail($("#signInPageEmailInput").val());
-
-      if (!ActiveEntry.errorMessages.get('signInError') &&
-          ActiveEntry.successMessages.get('email') &&
-          $("#signInPagePasswordInput").val()) {
-        $("#signInToAppButton").click();
-      }
+      $("#signInToAppButton").click();
     }
   }
 });
@@ -142,3 +140,18 @@ Template.entrySignIn.events({
 
 
 //==================================================================================================
+
+// Sets SignInButton Styling according to email and password fields
+function setSignInButtonStyling() {
+  var signInToAppButton = $("#signInToAppButton");
+  if ($("#signInPagePasswordInput").val() && ActiveEntry.successMessages.get('email')) {
+    // Set button as enable
+    signInToAppButton.removeClass("disabledButton");
+    signInToAppButton.attr("disabled", false);
+  } else {
+    signInToAppButton.addClass("disabledButton");
+    signInToAppButton.attr("disabled", true);
+
+
+  }
+}
