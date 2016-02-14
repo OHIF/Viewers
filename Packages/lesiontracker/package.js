@@ -144,6 +144,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/deactivateAllToolData.js', 'client');
     api.addFiles('lib/clearTools.js', 'client');
     api.addFiles('lib/calculateTotalLesionBurden.js', 'client');
+    api.addFiles('lib/convertToNonTarget.js', 'client');
 
     api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
     api.addFiles('lib/syncImageMeasurementAndToolData.js', 'client');
@@ -174,6 +175,7 @@ Package.onUse(function(api) {
     api.export('getTimepointName', 'client');
     api.export('getTrialCriteriaConstraints', 'client');
     api.export('calculateTotalLesionBurden', 'client');
+    api.export('convertToNonTarget', 'client');
 
     // Export global objects
     api.export('TrialResponseCriteria', 'client');

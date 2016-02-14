@@ -258,6 +258,14 @@ Template.lesionLocationDialog.events({
 
         closeHandler(dialog);
     },
+    'click #convertToNonTarget': function() {
+        var measurementData = Template.lesionLocationDialog.measurementData;
+        var dialog = Template.lesionLocationDialog.dialog;
+
+        convertToNonTarget(measurementData);
+
+        closeHandler(dialog);
+    },
     'click #btnCloseLesionPopup': function() {
         var dialog = Template.lesionLocationDialog.dialog;
         closeHandler(dialog);
