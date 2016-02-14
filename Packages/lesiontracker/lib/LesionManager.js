@@ -61,8 +61,8 @@ function updateLesionData(lesionData) {
     };
 
     if (!lesionData.measurementType) {
-        // For debugging
-        log.warn('No MeasurementType available?');
+        // For debugging, might want to switch to measurement types later
+        lesionData.measurementType = lesionData.isTarget ? 'bidirectional' : 'nonTarget';
     }
 
     // Populate this timepoint's data with whichever values

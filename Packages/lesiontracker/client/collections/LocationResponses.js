@@ -21,7 +21,7 @@ LocationResponses.insert({
 
 LocationResponses.insert({
     text: 'Present',
-    code: false,
+    code: 'Present',
     description: ''
 });
 
@@ -40,5 +40,12 @@ LocationResponses.insert({
 LocationResponses.insert({
     text: 'Excluded from Assessment',
     code: 'EX',
+    description: ''
+});
+
+// TODO: Check if this is a copy of Not evaluable?
+LocationResponses.insert({
+    text: 'Non-measurable',
+    code: 'NM',
     description: ''
 });

@@ -16,12 +16,11 @@
             <div class="locationResponse">
                 <label>Response</label>
                 <select id="selectNonTargetLesionLocationResponse">
-                    <option value="-1"></option>
                     {{ #each locationResponses}}
                     {{ #if code }}
-                        <option value={{code}}>{{code}} - {{text}}</option>
+                        <option value={{code}} selected={{selected}}>{{code}} - {{text}}</option>
                     {{ else }}
-                        <option value={{text}}>{{text}}</option>
+                        <option value={{text}} selected={{selected}}>{{text}}</option>
                     {{ /if }}
                     {{ /each}}
                 </select>
@@ -49,7 +48,6 @@
             <div class="locationResponse">
                 <label>Response</label>
                 <select id="selectNonTargetLesionLocationResponse">
-                    <option value="-1"></option>
                     {{ #each locationResponses}}
                     {{ #if code }}
                     <option value={{code}} selected={{selected}}>{{code}} - {{text}}</option>

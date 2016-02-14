@@ -40,6 +40,31 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
     doneCallback(lesionNumber);
 }
 
+function selectNonTargetResponse(responseCode) {
+    // First, disable all other responses
+    LocationResponses.update({}, {
+        $set: {
+            selected: false
+        }
+    }, {
+        multi: true
+    });
+
+    // If no response code is specified, leave them all disabled
+    if (!responseCode) {
+        return;
+    }
+
+    // Find the specified response by code and set it as selected
+    LocationResponses.update({
+        code: responseCode
+    }, {
+        $set: {
+            selected: true
+        }
+    });
+}
+
 // This event determines whether or not to show the Non-Target lesion dialog
 // If there already exists a lesion with this specific lesion number,
 // related to the chosen location.
@@ -60,10 +85,21 @@ function getLesionLocationCallback(measurementData, eventData) {
 
     // Find the select option box
     var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
-    var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
 
     selectorLocation.find('option:first').prop('selected', 'selected');
-    selectorResponse.find('option:first').prop('selected', 'selected');
+
+    // LT-112 "Non-target response shall default to non-measurable on baseline, present on follow-up"
+    var timepoint = Timepoints.findOne({
+        timepointId: measurementData.timepointId
+    });
+
+    if (timepoint && timepoint.timepointType === 'baseline') {
+        selectNonTargetResponse('NM');
+    } else if (timepoint && timepoint.timepointType === 'followup') {
+        selectNonTargetResponse('Present');
+    } else {
+        selectNonTargetResponse();
+    }
 
     // Allow location selection
     selectorLocation.removeAttr('disabled');
@@ -183,15 +219,13 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
         return;
     }
 
-    LesionLocations.update({},
-        {
-            $set: {
-                selected: false
-            }
-        },
-        {
-            multi: true
-        });
+    LesionLocations.update({}, {
+        $set: {
+            selected: false
+        }
+    }, {
+        multi: true
+    });
 
     var currentLocation = LesionLocations.findOne({
         id: measurement.locationId
@@ -207,33 +241,8 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
         }
     });
 
-    LocationResponses.update({},
-        {
-            $set: {
-                selected: false
-            }
-        },
-        {
-            multi: true
-        });
-
     var response = measurement.timepoints[measurementData.timepointId].response;
-
-    // TODO = Standardize this. Searching by code probably isn't the best, we should use
-    // some sort of UID
-    var currentResponse = LocationResponses.findOne({
-        code: response
-    });
-
-    if (!currentResponse) {
-        return;
-    }
-
-    LocationResponses.update(currentResponse._id, {
-        $set: {
-            selected: true
-        }
-    });
+    selectNonTargetResponse(response);
 };
 
 var config = {
@@ -245,27 +254,23 @@ var config = {
 cornerstoneTools.nonTarget.setConfiguration(config);
 
 Template.nonTargetLesionDialog.events({
+    'change #selectNonTargetLesionLocationResponse': function(e) {
+        var responseCode = $(e.currentTarget).val();
+        selectNonTargetResponse(responseCode);
+    },
     'click #nonTargetLesionOK': function() {
         var dialog = Template.nonTargetLesionDialog.dialog;
         var measurementData = Template.nonTargetLesionDialog.measurementData;
 
         // Find the select option box
         var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
-        var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
 
         // Get the current value of the selector
         var selectedOptionId = selectorLocation.find('option:selected').val();
-        var responseOptionId = selectorResponse.find('option:selected').val();
 
         // If the selected option is still the default (-1)
         // then stop here
         if (selectedOptionId < 0) {
-            return;
-        }
-
-        // If the selected response option is still the default (-1)
-        // then stop here
-        if (responseOptionId < 0) {
             return;
         }
 
@@ -279,7 +284,7 @@ Template.nonTargetLesionDialog.events({
             Measurements.update(measurementData.id, {
                 $set: {
                     location: locationObj.location,
-                    locationId: locationObj.id,
+                    locationId: locationObj.id
                 }
             });
         } else {
@@ -291,7 +296,7 @@ Template.nonTargetLesionDialog.events({
         measurementData.isTarget = false;
 
         // Response is set from location response list
-        measurementData.response = responseOptionId;
+        measurementData.response = LocationResponses.findOne({selected: true}).code;
 
         // Adds lesion data to timepoints array
         LesionManager.updateLesionData(measurementData);
