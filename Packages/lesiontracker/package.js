@@ -52,6 +52,7 @@ Package.onUse(function(api) {
     // UI Components
     api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.html', 'client');
     api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.styl', 'client');
+    api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.js', 'client');
 
     api.addFiles('client/components/associationModal/associationModal.html', 'client');
     api.addFiles('client/components/associationModal/associationModal.styl', 'client');
@@ -110,6 +111,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.html', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.styl', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.js', 'client');
+    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.html', 'client');
+    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.styl', 'client');
+    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.js', 'client');
 
     api.addFiles('client/components/lesionTrackerWorklistContextMenu/lesionTrackerWorklistContextMenu.html', 'client');
     api.addFiles('client/components/lesionTrackerWorklistContextMenu/lesionTrackerWorklistContextMenu.js', 'client');

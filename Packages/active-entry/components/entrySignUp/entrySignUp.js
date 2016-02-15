@@ -17,9 +17,9 @@ Router.route('/sign-up', {
 Template.entrySignUp.helpers({
   getSignUpMessageColor: function (){
     if (ActiveEntry.errorMessages.get('signInError')) {
-      return "color: #a94442; background-color: #f2dede; border-color: #ebccd1;"
+      return "color: #a94442; background-color: #f2dede; border-color: #ebccd1;";
     } else {
-      return "color: black;"
+      return "color: black;";
     }
   },
   getSignUpMessage: function (){
@@ -28,6 +28,15 @@ Template.entrySignUp.helpers({
     } else {
       return Session.get('defaultSignInMessage');
     }
+  },
+  entryErrorMessages: function () {
+    var errorMessages = [];
+    Object.keys(ActiveEntry.errorMessages.all()).forEach(function(key) {
+      if (key !== "signInError" && ActiveEntry.errorMessages.get(key)) {
+        errorMessages.push(ActiveEntry.errorMessages.get(key));
+      }
+    });
+    return errorMessages;
   },
   getButtonText: function () {
     if (ActiveEntry.errorMessages.get('signInError')) {
@@ -41,7 +50,7 @@ Template.entrySignUp.helpers({
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('email', "Email is poorly formatted")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('email', "Email present")) {
+    } else if (ActiveEntry.successMessages.equals('email', "Email present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -50,9 +59,9 @@ Template.entrySignUp.helpers({
   getPasswordStyling: function () {
     if (ActiveEntry.errorMessages.equals('password', "Password is required")) {
       return "border: 1px solid #a94442";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password is weak")) {
+    } else if (ActiveEntry.errorMessages.equals('password', Session.get('passwordWarning'))) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('password', "Password present")) {
+    } else if (ActiveEntry.successMessages.equals('password', "Password present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -61,9 +70,11 @@ Template.entrySignUp.helpers({
   getConfirmPasswordStyling: function () {
     if (ActiveEntry.errorMessages.equals('confirm', "Password is required")) {
       return "border: 1px solid #a94442";
+    } else if (ActiveEntry.errorMessages.equals('confirm', "Passwords do not match")) {
+      return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('confirm', "Password is weak")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('confirm', "Passwords match")) {
+    } else if (ActiveEntry.successMessages.equals('confirm', "Passwords match")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -74,7 +85,7 @@ Template.entrySignUp.helpers({
       return "border: 1px solid #a94442";
     } else if (ActiveEntry.errorMessages.equals('fullName', "Name is probably not complete")) {
       return "border: 1px solid #f2dede";
-    } else if (ActiveEntry.errorMessages.equals('fullName', "Name present")) {
+    } else if (ActiveEntry.successMessages.equals('fullName', "Name present")) {
       return "border: 1px solid green";
     } else {
       return "border: 1px solid gray";
@@ -85,6 +96,7 @@ Template.entrySignUp.helpers({
 Template.entrySignUp.events({
   "click #signUpPageSignInButton": function (event) {
     event.preventDefault();
+    ActiveEntry.reset();
     Router.go('/entrySignIn');
   },
   'change, keyup #signUpPageEmailInput': function (event, template) {
@@ -115,25 +127,40 @@ Template.entrySignUp.events({
     ActiveEntry.verifyFullName(fullName);
     ActiveEntry.errorMessages.set('signInError', null);
   },
-  // TODO:  this is outdated, and should be changed to match the signature/pattern in entrySignIn
   'click #signUpPageJoinNowButton': function (event, template) {
-    event.preventDefault();
-
-    ActiveEntry.errorMessages.set('signInError', null);
-    ActiveEntry.verifyPassword(event, template);
-
-    var newUser = {
-      fullName: template.$('[name="fullName"]').val(),
-      email: template.$('[name="email"]').val(),
-      password: template.$('[name="password"]').val(),
-      confirm: template.$('[name="confirm"]').val()
-    };
-
     ActiveEntry.signUp(
-      newUser.email,
-      newUser.password,
-      newUser.confirm,
-      newUser.fullName
+      $('#signUpPageEmailInput').val(),
+      $('#signUpPagePasswordInput').val(),
+      $('#signUpPagePasswordConfirmInput').val(),
+      $('#signUpPageFullNameInput').val()
     );
+  },
+  'keyup #entrySignUp': function(event, template) {
+    if(event.keyCode == 13) {
+      ActiveEntry.verifyFullName($("#signUpPageFullNameInput").val());
+      ActiveEntry.verifyEmail($("#signUpPageEmailInput").val());
+      ActiveEntry.verifyPassword($("#signUpPagePasswordInput").val());
+      ActiveEntry.verifyConfirmPassword($("#signUpPagePasswordInput").val(), $("#signUpPagePasswordConfirmInput").val());
+
+      if (!ActiveEntry.errorMessages.get('signInError') &&
+          ActiveEntry.successMessages.get('fullName') &&
+          ActiveEntry.successMessages.get('email') &&
+          ActiveEntry.successMessages.get('password') &&
+          ActiveEntry.successMessages.get('confirm')) {
+        $("#signUpPageJoinNowButton").click();
+      }
+    }
+  }
+});
+
+Template.entrySignUp.onRendered(function() {
+  // Password strength meter for password inputs
+  if (passwordValidationSettings.showPasswordStrengthIndicator) {
+    this.$('#signUpPagePasswordInput').pwstrength(passwordValidationSettings.pwstrengthOptions);
+  }
+
+  // Update password warning message if zxcvbn is active and zxcvbn function is defined
+  if(passwordValidationSettings.requireStrongPasswords) {
+    Session.set('passwordWarning', 'Password is weak');
   }
 });

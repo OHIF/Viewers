@@ -1,6 +1,6 @@
 Package.describe({
   name: 'clinical:active-entry',
-  version: '1.5.14',
+  version: '1.5.16',
   summary: 'SignIn, SignUp, and ForgotPassword pages for Clinical Framework.',
   git: 'https://github.com/clinical-meteor/clinical-active-entry',
   documentation: 'README.md'
@@ -16,19 +16,28 @@ Package.onUse(function (api) {
     'grove:less@0.1.1',
     'session',
     'reactive-dict',
-    'accounts-base',
-    'accounts-password'
+    //'codetheweb:zxcvbn'
   ], ['client']);
 
   api.use([
     'accounts-base',
     'accounts-password'
-  ], ['server']);
+  ]);
+
+  api.use([
+    'zuuk:stale-session@1.0.8'
+  ], ['client', 'server']);
 
   api.addFiles([
     'lib/ActiveEntry.js',
     'lib/Accounts.js'
   ]);
+
+  api.addFiles([
+    'lib/jquery.pwstrength.bootstrap.js',
+    'lib/checkPasswordStrength.js',
+    'lib/hashCodeGenerator.js'
+  ], ['client']);
 
   api.imply('accounts-base');
   api.imply('accounts-password');
@@ -48,6 +57,10 @@ Package.onUse(function (api) {
     'components/forgotPassword/forgotPassword.html',
     'components/forgotPassword/forgotPassword.js',
     'components/forgotPassword/forgotPassword.less',
+
+    'components/changePassword/changePassword.html',
+    'components/changePassword/changePassword.js',
+    'components/changePassword/changePassword.less',
 
   ], ['client']);
 

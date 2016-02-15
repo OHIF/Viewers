@@ -7,12 +7,35 @@
   @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
     width: 15%
 
-.navbar-brand
+  #userProfile
+    position: relative
+    float: right
+
+    .nav-pills > li > a:hover, .nav .open > a, .nav .open > a:hover, .nav .open > a:focus
+      background-color: #eee
+      color: black
+
+    .dropdown-menu > li > a:hover
+      background-color: #eee
+
+    .dropdown-menu > li > a >i
+      margin-right: 5px
+
+    .dropdown-toggle
+      color: #C1C1C1
+
+    .divider
+      height: 2px
+      margin: 9px 2px
+      overflow: hidden
+      background-color: #e5e5e5
+      border-bottom: 1px solid #fff
+
+  .navbar-brand
     display: inline-block
     padding: 0
     margin-right: 5px
     height: 100%
-    width: 100%
 
     img
       height: 30px

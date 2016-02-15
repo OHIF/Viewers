@@ -30,11 +30,21 @@ var routerOptions = {
 };
 
 Router.route('/', function() {
-    this.render('worklist', routerOptions);
+    // Check user is logged in
+    if (!Meteor.user() || !Meteor.userId()) {
+        this.render('entrySignIn', routerOptions);
+    } else{
+        this.render('worklist', routerOptions);
+    }
 });
 
 Router.route('/worklist', function() {
-    this.render('worklist', routerOptions);
+    // Check user is logged in
+    if (!Meteor.user() || !Meteor.userId()) {
+        this.render('entrySignIn', routerOptions);
+    } else{
+        this.render('worklist', routerOptions);
+    }
 });
 
 Router.route('/viewer/timepoints/:_id', {

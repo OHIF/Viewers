@@ -12,8 +12,16 @@ if (Meteor.isClient){
             destination: '/worklist'
         },
         themeColors: {
-            primary: 'black'
+            primary: ""
+        },
+        passwordOptions: {
+            showPasswordStrengthIndicator: false,
+            requireRegexValidation: true,
+            //requireStrongPasswords: false
+            passwordHistoryCount: 6,
+            failedAttemptsLimit: 5
         }
+
     });
 }
 

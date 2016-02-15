@@ -1,5 +1,10 @@
 ## Contributing
 
+**Submit your Pull Request on a Feature Branch**  
+
+- To ensure your pull-request has the greatest chance of getting merged in, please submit it on a feature branch rather than directly to master.  
+- Please see [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/) for more details.
+
 **Quality Assurance**  
 - Pull Requests will be generally accepted as long as the QA tests pass on [Circle CI](https://circleci.com/gh/clinical-meteor/clinical-active-entry).
 - Begin a Pull Request by logging an Issue for discussion.

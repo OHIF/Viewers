@@ -10,10 +10,11 @@
         <h1 id="signUpPageTitle" class="title-auth">Join.</h1>
         <div id="signUpPageMessage" class="subtitle-auth" style="{{getSignUpMessageColor}}">{{getSignUpMessage}}</div>
 
-        <form>
-          {{#if errorMessages}}
+        <form id="entrySignUpForm">
+
+          {{#if entryErrorMessages}}
             <div id="errorMessages" class="list-errors">
-              {{#each errorMessages}}
+              {{#each entryErrorMessages}}
                 <div class="alert alert-danger list-item">{{this}}</div>
               {{/each}}
             </div>

@@ -4,7 +4,23 @@
             <img src="/images/logo.png">
             <h4 class="name">Open Health Imaging Foundation</h4>
         </a>
+        {{#if currentUser}}
+            <div id="userProfile" class="row-fluid">
+                <div class="dropdown clearfix">
+                    <ul class="nav nav-pills pull-right">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{{fullName}}<b class="caret"></b></a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="changePassword" id="changePassword"><i class="fa fa-lock"></i>Change Password</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" id="logoutButton"><i class="fa fa-power-off"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {{/if}}
     </div>
+    {{> timeoutCountdownDialog}}
     {{ >optionsButton }}
     {{ >yield }}
 </template>
