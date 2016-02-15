@@ -1,6 +1,6 @@
 
 // REFACTOR:  Move to ActiveRecord object
-Session.set("defaultSignInMessage", "Improve your clinical practice with checklists.");
+//Session.set("defaultSignInMessage", "Improve your clinical practice with checklists.");
 
 //==================================================================================================
 // ROUTER

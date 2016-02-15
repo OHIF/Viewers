@@ -45,13 +45,26 @@ Meteor.methods({
   },
 
   getFailedAttemptsCount: function(emailAddress) {
-    return Meteor.users.findOne({"emails.address": emailAddress}).failedPasswordAttempts || 0;
+    // Check if the user actually exists, and if not, stop here
+    var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
+    if (!currentUser) {
+      return;
+    }
+    
+    return currentUser.failedPasswordAttempts || 0;
   },
 
   updateFailedAttempts: function(failedAttemptsParameters) {
     var emailAddress = failedAttemptsParameters[0];
     var failedAttemptsLimit = failedAttemptsParameters[1];
-    var failedAttemptCount = Meteor.users.findOne({"emails.address": emailAddress}).failedPasswordAttempts || 0;
+
+    // Check if the user actually exists, and if not, stop here
+    var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
+    if (!currentUser) {
+      return;
+    }
+
+    var failedAttemptCount = currentUser.failedPasswordAttempts || 0;
     if (failedAttemptCount == failedAttemptsLimit) {
       return failedAttemptCount;
     } else {

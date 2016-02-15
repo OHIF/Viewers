@@ -1,6 +1,8 @@
+Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
+
 Template.lesionTrackerLayout.events({
     'click #logoutButton': function() {
-        Meteor.logout(function(){
+        Meteor.logout(function() {
             Router.go('/entrySignIn');
         });
     },
@@ -10,7 +12,7 @@ Template.lesionTrackerLayout.events({
 });
 
 Template.lesionTrackerLayout.helpers({
-    'fullName': function() {
+    fullName: function() {
         return Meteor.user().profile.fullName;
     }
 });
@@ -18,26 +20,29 @@ Template.lesionTrackerLayout.helpers({
 Template.lesionTrackerLayout.onCreated(function() {
     // Show countdown dialog
     var handle;
-    $(document).on('TriggerOpenTimeoutCountdownDialog', function (e, leftTime) {
+    $(document).on('TriggerOpenTimeoutCountdownDialog', function(e, leftTime) {
         // TODO: Show modal dialog
         handle = setInterval(function() {
-            leftTime --;
+            leftTime--;
             // Set countdownDialogLeftTime session
-            Session.set("countdownDialogLeftTime", leftTime);
+            Session.set('countdownDialogLeftTime', leftTime);
+
             // Show dialog
-            if ($("#timeoutCountdownDialog").css("display") == "none") {
-                $("#timeoutCountdownDialog").css("display", "block");
+            var dialog = $('#timeoutCountdownDialog');
+            if (dialog.css('display') === 'none') {
+                dialog.css('display', 'block');
             }
         }, 1000);
 
     });
 
-    $(document).on('TriggerCloseTimeoutCountdownDialog', function (e) {
-        $("#timeoutCountdownDialog").css("display", "none");
+    $(document).on('TriggerCloseTimeoutCountdownDialog', function(e) {
+        var dialog = $('#timeoutCountdownDialog');
+        dialog.css('display', 'none');
         if (handle) {
             clearInterval(handle);
             // Close the dialog
-            $("#timeoutCountdownDialog").css("display", "none");
+            dialog.css('display', 'none');
 
         }
     });

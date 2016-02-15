@@ -33,7 +33,7 @@ Router.route('/', function() {
     // Check user is logged in
     if (!Meteor.user() || !Meteor.userId()) {
         this.render('entrySignIn', routerOptions);
-    } else{
+    } else {
         this.render('worklist', routerOptions);
     }
 });
@@ -42,7 +42,7 @@ Router.route('/worklist', function() {
     // Check user is logged in
     if (!Meteor.user() || !Meteor.userId()) {
         this.render('entrySignIn', routerOptions);
-    } else{
+    } else {
         this.render('worklist', routerOptions);
     }
 });

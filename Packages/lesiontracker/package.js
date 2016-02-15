@@ -58,8 +58,14 @@ Package.onUse(function(api) {
     api.addFiles('client/components/associationModal/associationModal.styl', 'client');
     api.addFiles('client/components/associationModal/associationModal.js', 'client');
 
+
+    api.addFiles('client/components/activeEntry/activeEntry.styl', 'client');
+    api.addFiles('client/components/activeEntry/activeEntry.js', 'client');
+
+    api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
+    api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
+
     api.addFiles('client/components/optionsButton/optionsButton.html', 'client');
-    api.addFiles('client/components/optionsButton/optionsButton.styl', 'client');
 
     api.addFiles('client/components/optionsModal/optionsModal.html', 'client');
     api.addFiles('client/components/optionsModal/optionsModal.styl', 'client');
