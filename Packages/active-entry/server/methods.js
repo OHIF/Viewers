@@ -79,6 +79,16 @@ Meteor.methods({
     return failedAttemptCount + 1;
   },
 
+  lockAccount: function(emailAddress) {
+    // Check if the user actually exists, and if not, stop here
+    var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
+    if (!currentUser) {
+      return;
+    }
+
+    Meteor.users.update({"emails.address": emailAddress}, {$set: {"profile.isLocked": true}});
+  },
+
   resetFailedAttempts: function(emailAddress) {
     Meteor.users.update({"emails.address": emailAddress}, {$set: {failedPasswordAttempts: 0}});
   },
@@ -106,6 +116,34 @@ Meteor.methods({
     }
 
     return currentUser.profile.isLocked || false;
+  },
+
+  updateLastLoginDate: function () {
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {lastLoginDate: new Date()}});
+  },
+
+  isAccountInactive: function (inactivityParameters) {
+    var emailAddress = inactivityParameters[0];
+    var inactivityPeriodDays = inactivityParameters[1];
+
+    // Check if the user actually exists, and if not, stop here
+    var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
+    console.log(currentUser);
+    if (!currentUser) {
+      return;
+    }
+    console.log(currentUser);
+
+    var lastLoginDate = currentUser.lastLoginDate;
+    console.log(lastLoginDate);
+    lastLoginDate.setDate(lastLoginDate.getDate() + inactivityPeriodDays);
+    console.log(lastLoginDate);
+
+    if (lastLoginDate <= new Date()) {
+      return true;
+    }
+
+    return false;
   }
 
 });
