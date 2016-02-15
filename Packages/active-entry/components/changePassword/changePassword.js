@@ -105,6 +105,10 @@ Template.changePassword.events({
               } else {
                 // Save the new password
                 ActiveEntry.insertHashedPassword(confirmPassword);
+
+                // Update password expiration date
+                ActiveEntry.updatePasswordSetDate();
+
                 // Logout
                 ActiveEntry.signOut();
                 // Go to signIn page for new entry

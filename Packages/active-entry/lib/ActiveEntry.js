@@ -28,7 +28,8 @@ if (Meteor.isClient) {
       requireRegexValidation: true,
       //requireStrongPasswords: false
       passwordHistoryCount: 6,
-      failedAttemptsLimit: 5
+      failedAttemptsLimit: 5,
+      passwordExpirationDays: 90
     }
 
   });
@@ -50,6 +51,18 @@ if (Meteor.isClient) {
 
 ActiveEntry.configure = function (configObject) {
   if (Meteor.isClient) {
+
+    // Set passwordOptions if they are not defined
+    if (!configObject.passwordOptions) {
+      configObject.passwordOptions = {
+        showPasswordStrengthIndicator: true,
+        requireRegexValidation: false,
+        //requireStrongPasswords: false
+        passwordHistoryCount: 6,
+        failedAttemptsLimit: 5,
+        passwordExpirationDays: 90
+      }
+    }
     Session.set('Photonic.ActiveEntry', configObject);
   }
 };
@@ -110,44 +123,78 @@ ActiveEntry.verifyFullName = function (fullName) {
 };
 
 ActiveEntry.signIn = function (emailValue, passwordValue){
+
   ActiveEntry.verifyPassword(passwordValue);
   ActiveEntry.verifyEmail(emailValue);
+
   var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
   var failedAttemptsLimit = ActiveEntryConfig && ActiveEntryConfig.passwordOptions && ActiveEntryConfig.passwordOptions.failedAttemptsLimit || 5;
+  var passwordExpirationDays = ActiveEntryConfig && ActiveEntryConfig.passwordOptions && ActiveEntryConfig.passwordOptions.passwordExpirationDays || 90;
 
-  Meteor.call("getFailedAttemptsCount", emailValue, function(error, failedAttemptsCount) {
+  // Check account is locked
+  Meteor.call("isAccountLocked", function (error, isAccountLocked) {
     if (error) {
-      console.warn(error.message);
+      console.warn(error);
     } else {
-      if (failedAttemptsCount != failedAttemptsLimit) {
-        Meteor.loginWithPassword({email: emailValue}, passwordValue, function (error, result) {
-          if (error) {
-            // Login failed
-            Meteor.call("updateFailedAttempts", [emailValue, failedAttemptsLimit], function(error, failedAttemptCount) {
+      if (isAccountLocked) {
+        ActiveEntry.errorMessages.set('signInError', "Your account has been locked.");
+        return;
+      }
+
+      Meteor.call("getFailedAttemptsCount", emailValue, function(error, failedAttemptsCount) {
+        if (error) {
+          console.warn(error.message);
+        } else {
+          if (failedAttemptsCount != failedAttemptsLimit) {
+            Meteor.loginWithPassword({email: emailValue}, passwordValue, function (error, result) {
               if (error) {
-                console.warn(error);
+                // Login failed
+                Meteor.call("updateFailedAttempts", [emailValue, failedAttemptsLimit], function(error, failedAttemptCount) {
+                  if (error) {
+                    console.warn(error);
+                  } else {
+                    if (failedAttemptCount == failedAttemptsLimit) {
+                      ActiveEntry.errorMessages.set('signInError', "Too many failed login attempts. Your account has been locked.");
+
+                    } else {
+                      ActiveEntry.errorMessages.set('signInError', (failedAttemptsLimit - failedAttemptCount) + " attempts remaining.");
+
+                    }
+                  }
+                });
               } else {
-                if (failedAttemptCount == failedAttemptsLimit) {
-                  ActiveEntry.errorMessages.set('signInError', "Too many failed login attempts. Your account has been locked.");
+                console.log('result', result);
+                // Reset failed attempts
+                Meteor.call("resetFailedAttempts", emailValue);
 
-                } else {
-                  ActiveEntry.errorMessages.set('signInError', (failedAttemptsLimit - failedAttemptCount) + " attempts remaining.");
+                // Check password expiration
+                // if password expired, route to changePassword page
+                Meteor.call("isPasswordExpired", passwordExpirationDays, function(error, isPasswordExpired) {
+                  if (error) {
+                    console.warn(error);
+                  } else {
+                    if (isPasswordExpired) {
+                      ActiveEntry.errorMessages.set('changePasswordError', 'Your password expired. Please change your password.');
+                      Router.go('/changePassword');
+                    } else {
+                      Router.go(ActiveEntryConfig.signIn.destination);
+                    }
+                  }
+                });
 
-                }
               }
             });
           } else {
-            console.log('result', result);
-            Meteor.call("resetFailedAttempts", emailValue);
-            Router.go(ActiveEntryConfig.signIn.destination);
+            ActiveEntry.errorMessages.set('signInError', "Your account has been locked.");
           }
-        });
-      } else {
-        ActiveEntry.errorMessages.set('signInError', "Your account has been locked.");
-      }
+        }
+
+      });
+
     }
 
   });
+
 
 };
 
@@ -185,7 +232,9 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
     } else {
       // Add password in previous password field
       ActiveEntry.insertHashedPassword(passwordValue);
-      ActiveEntry.updatePasswordCreatedDate();
+
+      // Update password set date
+      ActiveEntry.updatePasswordSetDate();
       var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
       Router.go(ActiveEntryConfig.signUp.destination);
     }
@@ -213,8 +262,8 @@ ActiveEntry.insertHashedPassword =  function(passwordValue) {
   Meteor.call("insertHashedPassword", [new String(passwordValue).hashCode(),passwordHistoryCount]);
 };
 
-ActiveEntry.updatePasswordCreatedDate = function() {
-  Meteor.call("updatePasswordCreatedDate");
+ActiveEntry.updatePasswordSetDate = function() {
+  Meteor.call("updatePasswordSetDate");
 };
 
 ActiveEntry.signOut = function (){

@@ -68,10 +68,10 @@ Meteor.methods({
     if (failedAttemptCount == failedAttemptsLimit) {
       return failedAttemptCount;
     } else {
-      if (failedAttemptCount == 4) {
+      if (failedAttemptCount == (failedAttemptsLimit - 1)) {
         // Locked user account
         Meteor.users.update({"emails.address": emailAddress}, {$set: {"profile.isLocked": true, failedPasswordAttempts: failedAttemptCount + 1}});
-      } else if (failedAttemptCount < 4) {
+      } else if (failedAttemptCount < (failedAttemptsLimit - 1)) {
         Meteor.users.update({"emails.address": emailAddress}, {$set: {failedPasswordAttempts: failedAttemptCount + 1}});
       }
     }
@@ -83,7 +83,29 @@ Meteor.methods({
     Meteor.users.update({"emails.address": emailAddress}, {$set: {failedPasswordAttempts: 0}});
   },
 
-  updatePasswordCreatedDate: function() {
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {"services.password.createdAt": new Date()}});
+  updatePasswordSetDate: function() {
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {"services.password.setDate": new Date()}});
+  },
+
+  isPasswordExpired: function(passwordExpirationDays) {
+    var passwordSetDate = Meteor.users.find({_id: Meteor.userId()}).fetch()[0].services.password.setDate;
+    passwordSetDate.setDate(passwordSetDate.getDate() + passwordExpirationDays);
+
+    if (passwordSetDate <= new Date()) {
+      return true;
+    }
+
+    return false;
+  },
+
+  isAccountLocked: function(emailAddress) {
+    // Check if the user actually exists, and if not, stop here
+    var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
+    if (!currentUser) {
+      return;
+    }
+
+    return currentUser.profile.isLocked || false;
   }
+
 });
