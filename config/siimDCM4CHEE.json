@@ -16,6 +16,7 @@
       }
     ]
   },
+  "defaultServiceType": "dicomWeb",
   "public": {
     "staleSessionInactivityTimeout": 300000,
     "staleSessionHeartbeatInterval": 30000,
