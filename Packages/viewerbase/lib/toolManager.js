@@ -28,10 +28,10 @@ function configureTools() {
     cornerstoneTools.toolStyle.setToolWidth(2);
 
     // Set color for inactive tools
-    cornerstoneTools.toolColors.setToolColor('rgb(111, 245, 66)');
+    cornerstoneTools.toolColors.setToolColor('rgb(255, 255, 0)');
 
     // Set color for active tools
-    cornerstoneTools.toolColors.setActiveColor('rgb(66, 245, 206)');
+    cornerstoneTools.toolColors.setActiveColor('rgb(0, 255, 0)');
 }
 
 toolManager = {
