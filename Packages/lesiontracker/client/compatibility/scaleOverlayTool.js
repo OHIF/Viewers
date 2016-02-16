@@ -224,7 +224,7 @@
                     y: hscaleBounds.bottomRight.y
                 }
             },
-            color: cornerstoneTools.toolColors.getToolColor(),
+            color: 'white', // TODO: fix this later
             lineWidth: cornerstoneTools.toolStyle.getToolWidth()
         };
 
