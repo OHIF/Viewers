@@ -7,7 +7,6 @@ Template.viewer.onCreated(function() {
     ValidationErrors.remove({});
 
     var self = this;
-    var firstMeasurementsActivated = false;
     var contentId = this.data.contentId;
 
     OHIF = OHIF || {
@@ -191,17 +190,6 @@ Template.viewer.onCreated(function() {
                     // This is used to re-add tools from the database into the
                     // Cornerstone ToolData structure
                     syncMeasurementAndToolData(data);
-
-                    // Activate first measurements in image box as default if exists
-                    if (!firstMeasurementsActivated) {
-                        var templateData = {
-                            contentId: Session.get('activeContentId')
-                        };
-
-                        // Activate measurement
-                        activateLesion(data._id, templateData);
-                        firstMeasurementsActivated = true;
-                    }
 
                     // Update each displayed viewport
                     updateAllViewports();

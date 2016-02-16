@@ -1,5 +1,5 @@
 <template name="lesionTableTimepointHeader">
-    <th class="lesionTableTimepointCell" title="Latest study date: {{formatDA latestDate "MM/DD/YYYY"}}"
+    <th class="lesionTableTimepointCell {{ #if isLoaded }}loaded{{/if}}" title="Latest study date: {{formatDA latestDate "MM/DD/YYYY"}}"
         data-toggle="tooltip" data-placement="top">
         {{ timepointName }}
     </th>

@@ -99,6 +99,10 @@ Meteor.methods({
 
   isPasswordExpired: function(passwordExpirationDays) {
     var passwordSetDate = Meteor.users.find({_id: Meteor.userId()}).fetch()[0].services.password.setDate;
+    if (!passwordSetDate) {
+      return false;
+    }
+
     passwordSetDate.setDate(passwordSetDate.getDate() + passwordExpirationDays);
 
     if (passwordSetDate <= new Date()) {
@@ -135,6 +139,10 @@ Meteor.methods({
     console.log(currentUser);
 
     var lastLoginDate = currentUser.lastLoginDate;
+    if (!lastLoginDate) {
+      return false; 
+    }
+
     console.log(lastLoginDate);
     lastLoginDate.setDate(lastLoginDate.getDate() + inactivityPeriodDays);
     console.log(lastLoginDate);

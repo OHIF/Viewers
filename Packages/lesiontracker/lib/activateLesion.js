@@ -16,34 +16,47 @@ activateLesion = function(measurementId, templateData) {
         return;
     }
 
-    // Get the timepoint data from this Measurement
-    var timepoints = measurementData.timepoints;
+    // Create an empty array to store the ordered timepoint data for this
+    // measurement
+    var orderedTimepointEntries = [];
 
-    // Get all non-dummy timepoint entries in the Measurement
-    // TODO=Re-evaluate this approach to populating viewports with timepoints
-    // What is the desired behaviour here?
-    var timepointsWithEntries = [];
-    Object.keys(timepoints).forEach(function(key) {
-        var timepoint = timepoints[key];
+    // Retrieve the Cursor for this patient's Timepoints in ascending order by studyDate
+    var sortedTimepoints = Timepoints.find({}, {
+        sort: {
+            latestDate: 1
+        }
+    })
 
-        if (timepoint.imageId === '' ||
-            timepoint.studyInstanceUid === '' ||
-            timepoint.seriesInstanceUid === '') {
+    // Loop through each timepoint and populate the orderTimepointEntries array with
+    // The measurement data at each timepoint. The most recent measurements will be first in
+    // the array.
+    sortedTimepoints.forEach(function(timepoint) {
+        var measurementDataAtTimepoint = measurementData.timepoints[timepoint.timepointId];
+        if (!measurementDataAtTimepoint) {
             return;
         }
 
-        timepointsWithEntries.push(timepoint);
+        orderedTimepointEntries.push(measurementDataAtTimepoint);
     });
 
-    // If there are no non-dummy timepoint entries, stop here
-    if (!timepointsWithEntries.length) {
+    // If there is no timepoint data to display for this Measurement, stop here
+    if (!orderedTimepointEntries.length) {
         return;
     }
 
+    // Retrieve the list of available viewports
+    var viewports = $('.imageViewerViewport').not('.empty');
+
+    // Remove earlier timepoint data entries
+    if (orderedTimepointEntries.length > viewports.length) {
+        var difference = orderedTimepointEntries.length - viewports.length;
+        orderedTimepointEntries.splice(0, difference);
+    }
+
     // Loop through the viewports and display each timepoint
-    $('.imageViewerViewport').not('.empty').each(function(viewportIndex, element) {
+    viewports.each(function(viewportIndex, element) {
         // Stop if we run out of timepoints before viewports
-        if (viewportIndex >= timepointsWithEntries.length) {
+        if (viewportIndex >= orderedTimepointEntries.length) {
             // Update the element anyway, to remove any other highlights that are present
             deactivateAllToolData(element, 'lesion');
             deactivateAllToolData(element, 'nonTarget');
@@ -55,7 +68,7 @@ activateLesion = function(measurementId, templateData) {
         // Find measurements related to the Nth timepoint
         // TODO=Re-evaluate this approach to populating viewports with timepoints
         // What is the desired behaviour here?
-        var measurementAtTimepoint = timepointsWithEntries[viewportIndex];
+        var measurementAtTimepoint = orderedTimepointEntries[viewportIndex];
 
         // Find the image that is currently in this viewport
         var enabledElement = cornerstone.getEnabledElement(element);
