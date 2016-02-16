@@ -16,6 +16,7 @@ var organGroups = [
     'Liver',
     'Lung',
     'Lymph Node',
+    'Mediastinum/Hilum',
     'Muscle',
     'Neck',
     'Other: Soft Tissue',
