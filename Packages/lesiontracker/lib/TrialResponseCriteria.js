@@ -280,10 +280,10 @@ function validateGroups() {
     // Collection. 
 
     var timepointTypes = ['baseline', 'followup'];
-    timepointTypes.forEach(function(timepoint) {
+    timepointTypes.forEach(function(timepointType) {
         // Retrieve the current constraints which apply to the specific Timepoint type
         // (e.g. baseline, followup) that this Measurement is being edited on.
-        var timepointConstraints = currentConstraints[timepoint.timepointType];
+        var timepointConstraints = currentConstraints[timepointType];
         if (!timepointConstraints) {
             return;
         }
