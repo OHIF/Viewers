@@ -132,20 +132,16 @@ Meteor.methods({
 
     // Check if the user actually exists, and if not, stop here
     var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
-    console.log(currentUser);
     if (!currentUser) {
       return;
     }
-    console.log(currentUser);
 
     var lastLoginDate = currentUser.lastLoginDate;
     if (!lastLoginDate) {
       return false; 
     }
 
-    console.log(lastLoginDate);
     lastLoginDate.setDate(lastLoginDate.getDate() + inactivityPeriodDays);
-    console.log(lastLoginDate);
 
     if (lastLoginDate <= new Date()) {
       return true;
