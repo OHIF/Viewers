@@ -1,4 +1,5 @@
 <template name="viewer">
+    {{#if Template.subscriptionsReady}}
     <div id="viewer">
         {{> studyBrowser }}
         <div class='viewerMain'>
@@ -6,4 +7,7 @@
             {{ > imageViewerViewports }}
         </div>
     </div>
+    {{else}}
+        {{>loadingText}}
+    {{/if}}
 </template>

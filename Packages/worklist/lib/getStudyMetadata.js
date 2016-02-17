@@ -24,16 +24,18 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
     // If no study metadata is in the cache variable, we need to retrieve it from
     // the server with a call.
     Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
-        var hipaaEvent = {
-            eventType: "viewed",
-            userId: Meteor.userId(),
-            userName: Meteor.user().profile.fullName,
-            collectionName: "Study",
-            recordId: studyInstanceUid,
-            patientId: study.patientId,
-            patientName: study.patientName
-        };
-        HipaaLogger.logEvent(hipaaEvent);
+        if (Meteor.user()) {
+            var hipaaEvent = {
+                eventType: "viewed",
+                userId: Meteor.userId(),
+                userName: Meteor.user().profile.fullName,
+                collectionName: "Study",
+                recordId: studyInstanceUid,
+                patientId: study.patientId,
+                patientName: study.patientName
+            };
+            HipaaLogger.logEvent(hipaaEvent);
+        }
 
         log.info('worklistStudy getStudyMetadata: ' + studyInstanceUid);
 
