@@ -42,10 +42,3 @@ LocationResponses.insert({
     code: 'EX',
     description: ''
 });
-
-// TODO: Check if this is a copy of Not evaluable?
-LocationResponses.insert({
-    text: 'Non-measurable',
-    code: 'NM',
-    description: ''
-});

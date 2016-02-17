@@ -23,10 +23,8 @@ convertToNonTarget = function(measurementData) {
         isTarget: false,
         measurementType: toolType
     };
-
+    
     if (timepoint && timepoint.timepointType === 'baseline') {
-        newMeasurement.response = 'NM';
-    } else if (timepoint && timepoint.timepointType === 'followup') {
         newMeasurement.response = 'Present';
     } else {
         newMeasurement.response = '';

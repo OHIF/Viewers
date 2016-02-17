@@ -94,8 +94,6 @@ function getLesionLocationCallback(measurementData, eventData) {
     });
 
     if (timepoint && timepoint.timepointType === 'baseline') {
-        selectNonTargetResponse('NM');
-    } else if (timepoint && timepoint.timepointType === 'followup') {
         selectNonTargetResponse('Present');
     } else {
         selectNonTargetResponse();
