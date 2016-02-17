@@ -6,18 +6,28 @@ Template.lesionTrackerLayout.events({
             Router.go('/entrySignIn');
         });
     },
-    'click #changePassword': function() {
-        Router.go('/changePassword');
+    'click #worklist': function(e, template) {
+        template.showWorklistMenu.set(false);
+    },
+    'click #audit': function(e, template) {
+        template.showWorklistMenu.set(true);
     }
 });
 
 Template.lesionTrackerLayout.helpers({
     fullName: function() {
         return Meteor.user().profile.fullName;
+    },
+
+    showWorklistMenu: function() {
+        return  Template.instance().showWorklistMenu.get();
     }
 });
 
 Template.lesionTrackerLayout.onCreated(function() {
+    // showViewer to go to viewer from audit
+    this.showWorklistMenu = new ReactiveVar(false);
+
     // Show countdown dialog
     var handle;
     $(document).on('TriggerOpenTimeoutCountdownDialog', function(e, leftTime) {
