@@ -180,7 +180,10 @@ Template.worklistResult.events({
         var dates = dateRange.split("-");
         studyDateFrom = dates[0];
         studyDateTo = dates[1];
-        search();
+
+        if (dateRange !== "") {
+            search();
+        }
     }
 });
 
