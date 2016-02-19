@@ -1,3 +1,5 @@
+Session.setDefault("searchResults", {showLoadingText: true, showNotFoundMessage: false});
+
 Template.worklistResult.helpers({
     /**
      * Returns a sorted instance of the WorklistStudies Collection
@@ -10,6 +12,15 @@ Template.worklistResult.helpers({
                 studyDate: 1
             }
         });
+    },
+
+    showLoadingText: function() {
+        return Session.get("searchResults").showLoadingText;
+    },
+
+    showNotFoundMessage: function() {
+        return Session.get("searchResults").showNotFoundMessage;
+
     }
 });
 
@@ -73,6 +84,12 @@ function convertStringToStudyDate(dateStr) {
  * Inserts the identified studies into the WorklistStudies Collection
  */
 function search() {
+    // Show loading message
+    var searchResults = Session.get("searchResults");
+    searchResults.showLoadingText = true;
+    searchResults.showNotFoundMessage = false;
+    Session.set("searchResults", searchResults);
+
     // Create the filters to be used for the Worklist Search
     filter = {
         patientName: getFilter($('input#patientName').val()),
@@ -94,10 +111,14 @@ function search() {
             return;
         }
 
+        // Hide loading text
+        searchResults.showLoadingText = false;
+        Session.set("searchResults", searchResults);
+
         if (!studies) {
             return;
         }
-        
+
         // Loop through all identified studies
         studies.forEach(function(study) {
 
@@ -109,6 +130,14 @@ function search() {
                 WorklistStudies.insert(study);
             }
         });
+
+        if (WorklistStudies.find().count() === 0) {
+            // Show notFound text
+            searchResults.showNotFoundMessage = true;
+            Session.set("searchResults", searchResults);
+        }
+
+
 
     });
 }

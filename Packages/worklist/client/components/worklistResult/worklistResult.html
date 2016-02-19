@@ -44,11 +44,15 @@
         </thead>
         <tbody id="studyListData">
         {{#each studies}}
-            {{ >worklistStudy }}
+            {{>worklistStudy }}
         {{/each}}
         </tbody>
     </table>
-    {{ #unless studies.count }}
-        {{ >loadingText }}
-    {{ /unless }}
+    {{#if showLoadingText}}
+        {{>loadingText}}
+    {{/if}}
+
+    {{#if showNotFoundMessage}}
+        {{>studyNotFound}}
+    {{/if}}
 </template>
