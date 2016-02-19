@@ -6,9 +6,10 @@ table#tblStudyList
   thead
     background-color: black
     white-space: nowrap
-    
+
     &:hover
       color: #888888
+
 
     // TODO: Use padding instead of hidden inputs to keep titles
     // at the same height in the header.
@@ -19,6 +20,12 @@ table#tblStudyList
       height: 25px
       background-color: #888888
       width: 100%
+
+    ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+    ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+    ::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
+      color: transparent;
+    }
 
   tbody
     tr

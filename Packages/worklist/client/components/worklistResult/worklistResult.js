@@ -18,8 +18,6 @@ search();
 
 var studyDateFrom;
 var studyDateTo;
-var checkFrom = false;
-var checkTo = false;
 var filter;
 
 /**
@@ -66,7 +64,7 @@ function convertStringToStudyDate(dateStr) {
     var y = dateStr.substring(0, 4);
     var m = dateStr.substring(4, 6);
     var d = dateStr.substring(6, 8);
-    var newDateStr = y + '/' + m + '/' + d;
+    var newDateStr = m + '/' + d + '/' + y;
     return new Date(newDateStr);
 }
 
@@ -99,19 +97,19 @@ function search() {
         if (!studies) {
             return;
         }
-
+        
         // Loop through all identified studies
         studies.forEach(function(study) {
 
             // Search the rest of the parameters that aren't done via the server call
             if (isIndexOf(study.modalities, modality) &&
-                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !checkFrom) &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !checkTo)) {
-
+                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === "") &&
+                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === "")) {
                 // Insert any matching studies into the WorklistStudies Collection
                 WorklistStudies.insert(study);
             }
         });
+
     });
 }
 
@@ -124,6 +122,17 @@ Template.worklistResult.onCreated(function() {
     }
 });
 
+Template.worklistResult.onRendered(function() {
+    // Initialize daterangepicker
+    $("#studyDate").daterangepicker({
+        ranges: {
+            'Today': [moment(), moment()],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        }
+    });
+});
+
 Template.worklistResult.events({
     'keydown input': function(e) {
         if (e.which === 13) { //  Enter
@@ -131,6 +140,17 @@ Template.worklistResult.events({
         }
     },
     'onsearch input': function() {
+        search();
+    },
+
+    'change #studyDate': function(e, template) {
+        var dateRange = $(e.currentTarget).val();
+        // Remove all space chars
+        dateRange = dateRange.replace(/ /g,'');
+        // Split dateRange into subdates
+        var dates = dateRange.split("-");
+        studyDateFrom = dates[0];
+        studyDateTo = dates[1];
         search();
     }
 });
