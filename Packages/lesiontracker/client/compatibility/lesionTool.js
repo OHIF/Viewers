@@ -1031,6 +1031,14 @@
                 suffix = ' pixels';
             }
 
+            // Length is always longer than width
+            if (width > length) {
+                var tempW = width;
+                var tempL = length;
+                length = tempW;
+                width = tempL;
+            }
+
             var lengthText = ' L ' + length.toFixed(1) + suffix;
             var widthText = ' W ' + width.toFixed(1) + suffix;
             var textLines = [ 'Target ' + data.lesionNumber, lengthText, widthText ];
