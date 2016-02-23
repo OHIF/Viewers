@@ -5,6 +5,7 @@ var defaultTemplate = 'studyContextMenu';
 Template.lesionTrackerWorklistContextMenu.replaces(defaultTemplate);
 
 Worklist.functions['removeTimepointAssociations'] = removeTimepointAssociations;
+Worklist.functions['exportSelectedStudies'] = exportSelectedStudies;
 
 /**
  * Removes all present study / timepoint associations from the Clinical Trial
@@ -71,5 +72,39 @@ function removeTimepointAssociations() {
                 }
             });
         }
+    });
+}
+
+/**
+ * Exports all selected studies on the worklist
+ */
+function exportSelectedStudies() {
+    var selectedStudies = WorklistSelectedStudies.find({}, {
+            sort: {
+                studyDate: 1
+            }
+        }).fetch() || [];
+
+    if (selectedStudies.length < 1) {
+        return;
+    }
+
+    var studiesToExport = [];
+    var numberOfStudiesToQuery = selectedStudies.length;
+
+    progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
+
+    selectedStudies.forEach(function(selectedStudy) {
+        getStudyMetadata(selectedStudy.studyInstanceUid, function(study) {
+            studiesToExport.push(study);
+
+            var numberOfStudiesQueried = studiesToExport.length;
+
+            progressDialog.update(numberOfStudiesQueried);
+
+            if (numberOfStudiesQueried === numberOfStudiesToQuery) {
+                exportStudies(studiesToExport);
+            }
+        });
     });
 }

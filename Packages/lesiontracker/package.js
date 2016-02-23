@@ -169,6 +169,8 @@ Package.onUse(function(api) {
     api.addFiles('lib/handleMeasurementModified.js', 'client');
     api.addFiles('lib/handleMeasurementRemoved.js', 'client');
 
+    api.addFiles('lib/exportStudies.js', 'client');
+
 
     // Export global functions
     api.export('pixelSpacingAutorunCheck', 'client');
@@ -191,6 +193,7 @@ Package.onUse(function(api) {
     api.export('getTrialCriteriaConstraints', 'client');
     api.export('calculateTotalLesionBurden', 'client');
     api.export('convertToNonTarget', 'client');
+    api.export('exportStudies', 'client');
 
     // Export global objects
     api.export('TrialResponseCriteria', 'client');
