@@ -1,0 +1,14 @@
+<template name="lesionTrackerProgressDialog">
+    <div id="lesionTrackerProgressDialog" tabindex="0">
+        <div class="dialogHeader">
+            <h5>{{progressDialogTitle}}</h5>
+        </div>
+        <div class="dialogContent">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width:{{progressStatus}}">
+                    {{progressStatus}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

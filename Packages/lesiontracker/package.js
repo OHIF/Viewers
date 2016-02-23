@@ -117,6 +117,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.html', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.styl', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.js', 'client');
+
     api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.html', 'client');
     api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.styl', 'client');
     api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.js', 'client');
@@ -127,6 +128,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.html', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.styl', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
+
+    api.addFiles('client/components/lesionTrackerProgressDialog/lesionTrackerProgressDialog.html', 'client');
+    api.addFiles('client/components/lesionTrackerProgressDialog/lesionTrackerProgressDialog.styl', 'client');
+    api.addFiles('client/components/lesionTrackerProgressDialog/lesionTrackerProgressDialog.js', 'client');
 
     // Server functions
     api.addFiles('server/collections.js', 'server');
