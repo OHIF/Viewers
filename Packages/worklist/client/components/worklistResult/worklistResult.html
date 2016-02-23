@@ -3,40 +3,62 @@
         <thead>
         <tr>
             <th>
-                <h5>Patient Name</h5>
+                <a id="_patientName" class="sortingCell" href="#">
+                    <span>Patient Name</span>
+                    <i class="{{sortingColumnsIcons.patientName}}"></i>
+                </a>
                 <input type="text" class="form-control worklist-search" id="patientName">
             </th>
             <th>
-                <h5>Patient ID</h5>
+                <a id="_patientId" class="sortingCell" href="#">
+                    <span>Patient ID</span>
+                    <i class="{{sortingColumnsIcons.patientId}}"></i>
+                </a>
                 <input type="text" class="form-control worklist-search" id="patientId">
             </th>
 
             {{#unless isTouchDevice}}
                 <th>
-                    <h5>Accession #</h5>
+                    <a id="_accessionNumber" class="sortingCell" href="#">
+                        <span>Accession #</span>
+                        <i class="{{sortingColumnsIcons.accessionNumber}}"></i>
+                    </a>
                     <input type="text" class="form-control worklist-search" id="accessionNumber">
                 </th>
             {{/unless}}
 
             <th>
-                <h5>Study Date</h5>
-                <input type="text" class="form-control worklist-search" name="daterange" id="studyDate" style="padding: 0;">
+                <a id="_studyDate" class="sortingCell" href="#">
+                    <span>Study Date</span>
+                    <i class="{{sortingColumnsIcons.studyDate}}"></i>
+                </a>
+                <input type="text" class="form-control worklist-search" name="daterange" id="studyDate">
+
             </th>
 
             {{#unless isTouchDevice}}
                 <th>
-                    <h5>Modality</h5>
+                    <a id="_modalities" class="sortingCell" href="#">
+                        <span>Modality</span>
+                        <i class="{{sortingColumnsIcons.modalities}}"></i>
+                    </a>
                     <input type="text" class="form-control worklist-search" id="modality">
                 </th>
             {{/unless}}
             <th>
-                <h5>Study Description</h5>
+                <a id="_studyDescription" class="sortingCell" href="#">
+                    <span>Study Description</span>
+                    <i class="{{sortingColumnsIcons.studyDescription}}"></i>
+                </a>
                 <input type="text" class="form-control worklist-search" id="studyDescription">
             </th>
 
             {{#unless isTouchDevice}}
             <th>
-                <h5># Images</h5>
+                <a id="_numberOfStudyRelatedInstances" class="sortingCell" href="#">
+                    <span># Images</span>
+                    <i class="{{sortingColumnsIcons.numberOfStudyRelatedInstances}}"></i>
+                </a>
                 <input type="text" class="form-control worklist-search" id="numImages">
             </th>
             {{/unless}}

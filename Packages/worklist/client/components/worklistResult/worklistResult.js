@@ -6,6 +6,13 @@ Template.worklistResult.helpers({
      * by Patient name and Study Date in Ascending order.
      */
     studies: function() {
+        var sortOption = Template.instance().sortOption.get();
+        if (sortOption) {
+            return WorklistStudies.find({}, {
+                sort: sortOption
+            });
+        }
+
         return WorklistStudies.find({}, {
             sort: {
                 patientName: 1,
@@ -20,7 +27,14 @@ Template.worklistResult.helpers({
 
     showNotFoundMessage: function() {
         return Session.get("searchResults").showNotFoundMessage;
+    },
 
+    sortingColumnsIcons: function() {
+        var sortingColumnsIcons = {};
+        Object.keys(Template.instance().sortingColumns.keys).forEach(function(key) {
+            sortingColumnsIcons[key] = Template.instance().sortingColumns.get(key) === 1 ? "fa fa-sort-up": (Template.instance().sortingColumns.get(key) === -1 ? "fa fa-sort-down":"");
+        });
+        return sortingColumnsIcons;
     }
 });
 
@@ -126,6 +140,10 @@ function search() {
             if (isIndexOf(study.modalities, modality) &&
                 (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === "") &&
                 (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === "")) {
+
+                // Convert numberOfStudyRelatedInstance string into integer
+                study.numberOfStudyRelatedInstances = parseInt(study.numberOfStudyRelatedInstances);
+
                 // Insert any matching studies into the WorklistStudies Collection
                 WorklistStudies.insert(study);
             }
@@ -143,6 +161,11 @@ function search() {
 }
 
 Template.worklistResult.onCreated(function() {
+    this.sortOption = new ReactiveVar();
+    this.sortingColumns = new ReactiveDict();
+    this.sortingColumns.set('patientName', 1);
+    this.sortingColumns.set('studyDate', 1);
+
     var self = this;
     if (Worklist.subscriptions) {
         Worklist.subscriptions.forEach(function(collectionName) {
@@ -161,6 +184,14 @@ Template.worklistResult.onRendered(function() {
         }
     });
 });
+
+function resetSortingColumns(template, sortingColumn) {
+    Object.keys(template.sortingColumns.keys).forEach(function(key) {
+        if (key !== sortingColumn) {
+            template.sortingColumns.set(key, null);
+        }
+    });
+}
 
 Template.worklistResult.events({
     'keydown input': function(e) {
@@ -184,6 +215,26 @@ Template.worklistResult.events({
         if (dateRange !== "") {
             search();
         }
+    },
+
+    'click a.sortingCell': function(e, template) {
+        var elementId = e.currentTarget.id;
+        // Remove _ from id
+        var columnName = elementId.replace("_", '');
+
+        var sortOption= {};
+        resetSortingColumns(template, columnName);
+        var columnObject = template.sortingColumns.get(columnName);
+        if (columnObject) {
+            template.sortingColumns.set(columnName, columnObject * -1);
+            sortOption[columnName] = columnObject * -1;
+        } else {
+            template.sortingColumns.set(columnName, 1);
+            sortOption[columnName] = 1;
+        }
+
+        template.sortOption.set(sortOption);
     }
+
 });
 
