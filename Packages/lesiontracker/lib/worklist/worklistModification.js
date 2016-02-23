@@ -28,6 +28,12 @@ function dblClickOnStudy(data) {
         }
     });
 
+    // Check timepointType whether or not baseline
+    if ((timepoint.timepointType).toLowerCase() === "baseline") {
+        // Set active tool as lesion tool
+        toolManager.setActiveTool('lesion');
+    }
+
     if (!timepoint) {
         openNewTab(data.studyInstanceUid, title);
         return;
