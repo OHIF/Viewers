@@ -6,7 +6,7 @@ Template.worklistResult.helpers({
      * by Patient name and Study Date in Ascending order.
      */
     studies: function() {
-        var sortOption = Template.instance().sortOption.get();
+        var sortOption = Session.get('sortOption');
         if (sortOption) {
             return WorklistStudies.find({}, {
                 sort: sortOption
@@ -163,8 +163,14 @@ function search() {
 Template.worklistResult.onCreated(function() {
     this.sortOption = new ReactiveVar();
     this.sortingColumns = new ReactiveDict();
-    this.sortingColumns.set('patientName', 1);
-    this.sortingColumns.set('studyDate', 1);
+    // Set sortOption
+    var sortOptionSession = Session.get('sortOption');
+    if (sortOptionSession) {
+        this.sortingColumns.set(sortOptionSession);
+    } else {
+        this.sortingColumns.set('patientName', 1);
+        this.sortingColumns.set('studyDate', 1);
+    }
 
     var self = this;
     if (Worklist.subscriptions) {
@@ -234,6 +240,7 @@ Template.worklistResult.events({
         }
 
         template.sortOption.set(sortOption);
+        Session.set('sortOption', sortOption);
     }
 
 });
