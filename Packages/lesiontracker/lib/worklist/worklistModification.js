@@ -14,6 +14,8 @@ function dblClickOnStudy(data) {
         studyInstanceUid: data.studyInstanceUid
     });
 
+    console.log(study);
+
     // Check if the study has been associated, and if not, just open it on its own
     if (!study) {
         // Open a new tab with this study
@@ -28,16 +30,13 @@ function dblClickOnStudy(data) {
         }
     });
 
-    // Check timepointType whether or not baseline
-    if ((timepoint.timepointType).toLowerCase() === "baseline") {
-        // Set active tool as lesion tool
-        toolManager.setActiveTool('lesion');
-    }
-
     if (!timepoint) {
         openNewTab(data.studyInstanceUid, title);
         return;
     }
+
+    // Set active tool for timepoint
+    setTimepointActiveTool(timepoint);
 
     // Add the Timepoint name to the Patient name to create the tab title
     title += ' ' + getTimepointName(timepoint);

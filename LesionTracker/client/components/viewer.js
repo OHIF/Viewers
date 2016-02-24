@@ -120,6 +120,7 @@ Template.viewer.onCreated(function() {
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
 
         if (subscriptionsReady) {
+
             TrialResponseCriteria.validateAllDelayed();
 
             ViewerStudies.find().observe({
@@ -259,6 +260,12 @@ Template.viewer.onCreated(function() {
 
                     TrialResponseCriteria.validateAll();
                 }
+            });
+
+            // Set active tool for timepoint
+            dataContext.timepointIds.forEach(function(timepointId) {
+                var timepoint = Timepoints.findOne({timepointId: timepointId});
+                setTimepointActiveTool(timepoint);
             });
         }
     });
