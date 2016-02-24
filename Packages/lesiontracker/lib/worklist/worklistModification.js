@@ -14,8 +14,6 @@ function dblClickOnStudy(data) {
         studyInstanceUid: data.studyInstanceUid
     });
 
-    console.log(study);
-
     // Check if the study has been associated, and if not, just open it on its own
     if (!study) {
         // Open a new tab with this study

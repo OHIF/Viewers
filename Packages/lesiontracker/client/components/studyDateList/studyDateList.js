@@ -19,14 +19,14 @@ Template.studyDateList.helpers({
             sort: {
                 studyDate: -1
             }
-        });
+        }).fetch();
 
         // Modify the array of related studies so the default option is the currently selected study
-        relatedStudies.forEach(function(study) {
+        relatedStudies.forEach(function(study, index) {
             // If the studyInstanceUid matches that of the current study in the browser,
             // Set this to 'selected', so that it becomes the default option
             if (study.studyInstanceUid === currentStudyInBrowser.studyInstanceUid) {
-                study.selected = true;
+                relatedStudies[index].selected = true;
             }
         });
 
