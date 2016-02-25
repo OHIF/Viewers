@@ -33,6 +33,7 @@ email@1.0.8
 fastclick@1.0.7
 fortawesome:fontawesome@4.4.0
 geojson-utils@1.0.4
+gilbertwat:bootstrap3-daterangepicker@1.3.21_1
 hangingprotocols@0.0.1
 hot-code-push@1.0.0
 html-tools@1.0.5
@@ -60,7 +61,7 @@ minifiers@1.1.7
 minimongo@1.0.10
 mobile-experience@1.0.1
 mobile-status-bar@1.0.6
-momentjs:moment@2.8.4
+momentjs:moment@2.9.0
 mongo@1.1.3
 mongo-id@1.0.1
 mrt:moment@2.8.1
