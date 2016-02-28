@@ -25,6 +25,7 @@ if (Meteor.isClient){
     });
 }
 
+/*
 if (Meteor.isServer){
     Accounts.emailTemplates.siteName = 'AwesomeSite';
     Accounts.emailTemplates.from = 'AwesomeSite Admin <accounts@example.com>';
@@ -42,3 +43,4 @@ if (Meteor.isServer){
         //process.env.MAIL_URL = 'smtp://sandboxid.mailgun.org:mypassword@smtp.mailgun.org:587';
     });
 }
+*/

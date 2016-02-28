@@ -1,5 +1,10 @@
 Session.setDefault('ViewerData', {});
 
+// TODO: verifyEmail variable will be removed when mail server is set.
+// verifyEmail controls email verification template
+// set verifyEmail as false if email server settings are not ready
+Session.setDefault('verifyEmail', false);
+
 // Re-add any tab data saved in the Session
 Object.keys(ViewerData).forEach(function(contentId) {
     var tabData = ViewerData[contentId];
@@ -29,21 +34,33 @@ var routerOptions = {
     data: data
 };
 
+
+
 Router.route('/', function() {
     // Check user is logged in
-    if (!Meteor.user() || !Meteor.userId()) {
-        this.render('entrySignIn', routerOptions);
+    if(Meteor.user() && Meteor.userId()) {
+        if (!Meteor.user().emails[0].verified && Session.get("verifyEmail")) {
+            this.render('emailVerification', routerOptions);
+        } else {
+            this.render('worklist', routerOptions);
+        }
+
     } else {
-        this.render('worklist', routerOptions);
+        this.render('entrySignIn', routerOptions);
     }
 });
 
 Router.route('/worklist', function() {
     // Check user is logged in
-    if (!Meteor.user() || !Meteor.userId()) {
-        this.render('entrySignIn', routerOptions);
+    if(Meteor.user() && Meteor.userId()) {
+        if (!Meteor.user().emails[0].verified && Session.get("verifyEmail")) {
+            this.render('emailVerification', routerOptions);
+        } else {
+            this.render('worklist', routerOptions);
+        }
+
     } else {
-        this.render('worklist', routerOptions);
+        this.render('entrySignIn', routerOptions);
     }
 });
 

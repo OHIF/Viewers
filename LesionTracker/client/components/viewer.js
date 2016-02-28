@@ -263,10 +263,13 @@ Template.viewer.onCreated(function() {
             });
 
             // Set active tool for timepoint
-            dataContext.timepointIds.forEach(function(timepointId) {
-                var timepoint = Timepoints.findOne({timepointId: timepointId});
-                setTimepointActiveTool(timepoint);
-            });
+            if (dataContext && dataContext.timepointIds) {
+                dataContext.timepointIds.forEach(function(timepointId) {
+                    var timepoint = Timepoints.findOne({timepointId: timepointId});
+                    setTimepointActiveTool(timepoint);
+                });
+            }
+
         }
     });
 });

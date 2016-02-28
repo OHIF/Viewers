@@ -155,8 +155,6 @@ function search() {
             Session.set("searchResults", searchResults);
         }
 
-
-
     });
 }
 
@@ -186,7 +184,7 @@ Template.worklistResult.onRendered(function() {
         ranges: {
             'Today': [moment(), moment()],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()]
         }
     });
 });

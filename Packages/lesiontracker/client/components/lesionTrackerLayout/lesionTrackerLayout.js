@@ -21,6 +21,19 @@ Template.lesionTrackerLayout.helpers({
 
     showWorklistMenu: function() {
         return  Template.instance().showWorklistMenu.get();
+    },
+
+    currentUser: function() {
+        if (Meteor.user() && Meteor.userId()) {
+            if (Session.get("verifyEmail")) {
+                if (Meteor.user().emails[0].verified) {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 });
 
