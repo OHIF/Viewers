@@ -1,9 +1,7 @@
 Session.setDefault('ViewerData', {});
 
-// TODO: verifyEmail variable will be removed when mail server is set.
-// verifyEmail controls email verification template
-// set verifyEmail as false if email server settings are not ready
-Session.setDefault('verifyEmail', false);
+// verifyEmail controls whether emailVerification template will be rendered or not
+var verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
 
 // Re-add any tab data saved in the Session
 Object.keys(ViewerData).forEach(function(contentId) {
@@ -34,12 +32,10 @@ var routerOptions = {
     data: data
 };
 
-
-
 Router.route('/', function() {
     // Check user is logged in
     if(Meteor.user() && Meteor.userId()) {
-        if (!Meteor.user().emails[0].verified && Session.get("verifyEmail")) {
+        if (!Meteor.user().emails[0].verified && verifyEmail) {
             this.render('emailVerification', routerOptions);
         } else {
             this.render('worklist', routerOptions);
@@ -53,7 +49,7 @@ Router.route('/', function() {
 Router.route('/worklist', function() {
     // Check user is logged in
     if(Meteor.user() && Meteor.userId()) {
-        if (!Meteor.user().emails[0].verified && Session.get("verifyEmail")) {
+        if (!Meteor.user().emails[0].verified && verifyEmail) {
             this.render('emailVerification', routerOptions);
         } else {
             this.render('worklist', routerOptions);

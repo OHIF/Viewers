@@ -23,6 +23,14 @@
     "staleSessionPurgeInterval": 15000,
     "staleSessionActivityEvents": "mousemove click keydown",
     "showCountdownDialog": true,
-    "dialogTimeout": 30000
+    "dialogTimeout": 30000,
+    "verifyEmail": false
+  },
+  "mailServerSettings": {
+    "username": "",
+    "password": "",
+    "server": "",
+    "port": ""
   }
+
 }

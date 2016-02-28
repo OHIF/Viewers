@@ -24,15 +24,20 @@ Template.lesionTrackerLayout.helpers({
     },
 
     currentUser: function() {
-        if (Meteor.user() && Meteor.userId()) {
-            if (Session.get("verifyEmail")) {
-                if (Meteor.user().emails[0].verified) {
-                    return true;
-                }
-                return false;
-            }
+        var verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
+
+        if (!Meteor.user() || !Meteor.userId()) {
+            return false;
+        }
+
+        if (!verifyEmail) {
             return true;
         }
+
+        if (Meteor.user().emails[0].verified) {
+            return true;
+        }
+
         return false;
     }
 });
@@ -44,7 +49,7 @@ Template.lesionTrackerLayout.onCreated(function() {
     // Show countdown dialog
     var handle;
     $(document).on('TriggerOpenTimeoutCountdownDialog', function(e, leftTime) {
-        // TODO: Show modal dialog
+        // Show modal dialog
         handle = setInterval(function() {
             leftTime--;
             // Set countdownDialogLeftTime session

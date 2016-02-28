@@ -29,7 +29,10 @@ Meteor.startup(function() {
             aeTitle: 'ORTHANC',
             default: true
         }],
-        defaultServiceType: 'dicomWeb'
+        "defaultServiceType": 'dicomWeb',
+        "public": {
+            "verifyEmail": false
+        }
         //defaultServiceType: 'dimse'
     };
 
