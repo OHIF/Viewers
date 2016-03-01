@@ -85,26 +85,5 @@ function exportSelectedStudies() {
             }
         }).fetch() || [];
 
-    if (selectedStudies.length < 1) {
-        return;
-    }
-
-    var studiesToExport = [];
-    var numberOfStudiesToQuery = selectedStudies.length;
-
-    progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
-
-    selectedStudies.forEach(function(selectedStudy) {
-        getStudyMetadata(selectedStudy.studyInstanceUid, function(study) {
-            studiesToExport.push(study);
-
-            var numberOfStudiesQueried = studiesToExport.length;
-
-            progressDialog.update(numberOfStudiesQueried);
-
-            if (numberOfStudiesQueried === numberOfStudiesToQuery) {
-                exportStudies(studiesToExport);
-            }
-        });
-    });
+    exportStudies(selectedStudies);
 }

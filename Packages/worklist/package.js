@@ -13,6 +13,7 @@ Package.onUse(function (api) {
     api.use('http');
     api.use('practicalmeteor:loglevel');
     api.use('rwatts:uuid');
+    api.use('silentcicero:jszip');
 
     // Our custom packages
     api.use('dicomweb');

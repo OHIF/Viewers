@@ -3,19 +3,44 @@
  * @param studiesToExport Studies to export
  */
 exportStudies = function(studiesToExport) {
+    if (studiesToExport.length < 1) {
+        return;
+    }
+
+    var studiesQueried = [];
+    var numberOfStudiesToQuery = studiesToExport.length;
+
+    progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
+
+    studiesToExport.forEach(function(selectedStudy) {
+        getStudyMetadata(selectedStudy.studyInstanceUid, function(study) {
+            studiesQueried.push(study);
+
+            var numberOfStudiesQueried = studiesQueried.length;
+
+            progressDialog.update(numberOfStudiesQueried);
+
+            if (numberOfStudiesQueried === numberOfStudiesToQuery) {
+                exportQueriedStudies(studiesQueried);
+            }
+        });
+    });
+};
+
+function exportQueriedStudies(studiesToExport) {
     var numberOfFilesToExport = getNumberOfFilesToExport(studiesToExport);
 
     progressDialog.show("Exporting Studies...", numberOfFilesToExport);
 
     try {
-        exportStudiesInternal(studiesToExport, numberOfFilesToExport);
+        exportQueriedStudiesInternal(studiesToExport, numberOfFilesToExport);
     } catch (err) {
         progressDialog.close();
         console.error("Failed to export studies: " + err.message);
     }
-};
+}
 
-function exportStudiesInternal(studiesToExport, numberOfFilesToExport) {
+function exportQueriedStudiesInternal(studiesToExport, numberOfFilesToExport) {
     var zip = new JSZip();
 
     var exportFailed = false;

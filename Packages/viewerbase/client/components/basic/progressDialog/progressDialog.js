@@ -2,7 +2,7 @@ progressDialog = {
     'show': function(title, numberOfTotal) {
         Session.set("progressDialogSettings", { title: title, numberOfCompleted: 0, numberOfTotal: numberOfTotal });
 
-        $('#lesionTrackerProgressDialog').css('display', 'block');
+        $('#progressDialog').css('display', 'block');
     },
     'update': function(numberOfCompleted) {
         var progressDialogSettings = Session.get("progressDialogSettings");
@@ -16,11 +16,11 @@ progressDialog = {
     },
     'close': function() {
         Session.set("progressDialogSettings", { title: "", numberOfCompleted: 0, numberOfTotal: 1 });
-        $('#lesionTrackerProgressDialog').css('display', 'none');
+        $('#progressDialog').css('display', 'none');
     },
 };
 
-Template.lesionTrackerProgressDialog.helpers({
+Template.progressDialog.helpers({
     'progressDialogTitle': function () {
         if (Session.get("progressDialogSettings") && Session.get("progressDialogSettings").title) {
             return Session.get("progressDialogSettings").title;

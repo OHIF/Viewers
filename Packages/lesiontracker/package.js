@@ -129,10 +129,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.styl', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
 
-    api.addFiles('client/components/lesionTrackerProgressDialog/lesionTrackerProgressDialog.html', 'client');
-    api.addFiles('client/components/lesionTrackerProgressDialog/lesionTrackerProgressDialog.styl', 'client');
-    api.addFiles('client/components/lesionTrackerProgressDialog/lesionTrackerProgressDialog.js', 'client');
-
     // Server functions
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', [ 'server' ]);
@@ -171,8 +167,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/handleMeasurementModified.js', 'client');
     api.addFiles('lib/handleMeasurementRemoved.js', 'client');
 
-    api.addFiles('lib/exportStudies.js', 'client');
-
 
     // Export global functions
     api.export('pixelSpacingAutorunCheck', 'client');
@@ -195,7 +189,6 @@ Package.onUse(function(api) {
     api.export('getTrialCriteriaConstraints', 'client');
     api.export('calculateTotalLesionBurden', 'client');
     api.export('convertToNonTarget', 'client');
-    api.export('exportStudies', 'client');
     api.export('setTimepointActiveTool', 'client');
 
 

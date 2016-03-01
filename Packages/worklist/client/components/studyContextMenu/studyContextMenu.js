@@ -12,6 +12,8 @@ function closeHandler(dialog) {
  * @param e
  */
 openStudyContextMenu = function(e) {
+    Worklist.functions['exportSelectedStudies'] = exportSelectedStudies;
+
     Template.studyContextMenu.study = $(e.currentTarget);
 
     var dialog = $('#studyContextMenu');
@@ -54,6 +56,19 @@ openStudyContextMenu = function(e) {
         closeHandler(dialog);
     });
 };
+
+/**
+ * Exports all selected studies on the worklist
+ */
+function exportSelectedStudies() {
+    var selectedStudies = WorklistSelectedStudies.find({}, {
+            sort: {
+                studyDate: 1
+            }
+        }).fetch() || [];
+
+    exportStudies(selectedStudies);
+}
 
 Template.studyContextMenu.events({
     'click a': function(e) {

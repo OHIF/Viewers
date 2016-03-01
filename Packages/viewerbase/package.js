@@ -110,6 +110,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/toolbar/toolbar.js', 'client');
     api.addFiles('client/components/viewer/toolbar/toolbar.styl', 'client');
 
+    api.addFiles('client/components/basic/progressDialog/progressDialog.html', 'client');
+    api.addFiles('client/components/basic/progressDialog/progressDialog.styl', 'client');
+    api.addFiles('client/components/basic/progressDialog/progressDialog.js', 'client');
+
     // Library functions
     api.addFiles('lib/accountsConfig.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
@@ -131,6 +135,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/resizeViewportElements.js', 'client');
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
+    api.addFiles('lib/exportStudies.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
     //api.export('accountsConfig', 'client');
@@ -149,6 +154,7 @@ Package.onUse(function(api) {
     api.export('updateOrientationMarkers', 'client');
     api.export('setFocusToActiveViewport', 'client');
     api.export('updateAllViewports', 'client');
+    api.export('exportStudies', 'client');
     api.export('encodeQueryData', 'server');
 
     // Viewer management objects
@@ -158,6 +164,7 @@ Package.onUse(function(api) {
     // Global objects
     api.export('OHIF', 'client');
     api.export('ClientId', 'client');
+    api.export('progressDialog', 'client');
 
     // Collections
     api.export('ViewerStudies', 'client');
