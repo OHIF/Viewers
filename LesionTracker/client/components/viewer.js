@@ -121,6 +121,9 @@ Template.viewer.onCreated(function() {
 
         if (subscriptionsReady) {
 
+            // Set buttons as enabled/disabled when Timepoints collection is ready
+            timepointAutoCheck(dataContext);
+
             TrialResponseCriteria.validateAllDelayed();
 
             ViewerStudies.find().observe({
@@ -261,15 +264,6 @@ Template.viewer.onCreated(function() {
                     TrialResponseCriteria.validateAll();
                 }
             });
-
-            // Set active tool for timepoint
-            if (dataContext && dataContext.timepointIds) {
-                dataContext.timepointIds.forEach(function(timepointId) {
-                    var timepoint = Timepoints.findOne({timepointId: timepointId});
-                    setTimepointActiveTool(timepoint);
-                });
-            }
-
         }
     });
 });

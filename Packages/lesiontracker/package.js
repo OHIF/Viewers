@@ -169,7 +169,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/clearTools.js', 'client');
     api.addFiles('lib/calculateTotalLesionBurden.js', 'client');
     api.addFiles('lib/convertToNonTarget.js', 'client');
-    api.addFiles('lib/setTimepointActiveTool.js', 'client');
+    api.addFiles('lib/timepointAutoCheck.js', 'client');
 
     api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
     api.addFiles('lib/syncImageMeasurementAndToolData.js', 'client');
@@ -201,7 +201,7 @@ Package.onUse(function(api) {
     api.export('getTrialCriteriaConstraints', 'client');
     api.export('calculateTotalLesionBurden', 'client');
     api.export('convertToNonTarget', 'client');
-    api.export('setTimepointActiveTool', 'client');
+    api.export('timepointAutoCheck', 'client');
 
 
     // Export global objects

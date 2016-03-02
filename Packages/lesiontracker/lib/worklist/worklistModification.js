@@ -33,9 +33,6 @@ function dblClickOnStudy(data) {
         return;
     }
 
-    // Set active tool for timepoint
-    setTimepointActiveTool(timepoint);
-
     // Add the Timepoint name to the Patient name to create the tab title
     title += ' ' + getTimepointName(timepoint);
 
