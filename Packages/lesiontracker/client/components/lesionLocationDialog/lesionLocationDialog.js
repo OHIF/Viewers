@@ -185,6 +185,16 @@ var config = {
 
 cornerstoneTools.lesion.setConfiguration(config);
 
+// Set CR-Tool, UN-Tool, EX-Tool configurations
+// Config for CR Tool
+cornerstoneTools.crTool.setConfiguration(config);
+
+// Config for EX Tool
+cornerstoneTools.exTool.setConfiguration(config);
+
+// Config for UN Tool
+cornerstoneTools.unTool.setConfiguration(config);
+
 Template.lesionLocationDialog.events({
     'change .selectLesionLocation': function(e) {
         var measurementData = Template.lesionLocationDialog.measurementData;

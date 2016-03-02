@@ -43,6 +43,19 @@ Package.onUse(function(api) {
     api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {
         bare: true
     });
+    api.addFiles('client/compatibility/crunexTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/crTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/unTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/exTool.js', 'client', {
+        bare: true
+    });
+
 
     // Trial Criteria data validation (the Meteor package is currently out-of-date)
     api.addFiles('client/compatibility/validate.js', 'client', {
@@ -157,7 +170,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/calculateTotalLesionBurden.js', 'client');
     api.addFiles('lib/convertToNonTarget.js', 'client');
     api.addFiles('lib/setTimepointActiveTool.js', 'client');
-
 
     api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
     api.addFiles('lib/syncImageMeasurementAndToolData.js', 'client');

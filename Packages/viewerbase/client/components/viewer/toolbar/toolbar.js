@@ -172,5 +172,11 @@ Template.toolbar.helpers({
             return this.toolbarOptions.includeHangingProtocolButtons;
         }
         return true;
+    },
+    'btnGroup': function()  {
+        if (this.toolbarOptions && this.toolbarOptions.btnGroup !== undefined) {
+            return this.toolbarOptions.btnGroup;
+        }
+        return [];
     }
 });
