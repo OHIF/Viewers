@@ -83,6 +83,9 @@ function updateLesionData(lesionData) {
             id: lesionData.id,
             measurementType: lesionData.measurementType
         };
+        if (lesionData.toolType) {
+            measurement.toolType = lesionData.toolType;
+        }
 
         // Retrieve the location name given the locationUID
         if (lesionData.locationUID !== undefined) {

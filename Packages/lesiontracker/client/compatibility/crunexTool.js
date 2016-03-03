@@ -161,6 +161,7 @@
                 response: toolName,
                 isTarget: true,
                 measurementType: 'nonTarget',
+                toolType: toolType,
                 toolName: 'Target'
             };
 

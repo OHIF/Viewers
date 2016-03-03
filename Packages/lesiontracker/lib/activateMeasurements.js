@@ -60,7 +60,12 @@ function activateTool(element, measurementData, timepointId) {
     deactivateAllToolData(element, 'lesion');
     deactivateAllToolData(element, 'nonTarget');
 
-    var toolType = measurementData.isTarget ? 'lesion' : 'nonTarget';
+    // Deactivate CRUNEX Tools
+    deactivateAllToolData(element, 'crTool');
+    deactivateAllToolData(element, 'unTool');
+    deactivateAllToolData(element, 'exTool');
+
+    var toolType = measurementData.toolType ? measurementData.toolType:(measurementData.isTarget ? 'lesion' : 'nonTarget');
     var toolData = cornerstoneTools.getToolState(element, toolType);
     if (!toolData) {
         return;
