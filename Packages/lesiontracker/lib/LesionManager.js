@@ -80,7 +80,8 @@ function updateLesionData(lesionData) {
             lesionNumber: lesionData.lesionNumber,
             isTarget: lesionData.isTarget,
             patientId: lesionData.patientId,
-            id: lesionData.id
+            id: lesionData.id,
+            measurementType: lesionData.measurementType
         };
 
         // Retrieve the location name given the locationUID

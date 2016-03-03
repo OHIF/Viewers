@@ -1,9 +1,9 @@
 handleMeasurementModified = function(e, eventData) {
     var measurementData = eventData.measurementData;
-
-    switch (eventData.toolType) {
+    switch (measurementData.measurementType) {
         case 'nonTarget':
         case 'lesion':
+        case 'bidirectional':
             log.info('CornerstoneToolsMeasurementModified');
             LesionManager.updateLesionData(measurementData);
             TrialResponseCriteria.validateDelayed(measurementData);

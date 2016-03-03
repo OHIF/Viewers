@@ -1,8 +1,9 @@
 handleMeasurementAdded = function(e, eventData) {
     var measurementData = eventData.measurementData;
 
-    switch (eventData.toolType) {
+    switch (measurementData.measurementType) {
         case 'nonTarget':
+        case 'bidirectional':
         case 'lesion':
             log.info('CornerstoneToolsMeasurementAdded');
             LesionManager.updateLesionData(measurementData);

@@ -158,10 +158,10 @@
                 seriesInstanceUid: seriesInstanceUid,
                 studyInstanceUid: studyInstanceUid,
                 patientId: patientId,
-                response: '',
+                response: toolName,
                 isTarget: true,
                 measurementType: 'nonTarget',
-                toolName: toolName
+                toolName: 'Target'
             };
 
             return measurementData;
