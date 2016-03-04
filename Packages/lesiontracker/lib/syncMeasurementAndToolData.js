@@ -3,7 +3,7 @@ syncMeasurementAndToolData = function(measurement) {
 
     // Check what toolType we should be adding this to, based on the isTarget value
     // of the stored Measurement
-    var toolType = measurement.isTarget ? 'lesion' : 'nonTarget';
+    var toolType = measurement.toolType;
 
     // Loop through the timepoint data for this measurement
     Object.keys(measurement.timepoints).forEach(function(key) {

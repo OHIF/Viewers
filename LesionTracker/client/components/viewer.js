@@ -226,7 +226,7 @@ Template.viewer.onCreated(function() {
                     // Get the Measurement ID and relevant tool so we can remove
                     // tool data for this Measurement
                     var measurementId = data._id;
-                    var toolType = data.isTarget ? 'lesion' : 'nonTarget';
+                    var toolType = data.toolType;
 
                     // Remove the measurement from all the imageIds on which it exists
                     // as toolData

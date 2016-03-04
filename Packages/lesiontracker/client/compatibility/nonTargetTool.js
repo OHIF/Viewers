@@ -154,7 +154,8 @@
             patientId: patientId,
             response: '',
             isTarget: false,
-            measurementType: 'nonTarget'
+            measurementType: 'nonTarget',
+            toolType: 'nonTarget'
         };
 
         return measurementData;

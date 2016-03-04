@@ -1,12 +1,24 @@
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     'use strict';
+    var responseByToolType = [
+        {"toolType": "crTool", "toolResponse": "CR"},
+        {"toolType": "unTool", "toolResponse": "UN"},
+        {"toolType": "exTool", "toolResponse": "EX"}
+    ];
 
-    function crunexTool(toolType, toolName) {
+    function crunexTool(toolType) {
         var toolInterface = {
-            toolType: toolType,
-            toolName: toolName
+            toolType: toolType
         };
+
+        var response;
+
+        responseByToolType.forEach(function(tool) {
+            if (tool.toolType === toolInterface.toolType) {
+                response = tool.toolResponse;
+            }
+        });
 
         var configuration = {
             setLesionNumberCallback: setLesionNumberCallback,
@@ -158,11 +170,10 @@
                 seriesInstanceUid: seriesInstanceUid,
                 studyInstanceUid: studyInstanceUid,
                 patientId: patientId,
-                response: toolName,
+                response: response,
                 isTarget: true,
                 measurementType: 'nonTarget',
-                toolType: toolType,
-                toolName: 'Target'
+                toolType: toolType
             };
 
             return measurementData;
@@ -288,7 +299,7 @@
                     context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                     context.stroke();
 
-                    var boundingBox = cornerstoneTools.drawTextBox(context,data.toolName + " " + + data.lesionNumber, canvasTextLocation.x, canvasTextLocation.y, color);
+                    var boundingBox = cornerstoneTools.drawTextBox(context, "Target " + + data.lesionNumber, canvasTextLocation.x, canvasTextLocation.y, color);
                     data.handles.textBox.boundingBox = boundingBox;
                 }
 

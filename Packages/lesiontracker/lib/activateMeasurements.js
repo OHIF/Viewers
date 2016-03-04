@@ -65,7 +65,7 @@ function activateTool(element, measurementData, timepointId) {
     deactivateAllToolData(element, 'unTool');
     deactivateAllToolData(element, 'exTool');
 
-    var toolType = measurementData.toolType ? measurementData.toolType:(measurementData.isTarget ? 'lesion' : 'nonTarget');
+    var toolType = measurementData.toolType;
     var toolData = cornerstoneTools.getToolState(element, toolType);
     if (!toolData) {
         return;

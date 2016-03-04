@@ -100,7 +100,8 @@
             shortestDiameter: 0,
             isDeleted: false,
             isTarget: true,
-            measurementType: 'bidirectional'
+            measurementType: 'bidirectional',
+            toolType: 'lesion'
         };
         return measurementData;
     }
