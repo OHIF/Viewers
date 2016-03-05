@@ -31,7 +31,7 @@ Package.onUse(function(api) {
     api.addFiles('client/collections/LocationResponses.js', 'client');
 
     // Additional Custom Cornerstone Tools for Lesion Tracker
-    api.addFiles('client/compatibility/lesionTool.js', 'client', {
+    api.addFiles('client/compatibility/bidirectionalTool.js', 'client', {
         bare: true
     });
     api.addFiles('client/compatibility/nonTargetTool.js', 'client', {

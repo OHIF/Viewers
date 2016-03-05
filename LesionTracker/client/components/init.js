@@ -1,7 +1,7 @@
 Meteor.startup(function() {
-    toolManager.addTool('lesion', {
-        mouse: cornerstoneTools.lesion,
-        touch: cornerstoneTools.lesionTouch
+    toolManager.addTool('bidirectional', {
+        mouse: cornerstoneTools.bidirectional,
+        touch: cornerstoneTools.bidirectionalTouch
     });
     
     toolManager.addTool('nonTarget', {
@@ -36,7 +36,7 @@ Meteor.startup(function() {
 
 
     var states = toolManager.getToolDefaultStates();
-    states.deactivate.push('lesion');
+    states.deactivate.push('bidirectional');
     states.deactivate.push('nonTarget');
     states.deactivate.push('length');
     states.deactivate.push('crTool');

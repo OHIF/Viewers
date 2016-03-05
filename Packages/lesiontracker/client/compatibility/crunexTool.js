@@ -172,7 +172,6 @@
                 patientId: patientId,
                 response: response,
                 isTarget: true,
-                measurementType: 'nonTarget',
                 toolType: toolType
             };
 

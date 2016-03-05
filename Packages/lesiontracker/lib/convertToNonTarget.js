@@ -21,7 +21,7 @@ convertToNonTarget = function(measurementData) {
         studyInstanceUid: measurementData.studyInstanceUid,
         patientId: measurementData.patientId,
         isTarget: false,
-        measurementType: toolType
+        toolType: toolType
     };
     
     if (timepoint && timepoint.timepointType === 'baseline') {

@@ -5,7 +5,7 @@ setTimepointTools = function(timepoint) {
     var fuTools = ["button#crunexTools"];
     if ((timepoint.timepointType).toLowerCase() === "baseline") {
         // Set active tool as lesion tool
-        toolManager.setActiveTool('lesion');
+        toolManager.setActiveTool('bidirectional');
         toolManager.addDisabledTool({tools: fuTools, status: true});
     } else {
         toolManager.setActiveTool(toolManager.getDefaultTool());

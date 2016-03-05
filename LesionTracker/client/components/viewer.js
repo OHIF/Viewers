@@ -41,9 +41,9 @@ Template.viewer.onCreated(function() {
         },
         toggleLesionTrackerTools: toggleLesionTrackerTools,
         clearTools: clearTools,
-        lesion: function() {
+        bidirectional: function() {
             // Used for hotkeys
-            toolManager.setActiveTool('lesion');
+            toolManager.setActiveTool('bidirectional');
         },
         nonTarget: function() {
             // Used for hotkeys
@@ -54,7 +54,7 @@ Template.viewer.onCreated(function() {
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
     OHIF.viewer.defaultHotkeys = OHIF.viewer.defaultHotkeys || {};
     OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = 'O';
-    OHIF.viewer.defaultHotkeys.lesion = 'T'; // Target
+    OHIF.viewer.defaultHotkeys.bidirectional = 'T'; // Target
     OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
 
     if (isTouchDevice()) {

@@ -56,7 +56,7 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
-            id: 'lesion',
+            id: 'bidirectional',
             title: 'Target Tool',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows-alt'

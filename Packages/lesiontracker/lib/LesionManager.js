@@ -4,12 +4,16 @@ measurementValuesByType = {
         'longestDiameter'
     ],
     nonTarget: ['response'],
+    crTool: ['response'],
+    exTool: ['response'],
+    unTool: ['response'],
     length: ['length'],
     ellipticalRoi: [
         'area',
         'mean',
         'stdev'
     ]
+
 };
 
 /**
@@ -60,14 +64,14 @@ function updateLesionData(lesionData) {
         imageId: lesionData.imageId
     };
 
-    if (!lesionData.measurementType) {
+    if (!lesionData.toolType) {
         // For debugging, might want to switch to measurement types later
-        lesionData.measurementType = lesionData.isTarget ? 'bidirectional' : 'nonTarget';
+        lesionData.toolType = lesionData.isTarget ? 'bidirectional' : 'nonTarget';
     }
 
     // Populate this timepoint's data with whichever values
     // are stored for this Measurement type
-    var values = measurementValuesByType[lesionData.measurementType];
+    var values = measurementValuesByType[lesionData.toolType];
     values.forEach(function(valueName) {
         timepointData[valueName] = lesionData[valueName];
     });
@@ -81,7 +85,7 @@ function updateLesionData(lesionData) {
             isTarget: lesionData.isTarget,
             patientId: lesionData.patientId,
             id: lesionData.id,
-            measurementType: lesionData.measurementType
+            toolType: lesionData.toolType
         };
         if (lesionData.toolType) {
             measurement.toolType = lesionData.toolType;

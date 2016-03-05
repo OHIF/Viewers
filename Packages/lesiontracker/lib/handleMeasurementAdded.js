@@ -1,10 +1,12 @@
 handleMeasurementAdded = function(e, eventData) {
     var measurementData = eventData.measurementData;
 
-    switch (measurementData.measurementType) {
+    switch (measurementData.toolType) {
         case 'nonTarget':
         case 'bidirectional':
-        case 'lesion':
+        case 'crTool':
+        case 'unTool':
+        case 'exTool':
             log.info('CornerstoneToolsMeasurementAdded');
             LesionManager.updateLesionData(measurementData);
             TrialResponseCriteria.validateDelayed(measurementData);
@@ -21,7 +23,7 @@ handleMeasurementAdded = function(e, eventData) {
             // Add the relevant metaData to this ImageMeasurement's toolData
             measurementData.clientId = ClientId;
             measurementData.imageId = imageId;
-            measurementData.measurementType = eventData.toolType;
+            measurementData.toolType = eventData.toolType;
             measurementData.patientId = study.patientId;
             measurementData.studyInstanceUid = study.studyInstanceUid;
             measurementData.seriesInstanceUid = series.seriesInstanceUid;

@@ -2,7 +2,7 @@
 
     'use strict';
 
-    var toolType = 'lesion';
+    var toolType = 'bidirectional';
 
     var configuration = {
         setLesionNumberCallback: setLesionNumberCallback,
@@ -100,8 +100,7 @@
             shortestDiameter: 0,
             isDeleted: false,
             isTarget: true,
-            measurementType: 'bidirectional',
-            toolType: 'lesion'
+            toolType: 'bidirectional'
         };
         return measurementData;
     }
@@ -127,7 +126,7 @@
         };
 
         // Set lesion number and lesion name
-        var config = cornerstoneTools.lesion.getConfiguration();
+        var config = cornerstoneTools.bidirectional.getConfiguration();
         if (measurementData.lesionNumber === undefined) {
             config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
         }
@@ -139,7 +138,7 @@
         // the end point and let the moveHandle move it for us.
         $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
         $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
-        $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.lesion.mouseDownActivateCallback);
+        $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
         $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
 
         // Add a flag for using Esc to cancel tool placement
@@ -178,7 +177,7 @@
 
             $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
             $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
-            $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.lesion.mouseDownActivateCallback);
+            $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
             $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
             cornerstone.updateImage(element);
         });
@@ -201,7 +200,7 @@
         var measurementData = createNewMeasurement(touchEventData);
 
         // Set lesion number and lesion name
-        var config = cornerstoneTools.lesion.getConfiguration();
+        var config = cornerstoneTools.bidirectional.getConfiguration();
         if (measurementData.lesionNumber === undefined) {
             config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
         }
@@ -211,9 +210,9 @@
 
         // since we are dragging to another place to drop the end point, we can just activate
         // the end point and let the moveHandle move it for us.
-        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.lesion.touchMoveHandle);
-        $(element).off('CornerstoneToolsTap', cornerstoneTools.lesion.tapCallback);
-        $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.lesion.touchDownActivateCallback);
+        $(element).off('CornerstoneToolsTouchDrag', cornerstoneTools.bidirectional.touchMoveHandle);
+        $(element).off('CornerstoneToolsTap', cornerstoneTools.bidirectional.tapCallback);
+        $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.bidirectional.touchDownActivateCallback);
 
         cornerstone.updateImage(element);
         cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -228,9 +227,9 @@
             // perpendicular line is not connected to long-line
             measurementData.handles.perpendicularStart.locked = false;
 
-            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.lesion.touchMoveHandle);
-            $(element).on('CornerstoneToolsTap', cornerstoneTools.lesion.tapCallback);
-            $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.lesion.touchDownActivateCallback);
+            $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.bidirectional.touchMoveHandle);
+            $(element).on('CornerstoneToolsTap', cornerstoneTools.bidirectional.tapCallback);
+            $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.bidirectional.touchDownActivateCallback);
             cornerstone.updateImage(element);
         });
     }
@@ -963,7 +962,7 @@
         var color;
         var element = eventData.element;
         var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-        var config = cornerstoneTools.lesion.getConfiguration();
+        var config = cornerstoneTools.bidirectional.getConfiguration();
 
         for (var i = 0; i < toolData.data.length; i++) {
             var data = toolData.data[i];
@@ -1076,7 +1075,7 @@
             return false;
         }
 
-        var config = cornerstoneTools.lesion.getConfiguration();
+        var config = cornerstoneTools.bidirectional.getConfiguration();
 
         var coords = eventData.currentPoints.canvas;
         var toolData = cornerstoneTools.getToolState(element, toolType);
@@ -1103,7 +1102,7 @@
     }
 
     // module exports
-    cornerstoneTools.lesion = cornerstoneTools.mouseButtonTool({
+    cornerstoneTools.bidirectional = cornerstoneTools.mouseButtonTool({
         createNewMeasurement: createNewMeasurement,
         addNewMeasurement: addNewMeasurement,
         onImageRendered: onImageRendered,
@@ -1114,7 +1113,7 @@
         toolType: toolType
     });
 
-    cornerstoneTools.lesionTouch = cornerstoneTools.touchTool({
+    cornerstoneTools.bidirectionalTouch = cornerstoneTools.touchTool({
         createNewMeasurement: createNewMeasurement,
         addNewMeasurement: addNewMeasurementTouch,
         onImageRendered: onImageRendered,
@@ -1122,6 +1121,6 @@
         toolType: toolType
     });
 
-    cornerstoneTools.lesion.setConfiguration(configuration);
+    cornerstoneTools.bidirectional.setConfiguration(configuration);
 
 })($, cornerstone, cornerstoneMath, cornerstoneTools);

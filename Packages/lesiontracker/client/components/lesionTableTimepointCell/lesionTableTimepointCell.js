@@ -18,7 +18,7 @@ Template.lesionTableTimepointCell.helpers({
 
         var data = lesionData.timepoints[this.timepointId];
 
-        if (lesionData.measurementType === 'bidirectional') {
+        if (lesionData.toolType === 'bidirectional') {
             if (data.shortestDiameter) {
                 return data.longestDiameter + ' x ' + data.shortestDiameter;
             }
@@ -35,7 +35,7 @@ Template.lesionTableTimepointCell.helpers({
 
     isBidirectional: function() {
         var lesionData = Template.parentData(1);
-        if (lesionData.measurementType === 'bidirectional') {
+        if (lesionData.toolType === 'bidirectional') {
             return true;
         }
         return false
