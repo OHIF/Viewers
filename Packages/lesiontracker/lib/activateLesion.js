@@ -25,7 +25,7 @@ activateLesion = function(measurementId, templateData) {
         sort: {
             latestDate: 1
         }
-    })
+    });
 
     // Loop through each timepoint and populate the orderTimepointEntries array with
     // The measurement data at each timepoint. The most recent measurements will be first in
@@ -58,9 +58,11 @@ activateLesion = function(measurementId, templateData) {
         // Stop if we run out of timepoints before viewports
         if (viewportIndex >= orderedTimepointEntries.length) {
             // Update the element anyway, to remove any other highlights that are present
-            deactivateAllToolData(element, 'lesion');
+            deactivateAllToolData(element, 'bidirectional');
             deactivateAllToolData(element, 'nonTarget');
-            cornerstone.updateImage(element);
+            deactivateAllToolData(element, 'crTool');
+            deactivateAllToolData(element, 'unTool');
+            deactivateAllToolData(element, 'exTool');
 
             return false;
         }
@@ -79,8 +81,11 @@ activateLesion = function(measurementId, templateData) {
         // If there is no measurement data to display, stop here
         if (!measurementAtTimepoint) {
             // Update the element anyway, to remove any other highlights that are present
-            deactivateAllToolData(element, 'lesion');
+            deactivateAllToolData(element, 'bidirectional');
             deactivateAllToolData(element, 'nonTarget');
+            deactivateAllToolData(element, 'crTool');
+            deactivateAllToolData(element, 'unTool');
+            deactivateAllToolData(element, 'exTool');
             cornerstone.updateImage(element);
             return;
         }

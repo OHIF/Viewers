@@ -28,10 +28,6 @@ Template.lesionTableTimepointCell.helpers({
             return data.response;
         }
     },
-    isTarget: function() {
-        var lesionData = Template.parentData(1);
-        return lesionData.isTarget;
-    },
 
     isBidirectional: function() {
         var lesionData = Template.parentData(1);

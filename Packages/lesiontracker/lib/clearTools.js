@@ -1,6 +1,6 @@
 clearTools = function() {
     var patientId = Session.get('patientId');
-    var toolTypes = [ 'lesion', 'nonTarget', 'length', 'ellipticalRoi'];
+    var toolTypes = [ 'bidirectional', 'nonTarget', 'length', 'ellipticalRoi', 'crTool', 'unTool', 'exTool' ];
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
     var toolStateKeys = Object.keys(toolState).slice(0);
 

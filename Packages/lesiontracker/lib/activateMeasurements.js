@@ -57,7 +57,7 @@ activateMeasurements = function(element, measurementId, templateData, viewportIn
  * @param timepointId
  */
 function activateTool(element, measurementData, timepointId) {
-    deactivateAllToolData(element, 'lesion');
+    deactivateAllToolData(element, 'bidirectional');
     deactivateAllToolData(element, 'nonTarget');
 
     // Deactivate CRUNEX Tools
