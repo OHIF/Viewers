@@ -23,8 +23,16 @@ openStudyContextMenu = function(e) {
         display: 'block'
     };
 
+    var pageHeight = $(document).height();
+    dialogProperty.top = Math.max(e.pageY, 0);
+    dialogProperty.top = Math.min(dialogProperty.top, pageHeight - dialog.outerHeight());
+
+    var pageWidth = $(document).width();
+    dialogProperty.left = Math.max(e.pageX, 0);
+    dialogProperty.left = Math.min(dialogProperty.left, pageWidth - dialog.outerWidth());
+
     // Device is touch device or not
-    // If device is touch device, set position center of screen vertically and horizontally// jscs:ignore
+    // If device is touch device, set position center of screen vertically and horizontally
     if (isTouchDevice()) {
         // add dialogMobile class to provide a black, transparent background
         dialog.addClass('dialogMobile');
@@ -32,17 +40,7 @@ openStudyContextMenu = function(e) {
         dialogProperty.left = 0;
         dialogProperty.right = 0;
         dialogProperty.bottom = 0;
-    } else {
-        dialogProperty.top = e.pageY;
-        dialogProperty.left = e.pageX;
-
-        var pageHeight = $(document.body).height();
-        dialogProperty.top = Math.max(dialogProperty.top, 0);
-        dialogProperty.top = Math.min(dialogProperty.top, pageHeight - dialog.outerHeight());
-
-        var pageWidth = $(document.body).width();
-        dialogProperty.left = Math.max(dialogProperty.left, 0);
-        dialogProperty.left = Math.min(dialogProperty.left, pageWidth - dialog.outerWidth());
+        dialogProperty.margin = 'auto';
     }
 
     dialog.css(dialogProperty);
