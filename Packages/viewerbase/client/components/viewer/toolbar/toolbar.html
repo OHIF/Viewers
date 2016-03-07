@@ -16,6 +16,10 @@
             {{ #if includeHangingProtocolButtons }}
                 {{ >hangingProtocolButtons }}
             {{ /if }}
+
+            {{ #each btnGroup }}
+                {{ >toolbarGroupButton}}
+            {{ /each }}
         </div>
     </div>
 </template>

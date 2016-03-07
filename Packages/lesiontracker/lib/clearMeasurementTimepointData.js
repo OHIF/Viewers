@@ -8,7 +8,7 @@ clearMeasurementTimepointData = function(measurementId, timepointId) {
 
     // Clear the Measurement data for this timepoint
     var imageId = data.timepoints[timepointId].imageId;
-    var toolType = data.isTarget ? 'lesion' : 'nonTarget';
+    var toolType = data.toolType;
     removeToolDataWithMeasurementId(imageId, toolType, measurementId);
 
     // Update any viewports that are currently displaying this imageId

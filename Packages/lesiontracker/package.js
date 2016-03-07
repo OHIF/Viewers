@@ -31,7 +31,7 @@ Package.onUse(function(api) {
     api.addFiles('client/collections/LocationResponses.js', 'client');
 
     // Additional Custom Cornerstone Tools for Lesion Tracker
-    api.addFiles('client/compatibility/lesionTool.js', 'client', {
+    api.addFiles('client/compatibility/bidirectionalTool.js', 'client', {
         bare: true
     });
     api.addFiles('client/compatibility/nonTargetTool.js', 'client', {
@@ -43,6 +43,19 @@ Package.onUse(function(api) {
     api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {
         bare: true
     });
+    api.addFiles('client/compatibility/crunexTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/crTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/unTool.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/exTool.js', 'client', {
+        bare: true
+    });
+
 
     // Trial Criteria data validation (the Meteor package is currently out-of-date)
     api.addFiles('client/compatibility/validate.js', 'client', {
@@ -159,8 +172,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/clearTools.js', 'client');
     api.addFiles('lib/calculateTotalLesionBurden.js', 'client');
     api.addFiles('lib/convertToNonTarget.js', 'client');
-    api.addFiles('lib/setTimepointActiveTool.js', 'client');
-
+    api.addFiles('lib/timepointAutoCheck.js', 'client');
 
     api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
     api.addFiles('lib/syncImageMeasurementAndToolData.js', 'client');
@@ -192,7 +204,7 @@ Package.onUse(function(api) {
     api.export('getTrialCriteriaConstraints', 'client');
     api.export('calculateTotalLesionBurden', 'client');
     api.export('convertToNonTarget', 'client');
-    api.export('setTimepointActiveTool', 'client');
+    api.export('timepointAutoCheck', 'client');
 
 
     // Export global objects

@@ -41,9 +41,9 @@ Template.viewer.onCreated(function() {
         },
         toggleLesionTrackerTools: toggleLesionTrackerTools,
         clearTools: clearTools,
-        lesion: function() {
+        bidirectional: function() {
             // Used for hotkeys
-            toolManager.setActiveTool('lesion');
+            toolManager.setActiveTool('bidirectional');
         },
         nonTarget: function() {
             // Used for hotkeys
@@ -54,7 +54,7 @@ Template.viewer.onCreated(function() {
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
     OHIF.viewer.defaultHotkeys = OHIF.viewer.defaultHotkeys || {};
     OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = 'O';
-    OHIF.viewer.defaultHotkeys.lesion = 'T'; // Target
+    OHIF.viewer.defaultHotkeys.bidirectional = 'T'; // Target
     OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
 
     if (isTouchDevice()) {
@@ -120,6 +120,9 @@ Template.viewer.onCreated(function() {
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
 
         if (subscriptionsReady) {
+
+            // Set buttons as enabled/disabled when Timepoints collection is ready
+            timepointAutoCheck(dataContext);
 
             TrialResponseCriteria.validateAllDelayed();
 
@@ -223,7 +226,7 @@ Template.viewer.onCreated(function() {
                     // Get the Measurement ID and relevant tool so we can remove
                     // tool data for this Measurement
                     var measurementId = data._id;
-                    var toolType = data.isTarget ? 'lesion' : 'nonTarget';
+                    var toolType = data.toolType;
 
                     // Remove the measurement from all the imageIds on which it exists
                     // as toolData
@@ -261,15 +264,6 @@ Template.viewer.onCreated(function() {
                     TrialResponseCriteria.validateAll();
                 }
             });
-
-            // Set active tool for timepoint
-            if (dataContext && dataContext.timepointIds) {
-                dataContext.timepointIds.forEach(function(timepointId) {
-                    var timepoint = Timepoints.findOne({timepointId: timepointId});
-                    setTimepointActiveTool(timepoint);
-                });
-            }
-
         }
     });
 });

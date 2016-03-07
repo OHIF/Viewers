@@ -57,10 +57,15 @@ activateMeasurements = function(element, measurementId, templateData, viewportIn
  * @param timepointId
  */
 function activateTool(element, measurementData, timepointId) {
-    deactivateAllToolData(element, 'lesion');
+    deactivateAllToolData(element, 'bidirectional');
     deactivateAllToolData(element, 'nonTarget');
 
-    var toolType = measurementData.isTarget ? 'lesion' : 'nonTarget';
+    // Deactivate CRUNEX Tools
+    deactivateAllToolData(element, 'crTool');
+    deactivateAllToolData(element, 'unTool');
+    deactivateAllToolData(element, 'exTool');
+
+    var toolType = measurementData.toolType;
     var toolData = cornerstoneTools.getToolState(element, toolType);
     if (!toolData) {
         return;

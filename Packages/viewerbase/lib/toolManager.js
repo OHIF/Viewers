@@ -1,5 +1,6 @@
 var activeTool = "wwwc";
 var defaultTool = "wwwc";
+var disabledTools = [];
 
 var tools = {};
 
@@ -218,5 +219,11 @@ toolManager = {
     },
     getDefaultTool: function() {
         return defaultTool;
+    },
+    addDisabledTool: function(toolData) {
+        disabledTools.push(toolData);
+    },
+    getDisabledTool: function() {
+        return disabledTools;
     }
 };

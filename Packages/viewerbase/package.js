@@ -114,6 +114,11 @@ Package.onUse(function(api) {
     api.addFiles('client/components/basic/progressDialog/progressDialog.styl', 'client');
     api.addFiles('client/components/basic/progressDialog/progressDialog.js', 'client');
 
+    api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.html', 'client');
+    api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.styl', 'client');
+    api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.js', 'client');
+
+
     // Library functions
     api.addFiles('lib/accountsConfig.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');

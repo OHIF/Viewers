@@ -3,7 +3,7 @@ syncMeasurementAndToolData = function(measurement) {
 
     // Check what toolType we should be adding this to, based on the isTarget value
     // of the stored Measurement
-    var toolType = measurement.isTarget ? 'lesion' : 'nonTarget';
+    var toolType = measurement.toolType;
 
     // Loop through the timepoint data for this measurement
     Object.keys(measurement.timepoints).forEach(function(key) {
@@ -56,6 +56,7 @@ function syncTimepointDataWithToolData(measurement, timepointData, imageId, tool
             tool.visible = timepointData.visible;
             tool.isDeleted = timepointData.isDeleted;
             tool.handles = timepointData.handles;
+            tool.toolType = measurement.toolType;
             return false;
         });
 
@@ -82,6 +83,7 @@ function syncTimepointDataWithToolData(measurement, timepointData, imageId, tool
     tool.locationUID = measurement.locationUID;
     tool.patientId = measurement.patientId;
     tool.id = measurement._id;
+    tool.toolType = measurement.toolType;
 
     // Add the measurementData into the toolData for this imageId
     toolState[imageId][toolType].data.push(tool);

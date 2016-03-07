@@ -115,6 +115,14 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
 
     // Get the lesion location dialog
     var dialog = $('#lesionLocationRelabelDialog');
+
+    // Show/Hide Convert To NonTarget option in lesionLocationRelabelDialog
+    if (measurementData.toolType === 'bidirectional') {
+        dialog.find("#convertToNonTarget").css("visibility", "visible");
+    } else {
+        dialog.find("#convertToNonTarget").css("visibility", "hidden");
+    }
+
     Template.lesionLocationDialog.dialog = dialog;
 
     // Show the backdrop
@@ -183,7 +191,17 @@ var config = {
     changeLesionLocationCallback: changeLesionLocationCallback
 };
 
-cornerstoneTools.lesion.setConfiguration(config);
+cornerstoneTools.bidirectional.setConfiguration(config);
+
+// Set CR-Tool, UN-Tool, EX-Tool configurations
+// Config for CR Tool
+cornerstoneTools.crTool.setConfiguration(config);
+
+// Config for EX Tool
+cornerstoneTools.exTool.setConfiguration(config);
+
+// Config for UN Tool
+cornerstoneTools.unTool.setConfiguration(config);
 
 Template.lesionLocationDialog.events({
     'change .selectLesionLocation': function(e) {

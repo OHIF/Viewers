@@ -4,6 +4,8 @@ Template.viewerMain.helpers({
 
         var buttonData = [];
 
+        var btnGroup = [];
+
         buttonData.push({
             id: 'resetViewport',
             title: 'Reset Viewport',
@@ -54,7 +56,7 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
-            id: 'lesion',
+            id: 'bidirectional',
             title: 'Target Tool',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows-alt'
@@ -81,10 +83,38 @@ Template.viewerMain.helpers({
             iconClasses: 'fa fa-eye'
         });
 
+        // CR/UN/EX Tools
+        var crunexToolsBtns = {
+            id: 'crunexTools',
+            tools:[{
+                id: 'crTool',
+                title: 'CR Tool',
+                classes: 'imageViewerTool',
+                iconClasses: 'fa fa-cr'
+            },
+            {
+                id: 'unTool',
+                title: 'UN Tool',
+                classes: 'imageViewerTool',
+                iconClasses: 'fa fa-un'
+            },
+            {
+                id: 'exTool',
+                title: 'EX Tool',
+                classes: 'imageViewerTool',
+                iconClasses: 'fa fa-ex'
+            }],
+            title: "CR/UN/EX",
+            groupIcon: 'fa fa-exchange'
+        };
+
+        btnGroup.push(crunexToolsBtns);
+
         toolbarOptions.buttonData = buttonData;
         toolbarOptions.includePlayClipButton = false;
         toolbarOptions.includeLayoutButton = false;
         toolbarOptions.includeHangingProtocolButtons = false;
+        toolbarOptions.btnGroup = btnGroup;
         return toolbarOptions;
     }
 });

@@ -5,7 +5,7 @@ syncImageMeasurementAndToolData = function(measurement) {
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
     var imageId = measurement.imageId;
-    var toolType = measurement.measurementType;
+    var toolType = measurement.toolType;
 
     // If no tool state exists for this imageId, create an empty object to store it
     if (!toolState[imageId]) {

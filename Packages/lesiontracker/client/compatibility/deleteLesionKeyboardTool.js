@@ -80,7 +80,7 @@
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
-            var toolTypes = [ 'lesion', 'nonTarget', 'length'];
+            var toolTypes = [ 'bidirectional', 'nonTarget', 'length', 'crTool', 'unTool', 'exTool'];
             var nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
 
             if (!nearbyToolData) {
