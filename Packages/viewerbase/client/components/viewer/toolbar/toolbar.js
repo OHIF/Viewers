@@ -158,7 +158,7 @@ Template.toolbar.onRendered(function() {
     var extraTooltipButtons = $('[rel="tooltip"]');
     extraTooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
 
-    // Set disabled/enabled tool buttons
+    // Set disabled/enabled tool buttons that are set in toolManager
     setButtonsDisability();
 });
 

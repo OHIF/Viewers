@@ -3,14 +3,19 @@ setTimepointTools = function(timepoint) {
 
     // Enabled tools for only follow-up tools
     var fuTools = ["button#crunexTools"];
+    var fuToolsJQ = $("button#crunexTools");
+    var isDisabled = false;
     if ((timepoint.timepointType).toLowerCase() === "baseline") {
         // Set active tool as lesion tool
         toolManager.setActiveTool('bidirectional');
-        toolManager.addDisabledTool({tools: fuTools, status: true});
+        isDisabled = true;
     } else {
         toolManager.setActiveTool(toolManager.getDefaultTool());
-        toolManager.addDisabledTool({tools: fuTools, status: false});
+        isDisabled = false;
     }
+
+    toolManager.addDisabledTool({tools: fuTools, status: isDisabled});
+    fuToolsJQ.prop('disabled', isDisabled);
 };
 
 timepointAutoCheck = function(templateData) {
