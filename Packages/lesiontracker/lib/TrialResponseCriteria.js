@@ -70,13 +70,9 @@ function assessGroupOfMeasurements(constraints) {
         type: type
     });
 
-    // Get the criteria type so we can calculate total lesion burden
-    var criteriaType = Session.get('TrialResponseAssessmentCriteria');
-
     // Calculate some simple group-level Measurement statistics for validation
     var testStructure = {
-        totalNumberOfLesions: Measurements.find().count(),
-        totalLesionBurden: calculateTotalLesionBurden(criteriaType)
+        totalNumberOfLesions: Measurements.find().count()
     };
 
     // Run the conformance checks with the validate.js library
@@ -220,8 +216,12 @@ function assessSingleMeasurement(constraints, measurementData) {
 function validateSingleMeasurement(measurementData) {
     // Obtain the name of the current TrialResponseAssessmentCriteria that
     // we are using.
-    var criteriaType = Session.get('TrialResponseAssessmentCriteria');
-    var currentConstraints = getTrialCriteriaConstraints(criteriaType, measurementData.imageId);
+    var criteriaTypes = TrialCriteriaTypes.find({
+        selected: true
+    }).map(function(criteria) {
+        return criteria.id;
+    });
+    var currentConstraints = getTrialCriteriaConstraints(criteriaTypes, measurementData.imageId);
 
     // If we have no relevant constraints, stop here
     if (!currentConstraints) {
@@ -264,12 +264,16 @@ function validateSingleMeasurement(measurementData) {
 function validateGroups() {
     log.info('validateGroups');
 
-    // Obtain the name of the current TrialResponseAssessmentCriteria that
+    // Obtain the names of the current TrialResponseAssessmentCriteria that
     // we are using.
-    var criteriaType = Session.get('TrialResponseAssessmentCriteria');
-    
+    var criteriaTypes = TrialCriteriaTypes.find({
+        selected: true
+    }).map(function(criteria) {
+        return criteria.id;
+    });
+
     // Criteria for the specific image are retrieved from the general set of criteria.
-    var currentConstraints = getTrialCriteriaConstraints(criteriaType);
+    var currentConstraints = getTrialCriteriaConstraints(criteriaTypes);
     if (!currentConstraints) {
         return;
     }
@@ -297,10 +301,13 @@ function validateGroups() {
 }
 
 function validateAll() {
-    log.info('validateAll');
-    // Obtain the name of the current TrialResponseAssessmentCriteria that
+    // Obtain the names of the current TrialResponseAssessmentCriteria that
     // we are using.
-    var criteriaType = Session.get('TrialResponseAssessmentCriteria');
+    var criteriaTypes = TrialCriteriaTypes.find({
+        selected: true
+    }).map(function(criteria) {
+        return criteria.id;
+    });
 
     Measurements.find().forEach(function(measurement) {
         Object.keys(measurement.timepoints).forEach(function(timepointId) {
@@ -311,7 +318,7 @@ function validateAll() {
             currentMeasurement._id = measurement._id;
 
             // Criteria for the specific image are retrieved from the general set of criteria.
-            var currentConstraints = getTrialCriteriaConstraints(criteriaType, currentMeasurement.imageId);
+            var currentConstraints = getTrialCriteriaConstraints(criteriaTypes, currentMeasurement.imageId);
             if (!currentConstraints) {
                 return;
             }
@@ -333,8 +340,6 @@ var validationTimeout = 400;
  * @param measurementData Input measurement data from CornerstoneTools
  */
 function validateDelayed(measurementData) {
-    log.info('validateAllDelayed');
-
     // Erase any currently-waiting validation call
     clearTimeout(validationTimeout);
 

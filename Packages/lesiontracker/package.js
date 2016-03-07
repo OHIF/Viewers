@@ -71,6 +71,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/optionsModal/optionsModal.styl', 'client');
     api.addFiles('client/components/optionsModal/optionsModal.js', 'client');
 
+    api.addFiles('client/components/recistDescription/recistDescription.html', 'client');
+    api.addFiles('client/components/irRCDescription/irRCDescription.html', 'client');
+
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
@@ -201,6 +204,7 @@ Package.onUse(function(api) {
     api.export('ValidationErrors', 'client');
     api.export('LesionLocations', 'client');
     api.export('LocationResponses', 'client');
+    api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
     api.export('ImageMeasurements', [ 'client', 'server' ]);

@@ -1,4 +1,24 @@
-Session.setDefault('TrialResponseAssessmentCriteria', 'RECIST');
+TrialCriteriaTypes = new Meteor.Collection(null);
+
+TrialCriteriaTypes.insert({
+    id: 'RECIST',
+    name: 'RECIST 1.1',
+    descriptionTemplate: 'recistDescription',
+    selected: true
+});
+
+TrialCriteriaTypes.insert({
+    id: 'irRC',
+    name: 'irRC',
+    descriptionTemplate: 'irRCDescription',
+    selected: false
+});
+
+Template.optionsModal.helpers({
+    trialCriteriaTypes: function() {
+        return TrialCriteriaTypes.find();
+    }
+});
 
 Template.optionsModal.events({
     /**
@@ -8,16 +28,24 @@ Template.optionsModal.events({
      * @param e The 'change' event on the selected radio button
      */
     'change input.trialCriteria': function(e) {
-        // Get the Trial Criteria type that the selected radio button represents
-        var radioButton = $(e.currentTarget);
-        var criteriaType = radioButton.val();
+        var isChecked = e.currentTarget.checked;
 
-        // Set this as the current Trial Response Assessment Criteria
-        // TODO: Update when we have more trial-level support
-        // (Currently this information is stored in Session, later this will change)
-        Session.set('TrialResponseAssessmentCriteria', criteriaType);
+        // Set "Selected" to false for the entire collection
+        // TODO: Remove this when we allow multiple criteria
+        TrialCriteriaTypes.update({}, {
+            $set: {
+                selected: false
+            }
+        }, {
+            multi: true
+        });
 
-        log.info('Trial Criteria changed to: ' + criteriaType);
+        // Set the current Criteria in the collection to selected
+        TrialCriteriaTypes.update(this._id, {
+            $set: {
+                selected: isChecked
+            }
+        });
     },
     /**
      * When the Clear Study/Timepoint Associations button is clicked, we

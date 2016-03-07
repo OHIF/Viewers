@@ -321,70 +321,78 @@ function irRC(image) {
  * Retrieve trial criteria constraints based on the image that measurements appear upon
  * If no image is specified, it is assumed that group or per Organ level criteria are desired.
  *
- * @param criteriaType A valid Trial Criteria set name (e.g. 'RECIST' or 'irRC')
+ * @param criteriaTypes An array of valid Trial Criteria set names (e.g. ['RECIST', 'irRC'])
+ * NOTE: Multiple criteria are not yet supported
+ *
  * @param imageId A Cornerstone Image ID
  * @returns {*} An Object of Trial Criteria that can be used to validate measurements' conformance
  */
-getTrialCriteriaConstraints = function(criteriaType, imageId) {
-    if (!TrialCriteriaConstraints[criteriaType]) {
-        throw 'No such Trial Criteria defined: ' + criteriaType;
-    }
+getTrialCriteriaConstraints = function(criteriaTypes, imageId) {
+    // TODO: update this when we allow multiple criteria
+    var allCriteria = [];
+    criteriaTypes.forEach(function(criteriaType) {
+        if (!TrialCriteriaConstraints[criteriaType]) {
+            throw 'No such Trial Criteria defined: ' + criteriaType;
+        }
 
-    // If no imageId was specified, skip customization of the criteria
-    // and return the requested criteria right away
-    var criteria;
-    if (!imageId) {
-        criteria = TrialCriteriaConstraints[criteriaType]();
-        return criteria;
-    }
+        // If no imageId was specified, skip customization of the criteria
+        // and return the requested criteria right away
+        var criteria;
+        if (!imageId) {
+            criteria = TrialCriteriaConstraints[criteriaType]();
+            return criteria;
+        }
 
-    // Otherwise, retrieve the series metaData to identify the modality of the image
-    var seriesMetaData = cornerstoneTools.metaData.get('series', imageId);
-    if (!seriesMetaData) {
-        return;
-    }
+        // Otherwise, retrieve the series metaData to identify the modality of the image
+        var seriesMetaData = cornerstoneTools.metaData.get('series', imageId);
+        if (!seriesMetaData) {
+            return;
+        }
 
-    // TODO: Get the rest of the metaData that has already been loaded by Cornerstone
-    var image = {};
+        // TODO: Get the rest of the metaData that has already been loaded by Cornerstone
+        var image = {};
 
-    // If we are looking at an MR or CT image, we should pass the slice thickness
-    // to the Trial Criteria functions so that they can customize the validation rules
-    if (seriesMetaData.modality === 'MR' || seriesMetaData.modality === 'CT') {
-        var instanceMetaData = cornerstoneTools.metaData.get('instance', imageId);
-        image.acquisitionSliceThickness = instanceMetaData.sliceThickness;
-    }
+        // If we are looking at an MR or CT image, we should pass the slice thickness
+        // to the Trial Criteria functions so that they can customize the validation rules
+        if (seriesMetaData.modality === 'MR' || seriesMetaData.modality === 'CT') {
+            var instanceMetaData = cornerstoneTools.metaData.get('instance', imageId);
+            image.acquisitionSliceThickness = instanceMetaData.sliceThickness;
+        }
 
-    // Retrieve the study metaData in order to find the timepoint type
-    var studyMetaData = cornerstoneTools.metaData.get('study', imageId);
-    if (!studyMetaData) {
-        return;
-    }
+        // Retrieve the study metaData in order to find the timepoint type
+        var studyMetaData = cornerstoneTools.metaData.get('study', imageId);
+        if (!studyMetaData) {
+            return;
+        }
 
-    // Retrieve the Study document from the Collection of associated Studies
-    var study = Studies.findOne({
-        studyInstanceUid: studyMetaData.studyInstanceUid
+        // Retrieve the Study document from the Collection of associated Studies
+        var study = Studies.findOne({
+            studyInstanceUid: studyMetaData.studyInstanceUid
+        });
+
+        if (!study) {
+            return;
+        }
+
+        // Find the related Timepoint document
+        var timepoint = Timepoints.findOne({
+            timepointId: study.timepointId
+        });
+
+        if (!timepoint) {
+            log.warn('Timepoint related to study is missing.');
+            return;
+        }
+
+        // Retrieve the Timepoint's type (e.g. 'baseline' or 'followup')
+        var timepointType = timepoint.timepointType;
+
+        // Obtain the customized trial criteria given the image metaData
+        criteria = TrialCriteriaConstraints[criteriaType](image);
+
+        // Return the relevant criteria given the current timepoint type
+        allCriteria.push(criteria[timepointType]);
     });
 
-    if (!study) {
-        return;
-    }
-
-    // Find the related Timepoint document
-    var timepoint = Timepoints.findOne({
-        timepointId: study.timepointId
-    });
-
-    if (!timepoint) {
-        log.warn('Timepoint related to study is missing.');
-        return;
-    }
-
-    // Retrieve the Timepoint's type (e.g. 'baseline' or 'followup')
-    var timepointType = timepoint.timepointType;
-
-    // Obtain the customized trial criteria given the image metaData
-    criteria = TrialCriteriaConstraints[criteriaType](image);
-
-    // Return the relevant criteria given the current timepoint type
-    return criteria[timepointType];
+    return allCriteria[0];
 };
