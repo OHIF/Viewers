@@ -6,6 +6,7 @@ Template.lesionTrackerWorklistContextMenu.replaces(defaultTemplate);
 
 Worklist.functions['removeTimepointAssociations'] = removeTimepointAssociations;
 Worklist.functions['exportSelectedStudies'] = exportSelectedStudies;
+Worklist.functions['viewStudies'] = viewStudies;
 
 /**
  * Removes all present study / timepoint associations from the Clinical Trial
@@ -83,7 +84,53 @@ function exportSelectedStudies() {
             sort: {
                 studyDate: 1
             }
-        }).fetch() || [];
+        }).fetch();
+
+    if (!selectedStudies) {
+        return;
+    }
 
     exportStudies(selectedStudies);
+}
+
+/**
+ * Loads multiple unassociated studies in the Viewer
+ */
+function viewStudies() {
+    var selectedStudies = WorklistSelectedStudies.find({}, {
+            sort: {
+                studyDate: 1
+            }
+        }).fetch();
+
+    if (!selectedStudies) {
+        return;
+    }
+
+    var title = selectedStudies[0].patientName;
+    var studyInstanceUids = selectedStudies.map(function(study) {
+        return study.studyInstanceUid;
+    });
+
+    // Generate a unique ID to represent this tab
+    // We can't just use the Mongo entry ID because
+    // then it will change after hot-reloading.
+    var contentid = uuid.new();
+
+    // Create a new entry in the WorklistTabs Collection
+    WorklistTabs.insert({
+        title: title,
+        contentid: contentid,
+        active: false
+    });
+
+    // Update the ViewerData global object
+    ViewerData[contentid] = {
+        title: title,
+        contentid: contentid,
+        studyInstanceUids: studyInstanceUids
+    };
+
+    // Switch to the new tab
+    switchToTab(contentid);
 }

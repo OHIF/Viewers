@@ -21,6 +21,12 @@ Template.studyDateList.helpers({
             }
         }).fetch();
 
+        // If no Study / Timepoint associated studies exist, just
+        // return the list of loaded studies
+        if (!relatedStudies.length) {
+            return ViewerStudies.find();
+        }
+
         // Modify the array of related studies so the default option is the currently selected study
         relatedStudies.forEach(function(study, index) {
             // If the studyInstanceUid matches that of the current study in the browser,

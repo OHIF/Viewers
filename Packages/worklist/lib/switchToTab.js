@@ -69,6 +69,20 @@ switchToTab = function(contentId) {
             data.studies = ViewerData[contentId].studies;
         }
 
+
+        // Add additional metadata to our study from the worklist
+        data.studies.forEach(function(study) {
+            var worklistStudy = WorklistStudies.findOne({
+                studyInstanceUid: study.studyInstanceUid
+            });
+
+            if (!worklistStudy) {
+                return;
+            }
+
+            $.extend(study, worklistStudy);
+        });
+
         // Get tab content container given the contentId string
         // If no such container exists, stop here because something is wrong
         var container = $('.tab-content').find('#' + contentId).get(0);

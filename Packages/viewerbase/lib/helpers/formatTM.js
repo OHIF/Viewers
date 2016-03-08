@@ -3,12 +3,9 @@
  */
 UI.registerHelper('formatTM', function(context, format) {
     if (!context) {
-        return undefined;
+        return;
     }
-    var dateAsMoment = moment(context);
-    var strFormat = "HH:mm:ss";
-    if (options) {
-        strFormat = format;
-    }
-    return dateAsMoment.format(strFormat);
+
+    var dateTime = moment(context);
+    return dateTime.format(format || "HH:mm:ss");
 });
