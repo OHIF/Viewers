@@ -18,8 +18,27 @@ Template.lesionTableTimepointCell.helpers({
 
         var data = lesionData.timepoints[this.timepointId];
 
+        // Check whether this is a Nodal or Extranodal Measurement
+        var targetType = lesionData.isTarget ? 'target' : 'nonTarget';
+        var nodalType = lesionData.isNodal ? 'nodal' : 'extraNodal';
+
+        // Get criteria types
+        var criteriaTypes = TrialCriteriaTypes.find({
+            selected: true
+        }).map(function(criteria) {
+            return criteria.id;
+        });
+        var currentConstraints = getTrialCriteriaConstraints(criteriaTypes, data.imageId);
+
         if (lesionData.toolType === 'bidirectional') {
             if (data.shortestDiameter) {
+                if (currentConstraints) {
+                    var criteria = currentConstraints[targetType][nodalType];
+                    if (criteria && Object.keys(criteria)[0] === 'shortestDiameter') {
+                        return data.shortestDiameter + ' x ' + data.longestDiameter;
+                    }
+                }
+
                 return data.longestDiameter + ' x ' + data.shortestDiameter;
             }
 
