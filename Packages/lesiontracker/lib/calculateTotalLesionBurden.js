@@ -22,7 +22,7 @@ calculateTotalLesionBurden = function(criteriaType) {
 
             measurements.forEach(function(measurement) {
                 var LD = parseFloat(measurement.longestDiameter);
-                var SD = parseFloat(measurement.longestDiameter);
+                var SD = parseFloat(measurement.shortestDiameter);
 
                 if (measurement.nodal === true) {
                     sumShortAxisNodal += SD;
