@@ -24,7 +24,8 @@ Router.onBeforeAction('loading');
 var data = {
     additionalTemplates: [
         'associationModal',
-        'optionsModal'
+        'optionsModal',
+        'serverInformationModal'
     ]
 };
 

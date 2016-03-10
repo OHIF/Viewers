@@ -145,6 +145,14 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.styl', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
 
+    api.addFiles('client/components/serverInformationModal/serverInformationModal.html', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationModal.styl', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationModal.js', 'client');
+
+    api.addFiles('client/components/userAccountMenu/userAccountMenu.html', 'client');
+    api.addFiles('client/components/userAccountMenu/userAccountMenu.styl', 'client');
+    api.addFiles('client/components/userAccountMenu/userAccountMenu.js', 'client');
+
     // Server functions
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', [ 'server' ]);

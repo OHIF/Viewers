@@ -9,6 +9,9 @@ Meteor.startup(function() {
         dicomWeb: {
             endpoints: [{
                 name: 'Orthanc',
+                host: 'localhost',
+                port: '8042',
+                aeTitle: 'Orthanc',
                 wadoUriRootNOTE: 'either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently',
                 wadoUriRoot: 'http://localhost:8043/wado',
                 qidoRoot: 'http://localhost:8042/dicom-web',

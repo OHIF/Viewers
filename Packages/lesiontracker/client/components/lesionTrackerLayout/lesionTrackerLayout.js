@@ -1,19 +1,5 @@
 Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
 
-Template.lesionTrackerLayout.events({
-    'click #logoutButton': function() {
-        Meteor.logout(function() {
-            Router.go('/entrySignIn');
-        });
-    },
-    'click #worklist': function(e, template) {
-        template.showWorklistMenu.set(false);
-    },
-    'click #audit': function(e, template) {
-        template.showWorklistMenu.set(true);
-    }
-});
-
 Template.lesionTrackerLayout.helpers({
     fullName: function() {
         return Meteor.user().profile.fullName;
@@ -44,7 +30,12 @@ Template.lesionTrackerLayout.helpers({
 
 Template.lesionTrackerLayout.onCreated(function() {
     // showViewer to go to viewer from audit
-    this.showWorklistMenu = new ReactiveVar(false);
+    this.showWorklistMenu = new ReactiveVar(true);
+    // Get url and check worklist
+    var currentPath = Router.current().route.path(this);
+    if (currentPath === '/' || currentPath === '/worklist') {
+        this.showWorklistMenu.set(false);
+    }
 
     // Show countdown dialog
     var handle;

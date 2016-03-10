@@ -1,44 +1,6 @@
 <template name="lesionTrackerLayout">
     <div class="logoContainer">
-        <div id="menu" class="row-fluid">
-            {{#if currentUser}}
-            <button type='button' class="btn btn-link dropdown-toggle" data-toggle="dropdown" id="userMenu">
-                {{fullName}} <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
-                {{#if showWorklistMenu}}
-                    <li>
-                        <a href="worklist" id="worklist">
-                            <i class="fa fa-list-ul"></i> Worklist
-                        </a>
-                    </li>
-
-                {{else}}
-                    <li>
-                        <!-- TODO: Move this elsewhere in the Worklist? -->
-                        {{>optionsButton }}
-                    </li>
-                    <li>
-                        <a href="audit" id="audit">
-                            <i class="fa fa-list-ul"></i> View Audit Log
-                        </a>
-                    </li>
-                {{/if}}
-
-                <li>
-                    <a href="changePassword" id="changePassword">
-                        <i class="fa fa-lock"></i> Change Password
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="#" id="logoutButton">
-                        <i class="fa fa-power-off"></i>Logout
-                    </a>
-                </li>
-            </ul>
-            {{/if}}
-        </div>
+        {{>userAccountMenu}}
         <a class="navbar-brand" href="http://ohif.org">
             <img src="/images/logo.png">
             <h4 class="name">Open Health Imaging Foundation</h4>
