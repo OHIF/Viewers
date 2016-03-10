@@ -108,17 +108,6 @@ function getDefaultButtonData() {
     return buttonData;
 }
 
-function setButtonsDisability() {
-    var disabledTools = toolManager.getDisabledTool();
-    disabledTools.forEach(function(toolData) {
-        var tools = toolData.tools;
-        var status =  toolData.status;
-        tools.forEach(function(element) {
-            $(element).prop("disabled", status);
-        });
-    });
-}
-
 Template.toolbar.events({
     'click .imageViewerTool': function(e) {
         $(e.currentTarget).tooltip('hide');
@@ -159,7 +148,19 @@ Template.toolbar.onRendered(function() {
     extraTooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
 
     // Set disabled/enabled tool buttons that are set in toolManager
-    setButtonsDisability();
+    var states = toolManager.getToolDefaultStates();
+    var disabledToolButtons = states.disabledToolButtons;
+    var allToolbarButtons = $("#toolbar").find("button");
+    if (disabledToolButtons.length > 0) {
+        for (var i=0; i < allToolbarButtons.length; i++) {
+            var toolbarButton = allToolbarButtons[i];
+            $(toolbarButton).prop("disabled", false);
+            var index = disabledToolButtons.indexOf($(toolbarButton).attr("id"));
+            if (index !== -1) {
+                $(toolbarButton).prop("disabled", true);
+            }
+        }
+    }
 });
 
 Template.toolbar.helpers({

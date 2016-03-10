@@ -1,6 +1,5 @@
 var activeTool = "wwwc";
 var defaultTool = "wwwc";
-var disabledTools = [];
 
 var tools = {};
 
@@ -8,7 +7,8 @@ var toolDefaultStates = {
     activate: [],
     deactivate: [],
     enable: [],
-    disable: []
+    disable: [],
+    disabledToolButtons: []
 };
 
 var initialized = false;
@@ -121,7 +121,7 @@ toolManager = {
         // Enable tools based on their default states
         Object.keys(toolDefaultStates).forEach(function(action) {
             var relevantTools = toolDefaultStates[action];
-            if (!relevantTools || !relevantTools.length) {
+            if (!relevantTools || !relevantTools.length || action === 'disabledToolButtons') {
                 return;
             }
 
@@ -219,11 +219,6 @@ toolManager = {
     },
     getDefaultTool: function() {
         return defaultTool;
-    },
-    addDisabledTool: function(toolData) {
-        disabledTools.push(toolData);
-    },
-    getDisabledTool: function() {
-        return disabledTools;
     }
+
 };

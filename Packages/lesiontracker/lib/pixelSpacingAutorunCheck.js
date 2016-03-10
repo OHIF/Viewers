@@ -33,15 +33,4 @@ pixelSpacingAutorunCheck = function() {
         oncologyTools.prop('disabled', false);
     }
 
-    // Set disabled/enabled timepoint buttons
-    var imageId = enabledElement.image.imageId;
-    var study = cornerstoneTools.metaData.get('study', imageId);
-
-    // Find the relevant timepoint given the current study
-    var timepoint = Timepoints.findOne({
-        studyInstanceUids: {
-            $in: [study.studyInstanceUid]
-        }
-    });
-    setTimepointTools(timepoint);
 };

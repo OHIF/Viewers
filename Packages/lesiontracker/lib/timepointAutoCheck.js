@@ -1,21 +1,33 @@
 // If timepoint is baseline, sets lesion tool as active tool
 setTimepointTools = function(timepoint) {
 
-    // Enabled tools for only follow-up tools
-    var fuTools = ["button#crunexTools"];
-    var fuToolsJQ = $("button#crunexTools");
-    var isDisabled = false;
+    var disabledBaselineTools = ["crunexTools"];
+    var states = toolManager.getToolDefaultStates();
+    var disabledToolButtons = states.disabledToolButtons;
+
     if ((timepoint.timepointType).toLowerCase() === "baseline") {
         // Set active tool as lesion tool
         toolManager.setActiveTool('bidirectional');
-        isDisabled = true;
+        disabledBaselineTools.forEach(function(tool) {
+            var index = disabledToolButtons.indexOf(tool);
+            if (index === -1) {
+                disabledToolButtons.push(tool);
+            }
+        });
+
     } else {
         toolManager.setActiveTool(toolManager.getDefaultTool());
-        isDisabled = false;
+        // Remove disabled baseline tools
+        disabledBaselineTools.forEach(function(tool) {
+            var index = disabledToolButtons.indexOf(tool);
+            if (index !== -1) {
+                disabledToolButtons.splice(index, 1);
+            }
+        });
     }
 
-    toolManager.addDisabledTool({tools: fuTools, status: isDisabled});
-    fuToolsJQ.prop('disabled', isDisabled);
+    states.disabledToolButtons = disabledToolButtons;
+    toolManager.setToolDefaultStates(states);
 };
 
 timepointAutoCheck = function(templateData) {
