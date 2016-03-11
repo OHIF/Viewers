@@ -50,5 +50,8 @@ Template.userAccountMenu.events({
     },
     'click #audit': function(e, template) {
         template.showWorklistMenu.set(true);
+    },
+    'click #changePassword': function(e, template) {
+        template.showWorklistMenu.set(true);
     }
 });
