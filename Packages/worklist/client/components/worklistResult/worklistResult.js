@@ -78,7 +78,7 @@ function replaceUndefinedColumnValue(text) {
     if (text === undefined || text === 'undefined') {
         return '';
     } else {
-        return text;
+        return text.toUpperCase();
     }
 }
 
