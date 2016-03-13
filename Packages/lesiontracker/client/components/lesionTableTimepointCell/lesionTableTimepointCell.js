@@ -83,6 +83,11 @@ Template.lesionTableTimepointCell.events({
         var currentTimepointID = this.timepointId;
 
         var timepointData = currentMeasurement.timepoints[currentTimepointID];
+
+        if (!timepointData) {
+            return;
+        }
+
         var measurementData = {
             id: currentMeasurement._id,
             timepointId: currentTimepointID,

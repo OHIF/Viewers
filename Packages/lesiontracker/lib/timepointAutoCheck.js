@@ -1,11 +1,14 @@
 // If timepoint is baseline, sets lesion tool as active tool
 setTimepointTools = function(timepoint) {
+    if (!timepoint) {
+        return;
+    }
 
     var disabledBaselineTools = ["crunexTools"];
     var states = toolManager.getToolDefaultStates();
     var disabledToolButtons = states.disabledToolButtons;
 
-    if ((timepoint.timepointType).toLowerCase() === "baseline") {
+    if (timepoint.timepointType === "baseline") {
         // Set active tool as lesion tool
         toolManager.setActiveTool('bidirectional');
         disabledBaselineTools.forEach(function(tool) {
@@ -14,7 +17,6 @@ setTimepointTools = function(timepoint) {
                 disabledToolButtons.push(tool);
             }
         });
-
     } else {
         toolManager.setActiveTool(toolManager.getDefaultTool());
         // Remove disabled baseline tools

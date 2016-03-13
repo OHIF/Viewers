@@ -56,7 +56,6 @@ Package.onUse(function(api) {
         bare: true
     });
 
-
     // Trial Criteria data validation (the Meteor package is currently out-of-date)
     api.addFiles('client/compatibility/validate.js', 'client', {
         bare: true
@@ -70,7 +69,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/associationModal/associationModal.html', 'client');
     api.addFiles('client/components/associationModal/associationModal.styl', 'client');
     api.addFiles('client/components/associationModal/associationModal.js', 'client');
-
 
     api.addFiles('client/components/activeEntry/activeEntry.styl', 'client');
     api.addFiles('client/components/activeEntry/activeEntry.js', 'client');
@@ -180,6 +178,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/clearTools.js', 'client');
     api.addFiles('lib/calculateTotalLesionBurden.js', 'client');
     api.addFiles('lib/convertToNonTarget.js', 'client');
+    api.addFiles('lib/convertNonTarget.js', 'client');
     api.addFiles('lib/timepointAutoCheck.js', 'client');
 
     api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
@@ -189,7 +188,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/handleMeasurementAdded.js', 'client');
     api.addFiles('lib/handleMeasurementModified.js', 'client');
     api.addFiles('lib/handleMeasurementRemoved.js', 'client');
-
 
     // Export global functions
     api.export('pixelSpacingAutorunCheck', 'client');
@@ -212,8 +210,8 @@ Package.onUse(function(api) {
     api.export('getTrialCriteriaConstraints', 'client');
     api.export('calculateTotalLesionBurden', 'client');
     api.export('convertToNonTarget', 'client');
+    api.export('convertNonTarget', 'client');
     api.export('timepointAutoCheck', 'client');
-
 
     // Export global objects
     api.export('TrialResponseCriteria', 'client');

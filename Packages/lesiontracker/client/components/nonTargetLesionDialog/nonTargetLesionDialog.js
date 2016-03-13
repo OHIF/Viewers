@@ -173,11 +173,6 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     // Make sure the context menu is closed when the user clicks away
     $('.removableBackdrop').one('mousedown touchstart', function() {
         closeHandler(dialog);
-
-        if (doneCallback && typeof doneCallback === 'function') {
-            var deleteTool = true;
-            doneCallback(measurementData, deleteTool);
-        }
     });
 
     // Find the select option box
@@ -320,6 +315,17 @@ Template.nonTargetLesionDialog.events({
         var dialog = Template.nonTargetLesionDialog.dialog;
         closeHandler(dialog);
     },
+    'click a.convertNonTarget': function(evt) {
+        var measurementData = Template.nonTargetLesionDialog.measurementData;
+        var dialog = Template.nonTargetLesionDialog.dialog;
+
+        var button = $(evt.currentTarget);
+        var toolType = button.data('type');
+
+        convertNonTarget(measurementData, toolType);
+
+        closeHandler(dialog);
+    },
     'keydown #lesionLocationDialog, keydown #lesionLocationRelabelDialog': function(e) {
         var dialog = Template.nonTargetLesionDialog.dialog;
 
@@ -331,11 +337,28 @@ Template.nonTargetLesionDialog.events({
     }
 });
 
+var conversionOptions = [{
+    id: 'bidirectional',
+    name: 'Measurable Target'
+}, {
+    id: 'crTool',
+    name: 'Complete Response (CR)'
+}, {
+    id: 'unTool',
+    name: 'Not Evaluable (NE)'
+}, {
+    id: 'exTool',
+    name: 'Excluded (EX)'
+}];
+
 Template.nonTargetLesionDialog.helpers({
     lesionLocations: function() {
         return LesionLocations.find();
     },
     locationResponses: function() {
         return LocationResponses.find();
+    },
+    conversionOptions: function() {
+        return conversionOptions;
     }
 });
