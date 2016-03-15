@@ -17,6 +17,7 @@ function filterToQIDOURL(server, filter) {
         PatientID: filter.patientId,
         AccessionNumber: filter.accessionNumber,
         StudyDescription: filter.studyDescription,
+        ModalitiesInStudy: filter.modality,
         limit: filter.limit || 20,
         includefield: server.qidoSupportsIncludeField ? 'all' : commaSeparatedFields
     };
