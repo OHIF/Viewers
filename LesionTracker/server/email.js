@@ -6,10 +6,11 @@ Meteor.startup(function () {
     var server = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.server || null;
     var port = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.port || null;
     var verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
+    var siteName = Meteor.settings && Meteor.settings.public && Meteor.settings.public.siteName || "Lesion Tracker";
 
-    if (verifyEmail && username && password && server && port) {
-        Accounts.emailTemplates.siteName = 'Lesion Tracker';
-        Accounts.emailTemplates.from = 'Lesion Tracker Admin <'+username+'>';
+    if (username && password && server && port) {
+        Accounts.emailTemplates.siteName = siteName;
+        Accounts.emailTemplates.from = siteName+' Admin <'+username+'>';
 
         process.env.MAIL_URL = 'smtp://' +
             encodeURIComponent(username) + ':' +
@@ -18,7 +19,7 @@ Meteor.startup(function () {
 
         // Subject line of the email.
         Accounts.emailTemplates.verifyEmail.subject = function(user) {
-            return 'Confirm Your Email Address for Lesion Tracker';
+            return 'Confirm Your Email Address for '+siteName;
         };
 
         // Email text
@@ -26,9 +27,24 @@ Meteor.startup(function () {
             return 'Thank you for registering.  Please click on the following link to verify your email address: \r\n' + url;
         };
 
+        // Reset password mail
+        Accounts.emailTemplates.resetPassword.subject = function() {
+          return 'Reset your '+siteName+' password'
+        };
+
+        Accounts.urls.resetPassword = function(token) {
+            return Meteor.absoluteUrl('resetPassword/' + token);
+        };
+
+        Accounts.emailTemplates.resetPassword.text = function(user, url) {
+            return "Hello " + user.profile.fullName + ",\n\n" +
+                "Click the following link to set your new password:\n" +
+                url + "\n\n";
+        };
+
         // Send email when account is created
         Accounts.config({
-            sendVerificationEmail: true
+            sendVerificationEmail: verifyEmail
         });
     }
 });

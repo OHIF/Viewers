@@ -30,13 +30,18 @@ Template.entrySignUp.helpers({
     }
   },
   entryErrorMessages: function () {
-    var errorMessages = [];
-    Object.keys(ActiveEntry.errorMessages.all()).forEach(function(key) {
-      if (key !== "signInError" && ActiveEntry.errorMessages.get(key)) {
-        errorMessages.push(ActiveEntry.errorMessages.get(key));
-      }
+    var allErrorMessages = Object.keys(ActiveEntry.errorMessages.all()).filter(function(key) {
+      return key !== "signInError" && ActiveEntry.errorMessages.get(key);
     });
-    return errorMessages;
+
+    if (allErrorMessages.length > 0) {
+      var errorMessage = ActiveEntry.errorMessages.get(allErrorMessages[0]);
+      if (errorMessage) {
+        return [errorMessage];
+      }
+    }
+
+    return;
   },
   getButtonText: function () {
     if (ActiveEntry.errorMessages.get('signInError')) {

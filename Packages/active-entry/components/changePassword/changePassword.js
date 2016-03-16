@@ -46,14 +46,19 @@ Template.changePassword.helpers({
     }
   },
 
-  entryErrorMessages: function() {
-    var errorMessages = [];
-    Object.keys(ActiveEntry.errorMessages.all()).forEach(function(key) {
-      if ((key === "password" || key === "confirm") &&  ActiveEntry.errorMessages.get(key)) {
-        errorMessages.push(ActiveEntry.errorMessages.get(key));
-      }
+  changePasswordErrorMessages: function() {
+    var allErrorMessages = Object.keys(ActiveEntry.errorMessages.all()).filter(function(key) {
+      return (key === "password" || key === "confirm") && ActiveEntry.errorMessages.get(key);
     });
-    return errorMessages;
+
+    if (allErrorMessages.length > 0) {
+      var errorMessage = ActiveEntry.errorMessages.get(allErrorMessages[0]);
+      if (errorMessage) {
+        return [errorMessage];
+      }
+    }
+
+    return;
   }
 });
 

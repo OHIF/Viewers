@@ -263,6 +263,47 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
   });
 };
 
+ActiveEntry.forgotPassword = function(emailAddress) {
+  ActiveEntry.verifyEmail(emailAddress);
+  ActiveEntry.errorMessages.set("forgotPassword", null);
+  ActiveEntry.successMessages.set("forgotPassword", null);
+
+  if (ActiveEntry.errorMessages.get("email")) {
+    return;
+  }
+
+  Accounts.forgotPassword({email:emailAddress }, function(error){
+    if (error) {
+      console.warn(error.message);
+      ActiveEntry.errorMessages.set("forgotPassword", error.message);
+      return;
+    }
+    // Show email sent notification
+    ActiveEntry.successMessages.set("forgotPassword", "Your password reset email is sent  to <strong>"+emailAddress+"</strong>");
+  });
+};
+
+ActiveEntry.resetPassword = function(passwordValue, confirmPassword) {
+  ActiveEntry.verifyPassword(passwordValue);
+  ActiveEntry.verifyConfirmPassword(passwordValue, confirmPassword);
+  ActiveEntry.errorMessages.set("resetPassword", null);
+
+  // Check error messages
+  if (ActiveEntry.errorMessages.get("password") ||  ActiveEntry.errorMessages.get("confirm")) {
+    return;
+  }
+
+  Accounts.resetPassword(Session.get('_resetPasswordToken'), passwordValue, function(error) {
+    if (error) {
+      ActiveEntry.errorMessages.set("resetPassword", error.message);
+      return;
+    }
+    Session.set('_resetPasswordToken', null);
+    var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
+    Router.go(ActiveEntryConfig.signIn.destination);
+  });
+};
+
 // Insert hashed password in previousPasswords fields
 ActiveEntry.insertHashedPassword =  function(passwordValue) {
   var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
