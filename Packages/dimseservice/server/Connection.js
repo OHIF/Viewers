@@ -1,4 +1,5 @@
-var EventEmitter = Npm.require('events').EventEmitter, net = Npm.require('net'), Socket = net.Socket;
+var net = Npm.require('net'), 
+    Socket = net.Socket;
 
 var DEFAULT_MAX_PACKAGE_SIZE = 32768;
 
@@ -20,6 +21,11 @@ Connection = function(options) {
 }
 
 util.inherits(Connection, EventEmitter);
+
+var StoreHandle = function() {
+    EventEmitter.call(this);
+}
+util.inherits(StoreHandle, EventEmitter);
 
 Connection.prototype.addPeer = function(options) {
   if (!options.aeTitle || !options.host || !options.port) {
@@ -64,6 +70,92 @@ Connection.prototype.selectPeer = function(aeTitle) {
     }
     return this.peers[aeTitle];
 }
+
+Connection.prototype._sendFile = function(socket, sHandle, file, maxSend, metaLength, list) {
+  var fileNameText = typeof file.file == 'string' ? file.file : 'buffer';
+  console.log("Sending file " + fileNameText);
+  var useContext = socket.getContextByUID(file.context), self = this;
+
+  PDU.generatePDatas(useContext.id, file.file, maxSend, null, metaLength, function(err, handle) {
+    if (err) {
+      console.log('Error while sending file');
+      return;
+    }
+    var processNext = function() {
+      var next = list.shift();
+      if (next)
+        self._sendFile(socket, sHandle, next, maxSend, metaLength, list);
+      else      
+        socket.release();
+    };
+
+    var store = socket.storeInstance(useContext.abstractSyntax, file.uid);
+    handle.on('pdv', function(pdv) {
+      socket.sendPData(pdv);
+    });
+    handle.on('error', function(err) {
+      sHandle.emit('file', err, fileNameText);
+      processNext();
+    });
+    store.on('response', function(msg) {
+      var statusText = msg.getStatus().toString(16);
+      console.log('STORE reponse with status', statusText);
+      var error = null;
+      if (msg.failure()) {
+        error = new Error(statusText);
+      }
+      sHandle.emit('file', error, fileNameText);
+      processNext();
+    });
+  });
+};
+
+Connection.prototype.storeInstances = function(fileList) {
+    var contexts = {}, read = 0, length = fileList.length, toSend = [], self = this, handle = new StoreHandle();
+    fileList.forEach(function(bufferOrFile){
+      var fileNameText = typeof bufferOrFile == 'string' ? bufferOrFile : 'buffer';
+      DicomMessage.readMetaHeader(bufferOrFile, function(err, metaMessage, metaLength) {
+        read++;
+        if (err) {
+          handle.emit('file', err, fileNameText);
+          return;
+        }
+        console.log('Dicom file ' + (typeof bufferOrFile == 'string' ? bufferOrFile : 'buffer') + ' found');
+        var syntax = metaMessage.getValue(0x00020010), 
+            sopClassUID = metaMessage.getValue(0x00020002),
+            instanceUID = metaMessage.getValue(0x00020003);
+
+        if (!contexts[sopClassUID]) {
+          contexts[sopClassUID] = [];
+        }
+        if (syntax && contexts[sopClassUID].indexOf(syntax) == -1) {
+          contexts[sopClassUID].push(syntax);
+        }
+        toSend.push({file : bufferOrFile, context : sopClassUID, uid : instanceUID});
+
+        if (read == length) {
+          var useContexts = [];
+          for (var context in contexts) {
+            var useSyntaxes = contexts[context];
+            if (useSyntaxes.length > 0) {
+              useContexts.push({context : context, syntaxes : contexts[context]});
+            } else {
+              throw "No syntax specified for context " + context;
+            }
+          }
+
+          self.associate({
+            contexts : useContexts
+          }, function(ac) {
+            var maxSend = ac.getMaxSize(), next = toSend.shift();
+            self._sendFile(this, handle, next, maxSend, metaLength, toSend);
+
+          });
+        }
+      });
+    });
+    return handle;
+};
 
 Connection.prototype.storeResponse = function(messageId, msg) {
     var rq = this.messages[messageId];

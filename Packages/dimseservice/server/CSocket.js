@@ -60,7 +60,8 @@ CSocket = function(socket, options) {
     this.on("released", function() {
         this.released();
     });
-    this.on('aborted', function() {
+    this.on('aborted', function(pdu) {
+        console.log('Assocation aborted with reason ' + pdu.reason);
         this.released();
     })
     this.on('message', function(pdvs) {
@@ -153,11 +154,20 @@ CSocket.prototype.setPresentationContexts = function(uids) {
     var contexts = [],
         id = 0;
     uids.forEach(function(uid) {
-        contexts.push({
-            id: ++id,
-            abstractSyntax: uid,
-            transferSyntaxes: [C.IMPLICIT_LITTLE_ENDIAN, C.EXPLICIT_LITTLE_ENDIAN, C.EXPLICIT_BIG_ENDIAN]
-        });
+        id++;
+        if (typeof uid == 'string') {
+            contexts.push({
+                id: id,
+                abstractSyntax: uid,
+                transferSyntaxes: [C.IMPLICIT_LITTLE_ENDIAN, C.EXPLICIT_LITTLE_ENDIAN, C.EXPLICIT_BIG_ENDIAN]
+            });
+        } else {
+            contexts.push({
+                id: id,
+                abstractSyntax: uid.context,
+                transferSyntaxes: uid.syntaxes
+            });
+        }
     });
     this.presentationContexts = contexts;
 };
@@ -174,9 +184,7 @@ CSocket.prototype.send = function(pdu, afterCbk) {
     //console.log('SEND PDU-TYPE: ', pdu.type);
     var toSend = pdu.buffer();
     //console.log('send buffer', toSend.toString('hex'));
-    this.socket.write(toSend, afterCbk ? afterCbk : function() {
-        //console.log('Data written');
-    });
+    return this.socket.write(toSend, afterCbk ? afterCbk : null);
 };
 
 CSocket.prototype.release = function() {
@@ -318,7 +326,7 @@ CSocket.prototype.interpret = function(stream) {
             this.emit('released');
         } else if (pdu.is(C.ITEM_TYPE_PDU_AABORT)) {
             //console.log('Aborted');
-            this.emit('aborted');
+            this.emit('aborted', pdu);
         } else if (pdu.is(C.ITEM_TYPE_PDU_PDATA)) {
             pdatas.push(pdu);
         }
@@ -363,16 +371,19 @@ CSocket.prototype.receivedMessage = function(pdv) {
         this.lastCommand = msg;
 
         if (msg.isResponse()) {
+            var replyId = msg.respondedTo(),
+                listener = this.messages[replyId].listener;
+
             if (msg.is(C.COMMAND_C_GET_RSP) || msg.is(C.COMMAND_C_MOVE_RSP)) {
                 //console.log('remaining', msg.getNumOfRemainingSubOperations(), msg.getNumOfCompletedSubOperations());
             }
             if (msg.failure()) {
-                //console.log("message failed with status ", msg.getStatus().toString(16));
+                console.log("message failed with status ", msg.getStatus().toString(16));
             }
+            listener.emit('response', msg);
             if (msg.isFinal()) {
-                var replyId = msg.respondedTo();
-                if (this.messages[replyId].listener) {
-                    this.messages[replyId].listener.emit('end', msg);
+                if (listener) {
+                    listener.emit('end', msg);
 
                     if (!msg.haveData())
                         delete this.messages[replyId];
@@ -474,9 +485,9 @@ CSocket.prototype.sendMessage = function(context, command, dataset) {
 
     msgData.command = command;
     this.messages[messageId] = msgData;
-
+    console.log('Sending command ' + command.typeString());
     this.send(pdata);
-    if (dataset) {
+    if (dataset && typeof dataset == 'object') {
         dataset.setSyntax(syntax);
         var dsData = new PDataTF(),
             dPdv = new PresentationDataValueItem(cid);
@@ -486,6 +497,14 @@ CSocket.prototype.sendMessage = function(context, command, dataset) {
         this.send(dsData);
     }
     return msgData.listener;
+};
+
+CSocket.prototype.sendPData = function(pdv, after) {
+    var pdata = new PDataTF();
+    pdata.setPresentationDataValueItems([pdv]);
+    //console.log('Sending pdata');
+    //console.log(pdata.totalLength());
+    this.send(pdata, after);
 };
 
 CSocket.prototype.verify = function() {
@@ -514,6 +533,14 @@ CSocket.prototype.move = function(destination, params, options) {
 
     return this.sendMessage(options.context, moveMessage, this.wrapMessage(params));
 };
+
+CSocket.prototype.storeInstance = function(sopClassUID, sopInstanceUID, options) {
+    var storeMessage = new CStoreRQ();
+    storeMessage.setAffectedSOPInstanceUID(sopInstanceUID);
+    storeMessage.setAffectedSOPClassUID(sopClassUID);
+
+    return this.sendMessage(sopClassUID, storeMessage, true);
+}
 
 CSocket.prototype.moveInstances = function(destination, params, options) {
     var sendParams = Object.assign({

@@ -15,6 +15,21 @@ Field.prototype.isNumeric = function() {
   return false;
 }
 
+BufferField = function(buffer, start, length) {
+  Field.call(this, C.TYPE_BUFFER, buffer);
+  this.bufferLength = length;
+  this.bufferStart = start;
+}
+util.inherits(BufferField, Field);
+
+BufferField.prototype.length = function() {
+  return this.bufferLength;
+}
+
+BufferField.prototype.write = function(stream) {
+  stream.writeRawBuffer(this.value, this.bufferStart, this.bufferLength);
+}
+
 StringField = function(str) {
   Field.call(this, C.TYPE_ASCII, typeof str == 'string' ? str : "");
 }
