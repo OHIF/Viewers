@@ -33,6 +33,8 @@ Template.layoutChooser.events({
         highlightCells(evt.currentTarget);
     },
     'click .layoutChooser table td': function(evt) {
+        $('#imageViewerViewports').remove();
+
         var currentCell = $(evt.currentTarget);
         var rowIndex = currentCell.closest('tr').index();
         var columnIndex = currentCell.index();
@@ -40,9 +42,10 @@ Template.layoutChooser.events({
         // Add 1 because the indices start from zero
         var data = {
             viewportRows: rowIndex + 1,
-            viewportColumns: columnIndex + 1
+            viewportColumns: columnIndex + 1,
         };
         
-        WindowManager.setLayout(data);
+        var container = $(".viewerMain").get(0);
+        UI.renderWithData(Template.imageViewerViewports, data, container);
     }
 });

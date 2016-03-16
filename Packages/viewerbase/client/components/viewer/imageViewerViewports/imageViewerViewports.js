@@ -1,10 +1,6 @@
 ViewerWindows = new Meteor.Collection(null);
 ViewerWindows._debugName = 'ViewerWindows';
 
-Template.imageViewerViewports.onCreated(function() {
-   WindowManager.init();
-});
-
 Template.imageViewerViewports.helpers({
     height: function() {
         var viewportRows = this.viewportRows || 1;
@@ -140,9 +136,10 @@ var savedSeriesData,
     savedViewportColumns;
 
 Template.imageViewerViewports.events({
-    'dblclick .imageViewerViewport': function(e) {
+    'CornerstoneMouseDoubleClick .imageViewerViewport': function(e) {
+        var container = $('.viewerMain').get(0);
         var data;
-        var contentId = Session.get('activeContentId');
+        var contentId = this.contentId || $('#viewer').parents('.tab-pane.active').attr('id');
 
         // If there is more than one viewport on screen
         // And one of them is double-clicked, it should be rendered alone
@@ -162,7 +159,8 @@ Template.imageViewerViewports.events({
             };
 
             // Render the imageViewerViewports template with these settings
-            WindowManager.updateWindows(data);
+            $('#imageViewerViewports').remove();
+            UI.renderWithData(Template.imageViewerViewports, data, container);
 
             // Remove the 'zoomed' class from any viewports
             $('.imageViewerViewport').removeClass('zoomed');
@@ -193,7 +191,8 @@ Template.imageViewerViewports.events({
             };
 
             // Render the imageViewerViewports template with these settings
-            WindowManager.updateWindows(data);
+            $('#imageViewerViewports').remove();
+            UI.renderWithData(Template.imageViewerViewports, data, container);
 
             // Add the 'zoomed' class to the lone remaining viewport
             $('.imageViewerViewport').eq(0).addClass('zoomed');
