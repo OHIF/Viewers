@@ -185,8 +185,7 @@ function thumbnailDragEndHandler(e, target) {
     }
 
     // Rerender the viewport using the drag and drop data
-    rerenderViewportWithNewSeries(element, OHIF.viewer.dragAndDropData);
-    Session.get('UseHangingProtocol', false);
+    WindowManager.loadSeriesInViewport(OHIF.viewer.dragAndDropData, element);
     return false;
 }
 
