@@ -40,7 +40,7 @@ Services.DIMSE.Studies = function(filter) {
         0x00081030: filter.studyDescription,
         0x00100040: "",
         0x00201208: "",
-        0x00080061: filter.modality
+        0x00080061: ""
     };
 
     var results = DIMSE.retrieveStudies(parameters);

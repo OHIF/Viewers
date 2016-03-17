@@ -72,6 +72,20 @@ function isIndexOf(mainVal, searchVal) {
 }
 
 /**
+ * Replace object if undefined
+ */
+function replaceUndefinedColumnValue(text) {
+    if (text === undefined || text === 'undefined') {
+        return '';
+    } else {
+        return text.toUpperCase();
+    }
+}
+
+/**
+
+
+/**
  * Convert string to study date
  */
 function convertStringToStudyDate(dateStr) {
@@ -98,9 +112,12 @@ function search() {
         patientName: getFilter($('input#patientName').val()),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
-        studyDescription: getFilter($('input#studyDescription').val()),
-        modality: getFilter($('input#modality').val())
+        studyDescription: getFilter($('input#studyDescription').val())
     };
+
+    // Make sure that modality has a reasonable value, since it is occasionally
+    // returned as 'undefined'
+    var modality = replaceUndefinedColumnValue($('input#modality').val());
 
     // Clear all current studies
     WorklistStudies.remove({});
@@ -121,9 +138,9 @@ function search() {
 
         // Loop through all identified studies
         studies.forEach(function(study) {
-
             // Search the rest of the parameters that aren't done via the server call
-            if ((new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === "") &&
+            if (isIndexOf(study.modalities, modality) &&
+                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === "") &&
                 (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === "")) {
 
                 // Convert numberOfStudyRelatedInstance string into integer

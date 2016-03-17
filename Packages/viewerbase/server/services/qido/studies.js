@@ -8,7 +8,8 @@
  */
 function filterToQIDOURL(server, filter) {
     var commaSeparatedFields = [
-        '00081030' // Study Description
+        '00081030', // Study Description
+        '00080060' //Modality
         // Add more fields here if you want them in the Study List
     ].join(',');
 
@@ -17,7 +18,6 @@ function filterToQIDOURL(server, filter) {
         PatientID: filter.patientId,
         AccessionNumber: filter.accessionNumber,
         StudyDescription: filter.studyDescription,
-        ModalitiesInStudy: filter.modality,
         limit: filter.limit || 20,
         includefield: server.qidoSupportsIncludeField ? 'all' : commaSeparatedFields
     };
@@ -50,7 +50,9 @@ function resultDataToStudies(resultData) {
             numberOfStudyRelatedSeries: DICOMWeb.getString(study['00201206']),
             numberOfStudyRelatedInstances: DICOMWeb.getString(study['00201208']),
             studyDescription: DICOMWeb.getString(study['00081030']),
-            modalities: DICOMWeb.getString(study['00080061'])
+            // modality: DICOMWeb.getString(study['00080060']),
+            // modalitiesInStudy: DICOMWeb.getString(study['00080061']),
+            modalities: DICOMWeb.getString(DICOMWeb.getModalities(study['00080060'], study['00080061']))
         });
     });
     return studies;
