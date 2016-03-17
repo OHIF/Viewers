@@ -17,7 +17,7 @@
         <div class="bottomleft dicomTag">
             <div>Ser: {{seriesNumber}}</div>
             <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
-            <div>{{frameRate}}</div>
+            <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
             <div>{{imageDimensions}}</div>
             <div>{{seriesDescription}}</div>
         </div>

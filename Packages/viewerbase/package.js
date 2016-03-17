@@ -96,6 +96,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.js', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.styl', 'client');
 
+    api.addFiles('client/components/viewer/cineDialog/cineDialog.html', 'client');
+    api.addFiles('client/components/viewer/cineDialog/cineDialog.js', 'client');
+    api.addFiles('client/components/viewer/cineDialog/cineDialog.styl', 'client');
+
     api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
 
     api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
@@ -131,6 +135,8 @@ Package.onUse(function(api) {
     api.addFiles('lib/windowManager.js', 'client');
     api.addFiles('lib/enablePrefetchOnElement.js', 'client');
     api.addFiles('lib/displayReferenceLines.js', 'client');
+    api.addFiles('lib/draggable.js', 'client');
+    api.addFiles('lib/toggleDialog.js', 'client');
     api.addFiles('lib/setActiveViewport.js', 'client');
     api.addFiles('lib/switchToImageByIndex.js', 'client');
     api.addFiles('lib/switchToImageRelative.js', 'client');
@@ -160,6 +166,7 @@ Package.onUse(function(api) {
     api.export('setFocusToActiveViewport', 'client');
     api.export('updateAllViewports', 'client');
     api.export('exportStudies', 'client');
+    api.export('getActiveViewportElement', 'client');
     api.export('encodeQueryData', 'server');
 
     // Viewer management objects

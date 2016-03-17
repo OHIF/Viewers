@@ -94,7 +94,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             laterality: remoteGetValue(instance['0020,0062']),
             viewPosition: remoteGetValue(instance['0018,5101']),
             numFrames: parseFloat(remoteGetValue(instance['0028,0008'])),
-            frameRate: parseFloat(remoteGetValue(instance['0018,1063']))
+            frameTime: parseFloat(remoteGetValue(instance['0018,1063']))
         };
 
         var iid = instance['xxxx,0001'].Value;

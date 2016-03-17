@@ -180,6 +180,17 @@ function loadSeriesIntoViewport(data, templateData) {
         cornerstoneTools.clearToolState(element, 'stack');
         cornerstoneTools.addToolState(element, 'stack', stack);
 
+        // Set the default CINE settings
+        var frameRate = 1000 / series.instances[0].frameTime;
+        var cineToolData = {
+            loop: OHIF.viewer.cine.loop,
+            framesPerSecond: frameRate || OHIF.viewer.cine.framesPerSecond
+        };
+        cornerstoneTools.addToolState(element, 'playClip', cineToolData);
+
+        // Autoplay datasets that have framerates set
+        cornerstoneTools.playClip(element);
+
         // Enable mouse, mouseWheel, touch, and keyboard input on the element
         cornerstoneTools.mouseInput.enable(element);
         cornerstoneTools.touchInput.enable(element);
@@ -223,6 +234,20 @@ function loadSeriesIntoViewport(data, templateData) {
             // This allows the template helpers to update reactively
             templateData.imageId = eventData.enabledElement.image.imageId;
             Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+
+            // Get the element and stack data
+            var element = e.target;
+            var toolData = cornerstoneTools.getToolState(element, 'stack');
+            if (!toolData || !toolData.data || !toolData.data.length) {
+                return;
+            }
+
+            var stack = toolData.data[0];
+
+            // Update the imageSlider value
+            var currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
+            var currentImageSlider = currentOverlay.find('#imageSlider');
+            currentImageSlider.val(stack.currentImageIdIndex + 1);
 
             // If this viewport is displaying a stack of images, save the current image
             // index in the stack to the global ViewerData object, as well as the Meteor Session.

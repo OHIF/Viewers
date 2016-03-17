@@ -69,6 +69,8 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
 
         var sopInstanceUid = instance[0x00080018];
 
+        console.log(instance);
+
         var instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
@@ -95,7 +97,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             laterality: instance[0x00200062],
             viewPosition: instance[0x00185101],
             numFrames: parseFloat(instance[0x00280008]),
-            frameRate: parseFloat(instance[0x00181063])
+            frameTime: parseFloat(instance[0x00181063])
         };
 
         // Retrieve the actual data over WADO-URI

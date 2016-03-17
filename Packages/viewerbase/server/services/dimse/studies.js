@@ -30,7 +30,6 @@ function resultDataToStudies(resultData) {
     return studies;
 }
 
-
 Services.DIMSE.Studies = function(filter) {
     log.info('Services.DIMSE.Studies');
     var parameters = {
@@ -38,9 +37,9 @@ Services.DIMSE.Studies = function(filter) {
         0x00100020: filter.patientId,
         0x00080050: filter.accessionNumber,
         0x00081030: filter.studyDescription,
-        0x00100040: "",
-        0x00201208: "",
-        0x00080061: ""
+        0x00100040: '',
+        0x00201208: '',
+        0x00080061: ''
     };
 
     var results = DIMSE.retrieveStudies(parameters);

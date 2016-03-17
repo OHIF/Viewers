@@ -12,6 +12,10 @@ Template.viewer.onCreated(function() {
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.isPlaying = {};
+    OHIF.viewer.cine = {
+        framesPerSecond: 24,
+        loop: true
+    };
 
     OHIF.viewer.functionList = {
         invert: function(element) {

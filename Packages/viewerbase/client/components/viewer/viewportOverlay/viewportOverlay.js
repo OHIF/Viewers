@@ -157,6 +157,11 @@ Template.viewportOverlay.helpers({
     seriesDescription: function() {
         return getSeries.call(this, 'seriesDescription');
     },
+    frameRate: function() {
+        var frameTime = getInstance.call(this, 'frameTime');
+        var frameRate = 1000 / frameTime;
+        return frameRate.toFixed(1);
+    },
     seriesNumber: function() {
         return getSeries.call(this, 'seriesNumber');
     },

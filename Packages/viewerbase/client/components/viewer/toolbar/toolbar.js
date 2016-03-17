@@ -133,6 +133,7 @@ Template.toolbar.events({
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
+
         var activeViewport = Session.get('activeViewport');
         var element = $('.imageViewerViewport').get(activeViewport);
         OHIF.viewer.functionList[command](element);
@@ -150,48 +151,53 @@ Template.toolbar.onRendered(function() {
     // Set disabled/enabled tool buttons that are set in toolManager
     var states = toolManager.getToolDefaultStates();
     var disabledToolButtons = states.disabledToolButtons;
-    var allToolbarButtons = $("#toolbar").find("button");
+    var allToolbarButtons = $('#toolbar').find('button');
     if (disabledToolButtons.length > 0) {
-        for (var i=0; i < allToolbarButtons.length; i++) {
+        for (var i = 0; i < allToolbarButtons.length; i++) {
             var toolbarButton = allToolbarButtons[i];
-            $(toolbarButton).prop("disabled", false);
-            var index = disabledToolButtons.indexOf($(toolbarButton).attr("id"));
+            $(toolbarButton).prop('disabled', false);
+            var index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
             if (index !== -1) {
-                $(toolbarButton).prop("disabled", true);
+                $(toolbarButton).prop('disabled', true);
             }
         }
     }
 });
 
 Template.toolbar.helpers({
-    'button': function() {
+    button: function() {
         if (this.toolbarOptions && this.toolbarOptions.buttonData) {
             return this.toolbarOptions.buttonData;
         }
+
         return getDefaultButtonData();
     },
-    'includePlayClipButton': function() {
+    includePlayClipButton: function() {
         if (this.toolbarOptions && this.toolbarOptions.includePlayClipButton !== undefined) {
             return this.toolbarOptions.includePlayClipButton;
         }
+
         return true;
     },
-    'includeLayoutButton': function() {
+    includeLayoutButton: function() {
         if (this.toolbarOptions && this.toolbarOptions.includeLayoutButton !== undefined) {
             return this.toolbarOptions.includeLayoutButton;
         }
+
         return true;
     },
-    'includeHangingProtocolButtons': function() {
+    includeHangingProtocolButtons: function() {
         if (this.toolbarOptions && this.toolbarOptions.includeHangingProtocolButtons !== undefined) {
             return this.toolbarOptions.includeHangingProtocolButtons;
         }
-        return true;
+
+        return false;
     },
-    'btnGroup': function()  {
+    btnGroup: function() {
         if (this.toolbarOptions && this.toolbarOptions.btnGroup !== undefined) {
             return this.toolbarOptions.btnGroup;
         }
+
         return [];
     }
 });
