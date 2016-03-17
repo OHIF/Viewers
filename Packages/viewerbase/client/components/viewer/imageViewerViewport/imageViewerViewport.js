@@ -189,7 +189,9 @@ function loadSeriesIntoViewport(data, templateData) {
         cornerstoneTools.addToolState(element, 'playClip', cineToolData);
 
         // Autoplay datasets that have framerates set
-        cornerstoneTools.playClip(element);
+        if (frameRate) {
+            cornerstoneTools.playClip(element);
+        }
 
         // Enable mouse, mouseWheel, touch, and keyboard input on the element
         cornerstoneTools.mouseInput.enable(element);
