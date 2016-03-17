@@ -173,7 +173,7 @@ DicomMessage.prototype.printElements = function(pairs, indent) {
   return typeName;
 }
 
-DicomMessage.prototype.toString = function() {
+DicomMessage.prototype.typeString = function() {
   var typeName = "";
   if (!this.isCommand()) {
     typeName = "DateSet Message";
@@ -188,7 +188,12 @@ DicomMessage.prototype.toString = function() {
       case C.COMMAND_C_FIND_RQ   : typeName = "C-FIND-RQ"; break;
       case C.COMMAND_C_STORE_RSP : typeName = "C-STORE-RSP"; break;
     }      
-  }
+  }   
+  return typeName;
+}
+
+DicomMessage.prototype.toString = function() {
+  var typeName = this.typeString();
   typeName += " [\n";
   typeName += this.printElements(this.elementPairs, 0);
   typeName += "]";
@@ -217,6 +222,83 @@ DicomMessage.prototype.toObject = function() {
   return this.walkObject(this.elementPairs);
 }
 
+DicomMessage.readToPairs = function(stream, syntax, options) {
+  var pairs = {};
+  while (!stream.end()) {
+    var elem = new DataElement();
+    if (options) {
+      elem.setOptions(options);
+    }
+    elem.setSyntax(syntax);
+    elem.readBytes(stream);
+    pairs[elem.tag.value] = elem;
+  }
+  return pairs;  
+}
+
+var fileValid = function(stream) {
+  return stream.readString(4, C.TYPE_ASCII) == 'DICM';
+}
+
+var readMetaStream = function(stream, useSyntax, length, callback) {
+  var message = new FileMetaMessage();
+  message.setElementPairs(DicomMessage.readToPairs(stream, useSyntax));
+  if (callback) {
+    callback(null, message, length);
+  }
+  return message;  
+}
+
+DicomMessage.readMetaHeader = function(bufferOrFile, callback) {
+  var useSyntax = C.EXPLICIT_LITTLE_ENDIAN;
+  if (bufferOrFile instanceof Buffer) {
+    var stream = new ReadStream(bufferOrFile);
+    stream.reset();
+    stream.increment(128);  
+    if (!fileValid(stream)) {
+      return quitWithError('Invalid a dicom file ', callback);  
+    }      
+    var el = readAElement(stream, useSyntax),
+        metaLength = el.value,
+        metaStream = stream.more(metaLength);
+
+    return readMetaStream(metaStream, useSyntax, metaLength, callback);
+  } else if (typeof bufferOrFile == 'string') {
+    fs.open(bufferOrFile, 'r', function(err, fd) {
+      if (err) {
+        //fs.closeSync(fd);
+        return quitWithError('Cannot open file', callback);
+      }
+      var buffer = new Buffer(16);
+      fs.read(fd, buffer, 0, 16, 128, function(err, bytesRead) {
+        if (err || bytesRead != 16) {
+          fs.closeSync(fd);
+          return quitWithError('Cannot read file', callback);
+        } 
+        var stream = new ReadStream(buffer);
+        if (!fileValid(stream)) {
+          fs.closeSync(fd);
+          return quitWithError('Not a dicom file ' + bufferOrFile, callback);
+        }
+        var el = readAElement(stream, useSyntax), 
+            metaLength = el.value,
+            metaBuffer = new Buffer(metaLength);
+
+        fs.read(fd, metaBuffer, 0, metaLength, 144, function(err, bytesRead) {
+          fs.closeSync(fd);
+          if (err || bytesRead != metaLength) {
+            return quitWithError('Invalid a dicom file ' + bufferOrFile, callback);            
+          }
+          var metaStream = new ReadStream(metaBuffer);
+          return readMetaStream(metaStream, useSyntax, metaLength, callback);
+        });
+      });
+    });
+  } 
+
+  return null;
+}
+
 DicomMessage.read = function(stream, type, syntax, options) {
   var elements = [], pairs = {}, useSyntax = type == C.DATA_TYPE_COMMAND ? C.IMPLICIT_LITTLE_ENDIAN : syntax;
   stream.reset();
@@ -240,6 +322,7 @@ DicomMessage.read = function(stream, type, syntax, options) {
       case 0x8010 : message = new CGetRSP(useSyntax); break;
       case 0x0001 : message = new CStoreRQ(useSyntax); break;
       case 0x0020 : message = new CFindRQ(useSyntax); break;
+      case 0x8001 : message = new CStoreRSP(useSyntax); break;
       default : throw "Unrecognized command type " + cmdType.toString(16); break;
     }
 
@@ -269,6 +352,12 @@ util.inherits(DataSetMessage, DicomMessage);
 DataSetMessage.prototype.is = function(type) {
   return false;
 }
+
+FileMetaMessage = function(syntax){
+  DicomMessage.call(this, syntax);
+  this.type = null
+};
+util.inherits(FileMetaMessage, DicomMessage);
 
 CommandMessage = function(syntax) {
   DicomMessage.call(this, syntax);
@@ -438,8 +527,16 @@ CStoreRQ.prototype.getMoveMessageId = function() {
   return this.getValue(0x00001031);
 }
 
-CStoreRQ.prototype.getSOPInstanceUID = function() {
+CStoreRQ.prototype.getAffectedSOPInstanceUID = function() {
   return this.getValue(0x00001000);
+}
+
+CStoreRQ.prototype.setAffectedSOPInstanceUID = function(uid) {
+  this.setElement(0x00001000, uid);
+}
+
+CStoreRQ.prototype.setAffectedSOPClassUID = function(uid) {
+  this.setElement(0x00000002, uid);
 }
 
 CStoreRSP = function(syntax) {

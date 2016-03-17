@@ -73,7 +73,7 @@ ValueRepresentation.prototype.read = function(stream, length, syntax) {
     if (!length)
       return this.defaultValue;
     if (this.maxLength != length)
-      throw "Invalid length for fixed length tag, vr " + this.type + ", length " + this.maxLength + " != " + length;
+      console.log("Invalid length for fixed length tag, vr " + this.type + ", length " + this.maxLength + " != " + length);
   }
   return this.readBytes(stream, length, syntax);
 }
@@ -212,11 +212,12 @@ DateValue = function() {
 util.inherits(DateValue, ValueRepresentation);
 
 DateValue.prototype.readBytes = function(stream, length) {
-  var datestr = stream.read(C.TYPE_ASCII, 8);
+  var datestr = stream.read(C.TYPE_ASCII, length);
 
   var year = parseInt(datestr.substring(0,4)), 
       month = parseInt(datestr.substring(4,6)), 
       day = parseInt(datestr.substring(6,8));
+
   return datestr;//new Date(year, month, day);
 }
 
@@ -701,6 +702,20 @@ OtherWordString.prototype.getFields = function(value) {
   return OtherWordString.super_.prototype.getFields.call(this, [new StringField(value)]);
 } 
 
+OtherByteString = function() {
+  ValueRepresentation.call(this, "OB");
+  this.maxLength = null;
+  this.padByte = "00";
+};
+util.inherits(OtherByteString, ValueRepresentation);
+
+OtherByteString.prototype.readBytes = function(stream, length) {
+  return stream.read(C.TYPE_HEX, length);
+}  
+
+OtherByteString.prototype.getFields = function(value) {
+  return OtherByteString.super_.prototype.getFields.call(this, [new HexField(value)]);
+} 
 
 elementByType = function(type, value, syntax) {
   var elem = null, nk = DicomElements.dicomNDict[type];
@@ -787,6 +802,18 @@ readElements = function(stream, syntax) {
       length = stream.read(C.TYPE_UINT32);
 
   stream.setEndian(oldEndian);
+}
+
+readAElement = function(stream, syntax) {
+  var elem = newElementWithSyntax(syntax);
+  elem.readBytes(stream);
+  return elem;
+}
+
+newElementWithSyntax = function(syntax) {
+  var elem = new DataElement();
+  elem.setSyntax(syntax);
+  return elem;
 }
 
 var explicitVRList = ["OB", "OW", "OF", "SQ", "UC", "UR", "UT", "UN"], 

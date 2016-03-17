@@ -179,6 +179,13 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, 
     return future.wait();
 };
 
+DIMSE.storeInstances = function(fileList) {
+    var handle = conn.storeInstances(fileList);
+    handle.on('file', function(err, file) {
+        console.log(err, file);
+    })
+};
+
 DIMSE.moveInstances = function(studyInstanceUID, seriesInstanceUID, sopInstanceUID, sopClassUID, params) {
     DIMSE.associate([C.SOP_STUDY_ROOT_MOVE, sopClassUID], function() {
         var defaultParams = {

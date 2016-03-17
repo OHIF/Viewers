@@ -1,3 +1,8 @@
+PDVHandle = function() {
+
+}
+util.inherits(PDVHandle, EventEmitter);
+
 PDU = function() {
   this.fields = [];
   this.lengthBytes = 4;  
@@ -101,6 +106,100 @@ mergePDVs = function(pdvs) {
     }
   }
   return merges;
+}
+
+PDU.splitPData = function(pdata, maxSize) {
+  var totalLength = pdata.totalLength();
+  if (totalLength > maxSize) {
+    //split into chunks of pdatas
+    var chunks = Math.floor(totalLength / maxSize), left = totalLength % maxSize;
+
+    for (var i = 0;i < chunks;i++) {
+      if (i == chunks - 1) {
+        if (left < 6) {
+          //need to move some of the last chunk
+        }
+      }
+    }
+  } else {
+    return [pdata];
+  }
+}
+
+var readChunk = function(fd, bufferSize, slice, callback) {
+  var buffer = new Buffer(bufferSize), length = slice.length, start = slice.start;
+  fs.read(fd, buffer, 0, length, start, function(err, bytesRead) {
+    callback(err, bytesRead, buffer, slice);
+  });  
+}
+
+PDU.generatePDatas = function(context, bufferOrFile, maxSize, length, metaLength, callback) {
+  var total, isFile = false;
+  if (typeof bufferOrFile == 'string') {
+    var stats = fs.statSync(bufferOrFile);
+    total = stats['size'];
+    isFile = true;
+  } else if (bufferOrFile instanceof Buffer) {
+    total = length ? length : bufferOrFile.length;
+  }
+  var handler = new PDVHandle();
+
+  var slices = [], start = metaLength + 144, index = 0;
+  maxSize -= 6;
+  while (start < total) {
+    var sliceLength = maxSize, isLast = false;
+    if (total - start < maxSize) {
+      sliceLength = total - start;
+      isLast = true;
+    } 
+    slices.push({start : start, length : sliceLength, isLast : isLast, index : index});
+    start += sliceLength;
+    index++;
+  }
+
+  if (isFile) {
+    fs.open(bufferOrFile, 'r', function(err, fd) {
+      if (err) {
+        //fs.closeSync(fd);
+        return quitWithError(err, callback);
+      } else callback(null, handler);
+
+      var after = function(err, bytesRead, buffer, slice) {
+        if (err) {
+          fs.closeSync(fd);
+          handler.emit('error', err);
+          return;
+        }
+        var pdv = new RawDataPDV(context, buffer, 0, slice.length, slice.isLast);
+        handler.emit('pdv', pdv);
+
+        if (slices.length < 1) {
+          handler.emit('end');
+          fs.closeSync(fd);
+        } else {
+          var next = slices.shift();
+          readChunk(fd, maxSize, next, after);
+        }
+      };
+
+      var sl = slices.shift();
+      readChunk(fd, maxSize, sl, after);
+    });
+  } else {
+    for (var i = 0;i < slices.length;i++) {
+      var toSlice = slices[i];
+
+      var buffer = bufferOrFile.slice(toSlice.start, toSlice.length);
+      var pdv = new RawDataPDV(context, buffer, 0, toSlice.length, toSlice.isLast);
+      handler.emit('pdv', pdv); 
+
+      if (i == slices.length - 1) {
+        handler.emit('end');
+      }        
+    }
+  }
+
+  return;
 }
 
 PDU.typeToString = function(type) {
@@ -269,6 +368,18 @@ AssociateAC.prototype.readBytes = function(stream, length) {
   this.setUserInformationItem(userItem);
 }
 
+AssociateAC.prototype.getMaxSize = function() {
+  var items = this.userInformationItem.userDataItems, length = items.length, size = null;
+
+  for (var i = 0;i < length;i++) {
+    if (items[i].is(C.ITEM_TYPE_MAXIMUM_LENGTH)) {
+      size = items[i].maximumLengthReceived;
+      break;
+    }
+  }
+  return size;
+}
+
 AssociateAbort = function() {
   this.type = C.ITEM_TYPE_PDU_AABORT;
   this.source = 1;
@@ -344,6 +455,12 @@ PDataTF.prototype.getFields = function() {
   var fields = this.presentationDataValueItems;
 
   return PDataTF.super_.prototype.getFields.call(this, fields);
+}
+
+PDataTF.prototype.totalLength = function() {
+  var fields = this.presentationDataValueItems;
+
+  return this.length(fields);
 }
 
 PDataTF.prototype.readBytes = function(stream, length) {
@@ -422,18 +539,31 @@ PresentationDataValueItem.prototype.getFields = function() {
   fields.push(new UInt8Field(messageHeader));
 
   fields.push(this.dataFragment);
-/*var stream = new WriteStream();this.dataFragment.write(stream);
-//var f = this.dataFragment.getFields();
-//var wr = new WriteStream();f[0].setSyntax(this.dataFragment.syntax);f[0].write(wr);
-var rst = stream.toReadBuffer();
-rst.setEndian(C.LITTLE_ENDIAN);
-  var group = rst.read(C.TYPE_UINT16), 
-      element = rst.read(C.TYPE_UINT16),
-      tag = tagFromNumbers(group, element);
 
-      console.log(tag.toString(), rst.read(C.TYPE_UINT32));*/
   return PresentationDataValueItem.super_.prototype.getFields.call(this, fields);
 }  
+
+RawDataPDV = function(context, buffer, start, length, isLast) {
+  this.type = null;
+  this.isLast = isLast;
+  this.dataFragmentBuffer = buffer;
+  this.bufferStart = start;
+  this.bufferLength = length;
+  this.contextId = context;
+  Item.call(this);
+
+  this.lengthBytes = 4;
+};
+util.inherits(RawDataPDV, Item);
+
+RawDataPDV.prototype.getFields = function() {
+  var fields = [new UInt8Field(this.contextId)];
+  var messageHeader = (this.isLast ? 1 : 0) << 1;
+  fields.push(new UInt8Field(messageHeader));
+  fields.push(new BufferField(this.dataFragmentBuffer, this.bufferStart, this.bufferLength));
+
+  return RawDataPDV.super_.prototype.getFields.call(this, fields);
+}
 
 ApplicationContextItem = function() {
   this.type = C.ITEM_TYPE_APPLICATION_CONTEXT;

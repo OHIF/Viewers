@@ -85,6 +85,13 @@ WriteStream.prototype.writeToBuffer = function(type, value, length) {
   this.increment(length);
 }
 
+WriteStream.prototype.writeRawBuffer = function(source, start, length) {
+  if (!source) return;
+  this.checkSize(length);
+  source.copy(this.rawBuffer, this.offset, start, length);
+  this.increment(length);
+}
+
 WriteStream.prototype.write = function(type, value) {
   if (isString(type)) {
     this.writeString(value, type);
