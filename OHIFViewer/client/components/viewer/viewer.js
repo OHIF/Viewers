@@ -82,7 +82,16 @@ Template.viewer.onCreated(function() {
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 });
 
+Template.viewer.onRendered(function() {
+    // Enable hotkeys
+    enableHotkeys();
+});
+
 Template.viewer.onDestroyed(function() {
     log.info('onDestroyed');
+
+    // Remove the Window resize listener
+    $(window).off('resize', handleResize);
+
     OHIF.viewer.updateImageSynchronizer.destroy();
 });
