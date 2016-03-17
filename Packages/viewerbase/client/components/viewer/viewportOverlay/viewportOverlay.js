@@ -159,6 +159,10 @@ Template.viewportOverlay.helpers({
     },
     frameRate: function() {
         var frameTime = getInstance.call(this, 'frameTime');
+        if (!frameTime) {
+            return;
+        }
+        
         var frameRate = 1000 / frameTime;
         return frameRate.toFixed(1);
     },
