@@ -68,9 +68,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         }
 
         var sopInstanceUid = instance[0x00080018];
-
-        console.log(instance);
-
+        
         var instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
