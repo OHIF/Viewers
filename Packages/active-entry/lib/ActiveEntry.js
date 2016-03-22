@@ -127,6 +127,26 @@ ActiveEntry.verifyFullName = function (fullName) {
   }
 };
 
+ActiveEntry.verifyLDAPUsername = function(username) {
+  if (username === "") {
+    ActiveEntry.errorMessages.set("ldapUsername", "Username is required");
+    ActiveEntry.successMessages.set("ldapUsername", null);
+  } else {
+    ActiveEntry.errorMessages.set("ldapUsername", null);
+    ActiveEntry.successMessages.set("ldapUsername", "Username present");
+  }
+};
+
+ActiveEntry.verifyLDAPPassword = function(password) {
+  if (password === "") {
+    ActiveEntry.errorMessages.set("ldapPassword", "Password is required");
+    ActiveEntry.successMessages.set("ldapPassword", null);
+  } else {
+    ActiveEntry.errorMessages.set("ldapPassword", null);
+    ActiveEntry.successMessages.set("ldapPassword", "Password present");
+  }
+};
+
 ActiveEntry.signIn = function (emailValue, passwordValue){
 
   ActiveEntry.verifyPassword(passwordValue);
@@ -222,7 +242,11 @@ ActiveEntry.signIn = function (emailValue, passwordValue){
 };
 
 ActiveEntry.loginWithLDAP = function(username, password) {
-  if (!username || !password) {
+  ActiveEntry.verifyLDAPUsername(username);
+  ActiveEntry.verifyLDAPPassword(password);
+  ActiveEntry.errorMessages.set('signInError', null);
+
+  if (ActiveEntry.errorMessages.get("ldapUsername") || ActiveEntry.errorMessages.get("ldapPassword")) {
     return;
   }
 

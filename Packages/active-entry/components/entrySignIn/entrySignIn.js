@@ -66,8 +66,35 @@ Template.entrySignIn.helpers({
     }
   },
 
+  getLDAPUsernameValidationStyling: function() {
+    if (ActiveEntry.errorMessages.equals('ldapUsername', "Username is required")) {
+      return "border: 1px solid #a94442";
+    } else if (ActiveEntry.successMessages.equals('ldapUsername', "Username present")) {
+      return "border: 1px solid green";
+    } else {
+      return "border: 1px solid gray";
+    }
+  },
+  getLDAPPasswordValidationStyling: function() {
+    if (ActiveEntry.errorMessages.equals('ldapPassword', "Password is required")) {
+      return "border: 1px solid #a94442";
+    } else if (ActiveEntry.successMessages.equals('ldapPassword', "Password present")) {
+      return "border: 1px solid green";
+    } else {
+      return "border: 1px solid gray";
+    }
+  },
   isLDAPSet: function() {
     return Session.get('isLDAPSet');
+  },
+  ldapErrorMessages: function () {
+    if (ActiveEntry.errorMessages.get("ldapUsername")) {
+      return [ActiveEntry.errorMessages.get("ldapUsername")];
+    } else if(ActiveEntry.errorMessages.get("ldapPassword")) {
+      return [ActiveEntry.errorMessages.get("ldapPassword")];
+    }
+
+    return;
   }
 
 });
@@ -117,6 +144,16 @@ Template.entrySignIn.events({
     ActiveEntry.errorMessages.set('signInError', null);
     setSignInButtonStyling();
   },
+  'keyup, change #signInLDAPUsernameInput': function (event, template) {
+    var username = $('#signInLDAPUsernameInput').val();
+    ActiveEntry.verifyLDAPUsername(username);
+    ActiveEntry.errorMessages.set('signInError', null);
+  },
+  'keyup, change #signInLDAPPasswordInput': function (event, template) {
+    var password = $('#signInLDAPPasswordInput').val();
+    ActiveEntry.verifyLDAPPassword(password);
+    ActiveEntry.errorMessages.set('signInError', null);
+  },
   // 'submit': function (event, template) {
   //   event.preventDefault();
   //   var emailValue = template.$('[name=email]').val();
@@ -137,6 +174,8 @@ Template.entrySignIn.events({
   'keyup #entrySignIn': function(event, template) {
     if(event.keyCode == 13) {
       $("#signInToAppButton").click();
+      $("#signInLDAPToAppButton").click();
+
     }
   },
   'click #signInLDAPToAppButton': function(e, template) {
