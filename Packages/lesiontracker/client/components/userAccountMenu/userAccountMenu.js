@@ -32,11 +32,11 @@ Template.userAccountMenu.helpers({
 
 Template.userAccountMenu.onCreated(function() {
     // showViewer to go to viewer from audit
-    this.showWorklistMenu = new ReactiveVar(true);
+    this.showWorklistMenu = new ReactiveVar(false);
     // Get url and check worklist
     var currentPath = Router.current().route.path(this);
-    if (currentPath === '/' || currentPath === '/worklist') {
-        this.showWorklistMenu.set(false);
+    if (currentPath === '/audit' || currentPath === '/changePassword') {
+        this.showWorklistMenu.set(true);
     }
 });
 
