@@ -33,7 +33,7 @@
     "port": ""
   },
   "ldap": {
-    "url": "ldap://localhost",
-    "port": "10389"
+    "url": "",
+    "port": ""
   }
 }
