@@ -32,14 +32,8 @@ if (Meteor.isClient) {
       passwordExpirationDays: 90,
       inactivityPeriodDays: 180
     }
-
   });
-}
 
-// requireRegexValidation toggles regex
-// reqiureStrongPasswords toggles zxcvbn
-
-if (Meteor.isClient) {
   ActiveEntry.errorMessages = new ReactiveDict('errorMessages');
   ActiveEntry.errorMessages.set('signInError', false);
 
@@ -48,6 +42,15 @@ if (Meteor.isClient) {
 
   // Change password warning message according to whether zxcvbn is turned on
   Session.set('passwordWarning', 'Password must have at least 8 characters. It must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character.');
+
+  Meteor.call('isLDAPSet', function(error, isSet) {
+    Session.set('isLDAPSet', isSet);
+  });
+}
+
+if (Meteor.isServer) {
+  LDAP_DEFAULTS.url = Meteor.settings.ldap && Meteor.settings.ldap.url;
+  LDAP_DEFAULTS.port = Meteor.settings.ldap && Meteor.settings.ldap.port;
 }
 
 ActiveEntry.configure = function (configObject) {
@@ -128,6 +131,7 @@ ActiveEntry.signIn = function (emailValue, passwordValue){
 
   ActiveEntry.verifyPassword(passwordValue);
   ActiveEntry.verifyEmail(emailValue);
+  // TODO: Find a solution nested  calling
 
   var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
   var failedAttemptsLimit = ActiveEntryConfig && ActiveEntryConfig.passwordOptions && ActiveEntryConfig.passwordOptions.failedAttemptsLimit || 5;
@@ -217,6 +221,44 @@ ActiveEntry.signIn = function (emailValue, passwordValue){
 
 };
 
+ActiveEntry.loginWithLDAP = function(username, password) {
+  if (!username || !password) {
+    return;
+  }
+
+  Meteor.loginWithLDAP(username, password, {
+    // The dn value depends on what you want to search/auth against
+    // The structure will depend on how your ldap server
+    // is configured or structured.
+    dn: "uid=" + username + ",ou=users,ou=system",
+    // The search value is optional. Set it if your search does not
+    // work with the bind dn.
+    searchResultsProfileMap: [
+      {
+        resultKey: 'cn',
+        profileProperty: 'fullName'
+      },
+      {
+        resultKey: 'mail',
+        profileProperty: 'email'
+      }
+    ]
+  }, function(error) {
+    if (error) {
+      ActiveEntry.errorMessages.set('signInError', error.errorType+" ["+error.error+"]");
+      return;
+    }
+    ActiveEntry.errorMessages.set('signInError', null);
+
+    // Update last login time
+    Meteor.call("updateLastLoginDate");
+
+    var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
+    Router.go(ActiveEntryConfig.signIn.destination);
+
+  });
+};
+
 ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullName){
   ActiveEntry.verifyEmail(emailValue);
   ActiveEntry.verifyPassword(passwordValue);
@@ -235,14 +277,16 @@ ActiveEntry.signUp = function (emailValue, passwordValue, confirmPassword, fullN
     return;
   }
 
+  // Capitalize first letter of every word in fullName
+  var capitalizedFullName = fullName.replace(/[^\s]+/g, function(str){
+    return str.substr(0,1).toUpperCase()+str.substr(1).toLowerCase();
+  });
+
   Accounts.createUser({
     email: emailValue,
     password: passwordValue,
     profile: {
-      fullName: fullName
-    },
-    testCase: {
-      createdAt: new Date()
+      fullName: capitalizedFullName
     }
   }, function (error, result) {
     if (error) {

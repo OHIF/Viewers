@@ -148,6 +148,14 @@ Meteor.methods({
     }
 
     return false;
+  },
+
+  isLDAPSet: function() {
+    if (LDAP_DEFAULTS.url && LDAP_DEFAULTS.port) {
+      return true;
+    }
+
+    return false;
   }
 
 });

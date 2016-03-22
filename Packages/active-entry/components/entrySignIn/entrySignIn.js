@@ -64,6 +64,10 @@ Template.entrySignIn.helpers({
     } else {
       return "border: 1px solid gray";
     }
+  },
+
+  isLDAPSet: function() {
+    return Session.get('isLDAPSet');
   }
 
 });
@@ -134,6 +138,11 @@ Template.entrySignIn.events({
     if(event.keyCode == 13) {
       $("#signInToAppButton").click();
     }
+  },
+  'click #signInLDAPToAppButton': function(e, template) {
+    var username = template.$("#signInLDAPUsernameInput").val();
+    var password = template.$("#signInLDAPPasswordInput").val();
+    ActiveEntry.loginWithLDAP(username, password);
   }
 });
 

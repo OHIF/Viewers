@@ -15,7 +15,7 @@ Package.onUse(function (api) {
     'clinical:router@2.0.17',
     'grove:less@0.1.1',
     'session',
-    'reactive-dict',
+    'reactive-dict'
     //'codetheweb:zxcvbn'
   ], ['client']);
 
@@ -25,7 +25,8 @@ Package.onUse(function (api) {
   ]);
 
   api.use([
-    'zuuk:stale-session@1.0.8'
+    'zuuk:stale-session@1.0.8',
+    'typ:accounts-ldap'
   ], ['client', 'server']);
 
   api.addFiles([
@@ -60,8 +61,7 @@ Package.onUse(function (api) {
 
     'components/changePassword/changePassword.html',
     'components/changePassword/changePassword.js',
-    'components/changePassword/changePassword.less',
-
+    'components/changePassword/changePassword.less'
   ], ['client']);
 
 

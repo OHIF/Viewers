@@ -36,7 +36,7 @@ var routerOptions = {
 Router.route('/', function() {
     // Check user is logged in
     if(Meteor.user() && Meteor.userId()) {
-        if (!Meteor.user().emails[0].verified && verifyEmail) {
+        if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
             this.render('worklist', routerOptions);
@@ -50,7 +50,7 @@ Router.route('/', function() {
 Router.route('/worklist', function() {
     // Check user is logged in
     if(Meteor.user() && Meteor.userId()) {
-        if (!Meteor.user().emails[0].verified && verifyEmail) {
+        if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
             this.render('worklist', routerOptions);

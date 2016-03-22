@@ -31,6 +31,9 @@
     "password": "",
     "server": "",
     "port": ""
+  },
+  "ldap": {
+    "url": "ldap://localhost",
+    "port": "10389"
   }
-
 }

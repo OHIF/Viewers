@@ -18,6 +18,10 @@ Template.userAccountMenu.helpers({
             return true;
         }
 
+        if (!Meteor.user().emails) {
+            return true;
+        }
+
         if (Meteor.user().emails[0].verified) {
             return true;
         }
