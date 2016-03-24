@@ -1,0 +1,21 @@
+<template name="confirmRemoveTimepointAssociation">
+    <div class="modal" id="confirmRemoveTimepointAssociation" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="removeAssociationModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="removeAssociationModalLabel">Remove Association</h4>
+                </div>
+
+                <div class="modal-body">
+                    Measurements related to this Study and Timepoint will be erased. Do you really want to delete this association?
+                </div>
+                <div class="modal-footer">
+                    <a id="removeTimepointAssociations" type="button" class="btn btn-danger" data-dismiss="modal"
+                       title="Remove Timepoint Association"> Remove
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id='btnRemoVeAssociationModalCancel'>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

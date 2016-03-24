@@ -25,7 +25,8 @@ var data = {
     additionalTemplates: [
         'associationModal',
         'optionsModal',
-        'serverInformationModal'
+        'serverInformationModal',
+        'confirmRemoveTimepointAssociation'
     ]
 };
 

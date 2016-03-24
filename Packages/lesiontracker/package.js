@@ -151,6 +151,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/userAccountMenu/userAccountMenu.styl', 'client');
     api.addFiles('client/components/userAccountMenu/userAccountMenu.js', 'client');
 
+    api.addFiles('client/components/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.html', 'client');
+    api.addFiles('client/components/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.js', 'client');
+
+
     // Server functions
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', [ 'server' ]);
