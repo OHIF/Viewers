@@ -85,8 +85,7 @@ Router.route('/viewer/timepoints/:_id', {
 Router.onBeforeAction(function () {
     if  (!Meteor.userId() && !Meteor.loggingIn()) {
         this.render('entrySignIn');
-        this.stop();
     } else {
         this.next();
     }
-},{except: ['entrySignIn'] });
+},{except: ['entrySignIn', 'entrySignUp', 'forgotPassword']});
