@@ -81,3 +81,12 @@ Router.route('/viewer/timepoints/:_id', {
         openNewTabWithTimepoint(timepointId);
     }
 });
+
+Router.onBeforeAction(function () {
+    if  (!Meteor.userId() && !Meteor.loggingIn()) {
+        this.render('entrySignIn');
+        this.stop();
+    } else {
+        this.next();
+    }
+},{except: ['entrySignIn'] });
