@@ -201,10 +201,10 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, 
     return future.wait();
 };
 
-DIMSE.storeInstances = function(fileList) {
+DIMSE.storeInstances = function(fileList, callback) {
     var handle = conn.storeInstances(fileList);
     handle.on('file', function(err, file) {
-        console.log(err, file);
+        callback(err, file);
     });
 };
 

@@ -115,6 +115,7 @@
         ViewerStudies: true,
         LesionManager: true,
         Timepoints: true,
-        Measurements: true
+        Measurements: true,
+        StudyImportStatus: true
     }
 }

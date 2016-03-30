@@ -147,6 +147,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
     api.addFiles('lib/exportStudies.js', 'client');
+    api.addFiles('lib/importStudies.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
     //api.export('accountsConfig', 'client');
@@ -166,6 +167,7 @@ Package.onUse(function(api) {
     api.export('setFocusToActiveViewport', 'client');
     api.export('updateAllViewports', 'client');
     api.export('exportStudies', 'client');
+    api.export('importStudies', 'client');
     api.export('getActiveViewportElement', 'client');
     api.export('encodeQueryData', 'server');
 
@@ -198,6 +200,7 @@ Package.onUse(function(api) {
     api.addFiles('server/lib/namespace.js', 'server');
     api.addFiles('server/methods/getStudyMetadata.js', 'server');
     api.addFiles('server/methods/worklistSearch.js', 'server');
+    api.addFiles('server/methods/importStudies.js', 'server');
 
     // DICOMWeb instance, study, and metadata retrieval
     api.addFiles('server/services/qido/instances.js', 'server');
@@ -215,5 +218,12 @@ Package.onUse(function(api) {
     api.addFiles('server/services/remote/retrieveMetadata.js', 'server');    
 
     api.export('Services', 'server');
+    api.export('importStudies', 'server');
+    api.export('importSupported', 'server');
+
+    // Collections
+    api.addFiles('both/collections.js', [ 'client', 'server' ]);
+    api.addFiles('server/collections.js', 'server');
+    api.export('StudyImportStatus', [ 'client', 'server' ]);
 });
 

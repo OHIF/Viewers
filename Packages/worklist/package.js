@@ -47,6 +47,10 @@ Package.onUse(function (api) {
     api.addFiles('client/components/studyContextMenu/studyContextMenu.js', 'client');
     api.addFiles('client/components/studyContextMenu/studyContextMenu.styl', 'client');
 
+    api.addFiles('client/components/worklistToolbar/worklistToolbar.html', 'client');
+    api.addFiles('client/components/worklistToolbar/worklistToolbar.js', 'client');
+    api.addFiles('client/components/worklistToolbar/worklistToolbar.styl', 'client');
+
     // Library functions
     api.addFiles('lib/getStudyMetadata.js', 'client');
     api.addFiles('lib/getStudiesMetadata.js', 'client');
