@@ -8,6 +8,51 @@ var conn = new Connection({
     }
 });
 
+var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
+    return {
+        0x0020000D: studyInstanceUID ? studyInstanceUID : '',
+        0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : '',
+        0x00080005: '',
+        0x00080020: '',
+        0x00080030: '',
+        0x00080090: '',
+        0x00100010: '',
+        0x00100020: '',
+        0x00200010: '',
+        0x0008103E: '',
+        0x00200011: '',
+        0x00080016: '', // sopClassUid
+        0x00080018: '', // sopInstanceUid
+        0x00200013: '', // instanceNumber
+        0x00280010: '', // rows
+        0x00280011: '', // columns
+        0x00280100: '', // bitsAllocated
+        0x00280101: '', // bitsStored
+        0x00280102: '', // highBit
+        0x00280103: '', // pixelRepresentation
+        0x00280004: '', // photometricInterpretation
+        0x00280008: '', // numFrames
+        0x00181063: '', // frameTime
+        0x00281052: '', // rescaleIntercept
+        0x00281053: '', // rescaleSlope
+        0x00280002: '', // samplesPerPixel
+        0x00201041: '', // sliceLocation
+        0x00281050: '', // windowCenter
+        0x00281051: '', // windowWidth
+        0x00280030: '', // pixelSpacing
+        0x00200062: '', // laterality
+        0x00185101: '', // viewPosition
+        0x00080008: '', // imageType
+        0x00200032: '', // imagePositionPatient
+        0x00200037: '', // imageOrientationPatient
+        0x00200052: '', // frameOfReferenceUID
+
+        // Orthanc has a bug here so we can't retrieve sequences at the moment
+        // https://groups.google.com/forum/#!topic/orthanc-users/ghKJfvtnK8Y
+        //0x00082112: ''  // sourceImageSequence
+    }
+};
+
 Meteor.startup(function() {
     var peers = Meteor.settings.dimse;
     console.log('Adding DIMSE peers');
@@ -101,6 +146,82 @@ DIMSE.retrieveStudies = function(params, options) {
     return future.wait();
 };
 
+DIMSE._retrieveInstancesBySeries = function(conn, series, studyInstanceUID, callback, params) {
+    var aSeries = series.shift(), seriesInstanceUID = aSeries.getValue(0x0020000E),
+        defaultParams = getInstanceRetrievalParams(studyInstanceUID, seriesInstanceUID);
+
+    var result = conn.findInstances(Object.assign(defaultParams, params)),
+        instances = [];
+
+    result.on('result', function(msg) {
+        instances.push(msg);
+    });
+    result.on('end', function() {
+        if (series.length > 0) {
+            callback(instances, false);
+            DIMSE._retrieveInstancesBySeries(conn, series, studyInstanceUID, callback, params);
+        } else {
+            callback(instances, true);
+        }
+    });
+};
+
+DIMSE.retrieveInstancesByStudyOnlyMulti = function(studyInstanceUID, params, options) {
+    if (!studyInstanceUID) return [];
+
+    var series = DIMSE.retrieveSeries(studyInstanceUID, params, options), instances = [];
+    series.forEach(function(seriesData){
+        var seriesInstanceUID = seriesData.getValue(0x0020000E);
+
+        var relatedInstances = DIMSE.retrieveInstances(studyInstanceUID, seriesInstanceUID, params, options);
+        instances = instances.concat(relatedInstances);
+    });
+    return instances;
+};
+
+DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options) {
+    if (!studyInstanceUID) return [];
+
+    var future = new Future;
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu){
+        var defaultParams = {
+            0x0020000D: studyInstanceUID,
+            0x00080005: '',
+            0x00080020: '',
+            0x00080030: '',
+            0x00080090: '',
+            0x00100010: '',
+            0x00100020: '',
+            0x00200010: '',
+            0x0008103E: '',
+            0x0020000E: '',
+            0x00200011: ''
+        };
+        var result = this.findSeries(Object.assign(defaultParams, params)),
+            series = [], conn = this, allInstances = [];
+
+        result.on('result', function(msg) {
+            series.push(msg);
+        }); 
+        result.on('end', function(){
+            if (series.length > 0) {
+                DIMSE._retrieveInstancesBySeries(conn, series, studyInstanceUID, function(relatedInstances, isEnd){
+                    allInstances = allInstances.concat(relatedInstances);
+                    if (isEnd) {
+                        conn.release();
+                    }
+                });
+            } else {
+                conn.release();
+            }
+        });
+        conn.on('close', function() {
+            future.return(allInstances);
+        });
+    });
+    return future.wait();
+}
+
 DIMSE.retrieveSeries = function(studyInstanceUID, params, options) {
     var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
@@ -140,48 +261,8 @@ DIMSE.retrieveSeries = function(studyInstanceUID, params, options) {
 DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, options) {
     var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
-        var defaultParams = {
-            0x0020000D: studyInstanceUID ? studyInstanceUID : '',
-            0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : '',
-            0x00080005: '',
-            0x00080020: '',
-            0x00080030: '',
-            0x00080090: '',
-            0x00100010: '',
-            0x00100020: '',
-            0x00200010: '',
-            0x0008103E: '',
-            0x00200011: '',
-            0x00080016: '', // sopClassUid
-            0x00080018: '', // sopInstanceUid
-            0x00200013: '', // instanceNumber
-            0x00280010: '', // rows
-            0x00280011: '', // columns
-            0x00280100: '', // bitsAllocated
-            0x00280101: '', // bitsStored
-            0x00280102: '', // highBit
-            0x00280103: '', // pixelRepresentation
-            0x00280004: '', // photometricInterpretation
-            0x00280008: '', // numFrames
-            0x00181063: '', // frameTime
-            0x00281052: '', // rescaleIntercept
-            0x00281053: '', // rescaleSlope
-            0x00280002: '', // samplesPerPixel
-            0x00201041: '', // sliceLocation
-            0x00281050: '', // windowCenter
-            0x00281051: '', // windowWidth
-            0x00280030: '', // pixelSpacing
-            0x00200062: '', // laterality
-            0x00185101: '', // viewPosition
-            0x00080008: '', // imageType
-            0x00200032: '', // imagePositionPatient
-            0x00200037: '', // imageOrientationPatient
-            0x00200052: '', // frameOfReferenceUID
+        var defaultParams = getInstanceRetrievalParams(studyInstanceUID, seriesInstanceUID);
 
-            // Orthanc has a bug here so we can't retrieve sequences at the moment
-            // https://groups.google.com/forum/#!topic/orthanc-users/ghKJfvtnK8Y
-            //0x00082112: ''  // sourceImageSequence
-        };
         var result = this.findInstances(Object.assign(defaultParams, params)),
             o = this;
 
