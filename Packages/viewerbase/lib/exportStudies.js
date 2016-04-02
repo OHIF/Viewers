@@ -1,3 +1,5 @@
+var exportFailed;
+
 /**
  * Exports requested studies
  * @param studiesToExport Studies to export
@@ -43,7 +45,7 @@ function exportQueriedStudies(studiesToExport) {
 function exportQueriedStudiesInternal(studiesToExport, numberOfFilesToExport) {
     var zip = new JSZip();
 
-    var exportFailed = false;
+    exportFailed = false;
     var numberOfFilesExported = 0;
 
     studiesToExport.forEach(function(study) {
@@ -67,39 +69,52 @@ function exportQueriedStudiesInternal(studiesToExport, numberOfFilesToExport) {
                 //  Download and Zip the dicom file
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", instance.wadouri, true);
-                xhr.responseType = "arraybuffer";
+                xhr.responseType = "blob";
 
                 //  Downloaded the dicom file completely
-                xhr.onload = function() {
+                xhr.onload = function(e) {
                     //  If failed to download a dicom file, skip others
                     if (exportFailed) {
                         return;
                     }
 
-                    var responseArrayBuffer = xhr.response;
-                    if (responseArrayBuffer) {
-                        seriesFolder.file(instance.sopInstanceUid + ".dcm", responseArrayBuffer, { binary: true });
+                    //  Failed to export a file
+                    if (xhr.readyState === 4 && xhr.status !== 200) {
+                        onExportFailed("File not downloaded: " + instance.wadouri);
+                        return;
                     }
 
-                    numberOfFilesExported++;
+                    var blobFile = new Blob([xhr.response], {type: 'application/dicom'});
 
-                    if (numberOfFilesExported === numberOfFilesToExport) {
-                        var zipContent = zip.generate({ type: "blob" });
-                        saveAs(zipContent, "studies.zip");
-                    }
+                    var fileReader = new FileReader();
 
-                    progressDialog.update(numberOfFilesExported);
+                    fileReader.onload = function() {
+                        try {
+                            seriesFolder.file(instance.sopInstanceUid + ".dcm", fileReader.result, { binary: true });
+                        } catch(err) {
+                            onExportFailed(err.message);
+                            return;
+                        }
+
+                        numberOfFilesExported++;
+
+                        if (numberOfFilesExported === numberOfFilesToExport) {
+                            var zipContent = zip.generate({ type: "blob" });
+                            saveAs(zipContent, "studies.zip");
+                        }
+
+                        progressDialog.update(numberOfFilesExported);
+                    };
+
+                    fileReader.readAsArrayBuffer(blobFile);
                 };
 
                 //  Failed to download the dicom file
                 xhr.onerror = function() {
-                    exportFailed = true;
-
-                    progressDialog.close();
-                    console.error("Failed to export studies!");
+                    onExportFailed("File not downloaded: " + instance.wadouri);
                 };
 
-                xhr.send(null);
+                xhr.send();
             });
         });
     });
@@ -119,4 +134,12 @@ function getNumberOfFilesToExport(studiesToExport) {
     });
 
     return numberOFFilesToExport;
+}
+
+function onExportFailed(err) {
+    exportFailed = true;
+    progressDialog.close();
+
+    //TODO: Export failed and dialog closed, so let user know
+    console.error("Failed to export studies!", err);
 }
