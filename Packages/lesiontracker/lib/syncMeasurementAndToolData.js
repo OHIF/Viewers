@@ -12,6 +12,11 @@ syncMeasurementAndToolData = function(measurement) {
 
         // Sync the Cornerstone ToolData with this Measurement's timepoint-specific data
         syncTimepointDataWithToolData(measurement, timepointData, imageId, toolType);
+
+        // Set reviewer for this timepoint
+        if (measurement.timepoints[key].studyInstanceUid) {
+            Meteor.call('setReviewer',measurement.timepoints[key].studyInstanceUid);
+        }
     });
 };
 

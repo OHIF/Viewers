@@ -183,6 +183,14 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
             selected: true
         }
     });
+
+    // Set reviewer for this timepoint
+    Object.keys(measurement.timepoints).forEach(function(key) {
+        if (measurement.timepoints[key].studyInstanceUid) {
+            Meteor.call('setReviewer',measurement.timepoints[key].studyInstanceUid);
+        }
+    });
+    
 };
 
 var config = {

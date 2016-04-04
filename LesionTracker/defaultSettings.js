@@ -16,11 +16,11 @@ Meteor.startup(function() {
                 qidoSupportsIncludeField: false,
                 imageRendering: 'wadouri',
                 requestOptions: {
-                  auth: 'orthanc:orthanc',
-                  logRequests: true,
-                  logResponses: false,
-                  logTiming: true
-              }
+                    auth: 'orthanc:orthanc',
+                    logRequests: true,
+                    logResponses: false,
+                    logTiming: true
+                }
             }]
         },
         dimse: [{
@@ -37,4 +37,15 @@ Meteor.startup(function() {
     };
 
     console.log('Using default LesionTracker settings with service: ' + Meteor.settings.defaultServiceType);
+
+    // Bind events if window is closed
+    $(window).bind('beforeunload', function (e) {
+        closingWindow();
+        // have to return null, unless you want a chrome popup alert
+        //return 'If you leave this page then any unsaved changes will be lost.';
+    });
 });
+
+closingWindow = function(){
+    Meteor.call('removeUserFromReviewers', Meteor.userId());
+};
