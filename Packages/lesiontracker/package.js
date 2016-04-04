@@ -29,6 +29,8 @@ Package.onUse(function(api) {
     // Client-side collections
     api.addFiles('client/collections/LesionLocations.js', 'client');
     api.addFiles('client/collections/LocationResponses.js', 'client');
+    api.addFiles('client/collections/subscriptions.js', 'client');
+
 
     // Additional Custom Cornerstone Tools for Lesion Tracker
     api.addFiles('client/compatibility/bidirectionalTool.js', 'client', {
@@ -158,6 +160,7 @@ Package.onUse(function(api) {
     // Server functions
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', [ 'server' ]);
+    api.addFiles('server/reviewers.js', [ 'server' ]);
 
     // Both client and server functions
     api.addFiles('both/collections.js', [ 'client', 'server' ]);
@@ -233,4 +236,7 @@ Package.onUse(function(api) {
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);
     api.export('Timepoints', [ 'client', 'server' ]);
+
+    api.export('Reviewers', [ 'client', 'server' ]);
+
 });

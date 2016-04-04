@@ -1,6 +1,9 @@
 <template name="lesionTrackerWorklistStudy">
     <tr class="worklistStudy noselect">
         <td>
+            {{#if reviewerTip}}
+                <i class="fa fa-exclamation-circle reviewerTip" data-toggle="tooltip" data-placement="bottom" title="{{reviewerTip}}"></i>
+            {{/if}}
             {{formatPN patientName}}
         </td>
         <td>
@@ -27,5 +30,6 @@
             {{numberOfStudyRelatedInstances}}
         </td>
         {{/unless}}
+
     </tr>
 </template>
