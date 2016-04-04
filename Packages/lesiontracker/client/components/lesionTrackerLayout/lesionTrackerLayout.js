@@ -62,7 +62,9 @@ Template.lesionTrackerLayout.onCreated(function() {
             clearInterval(handle);
             // Close the dialog
             dialog.css('display', 'none');
-
+            
+            // Remove reviewers info for the user
+            Meteor.call('removeUserFromReviewers', Meteor.userId());
         }
     });
 });

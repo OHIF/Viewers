@@ -1,5 +1,8 @@
 Meteor.methods({
     setReviewer: function (studyInstanceUid) {
+        if (!studyInstanceUid) {
+            return;
+        }
         var study = Studies.findOne({
             studyInstanceUid: studyInstanceUid
         });
@@ -45,6 +48,9 @@ Meteor.methods({
     },
 
     removeReviewer: function (timepointId) {
+        if (!timepointId) {
+            return;
+        }
         var reviewerTimepoint = Reviewers.findOne({timepointId: timepointId});
         if (!reviewerTimepoint || !reviewerTimepoint.reviewers) {
             return;
@@ -58,6 +64,9 @@ Meteor.methods({
     },
 
     removeUserFromReviewers: function(userId) {
+        if (!userId) {
+            return;
+        }
         Reviewers.find().map(function (timepoint) {
             Reviewers.update({_id: timepoint._id}, {"$pull": {"reviewers": {"userId": userId}}});
         });

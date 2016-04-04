@@ -89,7 +89,7 @@ WorklistTabs.find().observe({
     removed: function(tab) {
         var contentId = tab.contentid;
         var timepointIds = ViewerData[contentId].timepointIds;
-        if (timepointIds.length > 0) {
+        if (timepointIds && timepointIds.length > 0) {
             timepointIds.forEach(function(timepointId) {
                 // Remove the current user from Reviewers
                 Meteor.call('removeReviewer', timepointId);
