@@ -84,15 +84,16 @@ function getReviewerTipText(reviewers) {
 }
 
 // Observe changes on WorklistTabs
+// remove the current user from Reviewers if tab is removed
 WorklistTabs.find().observe({
     removed: function(tab) {
-        var timepointId = tab.timepointId;
-        if (!timepointId) {
-            return;
+        var contentId = tab.contentid;
+        var timepointIds = ViewerData[contentId].timepointIds;
+        if (timepointIds.length > 0) {
+            timepointIds.forEach(function(timepointId) {
+                // Remove the current user from Reviewers
+                Meteor.call('removeReviewer', timepointId);
+            });
         }
-
-        // Remove the current user from Reviewers
-        Meteor.call('removeReviewer', timepointId);
-
     }
 });

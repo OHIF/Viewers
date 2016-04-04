@@ -45,6 +45,8 @@ Template.userAccountMenu.events({
         $('#serverInformationModal').modal('show');
     },
     'click #logoutButton': function() {
+        // Remove reviewers info for the user
+        Meteor.call('removeUserFromReviewers', Meteor.userId());
         Meteor.logout(function() {
             Router.go('/entrySignIn');
         });

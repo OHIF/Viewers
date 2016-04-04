@@ -238,6 +238,11 @@ Template.viewer.onCreated(function() {
                         // Clear the toolData for this timepoint
                         var imageId = data.timepoints[timepointId].imageId;
                         removeToolDataWithMeasurementId(imageId, toolType, measurementId);
+
+                        // Set reviewer for this timepoint
+                        if (data.timepoints[timepointId].studyInstanceUid) {
+                            Meteor.call('setReviewer',data.timepoints[timepointId].studyInstanceUid);
+                        }
                     });
 
                     // Sync database data with toolData for all the measurements
