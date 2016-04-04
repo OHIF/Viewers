@@ -2,7 +2,7 @@
     {{#if currentUser}}
         <div id="userAccountMenu" class="row-fluid">
             <div class="list-group panel">
-                <a href="#userMenu" class="list-group-item" id="userName" data-toggle="collapse" data-parent="#userAccountMenu">{{fullName}} <span class="caret"></span></a>
+                <a href="#userMenu" class="list-group-item" id="userName" data-toggle="collapse" data-parent="#userAccountMenu">{{fullName}} {{currentPath}}<span class="caret"></span></a>
 
                 <div class="collapse pos-absolute" id="userMenu">
 

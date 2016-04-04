@@ -2,11 +2,6 @@ Template.userAccountMenu.helpers({
     fullName: function() {
         return Meteor.user().profile.fullName;
     },
-
-    showWorklistMenu: function() {
-        return  Template.instance().showWorklistMenu.get();
-    },
-
     currentUser: function() {
         var verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
 
@@ -27,16 +22,13 @@ Template.userAccountMenu.helpers({
         }
 
         return false;
-    }
-});
-
-Template.userAccountMenu.onCreated(function() {
-    // showViewer to go to viewer from audit
-    this.showWorklistMenu = new ReactiveVar(false);
-    // Get url and check worklist
-    var currentPath = Router.current().route.path(this);
-    if (currentPath === '/audit' || currentPath === '/changePassword') {
-        this.showWorklistMenu.set(true);
+    },
+    showWorklistMenu: function() {
+        var currentPath = Router.current().route.path(this);
+        if (currentPath === '/' || currentPath === '/worklist') {
+            return false;
+        }
+        return true;
     }
 });
 
@@ -50,14 +42,5 @@ Template.userAccountMenu.events({
         Meteor.logout(function() {
             Router.go('/entrySignIn');
         });
-    },
-    'click #worklist': function(e, template) {
-        template.showWorklistMenu.set(false);
-    },
-    'click #audit': function(e, template) {
-        template.showWorklistMenu.set(true);
-    },
-    'click #changePassword': function(e, template) {
-        template.showWorklistMenu.set(true);
     }
 });
