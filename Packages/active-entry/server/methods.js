@@ -123,7 +123,12 @@ Meteor.methods({
   },
 
   updateLastLoginDate: function () {
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {lastLoginDate: new Date()}});
+    var user = Meteor.users.findOne(Meteor.userId());
+    if (!user) {
+      return;
+    }
+    // Update priorLoginDate and lastLoginDate
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {priorLoginDate: user.lastLoginDate, lastLoginDate: new Date()}});
   },
 
   isAccountInactive: function (inactivityParameters) {
