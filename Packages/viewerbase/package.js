@@ -146,6 +146,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/resizeViewportElements.js', 'client');
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
+    api.addFiles('lib/queryStudies.js', 'client');
     api.addFiles('lib/exportStudies.js', 'client');
     api.addFiles('lib/importStudies.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
@@ -166,6 +167,8 @@ Package.onUse(function(api) {
     api.export('updateOrientationMarkers', 'client');
     api.export('setFocusToActiveViewport', 'client');
     api.export('updateAllViewports', 'client');
+    api.export('queryStudies', 'client');
+    api.export('getNumberOfFilesInStudy', 'client');
     api.export('exportStudies', 'client');
     api.export('importStudies', 'client');
     api.export('getActiveViewportElement', 'client');

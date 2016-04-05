@@ -9,28 +9,14 @@ exportStudies = function(studiesToExport) {
         return;
     }
 
-    var studiesQueried = [];
-    var numberOfStudiesToQuery = studiesToExport.length;
-
-    progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
-
-    studiesToExport.forEach(function(selectedStudy) {
-        getStudyMetadata(selectedStudy.studyInstanceUid, function(study) {
-            studiesQueried.push(study);
-
-            var numberOfStudiesQueried = studiesQueried.length;
-
-            progressDialog.update(numberOfStudiesQueried);
-
-            if (numberOfStudiesQueried === numberOfStudiesToQuery) {
-                exportQueriedStudies(studiesQueried);
-            }
-        });
-    });
+    queryStudies(studiesToExport, exportQueriedStudies);
 };
 
 function exportQueriedStudies(studiesToExport) {
-    var numberOfFilesToExport = getNumberOfFilesToExport(studiesToExport);
+    var numberOfFilesToExport = 0;
+    studiesToExport.forEach(function(study) {
+        numberOfFilesToExport += getNumberOfFilesInStudy(study);
+    });
 
     progressDialog.show("Exporting Studies...", numberOfFilesToExport);
 
@@ -118,22 +104,6 @@ function exportQueriedStudiesInternal(studiesToExport, numberOfFilesToExport) {
             });
         });
     });
-}
-
-function getNumberOfFilesToExport(studiesToExport) {
-    var numberOFFilesToExport = 0;
-
-    studiesToExport.forEach(function(study) {
-        study.seriesList.forEach(function(series) {
-            series.instances.forEach(function(instance) {
-                if (instance.wadouri) {
-                    numberOFFilesToExport++;
-                }
-            });
-        });
-    });
-
-    return numberOFFilesToExport;
 }
 
 function onExportFailed(err) {
