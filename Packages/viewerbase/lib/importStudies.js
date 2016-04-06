@@ -39,7 +39,7 @@ importStudies = function(filesToImport, importCallback) {
 
                 if (fileUploadStatus.numberOfFilesFailed > 0) {
                     //TODO: Some files failed to upload, so let user know
-                    console.log("Failed to upload " + studyImportStatus.numberOfStudiesFailed + " of " + numberOfStudiesToImport + " files");
+                    console.log("Failed to upload " + fileUploadStatus.numberOfFilesFailed + " of " + numberOfFilesToUpload + " files");
                 }
             }
         };
