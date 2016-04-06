@@ -16,7 +16,7 @@
         <i class="pull-left fa fa-gears fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> initialized HIPAA Audit Log.
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> initialized HIPAA Audit Log.
         </div>
       </div>
     </li>
@@ -60,7 +60,7 @@
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
           {{#if hasPatientInfo}}
-            <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> modified record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection, regarding patient <span class="patientName {{getHighlightColor}}">{{getPatientName}}</span>.
+            <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> modified record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection, regarding patient <span class="patientName" style="{{getHighlightColor}}">{{getPatientName}}</span>.
           {{else}}
             <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> modified record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
           {{/if}}
@@ -77,7 +77,7 @@
         <i class="pull-left fa fa-code-fork fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> cloned record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> cloned record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
         </div>
       </div>
     </li>
@@ -90,7 +90,7 @@
         <i class="pull-left fa fa-minus-circle fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> deleted record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> deleted record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
         </div>
       </div>
     </li>
@@ -103,7 +103,7 @@
         <i class="pull-left fa fa-warning fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> was denied access to record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> was denied access to record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
         </div>
       </div>
     </li>
@@ -117,9 +117,9 @@
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
           {{#if hasPatientInfo}}
-            <span style="{{getHighlightColor}}">{{userName}}</span> viewed record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection, regarding patient <span style="{{getHighlightColor}}">{{getPatientName}}</span>.
+            <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> viewed record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection, regarding patient <span class="patientName" style="{{getHighlightColor}}">{{getPatientName}}</span>.
           {{else}}
-            <span style="{{getHighlightColor}}">{{userName}}</span> viewed record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
+            <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> viewed record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
           {{/if}}
         </div>
       </div>
@@ -133,7 +133,7 @@
         <i class="pull-left fa fa-rss fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> published record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> published record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
         </div>
       </div>
     </li>
@@ -146,7 +146,7 @@
         <i class="pull-left fa fa-circle-o fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> unpublished record <span style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> unpublished record <span class="mongoRecordId" style="{{getHighlightColor}}">{{getRecordId}}</span> in the <span class="collectionName" style="{{getHighlightColor}}">{{getCollectionName}}</span> collection.
         </div>
       </div>
     </li>
@@ -159,7 +159,7 @@
         <i class="pull-left fa fa-bomb fa-2x lightgray"></i>
         <div class="media-body">
           <span class="small gray">{{entryTimestamp}}</span><br>
-          <span style="{{getHighlightColor}}">{{userName}}</span> received a data access error while performing an action!<br>
+          <span class="userName" style="{{getHighlightColor}}">{{userName}}</span> received a data access error while performing an action!<br>
           <span class="error">{{getErrorMessage}}</span>
 
         </div>
