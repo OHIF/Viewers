@@ -156,6 +156,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.html', 'client');
     api.addFiles('client/components/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.js', 'client');
 
+    api.addFiles('client/components/lastLoginModal/lastLoginModal.html', 'client');
+    api.addFiles('client/components/lastLoginModal/lastLoginModal.js', 'client');
 
     // Server functions
     api.addFiles('server/collections.js', 'server');

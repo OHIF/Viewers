@@ -40,12 +40,8 @@ Meteor.startup(function() {
 
     // Bind events if window is closed
     $(window).bind('beforeunload', function (e) {
-        closingWindow();
         // have to return null, unless you want a chrome popup alert
-        //return 'If you leave this page then any unsaved changes will be lost.';
+       // return 'If you leave this page then any unsaved changes will be lost.';
     });
 });
 
-closingWindow = function(){
-    Meteor.call('removeUserFromReviewers', Meteor.userId());
-};

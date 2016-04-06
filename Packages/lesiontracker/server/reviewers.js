@@ -45,6 +45,18 @@ Meteor.methods({
         } else {
             Reviewers.insert({timepointId: timepoint.timepointId, reviewers: [{userId: user._id, userName: user.profile.fullName}]});
         }
+
+        // Log
+        var hipaaEvent = {
+            eventType: 'modify',
+            userId: Meteor.userId(),
+            userName: Meteor.user().profile.fullName,
+            collectionName: "Measurements",
+            recordId: study.studyInstanceUid,
+            patientId: study.patientId,
+            patientName: study.patientName
+        };
+        HipaaLogger.logEvent(hipaaEvent);
     },
 
     removeReviewer: function (timepointId) {
@@ -70,6 +82,10 @@ Meteor.methods({
         Reviewers.find().map(function (timepoint) {
             Reviewers.update({_id: timepoint._id}, {"$pull": {"reviewers": {"userId": userId}}});
         });
+    },
+
+    getPriorLoginDate: function() {
+        return Meteor.users.findOne({_id: Meteor.userId()}, {fields: {priorLoginDate: 1}});
     }
 });
 

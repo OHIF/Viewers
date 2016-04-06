@@ -26,7 +26,8 @@ var data = {
         'associationModal',
         'optionsModal',
         'serverInformationModal',
-        'confirmRemoveTimepointAssociation'
+        'confirmRemoveTimepointAssociation',
+        'lastLoginModal'
     ]
 };
 

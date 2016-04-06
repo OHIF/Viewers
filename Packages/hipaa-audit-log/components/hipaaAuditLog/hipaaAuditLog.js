@@ -20,7 +20,7 @@ Template.hipaaAuditLog.helpers({
   },
   hipaaAudit: function () {
     // return HipaaLog.find();
-    return HipaaLog.find({
+    return  HipaaLog.find({
       $or: [
         {
           userName: {
@@ -30,6 +30,18 @@ Template.hipaaAuditLog.helpers({
         },
         {
           patientName: {
+            $regex: Session.get('hipaaSearchFilter'),
+            $options: 'i'
+          }
+        },
+        {
+          recordId: {
+            $regex: Session.get('hipaaSearchFilter'),
+            $options: 'i'
+          }
+        },
+        {
+          collectionName: {
             $regex: Session.get('hipaaSearchFilter'),
             $options: 'i'
           }
@@ -54,6 +66,23 @@ Template.hipaaAuditLog.helpers({
 Template.hipaaAuditLog.events({
   "keyup #hipaaSearchFilter": function (event, template) {
     Session.set("hipaaSearchFilter", $('#hipaaSearchFilter').val());
+  },
+  "click .userName": function(event, template) {
+    var userName = $(event.currentTarget).text();
+    Session.set('hipaaSearchFilter', userName);
+  },
+  "click .patientName": function(event, template) {
+    var patientName = $(event.currentTarget).text();
+    var patientNameRegex = patientName.replace(/[!@#$%^&*()+=\-[\]\\';,./{}|":<>?~_]/g, "\\$&");
+    Session.set('hipaaSearchFilter', patientNameRegex);
+  },
+  "click .mongoRecordId": function(event, template) {
+    var mongoRecordId = $(event.currentTarget).text();
+    Session.set('hipaaSearchFilter', mongoRecordId);
+  },
+  "click .collectionName": function(event, template) {
+    var collectionName = $(event.currentTarget).text();
+    Session.set('hipaaSearchFilter', collectionName);
   }
 });
 

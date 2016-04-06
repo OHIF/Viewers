@@ -83,6 +83,7 @@ npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
 observe-sequence@1.0.7
 ordered-dict@1.0.4
+peppelg:bootstrap-3-modal@1.0.4
 practicalmeteor:chai@2.1.0_1
 practicalmeteor:loglevel@1.2.0_2
 promise@0.5.1
@@ -98,6 +99,7 @@ service-configuration@1.0.5
 session@1.1.1
 sha@1.0.4
 silentcicero:jszip@0.0.4
+simple:reactive-method@1.0.2
 spacebars@1.0.7
 spacebars-compiler@1.0.7
 srp@1.0.4

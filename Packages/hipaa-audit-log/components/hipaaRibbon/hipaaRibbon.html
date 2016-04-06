@@ -1,13 +1,17 @@
   <template name="hipaaRibbon">
     <aside id="hipaaRibbon" class="{{getRibbonClass}}">
-      <input type="text" name="hipaaSearchFilter" id="hipaaSearchFilter" class="{{getInputClass}}" value="{{getHipaaSearchFilter}}" placeholder="Search User" style="{{getSearchFilterStyling}}">
+        <div class="btn-group">
+            <input type="text" name="hipaaSearchFilter" id="hipaaSearchFilter" class="{{getInputClass}}" value="{{getHipaaSearchFilter}}" placeholder="Search User" style="{{getSearchFilterStyling}}">
+            <span id="searchClear" class="glyphicon glyphicon-remove-circle"></span>
+        </div>
+      <!--<input type="text" name="hipaaSearchFilter" id="hipaaSearchFilter" class="{{getInputClass}}" value="{{getHipaaSearchFilter}}" placeholder="Search User" style="{{getSearchFilterStyling}}">-->
       <input type="date" id="beginDateInput" class="{{getInputClass}}" value="{{getBeginDate}}" style="{{getDateRangeStyling}}">
       <input type="date" id="endDateInput" class="{{getInputClass}}" value="{{getEndDate}}" style="{{getDateRangeStyling}}">
       <select id="actionFilter" name="actionFilter" class="{{getSelectClass}}" style="{{getSelectStyling}}">
-        <option id="filterCreatedButton">Created</option>
-        <option id="filterModifiedButton">Modified</option>
-        <option id="filterViewedButton">Viewed</option>
-        <option id="filterAllButton">All</option>
+        <option id="filterCreatedButton" value="create">Created</option>
+        <option id="filterModifiedButton" value="modify">Modified</option>
+        <option id="filterViewedButton" value="viewed">Viewed</option>
+        <option id="filterAllButton" selected value="">All</option>
       </select>
     </aside>
 

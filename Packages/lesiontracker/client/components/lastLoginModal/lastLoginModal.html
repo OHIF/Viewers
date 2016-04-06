@@ -1,0 +1,16 @@
+<template name="lastLoginModal">
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding: 0;">
+                    <div class="alert alert-info" style="margin: 0 auto;">
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+                        {{#if lastLoginDate}}
+                            <h5>You last logged in on <strong>{{lastLoginDate}}</strong></h5>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
