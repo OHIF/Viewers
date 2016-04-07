@@ -89,4 +89,4 @@ Router.onBeforeAction(function () {
     } else {
         this.next();
     }
-},{except: ['entrySignIn', 'entrySignUp', 'forgotPassword']});
+},{except: ['entrySignIn', 'entrySignUp', 'forgotPassword', 'resetPassword']});
