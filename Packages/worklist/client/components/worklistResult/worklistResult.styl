@@ -8,52 +8,90 @@ table#tblStudyList
     white-space: nowrap
 
     tr
+      th:first-child
+        div.sortingCell
+          border-right: 0.5px dashed #555555
+          border-left: none
+
       th
-        a.sortingCell
+        padding: 0
+
+        div.sortingCell
           display: inline-block
+          cursor: pointer
           width: 100%
+          min-width: 95px
           margin: 0 auto
           color: white
-          text-decoration: none
-          padding-bottom: 5px
+          padding: 10px
+          font-weight: 500
+          background: #171717
+          border-left: 0.5px dashed #555555
 
           span
             font-size: 15px
             float: left
 
           i
-            float: right
-            margin-left: 5px
+            margin: 0 5px
 
-        #studyDate
-          padding: 0
+          &:hover, &.active
+            background: #252525
 
-    &:hover
-      color: #888888
+        input.worklist-search
+          height: 34px
+          margin: 0 5px 20px 5px
+          cursor: pointer
+          padding: 10px
+          border: none
+          background-color: #707070
+          color: #434343
+          font-size: 10pt
+          font-weight: normal
+          width: calc(100% - 10px)
+          box-sizing: border-box
 
+          -webkit-transition: all 0.15s ease-in-out;
+          -moz-transition: all 0.15s ease-in-out;
+          -o-transition: all 0.15s ease-in-out;
+          transition: all 0.15s ease-in-out;
 
-    // TODO: Use padding instead of hidden inputs to keep titles
-    // at the same height in the header.
-    #numImages.worklist-search
-      visibility: hidden
+          &:active, &:hover
+            color: black
+            background-color: #d3d3d9
 
-    input.worklist-search
-      height: 25px
-      background-color: #888888
-      width: 100%
+          &::-webkit-input-placeholder /* WebKit, Blink, Edge */
+            color:    #434343
+
+          &:-moz-placeholder /* Mozilla Firefox 4 to 18 */
+            color:    #434343
+            opacity:  1
+          
+          &::-moz-placeholder /* Mozilla Firefox 19+ */
+            color:    #434343
+            opacity:  1
+          
+          &:-ms-input-placeholder /* Internet Explorer 10-11 */
+            color:    #434343
 
     ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
     ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
-    ::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
-      color: transparent;
-    }
+    ::-webkit-datetime-edit-day-field:not([aria-valuenow])
+      color: transparent
 
   tbody
     tr
-      height: 20px
-      padding: 4px
-      border: 1px solid #282828
+      height: 22px
+      padding: 5px
       background-color: black
+
+      td
+        color: #ffffff
+        border-top: 0.5px dashed #555555
+        white-space: nowrap
+
+        -webkit-transition: all 0.1s ease
+        transition: all 0.1s ease
 
       &:hover, &:active, &.active
         background-color: #009BD2
@@ -61,11 +99,7 @@ table#tblStudyList
 
         td
           // This selector is necessary to override bootstrap's 'table' class
+          border-top: 0.5px dashed #dddddd
+          border-bottom: 0.5px dashed #dddddd
           color: white
           background-color: #009BD2
-
-      &:nth-of-type(odd)
-        background-color: #202020
-
-      td
-        white-space: nowrap

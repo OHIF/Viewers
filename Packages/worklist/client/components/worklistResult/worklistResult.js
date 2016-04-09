@@ -1,4 +1,7 @@
-Session.setDefault("searchResults", {showLoadingText: true, showNotFoundMessage: false});
+Session.setDefault('searchResults', {
+    showLoadingText: true,
+    showNotFoundMessage: false
+});
 
 Template.worklistResult.helpers({
     /**
@@ -22,17 +25,26 @@ Template.worklistResult.helpers({
     },
 
     showLoadingText: function() {
-        return Session.get("searchResults").showLoadingText;
+        return Session.get('searchResults').showLoadingText;
     },
 
     showNotFoundMessage: function() {
-        return Session.get("searchResults").showNotFoundMessage;
+        return Session.get('searchResults').showNotFoundMessage;
     },
 
     sortingColumnsIcons: function() {
         var sortingColumnsIcons = {};
         Object.keys(Template.instance().sortingColumns.keys).forEach(function(key) {
-            sortingColumnsIcons[key] = Template.instance().sortingColumns.get(key) === 1 ? "fa fa-sort-up": (Template.instance().sortingColumns.get(key) === -1 ? "fa fa-sort-down":"");
+            var value = Template.instance().sortingColumns.get(key);
+
+            if (value === 1) {
+                sortingColumnsIcons[key] = 'fa fa-fw fa-sort-up';
+            } else if (value === -1) {
+                sortingColumnsIcons[key] = 'fa fa-fw fa-sort-down';
+            } else {
+                // fa-fw is blank
+                sortingColumnsIcons[key] = 'fa fa-fw';
+            }
         });
         return sortingColumnsIcons;
     }
@@ -102,10 +114,10 @@ function convertStringToStudyDate(dateStr) {
  */
 function search() {
     // Show loading message
-    var searchResults = Session.get("searchResults");
+    var searchResults = Session.get('searchResults');
     searchResults.showLoadingText = true;
     searchResults.showNotFoundMessage = false;
-    Session.set("searchResults", searchResults);
+    Session.set('searchResults', searchResults);
 
     // Create the filters to be used for the Worklist Search
     filter = {
@@ -130,7 +142,7 @@ function search() {
 
         // Hide loading text
         searchResults.showLoadingText = false;
-        Session.set("searchResults", searchResults);
+        Session.set('searchResults', searchResults);
 
         if (!studies) {
             return;
@@ -140,8 +152,8 @@ function search() {
         studies.forEach(function(study) {
             // Search the rest of the parameters that aren't done via the server call
             if (isIndexOf(study.modalities, modality) &&
-                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === "") &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === "")) {
+                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === '') &&
+                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = parseInt(study.numberOfStudyRelatedInstances);
@@ -154,7 +166,7 @@ function search() {
         if (WorklistStudies.find().count() === 0) {
             // Show notFound text
             searchResults.showNotFoundMessage = true;
-            Session.set("searchResults", searchResults);
+            Session.set('searchResults', searchResults);
         }
 
     });
@@ -170,6 +182,11 @@ Template.worklistResult.onCreated(function() {
     } else {
         this.sortingColumns.set('patientName', 1);
         this.sortingColumns.set('studyDate', 1);
+        this.sortingColumns.set('patientId', 0);
+        this.sortingColumns.set('accessionNumber', 0);
+        this.sortingColumns.set('studyDescription', 0);
+        this.sortingColumns.set('modality', 0);
+        this.sortingColumns.set('numberOfStudyRelatedInstances', 0);
     }
 
     var self = this;
@@ -182,9 +199,9 @@ Template.worklistResult.onCreated(function() {
 
 Template.worklistResult.onRendered(function() {
     // Initialize daterangepicker
-    $("#studyDate").daterangepicker({
+    $('#studyDate').daterangepicker({
         ranges: {
-            'Today': [moment(), moment()],
+            Today: [moment(), moment()],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()]
         }
@@ -208,27 +225,25 @@ Template.worklistResult.events({
     'onsearch input': function() {
         search();
     },
-
     'change #studyDate': function(e, template) {
         var dateRange = $(e.currentTarget).val();
         // Remove all space chars
-        dateRange = dateRange.replace(/ /g,'');
+        dateRange = dateRange.replace(/ /g, '');
         // Split dateRange into subdates
-        var dates = dateRange.split("-");
+        var dates = dateRange.split('-');
         studyDateFrom = dates[0];
         studyDateTo = dates[1];
 
-        if (dateRange !== "") {
+        if (dateRange !== '') {
             search();
         }
     },
-
-    'click a.sortingCell': function(e, template) {
+    'click div.sortingCell': function(e, template) {
         var elementId = e.currentTarget.id;
         // Remove _ from id
-        var columnName = elementId.replace("_", '');
+        var columnName = elementId.replace('_', '');
 
-        var sortOption= {};
+        var sortOption = {};
         resetSortingColumns(template, columnName);
         var columnObject = template.sortingColumns.get(columnName);
         if (columnObject) {
@@ -242,6 +257,5 @@ Template.worklistResult.events({
         template.sortOption.set(sortOption);
         Session.set('sortOption', sortOption);
     }
-
 });
 

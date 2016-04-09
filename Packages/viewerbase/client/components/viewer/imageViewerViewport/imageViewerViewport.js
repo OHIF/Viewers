@@ -30,6 +30,10 @@ function loadSeriesIntoViewport(data, templateData) {
     // This data will be saved so that the tab can be reloaded to the same state after tabs
     // are switched
     if (contentId) {
+        if (!ViewerData[contentId]) {
+            return;
+        }
+
         ViewerData[contentId].loadedSeriesData[viewportIndex] = {};
     }
 

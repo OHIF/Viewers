@@ -1,69 +1,86 @@
 <template name="worklistResult">
     {{>worklistToolbar}}
-    <table id="tblStudyList" class="worklistResult table table-striped noselect">
+    <table id="tblStudyList" class="worklistResult table noselect">
         <thead>
-        <tr>
-            <th>
-                <a id="_patientName" class="sortingCell" href="#">
-                    <span>Patient Name</span>
-                    <i class="{{sortingColumnsIcons.patientName}}"></i>
-                </a>
-                <input type="text" class="form-control worklist-search" id="patientName">
-            </th>
-            <th>
-                <a id="_patientId" class="sortingCell" href="#">
-                    <span>Patient ID</span>
-                    <i class="{{sortingColumnsIcons.patientId}}"></i>
-                </a>
-                <input type="text" class="form-control worklist-search" id="patientId">
-            </th>
-
-            {{#unless isTouchDevice}}
+            <tr>
                 <th>
-                    <a id="_accessionNumber" class="sortingCell" href="#">
+                    <input type="text"
+                           class="form-control worklist-search"
+                           id="patientName"
+                           placeholder="Search Patient Name">
+                    <div id="_patientName" class="sortingCell">
+                        <span>Patient Name</span>
+                        <i class="{{sortingColumnsIcons.patientName}}">&nbsp;</i>
+                    </div>
+                </th>
+                <th>
+                    <input type="text"
+                           class="form-control worklist-search"
+                           id="patientId"
+                           placeholder="Search Patient ID">
+                    <div id="_patientId" class="sortingCell">
+                        <span>Patient ID</span>
+                        <i class="{{sortingColumnsIcons.patientId}}">&nbsp;</i>
+                    </div>
+                </th>
+
+                {{#unless isTouchDevice}}
+                <th>
+                    <input type="text"
+                           class="form-control worklist-search"
+                           id="accessionNumber"
+                           placeholder="Search Accession #">
+                    <div id="_accessionNumber" class="sortingCell">
                         <span>Accession #</span>
-                        <i class="{{sortingColumnsIcons.accessionNumber}}"></i>
-                    </a>
-                    <input type="text" class="form-control worklist-search" id="accessionNumber">
+                        <i class="{{sortingColumnsIcons.accessionNumber}}">&nbsp;</i>
+                    </div>
                 </th>
-            {{/unless}}
+                {{/unless}}
 
-            <th>
-                <a id="_studyDate" class="sortingCell" href="#">
-                    <span>Study Date</span>
-                    <i class="{{sortingColumnsIcons.studyDate}}"></i>
-                </a>
-                <input type="text" class="form-control worklist-search" name="daterange" id="studyDate">
-
-            </th>
-
-            {{#unless isTouchDevice}}
                 <th>
-                    <a id="_modalities" class="sortingCell" href="#">
-                        <span>Modality</span>
-                        <i class="{{sortingColumnsIcons.modalities}}"></i>
-                    </a>
-                    <input type="text" class="form-control worklist-search" id="modality">
+                    <input type="text"
+                           class="form-control worklist-search"
+                           name="daterange"
+                           id="studyDate"
+                           placeholder="Search Study Date">
+                    <div id="_studyDate" class="sortingCell">
+                        <span>Study Date</span>
+                        <i class="{{sortingColumnsIcons.studyDate}}">&nbsp;</i>
+                    </div>
                 </th>
-            {{/unless}}
-            <th>
-                <a id="_studyDescription" class="sortingCell" href="#">
-                    <span>Study Description</span>
-                    <i class="{{sortingColumnsIcons.studyDescription}}"></i>
-                </a>
-                <input type="text" class="form-control worklist-search" id="studyDescription">
-            </th>
 
-            {{#unless isTouchDevice}}
-            <th>
-                <a id="_numberOfStudyRelatedInstances" class="sortingCell" href="#">
-                    <span># Images</span>
-                    <i class="{{sortingColumnsIcons.numberOfStudyRelatedInstances}}"></i>
-                </a>
-                <input type="text" class="form-control worklist-search" id="numImages">
-            </th>
-            {{/unless}}
-        </tr>
+                {{#unless isTouchDevice}}
+                <th>
+                    <input type="text"
+                           class="form-control worklist-search"
+                           id="modality"
+                           placeholder="Search Modality">
+                    <div id="_modalities" class="sortingCell">
+                        <span>Modality</span>
+                        <i class="{{sortingColumnsIcons.modalities}}">&nbsp;</i>
+                    </div>
+                </th>
+                {{/unless}}
+                <th>
+                    <input type="text"
+                           class="form-control worklist-search"
+                           id="studyDescription"
+                           placeholder="Search Study Description">
+                    <div id="_studyDescription" class="sortingCell">
+                        <span>Study Description</span>
+                        <i class="{{sortingColumnsIcons.studyDescription}}">&nbsp;</i>
+                    </div>
+                </th>
+
+                {{#unless isTouchDevice}}
+                <th>
+                    <div id="_numberOfStudyRelatedInstances" class="sortingCell">
+                        <span># Images</span>
+                        <i class="{{sortingColumnsIcons.numberOfStudyRelatedInstances}}">&nbsp;</i>
+                    </div>
+                </th>
+                {{/unless}}
+            </tr>
         </thead>
         <tbody id="studyListData">
         {{#each studies}}
