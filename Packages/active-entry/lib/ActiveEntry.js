@@ -361,16 +361,33 @@ ActiveEntry.resetPassword = function(passwordValue, confirmPassword) {
     return;
   }
 
-  Accounts.resetPassword(Session.get('_resetPasswordToken'), passwordValue, function(error) {
+  // Check token is expired
+  Meteor.call('checkResetTokenIsExpired',Session.get('_resetPasswordToken'), function(error, isTokenExpired) {
     if (error) {
-      ActiveEntry.errorMessages.set("resetPassword", error.message);
+      console.log(error.message);
       return;
     }
-    Session.set('_resetPasswordToken', null);
-    // Update last login time
-    Meteor.call("updateLastLoginDate");
-    var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
-    Router.go(ActiveEntryConfig.signIn.destination);
+
+    if (isTokenExpired) {
+      console.log("Your link is expired");
+      // Go to forgotPassword to create a new reset link
+      ActiveEntry.errorMessages.set("forgotPassword", 'Your link is expired. Please create a new reset link.');
+      Router.go('/forgotPassword');
+      return;
+    }
+
+    Accounts.resetPassword(Session.get('_resetPasswordToken'), passwordValue, function(error) {
+      if (error) {
+        ActiveEntry.errorMessages.set("resetPassword", error.message);
+        return;
+      }
+      Session.set('_resetPasswordToken', null);
+      // Update last login time
+      Meteor.call("updateLastLoginDate");
+      var ActiveEntryConfig = Session.get('Photonic.ActiveEntry');
+      Router.go(ActiveEntryConfig.signIn.destination);
+    });
+
   });
 };
 

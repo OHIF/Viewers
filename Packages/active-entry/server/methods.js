@@ -165,6 +165,26 @@ Meteor.methods({
     }
 
     return false;
+  },
+
+  checkResetTokenIsExpired: function(token) {
+    var user = Meteor.users.findOne({"services.password.reset.token": token});
+    if (!user) {
+      return;
+    }
+    var tokenCreatedTime = user.services.password.reset.when;
+    if (!tokenCreatedTime) {
+        return;
+    }
+    // Token will be expired if created time is over 30 min as default
+    tokenCreatedTime.setTime(tokenCreatedTime.getTime() + 30*60000);
+    if (tokenCreatedTime < new Date()) {
+        // Remove reset token
+        Meteor.users.update({_id: user._id}, {$unset: {'services.password.reset': 1}});
+        return true;
+    }
+
+    return false;
   }
 
 });

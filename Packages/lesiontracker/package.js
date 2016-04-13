@@ -238,7 +238,6 @@ Package.onUse(function(api) {
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);
     api.export('Timepoints', [ 'client', 'server' ]);
-
     api.export('Reviewers', [ 'client', 'server' ]);
 
 });
