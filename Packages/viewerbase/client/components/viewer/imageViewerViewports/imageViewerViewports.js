@@ -20,7 +20,7 @@ Template.imageViewerViewports.helpers({
         var viewportRows = this.viewportRows || 1;
         var viewportColumns = this.viewportColumns || 1;
 
-        var contentId = this.contentId || $('#viewer').parents('.tab-pane.active').attr('id');
+        var contentId = Session.get('activeContentId');
         if (this.viewportRows && this.viewportColumns) {
             viewportRows = this.viewportRows || 1;
             viewportColumns = this.viewportColumns || 1;
