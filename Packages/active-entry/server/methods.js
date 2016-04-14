@@ -41,7 +41,6 @@ Meteor.methods({
         }
     }
     return false;
-
   },
 
   getFailedAttemptsCount: function(emailAddress) {
@@ -54,9 +53,7 @@ Meteor.methods({
     return currentUser.failedPasswordAttempts || 0;
   },
 
-  updateFailedAttempts: function(failedAttemptsParameters) {
-    var emailAddress = failedAttemptsParameters[0];
-    var failedAttemptsLimit = failedAttemptsParameters[1];
+  updateFailedAttempts: function(emailAddress, failedAttemptsLimit) {
 
     // Check if the user actually exists, and if not, stop here
     var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
@@ -135,10 +132,7 @@ Meteor.methods({
     Meteor.users.update({_id: Meteor.userId()}, {$set: {priorLoginDate: priorLoginDate, lastLoginDate: new Date()}});
   },
 
-  isAccountInactive: function (inactivityParameters) {
-    var emailAddress = inactivityParameters[0];
-    var inactivityPeriodDays = inactivityParameters[1];
-
+  isAccountInactive: function (emailAddress, inactivityPeriodDays) {
     // Check if the user actually exists, and if not, stop here
     var currentUser = Meteor.users.findOne({"emails.address": emailAddress});
     if (!currentUser) {
@@ -167,7 +161,7 @@ Meteor.methods({
     return false;
   },
 
-  checkResetTokenIsExpired: function(token) {
+  checkResetTokenIsExpired: function(token, expireTimeInMinute) {
     var user = Meteor.users.findOne({"services.password.reset.token": token});
     if (!user) {
       return;
@@ -177,7 +171,7 @@ Meteor.methods({
         return;
     }
     // Token will be expired if created time is over 30 min as default
-    tokenCreatedTime.setTime(tokenCreatedTime.getTime() + 30*60000);
+    tokenCreatedTime.setTime(tokenCreatedTime.getTime() + expireTimeInMinute*60000);
     if (tokenCreatedTime < new Date()) {
         // Remove reset token
         Meteor.users.update({_id: user._id}, {$unset: {'services.password.reset': 1}});
@@ -185,6 +179,24 @@ Meteor.methods({
     }
 
     return false;
-  }
+  },
+
+  checkResetPasswordExistence: function(hashedPassword, token) {
+    var user = Meteor.users.findOne({"services.password.reset.token": token});
+    if (!user) {
+      return;
+    }
+    var previousPasswords = user.previousPasswords;
+    if (!previousPasswords) {
+      return;
+    }
+    for(var i=0; i< previousPasswords.length; i++) {
+      var recordedHashedPassword = previousPasswords[i].hashedPassword;
+      if (recordedHashedPassword == hashedPassword) {
+        return true;
+      }
+    }
+    return false;
+  },
 
 });
