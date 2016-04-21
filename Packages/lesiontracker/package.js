@@ -200,6 +200,7 @@ Package.onUse(function(api) {
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);
+    api.addFiles('server/servers.js', 'server');
 
     // Both client and server functions
     api.addFiles('both/collections.js', [ 'client', 'server' ]);
@@ -274,7 +275,11 @@ Package.onUse(function(api) {
     api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
+<<<<<<< 624d2aeaf5db4d1ac2b6ade6411fa55f4788ceac
     api.export('AdditionalFindings', [ 'client', 'server' ]);
+=======
+    api.export('Servers', [ 'client', 'server' ]);
+>>>>>>> Refactoring servers configuration structure
     api.export('ImageMeasurements', [ 'client', 'server' ]);
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);

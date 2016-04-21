@@ -67,7 +67,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         }
 
         var sopInstanceUid = instance[0x00080018];
-        
+
         var instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
@@ -98,7 +98,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         };
 
         // Retrieve the actual data over WADO-URI
-        var server = Meteor.settings.dicomWeb.endpoints[0];
+        var server = Meteor.settings.servers.dicomWeb[0];
         instanceSummary.wadouri = server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + "&contentType=application%2Fdicom";
 
         series.instances.push(instanceSummary);

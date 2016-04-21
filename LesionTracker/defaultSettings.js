@@ -8,8 +8,8 @@ Meteor.startup(function() {
     }
 
     Meteor.settings = {
-        dicomWeb: {
-            endpoints: [{
+        servers: {
+            dicomWeb: [{
                 name: 'Orthanc',
                 wadoUriRootNOTE: 'either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently',
                 wadoUriRoot: 'http://localhost:8043/wado',
@@ -23,14 +23,15 @@ Meteor.startup(function() {
                     logResponses: false,
                     logTiming: true
                 }
+            }],
+            dimse: [{
+                name: "ORTHANC_DIMSE",
+                host: 'localhost',
+                port: 4242,
+                aeTitle: 'ORTHANC',
+                default: true
             }]
         },
-        dimse: [{
-            host: 'localhost',
-            port: 4242,
-            aeTitle: 'ORTHANC',
-            default: true
-        }],
         "defaultServiceType": 'dicomWeb',
         "public": {
             "verifyEmail": false,
@@ -49,4 +50,3 @@ Meteor.startup(function() {
        // return 'If you leave this page then any unsaved changes will be lost.';
     });
 });
-

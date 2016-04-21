@@ -37,8 +37,9 @@ Meteor.methods({
      * @returns {boolean}
      */
     importSupported: function() {
-        //TODO: Support importing studies into dicomWeb
-        return (Meteor.settings.dimse && Meteor.settings.defaultServiceType === 'dimse');
+        if (Meteor.settings.servers.dimse && Meteor.settings.defaultServiceType === 'dimse') {
+            return true;
+        }
     },
     /**
      * Imports studies from local into worklist
@@ -50,10 +51,10 @@ Meteor.methods({
             return;
         }
 
-        if (Meteor.settings.dicomWeb && Meteor.settings.defaultServiceType === 'dicomWeb') {
+        if (Meteor.settings.servers.dicomWeb && Meteor.settings.defaultServiceType === 'dicomWeb') {
             //TODO: Support importing studies into dicomWeb
             console.log('Importing studies into dicomWeb is currently not supported.');
-        } else if (Meteor.settings.dimse && Meteor.settings.defaultServiceType === 'dimse') {
+        } else if (Meteor.settings.servers.dimse && Meteor.settings.defaultServiceType === 'dimse') {
             importStudiesDIMSE(studiesToImport, studyImportStatusId);
         } else {
             throw 'No properly configured server was available over DICOMWeb or DIMSE.';
