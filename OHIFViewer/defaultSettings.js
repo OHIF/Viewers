@@ -6,8 +6,8 @@ Meteor.startup(function() {
     }
 
     Meteor.settings = {
-        dicomWeb: {
-            endpoints: [{
+        servers: {
+            dicomWeb: [{
                 name: 'Orthanc',
                 wadoUriRootNOTE: 'either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently',
                 wadoUriRoot: 'http://localhost:8043/wado',
@@ -20,13 +20,14 @@ Meteor.startup(function() {
                   logRequests: true,
                   logResponses: false,
                   logTiming: true
-              }
+                }
+            }],
+            dimse: [{
+                name: "ORTHANC_DIMSE",
+                host: 'localhost',
+                port: 4242,
+                hostAE: 'ORTHANC'
             }]
-        },
-        dimse: {
-            host: 'localhost',
-            port: 4242,
-            hostAE: 'ORTHANC'
         },
         defaultServiceType: 'dicomWeb'
         //defaultServiceType: 'dimse'

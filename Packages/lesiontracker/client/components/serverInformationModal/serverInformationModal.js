@@ -7,12 +7,12 @@ function parseUrl(url) {
 
 Template.serverInformationModal.helpers({
     serverInformation: function() {
+        // TODO: change for Collections
         var defaultServiceType = Meteor.settings && Meteor.settings.defaultServiceType || 'dicomWeb';
-        var serviceInfo = Meteor.settings[defaultServiceType];
+        var serviceInfo = Meteor.settings.servers[defaultServiceType];
         if (defaultServiceType === 'dicomWeb') {
             var serverInformationDicom = [];
-            var endpoints = serviceInfo["endpoints"];
-            endpoints.forEach(function(endpoint) {
+            serviceInfo.forEach(function(endpoint) {
                 var parsedUrl = parseUrl(endpoint.qidoRoot);
                 serverInformationDicom.push({host: parsedUrl.hostname, port: parsedUrl.port, aeTitle: endpoint.name});
             });

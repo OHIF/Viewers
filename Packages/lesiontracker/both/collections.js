@@ -1,3 +1,4 @@
+Servers = new Mongo.Collection('servers');
 Timepoints = new Meteor.Collection('timepoints');
 Studies = new Meteor.Collection('studies');
 Measurements = new Meteor.Collection('measurements');

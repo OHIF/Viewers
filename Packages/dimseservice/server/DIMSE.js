@@ -54,7 +54,8 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
 };
 
 Meteor.startup(function() {
-    var peers = Meteor.settings.dimse;
+    if (!Meteor.settings.servers.dimse) return;
+    var peers = Meteor.settings.servers.dimse[0].peers;
     console.log('Adding DIMSE peers');
     if (peers && peers.length) {
         peers.forEach(function(peer) {
@@ -202,7 +203,7 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
 
         result.on('result', function(msg) {
             series.push(msg);
-        }); 
+        });
         result.on('end', function(){
             if (series.length > 0) {
                 DIMSE._retrieveInstancesBySeries(conn, series, studyInstanceUID, function(relatedInstances, isEnd){

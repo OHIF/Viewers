@@ -90,7 +90,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
-    
+
     api.addFiles('client/components/lesionTable/lesionTable.html', 'client');
     api.addFiles('client/components/lesionTable/lesionTable.styl', 'client');
     api.addFiles('client/components/lesionTable/lesionTable.js', 'client');
@@ -163,6 +163,7 @@ Package.onUse(function(api) {
     api.addFiles('server/collections.js', 'server');
     api.addFiles('server/removeCollections.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);
+    api.addFiles('server/servers.js', 'server');
 
     // Both client and server functions
     api.addFiles('both/collections.js', [ 'client', 'server' ]);
@@ -234,6 +235,7 @@ Package.onUse(function(api) {
     api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
+    api.export('Servers', [ 'client', 'server' ]);
     api.export('ImageMeasurements', [ 'client', 'server' ]);
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);

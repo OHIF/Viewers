@@ -31,8 +31,8 @@ function resultDataToStudyMetadata(resultData) {
             seriesList.push(series);
         }
 
-        var host = Meteor.settings.dimse.host,
-            port = Meteor.settings.dimse.port;
+        var host = Meteor.settings.servers.dimse.host,
+            port = Meteor.settings.servers.dimse.port;
 
         var serverRoot = host + ':' + port;
 
