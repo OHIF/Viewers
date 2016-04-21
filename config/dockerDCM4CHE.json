@@ -19,9 +19,11 @@
     "dimse": [
       {
         "name": "DCM4CHE_DIMSE",
-        "host": "192.168.99.100",
-        "port": 11112,
-        "hostAE": "DCM4CHE"
+        "peers": [{
+          "host": "192.168.99.100",
+          "port": 11112,
+          "hostAE": "DCM4CHE"
+        }]
       }
     ]
   },

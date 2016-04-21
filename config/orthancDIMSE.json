@@ -19,17 +19,21 @@
     ],
     "dimse": [{
       "name": "ORTHANC_DIMSE",
-      "host": "localhost",
-      "port": 4242,
-      "aeTitle": "ORTHANC",
-      "default": true
-    },{
-      "name": "OHIFDCM_DIMSE",
-      "host": "0.0.0.0",
-      "port": 11112,
-      "aeTitle": "OHIFDCM",
-      "default": true,
-      "server": true
+      "peers": [
+        {
+          "host": "localhost",
+          "port": 4242,
+          "aeTitle": "ORTHANC",
+          "default": true
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 11112,
+          "aeTitle": "OHIFDCM",
+          "default": true,
+          "server": true
+        }
+      ]
     }]
   },
   "defaultServiceType": "dimse"

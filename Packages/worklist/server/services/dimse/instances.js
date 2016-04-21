@@ -31,6 +31,8 @@ function resultDataToStudyMetadata(resultData) {
             seriesList.push(series);
         }
 
+        // TODO: Check which peer it should point to | brunoalvesdefaria
+        var server = Meteor.settings.servers.dimse[0].peers[0];
         var host = Meteor.settings.servers.dimse.host,
             port = Meteor.settings.servers.dimse.port;
 

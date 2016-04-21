@@ -26,9 +26,11 @@ Meteor.startup(function() {
             }],
             dimse: [{
                 name: "ORTHANC_DIMSE",
-                host: 'localhost',
-                port: 4242,
-                hostAE: 'ORTHANC'
+                peers: [{
+                    host: 'localhost',
+                    port: 4242,
+                    hostAE: 'ORTHANC'
+                }]
             }]
         },
         defaultServiceType: 'dicomWeb',
