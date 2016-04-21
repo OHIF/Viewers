@@ -58,6 +58,10 @@ Package.onUse(function(api) {
     
     api.addFiles('client/tools.js', 'client');
 
+    // Spacebars helpers
+    api.addFiles('client/helpers/blaze.js', 'client');
+    api.addFiles('client/helpers/logical.js', 'client');
+
     // UI Components
     api.addFiles('client/components/viewer/viewer.html', 'client');
     api.addFiles('client/components/viewer/viewer.styl', 'client');
@@ -182,8 +186,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.html', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
 
+    api.addFiles('client/components/serverInformationModal/serverInformationForm.html', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationList.html', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationList.js', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationModal.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationModal.styl', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationModal.js', 'client');
 
     api.addFiles('client/components/userAccountMenu/userAccountMenu.html', 'client');

@@ -1,0 +1,36 @@
+<template name="serverInformationList">
+    <table id="tblServer" class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each server in servers}}
+                <tr>
+                    <td>{{server.name}}</td>
+                    <td>{{server.type}}</td>
+                    <td class="text-right">
+                        <div class="btn-group" role="group" aria-label="Actions">
+                            <button class="btn btn-sm btn-default editServer" {{tooltipTop "Edit"}}>
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger removeServer" {{tooltipTop "Remove"}}>
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {{else}}
+                <tr>
+                    <td class="text-center" colspan="3">No servers found</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <button class="btn btn-default addServer">
+        <i class="fa fa-plus"></i> Add a new server
+    </button>
+</template>
