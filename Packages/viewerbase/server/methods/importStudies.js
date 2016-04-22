@@ -49,6 +49,10 @@ Meteor.methods({
      * @param studyImportStatusId Study import status collection id to track import status
      */
     importStudies: function(studiesToImport, studyImportStatusId) {
+        if (!studiesToImport || !studyImportStatusId) {
+            return;
+        }
+
         if (Meteor.settings.dicomWeb && Meteor.settings.defaultServiceType === 'dicomWeb') {
             //TODO: Support importing studies into dicomWeb
             console.log('Importing studies into dicomWeb is currently not supported.');
@@ -76,24 +80,41 @@ Meteor.methods({
 });
 
 function importStudiesDIMSE(studiesToImport, studyImportStatusId) {
+    if (!studiesToImport || !studyImportStatusId) {
+        return;
+    }
     //  Perform C-Store to import studies and handle the callbacks to update import status
     DIMSE.storeInstances(studiesToImport, function(err, file) {
-        //  Use fiber to be able to modify meteor collection in callback
-        fiber(function() {
-            //  Update the import status
-            if (err) {
-                StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
-                console.log("Failed to import study via DIMSE: ", file, err);
-            } else {
-                StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesImported': 1}});
-                console.log("Study successfully imported via DIMSE: ", file);
-            }
+        try {
+            //  Use fiber to be able to modify meteor collection in callback
+            fiber(function() {
+                try {
+                    //  Update the import status
+                    if (err) {
+                        StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
+                        console.log("Failed to import study via DIMSE: ", file, err);
+                    } else {
+                        StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesImported': 1}});
+                        console.log("Study successfully imported via DIMSE: ", file);
+                    }
 
-            //  The import operation of this file is completed, so delete it if still exists
-            if (fileExists(file)) {
-                fs.unlink(file);
-            }
-        }).run();
+                } catch(error) {
+
+                    StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
+                    console.log("Failed to import study via DIMSE: ", file, error);
+                } finally {
+                    //  The import operation of this file is completed, so delete it if still exists
+                    if (fileExists(file)) {
+                        fs.unlink(file);
+                    }
+                }
+
+            }).run();
+        } catch(error) {
+            StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
+            console.log("Failed to import study via DIMSE: ", file, error);
+        }
+
     });
 }
 

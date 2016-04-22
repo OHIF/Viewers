@@ -18,6 +18,11 @@ progressDialog = {
         Session.set("progressDialogSettings", { title: "", numberOfCompleted: 0, numberOfTotal: 1 });
         $('#progressDialog').css('display', 'none');
     },
+    'setMessage': function(message) {
+        var progressDialogSettings = Session.get("progressDialogSettings");
+        progressDialogSettings.message = message;
+        Session.set("progressDialogSettings", progressDialogSettings);
+    }
 };
 
 Template.progressDialog.helpers({
@@ -40,5 +45,12 @@ Template.progressDialog.helpers({
         }
 
         return parseInt((numberOfCompleted / numberofTotal) * 100) + "%";
+    },
+    'progressMessage': function() {
+        var progressDialogSettings = Session.get("progressDialogSettings");
+        if (progressDialogSettings && progressDialogSettings.message) {
+            return progressDialogSettings.message;
+        }
+        return;
     }
 });

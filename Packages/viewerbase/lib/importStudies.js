@@ -6,7 +6,10 @@ importStudies = function(filesToImport, importCallback) {
     if (filesToImport.length < 1) {
         return;
     }
-    var fileUploadStatus = { numberOfFilesUploaded: 0, numberOfFilesFailed: 0 };
+    var fileUploadStatus = {
+        numberOfFilesUploaded: 0,
+        numberOfFilesFailed: 0
+    };
 
     var numberOfFilesToUpload = filesToImport.length;
     var studiesToImport = [];
@@ -60,8 +63,11 @@ function updateFileUploadStatus(fileUploadStatus, isSuccess) {
         fileUploadStatus.numberOfFilesUploaded++;
     }
 }
-
 function importStudiesInternal(studiesToImport, importCallback) {
+    if (!studiesToImport) {
+        return;
+    }
+
     var numberOfStudiesToImport = studiesToImport.length;
 
     progressDialog.show("Importing Studies...", numberOfStudiesToImport);
@@ -69,7 +75,9 @@ function importStudiesInternal(studiesToImport, importCallback) {
     //  Create/Insert a new study import status item
     Meteor.call("createStudyImportStatus", function(err, studyImportStatusId) {
         if (err) {
-            console.log(err);
+            // Hide dialog
+            progressDialog.close();
+            console.log(err.message);
             return;
         }
 
@@ -82,6 +90,12 @@ function importStudiesInternal(studiesToImport, importCallback) {
 
                 var numberOfStudiesProcessedToImport = studyImportStatus.numberOfStudiesImported + studyImportStatus.numberOfStudiesFailed;
 
+                // Show failed message in the dialog
+                if (studyImportStatus.numberOfStudiesFailed > 0) {
+                    var failMessage = "Failed to import " + studyImportStatus.numberOfStudiesFailed + " of " + numberOfStudiesToImport + " files";
+                    progressDialog.setMessage(failMessage);
+                }
+
                 progressDialog.update(numberOfStudiesProcessedToImport);
 
                 if (numberOfStudiesProcessedToImport == numberOfStudiesToImport) {
@@ -90,7 +104,10 @@ function importStudiesInternal(studiesToImport, importCallback) {
 
                     if (studyImportStatus.numberOfStudiesFailed > 0) {
                         //TODO: Some files failed to import, so let user know
-                        console.log("Failed to import " + studyImportStatus.numberOfStudiesFailed + " of " + numberOfStudiesToImport + " files");
+                        // Update progress dialog message
+                        var failMessage = "Failed to import " + studyImportStatus.numberOfStudiesFailed + " of " + numberOfStudiesToImport + " files";
+                        progressDialog.setMessage(failMessage);
+                        console.log(failMessage);
                     }
 
                     //  Let the caller know that import operation is completed

@@ -31,7 +31,10 @@ Meteor.startup(function() {
         }],
         "defaultServiceType": 'dicomWeb',
         "public": {
-            "verifyEmail": false
+            "verifyEmail": false,
+            "ui": {
+                "studyListFunctionsEnabled": false
+            }
         }
         //defaultServiceType: 'dimse'
     };

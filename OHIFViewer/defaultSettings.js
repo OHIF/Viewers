@@ -28,7 +28,12 @@ Meteor.startup(function() {
             port: 4242,
             hostAE: 'ORTHANC'
         },
-        defaultServiceType: 'dicomWeb'
+        defaultServiceType: 'dicomWeb',
+        public: {
+            ui: {
+                studyListFunctionsEnabled: false
+            }
+        }
         //defaultServiceType: 'dimse'
     };
 
