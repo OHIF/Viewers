@@ -33,7 +33,7 @@ Meteor.startup(function() {
         "public": {
             "verifyEmail": false,
             "ui": {
-                "studyListFunctionsEnabled": false
+                "studyListFunctionsEnabled": true
             }
         }
         //defaultServiceType: 'dimse'

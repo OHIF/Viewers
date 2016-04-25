@@ -31,7 +31,7 @@ Meteor.startup(function() {
         defaultServiceType: 'dicomWeb',
         public: {
             ui: {
-                studyListFunctionsEnabled: false
+                studyListFunctionsEnabled: true
             }
         }
         //defaultServiceType: 'dimse'

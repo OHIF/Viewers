@@ -6,6 +6,12 @@ Template.worklistToolbar.events({
         });
         
         importStudies(selectedFiles);
+    },
+
+    'click #btnImport': function(e) {
+        // Reset file input
+        var fileInput = e.currentTarget;
+        $(fileInput).val("");
     }
 });
 
