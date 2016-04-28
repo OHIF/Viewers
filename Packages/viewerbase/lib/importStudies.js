@@ -6,12 +6,17 @@ importStudies = function(filesToImport, importCallback) {
     if (filesToImport.length < 1) {
         return;
     }
-    var fileUploadStatus = { numberOfFilesUploaded: 0, numberOfFilesFailed: 0 };
-
+    var fileUploadStatus = {
+        numberOfFilesUploaded: 0,
+        numberOfFilesFailed: 0
+    };
     var numberOfFilesToUpload = filesToImport.length;
     var studiesToImport = [];
-
-    progressDialog.show("Uploading Files...", numberOfFilesToUpload);
+    progressDialog.show({
+        title: "Uploading Files...",
+        numberOfCompleted: 0,
+        numberOfTotal: numberOfFilesToUpload
+    });
 
     //  Upload files to the server
     filesToImport.forEach(function(fileToUpload) {
@@ -60,20 +65,29 @@ function updateFileUploadStatus(fileUploadStatus, isSuccess) {
         fileUploadStatus.numberOfFilesUploaded++;
     }
 }
-
 function importStudiesInternal(studiesToImport, importCallback) {
+    if (!studiesToImport) {
+        return;
+    }
+
     var numberOfStudiesToImport = studiesToImport.length;
 
-    progressDialog.show("Importing Studies...", numberOfStudiesToImport);
+    progressDialog.show({
+        title: "Importing Studies...",
+        numberOfCompleted: 0,
+        numberOfTotal: numberOfStudiesToImport
+    });
 
     //  Create/Insert a new study import status item
     Meteor.call("createStudyImportStatus", function(err, studyImportStatusId) {
         if (err) {
-            console.log(err);
+            // Hide dialog
+            progressDialog.close();
+            console.log(err.message);
             return;
         }
 
-        //  Handle when it is updated
+        //  Handle when StudyImportStatus collection is updated
         StudyImportStatus.find(studyImportStatusId).observe({
             changed: function(studyImportStatus) {
                 if (!studyImportStatus) {
@@ -82,16 +96,26 @@ function importStudiesInternal(studiesToImport, importCallback) {
 
                 var numberOfStudiesProcessedToImport = studyImportStatus.numberOfStudiesImported + studyImportStatus.numberOfStudiesFailed;
 
+                // Show number of imported files
+                var successMessage = 'Imported '+studyImportStatus.numberOfStudiesImported+' of '+numberOfStudiesToImport;
+                progressDialog.setMessage({
+                    message: successMessage,
+                    messageType: 'success'
+                });
                 progressDialog.update(numberOfStudiesProcessedToImport);
+
+                // Show number of failed files if there is at least one failed file
+                if (studyImportStatus.numberOfStudiesFailed > 0) {
+                    var successMessage = 'Failed '+studyImportStatus.numberOfStudiesFailed+' of '+numberOfStudiesToImport;
+                    progressDialog.setMessage({
+                        message: successMessage,
+                        messageType: 'warning'
+                    });
+                }
 
                 if (numberOfStudiesProcessedToImport == numberOfStudiesToImport) {
                     //  The entire import operation is completed, so remove the study import status item
                     Meteor.call("removeStudyImportStatus", studyImportStatus._id);
-
-                    if (studyImportStatus.numberOfStudiesFailed > 0) {
-                        //TODO: Some files failed to import, so let user know
-                        console.log("Failed to import " + studyImportStatus.numberOfStudiesFailed + " of " + numberOfStudiesToImport + " files");
-                    }
 
                     //  Let the caller know that import operation is completed
                     if (importCallback) {

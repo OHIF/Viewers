@@ -1,7 +1,8 @@
 <template name="worklistResult">
-    {{>worklistToolbar}}
-    <table id="tblStudyList" class="worklistResult table noselect">
-        <thead>
+    <div id="studyListContainer">
+        {{>worklistToolbar}}
+        <table id="tblStudyList" class="worklistResult table noselect">
+            <thead>
             <tr>
                 <th>
                     <input type="text"
@@ -25,16 +26,16 @@
                 </th>
 
                 {{#unless isTouchDevice}}
-                <th>
-                    <input type="text"
-                           class="form-control worklist-search"
-                           id="accessionNumber"
-                           placeholder="Search Accession #">
-                    <div id="_accessionNumber" class="sortingCell">
-                        <span>Accession #</span>
-                        <i class="{{sortingColumnsIcons.accessionNumber}}">&nbsp;</i>
-                    </div>
-                </th>
+                    <th>
+                        <input type="text"
+                               class="form-control worklist-search"
+                               id="accessionNumber"
+                               placeholder="Search Accession #">
+                        <div id="_accessionNumber" class="sortingCell">
+                            <span>Accession #</span>
+                            <i class="{{sortingColumnsIcons.accessionNumber}}">&nbsp;</i>
+                        </div>
+                    </th>
                 {{/unless}}
 
                 <th>
@@ -50,16 +51,16 @@
                 </th>
 
                 {{#unless isTouchDevice}}
-                <th>
-                    <input type="text"
-                           class="form-control worklist-search"
-                           id="modality"
-                           placeholder="Search Modality">
-                    <div id="_modalities" class="sortingCell">
-                        <span>Modality</span>
-                        <i class="{{sortingColumnsIcons.modalities}}">&nbsp;</i>
-                    </div>
-                </th>
+                    <th>
+                        <input type="text"
+                               class="form-control worklist-search"
+                               id="modality"
+                               placeholder="Search Modality">
+                        <div id="_modalities" class="sortingCell">
+                            <span>Modality</span>
+                            <i class="{{sortingColumnsIcons.modalities}}">&nbsp;</i>
+                        </div>
+                    </th>
                 {{/unless}}
                 <th>
                     <input type="text"
@@ -73,26 +74,28 @@
                 </th>
 
                 {{#unless isTouchDevice}}
-                <th>
-                    <div id="_numberOfStudyRelatedInstances" class="sortingCell">
-                        <span># Images</span>
-                        <i class="{{sortingColumnsIcons.numberOfStudyRelatedInstances}}">&nbsp;</i>
-                    </div>
-                </th>
+                    <th>
+                        <div id="_numberOfStudyRelatedInstances" class="sortingCell">
+                            <span># Images</span>
+                            <i class="{{sortingColumnsIcons.numberOfStudyRelatedInstances}}">&nbsp;</i>
+                        </div>
+                    </th>
                 {{/unless}}
             </tr>
-        </thead>
-        <tbody id="studyListData">
-        {{#each studies}}
-            {{>worklistStudy }}
-        {{/each}}
-        </tbody>
-    </table>
-    {{#if showLoadingText}}
-        {{>loadingText}}
-    {{/if}}
+            </thead>
+            <tbody id="studyListData">
+            {{#each studies}}
+                {{>worklistStudy }}
+            {{/each}}
+            </tbody>
+        </table>
+        {{#if showLoadingText}}
+            {{>loadingText}}
+        {{/if}}
 
-    {{#if showNotFoundMessage}}
-        {{>studyNotFound}}
-    {{/if}}
+        {{#if showNotFoundMessage}}
+            {{>studyNotFound}}
+        {{/if}}
+    </div>
+
 </template>

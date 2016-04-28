@@ -31,7 +31,12 @@ Meteor.startup(function() {
                 }]
             }]
         },
-        defaultServiceType: 'dicomWeb'
+        defaultServiceType: 'dicomWeb',
+        public: {
+            ui: {
+                studyListFunctionsEnabled: true
+            }
+        }
         //defaultServiceType: 'dimse'
     };
 

@@ -6,13 +6,22 @@ Template.worklistToolbar.events({
         });
         
         importStudies(selectedFiles);
+    },
+
+    'click #btnImport': function(e) {
+        // Reset file input
+        var fileInput = e.currentTarget;
+        $(fileInput).val("");
     }
 });
 
 Template.worklistToolbar.helpers({
     importSupported: function() {
         var importSupported = Session.get('importSupported');
-        if (importSupported) {
+        var studyListFunctionsEnabled = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui &&
+            Meteor.settings.public.ui.studyListFunctionsEnabled || false;
+
+        if (importSupported && studyListFunctionsEnabled) {
             return true;
         }
         return false;
