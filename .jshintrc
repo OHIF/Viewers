@@ -90,32 +90,32 @@
     // Custom Globals
     // additional predefined global variables
     "globals"       : {
-        console: true,
-        prompt: true,
-        $: true,
-        Hammer: true,
-        cornerstone: true,
-        cornerstoneMath: true,
-        cornerstoneTools: true,
-        cornerstoneTools: true,
+        "console": true,
+        "prompt": true,
+        "$": true,
+        "Hammer": true,
+        "cornerstone": true,
+        "cornerstoneMath": true,
+        "cornerstoneTools": true,
+        "cornerstoneTools": true,
 
         // Meteor-specific Globals
-        Meteor: true,
-        Template: true,
-        UI: true,
-        Session: true,
+        "Meteor": true,
+        "Template": true,
+        "UI": true,
+        "Session": true,
 
         // loglevel package
-        log: true,
+        "log": true,
 
         // OHIF-package specific Globals
-        OHIF: true,
-        toolManager: true,
-        ViewerData: true,
-        ViewerStudies: true,
-        LesionManager: true,
-        Timepoints: true,
-        Measurements: true,
-        StudyImportStatus: true
+        "OHIF": true,
+        "toolManager": true,
+        "ViewerData": true,
+        "ViewerStudies": true,
+        "LesionManager": true,
+        "Timepoints": true,
+        "Measurements": true,
+        "StudyImportStatus": true
     }
 }
