@@ -149,6 +149,8 @@ Package.onUse(function(api) {
     api.addFiles('lib/queryStudies.js', 'client');
     api.addFiles('lib/exportStudies.js', 'client');
     api.addFiles('lib/importStudies.js', 'client');
+    api.addFiles('lib/isImage.js', 'client');
+    api.addFiles('lib/sopClassDictionary.js', 'client');
     api.addFiles('lib/encodeQueryData.js', 'server');
 
     //api.export('accountsConfig', 'client');
@@ -172,6 +174,8 @@ Package.onUse(function(api) {
     api.export('exportStudies', 'client');
     api.export('importStudies', 'client');
     api.export('getActiveViewportElement', 'client');
+    api.export('isImage', 'client');
+    api.export('sopClassDictionary', 'client');
     api.export('encodeQueryData', 'server');
 
     // Viewer management objects

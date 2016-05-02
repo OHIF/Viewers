@@ -533,9 +533,9 @@ function defaultHangingProtocol(inputData) {
         study.seriesList.forEach(function(series) {
             
             // Ensure that the series has image data
-            // (All images have rows)
+            // (All images have sopClassUid)
             var anInstance = series.instances[0];
-            if (!anInstance || !anInstance.rows) {
+            if (!anInstance || !isImage(anInstance.sopClassUid)) {
                 return;
             }
 
