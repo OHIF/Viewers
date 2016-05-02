@@ -187,6 +187,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
 
     api.addFiles('client/components/serverInformationModal/serverInformationForm.html', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationForm.js', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationList.html', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationList.js', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationModal.html', 'client');

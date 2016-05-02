@@ -9,11 +9,18 @@
         <div class="col-lg-6">
             <div class="form-group">
                 <label for="serverType">Server Type</label>
-                <select class="form-control" id="serverType">
+                <select class="form-control js-server-type">
+                    <option>Select</option>
                     <option value="dicomWeb">DICOM Web</option>
                     <option value="dimse">DIMSE</option>
                 </select>
             </div>
         </div>
     </div>
+    {{#if equals serverType.get "dicomWeb"}}
+      TODO: Print DICOM Web form
+    {{/if}}
+    {{#if equals serverType.get "dimse"}}
+      TODO: Print DIMSE form
+    {{/if}}
 </template>

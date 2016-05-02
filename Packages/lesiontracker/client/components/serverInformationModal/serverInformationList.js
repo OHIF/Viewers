@@ -1,6 +1,13 @@
 Template.serverInformationList.onRendered(function() {
     var instance = Template.instance();
-    instance.$('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+    instance.$('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+    });
+});
+
+Template.serverInformationList.onDestroyed(function() {
+    var instance = Template.instance();
+    instance.$('[data-toggle="tooltip"]').tooltip('destroy');
 });
 
 Template.serverInformationList.helpers({
@@ -18,9 +25,9 @@ Template.serverInformationList.helpers({
 
 Template.serverInformationList.events({
     'click .addServer': function(event, instance) {
-        instance.data.mode.set("create");
+        instance.data.mode.set('create');
     },
     'click .editServer': function(event, instance) {
-        instance.data.mode.set("edit");
+        instance.data.mode.set('edit');
     }
 });
