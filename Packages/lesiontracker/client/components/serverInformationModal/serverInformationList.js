@@ -28,6 +28,7 @@ Template.serverInformationList.events({
         instance.data.mode.set('create');
     },
     'click .editServer': function(event, instance) {
+        instance.data.currentItem.set(this);
         instance.data.mode.set('edit');
     }
 });
