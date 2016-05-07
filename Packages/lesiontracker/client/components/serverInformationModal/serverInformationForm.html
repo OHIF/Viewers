@@ -1,26 +1,39 @@
 <template name="serverInformationForm">
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="form-group">
-                <label for="serverName">Server Name</label>
-                <input type="text" class="form-control" id="serverName">
+    <form class="server-information-form">
+        <input type="hidden" name="_id">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label class="wrapper">
+                        <strong>Server Name</strong>
+                        <input type="text" name="name" class="form-control">
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label class="wrapper">
+                        <strong>Server Type</strong>
+                        <select name="type" class="form-control js-server-type">
+                            <option>Select</option>
+                            <option value="dicomWeb">DICOM Web</option>
+                            <option value="dimse">DIMSE</option>
+                        </select>
+                    </label>
+                </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="form-group">
-                <label for="serverType">Server Type</label>
-                <select class="form-control js-server-type">
-                    <option>Select</option>
-                    <option value="dicomWeb">DICOM Web</option>
-                    <option value="dimse">DIMSE</option>
-                </select>
+        <hr>
+        {{#if equals serverType.get "dicomWeb"}}
+          {{>serverInformationDicomWeb this}}
+        {{/if}}
+        {{#if equals serverType.get "dimse"}}
+          TODO: Print DIMSE form
+        {{/if}}
+        {{#if serverType.get}}
+            <div>
+                <input type="submit" class="btn btn-primary" value="Save">
             </div>
-        </div>
-    </div>
-    {{#if equals serverType.get "dicomWeb"}}
-      TODO: Print DICOM Web form
-    {{/if}}
-    {{#if equals serverType.get "dimse"}}
-      TODO: Print DIMSE form
-    {{/if}}
+        {{/if}}
+    </form>
 </template>

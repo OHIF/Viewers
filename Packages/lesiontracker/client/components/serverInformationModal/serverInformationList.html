@@ -8,10 +8,10 @@
             </tr>
         </thead>
         <tbody>
-            {{#each server in servers}}
+            {{#each servers}}
                 <tr>
-                    <td>{{server.name}}</td>
-                    <td>{{server.type}}</td>
+                    <td>{{this.name}}</td>
+                    <td>{{this.type}}</td>
                     <td class="text-right">
                         <div class="btn-group" role="group" aria-label="Actions">
                             <button class="btn btn-sm btn-default editServer" {{tooltipTop "Edit"}}>
