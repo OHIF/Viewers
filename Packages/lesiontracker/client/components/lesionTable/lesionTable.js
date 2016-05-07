@@ -18,12 +18,12 @@ Template.lesionTable.helpers({
 });
 
 Template.lesionTable.events({
-    'click table#tblLesion tbody tr': function(e, template) {
+//    'click table#tblLesion tbody tr': function(e, template) {
         // Retrieve the lesion id from the DOM data for this row
-        var measurementId = $(e.currentTarget).data('measurementid');
+  //      var measurementId = $(e.currentTarget).data('measurementid');
 
-        activateLesion(measurementId, template.data);
-    },
+   //     activateLesion(measurementId, template.data);
+    //},
     'mousedown div#dragbar': function(e, template) {
         var pY = e.pageY;
         var draggableParent = $(e.currentTarget).parent();

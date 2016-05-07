@@ -1,7 +1,7 @@
 <template name="lesionTableRow">
     <tr id="{{lesionNumber}}" class="lesionTableRow" data-measurementid="{{_id}}">
         <td class='lesionNumber'>{{lesionNumberAbsolute}}</td>
-        <td class='location' tabindex="0">{{location}}</td>
+        <!--<td class='location' tabindex="0">{{location}}</td>-->
         <td class='target'>{{#if isTarget}} Y {{else}} N {{/if}}</td>
         <!--Each time point as a column-->
         {{# each timepoints }}
