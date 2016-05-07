@@ -1,0 +1,44 @@
+table.settingsTable
+  thead
+    tr
+      th
+        color: whitesmoke
+        text-align: center
+
+      th:first-child
+        text-align: left
+
+  tbody
+    background: #3e3e3e
+
+    tr
+      td
+        color: #ffffff
+        text-align: center
+
+        .editSetting
+        .deleteSetting
+          &:hover, &:active
+            cursor:pointer
+            color: #48d3ff
+
+            -webkit-transition: all 0.1s ease
+            -moz-transition: all 0.1s ease
+            transition: all 0.1s ease
+
+      td:first-child
+        text-align: left
+
+.addSettingContainer
+  margin: 10px 0
+  text-align: center
+  color: #ffffff
+
+  .addSetting
+    &:hover, &:active
+      cursor: pointer
+      color: #48d3ff
+
+      -webkit-transition: all 0.1s ease
+      -moz-transition: all 0.1s ease
+      transition: all 0.1s ease

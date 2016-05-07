@@ -1,6 +1,7 @@
 Session.setDefault('ViewerData', {});
 
 // Re-add any tab data saved in the Session
+WorklistTabs.remove({});
 Object.keys(ViewerData).forEach(function(contentId) {
     var tabData = ViewerData[contentId];
     var data = {
@@ -12,13 +13,16 @@ Object.keys(ViewerData).forEach(function(contentId) {
 
 Router.configure({
     layoutTemplate: 'layout',
-    loadingTemplate: 'layout',
-    notFoundTemplate: 'notFound'
+    loadingTemplate: 'layout'
 });
 
 Router.onBeforeAction('loading');
 
 Router.route('/', function() {
+    this.render('worklist');
+});
+
+Router.route('/worklist', function() {
     this.render('worklist');
 });
 
@@ -30,14 +34,19 @@ Router.route('/viewer/:_id', {
         
         // Check if this study is already loaded in a tab
         // If it is, stop here so we don't keep adding tabs on hot-code reloads
-        var tab = WorklistTabs.find({
+        var tabs = WorklistTabs.find({
             studyInstanceUid: studyInstanceUid
-        }).fetch();
-        if (tab) {
+        });
+        if (tabs.count()) {
             return;
         }
 
-        this.render('worklist');
-        openNewTab(studyInstanceUid);
+        this.render('worklist', {
+            data: function() {
+                return {
+                    studyInstanceUid: studyInstanceUid
+                };
+            }
+        });
     }
 });

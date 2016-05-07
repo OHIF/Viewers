@@ -164,7 +164,7 @@ function search() {
         });
 
         if (WorklistStudies.find().count() === 0) {
-            // Show notFound text
+            // Show studyNotFound text
             searchResults.showNotFoundMessage = true;
             Session.set('searchResults', searchResults);
         }

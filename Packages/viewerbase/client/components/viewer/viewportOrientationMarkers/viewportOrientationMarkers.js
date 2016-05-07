@@ -22,7 +22,7 @@ updateOrientationMarkers = function(element) {
 
     var markers = {
         top: oppositeColumnString,
-        left: oppositeRowString,
+        left: oppositeRowString
     };
 
     // If any vertical or horizontal flips are applied, change the orientation strings ahead of
@@ -30,12 +30,13 @@ updateOrientationMarkers = function(element) {
     if (viewport.vflip) {
         markers.top = cornerstoneTools.orientation.invertOrientationString(markers.top);
     }
+
     if (viewport.hflip) {
         markers.left = cornerstoneTools.orientation.invertOrientationString(markers.left);
     }
 
     // Get the viewport orientation marker DOM elements
-    var viewportOrientationMarkers = $(element).siblings(".viewportOrientationMarkers");
+    var viewportOrientationMarkers = $(element).siblings('.viewportOrientationMarkers');
     var topMarker = viewportOrientationMarkers.find('.topMid');
     var leftMarker = viewportOrientationMarkers.find('.leftMid');
 

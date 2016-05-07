@@ -1,0 +1,31 @@
+<template name="settingsTable">
+    <table class="settingsTable table">
+        <thead>
+            <tr>
+                <th>Setting</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ #each objectToPairs settings }}
+            {{#if value}}
+                <tr>
+                    <td>
+                        <i class="fa fa-pencil editSetting"></i>
+                        <i class="fa fa-trash deleteSetting"></i>
+                        {{getSettingText}}
+                    </td>
+                    <td>
+                        {{prettyPrintStringify value}}
+                    </td>
+                </tr>
+            {{/if}}
+            {{ /each }}
+        </tbody>
+    </table>
+    <div class="addSettingContainer">
+        <span class="addSetting">
+            Add Display Setting <i class="fa fa-plus-circle"></i>
+        </span>
+    </div>
+</template>

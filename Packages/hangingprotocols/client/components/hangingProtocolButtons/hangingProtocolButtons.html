@@ -1,0 +1,20 @@
+<template name="hangingProtocolButtons">
+    <button id="previousPresentationGroup" type="button"
+            class="btn btn-sm btn-default"
+            data-container="body"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Previous presentation group"
+            disabled="{{ #unless isPreviousAvailable }} true {{ /unless }}">
+        <span class="fa fa-step-backward"></span>
+    </button>
+    <button id="nextPresentationGroup" type="button"
+            class="btn btn-sm btn-default"
+            data-container="body"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Next presentation group"
+            disabled="{{ #unless isNextAvailable }} true {{ /unless }}">
+        <span class="fa fa-step-forward"></span>
+    </button>
+</template>

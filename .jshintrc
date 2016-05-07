@@ -43,7 +43,7 @@
     "debug"         : false,     // true: Allow debugger statements e.g. browser breakpoints.
     "eqnull"        : false,     // true: Tolerate use of `== null`
     "es5"           : true,      // true: Allow ES5 syntax (ex: getters and setters)
-    "esnext"        : false,     // true: Allow ES.next (ES6) syntax (ex: `const`)
+    "esnext"        : true,     // true: Allow ES.next (ES6) syntax (ex: `const`)
     "moz"           : false,     // true: Allow Mozilla specific syntax (extends and overrides esnext features)
                                  // (ex: `for each`, multiple try/catch, function expression…)
     "evil"          : false,     // true: Tolerate use of `eval` and `new Function()`
@@ -85,37 +85,5 @@
     "typed"         : false,    // Globals for typed array constructions
     "worker"        : false,    // Web Workers
     "wsh"           : false,    // Windows Scripting Host
-    "yui"           : false,    // Yahoo User Interface
-
-    // Custom Globals
-    // additional predefined global variables
-    "globals"       : {
-        console: true,
-        prompt: true,
-        $: true,
-        Hammer: true,
-        cornerstone: true,
-        cornerstoneMath: true,
-        cornerstoneTools: true,
-        cornerstoneTools: true,
-
-        // Meteor-specific Globals
-        Meteor: true,
-        Template: true,
-        UI: true,
-        Session: true,
-
-        // loglevel package
-        log: true,
-
-        // OHIF-package specific Globals
-        OHIF: true,
-        toolManager: true,
-        ViewerData: true,
-        ViewerStudies: true,
-        LesionManager: true,
-        Timepoints: true,
-        Measurements: true,
-        StudyImportStatus: true
-    }
+    "yui"           : false     // Yahoo User Interface
 }

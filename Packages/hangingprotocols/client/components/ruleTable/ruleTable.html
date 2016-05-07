@@ -1,0 +1,32 @@
+<template name="ruleTable">
+    <table class="ruleTable table">
+        <thead>
+        <tr>
+            <th>Constraint</th>
+            <th>Wt.</th>
+            <th>Req.</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ #each rules }}
+        {{ #if constraint }}
+        <tr>
+            <td>
+                <i class="fa fa-pencil editRule"></i>
+                <i class="fa fa-trash deleteRule"></i>
+                {{displayConstraint attribute constraint}}
+                {{ #unless rulePassed }}<small class="failWarning">Fail</small>{{ /unless }}
+            </td>
+            <td><input class="ruleWeight" type="number" value={{weight}} min="1" step="1" max="1000"/></td>
+            <td><input class="ruleRequired" type="checkbox" {{inlineIf required true "checked"}}/></td>
+        </tr>
+        {{ /if }}
+        {{ /each }}
+        </tbody>
+    </table>
+    <div class="addRuleContainer">
+        <span class="addRule">
+            Add New Constraint <i class="fa fa-plus-circle"></i>
+        </span>
+    </div>
+</template>

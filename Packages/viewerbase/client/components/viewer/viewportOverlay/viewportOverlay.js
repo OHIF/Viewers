@@ -80,6 +80,20 @@ function getInstance(property) {
     return instance[property];
 }
 
+function getTagDisplay(property) {
+    Session.get('CornerstoneNewImage' + this.viewportIndex);
+    if (!this.imageId) {
+        return false;
+    }
+
+    var instance = cornerstoneTools.metaData.get('tagDisplay', this.imageId);
+    if (!instance) {
+        return '';
+    }
+
+    return instance[property];
+}
+
 function getImage(viewportIndex) {
     var element = getElementIfNotEmpty(viewportIndex);
     if (!element) {
@@ -171,6 +185,15 @@ Template.viewportOverlay.helpers({
     },
     imageNumber: function() {
         return getInstance.call(this, 'instanceNumber');
+    },
+    tagDisplayLeftOnly: function() {
+        return getTagDisplay.call(this, 'side') === 'L';
+    },
+    tagDisplayRightOnly: function() {
+        return getTagDisplay.call(this, 'side') === 'R';
+    },
+    tagDisplaySpecified: function() {
+        return getTagDisplay.call(this, 'side');
     },
     imageIndex: function() {
         return getInstance.call(this, 'index');

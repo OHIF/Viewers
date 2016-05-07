@@ -1,0 +1,11 @@
+<template name="relatedStudySelect">
+    <div class="relatedStudySelect">
+        <label>Study:</label>
+        <span class="loading"><i class="fa fa-spinner fa-spin"></i></span>
+        <select id="selectStudyDate">
+            {{#each relatedStudies}}
+                <option value="{{studyInstanceUid}}" selected={{selected}}>{{formatDA studyDate}}: {{studyDescription}}</option>
+            {{/each}}
+        </select>
+    </div>
+</template>

@@ -86,25 +86,23 @@ Template.viewerMain.helpers({
         // CR/UN/EX Tools
         var crunexToolsBtns = {
             id: 'crunexTools',
-            tools:[{
+            tools: [{
                 id: 'crTool',
                 title: 'CR Tool',
                 classes: 'imageViewerTool',
                 iconClasses: 'fa fa-cr'
-            },
-            {
+            }, {
                 id: 'unTool',
                 title: 'UN Tool',
                 classes: 'imageViewerTool',
                 iconClasses: 'fa fa-un'
-            },
-            {
+            }, {
                 id: 'exTool',
                 title: 'EX Tool',
                 classes: 'imageViewerTool',
                 iconClasses: 'fa fa-ex'
             }],
-            title: "CR/UN/EX",
+            title: 'CR/UN/EX',
             groupIcon: 'fa fa-exchange'
         };
 
@@ -117,4 +115,13 @@ Template.viewerMain.helpers({
         toolbarOptions.btnGroup = btnGroup;
         return toolbarOptions;
     }
+});
+
+Template.viewerMain.onRendered(function() {
+    var parentNode = document.getElementById('layoutManagerTarget');
+    var studies = this.data.studies;
+    layoutManager = new LayoutManager(parentNode, studies);
+
+    ProtocolEngine = new HP.ProtocolEngine(layoutManager, studies);
+    HP.setEngine(ProtocolEngine);
 });
