@@ -1,0 +1,57 @@
+<template name="viewer">
+    {{#if Template.subscriptionsReady}}
+    <div id="viewer">
+        {{>confirmDeleteDialog}}
+        {{>lesionLocationDialog}}
+        {{>nonTargetLesionDialog}}
+        {{>nonTargetResponseDialog}}
+        <!-- >conformanceCheckFeedback -->
+
+        <div class="toolbarSection">
+            <div id="studySidebarToggle" class="pull-left">
+                Studies
+            </div>
+            <div class="pull-left">
+                {{ >toolbar toolbarOptions=toolbarOptions }}
+            </div>
+            <div class="pull-right">
+                <i class="fa fa-info"></i>
+                Trial
+            </div>
+            <div class="centered">
+                <!-- Check number of viewports -->
+                <!-- > studySeriesQuickSwitch -->
+            </div>
+            <div class="pull-right">
+                <i class="fa fa-list"></i>
+                HUD
+            </div>
+            <div class="pull-right">
+                <a id="lesionSidebarToggle">Lesions</a>
+                <a id="additionalMeasurementSidebarToggle">Additional</a>
+            </div>
+        </div>
+        <div class="viewerSection">
+            <div class="sidebarMenu sidebar-left {{ #if studySidebarOpen }}sidebar-open{{/if}}">
+                <div>
+                    {{> studyDateList}}
+                    <div class="studyBrowserContainer">
+                        {{> studyBrowser}}
+                    </div>
+                </div>
+            </div>
+            <div class="mainContent {{ #if studySidebarOpen }}sidebar-left-open{{/if}} {{ #if lesionSidebarOpen }}sidebar-right-open{{/if}}">
+                {{ >viewerMain }}
+            </div>
+            <div class="sidebarMenu sidebar-right {{ #if lesionSidebarOpen }}sidebar-open{{/if}}">
+                {{>lesionTable }}
+            </div>
+            <div class="sidebarMenu sidebar-right {{ #if additionalMeasurementsSidebarOpen }}sidebar-open{{/if}}">
+                Additional Measurements
+            </div>
+        </div>
+    </div>
+    {{else}}
+        {{>loadingText}}
+    {{/if}}
+</template>

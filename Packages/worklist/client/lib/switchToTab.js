@@ -11,9 +11,11 @@ switchToTab = function(contentId) {
 
     log.info('Switching to tab: ' + contentId);
 
-    // Use Bootstrap's Tab JavaScript to show the contents of the current tab
-    // Unless it is the worklist, it is currently an empty div
-    $('.tabTitle a[data-target="#' + contentId + '"]').tab('show');
+    $('.tabTitle').removeClass('active');
+    $('.tabTitle a[data-target="#' + contentId + '"]').addClass('active');
+
+    $('.tab-content .tab-pane').removeClass('active');
+    $('.tab-content .tab-pane#' + contentId).addClass('active');
 
     // Remove any previous Viewers from the DOM
     $('.viewerContainer').remove();
@@ -61,14 +63,13 @@ switchToTab = function(contentId) {
 
         // Once we have the study data, store it in a structure with
         // any other saved data about this tab (e.g. layout structure)
-        var data = jQuery.extend({}, ViewerData[contentId]);
+        var data = $.extend({}, ViewerData[contentId]);
         data.studies = studies;
         data.contentId = contentId;
 
         if (ViewerData[contentId].studies && ViewerData[contentId].studies.length) {
             data.studies = ViewerData[contentId].studies;
         }
-
 
         // Add additional metadata to our study from the worklist
         data.studies.forEach(function(study) {

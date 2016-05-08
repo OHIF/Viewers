@@ -6,7 +6,7 @@
  * @param title The title to be used for the tab heading
  */
 openNewTabWithTimepoint = function(timepointId, title) {
-    var contentid = 'viewer';
+    var contentid = 'viewerTab';
 
     var timepoint = Timepoints.findOne({
         timepointId: timepointId

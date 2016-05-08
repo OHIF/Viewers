@@ -34,7 +34,6 @@ Meteor.startup(function() {
         touch: cornerstoneTools.exToolTouch
     });
 
-
     var states = toolManager.getToolDefaultStates();
     states.deactivate.push('bidirectional');
     states.deactivate.push('nonTarget');
@@ -44,7 +43,5 @@ Meteor.startup(function() {
     states.deactivate.push('exTool');
 
     states.activate.push('deleteLesionKeyboardTool');
-
-    states.enable.push('scaleOverlayTool');
     toolManager.setToolDefaultStates(states);
 });

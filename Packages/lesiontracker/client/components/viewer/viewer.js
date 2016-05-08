@@ -1,4 +1,6 @@
 Session.setDefault('activeViewport', false);
+Session.setDefault('studySidebarOpen', false);
+Session.setDefault('lesionSidebarOpen', false);
 
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
@@ -6,10 +8,13 @@ Template.viewer.onCreated(function() {
 
     ValidationErrors.remove({});
 
-    var self = this;
+    var instance = this;
+    instance.studySidebarOpen = new ReactiveVar(Session.get('studySidebarOpen'));
+    instance.lesionSidebarOpen = new ReactiveVar(Session.get('lesionSidebarOpen'));
+
     var contentId = this.data.contentId;
 
-    OHIF = OHIF || {
+    OHIF = OHIF || window.OHIF || {
             viewer: {}
         };
 
@@ -100,7 +105,7 @@ Template.viewer.onCreated(function() {
     Session.set('activeViewport', ViewerData[contentId].activeViewport || false);
 
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element
-    self.autorun(pixelSpacingAutorunCheck);
+    instance.autorun(pixelSpacingAutorunCheck);
 
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
@@ -113,18 +118,17 @@ Template.viewer.onCreated(function() {
     var patientId = this.data.studies[0].patientId;
     Session.set('patientId', patientId);
 
-    self.autorun(function() {
+    instance.autorun(function() {
         var dataContext = Template.currentData();
-        self.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
-        self.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
-        self.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
-        self.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
 
-        var subscriptionsReady = self.subscriptionsReady();
+        var subscriptionsReady = instance.subscriptionsReady();
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
 
         if (subscriptionsReady) {
-
             // Set buttons as enabled/disabled when Timepoints collection is ready
             timepointAutoCheck(dataContext);
 
@@ -241,7 +245,7 @@ Template.viewer.onCreated(function() {
 
                         // Set reviewer for this timepoint
                         if (data.timepoints[timepointId].studyInstanceUid) {
-                            Meteor.call('setReviewer',data.timepoints[timepointId].studyInstanceUid);
+                            Meteor.call('setReviewer', data.timepoints[timepointId].studyInstanceUid);
                         }
                     });
 
@@ -298,5 +302,133 @@ Template.viewer.events({
     },
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport': function(e, template, eventData) {
         handleMeasurementRemoved(e, eventData);
+    },
+    'click #studySidebarToggle': function(event, instance) {
+        var isOpen = instance.studySidebarOpen.get();
+        instance.studySidebarOpen.set(!isOpen);
+    },
+    'click #lesionSidebarToggle': function(event, instance) {
+        var isOpen = instance.lesionSidebarOpen.get();
+        instance.lesionSidebarOpen.set(!isOpen);
+    }
+});
+
+Template.viewer.helpers({
+    toolbarOptions: function() {
+        var toolbarOptions = {};
+
+        var buttonData = [];
+
+        var btnGroup = [];
+
+        buttonData.push({
+            id: 'resetViewport',
+            title: 'Reset Viewport',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-undo'
+        });
+
+        buttonData.push({
+            id: 'zoom',
+            title: 'Zoom',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-search'
+        });
+
+        buttonData.push({
+            id: 'wwwc',
+            title: 'Levels',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-sun-o'
+        });
+
+        buttonData.push({
+            id: 'pan',
+            title: 'Pan',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-arrows'
+        });
+
+        buttonData.push({
+            id: 'length',
+            title: 'Length Measurement',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-arrows-v'
+        });
+
+        buttonData.push({
+            id: 'ellipticalRoi',
+            title: 'Elliptical ROI Measurement',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-circle-o'
+        });
+
+        buttonData.push({
+            id: 'bidirectional',
+            title: 'Target',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-arrows-alt'
+        });
+
+        buttonData.push({
+            id: 'nonTarget',
+            title: 'Non-Target',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-long-arrow-up'
+        });
+
+        buttonData.push({
+            id: 'clearTools',
+            title: 'Clear tools',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-trash'
+        });
+
+        buttonData.push({
+            id: 'toggleLesionTrackerTools',
+            title: 'Show / hide tools',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-eye'
+        });
+
+        // CR/UN/EX Tools
+        var crunexToolsBtns = {
+            id: 'crunexTools',
+            tools: [{
+                id: 'crTool',
+                title: 'CR Tool',
+                classes: 'imageViewerTool',
+                iconClasses: 'fa fa-cr'
+            }, {
+                id: 'unTool',
+                title: 'UN Tool',
+                classes: 'imageViewerTool',
+                iconClasses: 'fa fa-un'
+            }, {
+                id: 'exTool',
+                title: 'EX Tool',
+                classes: 'imageViewerTool',
+                iconClasses: 'fa fa-ex'
+            }],
+            title: 'CR/UN/EX',
+            groupIcon: 'fa fa-exchange'
+        };
+
+        btnGroup.push(crunexToolsBtns);
+
+        toolbarOptions.buttonData = buttonData;
+        toolbarOptions.includePlayClipButton = false;
+        toolbarOptions.includeLayoutButton = false;
+        toolbarOptions.includeHangingProtocolButtons = false;
+        toolbarOptions.btnGroup = btnGroup;
+        return toolbarOptions;
+    },
+    studySidebarOpen: function() {
+        var instance = Template.instance();
+        return instance.studySidebarOpen.get();
+    },
+    lesionSidebarOpen: function() {
+        var instance = Template.instance();
+        return instance.lesionSidebarOpen.get();
     }
 });

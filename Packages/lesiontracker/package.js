@@ -32,7 +32,9 @@ Package.onUse(function(api) {
     api.addFiles('client/collections/subscriptions.js', 'client');
 
     // Importable colors / typography settings
-    api.addFiles('client/app.styl', 'client', {isImport: true});
+    api.addFiles('client/app.styl', 'client', {
+        isImport: true
+    });
 
     // Additional Custom Cornerstone Tools for Lesion Tracker
     api.addFiles('client/compatibility/bidirectionalTool.js', 'client', {
@@ -61,6 +63,14 @@ Package.onUse(function(api) {
     });
 
     // UI Components
+    api.addFiles('client/components/viewer/viewer.html', 'client');
+    api.addFiles('client/components/viewer/viewer.styl', 'client');
+    api.addFiles('client/components/viewer/viewer.js', 'client');
+
+    api.addFiles('client/components/viewerMain/viewerMain.html', 'client');
+    api.addFiles('client/components/viewerMain/viewerMain.styl', 'client');
+    api.addFiles('client/components/viewerMain/viewerMain.js', 'client');
+    
     api.addFiles('client/components/lesionTracker/lesionTracker.html', 'client');
     api.addFiles('client/components/lesionTracker/lesionTracker.styl', 'client');
     api.addFiles('client/components/lesionTracker/lesionTracker.js', 'client');
@@ -238,5 +248,4 @@ Package.onUse(function(api) {
     api.export('Studies', [ 'client', 'server' ]);
     api.export('Timepoints', [ 'client', 'server' ]);
     api.export('Reviewers', [ 'client', 'server' ]);
-
 });

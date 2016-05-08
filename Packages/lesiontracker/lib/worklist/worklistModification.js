@@ -17,7 +17,7 @@ function dblClickOnStudy(data) {
     // Check if the study has been associated, and if not, just open it on its own
     if (!study) {
         // Open a new tab with this study
-        openNewTab(data.studyInstanceUid, title);
+        open(data.studyInstanceUid, title);
         return;
     }
 
@@ -29,7 +29,7 @@ function dblClickOnStudy(data) {
     });
 
     if (!timepoint) {
-        openNewTab(data.studyInstanceUid, title);
+        open(data.studyInstanceUid, title);
         return;
     }
 
@@ -37,4 +37,36 @@ function dblClickOnStudy(data) {
     title += ' ' + getTimepointName(timepoint);
 
     openNewTabWithTimepoint(timepoint.timepointId, title);
+}
+
+/**
+ * Opens a study
+ *
+ * @param studyInstanceUid The UID of the Study to be opened
+ * @param title The title to be used for the tab heading
+ */
+function open(studyInstanceUid, title) {
+    var contentid = 'viewerTab';
+
+    WorklistTabs.remove({});
+    
+    // Create a new entry in the WorklistTabs Collection
+    WorklistTabs.insert({
+        title: title,
+        contentid: contentid,
+        studyInstanceUid: studyInstanceUid,
+        active: false
+    });
+
+    ViewerData = window.ViewerData || ViewerData;
+
+    // Update the ViewerData global object
+    ViewerData[contentid] = {
+        title: title,
+        contentid: contentid,
+        studyInstanceUids: [studyInstanceUid]
+    };
+
+    // Switch to the new tab
+    switchToTab(contentid);
 }
