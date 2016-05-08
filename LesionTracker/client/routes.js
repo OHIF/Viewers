@@ -36,11 +36,11 @@ var routerOptions = {
 
 Router.route('/', function() {
     // Check user is logged in
-    if(Meteor.user() && Meteor.userId()) {
+    if (Meteor.user() && Meteor.userId()) {
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
-            this.render('worklist', routerOptions);
+            this.render('lesionTracker', routerOptions);
         }
 
     } else {
@@ -50,11 +50,11 @@ Router.route('/', function() {
 
 Router.route('/worklist', function() {
     // Check user is logged in
-    if(Meteor.user() && Meteor.userId()) {
+    if (Meteor.user() && Meteor.userId()) {
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
-            this.render('worklist', routerOptions);
+            this.render('lesionTracker', routerOptions);
         }
 
     } else {
@@ -77,15 +77,17 @@ Router.route('/viewer/timepoints/:_id', {
             return;
         }
 
-        this.render('worklist', routerOptions);
+        this.render('lesionTracker', routerOptions);
         openNewTabWithTimepoint(timepointId);
     }
 });
 
-Router.onBeforeAction(function () {
-    if  (!Meteor.userId() && !Meteor.loggingIn()) {
+Router.onBeforeAction(function() {
+    if (!Meteor.userId() && !Meteor.loggingIn()) {
         this.render('entrySignIn');
     } else {
         this.next();
     }
-},{except: ['entrySignIn', 'entrySignUp', 'forgotPassword', 'resetPassword']});
+}, {
+    except: ['entrySignIn', 'entrySignUp', 'forgotPassword', 'resetPassword']
+});

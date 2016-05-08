@@ -1,0 +1,18 @@
+<template name="lesionTracker">
+    <div class="logoContainer">
+        {{>userAccountMenu}}
+        <a class="navbar-brand pull-left" href="http://ohif.org">
+            <img src="/images/logo.png">
+            <h4 class="name">Open Health Imaging Foundation</h4>
+        </a>
+    </div>
+    {{>timeoutCountdownDialog}}
+    <div class="worklistContainer">
+        {{> worklistResult }}
+    </div>
+    {{#each additionalTemplates}}
+        {{> UI.dynamic template=this}}
+    {{/each}}
+    {{>studyContextMenu }}
+    {{>progressDialog}}
+</template>

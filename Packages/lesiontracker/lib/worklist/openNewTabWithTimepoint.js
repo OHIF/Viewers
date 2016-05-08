@@ -6,12 +6,7 @@
  * @param title The title to be used for the tab heading
  */
 openNewTabWithTimepoint = function(timepointId, title) {
-    log.info('openNewTabWithTimepoint: ' + timepointId + ' ' + title);
-
-    // Generate a unique ID to represent this tab
-    // We can't just use the Mongo entry ID because
-    // then it will change after hot-reloading.
-    var contentid = uuid.new();
+    var contentid = 'viewer';
 
     var timepoint = Timepoints.findOne({
         timepointId: timepointId
@@ -26,14 +21,6 @@ openNewTabWithTimepoint = function(timepointId, title) {
     if (!data.studyInstanceUids) {
         throw 'No studies found that are related to this timepoint';
     }
-
-    // Create a new entry in the WorklistTabs Collection
-    WorklistTabs.insert({
-        title: title,
-        contentid: contentid,
-        active: false,
-        timepointId: timepointId
-    });
 
     // Update the ViewerData global object
     ViewerData[contentid] = {

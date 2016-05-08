@@ -31,6 +31,8 @@ Package.onUse(function(api) {
     api.addFiles('client/collections/LocationResponses.js', 'client');
     api.addFiles('client/collections/subscriptions.js', 'client');
 
+    // Importable colors / typography settings
+    api.addFiles('client/app.styl', 'client', {isImport: true});
 
     // Additional Custom Cornerstone Tools for Lesion Tracker
     api.addFiles('client/compatibility/bidirectionalTool.js', 'client', {
@@ -59,9 +61,11 @@ Package.onUse(function(api) {
     });
 
     // UI Components
+    api.addFiles('client/components/lesionTracker/lesionTracker.html', 'client');
+    api.addFiles('client/components/lesionTracker/lesionTracker.styl', 'client');
+    api.addFiles('client/components/lesionTracker/lesionTracker.js', 'client');
+    
     api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.html', 'client');
-    api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.styl', 'client');
-    api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.js', 'client');
 
     api.addFiles('client/components/associationModal/associationModal.html', 'client');
     api.addFiles('client/components/associationModal/associationModal.styl', 'client');
