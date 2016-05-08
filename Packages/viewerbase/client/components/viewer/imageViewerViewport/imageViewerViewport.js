@@ -21,6 +21,8 @@ function loadSeriesIntoViewport(data, templateData) {
     // The viewport index is often used to store information about a viewport element
     var element = data.element;
     var viewportIndex = $('.imageViewerViewport').index(element);
+
+    layoutManager = layoutManager || window.layoutManager;
     layoutManager.viewportData[viewportIndex].viewportIndex = viewportIndex;
 
     // Get the contentID of the current worklist tab, if the viewport is running

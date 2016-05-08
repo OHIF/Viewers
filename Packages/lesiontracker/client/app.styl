@@ -4,6 +4,7 @@ $hoverColor = #000000
 $activeColor = #40D9B8
 $uiBorderColor = #436270
 $darkUiColor = #16202B
+$primaryBackgroundColor = #000000
 
 // Text Colors
 $textPrimaryColor = #ffffff
@@ -12,3 +13,30 @@ $textSecondaryColor = #91B9CD
 // Other Colors
 $errorColor = #E29E4A
 $menuBackgroundColor = #F2F2F2
+
+
+// Sizes
+$topBarHeight = 30px
+
+// Thicknesses
+$uiBorderThickness = 1px
+
+// Fonts
+$logoFontFamily = "Sanchez"
+$logoFontWeight = 300
+
+
+// Transitions
+$sidebarTransition = all 0.3s ease
+$sidebarMenuWidth = 450px
+
+.sidebarMenu
+  width: $sidebarMenuWidth
+  height: 100%
+  position: fixed
+  background: $primaryBackgroundColor
+  -webkit-transition: $sidebarTransition
+  -ms-transition: $sidebarTransition
+  -o-transition: $sidebarTransition
+  -moz-transition: $sidebarTransition
+  transition: $sidebarTransition

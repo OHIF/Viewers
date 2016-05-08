@@ -1,39 +1,47 @@
 @import "../../app"
 
-.logoContainer
-  height: 40px
-  top: 0
-  right: 0
-  padding: 0 10px
-  color: white
-  @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
-    width: 15%
+.topBar
+  height: $topBarHeight
+  color: $textPrimaryColor
+  background-color: $primaryBackgroundColor
 
-  .navbar-brand
-    display: inline-block
-    padding: 0
-    margin-right: 5px
+  .brandSection
     height: 100%
+    display: inline-block
 
-    img
-      height: 30px
-      float: left
-      margin-right: 10px
-      margin-top: 5px
-      /* Media queries for iPhone6*/
-      @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
-        height: 20px
-        margin-top: 10px
-        margin-bottom: 10px
-        margin-right: 5px
+    img.logoImage
+      height: 100%
+      margin: 0 5px
 
-    h4.name
-      float: left
-      margin: 10px 0
-      font-family: "Sanchez"
-      color: white
-      @media only screen and (min-device-width : 375px) and (max-device-width : 667px) and (orientation : portrait)
-        font-size: 0.3em
-        font-size: 0.3em
-        width: 50%
+    .logoText
+      display: inline-block
+      font-family: $logoFontFamily
+      font-weight: $logoFontWeight
+      color: $textPrimaryColor
 
+  .studyListLinkSection
+    border-left: $uiBorderThickness solid $uiBorderColor;
+    padding: 5px
+    margin: 0 10px
+
+    a
+      line-height: 100%
+
+  .userAccountSection
+     margin: 0 10px
+
+#worklistTabs
+  height: "calc(100% - %s)" % $topBarHeight
+
+
+
+// Override Viewerbase's borders
+#imageViewerViewports .viewportContainer
+  border: none !important
+  outline: 0 !important // Prevent blue outline in Chrome
+
+  &:hover
+  &.active
+  &:hover.active
+    border: none !important
+    outline: 0 !important // Prevent blue outline in Chrome

@@ -1,18 +1,35 @@
 <template name="lesionTracker">
-    <div class="logoContainer">
-        {{>userAccountMenu}}
-        <a class="navbar-brand pull-left" href="http://ohif.org">
-            <img src="/images/logo.png">
-            <h4 class="name">Open Health Imaging Foundation</h4>
+    <div class="topBar">
+        <a class="brandSection pull-left" href="http://ohif.org">
+            <img class="logoImage" src="/images/logo.png">
+            <div class="logoText">
+                Open Health Imaging Foundation
+            </div>
         </a>
+        {{ #unless onStudyList}}
+        <div class="studyListLinkSection pull-left">
+            <a>Study List</a>
+        </div>
+        {{ /unless }}
+        <div class="userAccountSection pull-right">
+            {{>userAccountMenu}}
+        </div>
     </div>
     {{>timeoutCountdownDialog}}
-    <div class="worklistContainer">
-        {{> worklistResult }}
+    <div id="worklistTabs" class="tab-content">
+        <div class="tab-pane active" id="worklistTab">
+            <div class="worklistContainer">
+                {{> worklistResult }}
+            </div>
+        </div>
+        <div class="tab-pane" id="viewerTab">
+        </div>
     </div>
-    {{#each additionalTemplates}}
-        {{> UI.dynamic template=this}}
-    {{/each}}
-    {{>studyContextMenu }}
-    {{>progressDialog}}
+    {{ >associationModal }}
+    {{ >optionsModal }}
+    {{ >serverInformationModal }}
+    {{ >confirmRemoveTimepointAssociation }}
+    {{ >lastLoginModal }}
+    {{ >studyContextMenu }}
+    {{ >progressDialog}}
 </template>

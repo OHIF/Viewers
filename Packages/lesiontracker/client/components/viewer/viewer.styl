@@ -1,0 +1,79 @@
+@import "../../app"
+
+#viewer
+  width: 100%
+  height: 100%
+  margin: 0
+  padding: 0
+  background-color: black
+
+  .toolbarSection
+    height: 50px
+    width: 100%
+
+    div
+      color: $textPrimaryColor
+
+  .viewerSection
+    height: calc(100% - 50px)
+    width: 100%
+
+  .sidebar-left
+    left: - $sidebarMenuWidth
+
+  .sidebar-left.sidebar-open
+    left: 0
+
+  .sidebar-right
+    right: - $sidebarMenuWidth
+
+  .sidebar-right.sidebar-open
+    right: 0
+
+  .mainContent
+    position: fixed
+    width: 100%
+    height: 100%
+    -webkit-transition: $sidebarTransition
+    -ms-transition: $sidebarTransition
+    -o-transition: $sidebarTransition
+    -moz-transition: $sidebarTransition
+    transition: $sidebarTransition
+
+    &.sidebar-left-open.sidebar-right-open
+      width: "calc(100% - %s)" % (2 * $sidebarMenuWidth)
+      left: $sidebarMenuWidth
+
+    &.sidebar-left-open
+      width: "calc(100% - %s)" % $sidebarMenuWidth
+      left: $sidebarMenuWidth
+
+    &.sidebar-right-open
+      width: "calc(100% - %s)" % $sidebarMenuWidth
+
+
+//font awesome icons
+.fa-cr:before
+  content: 'CR'
+  font-weight: bold
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+
+.fa-un:before
+  content: 'UN'
+  font-weight: bold
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+
+.fa-ex:before
+  content: 'EX'
+  font-weight: bold
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+
+#btnCollapse
+  background-color: #333
+  border-color: black
+
+  &.active
+    border-color: #333
+
+.btnCollapseIcon
+  color: white

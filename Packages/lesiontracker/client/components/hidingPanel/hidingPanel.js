@@ -1,6 +1,6 @@
 
 function pinPanel() {
-    var hidingPanel = $(".hidingPanel");
+    var hidingPanel = $('.hidingPanel');
     hidingPanel.css({
         width: '122px'
     });
@@ -12,12 +12,12 @@ function pinPanel() {
     // Calculate newWidth of viewportAndLesionTable
     var viewerWidth = $('#viewer').width();
     var newWidth = 100 - 122 / viewerWidth * 100;
-    $("#viewportAndLesionTable").css('width', newWidth + '%');
+    $('#viewportAndLesionTable').css('width', newWidth + '%');
 }
 
 function unpinPanel() {
-// Calculate newWidth of viewportAndLesionTable
-    $("#viewportAndLesionTable").css('width', '99%');
+    // Calculate newWidth of viewportAndLesionTable
+    $('#viewportAndLesionTable').css('width', '99%');
 }
 
 Template.hidingPanel.events({
@@ -90,9 +90,6 @@ Template.hidingPanel.events({
 });
 
 Template.hidingPanel.helpers({
-    studyDateIsShown: function() {
-        return true;
-    },
     isPinned: function() {
         return Template.instance().isPinned.get();
     }
@@ -117,7 +114,7 @@ Template.hidingPanel.onCreated(function() {
     if (!isPanelPinned) {
         isPanelPinned = false;
     }
-    this.isPinned = new ReactiveVar(isPanelPinned);
 
+    this.isPinned = new ReactiveVar(isPanelPinned);
 
 });
