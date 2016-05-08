@@ -1,6 +1,49 @@
+// Define the ViewerData global object
+// If there is currently any Session data for this object,
+// use this to repopulate the variable
+ViewerData = Session.get('ViewerData') || {};
+
+// Define the WorklistStudies Collection
+// This is a client-side only Collection which
+// Stores the list of studies in the Worklist
+WorklistStudies = new Meteor.Collection(null);
+WorklistStudies._debugName = 'WorklistStudies';
+
+Template.lesionTracker.onRendered(function() {
+    var templateData = Template.currentData();
+    if (templateData && templateData.studyInstanceUid) {
+        var studyInstanceUid = templateData.studyInstanceUid;
+        openNewTab(studyInstanceUid, studyInstanceUid);
+    } else {
+        // If there is a tab set as active in the Session,
+        // switch to that now.
+        var contentId = Session.get('activeContentId');
+
+        // TODO: FIx this it seems to be forcing two switches
+        switchToTab(contentId);
+    }
+
+    Meteor.subscribe('hangingprotocols');
+});
+
+Template.lesionTracker.events({
+    'click #tablist a[data-toggle="tab"]': function(e) {
+        // If this tab is already active, do nothing
+        var tabButton = $(e.currentTarget);
+        var tabTitle = tabButton.parents('.tabTitle');
+        if (tabTitle.hasClass('active')) {
+            return;
+        }
+
+        // Otherwise, switch to the tab
+        var contentId = tabButton.data('target').replace('#', '');
+        switchToTab(contentId);
+    }
+});
+
 Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
 
-Template.lesionTrackerLayout.helpers({
+Template.lesionTracker.helpers({
     fullName: function() {
         return Meteor.user().profile.fullName;
     },
@@ -28,7 +71,7 @@ Template.lesionTrackerLayout.helpers({
     }
 });
 
-Template.lesionTrackerLayout.onCreated(function() {
+Template.lesionTracker.onCreated(function() {
     // showViewer to go to viewer from audit
     this.showWorklistMenu = new ReactiveVar(true);
     // Get url and check worklist
@@ -67,14 +110,14 @@ Template.lesionTrackerLayout.onCreated(function() {
             clearInterval(handle);
             // Close the dialog
             dialog.css('display', 'none');
-            
+
             // Remove reviewers info for the user
             Meteor.call('removeUserFromReviewers', Meteor.userId());
         }
     });
 });
 
-Template.lesionTrackerLayout.onRendered(function() {
+Template.lesionTracker.onRendered(function() {
     var oldUserId = undefined;
     var userName;
     var lastLoginModalInterval;
@@ -101,26 +144,25 @@ Template.lesionTrackerLayout.onRendered(function() {
             // Log
             // TODO: eventype is not defined for logout in hipaa-audit-log
             /*HipaaLogger.logEvent({
-                eventType: 'logout',
-                userId: oldUserId,
-                userName: userName
-            });*/
+             eventType: 'logout',
+             userId: oldUserId,
+             userName: userName
+             });*/
 
             // Remove the user from Reviewers
             Meteor.call('removeUserFromReviewers', oldUserId);
         }
+
         oldUserId = Meteor.userId();
 
         // Trigger last login date popup
         if (Session.get('showLastLoginModal')) {
             Modal.show('lastLoginModal');
-            lastLoginModalInterval = Meteor.setInterval( function() {
+            lastLoginModalInterval = Meteor.setInterval(function() {
                 Modal.hide('lastLoginModal');
-                Session.set("showLastLoginModal", null);
+                Session.set('showLastLoginModal', null);
             }, 3000);
             return true;
         }
     });
 });
-
-
