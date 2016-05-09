@@ -3,12 +3,6 @@
 // use this to repopulate the variable
 ViewerData = Session.get('ViewerData') || {};
 
-// Define the WorklistStudies Collection
-// This is a client-side only Collection which
-// Stores the list of studies in the Worklist
-WorklistStudies = new Meteor.Collection(null);
-WorklistStudies._debugName = 'WorklistStudies';
-
 Template.lesionTracker.onCreated(function() {
     // showViewer to go to viewer from audit
     this.showWorklistMenu = new ReactiveVar(true);

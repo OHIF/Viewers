@@ -1,4 +1,3 @@
-
 function parseUrl(url) {
     var parser = document.createElement('a');
     parser.href = url;
@@ -11,14 +10,19 @@ Template.serverInformationModal.helpers({
         var serviceInfo = Meteor.settings[defaultServiceType];
         if (defaultServiceType === 'dicomWeb') {
             var serverInformationDicom = [];
-            var endpoints = serviceInfo["endpoints"];
+            var endpoints = serviceInfo['endpoints'];
             endpoints.forEach(function(endpoint) {
                 var parsedUrl = parseUrl(endpoint.qidoRoot);
-                serverInformationDicom.push({host: parsedUrl.hostname, port: parsedUrl.port, aeTitle: endpoint.name});
+                serverInformationDicom.push({
+                    host: parsedUrl.hostname,
+                    port: parsedUrl.port,
+                    aeTitle: endpoint.name
+                });
             });
 
             return serverInformationDicom;
         }
+
         return serviceInfo;
     }
 });

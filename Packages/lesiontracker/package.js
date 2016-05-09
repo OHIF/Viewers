@@ -119,7 +119,12 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTable/lesionTable.js', 'client');
 
     api.addFiles('client/components/lesionTableRow/lesionTableRow.html', 'client');
+    api.addFiles('client/components/lesionTableRow/lesionTableRow.styl', 'client');
     api.addFiles('client/components/lesionTableRow/lesionTableRow.js', 'client');
+
+    api.addFiles('client/components/lesionTableHeaderRow/lesionTableHeaderRow.html', 'client');
+    api.addFiles('client/components/lesionTableHeaderRow/lesionTableHeaderRow.styl', 'client');
+    api.addFiles('client/components/lesionTableHeaderRow/lesionTableHeaderRow.js', 'client');
 
     api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
     api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.styl', 'client');
