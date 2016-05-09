@@ -9,8 +9,9 @@ Template.viewer.onCreated(function() {
     ValidationErrors.remove({});
 
     var instance = this;
-    instance.studySidebarOpen = new ReactiveVar(Session.get('studySidebarOpen'));
-    instance.lesionSidebarOpen = new ReactiveVar(Session.get('lesionSidebarOpen'));
+    instance.data.state = new ReactiveDict();
+    instance.data.state.set('studySidebarOpen', Session.get('studySidebarOpen'));
+    instance.data.state.set('lesionSidebarOpen', Session.get('lesionSidebarOpen'));
 
     var contentId = this.data.contentId;
 
@@ -304,12 +305,12 @@ Template.viewer.events({
         handleMeasurementRemoved(e, eventData);
     },
     'click #studySidebarToggle': function(event, instance) {
-        var isOpen = instance.studySidebarOpen.get();
-        instance.studySidebarOpen.set(!isOpen);
+        var isOpen = instance.data.state.get('studySidebarOpen');
+        instance.data.state.set('studySidebarOpen', !isOpen);
     },
     'click #lesionSidebarToggle': function(event, instance) {
-        var isOpen = instance.lesionSidebarOpen.get();
-        instance.lesionSidebarOpen.set(!isOpen);
+        var isOpen = instance.data.state.get('lesionSidebarOpen');
+        instance.data.state.set('lesionSidebarOpen', !isOpen);
     }
 });
 
@@ -422,13 +423,5 @@ Template.viewer.helpers({
         toolbarOptions.includeHangingProtocolButtons = false;
         toolbarOptions.btnGroup = btnGroup;
         return toolbarOptions;
-    },
-    studySidebarOpen: function() {
-        var instance = Template.instance();
-        return instance.studySidebarOpen.get();
-    },
-    lesionSidebarOpen: function() {
-        var instance = Template.instance();
-        return instance.lesionSidebarOpen.get();
     }
 });

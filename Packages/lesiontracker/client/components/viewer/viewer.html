@@ -31,25 +31,7 @@
                 <a id="additionalMeasurementSidebarToggle">Additional</a>
             </div>
         </div>
-        <div class="viewerSection">
-            <div class="sidebarMenu sidebar-left {{ #if studySidebarOpen }}sidebar-open{{/if}}">
-                <div>
-                    {{> studyDateList}}
-                    <div class="studyBrowserContainer">
-                        {{> studyBrowser}}
-                    </div>
-                </div>
-            </div>
-            <div class="mainContent {{ #if studySidebarOpen }}sidebar-left-open{{/if}} {{ #if lesionSidebarOpen }}sidebar-right-open{{/if}}">
-                {{ >viewerMain }}
-            </div>
-            <div class="sidebarMenu sidebar-right {{ #if lesionSidebarOpen }}sidebar-open{{/if}}">
-                {{>lesionTable }}
-            </div>
-            <div class="sidebarMenu sidebar-right {{ #if additionalMeasurementsSidebarOpen }}sidebar-open{{/if}}">
-                Additional Measurements
-            </div>
-        </div>
+        {{ > flexboxLayout }}
     </div>
     {{else}}
         {{>loadingText}}
