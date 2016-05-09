@@ -7,31 +7,8 @@
         {{>nonTargetResponseDialog}}
         <!-- >conformanceCheckFeedback -->
 
-        <div class="toolbarSection">
-            <div id="studySidebarToggle" class="pull-left">
-                Studies
-            </div>
-            <div class="pull-left">
-                {{ >toolbar toolbarOptions=toolbarOptions }}
-            </div>
-            <div class="pull-right">
-                <i class="fa fa-info"></i>
-                Trial
-            </div>
-            <div class="centered">
-                <!-- Check number of viewports -->
-                <!-- > studySeriesQuickSwitch -->
-            </div>
-            <div class="pull-right">
-                <i class="fa fa-list"></i>
-                HUD
-            </div>
-            <div class="pull-right">
-                <a id="lesionSidebarToggle">Lesions</a>
-                <a id="additionalMeasurementSidebarToggle">Additional</a>
-            </div>
-        </div>
-        {{ > flexboxLayout }}
+        {{ >toolbarSection }}
+        {{ >flexboxLayout }}
     </div>
     {{else}}
         {{>loadingText}}

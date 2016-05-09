@@ -1,0 +1,35 @@
+@import "../../app"
+
+.toolbarSection
+  height: $toolbarHeight
+  width: 100%
+  border-bottom: $uiBorderColor $uiBorderThickness solid
+
+  .toolbarSectionButton
+    display: block
+    color: $defaultColor
+    fill: $defaultColor
+    padding: 0 10px
+    height: $toolbarHeight
+    min-width: 30px
+    cursor: pointer
+
+    .svgContainer
+      text-align: center
+
+    svg
+      background-color: transparent
+      width: 24px
+      height: 24px
+
+    &:active, &.active
+      color: $activeColor
+
+      svg
+        fill: $activeColor
+
+    &:hover
+      color: $hoverColor
+
+      svg
+        fill: $hoverColor
