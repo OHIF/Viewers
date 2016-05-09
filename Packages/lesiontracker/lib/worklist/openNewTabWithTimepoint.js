@@ -22,6 +22,8 @@ openNewTabWithTimepoint = function(timepointId, title) {
         throw 'No studies found that are related to this timepoint';
     }
 
+    ViewerData = window.ViewerData || ViewerData;
+
     // Update the ViewerData global object
     ViewerData[contentid] = {
         title: title,
