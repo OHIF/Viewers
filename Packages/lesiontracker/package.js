@@ -62,6 +62,8 @@ Package.onUse(function(api) {
         bare: true
     });
 
+    api.addAssets('assets/magnifyingGlass.svg', 'client');
+
     // UI Components
     api.addFiles('client/components/viewer/viewer.html', 'client');
     api.addFiles('client/components/viewer/viewer.styl', 'client');
@@ -70,6 +72,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/flexboxLayout/flexboxLayout.html', 'client');
     api.addFiles('client/components/flexboxLayout/flexboxLayout.styl', 'client');
     api.addFiles('client/components/flexboxLayout/flexboxLayout.js', 'client');
+
+    api.addFiles('client/components/toolbarSection/toolbarSection.html', 'client');
+    api.addFiles('client/components/toolbarSection/toolbarSection.styl', 'client');
+    api.addFiles('client/components/toolbarSection/toolbarSection.js', 'client');
 
     api.addFiles('client/components/viewerMain/viewerMain.html', 'client');
     api.addFiles('client/components/viewerMain/viewerMain.styl', 'client');
