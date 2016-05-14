@@ -61,6 +61,7 @@ Package.onUse(function(api) {
     // Spacebars helpers
     api.addFiles('client/helpers/blaze.js', 'client');
     api.addFiles('client/helpers/logical.js', 'client');
+    api.addFiles('client/helpers/string.js', 'client');
 
     // Utility classes
     api.addFiles('client/utils/form.js', 'client');
@@ -191,8 +192,11 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/serverInformationModal/serverInformationDicomWeb.html', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationDicomWeb.js', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationDimse.html', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationDimse.js', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationForm.html', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationForm.js', 'client');
+    api.addFiles('client/components/serverInformationModal/serverInformationFormField.html', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationList.html', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationList.js', 'client');
     api.addFiles('client/components/serverInformationModal/serverInformationModal.html', 'client');
