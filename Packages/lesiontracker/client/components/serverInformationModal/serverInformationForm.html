@@ -24,13 +24,13 @@
             </div>
         </div>
         <hr>
-        {{#if equals serverType.get "dicomWeb"}}
+        {{#if equals this.serverType.get "dicomWeb"}}
           {{>serverInformationDicomWeb this}}
         {{/if}}
-        {{#if equals serverType.get "dimse"}}
-          TODO: Print DIMSE form
+        {{#if equals this.serverType.get "dimse"}}
+          {{>serverInformationDimse this}}
         {{/if}}
-        {{#if serverType.get}}
+        {{#if this.serverType.get}}
             <div>
                 <input type="submit" class="btn btn-primary" value="Save">
             </div>

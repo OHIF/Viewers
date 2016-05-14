@@ -1,0 +1,43 @@
+<template name="serverInformationDimse">
+    <div class="panel panel-default panel-body">
+        <div class="clearfix">
+            <h4 class="pull-left">Peer list</h4>
+            <button class="btn btn-primary pull-right js-new-peer">New peer</button>
+        </div>
+        <hr>
+        <div class="row">
+            {{#each peer in instance.peers.get}}
+                <div class="col-lg-6">
+                    <div class="panel panel-default panel-body">
+                        <div class="row">
+                            {{>serverInformationFormField name=(concat "peers[]." @index ".aeTitle") label="AE title"}}
+                            {{>serverInformationFormField name=(concat "peers[]." @index ".hostAE") label="AE host"}}
+                            {{>serverInformationFormField name=(concat "peers[]." @index ".host") label="Host"}}
+                            {{>serverInformationFormField name=(concat "peers[]." @index ".port") label="Port"}}
+                            <div class="col-lg-12">
+                                <strong>Settings</strong>
+                                <div class="form-group">
+                                    <div class="form-control clearfix">
+                                        <div class="checkbox pull-left">
+                                            <label>
+                                                <input type="checkbox" name="peers[].{{@index}}.default">
+                                                <span>Default</span>
+                                            </label>
+                                        </div>
+                                        <div class="checkbox pull-left">
+                                            <label>
+                                                <input type="checkbox" name="peers[].{{@index}}.server">
+                                                <span>Server</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+    <hr>
+</template>

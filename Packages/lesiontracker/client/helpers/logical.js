@@ -1,35 +1,35 @@
-Template.registerHelper("choose", function() {
+Template.registerHelper('choose', function() {
     let result;
-    _.each(arguments, value => {
-        if (result || value instanceof Spacebars.kw) return;
-        value && (result = value);
+    _.each(_.initial(arguments, 1), function(value) {
+        return value && (result = value);
     });
     return result;
 });
 
-Template.registerHelper("bool", function(value) {
+Template.registerHelper('bool', function(value) {
     return !!value;
 });
 
-Template.registerHelper("equals", function(a, b) {
+Template.registerHelper('equals', function(a, b) {
     return a === b;
 });
 
-Template.registerHelper("not", function(value) {
+Template.registerHelper('not', function(value) {
     return !value;
 });
 
-Template.registerHelper("and", function() {
+Template.registerHelper('and', function() {
     let result = true;
-    _.each(arguments, value => value || (result = false));
+    _.each(_.initial(arguments, 1), function(value) {
+        return value || (result = false);
+    });
     return result;
 });
 
-Template.registerHelper("or", function() {
+Template.registerHelper('or', function() {
     let result = false;
-    _.each(arguments, value => {
-        if (value instanceof Spacebars.kw) return;
-        value && (result = true);
+    _.each(_.initial(arguments, 1), function(value) {
+        return value && (result = true);
     });
     return result;
 });

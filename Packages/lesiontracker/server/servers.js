@@ -23,12 +23,16 @@ Meteor.methods({
         var options = {
             upsert: true
         };
+
+        if (!serverSettings._id) {
+            delete serverSettings._id;
+        }
+
         var callback = function(error, affected) {
             if (error) {
                 throw new Meteor.Error('data-write', error);
             }
 
-            console.log(Servers.findOne());
         };
 
         Servers.update(criteria, serverSettings, options, callback);

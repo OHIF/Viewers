@@ -39,15 +39,18 @@ class Form {
             var propertyArray = key.split('.');
             var currentObject = nestedObject;
             while (propertyArray.length) {
-                var currentProperty = propertyArray.shift();
+                var property = propertyArray.shift();
+                var isArray = property.slice(-2) === '[]';
+                var key = isArray ? property.slice(0, -2) : property;
                 if (!propertyArray.length) {
-                    currentObject[currentProperty] = value;
+                    currentObject[key] = value;
                 } else {
-                    if (!currentObject[currentProperty]) {
-                        currentObject[currentProperty] = {};
+                    if (!currentObject[key]) {
+                        var dataStructure = isArray ? [] : {};
+                        currentObject[key] = dataStructure;
                     }
 
-                    currentObject = currentObject[currentProperty];
+                    currentObject = currentObject[key];
                 }
             }
         }
@@ -63,6 +66,10 @@ class Form {
                 var currentKey = baseKey ? baseKey + '.' + key : key;
                 var currentValue = nestedObject[key];
                 if (typeof currentValue === 'object') {
+                    if (currentValue instanceof Array) {
+                        currentKey += '[]';
+                    }
+
                     putValues(currentKey, currentValue, resultObject);
                 } else {
                     resultObject[currentKey] = currentValue;
