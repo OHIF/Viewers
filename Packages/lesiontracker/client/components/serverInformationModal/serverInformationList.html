@@ -14,10 +14,10 @@
                     <td>{{this.type}}</td>
                     <td class="text-right">
                         <div class="btn-group" role="group" aria-label="Actions">
-                            <button class="btn btn-sm btn-default editServer" {{tooltipTop "Edit"}}>
+                            <button class="btn btn-sm btn-default js-edit-server" title="Edit">
                                 <i class="fa fa-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger removeServer" {{tooltipTop "Remove"}}>
+                            <button class="btn btn-sm btn-danger js-remove-server" title="Remove">
                                 <i class="fa fa-trash"></i>
                             </button>
                         </div>
@@ -30,7 +30,7 @@
             {{/each}}
         </tbody>
     </table>
-    <button class="btn btn-default addServer">
+    <button class="btn btn-default js-add-server">
         <i class="fa fa-plus"></i> Add a new server
     </button>
 </template>

@@ -12,12 +12,13 @@ Meteor.startup(function() {
 });
 
 Meteor.methods({
+
     saveServer: function(serverSettings) {
         if (!Meteor.userId()) {
             throw new Meteor.Error('not-authorized');
         }
 
-        var criteria = {
+        var query = {
             _id: serverSettings._id
         };
         var options = {
@@ -35,6 +36,14 @@ Meteor.methods({
 
         };
 
-        Servers.update(criteria, serverSettings, options, callback);
+        Servers.update(query, serverSettings, options, callback);
+    },
+
+    removeServer: function(serverId) {
+        var query = {
+            _id: serverId
+        };
+        Servers.remove(query, true);
     }
+
 });
