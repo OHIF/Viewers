@@ -3,7 +3,9 @@ Template.serverInformationDimse.onCreated(function() {
     instance.peers = new ReactiveVar([]);
     instance.autorun(function() {
         var currentItem = instance.data.currentItem.get();
-        instance.peers.set(currentItem.peers || []);
+        if (currentItem) {
+            instance.peers.set(currentItem.peers || []);
+        }
     });
 });
 

@@ -25,7 +25,7 @@ Template.serverInformationForm.events({
                 console.log('>>>>ERROR', error);
             }
 
-            instance.data.mode.set('list');
+            instance.data.resetState();
         });
     }
 });

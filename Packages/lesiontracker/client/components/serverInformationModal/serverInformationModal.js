@@ -4,14 +4,17 @@ Template.serverInformationModal.onCreated(function() {
         mode: new ReactiveVar('list'),
         serverType: new ReactiveVar(null),
         currentItem: new ReactiveVar(null),
-        $form: null
+        $form: null,
+        resetState: function() {
+            instance.container.mode.set('list');
+            instance.container.serverType.set(null);
+            instance.container.currentItem.set(null);
+        }
     };
 });
 
 Template.serverInformationModal.events({
-    'click .js-back': function(event, instance) {
-        var container = instance.container;
-        container.mode.set('list');
-        container.serverType.set(null);
+    'click .js-back, click [data-dismiss=modal]': function(event, instance) {
+        instance.container.resetState();
     }
 });
