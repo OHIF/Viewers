@@ -47,6 +47,9 @@ Template.lesionTracker.events({
         // Otherwise, switch to the tab
         var contentId = tabButton.data('target').replace('#', '');
         switchToTab(contentId);
+    },
+    'click #loadStudyList': function() {
+        switchToTab('worklistTab');
     }
 });
 
@@ -57,6 +60,6 @@ Template.lesionTracker.helpers({
         return Template.instance().showWorklistMenu.get();
     },
     onStudyList: function() {
-        return (Session.get('activeContentId') === "worklistTab");
+        return (Session.get('activeContentId') === 'worklistTab');
     }
 });

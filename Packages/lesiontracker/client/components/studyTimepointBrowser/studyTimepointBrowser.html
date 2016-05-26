@@ -1,0 +1,13 @@
+<template name="studyTimepointBrowser">
+    <div class="studyTimepointBrowser">
+        <div class="scrollableStudyThumbnails">
+        {{ #each timepoints }}
+            {{ #each studies }}
+                {{#each thumbnails}}
+                    {{ >thumbnailEntry }}
+                {{/each}}
+            {{ /each }}
+        {{ /each }}
+        </div>
+    </div>
+</template>

@@ -1,5 +1,13 @@
 <template name="lesionTable">
     <div id="lesionTableContainer">
+        <div class="lesionTableLayoutChanger viewerRoundedButtonGroup">
+            <a id="comparisonTimepoints" class="viewerRoundedButton noselect {{inlineIf lesionTableLayout "comparisonTimepoints" "active"}}">
+                Comparison
+            </a>
+            <a id="keyTimepoints" class="viewerRoundedButton noselect {{inlineIf lesionTableLayout "keyTimepoints" "active"}}">
+                Key Timepoints
+            </a>
+        </div>
         <div class="lesionTableTimepointHeaderRow">
             <div class="spacer">
             </div>

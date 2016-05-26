@@ -35,6 +35,10 @@ Template.lesionTable.helpers({
                 latestDate: 1
             }
         });
+    },
+    lesionTableLayout: function() {
+        var instance = Template.instance();
+        return instance.lesionTableLayout.get();
     }
 });
 
@@ -45,11 +49,22 @@ Template.lesionTable.events({
     /*'click table#tblLesion tbody tr': function(e, template) {
           var measurementId = $(e.currentTarget).data('measurementid');
           activateLesion(measurementId, template.data);
-    }*/
+    },*/
+    'click .lesionTableLayoutChanger a': function(event, instance) {
+        var id = event.currentTarget.id;
+        instance.lesionTableLayout.set(id);
+    }
 });
 
 // Temporary until we have a real window manager with events for series/study changed
 Session.setDefault('NewSeriesLoaded', false);
+
+Template.lesionTable.onCreated(function() {
+    var instance = this;
+
+    instance.lesionTableLayout = new ReactiveVar();
+    instance.lesionTableLayout.set('comparisonTimepoints');
+});
 
 Template.lesionTable.onRendered(function() {
     // Find the first measurement by Lesion Number
