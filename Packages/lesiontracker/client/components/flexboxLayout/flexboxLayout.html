@@ -2,9 +2,16 @@
     <div class="viewerSection">
         <div class="sidebarMenu sidebar-left {{ #if studySidebarOpen }}sidebar-open{{/if}}">
             <div>
-                {{> studyDateList}}
+                <div class="studiesListedChanger viewerRoundedButtonGroup">
+                    <a id="keyTimepoints" class="viewerRoundedButton noselect {{inlineIf studiesListed "keyTimepoints" "active"}}">
+                        Key Timepoints
+                    </a>
+                    <a id="allTimepoints" class="viewerRoundedButton noselect {{inlineIf studiesListed "allTimepoints" "active"}}">
+                        All Timepoints
+                    </a>
+                </div>
                 <div class="studyBrowserContainer">
-                    {{> studyBrowser}}
+                    {{> studyTimepointBrowser}}
                 </div>
             </div>
         </div>
