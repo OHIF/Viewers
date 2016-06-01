@@ -11,13 +11,22 @@ Meteor.startup(function() {
 
 });
 
-Meteor.methods({
+class ServersControl {
 
-    saveServer: function(serverSettings) {
+    static validateUser() {
         if (!Meteor.userId()) {
             throw new Meteor.Error('not-authorized');
         }
+    }
 
+    static writeCallback(error, affected) {
+        if (error) {
+            throw new Meteor.Error('data-write', error);
+        }
+    }
+
+    static save(serverSettings) {
+        this.validateUser();
         var query = {
             _id: serverSettings._id
         };
@@ -29,21 +38,34 @@ Meteor.methods({
             delete serverSettings._id;
         }
 
-        var callback = function(error, affected) {
-            if (error) {
-                throw new Meteor.Error('data-write', error);
-            }
+        return Servers.update(query, serverSettings, options, this.writeCallback);
+    }
 
+    static setActive(serverId) {
+        this.validateUser();
+        var query = {
+            _id: Meteor.userId()
         };
+        var data = {
+            $set: {
+                'profile.activeServer': serverId
+            }
+        };
+        Accounts.users.update(query, data, this.writeCallback);
+    }
 
-        Servers.update(query, serverSettings, options, callback);
-    },
-
-    removeServer: function(serverId) {
+    static remove(serverId) {
+        this.validateUser();
         var query = {
             _id: serverId
         };
-        Servers.remove(query, true);
+        return Servers.remove(query, this.writeCallback);
     }
 
+}
+
+Meteor.methods({
+    serverSave: serverSettings => ServersControl.save(serverSettings),
+    serverSetActive: serverId => ServersControl.setActive(serverId),
+    serverRemove: serverId => ServersControl.remove(serverId)
 });
