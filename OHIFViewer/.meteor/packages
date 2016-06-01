@@ -4,9 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-accounts-password
-ian:accounts-ui-bootstrap-3
-iron:router
 twbs:bootstrap
 http
 arsnebula:reactive-promise
@@ -37,3 +34,4 @@ practicalmeteor:loglevel
 hangingprotocols
 reactive-dict
 gilbertwat:bootstrap3-daterangepicker
+clinical:router

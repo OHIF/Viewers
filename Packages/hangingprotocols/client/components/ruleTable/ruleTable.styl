@@ -1,0 +1,46 @@
+table.ruleTable
+  thead
+    tr
+      th
+        color: whitesmoke
+        text-align: center
+
+      th:first-child
+        text-align: left
+
+  tbody
+    tr
+      td
+        color: #ffffff
+        text-align: center
+
+        .failWarning
+          color: red
+
+        .editRule
+        .deleteRule
+          &:hover, &:active
+            cursor: pointer
+            color: #48d3ff
+
+            -webkit-transition: all 0.1s ease
+            -moz-transition: all 0.1s ease
+            transition: all 0.1s ease
+
+
+      td:first-child
+        text-align: left
+
+.addRuleContainer
+  margin: 10px 0
+  text-align: center
+  color: #ffffff
+
+  .addRule
+    &:hover, &:active
+      cursor: pointer
+      color: #48d3ff
+
+      -webkit-transition: all 0.1s ease
+      -moz-transition: all 0.1s ease
+      transition: all 0.1s ease

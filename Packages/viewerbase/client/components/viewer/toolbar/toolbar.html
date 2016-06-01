@@ -10,11 +10,17 @@
             {{ /if }}
 
             {{ #if includeLayoutButton }}
-                {{ >layoutButton }}
+            <div class="btn-group">
+                <button id="layout" type="button" class="btn btn-sm btn-default dropdown-toggle" data-container="body" data-toggle="dropdown" aria-expanded="false" data-placement="right" title="Layout" rel="tooltip">
+                    <span class="fa fa-th-large"></span>
+                </button>
+                {{  >layoutChooser }}
+            </div>
             {{ /if }}
 
             {{ #if includeHangingProtocolButtons }}
                 {{ >hangingProtocolButtons }}
+                {{ >matchedProtocols }}
             {{ /if }}
 
             {{ #each btnGroup }}

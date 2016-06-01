@@ -19,7 +19,6 @@ function updateFramerate(rate) {
 
     // If the movie is playing, stop/start to update the framerate
     if (isPlaying()) {
-        var element = getActiveViewportElement();
         cornerstoneTools.stopClip(element);
         cornerstoneTools.playClip(element);
     }

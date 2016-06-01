@@ -152,7 +152,7 @@ Template.toolbar.onRendered(function() {
     var states = toolManager.getToolDefaultStates();
     var disabledToolButtons = states.disabledToolButtons;
     var allToolbarButtons = $('#toolbar').find('button');
-    if (disabledToolButtons.length > 0) {
+    if (disabledToolButtons && disabledToolButtons.length > 0) {
         for (var i = 0; i < allToolbarButtons.length; i++) {
             var toolbarButton = allToolbarButtons[i];
             $(toolbarButton).prop('disabled', false);
@@ -191,7 +191,7 @@ Template.toolbar.helpers({
             return this.toolbarOptions.includeHangingProtocolButtons;
         }
 
-        return false;
+        return true;
     },
     btnGroup: function() {
         if (this.toolbarOptions && this.toolbarOptions.btnGroup !== undefined) {

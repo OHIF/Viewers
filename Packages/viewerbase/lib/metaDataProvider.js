@@ -90,6 +90,21 @@ addMetaData = function(imageId, data) {
 };
 
 /**
+ * Adds a set of metaData to the Cornerstone metaData provider given a specific
+ * imageId, type, and dataset
+ *
+ * @param imageId
+ * @param type (e.g. series, instance, tagDisplay)
+ * @param data
+ */
+addSpecificMetadata = function(imageId, type, data) {
+    var metaData = {};
+    metaData[type] = data;
+
+    metaDataLookup[imageId] = $.extend(metaDataLookup[imageId], metaData);
+};
+
+/**
  * Looks up metaData for Cornerstone Tools given a specified type and imageId
  * A type may be, e.g. 'study', or 'patient', or 'imagePlane'. These types
  * are keys in the stored metaData objects.

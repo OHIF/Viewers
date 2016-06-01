@@ -20,10 +20,20 @@ WorklistStudies = new Meteor.Collection(null);
 WorklistStudies._debugName = 'WorklistStudies';
 
 Template.worklist.onRendered(function() {
-    // If there is a tab set as active in the Session,
-    // switch to that now.
-    var contentId = Session.get('activeContentId');
-    switchToTab(contentId);
+    var templateData = Template.currentData();
+    if (templateData && templateData.studyInstanceUid) {
+        var studyInstanceUid = templateData.studyInstanceUid;
+        openNewTab(studyInstanceUid, studyInstanceUid);
+    } else {
+        // If there is a tab set as active in the Session,
+        // switch to that now.
+        var contentId = Session.get('activeContentId');
+
+        // TODO: FIx this it seems to be forcing two switches
+        switchToTab(contentId);        
+    }
+
+    Meteor.subscribe('hangingprotocols');
 });
 
 Template.worklist.helpers({

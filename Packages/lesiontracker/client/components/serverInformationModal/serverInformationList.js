@@ -22,7 +22,6 @@ Template.serverInformationList.events({
         });
     },
     'click .js-use-server': function(event, instance) {
-        console.debug('>>>>clicked');
         var id = this._id;
         Meteor.call('serverSetActive', this._id, function(error) {
             // TODO: [custom-servers] check for errors: not-authorized, data-write

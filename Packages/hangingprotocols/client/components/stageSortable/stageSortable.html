@@ -1,0 +1,30 @@
+<template name="stageSortable">
+    <div id="stageSortingContainer">
+        <div class="moveStageButtons">
+            <a class="moveStageUp noselect"  disabled="{{ #unless isPreviousAvailable }}true{{ /unless }}">
+                Move Stage Up <i class="fa fa-chevron-up"></i>
+            </a>
+            <a class="moveStageDown noselect" disabled="{{ #unless isNextAvailable }}true{{ /unless }}">
+                Move Stage Down <i class="fa fa-chevron-down"></i>
+            </a>
+        </div>
+        <div id="stageSortable" class="sortable">
+            {{#each stages}}
+                <div class="sortable-item" data-id={{id}}>
+                    <span>
+                        <div class="sortable-handle pull-left"></div>
+                        <i class="deleteStage fa fa-trash fa-lg pull-right"></i>
+                        <span class="{{#if isActiveStage}}active{{/if}}">
+                            {{ stageLabel }}
+                        </span>
+                    </span>
+                </div>
+            {{/each}}
+        </div>
+        <div class="addStage">
+            <span id="addStage">
+                Create New Stage <i class="fa fa-plus-circle"></i>
+            </span>
+        </div>
+    </div>
+</template>

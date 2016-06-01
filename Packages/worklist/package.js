@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-    api.versionsFrom('1.2.0.2');
+    api.versionsFrom('1.2.1');
 
     api.use('standard-app-packages');
     api.use('jquery');
@@ -17,11 +17,13 @@ Package.onUse(function (api) {
 
     // Our custom packages
     api.use('dicomweb');
+    api.use('dimseservice');
+    api.use('orthanc-remote');
 
     // This sets the default logging level of the package using the
     // loglevel package. It can be overridden in the JavaScript
     // console for debugging purposes
-    api.addFiles('log.js', 'client');
+    api.addFiles('log.js');
 
     // Components
     api.addFiles('client/components/worklist.html', 'client');
@@ -51,12 +53,40 @@ Package.onUse(function (api) {
     api.addFiles('client/components/worklistToolbar/worklistToolbar.js', 'client');
     api.addFiles('client/components/worklistToolbar/worklistToolbar.styl', 'client');
 
-    // Library functions
-    api.addFiles('lib/getStudyMetadata.js', 'client');
-    api.addFiles('lib/getStudiesMetadata.js', 'client');
-    api.addFiles('lib/openNewTab.js', 'client');
-    api.addFiles('lib/switchToTab.js', 'client');
-    api.addFiles('lib/worklist.js', 'client');
+    api.addFiles('client/components/progressDialog/progressDialog.html', 'client');
+    api.addFiles('client/components/progressDialog/progressDialog.styl', 'client');
+    api.addFiles('client/components/progressDialog/progressDialog.js', 'client');
+
+    // Client-side library functions
+    api.addFiles('client/lib/getStudyMetadata.js', 'client');
+    api.addFiles('client/lib/getStudiesMetadata.js', 'client');
+    api.addFiles('client/lib/openNewTab.js', 'client');
+    api.addFiles('client/lib/switchToTab.js', 'client');
+    api.addFiles('client/lib/exportStudies.js', 'client');
+    api.addFiles('client/lib/worklist.js', 'client');
+
+    // Server-side functions
+    api.addFiles('server/lib/namespace.js', 'server');
+    api.addFiles('server/lib/encodeQueryData.js', 'server');
+    api.addFiles('server/methods/getStudyMetadata.js', 'server');
+    api.addFiles('server/methods/worklistSearch.js', 'server');
+
+    // DICOMWeb instance, study, and metadata retrieval
+    api.addFiles('server/services/qido/instances.js', 'server');
+    api.addFiles('server/services/qido/studies.js', 'server');
+    api.addFiles('server/services/wado/retrieveMetadata.js', 'server');
+
+    // DIMSE instance, study, and metadata retrieval
+    api.addFiles('server/services/dimse/instances.js', 'server');
+    api.addFiles('server/services/dimse/studies.js', 'server');
+    api.addFiles('server/services/dimse/retrieveMetadata.js', 'server');
+
+    // Study, instance, and metadata retrieval from remote PACS via Orthanc as a proxy
+    api.addFiles('server/services/remote/instances.js', 'server');
+    api.addFiles('server/services/remote/studies.js', 'server');
+    api.addFiles('server/services/remote/retrieveMetadata.js', 'server');
+
+    api.export('Services', 'server');
 
     // Export Worklist helper functions for usage in Routes
     api.export('getTimepointName', 'client');
@@ -65,6 +95,7 @@ Package.onUse(function (api) {
     api.export('openNewTab', 'client');
     api.export('setWorklistSubscriptions', 'client');
     api.export('switchToTab', 'client');
+    api.export('progressDialog', 'client');
     api.export('Worklist');
 
     // Export the global ViewerData object

@@ -15,8 +15,7 @@ Object.keys(ViewerData).forEach(function(contentId) {
 
 Router.configure({
     layoutTemplate: 'lesionTrackerLayout',
-    loadingTemplate: 'lesionTrackerLayout',
-    notFoundTemplate: 'notFound'
+    loadingTemplate: 'lesionTrackerLayout'
 });
 
 Router.onBeforeAction('loading');

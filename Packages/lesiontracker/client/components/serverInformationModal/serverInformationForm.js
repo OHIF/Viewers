@@ -20,10 +20,7 @@ Template.serverInformationForm.events({
         event.preventDefault();
         var formData = FormUtils.getFormData(instance.data.$form);
         Meteor.call('serverSave', formData, function(error) {
-            if (error) {
-                // TODO: check for errors: not-authorized, data-write
-                console.log('>>>>ERROR', error);
-            }
+            // TODO: [custom-servers] check for errors: not-authorized, data-write
 
             instance.data.resetState();
         });

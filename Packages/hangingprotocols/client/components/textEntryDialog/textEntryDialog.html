@@ -1,0 +1,23 @@
+<template name="textEntryDialog">
+    <div class="textEntryDialog">
+        <div class="dialogHeader">
+            <h4 class="title">{{title}}}</h4>
+        </div>
+        <div class="dialogContent">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h5 class="instructions">{{instructions}}</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <input class='currentValue' type="text" value={{currentValue}}>
+                </div>
+            </div>
+        </div>
+        <div class="dialogFooter">
+            <button class="cancel btn btn-link" tabindex="1">Cancel</button>
+            <button class="save btn btn-primary" tabindex="0">OK</button>
+        </div>
+    </div>
+</template>

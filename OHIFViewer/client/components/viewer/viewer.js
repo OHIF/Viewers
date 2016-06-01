@@ -1,6 +1,9 @@
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
+    $('.navbar').width('100%');
+
+    Meteor.subscribe('hangingprotocols');
 
     log.info('viewer onCreated');
 
@@ -24,18 +27,22 @@ Template.viewer.onCreated(function() {
             cornerstone.setViewport(element, viewport);
         },
         resetViewport: function(element) {
-            cornerstone.reset(element);
+            var enabledElement = cornerstone.getEnabledElement(element);
+            if (enabledElement.fitToWindow === false) {
+                var imageId = enabledElement.image.imageId;
+                var instance = cornerstoneTools.metaData.get('instance', imageId);
+
+                enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, enabledElement.image);
+                var instanceClassDefaultViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
+                cornerstone.setViewport(element, instanceClassDefaultViewport);
+            } else {
+                cornerstone.reset(element);
+            }
         },
         clearTools: function(element) {
             var toolStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
             toolStateManager.clear(element);
             cornerstone.updateImage(element);
-        },
-        previousPresentationGroup: function() {
-            WindowManager.previousPresentationGroup();
-        },
-        nextPresentationGroup: function() {
-            WindowManager.nextPresentationGroup();
         }
     };
 
@@ -78,13 +85,18 @@ Template.viewer.onCreated(function() {
         study.selected = true;
         ViewerStudies.insert(study);
     });
-
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 });
 
 Template.viewer.onRendered(function() {
     // Enable hotkeys
     enableHotkeys();
+
+    var parentNode = document.getElementById('layoutManagerTarget');
+    var studies = this.data.studies;
+    layoutManager = new LayoutManager(parentNode, studies);
+
+    ProtocolEngine = new HP.ProtocolEngine(layoutManager, studies);
+    HP.setEngine(ProtocolEngine);
 });
 
 Template.viewer.onDestroyed(function() {
@@ -92,6 +104,4 @@ Template.viewer.onDestroyed(function() {
 
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
-
-    OHIF.viewer.updateImageSynchronizer.destroy();
 });

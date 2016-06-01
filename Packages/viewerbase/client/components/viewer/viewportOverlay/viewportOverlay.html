@@ -1,5 +1,6 @@
 <template name="viewportOverlay">
     <div class="imageViewerViewportOverlay noselect">
+        {{ #unless tagDisplaySpecified }}
         <div class="topleft dicomTag">
             <div>{{formatPN patientName}}</div>
             <div>{{patientId}}</div>
@@ -21,6 +22,47 @@
             <div>{{imageDimensions}}</div>
             <div>{{seriesDescription}}</div>
         </div>
+        {{ /unless }}
+
+        {{ #if tagDisplayRightOnly }}
+        <div class="topright dicomTag">
+            <div>{{formatPN patientName}}</div>
+            <div>{{patientId}}</div>
+            <div class='priorIndicator'>{{prior}}</div>
+            <div>{{studyDescription}}</div>
+            <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
+        </div>
+        <div class="bottomright dicomTag">
+            <div>Ser: {{seriesNumber}}</div>
+            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+            <div>{{imageDimensions}}</div>
+            <div>{{seriesDescription}}</div>
+            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{compression}}</div>
+            <div>{{wwwc}}</div>
+        </div>
+        {{ /if }}
+
+        {{ #if tagDisplayLeftOnly }}
+        <div class="topleft dicomTag">
+            <div>{{formatPN patientName}}</div>
+            <div>{{patientId}}</div>
+            <div class='priorIndicator'>{{prior}}</div>
+            <div>{{studyDescription}}</div>
+            <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
+        </div>
+        <div class="bottomleft dicomTag">
+            <div>Ser: {{seriesNumber}}</div>
+            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+            <div>{{imageDimensions}}</div>
+            <div>{{seriesDescription}}</div>
+            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{compression}}</div>
+            <div>{{wwwc}}</div>
+        </div>
+        {{ /if }}
         {{>imageControls}}
     </div>
 </template>

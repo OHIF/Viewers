@@ -5,27 +5,26 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.2.0.2');
+    api.versionsFrom('1.2.1');
 
     api.use('standard-app-packages');
+    api.use('ecmascript');
+    api.use('http');
     api.use('jquery');
     api.use('stylus');
-    api.use('accounts-password');
-    api.use('ian:accounts-ui-bootstrap-3');
-    api.use('http');
     api.use('practicalmeteor:loglevel');
     api.use('momentjs:moment');
 
     // Our custom packages
-    api.use('dicomweb');
-    api.use('dimseservice');
     api.use('cornerstone');
-    api.use('hangingprotocols');
 
-    api.addFiles('log.js', ['client', 'server']);
+    api.addFiles('log.js');
 
-    // TODO= Find a meteor package for this
+    // TODO: Use NPM depends for these
     api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
+
+    // Data validation (the Meteor package is currently out-of-date)
+    api.addFiles('client/compatibility/validate.js', 'client');
 
     // ---------- Collections ----------
     api.addFiles('client/collections.js', 'client');
@@ -33,35 +32,28 @@ Package.onUse(function(api) {
     // ---------- Components ----------
 
     // Basic components
-    api.addFiles('client/components/basic/layout/layout.html', 'client');
-    api.addFiles('client/components/basic/layout/layout.styl', 'client');
-    api.addFiles('client/components/basic/login/login.html', 'client');
-    api.addFiles('client/components/basic/notFound/notFound.html', 'client');
-
     api.addFiles('client/components/basic/loadingText/loadingText.html', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.styl', 'client');
-
-    api.addFiles('client/components/basic/studyNotFound/studyNotFound.html', 'client');
-    api.addFiles('client/components/basic/studyNotFound/studyNotFound.styl', 'client');
 
     api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.html', 'client');
     api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.styl', 'client');
 
-    api.addFiles('client/components/basic/hidingPanel/hidingPanel.html', 'client');
-    api.addFiles('client/components/basic/hidingPanel/hidingPanel.js', 'client');
-    api.addFiles('client/components/basic/hidingPanel/hidingPanel.styl', 'client');
+    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
+    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
+    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
 
     // Study Browser components
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.html', 'client');
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.js', 'client');
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.styl', 'client');
 
+    api.addFiles('client/components/studyBrowser/relatedStudySelect/relatedStudySelect.html', 'client');
+    api.addFiles('client/components/studyBrowser/relatedStudySelect/relatedStudySelect.js', 'client');
+    api.addFiles('client/components/studyBrowser/relatedStudySelect/relatedStudySelect.styl', 'client');
+
     api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.html', 'client');
     api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.js', 'client');
     api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.styl', 'client');
-
-    api.addFiles('client/components/studyBrowser/thumbnails/thumbnails.html', 'client');
-    api.addFiles('client/components/studyBrowser/thumbnails/thumbnails.js', 'client');
 
     api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.html', 'client');
     api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.js', 'client');
@@ -72,9 +64,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.js', 'client');
     api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.styl', 'client');
 
-    api.addFiles('client/components/viewer/imageViewerViewports/imageViewerViewports.html', 'client');
-    api.addFiles('client/components/viewer/imageViewerViewports/imageViewerViewports.js', 'client');
-    api.addFiles('client/components/viewer/imageViewerViewports/imageViewerViewports.styl', 'client');
+    api.addFiles('client/components/viewer/gridLayout/gridLayout.html', 'client');
+    api.addFiles('client/components/viewer/gridLayout/gridLayout.js', 'client');
+    api.addFiles('client/components/viewer/gridLayout/gridLayout.styl', 'client');
 
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.html', 'client');
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.js', 'client');
@@ -105,34 +97,22 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
     api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
 
-    api.addFiles('client/components/viewer/hangingProtocolButtons/hangingProtocolButtons.html', 'client');
-    api.addFiles('client/components/viewer/hangingProtocolButtons/hangingProtocolButtons.js', 'client');
-
-    api.addFiles('client/components/viewer/layoutButton/layoutButton.html', 'client');
-
     api.addFiles('client/components/viewer/toolbar/toolbar.html', 'client');
     api.addFiles('client/components/viewer/toolbar/toolbar.js', 'client');
     api.addFiles('client/components/viewer/toolbar/toolbar.styl', 'client');
-
-    api.addFiles('client/components/basic/progressDialog/progressDialog.html', 'client');
-    api.addFiles('client/components/basic/progressDialog/progressDialog.styl', 'client');
-    api.addFiles('client/components/basic/progressDialog/progressDialog.js', 'client');
 
     api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.html', 'client');
     api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.styl', 'client');
     api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.js', 'client');
 
-
     // Library functions
-    api.addFiles('lib/accountsConfig.js', 'client');
+    api.addFiles('lib/layoutManager.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
     api.addFiles('lib/getImageId.js', 'client');
     api.addFiles('lib/getWADORSImageId.js', 'client');
     api.addFiles('lib/metaDataProvider.js', 'client');
-    api.addFiles('lib/rerenderViewportWithNewSeries.js', 'client');
     api.addFiles('lib/sortStudy.js', 'client');
     api.addFiles('lib/toolManager.js', 'client');
-    api.addFiles('lib/windowManager.js', 'client');
     api.addFiles('lib/enablePrefetchOnElement.js', 'client');
     api.addFiles('lib/displayReferenceLines.js', 'client');
     api.addFiles('lib/draggable.js', 'client');
@@ -147,11 +127,11 @@ Package.onUse(function(api) {
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
     api.addFiles('lib/queryStudies.js', 'client');
-    api.addFiles('lib/exportStudies.js', 'client');
     api.addFiles('lib/importStudies.js', 'client');
-    api.addFiles('lib/encodeQueryData.js', 'server');
+    api.addFiles('lib/validators.js', 'client');
+    api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
+    api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
 
-    //api.export('accountsConfig', 'client');
     api.export('resizeViewportElements', 'client');
     api.export('handleResize', 'client');
     api.export('enableHotkeys', 'client');
@@ -162,7 +142,6 @@ Package.onUse(function(api) {
     api.export('getImageId', 'client');
     api.export('getWADORSImageId', 'client');
     api.export('metaDataProvider', 'client');
-    api.export('rerenderViewportWithNewSeries', 'client');
     api.export('sortStudy', 'client');
     api.export('updateOrientationMarkers', 'client');
     api.export('setFocusToActiveViewport', 'client');
@@ -172,55 +151,46 @@ Package.onUse(function(api) {
     api.export('exportStudies', 'client');
     api.export('importStudies', 'client');
     api.export('getActiveViewportElement', 'client');
-    api.export('encodeQueryData', 'server');
+    api.export('getInstanceClassDefaultViewport', 'client');
+    api.export('showConfirmDialog', 'client');
+    api.export('applyWLPreset', 'client');
+
+    // Export the ValidateJS Library with our added validators
+    //api.export('validate', 'client');
 
     // Viewer management objects
     api.export('toolManager', 'client');
-    api.export('WindowManager', 'client');
+    api.export('LayoutManager', 'client');
 
     // Global objects
     api.export('OHIF', 'client');
     api.export('ClientId', 'client');
-    api.export('progressDialog', 'client');
 
     // Collections
     api.export('ViewerStudies', 'client');
 
     // UI Helpers
     api.addFiles('lib/helpers/formatDA.js', 'client');
+    api.addFiles('lib/helpers/formatJSDate.js', 'client');
+    api.addFiles('lib/helpers/jsDateFromNow.js', 'client');
     api.addFiles('lib/helpers/formatNumberPrecision.js', 'client');
     api.addFiles('lib/helpers/formatTM.js', 'client');
     api.addFiles('lib/helpers/inlineIf.js', 'client');
-
+    api.addFiles('lib/helpers/inc.js', 'client');
+    api.addFiles('lib/helpers/getUsername.js', 'client');
+    api.addFiles('lib/helpers/capitalizeFirstLetter.js', 'client');
+    api.addFiles('lib/helpers/objectToPairs.js', 'client');
+    api.addFiles('lib/helpers/objectEach.js', 'client');
+    api.addFiles('lib/helpers/ifTypeIs.js', 'client');
+    api.addFiles('lib/helpers/prettyPrintStringify.js', 'client');
     api.addFiles('lib/helpers/formatPN.js', 'client');
     api.export('formatPN', 'client');
 
     api.addFiles('lib/helpers/isTouchDevice.js', 'client');
     api.export('isTouchDevice', 'client');
 
-    // Server-side functions
-    api.addFiles('server/seed.js', 'server');
-    api.addFiles('server/lib/namespace.js', 'server');
-    api.addFiles('server/methods/getStudyMetadata.js', 'server');
-    api.addFiles('server/methods/worklistSearch.js', 'server');
     api.addFiles('server/methods/importStudies.js', 'server');
 
-    // DICOMWeb instance, study, and metadata retrieval
-    api.addFiles('server/services/qido/instances.js', 'server');
-    api.addFiles('server/services/qido/studies.js', 'server');
-    api.addFiles('server/services/wado/retrieveMetadata.js', 'server');
-
-    // DIMSE instance, study, and metadata retrieval
-    api.addFiles('server/services/dimse/instances.js', 'server');
-    api.addFiles('server/services/dimse/studies.js', 'server');
-    api.addFiles('server/services/dimse/retrieveMetadata.js', 'server');
-
-    // Study, instance, and metadata retrieval from remote PACS via Orthanc as a proxy
-    api.addFiles('server/services/remote/instances.js', 'server');
-    api.addFiles('server/services/remote/studies.js', 'server');
-    api.addFiles('server/services/remote/retrieveMetadata.js', 'server');    
-
-    api.export('Services', 'server');
     api.export('importStudies', 'server');
     api.export('importSupported', 'server');
 

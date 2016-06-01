@@ -184,9 +184,10 @@ function thumbnailDragEndHandler(e, target) {
         return false;
     }
 
+    var viewportIndex = $('.imageViewerViewport').index(element);
+
     // Rerender the viewport using the drag and drop data
-    rerenderViewportWithNewSeries(element, OHIF.viewer.dragAndDropData);
-    Session.get('UseHangingProtocol', false);
+    layoutManager.rerenderViewportWithNewSeries(viewportIndex, OHIF.viewer.dragAndDropData);
     return false;
 }
 

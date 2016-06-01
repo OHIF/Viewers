@@ -58,11 +58,6 @@ Package.onUse(function(api) {
         bare: true
     });
 
-    // Trial Criteria data validation (the Meteor package is currently out-of-date)
-    api.addFiles('client/compatibility/validate.js', 'client', {
-        bare: true
-    });
-
     // Spacebars helpers
     api.addFiles('client/helpers/blaze.js', 'client');
     api.addFiles('client/helpers/logical.js', 'client');
@@ -85,6 +80,10 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
+
+    api.addFiles('client/components/hidingPanel/hidingPanel.html', 'client');
+    api.addFiles('client/components/hidingPanel/hidingPanel.styl', 'client');
+    api.addFiles('client/components/hidingPanel/hidingPanel.js', 'client');
 
     api.addFiles('client/components/optionsButton/optionsButton.html', 'client');
 
@@ -125,10 +124,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.html', 'client');
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.styl', 'client');
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.js', 'client');
-
-    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
-    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
-    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
 
     api.addFiles('client/components/conformanceCheckFeedback/conformanceCheckFeedback.html', 'client');
     api.addFiles('client/components/conformanceCheckFeedback/conformanceCheckFeedback.styl', 'client');

@@ -1,13 +1,18 @@
 <template name="viewer">
     {{#if Template.subscriptionsReady}}
     <div id="viewer">
-        {{> studyBrowser }}
+        <div class="studyBrowserSidebar">
+            {{ >relatedStudySelect }}
+            {{> studyBrowser }}
+        </div>
         {{> cineDialog }}
         <div class='viewerMain'>
             {{> toolbar }}
-            {{> imageViewerViewports }}
+            <div id='layoutManagerTarget'>
+            </div>
         </div>
     </div>
+    {{ >protocolEditor }}
     {{else}}
         {{>loadingText}}
     {{/if}}

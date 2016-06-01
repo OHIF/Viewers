@@ -39,6 +39,4 @@ Meteor.startup(function() {
         }
         //defaultServiceType: 'dimse'
     };
-
-    console.log('Using default OHIF Viewer settings with service: ' + Meteor.settings.defaultServiceType);
 });
