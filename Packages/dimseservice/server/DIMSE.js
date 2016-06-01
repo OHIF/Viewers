@@ -54,7 +54,8 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
 };
 
 Meteor.startup(function() {
-    if (!Meteor.settings.servers.dimse) return;
+    if (!Meteor.settings.servers.dimse || !Meteor.settings.servers.dimse.length) return;
+    // TODO: [custom-servers] use active server and check if type is DIMSE
     var peers = Meteor.settings.servers.dimse[0].peers;
     console.log('Adding DIMSE peers');
     if (peers && peers.length) {

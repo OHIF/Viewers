@@ -14,6 +14,13 @@
                     <td>{{this.type}}</td>
                     <td class="text-right">
                         <div class="btn-group" role="group" aria-label="Actions">
+                            <button class="btn btn-sm btn-default js-use-server" title="Use this server" disabled="{{#if isActive this}}disabled{{/if}}">
+                                {{#if isActive this}}
+                                    <i class="fa fa-check-square-o"></i>
+                                {{else}}
+                                    <i class="fa fa-square-o"></i>
+                                {{/if}}
+                            </button>
                             <button class="btn btn-sm btn-default js-edit-server" title="Edit">
                                 <i class="fa fa-pencil"></i>
                             </button>
