@@ -33,7 +33,10 @@ Package.onUse(function(api) {
     api.addFiles('client/collections/subscriptions.js', 'client');
 
     // Importable colors / typography settings
-    api.addFiles('client/app.styl', 'client', {
+    api.addFiles([
+      'client/styles/spacings.styl',
+      'client/app.styl'
+    ], 'client', {
         isImport: true
     });
 
