@@ -1,7 +1,7 @@
 Template.flexboxLayout.onCreated(() => {
     const instance = Template.instance();
     instance.state = instance.data.state;
-    instance.timepointType = new ReactiveVar();
+    instance.timepointViewType = new ReactiveVar();
 });
 
 var resizeTimeout;
@@ -22,10 +22,13 @@ Template.flexboxLayout.onRendered(() => {
 });
 
 Template.flexboxLayout.helpers({
+    timepointViewType() {
+        return Template.instance().timepointViewType;
+    },
     buttonGroupData() {
         const instance = Template.instance();
         return {
-            value: instance.timepointType,
+            value: instance.timepointViewType,
             options: [{
                 key: 'key',
                 text: 'Key Timepoints'

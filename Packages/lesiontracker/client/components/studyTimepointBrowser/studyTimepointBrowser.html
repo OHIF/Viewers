@@ -2,8 +2,10 @@
     <div class="studyTimepointBrowser">
         <div class="scrollableStudyThumbnails">
             {{#each timepoint in timepoints}}
-                <h2>{{@index}}</h2>
-                {{>studyTimepoint timepoint=timepoint index=@index}}
+                {{#if shouldShowTimepoint timepoint @index}}
+                    <h4>{{timepointTitle timepoint timepoints.count @index}}</h4>
+                    {{>studyTimepoint timepoint=timepoint index=@index}}
+                {{/if}}
             {{/each}}
         </div>
     </div>
