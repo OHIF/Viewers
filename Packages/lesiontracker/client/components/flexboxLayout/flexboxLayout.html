@@ -2,24 +2,17 @@
     <div class="viewerSection">
         <div class="sidebarMenu sidebar-left {{ #if studySidebarOpen }}sidebar-open{{/if}}">
             <div>
-                <div class="studiesListedChanger viewerRoundedButtonGroup">
-                    <a id="keyTimepoints" class="viewerRoundedButton noselect {{inlineIf studiesListed "keyTimepoints" "active"}}">
-                        Key Timepoints
-                    </a>
-                    <a id="allTimepoints" class="viewerRoundedButton noselect {{inlineIf studiesListed "allTimepoints" "active"}}">
-                        All Timepoints
-                    </a>
-                </div>
+                {{>roundedButtonGroup buttonGroupData}}
                 <div class="studyBrowserContainer">
-                    {{> studyTimepointBrowser}}
+                    {{>studyTimepointBrowser}}
                 </div>
             </div>
         </div>
         <div class="mainContent {{ #if studySidebarOpen }}sidebar-left-open{{/if}} {{ #if lesionSidebarOpen }}sidebar-right-open{{/if}}">
-            {{ >viewerMain }}
+            {{>viewerMain}}
         </div>
         <div class="sidebarMenu sidebar-right {{ #if lesionSidebarOpen }}sidebar-open{{/if}}">
-            {{>lesionTable }}
+            {{>lesionTable}}
         </div>
         <div class="sidebarMenu sidebar-right {{ #if additionalMeasurementsSidebarOpen }}sidebar-open{{/if}}">
             Additional Measurements

@@ -1,12 +1,12 @@
-Template.flexboxLayout.onCreated(function() {
-    var instance = this;
-
+Template.flexboxLayout.onCreated(() => {
+    const instance = Template.instance();
     instance.state = instance.data.state;
+    instance.timepointType = new ReactiveVar();
 });
 
 var resizeTimeout;
-Template.flexboxLayout.onRendered(function() {
-    var instance = this;
+Template.flexboxLayout.onRendered(() => {
+    const instance = Template.instance();
 
     instance.autorun(function() {
         Meteor.clearTimeout(resizeTimeout);
@@ -22,12 +22,25 @@ Template.flexboxLayout.onRendered(function() {
 });
 
 Template.flexboxLayout.helpers({
-    studySidebarOpen: function() {
-        var instance = Template.instance();
+    buttonGroupData() {
+        const instance = Template.instance();
+        return {
+            value: instance.timepointType,
+            options: [{
+                key: 'key',
+                text: 'Key Timepoints'
+            }, {
+                key: 'all',
+                text: 'All Timepoints'
+            }]
+        };
+    },
+    studySidebarOpen() {
+        const instance = Template.instance();
         return instance.state.get('studySidebarOpen');
     },
-    lesionSidebarOpen: function() {
-        var instance = Template.instance();
+    lesionSidebarOpen() {
+        const instance = Template.instance();
         return instance.state.get('lesionSidebarOpen');
     }
 });

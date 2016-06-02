@@ -1,0 +1,7 @@
+<template name="studyTimepointStudy">
+    <div class="studyTimepointStudy">
+        {{#each thumbnail in (thumbnails this.study)}}
+            {{>thumbnailEntry thumbnail}}
+        {{/each}}
+    </div>
+</template>

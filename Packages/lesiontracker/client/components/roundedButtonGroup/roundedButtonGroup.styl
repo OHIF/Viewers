@@ -1,0 +1,48 @@
+@import "../../app"
+
+$height = 25px
+$borderColorDefault = #3C5D80
+$borderColorActive = #3c8074
+$textColorDefault = #91B9CD
+$textColorActive = #2D2D2D
+
+.viewerRoundedButtonGroup
+  font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-weight: 500
+  position: relative
+
+  .viewerRoundedButton
+    background: $darkUiColor
+    border: 1px $borderColorDefault solid
+    color: $textColorDefault
+    cursor: pointer
+    display: table
+    margin-left: -1px
+    float: left
+    font-size: 11px
+    height: $height
+    line-height: $height
+    padding: 0 15px
+    text-decoration: none
+    text-transform: uppercase
+    transition: $sidebarTransition
+    -webkit-transition: $sidebarTransition
+    -ms-transition: $sidebarTransition
+    -o-transition: $sidebarTransition
+    -moz-transition: $sidebarTransition
+    z-index: 1
+
+    &.active
+      background: $activeColor
+      color: $textColorActive
+      border-color: $borderColorActive
+      z-index: 2
+
+    &:first-child
+      margin-left: 0
+      border-bottom-left-radius: $height
+      border-top-left-radius: $height
+
+    &:last-child
+      border-bottom-right-radius: $height
+      border-top-right-radius: $height
