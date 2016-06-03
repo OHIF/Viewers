@@ -34,8 +34,11 @@ Package.onUse(function(api) {
 
     // Importable colors / typography settings
     api.addFiles([
-      'client/styles/spacings.styl',
-      'client/app.styl'
+        'client/app.styl',
+        'client/styles/global.styl',
+        'client/styles/mixins.styl',
+        'client/styles/spacings.styl',
+        'client/styles/variables.styl'
     ], 'client', {
         isImport: true
     });
@@ -156,6 +159,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.styl', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.js', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.html', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.js', 'client');
 
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.html', 'client');

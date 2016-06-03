@@ -3,7 +3,10 @@
         <div class="scrollableStudyThumbnails">
             {{#each timepoint in timepoints}}
                 {{#if shouldShowTimepoint timepoint @index}}
-                    <h4>{{timepointTitle timepoint timepoints.count @index}}</h4>
+                    <hr class="m-y-1">
+                    <div class="timepointFollowupTitle m-t-2">
+                        {{timepointTitle timepoint timepoints.count @index}}
+                    </div>
                     {{>studyTimepoint timepoint=timepoint index=@index}}
                 {{/if}}
             {{/each}}
