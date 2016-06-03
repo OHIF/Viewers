@@ -131,6 +131,8 @@ Package.onUse(function(api) {
     api.addFiles('lib/validators.js', 'client');
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
+    api.addFiles('lib/isImage.js', 'client');
+    api.addFiles('lib/sopClassDictionary.js', 'client');
 
     api.export('resizeViewportElements', 'client');
     api.export('handleResize', 'client');
@@ -154,6 +156,8 @@ Package.onUse(function(api) {
     api.export('getInstanceClassDefaultViewport', 'client');
     api.export('showConfirmDialog', 'client');
     api.export('applyWLPreset', 'client');
+    api.export('isImage', 'client');
+    api.export('sopClassDictionary', 'client');
 
     // Export the ValidateJS Library with our added validators
     //api.export('validate', 'client');

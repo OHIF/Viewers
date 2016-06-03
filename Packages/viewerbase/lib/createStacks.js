@@ -22,9 +22,9 @@ createStacks = function(study) {
         }
 
         // Don't display thumbnails for non-image modalities
-        // All imaging modalities must have a valid value for rows (or columns)
+        // All imaging modalities must have a valid value for sopClassUid or rows
         var anInstance = series.instances[0];
-        if (!anInstance || !anInstance.rows) {
+        if (!anInstance || (!isImage(anInstance.sopClassUid) && !anInstance.rows)) {
             return;
         }
 
