@@ -1,8 +1,8 @@
 Template.studyTimepointBrowser.events({
-    'click .studyTimepointStudy'(event, instance) {
-        const element = event.currentTarget;
-        instance.$('.studyTimepointStudy').not(element).removeClass('active');
-        $(element).toggleClass('active');
+    'click .studyModality'(event, instance) {
+        const study = $(event.currentTarget).closest('.studyTimepointStudy')[0];
+        instance.$('.studyTimepointStudy').not(study).removeClass('active');
+        $(study).toggleClass('active');
     }
 });
 
