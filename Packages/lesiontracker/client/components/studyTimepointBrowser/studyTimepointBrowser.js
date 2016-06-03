@@ -1,3 +1,11 @@
+Template.studyTimepointBrowser.events({
+    'click .studyTimepointStudy'(event, instance) {
+        const element = event.currentTarget;
+        instance.$('.studyTimepointStudy').not(element).removeClass('active');
+        $(element).toggleClass('active');
+    }
+});
+
 Template.studyTimepointBrowser.helpers({
     timepoints: function() {
         const sort = {

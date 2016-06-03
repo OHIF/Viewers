@@ -8,8 +8,10 @@
                 <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
             </div>
         </div>
-        {{#each thumbnail in (thumbnails this.study)}}
+        <div class="studyTimepointThumbnails">
+            {{#each thumbnail in (thumbnails this.study)}}
             {{>thumbnailEntry thumbnail}}
-        {{/each}}
+            {{/each}}
+        </div>
     </div>
 </template>
