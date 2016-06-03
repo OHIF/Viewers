@@ -1,6 +1,6 @@
 Template.imageThumbnail.onRendered(function() {
     var instance = this.data.stack.instances[0];
-    var element = this.find('.imageThumbnail');
+    var element = this.find('.imageThumbnailCanvas');
 
     cornerstone.disable(element);
     $(element).find('canvas').remove();
@@ -12,7 +12,7 @@ Template.imageThumbnail.onRendered(function() {
     var elem = $(element);
     elem.find('.imageThumbnailLoadingIndicator').css('display', 'block');
 
-    var thumbnailIndex = $('.imageThumbnail').index(element);
+    var thumbnailIndex = $('.imageThumbnailCanvas').index(element);
     ThumbnailLoading[thumbnailIndex] = imageId;
 
     this.data.thumbnailIndex = thumbnailIndex;

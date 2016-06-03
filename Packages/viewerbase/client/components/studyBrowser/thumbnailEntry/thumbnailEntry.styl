@@ -1,24 +1,16 @@
+// TODO: [design] migrate stylus files to a common OHIF package
+@import "{lesiontracker}/client/app"
+
 .thumbnailEntry
-  width: 105px
-  padding: 5px
-  background-color: black
-  border: 1px solid #424242
-  margin: 0 auto
   cursor: copy
   cursor: -webkit-grab
   cursor: -moz-grab
-  
+  display: table
+  margin: 0 auto
+  font-family: Roboto
+
   .seriesDescription
-    text-align: center
-    color: #555
+    color: $textPrimaryColor
+    font-size: 14px
+    line-height: 1.3em
     word-wrap: break-word
-    
-  &:hover
-    background-color: white
-      
-  &.active
-    background-color: #424242
-    border-color: #4e4e4e
-    
-    .seriesDescription
-      color: white

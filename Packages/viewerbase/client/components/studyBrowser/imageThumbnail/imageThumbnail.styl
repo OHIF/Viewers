@@ -1,10 +1,19 @@
+// TODO: [design] migrate stylus files to a common OHIF package
+@import "{lesiontracker}/client/app"
+
 .imageThumbnail
-  width: 90px
-  height: 90px
-  background-color: black
+  background-color: $primaryBackgroundColor
+  border: 1px solid $uiBorderColorDark
+  border-radius: 7px
+  height: 135px
   margin: 0 auto
   position: relative
-  
+  width: 217px
+
+.imageThumbnailCanvas
+  height: 100%
+  overflow: hidden
+
 .thumbnailLoadingIndicator
   display: none
   pointer-events: none
@@ -17,7 +26,7 @@
   bottom: 0
   margin: auto
   position: absolute
-  
+
   p
     text-align: center
     font-size: 10pt
