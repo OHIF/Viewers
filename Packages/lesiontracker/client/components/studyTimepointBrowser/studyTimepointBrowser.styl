@@ -1,0 +1,26 @@
+@import "../../app"
+
+.studyTimepointBrowser
+  background-color: $primaryBackgroundColor
+  float: left
+  height: calc(100% - 60px - 50px - 30px)
+  overflow: hidden
+  width: 100%
+
+  .timepointFollowupTitle
+    color: $textSecondaryColor
+    font-family: Roboto
+    font-size: 13px
+    padding-top: 2px
+    text-transform: uppercase
+
+  .studyTimepointScrollArea
+    height: 100%
+    overflow-x: hidden
+    overflow-y: auto
+    margin-right: -16px
+    padding-bottom: 20px
+    padding-right: 16px
+
+    &::-webkit-scrollbar
+      display: none

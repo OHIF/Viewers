@@ -24,6 +24,10 @@ Array.prototype.move = function(oldIndex, newIndex) {
  */
 function getStageIndex(protocol, id) {
     var stageIndex;
+    if (!protocol || !protocol.stages) {
+        return;
+    }
+
     protocol.stages.forEach(function(stage, index) {
         if (stage.id === id) {
             stageIndex = index;

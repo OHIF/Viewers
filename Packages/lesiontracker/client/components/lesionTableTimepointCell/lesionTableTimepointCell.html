@@ -1,11 +1,11 @@
 <template name="lesionTableTimepointCell">
     {{ #if hasDataAtThisTimepoint }}
-        {{ #if isBirectional }}
-            <td class="lesionTableTimepointCell targetCell" tabindex="1">{{displayData}}</td>
-        {{ else }}
-            <td class="lesionTableTimepointCell nonTargetCell" tabindex="1">{{displayData}}</td>
-        {{ /if }}
+    <div class="lesionTableTimepointCell" tabindex="1">
+        {{displayData}}
+    </div>
     {{ else }}
-    <td class="lesionTableTimepointCell empty"></td>
+    <div class="lesionTableTimepointCell empty">
+        ...
+    </div>
     {{ /if }}
 </template>

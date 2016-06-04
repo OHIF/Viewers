@@ -1,0 +1,7 @@
+<template name="studyTimepoint">
+    <div class="studyTimepoint">
+        {{#each study in (studies this.timepoint)}}
+            {{>studyTimepointStudy study=study}}
+        {{/each}}
+    </div>
+</template>

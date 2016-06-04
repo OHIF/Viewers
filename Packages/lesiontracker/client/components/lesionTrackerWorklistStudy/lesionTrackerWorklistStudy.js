@@ -45,7 +45,10 @@ Template[defaultTemplate].helpers({
             return;
         }
 
-        var timepointReviewers = Reviewers.findOne({timepointId: timepoint.timepointId});
+        var timepointReviewers = Reviewers.findOne({
+            timepointId: timepoint.timepointId
+        });
+        
         if (!timepointReviewers) {
             return;
         }
@@ -59,7 +62,7 @@ function getReviewerTipText(reviewers) {
         return;
     }
 
-    var newReviewers = reviewers.filter(function ( reviewer ) {
+    var newReviewers = reviewers.filter(function(reviewer) {
         return reviewer.userId !== Meteor.userId();
     });
 
@@ -76,6 +79,7 @@ function getReviewerTipText(reviewers) {
         if (index > 0) {
             tipText += ',';
         }
+
         tipText += reviewer.userName;
 
     });

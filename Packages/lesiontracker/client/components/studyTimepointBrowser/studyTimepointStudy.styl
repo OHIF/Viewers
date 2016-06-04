@@ -1,0 +1,99 @@
+@import "../../app"
+
+$boxBackgroundColor = #3E5975
+$boxBorderColor = transparent
+$boxHoverBackgroundColor = #14191E
+$boxHoverBorderColor = #2d4660
+$boxActiveBackgroundColor = $activeColor
+$boxActiveTextColor = $primaryBackgroundColor
+$boxActiveBorderColor = #131D29
+$boxWidth = 50px
+$borderThickness = 2px
+$boxBorderRadius = 8px
+$nestingMargin = 6px
+$spacerX = 7px
+$spacerY = 12px
+
+.studyTimepointStudy
+
+  &.active
+    .studyModality
+      box-shadow: inset 0 0 0 3px $activeColor
+      .studyModalityBox
+        color: $boxActiveTextColor
+        &
+        &:before
+        &:after
+          background-color: $boxActiveBackgroundColor
+          border-color: $boxActiveBorderColor
+
+  &:not(.active) .studyTimepointThumbnails
+    max-height: 0 !important
+
+  .studyTimepointThumbnails
+    overflow: hidden
+    transition($sidebarTransition)
+
+  .studyModality
+    border: 1px solid $boxBorderColor
+    border-radius: 12px
+    cursor: pointer
+    font-family: Roboto
+    padding: $spacerY $spacerX ($spacerY - 1)
+    position: relative
+    transition($sidebarTransition)
+    z-index: 1
+
+    &:hover
+      background-color: $boxHoverBackgroundColor
+      border-color: $boxHoverBorderColor
+
+    .studyModalityText
+      font-size: 13px
+      left: ($spacerX * 3) + $boxWidth + ($nestingMargin * 3)
+      line-height: 14px
+      position: absolute
+      right: $spacerX
+      top: $spacerY
+      .studyModalityDate
+        margin-top: 8px
+        color: $textSecondaryColor
+      .studyModalityDescription
+        margin-top: 8px
+        color: $textPrimaryColor
+
+    .studyModalityBox
+      color: $textSecondaryColor
+      font-size: 22px
+      line-height: $boxWidth
+      margin-left: $nestingMargin * 2
+      margin-top: $nestingMargin * 2
+      position: relative
+      text-align: center
+      text-transform: uppercase
+
+      &
+      &:before
+      &:after
+        background-color: $boxBackgroundColor
+        border: $borderThickness solid $primaryBackgroundColor
+        border-radius: $boxBorderRadius
+        height: $boxWidth + ($borderThickness * 2)
+        transition($sidebarTransition)
+        width: $boxWidth + ($borderThickness * 2)
+
+      &:before
+      &:after
+        display: block
+        content: ''
+        position: absolute
+
+      &:before
+        top: -($borderThickness + $nestingMargin)
+        left: -($borderThickness + $nestingMargin)
+        z-index: -1
+
+      &:after
+        top: -($borderThickness + ($nestingMargin * 2))
+        left: -($borderThickness + ($nestingMargin * 2))
+        z-index: -2

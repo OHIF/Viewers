@@ -1,0 +1,7 @@
+<template name="roundedButtonGroup">
+    <div class="{{class}} viewerRoundedButtonGroup clearfix center-table">
+        {{#each item in this.options}}
+            <a class="viewerRoundedButton noselect {{inlineIf value.get item.key 'active'}}" data-key="{{item.key}}">{{item.text}}</a>
+        {{/each}}
+    </div>
+</template>

@@ -1,0 +1,17 @@
+<template name="studyTimepointStudy">
+    <div class="studyTimepointStudy">
+        <div class="studyModality">
+            <!-- TODO: [design] find where to get the modality abbreviation -->
+            <div class="studyModalityBox">CT</div>
+            <div class="studyModalityText">
+                <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
+                <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
+            </div>
+        </div>
+        <div class="studyTimepointThumbnails">
+            {{#each thumbnail in (thumbnails this.study)}}
+            {{>thumbnailEntry thumbnail}}
+            {{/each}}
+        </div>
+    </div>
+</template>

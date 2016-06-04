@@ -1,0 +1,18 @@
+<template name="lesionTableHeaderRow">
+    <div class="lesionTableHeaderRow">
+        <div class="add">
+            +
+        </div>
+        <div class="type">
+            {{type}}
+        </div>
+        {{ #if maxNumLesions }}
+            <div class="maxNumLesions">
+                Max {{maxNumLesions}}
+            </div>
+        {{/if}}
+        <div class="numberOfLesions">
+            {{numberOfLesions}}
+        </div>
+    </div>
+</template>

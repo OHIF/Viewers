@@ -1,4 +1,10 @@
-Template.viewerMain.helpers({
+Template.toolbarSection.onRendered(function() {
+    var instance = this;
+
+    instance.state = instance.data.state;
+});
+
+Template.toolbarSection.helpers({
     toolbarOptions: function() {
         var toolbarOptions = {};
 
@@ -14,13 +20,6 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
-            id: 'wwwc',
-            title: 'WW/WC',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-sun-o'
-        });
-
-        buttonData.push({
             id: 'zoom',
             title: 'Zoom',
             classes: 'imageViewerTool',
@@ -28,17 +27,17 @@ Template.viewerMain.helpers({
         });
 
         buttonData.push({
+            id: 'wwwc',
+            title: 'Levels',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-sun-o'
+        });
+
+        buttonData.push({
             id: 'pan',
             title: 'Pan',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows'
-        });
-
-        buttonData.push({
-            id: 'stackScroll',
-            title: 'Stack Scroll',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-bars'
         });
 
         buttonData.push({
@@ -57,14 +56,14 @@ Template.viewerMain.helpers({
 
         buttonData.push({
             id: 'bidirectional',
-            title: 'Target Tool',
+            title: 'Target',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-arrows-alt'
         });
 
         buttonData.push({
             id: 'nonTarget',
-            title: 'Non-Target Tool',
+            title: 'Non-Target',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-long-arrow-up'
         });
@@ -117,11 +116,13 @@ Template.viewerMain.helpers({
     }
 });
 
-Template.viewerMain.onRendered(function() {
-    var parentNode = document.getElementById('layoutManagerTarget');
-    var studies = this.data.studies;
-    layoutManager = new LayoutManager(parentNode, studies);
-
-    ProtocolEngine = new HP.ProtocolEngine(layoutManager, studies);
-    HP.setEngine(ProtocolEngine);
+Template.toolbarSection.events({
+    'click #studySidebarToggle': function(event, instance) {
+        var isOpen = instance.data.state.get('studySidebarOpen');
+        instance.data.state.set('studySidebarOpen', !isOpen);
+    },
+    'click #lesionSidebarToggle': function(event, instance) {
+        var isOpen = instance.data.state.get('lesionSidebarOpen');
+        instance.data.state.set('lesionSidebarOpen', !isOpen);
+    }
 });
