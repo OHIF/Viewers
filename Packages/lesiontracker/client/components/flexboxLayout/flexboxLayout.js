@@ -14,6 +14,7 @@ Template.flexboxLayout.onRendered(function() {
         // Trigger a resize any time the layout state changes
         var studySidebarOpen = instance.state.get('studySidebarOpen');
         var lesionSidebarOpen = instance.state.get('lesionSidebarOpen');
+        var additionalMeasurementsSidebarOpen = instance.state.get('additionalMeasurementsSidebarOpen');
 
         resizeTimeout = Meteor.setTimeout(function() {
             handleResize();
@@ -29,5 +30,15 @@ Template.flexboxLayout.helpers({
     lesionSidebarOpen: function() {
         var instance = Template.instance();
         return instance.state.get('lesionSidebarOpen');
+    },
+    additionalMeasurementsSidebarOpen: function() {
+        var instance = Template.instance();
+        return instance.state.get('additionalMeasurementsSidebarOpen');
+    },
+    rightSidebarOpen: function() {
+        var instance = Template.instance();
+        var lesionSidebarOpen = instance.data.state.get('lesionSidebarOpen');
+        var additionalMeasurementsSidebarOpen = instance.data.state.get('additionalMeasurementsSidebarOpen');
+        return lesionSidebarOpen || additionalMeasurementsSidebarOpen;
     }
 });

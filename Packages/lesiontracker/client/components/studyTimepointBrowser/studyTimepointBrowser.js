@@ -1,10 +1,11 @@
-
 Template.studyTimepointBrowser.helpers({
     timepoints: function() {
         return Timepoints.find();
     },
-    studies : function() {
-        return ViewerStudies.find({selected: true});
+    studies: function() {
+        return ViewerStudies.find({
+            selected: true
+        });
     },
     thumbnails: function() {
         var study = this;

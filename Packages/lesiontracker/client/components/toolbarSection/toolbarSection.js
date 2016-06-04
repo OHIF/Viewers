@@ -124,5 +124,11 @@ Template.toolbarSection.events({
     'click #lesionSidebarToggle': function(event, instance) {
         var isOpen = instance.data.state.get('lesionSidebarOpen');
         instance.data.state.set('lesionSidebarOpen', !isOpen);
+        instance.data.state.set('additionalMeasurementsSidebarOpen', false);
+    },
+    'click #additionalMeasurementsSidebarToggle': function(event, instance) {
+        var isOpen = instance.data.state.get('additionalMeasurementsSidebarOpen');
+        instance.data.state.set('additionalMeasurementsSidebarOpen', !isOpen);
+        instance.data.state.set('lesionSidebarOpen', false);
     }
 });

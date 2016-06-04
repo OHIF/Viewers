@@ -62,7 +62,7 @@ Package.onUse(function(api) {
         bare: true
     });
 
-    api.addAssets('assets/magnifyingGlass.svg', 'client');
+    api.addAssets('assets/icons.svg', 'client');
 
     // UI Components
     api.addFiles('client/components/viewer/viewer.html', 'client');
@@ -86,6 +86,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTracker/lesionTracker.js', 'client');
     
     api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.html', 'client');
+
+    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.html', 'client');
+    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.styl', 'client');
+    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.js', 'client');
 
     api.addFiles('client/components/associationModal/associationModal.html', 'client');
     api.addFiles('client/components/associationModal/associationModal.styl', 'client');
