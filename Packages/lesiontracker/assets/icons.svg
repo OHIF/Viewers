@@ -59,7 +59,7 @@
     <title>
       Studies
     </title>
-    <path d="M0 13L7 13 7 7 0 7 0 13 0 13ZM0 0L0 6 7 6 7 0 0 0ZM8 13L15 13 15 7 8 7 8 13ZM8 0L8 6 15 6 15 0 8 0Z" id="boxes"/>
+    <path d="M0 13L7 13 7 7 0 7 0 13 0 13ZM0 0L0 6 7 6 7 0 0 0ZM8 13L15 13 15 7 8 7 8 13ZM8 0L8 6 15 6 15 0 8 0Z" id="boxes" stroke="none"/>
   </symbol>
   <symbol id="icon-study-modality" viewBox="0 0 64 62">
     <title>
@@ -73,8 +73,8 @@
     <title>
       Window / Level
     </title>
-    <circle id="Oval-2" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" cx="8" cy="8" r="8"></circle>
-    <path d="M13.9867821,2.69341277 C15.2393779,4.10552346 16,5.96393532 16,8 C16,12.418278 12.418278,16 8,16 C5.96393532,16 4.10552346,15.2393779 2.69341277,13.9867821 L13.9867821,2.69341277 Z" id="Combined-Shape" fill="#000000"></path>
+    <circle id="Oval-2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" cx="8" cy="8" r="8" fill="none"></circle>
+    <path d="M13.9867821,2.69341277 C15.2393779,4.10552346 16,5.96393532 16,8 C16,12.418278 12.418278,16 8,16 C5.96393532,16 4.10552346,15.2393779 2.69341277,13.9867821 L13.9867821,2.69341277 Z" id="Combined-Shape"></path>
   </symbol>
   <symbol id="icon-tools-link" viewBox="0 0 23 15">
     <title>
@@ -122,23 +122,21 @@
     <title>
       Pan
     </title>
-    <g fill-rule="evenodd">
-      <path d="M8,15 L8,0" id="Line"></path>
-      <path d="M15,8 L1,8" id="Line"></path>
-      <polyline id="Path-28" points="6 1.99816663 7.99816663 0 10.0091928 2.01102613"></polyline>
-      <polyline id="Path-28" transform="translate(8.004596, 15.005513) rotate(-180.000000) translate(-8.004596, -15.005513) " points="6 15.9981666 7.99816663 14 10.0091928 16.0110261"></polyline>
-      <polyline id="Path-28" transform="translate(1.005513, 8.004596) rotate(-90.000000) translate(-1.005513, -8.004596) " points="-0.999083316 8.99724995 0.999083316 6.99908332 3.01010945 9.01010945"></polyline>
-      <polyline id="Path-28" transform="translate(15.005513, 8.004596) rotate(-270.000000) translate(-15.005513, -8.004596) " points="13.0009167 8.99724995 14.9990833 6.99908332 17.0101094 9.01010945"></polyline>
-    </g>
+    <path d="M8,15 L8,0" id="Line" stroke-width="2px"></path>
+    <path d="M15,8 L1,8" id="Line" stroke-width="2px"></path>
+    <polyline stroke-width="2px" points="6 1.99816663 7.99816663 0 10.0091928 2.01102613"></polyline>
+    <polyline stroke-width="2px" transform="translate(8.004596, 15.005513) rotate(-180.000000) translate(-8.004596, -15.005513) " points="6 15.9981666 7.99816663 14 10.0091928 16.0110261"></polyline>
+    <polyline stroke-width="2px" transform="translate(1.005513, 8.004596) rotate(-90.000000) translate(-1.005513, -8.004596) " points="-0.999083316 8.99724995 0.999083316 6.99908332 3.01010945 9.01010945"></polyline>
+    <polyline stroke-width="2px" transform="translate(15.005513, 8.004596) rotate(-270.000000) translate(-15.005513, -8.004596) " points="13.0009167 8.99724995 14.9990833 6.99908332 17.0101094 9.01010945"></polyline>
   </symbol>
   <symbol id="icon-tools-zoom" viewBox="0 0 17 17">
     <title>
       Zoom
     </title>
-    <ellipse id="Oval-1" cx="6" cy="6" rx="6" ry="6"/>
-    <path d="M10.5 10.5L15 15" id="Line"/>
+    <path d="M10.5 10.5 L15 15"/>
+    <ellipse cx="6" cy="6" rx="6" ry="6" fill="none"/>
   </symbol>
-  <symbol id="icon-trial-info" width="20" height="20" viewBox="0 0 20 20">
+  <symbol id="icon-trial-info" viewBox="0 0 20 20">
     <title>
       Trial Information
     </title>

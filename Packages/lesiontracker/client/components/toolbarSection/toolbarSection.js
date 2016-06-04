@@ -43,10 +43,10 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'clearTools',
-            title: 'Clear tools',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            iconClasses: 'fa fa-trash'
+            id: 'link',
+            title: 'Link',
+            classes: 'imageViewerCommand toolbarSectionButton disabled',
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-link'
         });
 
         return buttonData;
