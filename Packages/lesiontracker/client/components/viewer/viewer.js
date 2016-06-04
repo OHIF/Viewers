@@ -1,6 +1,7 @@
 Session.setDefault('activeViewport', false);
 Session.setDefault('studySidebarOpen', false);
 Session.setDefault('lesionSidebarOpen', false);
+Session.setDefault('additionalMeasurementsSidebarOpen', false);
 
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
@@ -12,6 +13,7 @@ Template.viewer.onCreated(function() {
     instance.data.state = new ReactiveDict();
     instance.data.state.set('studySidebarOpen', Session.get('studySidebarOpen'));
     instance.data.state.set('lesionSidebarOpen', Session.get('lesionSidebarOpen'));
+    instance.data.state.set('additionalMeasurementsSidebarOpen', Session.get('additionalMeasurementsSidebarOpen'));
 
     var contentId = this.data.contentId;
 

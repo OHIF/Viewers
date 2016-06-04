@@ -5,9 +5,9 @@ var http = require('http'),
     httpProxy = require('http-proxy');
 
 var proxy =  httpProxy.createProxyServer({
-    target: 'http://192.168.99.100:8042',
+    target: 'http://localhost:8042',
     auth: 'orthanc:orthanc'
-}).listen(8042);
+}).listen(8043);
 
 proxy.on('proxyRes', function(proxyReq, req, res, options) {
   // add the CORS header to the response

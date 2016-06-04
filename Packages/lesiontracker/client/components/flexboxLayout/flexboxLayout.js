@@ -15,6 +15,8 @@ Template.flexboxLayout.onRendered(() => {
         var studySidebarOpen = instance.state.get('studySidebarOpen');
         var lesionSidebarOpen = instance.state.get('lesionSidebarOpen');
 
+        var additionalMeasurementsSidebarOpen = instance.state.get('additionalMeasurementsSidebarOpen');
+
         resizeTimeout = Meteor.setTimeout(function() {
             handleResize();
         }, 300);
@@ -45,5 +47,15 @@ Template.flexboxLayout.helpers({
     lesionSidebarOpen() {
         const instance = Template.instance();
         return instance.state.get('lesionSidebarOpen');
+    },
+    additionalMeasurementsSidebarOpen() {
+        const instance = Template.instance();
+        return instance.state.get('additionalMeasurementsSidebarOpen');
+    },
+    rightSidebarOpen() {
+        const instance = Template.instance();
+        const lesionSidebarOpen = instance.data.state.get('lesionSidebarOpen');
+        const additionalMeasurementsSidebarOpen = instance.data.state.get('additionalMeasurementsSidebarOpen');
+        return lesionSidebarOpen || additionalMeasurementsSidebarOpen;
     }
 });

@@ -1,0 +1,13 @@
+<template name="toolbarSectionButton">
+    <div id="{{id}}" class="toolbarSectionButton {{classes}}" title="{{title}}">
+        <!--  data-container="body" data-toggle="tooltip" data-placement="bottom" -->
+        <div class="svgContainer">
+            <svg>
+                <use xlink:href={{svgLink}}></use>
+            </svg>
+        </div>
+        <div class="buttonLabel">
+            {{title}}
+        </div>
+    </div>
+</template>
