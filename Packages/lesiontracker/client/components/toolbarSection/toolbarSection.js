@@ -5,114 +5,51 @@ Template.toolbarSection.onRendered(function() {
 });
 
 Template.toolbarSection.helpers({
-    toolbarOptions: function() {
-        var toolbarOptions = {};
-
+    toolbarButtons: function() {
         var buttonData = [];
-
-        var btnGroup = [];
-
-        buttonData.push({
-            id: 'resetViewport',
-            title: 'Reset Viewport',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-undo'
-        });
-
         buttonData.push({
             id: 'zoom',
             title: 'Zoom',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-search'
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-zoom'
         });
 
         buttonData.push({
             id: 'wwwc',
             title: 'Levels',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-sun-o'
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-levels'
         });
 
         buttonData.push({
             id: 'pan',
             title: 'Pan',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows'
-        });
-
-        buttonData.push({
-            id: 'length',
-            title: 'Length Measurement',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows-v'
-        });
-
-        buttonData.push({
-            id: 'ellipticalRoi',
-            title: 'Elliptical ROI Measurement',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-circle-o'
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-pan'
         });
 
         buttonData.push({
             id: 'bidirectional',
             title: 'Target',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-arrows-alt'
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-measure-target'
         });
 
         buttonData.push({
             id: 'nonTarget',
             title: 'Non-Target',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-long-arrow-up'
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-measure-non-target'
         });
 
         buttonData.push({
             id: 'clearTools',
             title: 'Clear tools',
-            classes: 'imageViewerCommand',
+            classes: 'imageViewerCommand toolbarSectionButton',
             iconClasses: 'fa fa-trash'
         });
 
-        buttonData.push({
-            id: 'toggleLesionTrackerTools',
-            title: 'Show / hide tools',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-eye'
-        });
-
-        // CR/UN/EX Tools
-        var crunexToolsBtns = {
-            id: 'crunexTools',
-            tools: [{
-                id: 'crTool',
-                title: 'CR Tool',
-                classes: 'imageViewerTool',
-                iconClasses: 'fa fa-cr'
-            }, {
-                id: 'unTool',
-                title: 'UN Tool',
-                classes: 'imageViewerTool',
-                iconClasses: 'fa fa-un'
-            }, {
-                id: 'exTool',
-                title: 'EX Tool',
-                classes: 'imageViewerTool',
-                iconClasses: 'fa fa-ex'
-            }],
-            title: 'CR/UN/EX',
-            groupIcon: 'fa fa-exchange'
-        };
-
-        btnGroup.push(crunexToolsBtns);
-
-        toolbarOptions.buttonData = buttonData;
-        toolbarOptions.includePlayClipButton = false;
-        toolbarOptions.includeLayoutButton = false;
-        toolbarOptions.includeHangingProtocolButtons = false;
-        toolbarOptions.btnGroup = btnGroup;
-        return toolbarOptions;
+        return buttonData;
     }
 });
 
@@ -130,5 +67,60 @@ Template.toolbarSection.events({
         var isOpen = instance.data.state.get('additionalMeasurementsSidebarOpen');
         instance.data.state.set('additionalMeasurementsSidebarOpen', !isOpen);
         instance.data.state.set('lesionSidebarOpen', false);
+    },
+    // TODO: Inherit these from toolbar template somehow
+    'click .imageViewerTool': function(e) {
+        $(e.currentTarget).tooltip('hide');
+
+        var tool = e.currentTarget.id;
+
+        var elements = $('.imageViewerViewport');
+
+        var activeTool = toolManager.getActiveTool();
+        $('.toolbarSectionButton').removeClass('active');
+        if (tool === activeTool) {
+            var defaultTool = toolManager.getDefaultTool();
+            console.log('Setting active tool to: ' + defaultTool);
+            toolManager.setActiveTool(defaultTool, elements);
+        } else {
+            console.log('Setting active tool to: ' + tool);
+            toolManager.setActiveTool(tool, elements);
+        }
+    },
+    'click .imageViewerCommand': function(e) {
+        $(e.currentTarget).tooltip('hide');
+
+        var command = e.currentTarget.id;
+        if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
+            return;
+        }
+
+        var activeViewport = Session.get('activeViewport');
+        var element = $('.imageViewerViewport').get(activeViewport);
+        OHIF.viewer.functionList[command](element);
+    }
+});
+
+Template.toolbarSection.onRendered(function() {
+    var tooltipButtons = $('[data-toggle="tooltip"]');
+    tooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
+
+    // Enable tooltips for the layout button
+    var extraTooltipButtons = $('[rel="tooltip"]');
+    extraTooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
+
+    // Set disabled/enabled tool buttons that are set in toolManager
+    var states = toolManager.getToolDefaultStates();
+    var disabledToolButtons = states.disabledToolButtons;
+    var allToolbarButtons = $('#toolbar').find('button');
+    if (disabledToolButtons && disabledToolButtons.length > 0) {
+        for (var i = 0; i < allToolbarButtons.length; i++) {
+            var toolbarButton = allToolbarButtons[i];
+            $(toolbarButton).prop('disabled', false);
+            var index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
+            if (index !== -1) {
+                $(toolbarButton).prop('disabled', true);
+            }
+        }
     }
 });

@@ -11,7 +11,9 @@
             </div>
         </div>
         <div class="pull-left">
-            <!--toolbar toolbarOptions=toolbarOptions }}-->
+            {{ #each toolbarButtons }}
+                {{ >toolbarSectionButton }}
+            {{ /each }}
         </div>
         <!--<div class="centered">
             > studySeriesQuickSwitch

@@ -73,8 +73,8 @@
     <title>
       Window / Level
     </title>
-    <circle id="Oval-2" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" cx="8" cy="8" r="8"/>
-    <path d="M13.99 2.69C15.24 4.11 16 5.96 16 8 16 12.42 12.42 16 8 16 5.96 16 4.11 15.24 2.69 13.99L13.99 2.69Z" id="Combined-Shape"/>
+    <circle id="Oval-2" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" cx="8" cy="8" r="8"></circle>
+    <path d="M13.9867821,2.69341277 C15.2393779,4.10552346 16,5.96393532 16,8 C16,12.418278 12.418278,16 8,16 C5.96393532,16 4.10552346,15.2393779 2.69341277,13.9867821 L13.9867821,2.69341277 Z" id="Combined-Shape" fill="#000000"></path>
   </symbol>
   <symbol id="icon-tools-link" viewBox="0 0 23 15">
     <title>
@@ -122,12 +122,14 @@
     <title>
       Pan
     </title>
-    <path d="M8 15L8 0" id="Line"/>
-    <path d="M15 8L1 8" id="Line"/>
-    <polyline id="Path-28" points="6 2 8 0 10.01 2.01"/>
-    <polyline id="Path-28" transform="translate(8.004596, 15.005513) rotate(-180.000000) translate(-8.004596, -15.005513) " points="6 16 8 14 10.01 16.01"/>
-    <polyline id="Path-28" transform="translate(1.005513, 8.004596) rotate(-90.000000) translate(-1.005513, -8.004596) " points="-1 9 1 7 3.01 9.01"/>
-    <polyline id="Path-28" transform="translate(15.005513, 8.004596) rotate(-270.000000) translate(-15.005513, -8.004596) " points="13 9 15 7 17.01 9.01"/>
+    <g fill-rule="evenodd">
+      <path d="M8,15 L8,0" id="Line"></path>
+      <path d="M15,8 L1,8" id="Line"></path>
+      <polyline id="Path-28" points="6 1.99816663 7.99816663 0 10.0091928 2.01102613"></polyline>
+      <polyline id="Path-28" transform="translate(8.004596, 15.005513) rotate(-180.000000) translate(-8.004596, -15.005513) " points="6 15.9981666 7.99816663 14 10.0091928 16.0110261"></polyline>
+      <polyline id="Path-28" transform="translate(1.005513, 8.004596) rotate(-90.000000) translate(-1.005513, -8.004596) " points="-0.999083316 8.99724995 0.999083316 6.99908332 3.01010945 9.01010945"></polyline>
+      <polyline id="Path-28" transform="translate(15.005513, 8.004596) rotate(-270.000000) translate(-15.005513, -8.004596) " points="13.0009167 8.99724995 14.9990833 6.99908332 17.0101094 9.01010945"></polyline>
+    </g>
   </symbol>
   <symbol id="icon-tools-zoom" viewBox="0 0 17 17">
     <title>

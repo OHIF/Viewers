@@ -73,6 +73,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/flexboxLayout/flexboxLayout.styl', 'client');
     api.addFiles('client/components/flexboxLayout/flexboxLayout.js', 'client');
 
+    api.addFiles('client/components/toolbarSectionButton/toolbarSectionButton.html', 'client');
+    api.addFiles('client/components/toolbarSectionButton/toolbarSectionButton.styl', 'client');
+    api.addFiles('client/components/toolbarSectionButton/toolbarSectionButton.js', 'client');
+
     api.addFiles('client/components/toolbarSection/toolbarSection.html', 'client');
     api.addFiles('client/components/toolbarSection/toolbarSection.styl', 'client');
     api.addFiles('client/components/toolbarSection/toolbarSection.js', 'client');
