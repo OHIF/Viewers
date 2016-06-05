@@ -51,7 +51,7 @@ LayoutManager = class LayoutManager {
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227
                     var firstInstance = series.instances[0];
-                    if (!firstInstance.rows || !firstInstance.columns) {
+                    if (!firstInstance.rows) {
                         currentViewportData = {};
                     } else {
                         currentViewportData = {
