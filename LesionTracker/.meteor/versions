@@ -26,8 +26,8 @@ clinical:hipaa-audit-log@2.4.2
 clinical:hipaa-logger@1.0.1
 clinical:router@2.0.17
 clinical:router-location@2.0.14
-clinical:router-middleware-stack@2.0.13
-clinical:router-url@2.0.15
+clinical:router-middleware-stack@2.1.2
+clinical:router-url@2.1.0
 clinical:theming@0.4.10
 coffeescript@1.0.11
 cornerstone@0.0.1
