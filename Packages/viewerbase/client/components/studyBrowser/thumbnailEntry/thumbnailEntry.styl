@@ -1,24 +1,66 @@
+@import "{design}/app"
+
+$seriesCountBackgroundColor = #678696
+
 .thumbnailEntry
-  width: 105px
-  padding: 5px
-  background-color: black
-  border: 1px solid #424242
-  margin: 0 auto
   cursor: copy
   cursor: -webkit-grab
   cursor: -moz-grab
-  
-  .seriesDescription
-    text-align: center
-    color: #555
+  display: table
+  margin: 0 auto
+  font-family: Roboto
+
+  .seriesDetails
+    color: $textPrimaryColor
+    font-size: 14px
+    line-height: 1.3em
+    min-height: 36px
+    position: relative
     word-wrap: break-word
-    
-  &:hover
-    background-color: white
-      
-  &.active
-    background-color: #424242
-    border-color: #4e4e4e
-    
-    .seriesDescription
-      color: white
+
+  .seriesDescription
+    margin-right: 54px
+
+  .seriesInformation
+    position: absolute
+    right: 0
+    top: 0
+
+    .seriesInformationNumbers
+    .seriesInformationIcons
+      margin-right: 4px
+
+    .seriesInformationNumbers
+      color: $textSecondaryColor
+      float: left
+      font-size: 12px
+
+    .seriesInformationIcons
+      float: left
+      text-align: right
+
+      strong
+        color: $activeColor
+        font-size: 10px
+        // TODO: [design] try to find out what is the font-weight for Roboto-Black
+        font-weight: 500
+
+      div
+        background-color: $seriesCountBackgroundColor
+        margin-top: 6px
+        position: relative
+
+        &:after
+          background-color: $activeColor
+          box-shadow: 1px 1px rgba(0, 0, 0, .115)
+          left: -5px
+          position: absolute
+          top: -5px
+
+        &
+        &:after
+          border: 1px solid $primaryBackgroundColor
+          content: ''
+          display: block
+          height: 11px
+          width: 11px

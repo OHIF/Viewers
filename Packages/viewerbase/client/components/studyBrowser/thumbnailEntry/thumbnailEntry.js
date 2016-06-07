@@ -24,7 +24,7 @@ function thumbnailDragStartHandler(e, data) {
     // Identify the current study and series index from the thumbnail's DOM position
     var targetThumbnail = e.currentTarget;
     var imageThumbnail = $(targetThumbnail);
-    
+
     // Store this data for use during drag and drop
     OHIF.viewer.dragAndDropData = data;
 
@@ -32,7 +32,7 @@ function thumbnailDragStartHandler(e, data) {
     var targetId = targetThumbnail.id + 'DragClone';
     var clone = cloneElement(targetThumbnail, targetId);
     clone.classList.add('imageThumbnailClone');
-    
+
     // Set pointerEvents to pass through the clone DOM element
     // This is necessary in order to identify what is below it
     // when using document.elementFromPoint
@@ -40,7 +40,7 @@ function thumbnailDragStartHandler(e, data) {
 
     // Append the clone to the parent of the target
     targetThumbnail.parentNode.appendChild(clone);
-    
+
     // Set the cursor x and y positions from the current touch/mouse coordinates
     // Handle touchStart cases
     if (e.type === 'touchstart') {
@@ -61,7 +61,7 @@ function thumbnailDragStartHandler(e, data) {
 
     // This block gets the current position of the touch/mouse
     // relative to the thumbnail itself
-    // 
+    //
     // i.e. Where did the user grab it from?
     var position = imageThumbnail.position();
     var left = position.left;
@@ -70,7 +70,7 @@ function thumbnailDragStartHandler(e, data) {
     // This difference is saved for later so the element movement looks normal
     diffX = cursorX - left;
     diffY = cursorY - top;
-    
+
     // This sets the default style properties of the cloned element so it is
     // ready to be dragged around the page
     $(clone).css({
@@ -103,7 +103,7 @@ function thumbnailDragHandler(e, target) {
         'z-index': 100,
         visibility: 'visible'
     });
-    
+
     // Identify the element below the current cursor position
     var elemBelow = document.elementFromPoint(cursorX + diffX, cursorY + diffY);
 
@@ -156,7 +156,7 @@ function thumbnailDragEndHandler(e, target) {
 
     // Remove any current faded effects on viewports
     $('.imageViewerViewport canvas').removeClass('faded');
-    
+
     // If none exists, stop here
     if (!elemBelow) {
         return;
@@ -186,8 +186,19 @@ function thumbnailDragEndHandler(e, target) {
 
     var viewportIndex = $('.imageViewerViewport').index(element);
 
+    // Removes active class from previous selected series in viewport
+    const previousUid = layoutManager.viewportData[viewportIndex].seriesInstanceUid;
+    if (previousUid) {
+        $(`.thumbnailEntry[data-uid="${previousUid}"]`).removeClass('active');
+    }
+
     // Rerender the viewport using the drag and drop data
     layoutManager.rerenderViewportWithNewSeries(viewportIndex, OHIF.viewer.dragAndDropData);
+
+    // Set active state for dragged thumbnail entry
+    const newUid = OHIF.viewer.dragAndDropData.seriesInstanceUid
+    $(`.thumbnailEntry[data-uid="${newUid}"]`).addClass('active');
+
     return false;
 }
 
@@ -211,11 +222,5 @@ Template.thumbnailEntry.events({
     },
     'touchend .thumbnailEntry': function(e) {
         thumbnailDragEndHandler(e, e.currentTarget);
-    }
-});
-
-Template.thumbnailEntry.helpers({
-    seriesDescription: function() {
-        return this.stack.seriesDescription || '';
     }
 });

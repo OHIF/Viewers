@@ -1,0 +1,47 @@
+@import "{design}/app"
+
+.topBar
+  height: $topBarHeight
+  color: $textPrimaryColor
+  background-color: $primaryBackgroundColor
+
+  .brandSection
+    height: 100%
+    display: inline-block
+
+    img.logoImage
+      height: 100%
+      margin: 0 5px
+
+    .logoText
+      display: inline-block
+      font-family: $logoFontFamily
+      font-weight: $logoFontWeight
+      color: $textPrimaryColor
+
+  .studyListLinkSection
+    border-left: $uiBorderThickness solid $uiBorderColor;
+    padding: 5px
+    margin: 0 10px
+
+    a
+      text-decoration: none
+      cursor: pointer
+      line-height: 100%
+
+  .userAccountSection
+     margin: 0 10px
+
+#worklistTabs
+  height: "calc(100% - %s)" % $topBarHeight
+
+// Override Viewerbase's borders
+#imageViewerViewports .viewportContainer
+  border: none !important
+  outline: 0 !important // Prevent blue outline in Chrome
+
+  &:hover
+  &.active
+  &:hover.active
+    border: none !important
+    outline: 0 !important // Prevent blue outline in Chrome

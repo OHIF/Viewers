@@ -1,11 +1,38 @@
 <template name="lesionTableRow">
-    <tr id="{{lesionNumber}}" class="lesionTableRow" data-measurementid="{{_id}}">
-        <td class='lesionNumber'>{{lesionNumberAbsolute}}</td>
-        <!--<td class='location' tabindex="0">{{location}}</td>-->
-        <td class='target'>{{#if isTarget}} Y {{else}} N {{/if}}</td>
-        <!--Each time point as a column-->
-        {{# each timepoints }}
-            {{> lesionTableTimepointCell}}
-        {{/ each }}
-    </tr>
+    <div class="lesionTableRow" data-measurementid="{{_id}}">
+        <div class='lesionRowSidebar'>
+            <div class="lesionNumber">
+                {{lesionNumberAbsolute}}
+            </div>
+            <div class="lesionNumber">
+                {{ #if descriptionRequired }}
+                <div>
+                    <svg>
+                        <use xlink:href=/packages/lesiontracker/assets/icons.svg#icon-ui-warning></use>
+                    </svg>
+                </div>
+                {{ /if }}
+                {{ #if responseStatus }}
+                <div>
+                    CR
+                </div>
+                {{ /if }}
+            </div>
+        </div>
+        <div class="lesionDetails">
+            <div class='location'>
+                {{ #if location }}
+                    {{location}}
+                {{ else }}
+                    (No description)
+                {{ /if }}
+            </div>
+            <div class="timepointData">
+                <!--Each time point as a column-->
+                {{# each timepoints }}
+                    {{> lesionTableTimepointCell}}
+                {{/ each }}
+            </div>
+        </div>
+    </div>
 </template>

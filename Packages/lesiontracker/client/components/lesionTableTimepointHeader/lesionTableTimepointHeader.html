@@ -1,6 +1,10 @@
 <template name="lesionTableTimepointHeader">
-    <th class="lesionTableTimepointCell {{ #if isLoaded }}loaded{{/if}}" title="Latest study date: {{formatDA latestDate "MM/DD/YYYY"}}"
-        data-toggle="tooltip" data-placement="top">
-        {{ timepointName }}
-    </th>
+    <div class="lesionTableTimepointHeader">
+        <div class="timepointName">
+            {{ timepointName }}
+        </div>
+        <div  class="timepointDate">
+            {{ formatDA latestDate "DD-MMM-YY"}}
+        </div>
+    </div>
 </template>

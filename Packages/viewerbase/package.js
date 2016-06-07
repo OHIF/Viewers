@@ -13,9 +13,9 @@ Package.onUse(function(api) {
     api.use('jquery');
     api.use('stylus');
     api.use('practicalmeteor:loglevel');
-    api.use('momentjs:moment');
-    
+    api.use('momentjs:moment');    
     api.use('validatejs');
+    api.use('design');
 
     // Our custom packages
     api.use('cornerstone');
@@ -133,8 +133,6 @@ Package.onUse(function(api) {
     //api.addFiles('lib/validators.js', 'client');
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
-    api.addFiles('lib/isImage.js', 'client');
-    api.addFiles('lib/sopClassDictionary.js', 'client');
 
     api.export('resizeViewportElements', 'client');
     api.export('handleResize', 'client');
@@ -158,8 +156,6 @@ Package.onUse(function(api) {
     api.export('getInstanceClassDefaultViewport', 'client');
     api.export('showConfirmDialog', 'client');
     api.export('applyWLPreset', 'client');
-    api.export('isImage', 'client');
-    api.export('sopClassDictionary', 'client');
 
     // Export the ValidateJS Library with our added validators
     //api.export('validate', 'client');
@@ -177,6 +173,7 @@ Package.onUse(function(api) {
 
     // UI Helpers
     api.addFiles('lib/helpers/formatDA.js', 'client');
+    api.addFiles('lib/helpers/logical.js', 'client');
     api.addFiles('lib/helpers/formatJSDate.js', 'client');
     api.addFiles('lib/helpers/jsDateFromNow.js', 'client');
     api.addFiles('lib/helpers/formatNumberPrecision.js', 'client');
@@ -205,4 +202,3 @@ Package.onUse(function(api) {
     api.addFiles('server/collections.js', 'server');
     api.export('StudyImportStatus', [ 'client', 'server' ]);
 });
-

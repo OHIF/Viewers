@@ -1,38 +1,46 @@
 <template name="userAccountMenu">
     {{#if currentUser}}
-        <div id="userAccountMenu" class="row-fluid">
-            <div class="list-group panel">
-                <a href="#userMenu" class="list-group-item" id="userName" data-toggle="collapse" data-parent="#userAccountMenu">{{fullName}} {{currentPath}}<span class="caret"></span></a>
-
-                <div class="collapse pos-absolute" id="userMenu">
-
-                    {{#if showWorklistMenu}}
-                        <a href="worklist" id="worklist" data-toggle="collapse" data-target="#userMenu" class="list-group-item sub-item">
+        <div id="userAccountMenu" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{name}} {{currentPath}} | <i class="fa fa-cog fa-lg"></i>
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right">
+                {{#if showWorklistMenu}}
+                    <li>
+                        <a href="worklist" id="worklist">
                             <i class="fa fa-list-ul"></i> Worklist
                         </a>
-                    {{else}}
-                        <!--TODO: Move this elsewhere in the Worklist? -->
-                        <span data-toggle="collapse" data-target="#userMenu" class="list-group-item sub-item externalItem">{{>optionsButton }}</span>
-                        <a href="audit" id="audit" data-toggle="collapse" data-target="#userMenu" class="list-group-item sub-item">
+                    </li>
+                {{else}}
+                    <!--TODO: Move this elsewhere in the Worklist? -->
+                    <li>
+                        {{>optionsButton }}
+                    </li>
+                    <li>
+                        <a href="/audit" id="audit">
                             <i class="fa fa-list-ul"></i> View Audit Log
                         </a>
-                    {{/if}}
-
-                    <a href="#itemSettings" class="list-group-item sub-item" data-toggle="collapse" data-parent="#itemSettings"><i class="fa fa-cog fa-lg"></i> Settings <span class="caret"></span></a>
-                    <div class="collapse list-group-submenu" id="itemSettings">
-                        <a href="#" id="serverInformation" class="list-group-item sub-sub-item" data-parent="#itemSettings" data-toggle="collapse" data-target="#itemSettings,#userMenu"><i class="fa fa-server fa-lg"></i> Server Information</a>
-                    </div>
-
-                    <a href="#itemProfile" class="list-group-item sub-item" data-toggle="collapse" data-parent="#itemProfile" ><i class="fa fa-user fa-lg"></i> Profile <span class="caret"></span></a>
-                    <div class="collapse list-group-submenu" id="itemProfile">
-                        <a href="changePassword" id="changePassword" class="list-group-item sub-sub-item" data-parent="#itemProfile" data-toggle="collapse" data-target="#itemProfile,#userMenu"><i class="fa fa-lock"></i> Change Password</a>
-                    </div>
-
-                    <a href="#" id="logoutButton" data-toggle="collapse" data-target="#userMenu" class="list-group-item sub-item">
+                    </li>
+                {{/if}}
+                <li role="separator" class="divider"></li>
+                <li>
+                    <a id="serverInformation">
+                        <i class="fa fa-server fa-lg"></i> Server Information
+                    </a>
+                </li>
+                <li role="separator" class="divider"></li>
+                <li>
+                    <a href="changePassword" id="changePassword">
+                        <i class="fa fa-lock"></i> Change Password
+                    </a>
+                </li>
+                <li>
+                    <a id="logoutButton">
                         <i class="fa fa-power-off"></i> Logout
                     </a>
-                </div>
-            </div>
+                </li>
+            </ul>
         </div>
     {{/if}}
 </template>

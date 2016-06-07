@@ -1,0 +1,8 @@
+@import "{design}/app"
+
+.studyTimepointWrapper
+  overflow: hidden
+  transition($sidebarTransition)
+
+.timepointEntry:not(.active) .studyTimepointWrapper
+  max-height: 0 !important

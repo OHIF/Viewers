@@ -1,17 +1,9 @@
+@import "{design}/app"
+
 #lesionTableContainer
   width: 100%
   height: 16%
   background-color: #000000
-
-  #dragbar
-    width: 100%
-    height: 3px
-    top: 0
-    left: 0
-    right: 0
-    bottom: 0
-    background-color: #666666
-    cursor: row-resize
 
   #lesionTableWrapper
     position: relative
@@ -19,75 +11,13 @@
     height: 100%
     margin: 0 auto
 
-  .lesionTable
+.lesionTableTimepointHeaderRow
+  display: flex
 
-    td, th
-      border: 1px solid #FFFFFF
-      border-collapse: collapse
-      width: 100px
+  .spacer
+    width: 20px
 
-    td.lesionNumber, th#thNumber
-      width: 70px
-
-    td.location, th#thLocation
-      width: 250px
-
-    td.target, th#thTarget
-      width: 70px
-
-
-    thead
-      width: 100%
-      height: 40px
-      display: block
-
-      tr
-        width: 100%
-        height: 40px
-
-        th
-          border-bottom-width: 0
-          font-weight: normal
-          color: #FFFFFF
-          line-height: 15px
-          text-align: center
-          margin: 0
-          padding: 5px
-          background-color: #424242
-          vertical-align: middle
-
-    tbody
-      display: block
-      position: absolute
-      top: 40px
-      left: 0
-      right: 0
-      bottom: 0
-      overflow: auto
-      width: 100%
-      padding-bottom: 20px
-
-      tr.selectedRow
-        background: #F5F5F5 !important
-        color: #000000 !important
-
-      tr.lesionTableRow
-        width: 100%
-
-        &:nth-child(even)
-          background: #888
-        &:nth-child(odd)
-          background: #BBB
-        &:hover
-          cursor: pointer
-          background-color: #009BD2
-          color: white
-
-        td
-          border-bottom-width: 0
-          margin: 0
-          padding: 5px
-          line-height: 15px
-
-          &.lesionNumber,  &.target, &.lesionTableTimepointCell
-            text-align: center
+.lesionTableLayoutChanger
+  padding: 5px
+  text-align: center
+  margin: 0 auto

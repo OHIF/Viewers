@@ -1,0 +1,151 @@
+@import "{design}/app"
+
+.toolbarSection
+  height: $toolbarHeight
+  width: 100%
+  border-bottom: $uiBorderColor $uiBorderThickness solid
+
+  .capsule-group
+    display: inline-block
+
+    div.capsule-entry
+      display: inline-block
+      color: $defaultColor
+      fill: $defaultColor
+      stroke: $defaultColor
+      height: $toolbarHeight
+      min-width: 30px
+      cursor: pointer
+      text-align: center
+      margin: 0
+
+      div.capsule
+        width: 66px
+        height: 26px
+
+      &:first-child
+        .capsule
+          border-radius: 57px
+          background-color: #16202b
+          border: solid 1px #3c5d80
+          border-right: none
+          border-top-right-radius: 0
+          border-bottom-right-radius: 0
+
+      &:last-child
+        .capsule
+          border-radius: 57px
+          background-color: #16202b
+          border: solid 1px #3c5d80
+          border-left: none
+          border-top-left-radius: 0
+          border-bottom-left-radius: 0
+
+      &.disabled
+       opacity: 0.5
+       cursor: not-allowed
+
+      .svgContainer
+       margin: 0 auto
+       text-align: center
+
+      .capsule
+       width: 62px
+       height: 26px
+       border-radius: 100px
+       background-color: #16202b
+       border: solid 1px #3c5d80
+
+      svg
+       background-color: transparent
+       margin: 5px
+       width: 17px
+       height: 17px
+
+      &:active, &.active
+       color: $activeColor
+
+       svg
+         fill: $activeColor
+         stroke: $activeColor
+
+      &:hover
+       color: $hoverColor
+
+       svg
+         fill: $hoverColor
+         stroke: $hoverColor
+
+
+  .toolbarSectionButton
+    display: inline-block
+    color: $defaultColor
+    fill: $defaultColor
+    stroke: $defaultColor
+    padding: 0 10px
+    height: $toolbarHeight
+    min-width: 30px
+    cursor: pointer
+    text-align: center
+
+    &.disabled
+      opacity: 0.5
+      cursor: not-allowed
+
+    .buttonLabel
+      font-size: 12px
+
+    .svgContainer
+      margin: 0 auto
+      text-align: center
+
+    .capsule
+      width: 62px
+      height: 26px
+      border-radius: 100px
+      background-color: #16202b
+      border: solid 1px #3c5d80
+
+    svg
+      background-color: transparent
+      margin: 2px
+      width: 21px
+      height: 21px
+
+    &:active, &.active
+      color: $activeColor
+
+      svg
+        fill: $activeColor
+        stroke: $activeColor
+
+    &:hover
+      color: $hoverColor
+
+      svg
+        fill: $hoverColor
+        stroke: $hoverColor
+
+  .toolbarSectionEntry
+    display: inline-block
+    color: $defaultColor
+    fill: $defaultColor
+    stroke: $defaultColor
+    padding: 0 10px
+    height: $toolbarHeight
+    min-width: 30px
+    cursor: pointer
+    text-align: center
+
+  .quickSwitch
+    position: absolute
+
+    &.middle
+      left: calc(50% - 60px)
+
+    &.left
+      left: calc(50% - 160px)
+
+    &.right
+      left: 50%
+      margin-left: 20px

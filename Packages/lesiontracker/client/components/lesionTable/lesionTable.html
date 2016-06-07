@@ -1,27 +1,30 @@
 <template name="lesionTable">
     <div id="lesionTableContainer">
-        <div id="dragbar"></div>
-        <div id="lesionTableWrapper">
-            <table class="table table-striped noselect lesionTable" id="tblLesion">
-                <thead>
-                <tr>
-                    <th id="thNumber">Lesion #</th>
-                    <!--<th id="thLocation">Location</th>-->
-                    <th id="thTarget">Target</th>
-                    <!--Each time point name as a column-->
-                    {{ #each timepoints }}
-                    {{ >lesionTableTimepointHeader }}
-                    {{ /each }}
-                </tr>
-                </thead>
-                <tbody>
-                <!--Each measurement as row-->
-                {{ #each measurement }}
-                {{ >lesionTableRow }}
-                {{ /each }}
-                </tbody>
-            </table>
+        <div class="lesionTableLayoutChanger viewerRoundedButtonGroup">
+            {{ >roundedButtonGroup buttonGroupData }}
         </div>
+        <div class="lesionTableTimepointHeaderRow">
+            <div class="spacer">
+            </div>
+            {{ #each timepoints }}
+            {{ >lesionTableTimepointHeader }}
+            {{ /each }}
+        </div>
+        <div class="lesionTableWrapper">
+            {{ >lesionTableHeaderRow id="target" type="Targets" measurements=targets}}
+            {{ #each targets }}
+            {{ >lesionTableRow }}
+            {{ /each }}
 
+            {{ >lesionTableHeaderRow id="nonTarget" type="Non-targets" measurements=nonTargets}}
+            {{ #each nonTargets }}
+            {{ >lesionTableRow }}
+            {{ /each }}
+
+            {{ >lesionTableHeaderRow id="newLesions" type="New lesions" measurements=newLesions}}
+            {{ #each nonTargets }}
+            {{ >lesionTableRow }}
+            {{ /each }}
+        </div>
     </div>
 </template>

@@ -1,0 +1,68 @@
+@import "{design}/app"
+
+$switchSize = 50px
+
+.quickSwitch
+  position: absolute
+  width: 140px
+  height: 80px
+  top: 5px
+
+  div.switchSection
+    float: left
+    display: inline-block
+    margin: 0 5px
+
+    .label
+      display: block
+      text-transform: uppercase
+      text-align: center
+      font-size: 12px
+      font-weight: 100
+      color: $textSecondaryColor
+
+    .studySwitch
+      display: block
+      margin: 0 auto
+      width: $switchSize
+      height: $switchSize
+      border-radius: 11px
+      background-color: $darkUiColor
+      border: solid 1px $activeColor
+
+    .seriesSwitch
+      display: block
+      width: $switchSize
+      height: $switchSize
+
+      svg
+        width: $switchSize
+        height: $switchSize
+
+.mirror-x
+  transform(scaleX(-1));
+
+.studyHover
+  position: absolute
+  z-index: 10000
+  top: 70px
+  left: -350px
+  width: 400px
+  height: 500px
+  background: red
+  transition(all 0.3s ease)
+
+.seriesHover
+  position: absolute
+  z-index: 10000
+  top: 70px
+  left: 50px
+  width: 700px
+  height: 900px
+  background: blue
+  transition(all 0.3s ease)
+
+  &.tiny
+    width: 0
+    height: 0
+    opacity: 0

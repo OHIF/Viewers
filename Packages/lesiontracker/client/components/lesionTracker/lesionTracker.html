@@ -1,0 +1,35 @@
+<template name="lesionTracker">
+    <div class="topBar">
+        <a class="brandSection pull-left" href="http://ohif.org">
+            <img class="logoImage" src="/images/logo.png">
+            <div class="logoText">
+                Open Health Imaging Foundation
+            </div>
+        </a>
+        {{ #unless onStudyList}}
+        <div class="studyListLinkSection pull-left">
+            <a id="loadStudyList">Study List</a>
+        </div>
+        {{ /unless }}
+        <div class="userAccountSection pull-right">
+            {{>userAccountMenu}}
+        </div>
+    </div>
+    {{>timeoutCountdownDialog}}
+    <div id="worklistTabs" class="tab-content">
+        <div class="tab-pane active" id="worklistTab">
+            <div class="worklistContainer">
+                {{> worklistResult }}
+            </div>
+        </div>
+        <div class="tab-pane" id="viewerTab">
+        </div>
+    </div>
+    {{ >associationModal }}
+    {{ >optionsModal }}
+    {{ >serverInformationModal }}
+    {{ >confirmRemoveTimepointAssociation }}
+    {{ >lastLoginModal }}
+    {{ >studyContextMenu }}
+    {{ >progressDialog}}
+</template>

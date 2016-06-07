@@ -1,3 +1,15 @@
-#lesionTableContainer .lesionTable thead tr th.lesionTableTimepointCell.loaded
-  //font-weight: bold
-  color: #4fbfff
+@import "{design}/app"
+
+.lesionTableTimepointHeader
+  flex: 1
+  justify-content: space-around
+
+  div
+    text-align: center
+
+  .timepointName
+    color: $textSecondaryColor
+
+  .timepointDate
+    color: $textPrimaryColor
+    border-left: $uiBorderColor $uiBorderThickness solid

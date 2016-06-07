@@ -38,6 +38,7 @@ ddp-common@1.2.6
 ddp-rate-limiter@1.0.5
 ddp-server@1.2.9
 deps@1.0.12
+design@0.0.1
 dicomweb@0.0.1
 diff-sequence@1.0.6
 dimseservice@0.0.1

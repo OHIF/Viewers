@@ -1,6 +1,22 @@
 <template name="thumbnailEntry">
-    <div class="thumbnailEntry">
-        {{ >imageThumbnail }}
-        <div class='seriesDescription noselect'>{{seriesDescription}}</div>
+    <div class="thumbnailEntry m-t-1 m-b-2" data-uid="{{this.stack.seriesInstanceUid}}">
+        <div class="p-x-1">
+            {{>imageThumbnail}}
+        </div>
+        <div class="seriesDetails noselect m-a-1">
+            <div class="seriesDescription">
+                {{this.stack.seriesDescription}}
+            </div>
+            <div class="seriesInformation">
+                <div class="seriesInformationIcons">
+                    <strong>S:</strong>
+                    <div></div>
+                </div>
+                <div class="seriesInformationNumbers">
+                    <div>{{this.stack.seriesNumber}}</div>
+                    <div>{{this.stack.instances.length}}</div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>

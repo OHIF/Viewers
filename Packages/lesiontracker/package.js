@@ -7,9 +7,11 @@ Package.describe({
 Package.onUse(function(api) {
     api.versionsFrom('1.2.0.2');
 
+    api.use('ecmascript');
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
+    api.use('design');
 
     api.use('validatejs');
 
@@ -33,37 +35,68 @@ Package.onUse(function(api) {
     api.addFiles('client/collections/LocationResponses.js', 'client');
     api.addFiles('client/collections/subscriptions.js', 'client');
 
-
     // Additional Custom Cornerstone Tools for Lesion Tracker
-    api.addFiles('client/compatibility/bidirectionalTool.js', 'client', {
+    api.addFiles([
+        'client/compatibility/bidirectionalTool.js',
+        'client/compatibility/nonTargetTool.js',
+        'client/compatibility/scaleOverlayTool.js',
+        'client/compatibility/deleteLesionKeyboardTool.js',
+        'client/compatibility/crunexTool.js',
+        'client/compatibility/crTool.js',
+        'client/compatibility/unTool.js',
+        'client/compatibility/exTool.js'
+    ], 'client', {
         bare: true
     });
-    api.addFiles('client/compatibility/nonTargetTool.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/scaleOverlayTool.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/deleteLesionKeyboardTool.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/crunexTool.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/crTool.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/unTool.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/exTool.js', 'client', {
-        bare: true
-    });
+
+    api.addAssets('assets/icons.svg', 'client');
 
     // UI Components
+    api.addFiles('client/components/viewer/viewer.html', 'client');
+    api.addFiles('client/components/viewer/viewer.styl', 'client');
+    api.addFiles('client/components/viewer/viewer.js', 'client');
+
+    api.addFiles('client/components/flexboxLayout/flexboxLayout.html', 'client');
+    api.addFiles('client/components/flexboxLayout/flexboxLayout.styl', 'client');
+    api.addFiles('client/components/flexboxLayout/flexboxLayout.js', 'client');
+
+    api.addFiles('client/components/toolbarSectionButton/toolbarSectionButton.html', 'client');
+    api.addFiles('client/components/toolbarSectionButton/toolbarSectionButton.styl', 'client');
+    api.addFiles('client/components/toolbarSectionButton/toolbarSectionButton.js', 'client');
+
+    api.addFiles('client/components/toolbarSection/toolbarSection.html', 'client');
+    api.addFiles('client/components/toolbarSection/toolbarSection.styl', 'client');
+    api.addFiles('client/components/toolbarSection/toolbarSection.js', 'client');
+
+    api.addFiles('client/components/radialProgressBar/radialProgressBar.html', 'client');
+    api.addFiles('client/components/radialProgressBar/radialProgressBar.styl', 'client');
+    api.addFiles('client/components/radialProgressBar/radialProgressBar.js', 'client');
+
+    api.addFiles('client/components/caseProgress/caseProgress.html', 'client');
+    api.addFiles('client/components/caseProgress/caseProgress.styl', 'client');
+    api.addFiles('client/components/caseProgress/caseProgress.js', 'client');
+
+    api.addFiles('client/components/viewerMain/viewerMain.html', 'client');
+    api.addFiles('client/components/viewerMain/viewerMain.styl', 'client');
+    api.addFiles('client/components/viewerMain/viewerMain.js', 'client');
+
+    api.addFiles('client/components/lesionTracker/lesionTracker.html', 'client');
+    api.addFiles('client/components/lesionTracker/lesionTracker.styl', 'client');
+    api.addFiles('client/components/lesionTracker/lesionTracker.js', 'client');
+
     api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.html', 'client');
-    api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.styl', 'client');
-    api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.js', 'client');
+
+    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.html', 'client');
+    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.styl', 'client');
+    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.js', 'client');
+
+    api.addFiles('client/components/additionalMeasurements/radioOptionGroup/radioOptionGroup.html', 'client');
+    api.addFiles('client/components/additionalMeasurements/radioOptionGroup/radioOptionGroup.styl', 'client');
+    api.addFiles('client/components/additionalMeasurements/radioOptionGroup/radioOptionGroup.js', 'client');
+
+    api.addFiles('client/components/studySeriesQuickSwitch/studySeriesQuickSwitch.html', 'client');
+    api.addFiles('client/components/studySeriesQuickSwitch/studySeriesQuickSwitch.styl', 'client');
+    api.addFiles('client/components/studySeriesQuickSwitch/studySeriesQuickSwitch.js', 'client');
 
     api.addFiles('client/components/associationModal/associationModal.html', 'client');
     api.addFiles('client/components/associationModal/associationModal.styl', 'client');
@@ -91,13 +124,18 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.html', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
-    
+
     api.addFiles('client/components/lesionTable/lesionTable.html', 'client');
     api.addFiles('client/components/lesionTable/lesionTable.styl', 'client');
     api.addFiles('client/components/lesionTable/lesionTable.js', 'client');
 
     api.addFiles('client/components/lesionTableRow/lesionTableRow.html', 'client');
+    api.addFiles('client/components/lesionTableRow/lesionTableRow.styl', 'client');
     api.addFiles('client/components/lesionTableRow/lesionTableRow.js', 'client');
+
+    api.addFiles('client/components/lesionTableHeaderRow/lesionTableHeaderRow.html', 'client');
+    api.addFiles('client/components/lesionTableHeaderRow/lesionTableHeaderRow.styl', 'client');
+    api.addFiles('client/components/lesionTableHeaderRow/lesionTableHeaderRow.js', 'client');
 
     api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.html', 'client');
     api.addFiles('client/components/lesionTableTimepointCell/lesionTableTimepointCell.styl', 'client');
@@ -115,10 +153,20 @@ Package.onUse(function(api) {
     api.addFiles('client/components/studyDateList/studyDateList.styl', 'client');
     api.addFiles('client/components/studyDateList/studyDateList.js', 'client');
 
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepoint.html', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepoint.styl', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepoint.js', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.html', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.styl', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.js', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.html', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
+    api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.js', 'client');
+
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.html', 'client');
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.styl', 'client');
     api.addFiles('client/components/studyAssociationTable/studyAssociationTable.js', 'client');
-    
+
     api.addFiles('client/components/conformanceCheckFeedback/conformanceCheckFeedback.html', 'client');
     api.addFiles('client/components/conformanceCheckFeedback/conformanceCheckFeedback.styl', 'client');
     api.addFiles('client/components/conformanceCheckFeedback/conformanceCheckFeedback.js', 'client');
@@ -236,5 +284,4 @@ Package.onUse(function(api) {
     api.export('Studies', [ 'client', 'server' ]);
     api.export('Timepoints', [ 'client', 'server' ]);
     api.export('Reviewers', [ 'client', 'server' ]);
-
 });

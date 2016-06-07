@@ -1,3 +1,102 @@
+@import "{design}/app"
+
+$viewportTagPadding = 20px
+$imageSliderBorderRadius = 57px
+$imageSliderColor = #22374d
+$imageSliderTrackColor = rgba(0,0,0,0)
+$imageSliderBorder = none
+
+// Note that these are backwards due to the magic needed to make a cross-browser vertical slider
+$imageSliderWidth = 12px
+$imageSliderHeight = 39px
+$imageSliderCursor = grab
+
 .imageViewerViewportOverlay
-  .timepointName
-    color: #32BFFF
+  color: $textSecondaryColor
+
+  .dicomTag
+    font-weight: 200
+
+  .topleft
+    top: $viewportTagPadding
+    left: $viewportTagPadding
+
+  .topright
+    top: $viewportTagPadding
+    right: $viewportTagPadding
+    text-align: right
+
+  .bottomleft
+    bottom: $viewportTagPadding
+    left: $viewportTagPadding
+
+  .bottomright
+    bottom: $viewportTagPadding
+    right: $viewportTagPadding
+    text-align: right
+
+  .imageControls
+    #scrollbar
+      #imageSlider
+        -webkit-appearance: none
+        background-color: $imageSliderTrackColor
+
+        // --- Style the range track --- //
+        &::-webkit-slider-runnable-track
+          height: 5px
+          border: none
+          cursor: pointer
+          background-color: $imageSliderTrackColor
+          z-index: 6
+
+        &::-moz-range-track
+          height: 2px
+          border: none
+          cursor: pointer
+          background-color: $imageSliderTrackColor
+          z-index: 6
+
+        &::-ms-track
+          width: 100%
+          height: 2px
+          border: none
+          cursor: pointer
+          animate: 0.2s
+          background: transparent
+          border-width: 15px 0
+          color: $imageSliderTrackColor
+
+        // Hide any fill IE tries to add
+        &::-ms-fill-lower
+          background: $imageSliderTrackColor
+
+        &::-ms-fill-upper
+          background: $imageSliderTrackColor
+
+        // --- Style the range thumb --- //
+        &::-webkit-slider-thumb
+          -webkit-appearance: none !important
+          background-color: $imageSliderColor
+          border-radius: $imageSliderBorderRadius
+          border: $imageSliderBorder
+          height: $imageSliderWidth
+          width: $imageSliderHeight
+          cursor: $imageSliderCursor
+          margin-top: -7px
+
+        &::-moz-range-thumb
+          background-color: $imageSliderColor
+          border-radius: $imageSliderBorderRadius
+          border: $imageSliderBorder
+          height: $imageSliderWidth
+          width: $imageSliderHeight
+          cursor: $imageSliderCursor
+          z-index: 7
+
+        &::-ms-thumb
+          background-color: $imageSliderColor
+          border-radius: $imageSliderBorderRadius
+          border: $imageSliderBorder
+          height: $imageSliderWidth
+          width: $imageSliderHeight
+          cursor: $imageSliderCursor

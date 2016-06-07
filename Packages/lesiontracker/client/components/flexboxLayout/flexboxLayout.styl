@@ -1,0 +1,69 @@
+@import "{design}/app"
+
+.viewerSection
+  display: inline-flex
+  flex-flow: row nowrap
+  align-items: stretch
+  height: 'calc(100% - %s)' % $toolbarHeight
+  width: 100%
+
+  .sidebarMenu
+    position: absolute
+    height: 100%
+    background: $primaryBackgroundColor
+    -webkit-transition: $sidebarTransition
+    -ms-transition: $sidebarTransition
+    -o-transition: $sidebarTransition
+    -moz-transition: $sidebarTransition
+    transition: $sidebarTransition
+
+    .timepointButtonContainer
+      height: 55px
+
+  .sidebar-left
+    width: $studiesSidebarMenuWidth
+    order: 1
+    flex: 0
+    left: - $studiesSidebarMenuWidth
+    border-right: $uiBorderThickness $uiBorderColor solid
+
+    &.sidebar-open
+      left: 0
+
+  .mainContent
+    order: 2
+    width: 100%
+    height: 100%
+    -webkit-transition: $sidebarTransition
+    -ms-transition: $sidebarTransition
+    -o-transition: $sidebarTransition
+    -moz-transition: $sidebarTransition
+    transition: $sidebarTransition
+    transform: translate3d(0,0,0);
+
+    &.sidebar-left-open.sidebar-right-open
+      width: 'calc(100% - %s)' % ($studiesSidebarMenuWidth + $lesionsSidebarMenuWidth)
+
+    &.sidebar-right-open
+      width: 'calc(100% - %s)' % $lesionsSidebarMenuWidth
+
+    &.sidebar-left-open
+      width: 'calc(100% - %s)' % $studiesSidebarMenuWidth
+
+    &.sidebar-left-open
+      transform: translate3d($studiesSidebarMenuWidth,0,0);
+
+  .sidebar-right
+    width: $lesionsSidebarMenuWidth
+    order: 3
+    flex: 0
+    right: - $lesionsSidebarMenuWidth
+    border-left: $uiBorderThickness $uiBorderColor solid
+
+    &.sidebar-open
+      right: 0
+
+  .studiesListedChanger
+    padding: 20px 10px
+    text-align: center
+    border-bottom: $uiBorderThickness $uiBorderColor solid

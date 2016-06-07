@@ -1,0 +1,43 @@
+<template name="radialProgressBar">
+    <div class="radialProgress">
+        <svg id="svg"
+             width="46"
+             height="46"
+             viewPort="0 0 50 50"
+             version="1.1"
+             xmlns="http://www.w3.org/2000/svg">
+
+            <!-- stroke-dasharray is 2 * PI * radius !-->
+            <circle r="13"
+                    cx="23"
+                    cy="23"
+                    fill="transparent"
+                    stroke-dasharray="81.64"
+                    stroke-dashoffset="0">
+            </circle>
+            <circle id="bar"
+                    r="13"
+                    cx="23"
+                    cy="23"
+                    fill="transparent"
+                    stroke-dasharray="81.64"
+                    style="stroke-dashoffset: {{progressRadius}}px;">
+            </circle>
+        </svg>
+        <div class="progressText">
+            {{ #if isLocked }}
+                <svg>
+                    <use xlink:href=/packages/lesiontracker/assets/icons.svg#icon-status-lock></use>
+                </svg>
+            {{ else }}
+                {{ #if progressComplete }}
+                <svg>
+                    <use xlink:href=/packages/lesiontracker/assets/icons.svg#icon-status-complete></use>
+                </svg>
+                {{ else }}
+                {{progressText}}
+                {{ /if }}
+            {{ /if }}
+        </div>
+    </div>
+</template>

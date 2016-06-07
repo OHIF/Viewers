@@ -1,0 +1,17 @@
+@import "{design}/app"
+
+.viewerMain
+  width: 100%
+  height: 100%
+
+  #layoutManagerTarget
+    width: 100%
+    height: 100%
+
+    transition(all 0.3s ease)
+
+    #imageViewerViewports
+      .viewportContainer:not(:last-child)
+        .removable
+          .imageViewerViewport
+            border-right: $uiBorderThickness solid #436270

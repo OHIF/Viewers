@@ -1,3 +1,39 @@
-.lesionTableRow .location
-  &:hover
-    font-weight: bold
+@import "{design}/app"
+
+.lesionTableRow
+  display: flex
+  width: 100%
+
+  .lesionRowSidebar
+    flex: 1
+    color: $textSecondaryColor
+    background: $darkUiColor
+    max-width: 20px
+    height: 60px
+
+    .lesionNumber
+      padding: 3px
+
+    &.active
+      border-left: 4px $activeColor solid
+
+  .lesionDetails
+    flex: 1
+    display: flex
+    flex-direction: column
+    align-items: stretch
+
+    .location
+      flex: 1
+      text-align: center
+      color: $textSecondaryColor
+      height: 20px
+      width: 100%
+
+    .timepointData
+      display: flex
+
+      div
+        flex: 1
+        text-align: center
+        justify-content: space-around

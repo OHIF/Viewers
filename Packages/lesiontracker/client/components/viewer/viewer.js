@@ -1,4 +1,7 @@
 Session.setDefault('activeViewport', false);
+Session.setDefault('studySidebarOpen', false);
+Session.setDefault('lesionSidebarOpen', false);
+Session.setDefault('additionalMeasurementsSidebarOpen', false);
 
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
@@ -6,10 +9,15 @@ Template.viewer.onCreated(function() {
 
     ValidationErrors.remove({});
 
-    var self = this;
+    var instance = this;
+    instance.data.state = new ReactiveDict();
+    instance.data.state.set('studySidebarOpen', Session.get('studySidebarOpen'));
+    instance.data.state.set('lesionSidebarOpen', Session.get('lesionSidebarOpen'));
+    instance.data.state.set('additionalMeasurementsSidebarOpen', Session.get('additionalMeasurementsSidebarOpen'));
+
     var contentId = this.data.contentId;
 
-    OHIF = OHIF || {
+    OHIF = OHIF || window.OHIF || {
             viewer: {}
         };
 
@@ -100,7 +108,7 @@ Template.viewer.onCreated(function() {
     Session.set('activeViewport', ViewerData[contentId].activeViewport || false);
 
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element
-    self.autorun(pixelSpacingAutorunCheck);
+    instance.autorun(pixelSpacingAutorunCheck);
 
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
@@ -113,18 +121,17 @@ Template.viewer.onCreated(function() {
     var patientId = this.data.studies[0].patientId;
     Session.set('patientId', patientId);
 
-    self.autorun(function() {
+    instance.autorun(function() {
         var dataContext = Template.currentData();
-        self.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
-        self.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
-        self.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
-        self.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
 
-        var subscriptionsReady = self.subscriptionsReady();
+        var subscriptionsReady = instance.subscriptionsReady();
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
 
         if (subscriptionsReady) {
-
             // Set buttons as enabled/disabled when Timepoints collection is ready
             timepointAutoCheck(dataContext);
 
@@ -241,7 +248,7 @@ Template.viewer.onCreated(function() {
 
                         // Set reviewer for this timepoint
                         if (data.timepoints[timepointId].studyInstanceUid) {
-                            Meteor.call('setReviewer',data.timepoints[timepointId].studyInstanceUid);
+                            Meteor.call('setReviewer', data.timepoints[timepointId].studyInstanceUid);
                         }
                     });
 

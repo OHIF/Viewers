@@ -1,0 +1,74 @@
+@import "{design}/app"
+
+#additionalMeasurements
+  width: 100%
+  height: 100%
+  background-color: #000000
+
+  .scrollArea
+    height: 100%
+    overflow-x: hidden
+    overflow-y: auto
+    margin-right: -16px
+    padding-bottom: 100px
+    padding-right: 16px
+
+    -webkit-overflow-scrolling: touch
+
+    &::-webkit-scrollbar
+      display: none
+
+    .header
+      height: 33px
+      line-height: 33px
+      font-weight: 400
+      font-size: 14px
+      padding: 0 10px
+      color: $textPrimaryColor
+      background-color: $darkUiColor
+
+    .entrySection
+      #regionsOfMetastaticDisease
+        width: 285px
+        height: 30px
+        border-radius: 2px
+        background-color: #b6b6b6
+        color: #3e3e3e
+        font-size: 14px
+
+    .buttonSection
+      cursor: pointer
+      height: 100px
+      color: $defaultColor
+
+      &:hover
+        color: $hoverColor
+
+        .svgContainer
+          svg
+            fill: $hoverColor
+
+      &:active
+        color: $activeColor
+
+        .svgContainer
+          svg
+            fill: $activeColor
+
+      div
+        float: left
+        display: inline-block
+        height: 80px
+
+      .buttonLabel
+        line-height: 80px
+        padding: 0 30px
+
+      .svgContainer
+        padding: 15px 5px
+        width: 40px
+
+        svg
+          width: 40px
+          height: 40px
+          fill: $textPrimaryColor

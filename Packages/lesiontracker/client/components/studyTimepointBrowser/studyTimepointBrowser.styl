@@ -1,0 +1,68 @@
+@import "{design}/app"
+
+.studyTimepointBrowser
+  background-color: $primaryBackgroundColor
+  float: left
+  height: calc(100% - 55px - 50px - 30px)
+  overflow: hidden
+  width: 100%
+
+  .timepointEntry
+    &.active
+      .timepointModalities
+        height: 0
+      .timepointDate
+        display: none
+      .expandIcon i
+        transform: rotateX(180deg)
+      .timepointFollowupTitle
+        font-size: 14px
+        color: $textSecondaryColor
+        text-transform: uppercase
+
+  .timepointHeader
+    cursor: pointer
+    font-size: 13px
+
+    &
+    .expandIcon i
+    .timepointFollowupTitle
+    .timepointDate
+    .timepointModalities
+      color: $textSecondaryColor
+      transition($sidebarTransition)
+
+    &:hover
+      &
+      .timepointFollowupTitle
+      .expandIcon i
+      .timepointDate
+      .timepointModalities
+        color: $textPrimaryColor !important
+
+    .timepointDetails
+    .timepointModalities
+      line-height: 25px
+
+    .timepointModalities
+      height: 25px
+      overflow: hidden
+
+    .expandIcon i
+      color: $defaultColor
+
+    .timepointFollowupTitle
+      color: $textPrimaryColor
+      font-family: Roboto
+      padding-top: 2px
+
+  .studyTimepointScrollArea
+    height: 100%
+    overflow-x: hidden
+    overflow-y: auto
+    margin-right: -16px
+    padding-bottom: 20px
+    padding-right: 16px
+
+    &::-webkit-scrollbar
+      display: none

@@ -1,34 +1,15 @@
+@import "{design}/app"
+
 #userAccountMenu
-  position: relative
-  float: right
+  padding: 5px
   height: 100%
-  line-height: 40px
-  z-index: 999
 
-  .list-group
-    background-color: transparent
-    color: white
-    line-height: 35px
-    margin-left: 10px
-    .list-group-item
-      padding: 5px 10px
-      width: 200px
-    a#userName
-      padding: 0
-      background-color: transparent
-      color: white
-      border: solid 1px transparent
-      text-align: right
-      display: inline-block
-      width: auto
-    #userMenu
-      position: absolute
-      right: 0
-      .externalItem
-        a
-          color: #555
+  .dropdown-toggle
+    cursor: pointer
+    text-decoration: none
+    background-color: $primaryBackgroundColor
+    color: $textSecondaryColor
 
-    .list-group-submenu
-      .sub-sub-item
-        padding-left: 20px
-        padding-right: 20px
+  ul.dropdown-menu
+    li
+      cursor: pointer

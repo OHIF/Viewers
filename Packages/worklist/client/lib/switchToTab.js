@@ -11,9 +11,11 @@ switchToTab = function(contentId) {
 
     log.info('Switching to tab: ' + contentId);
 
-    // Use Bootstrap's Tab JavaScript to show the contents of the current tab
-    // Unless it is the worklist, it is currently an empty div
-    $('.tabTitle a[data-target="#' + contentId + '"]').tab('show');
+    $('.tabTitle').removeClass('active');
+    $('.tabTitle a[data-target="#' + contentId + '"]').addClass('active');
+
+    $('.tab-content .tab-pane').removeClass('active');
+    $('.tab-content .tab-pane#' + contentId).addClass('active');
 
     // Remove any previous Viewers from the DOM
     $('.viewerContainer').remove();

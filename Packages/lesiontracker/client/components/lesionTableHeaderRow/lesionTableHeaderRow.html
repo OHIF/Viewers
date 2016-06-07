@@ -1,0 +1,22 @@
+<template name="lesionTableHeaderRow">
+    <div class="lesionTableHeaderRow">
+        <div class="add">
+            <svg>
+                <use xlink:href=/packages/lesiontracker/assets/icons.svg#icon-ui-add></use>
+            </svg>
+        </div>
+        <div class="type">
+            {{type}}
+        </div>
+        <div class="max">
+        {{ #if maxNumLesions }}
+            <p class="maxNumLesions">
+                Max {{maxNumLesions}}
+            </p>
+        {{/if}}
+        </div>
+        <div class="numberOfLesions">
+            {{numberOfLesions}}
+        </div>
+    </div>
+</template>
