@@ -107,13 +107,7 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
-
-    api.addFiles('client/components/hidingPanel/hidingPanel.html', 'client');
-    api.addFiles('client/components/hidingPanel/hidingPanel.styl', 'client');
-    api.addFiles('client/components/hidingPanel/hidingPanel.js', 'client');
-
-    api.addFiles('client/components/optionsButton/optionsButton.html', 'client');
-
+    
     api.addFiles('client/components/optionsModal/optionsModal.html', 'client');
     api.addFiles('client/components/optionsModal/optionsModal.styl', 'client');
     api.addFiles('client/components/optionsModal/optionsModal.js', 'client');
