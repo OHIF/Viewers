@@ -61,7 +61,7 @@ Template.studyTimepointBrowser.helpers({
             2: '(Nadir)'
         };
         // TODO: [design] find out how to define the nadir timepoint
-        const followUp = total - index;
+        const followUp = total - index - 1;
         const parenthesis = states[index] || '';
         return `Follow-up ${followUp} ${parenthesis}`;
     }
