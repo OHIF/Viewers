@@ -1,12 +1,12 @@
 <template name="worklistToolbar">
-    <div id='worklistToolbar'>
-        <div class="btn-group">
-            {{#if importSupported }}
-                <span class="btn btn-default btn-file">
-                    <i class="fa fa-upload"></i>
-                    <input id="btnImport" title="Import Study" type="file" webkitdirectory directory multiple>
-                </span>
-            {{/if }}
+    <div class='worklistToolbar'>
+        {{#if importSupported }}
+        <div class="addNewStudy btn-file">
+            <label for="btnImport">
+                <i class="fa fa-plus"></i> Add new study
+            </label>
+            <input id="btnImport" class="inputfile" type="file" webkitdirectory directory multiple>
         </div>
+        {{/if }}
     </div>
 </template>

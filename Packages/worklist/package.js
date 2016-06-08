@@ -16,6 +16,7 @@ Package.onUse(function (api) {
     api.use('silentcicero:jszip');
 
     // Our custom packages
+    api.use('design');
     api.use('dicomweb');
     api.use('dimseservice');
     api.use('orthanc-remote');

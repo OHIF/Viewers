@@ -1,27 +1,24 @@
-#worklistToolbar
-  background-color: black
-  position: absolute
-  top: 0
-  right: 0
+@import "{design}/app"
 
-  .btn-file
-    position: relative
-    overflow: hidden
-    width: 30px
-    height: 30px
-    padding: 5px
-    line-height: 20px
+.worklistToolbar
+  .addNewStudy
+    margin: 0 10px
 
-    input[type=file]
-      position: absolute
-      top: 0
-      right: 0
-      min-width: 100%
-      min-height: 100%
-      font-size: 100 px
-      text-align: right
+    label
+      color: $textSecondaryColor
+      font-weight: 300
+      cursor: pointer
+
+      &:hover
+        color: $hoverColor
+
+      &:active
+        color: $activeColor
+
+    .inputfile
+      width: 0.1px;
+      height: 0.1px
       opacity: 0
-      outline: none
-      background: white
-      cursor: inherit
-      display: block
+      overflow: hidden
+      position: absolute
+      z-index: -1

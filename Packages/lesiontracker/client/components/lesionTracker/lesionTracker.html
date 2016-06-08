@@ -1,16 +1,16 @@
 <template name="lesionTracker">
-    <div class="topBar">
+    <div class="topBar {{#if onStudyList}}studyList{{/if}}">
         <a class="brandSection pull-left" href="http://ohif.org">
             <img class="logoImage" src="/images/logo.png">
             <div class="logoText">
                 Open Health Imaging Foundation
             </div>
         </a>
-        {{ #unless onStudyList}}
-        <div class="studyListLinkSection pull-left">
-            <a id="loadStudyList">Study List</a>
+        {{ #if studyListToggleText }}
+        <div class="studyListLinkSection pull-left js-toggle-studyList">
+            {{studyListToggleText}}
         </div>
-        {{ /unless }}
+        {{ /if }}
         <div class="userAccountSection pull-right">
             {{>userAccountMenu}}
         </div>
@@ -32,5 +32,4 @@
     {{ >lastLoginModal }}
     {{ >studyContextMenu }}
     {{ >progressDialog}}
-    {{ >lesionTableHUD }}
 </template>

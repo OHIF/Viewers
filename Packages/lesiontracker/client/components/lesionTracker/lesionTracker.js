@@ -36,23 +36,16 @@ Template.lesionTracker.onRendered(function() {
 });
 
 Template.lesionTracker.events({
-    'click #tablist a[data-toggle="tab"]': function(e) {
-        // If this tab is already active, do nothing
-        var tabButton = $(e.currentTarget);
-        var tabTitle = tabButton.parents('.tabTitle');
-        if (tabTitle.hasClass('active')) {
-            return;
+    'click .js-toggle-studyList': function() {
+        var contentId = Session.get('activeContentId');
+        var worklistContentId = 'worklistTab';
+        var viewerContentId = 'viewerTab';
+
+        if (contentId !== worklistContentId) {
+            switchToTab(worklistContentId);
+        } else {
+            switchToTab(viewerContentId);
         }
-
-        // Otherwise, switch to the tab
-        var contentId = tabButton.data('target').replace('#', '');
-        switchToTab(contentId);
-    },
-    'click #loadStudyList': function() {
-        // TODO: Make some set of 'closing study' callbacks
-        $('#lesionTableHUD').display('none');
-
-        switchToTab('worklistTab');
     }
 });
 
@@ -61,6 +54,21 @@ Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
 Template.lesionTracker.helpers({
     showWorklistMenu: function() {
         return Template.instance().showWorklistMenu.get();
+    },
+    studyListToggleText: function() {
+        var contentId = Session.get('activeContentId');
+        if (!contentId) {
+            return;
+        }
+
+        var worklistContentId = 'worklistTab';
+        var viewerContentId = 'viewerTab';
+
+        if (contentId === worklistContentId) {
+            return 'Back to viewer';
+        } else if (contentId === viewerContentId) {
+            return 'Study list';
+        }
     },
     onStudyList: function() {
         return (Session.get('activeContentId') === 'worklistTab');

@@ -1,16 +1,17 @@
 <template name="viewer">
     {{#if Template.subscriptionsReady}}
     <div id="viewer">
-        {{>confirmDeleteDialog}}
-        {{>lesionLocationDialog}}
-        {{>nonTargetLesionDialog}}
-        {{>nonTargetResponseDialog}}
+        {{ >confirmDeleteDialog }}
+        {{ >lesionLocationDialog }}
+        {{ >nonTargetLesionDialog }}
+        {{ >nonTargetResponseDialog }}
+        {{ >lesionTableHUD }}
         <!-- >conformanceCheckFeedback -->
 
         {{ >toolbarSection }}
         {{ >flexboxLayout }}
     </div>
     {{else}}
-        {{>loadingText}}
+        {{ >loadingText }}
     {{/if}}
 </template>

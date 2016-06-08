@@ -4,6 +4,7 @@
   height: $topBarHeight
   color: $textPrimaryColor
   background-color: $primaryBackgroundColor
+  transition(all 0.5s ease)
 
   .brandSection
     height: 100%
@@ -11,6 +12,7 @@
 
     img.logoImage
       height: 100%
+      max-height: 50px
       margin: 0 5px
 
     .logoText
@@ -20,17 +22,40 @@
       color: $textPrimaryColor
 
   .studyListLinkSection
+    color: $textSecondaryColor
     border-left: $uiBorderThickness solid $uiBorderColor;
-    padding: 5px
+    font-weight: 400
+    font-size: 13px
+    line-height: 30px
+    padding: 0 10px
     margin: 0 10px
+    cursor: pointer
 
-    a
-      text-decoration: none
-      cursor: pointer
-      line-height: 100%
+    &:hover
+      color: $hoverColor
+
+    &:active
+      color: $activeColor
 
   .userAccountSection
      margin: 0 10px
+
+  &.studyList
+    background-color: rgba(21, 25, 30, 0.7)
+    height: 160px
+
+    .brandSection
+      margin-top: 50px
+      margin-left: 50px
+
+      .logoText
+        font-size: 30px
+
+    .studyListLinkSection
+      position: absolute
+      border: none
+      top: 5px
+      left: 5px
 
 #worklistTabs
   height: "calc(100% - %s)" % $topBarHeight

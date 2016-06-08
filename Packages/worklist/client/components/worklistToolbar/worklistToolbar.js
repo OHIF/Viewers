@@ -11,7 +11,7 @@ Template.worklistToolbar.events({
     'click #btnImport': function(e) {
         // Reset file input
         var fileInput = e.currentTarget;
-        $(fileInput).val("");
+        $(fileInput).val('');
     }
 });
 
@@ -21,14 +21,11 @@ Template.worklistToolbar.helpers({
         var studyListFunctionsEnabled = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui &&
             Meteor.settings.public.ui.studyListFunctionsEnabled || false;
 
-        if (importSupported && studyListFunctionsEnabled) {
-            return true;
-        }
-        return false;
+        return (importSupported && studyListFunctionsEnabled);
     }
 });
 
-Meteor.call("importSupported", function(err, result) {
+Meteor.call('importSupported', function(err, result) {
     if (!err && result) {
         Session.set('importSupported', true);
     } else {

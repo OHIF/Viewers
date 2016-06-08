@@ -1,20 +1,49 @@
-#studyListContainer
-  position: relative
-  table#tblStudyList
-    color: #888888
-    border-collapse: collapse
-    border-color: gray
+@import "{design}/app"
 
+$hoverColor = #2c363f
+$textPrimaryColor = white
+$textSecondaryColor = #91b9cd
+
+$inputBackgroundColor = #2c363f
+$inputPlaceholderColor = lightgray
+
+$studyListToolbarHeight = 75px
+
+.studyListToolbar
+  height: $studyListToolbarHeight
+  background: #151a1f
+  border-bottom: 2px solid black
+  padding: 0 30px
+
+  div
+    display: inline-block
+
+  .header
+    font-size: 22px
+    font-weight: 200
+    color: $textSecondaryColor
+    padding: 0 10px
+    line-height: $studyListToolbarHeight
+
+  .worklistToolbar
+    height: $studyListToolbarHeight
+    line-height: $studyListToolbarHeight
+
+  .studyCount
+    font-size: 40px
+    font-weight: 100
+    color: #6fbde2
+    padding: 0 10px
+    line-height: $studyListToolbarHeight
+
+#studyListContainer
+  table#tblStudyList
     thead
-      background-color: black
+      background-color: #151a1f
       white-space: nowrap
+      border-bottom: solid 1px #6fbde2;
 
       tr
-        th:first-child
-          div.sortingCell
-            border-right: 0.5px dashed #555555
-            border-left: none
-
         th
           padding: 0
 
@@ -24,11 +53,10 @@
             width: 100%
             min-width: 95px
             margin: 0 auto
-            color: white
-            padding: 10px
-            font-weight: 500
+            color: $textPrimaryColor
+            font-weight: 400
+            padding: 20px
             background: #171717
-            border-left: 0.5px dashed #555555
 
             span
               font-size: 15px
@@ -43,38 +71,38 @@
           input.worklist-search
             height: 34px
             margin: 0 5px 20px 5px
+            padding: 20px
             cursor: pointer
-            padding: 10px
             border: none
-            background-color: #707070
-            color: #434343
+            background-color: $inputBackgroundColor
+            color: $inputPlaceholderColor
             font-size: 10pt
             font-weight: normal
             width: calc(100% - 10px)
+            border-radius: 4px
             box-sizing: border-box
 
-            -webkit-transition: all 0.15s ease-in-out;
-            -moz-transition: all 0.15s ease-in-out;
-            -o-transition: all 0.15s ease-in-out;
-            transition: all 0.15s ease-in-out;
+            transition(all 0.15s ease)
+
+            &.invisible
+              visibility: hidden
 
             &:active, &:hover
-              color: black
-              background-color: #d3d3d9
+              background-color: $inputBackgroundColor
 
             &::-webkit-input-placeholder /* WebKit, Blink, Edge */
-              color:    #434343
+              color:    $inputPlaceholderColor
 
             &:-moz-placeholder /* Mozilla Firefox 4 to 18 */
-              color:    #434343
+              color:    $inputPlaceholderColor
               opacity:  1
 
             &::-moz-placeholder /* Mozilla Firefox 19+ */
-              color:    #434343
+              color:    $inputPlaceholderColor
               opacity:  1
 
             &:-ms-input-placeholder /* Internet Explorer 10-11 */
-              color:    #434343
+              color:    $inputPlaceholderColor
 
       ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
       ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
@@ -87,21 +115,23 @@
         padding: 5px
         background-color: black
 
+        &:nth-child(even)
+          background-color: #151a1f
+
         td
-          color: #ffffff
-          border-top: 0.5px dashed #555555
+          color: $textPrimaryColor
+          font-weight: 200
+          border-top: 1px solid #436270
           white-space: nowrap
 
-          -webkit-transition: all 0.1s ease
-          transition: all 0.1s ease
+          transition(all 0.1s ease)
 
         &:hover, &:active, &.active
-          background-color: #009BD2
+          background-color: $hoverColor
           color: white
 
           td
             // This selector is necessary to override bootstrap's 'table' class
-            border-top: 0.5px dashed #dddddd
-            border-bottom: 0.5px dashed #dddddd
-            color: white
-            background-color: #009BD2
+            border-top: 1px solid #436270
+            border-bottom: 1px solid #436270
+            background-color: $hoverColor
