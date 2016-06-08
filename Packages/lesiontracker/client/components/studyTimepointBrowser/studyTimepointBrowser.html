@@ -15,10 +15,9 @@
                                     </div>
                                     <div class="timepointDate pull-right m-r-1">{{formatDA timepoint.earliestDate 'D-MMM-YYYY'}}</div>
                                 </div>
-                                <!-- TODO: [design] find out where to get this information -->
-                                <div class="timepointModalities">2 MR, 2 CT</div>
+                                <div class="timepointModalities">{{modalitiesSummary timepoint}}</div>
                             </div>
-                            {{>studyTimepoint timepoint=timepoint index=@index}}
+                            {{>studyTimepoint studies=(studies timepoint) index=@index}}
                         </div>
                         <hr class="m-y-1">
                     {{/if}}

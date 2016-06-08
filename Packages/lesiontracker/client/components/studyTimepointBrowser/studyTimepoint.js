@@ -47,12 +47,3 @@ Template.studyTimepoint.events({
         $wrapper.css('max-height', $timepoint.height());
     }
 });
-
-Template.studyTimepoint.helpers({
-    studies: function(timepoint) {
-        const query = {
-            selected: true
-        };
-        return ViewerStudies.find(query);
-    }
-});

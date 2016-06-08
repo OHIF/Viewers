@@ -2,7 +2,11 @@
     <div class="studyTimepointStudy">
         <div class="studyModality">
             <div class="studyModalityBox">
-                {{this.study.modalities}}
+                {{#if this.study.modalities}}
+                    {{this.study.modalities}}
+                {{else}}
+                    UN
+                {{/if}}
             </div>
             <div class="studyModalityText">
                 <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
@@ -11,7 +15,7 @@
         </div>
         <div class="studyTimepointThumbnails">
             {{#each thumbnail in (thumbnails this.study)}}
-            {{>thumbnailEntry thumbnail}}
+                {{>thumbnailEntry thumbnail}}
             {{/each}}
         </div>
     </div>

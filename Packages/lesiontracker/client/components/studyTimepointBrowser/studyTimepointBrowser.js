@@ -1,3 +1,15 @@
+Template.studyTimepointBrowser.onCreated(() => {
+    const instance = Template.instance();
+
+    // Get the studies for a specific timepoint
+    instance.getStudies = timepoint => {
+        const query = {
+            selected: true
+        };
+        return ViewerStudies.find(query);
+    };
+});
+
 Template.studyTimepointBrowser.onRendered(() => {
     const instance = Template.instance();
     instance.autorun(() => {
@@ -37,6 +49,10 @@ Template.studyTimepointBrowser.helpers({
         // Returns all timepoints with sorting
         return Timepoints.find({}, sort);
     },
+    // Get the studies for a specific timepoint
+    studies(timepoint) {
+        return Template.instance().getStudies(timepoint);
+    },
     // Decides if a timepoint should be shown or omitted
     shouldShowTimepoint(timepoint, index) {
         const instance = Template.instance();
@@ -64,5 +80,24 @@ Template.studyTimepointBrowser.helpers({
         const followUp = total - index - 1;
         const parenthesis = states[index] || '';
         return `Follow-up ${followUp} ${parenthesis}`;
+    },
+    // Build the modalities summary for all timepoint's studies
+    modalitiesSummary(timepoint) {
+        const instance = Template.instance();
+
+        const studies = instance.getStudies(timepoint);
+
+        const modalities = {};
+        studies.forEach(study => {
+            const modality = study.modalities || 'UN';
+            modalities[modality] = modalities[modality] + 1 || 1;
+        });
+
+        const result = [];
+        _.each(modalities, (count, modality) => {
+            result.push(`${count} ${modality}`);
+        });
+
+        return result.join(', ');
     }
 });
