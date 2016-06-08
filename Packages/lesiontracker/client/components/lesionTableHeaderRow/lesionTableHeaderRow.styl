@@ -3,7 +3,8 @@
 $headerRowHeight = 63px
 
 .lesionTableHeaderRow
-  background: $darkUiColor
+  border-top: 2px solid black
+  background: #151a1f
   color: $textSecondaryColor
   fill: $textSecondaryColor
   width: 100%
@@ -19,7 +20,7 @@ $headerRowHeight = 63px
 
   .add
     padding: 0 10px
-    max-width: 20px
+    max-width: 40px
     cursor: pointer
 
     svg
@@ -27,13 +28,16 @@ $headerRowHeight = 63px
       max-width: 11px
 
   .type
-    cursor: pointer
-    font-weight: 200
+    padding: 0 10px
+    text-align: left
+    font-weight: 300
+    color: #91b9cd
     height: $headerRowHeight
     font-size: 13pt
 
   .numberOfLesions
     float: right
+    color:  #6fbde2
     font-weight: 100
     font-size: 40px
     max-width: 30px
@@ -43,7 +47,6 @@ $headerRowHeight = 63px
 
   .max
     height: $headerRowHeight
-    background: $darkUiColor
 
     .maxNumLesions
       margin: 21px auto

@@ -2,16 +2,19 @@
 
 .lesionTableRow
   display: flex
+  border-top: 2px solid black
+  height: 63px
   width: 100%
 
   .lesionRowSidebar
     flex: 1
     color: $textSecondaryColor
     background: $darkUiColor
-    max-width: 20px
-    height: 60px
+    max-width: 30px
 
     .lesionNumber
+      text-align: center
+      font-weight: 200
       padding: 3px
 
     &.active
@@ -19,13 +22,16 @@
 
   .lesionDetails
     flex: 1
+    padding-left: 20px
+    padding-top: 5px
     display: flex
     flex-direction: column
     align-items: stretch
 
     .location
       flex: 1
-      text-align: center
+      font-weight: 200
+      font-size: 14px
       color: $textSecondaryColor
       height: 20px
       width: 100%
@@ -34,6 +40,7 @@
       display: flex
 
       div
+        font-weight: 200
+        padding-bottom: 10px
         flex: 1
-        text-align: center
         justify-content: space-around

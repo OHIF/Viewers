@@ -69,7 +69,7 @@ Template.lesionTable.onCreated(function() {
     var instance = this;
 
     instance.lesionTableLayout = new ReactiveVar();
-    instance.lesionTableLayout.set('comparisonTimepoints');
+    instance.lesionTableLayout.set('comparison');
 });
 
 Template.lesionTable.onRendered(function() {
