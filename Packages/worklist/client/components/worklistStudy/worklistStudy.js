@@ -3,7 +3,7 @@ WorklistSelectedStudies = new Meteor.Collection(null);
 WorklistSelectedStudies._debugName = 'WorklistSelectedStudies';
 
 function handleShiftClick(studyRow, data) {
-    log.info('shiftKey');
+    //log.info('shiftKey');
     var studyInstanceUid = studyRow.attr('studyInstanceUid');
 
     // Select all rows in between these two rows
@@ -60,7 +60,7 @@ function handleShiftClick(studyRow, data) {
 }
 
 function handleCtrlClick(studyRow, data) {
-    log.info('ctrlKey');
+    //log.info('ctrlKey');
     var studyInstanceUid = studyRow.attr('studyInstanceUid');
 
     if (studyRow.hasClass('active')) {
@@ -82,6 +82,23 @@ function handleCtrlClick(studyRow, data) {
     }
 }
 
+Template.worklistStudy.onRendered(function() {
+    var instance = this;
+    var elem = instance.$('tr.worklistStudy').get(0);
+
+    // Enable HammerJS to allow touch support
+    var mc = new Hammer.Manager(elem);
+    var doubleTapRecognizer = new Hammer.Tap({
+        event: 'doubletap',
+        taps: 2,
+        interval: 500,
+        threshold: 30,
+        posThreshold: 30
+    });
+
+    mc.add(doubleTapRecognizer);
+});
+
 Template.worklistStudy.events({
     'click tr.worklistStudy': function(e) {
         var studyRow = $(e.currentTarget);
@@ -96,7 +113,7 @@ Template.worklistStudy.events({
             handleCtrlClick(studyRow, data);
         } else {
             // Select a single study
-            log.info('Regular click');
+            //log.info('Regular click');
 
             // Clear all selected studies
             WorklistSelectedStudies.remove({});
@@ -104,7 +121,7 @@ Template.worklistStudy.events({
 
             // Set the previous study to the currently clicked-on study
             Worklist.previouslySelected = studyRow;
-            log.info('Worklist PreviouslySelected set: ' + studyRow.index());
+            //log.info('Worklist PreviouslySelected set: ' + studyRow.index());
 
             // Set the current study as selected
             WorklistSelectedStudies.insert(data);
@@ -123,8 +140,8 @@ Template.worklistStudy.events({
             middleClickOnStudy(data);
         }
     },
-    'dblclick tr.worklistStudy': function(e) {
-        if (e.which !== 1) {
+    'dblclick tr.worklistStudy, doubletap tr.worklistStudy': function(e) {
+        if (e.which !== undefined && e.which !== 1) {
             return;
         }
 
@@ -135,7 +152,7 @@ Template.worklistStudy.events({
             dblClickOnStudy(data);
         }
     },
-    'contextmenu tr.worklistStudy': function(e, template) {
+    'contextmenu tr.worklistStudy, press tr.worklistStudy': function(e, template) {
         $(e.currentTarget).addClass('active');
 
         if (openStudyContextMenu && typeof openStudyContextMenu === 'function') {

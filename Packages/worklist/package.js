@@ -20,6 +20,9 @@ Package.onUse(function (api) {
     api.use('dimseservice');
     api.use('orthanc-remote');
 
+    // TODO: Replace with NPM dependency
+    api.use('cornerstone'); // Only for HammerJS
+
     // This sets the default logging level of the package using the
     // loglevel package. It can be overridden in the JavaScript
     // console for debugging purposes
