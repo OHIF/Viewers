@@ -10,21 +10,6 @@
             {{ >lesionTableTimepointHeader }}
             {{ /each }}
         </div>
-        <div class="lesionTableWrapper">
-            {{ >lesionTableHeaderRow id="target" type="Targets" measurements=targets}}
-            {{ #each targets }}
-            {{ >lesionTableRow }}
-            {{ /each }}
-
-            {{ >lesionTableHeaderRow id="nonTarget" type="Non-targets" measurements=nonTargets}}
-            {{ #each nonTargets }}
-            {{ >lesionTableRow }}
-            {{ /each }}
-
-            {{ >lesionTableHeaderRow id="newLesions" type="New lesions" measurements=newLesions}}
-            {{ #each nonTargets }}
-            {{ >lesionTableRow }}
-            {{ /each }}
-        </div>
+        {{ >lesionTableView }}
     </div>
 </template>

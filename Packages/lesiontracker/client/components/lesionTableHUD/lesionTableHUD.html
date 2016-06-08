@@ -1,0 +1,13 @@
+<template name="lesionTableHUD">
+    <div id="lesionTableHUD">
+        <div class="header">
+            Measurements
+        </div>
+        {{ >lesionTableView }}
+        <div class="footer">
+            {{ #each toolbarButtons }}
+                {{ >toolbarSectionButton }}
+            {{ /each }}
+        </div>
+    </div>
+</template>

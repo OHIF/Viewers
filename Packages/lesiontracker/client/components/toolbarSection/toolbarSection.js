@@ -105,6 +105,10 @@ Template.toolbarSection.events({
         var activeViewport = Session.get('activeViewport');
         var element = $('.imageViewerViewport').get(activeViewport);
         OHIF.viewer.functionList[command](element);
+    },
+    'click #toggleHUD': function(e) {
+        var lesionTableHUD = document.getElementById('lesionTableHUD');
+        toggleDialog(lesionTableHUD);
     }
 });
 

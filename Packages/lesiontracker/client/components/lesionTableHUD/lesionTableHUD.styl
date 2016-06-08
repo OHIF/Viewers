@@ -1,0 +1,86 @@
+@import "{design}/app"
+
+$borderColor = rgba(77, 99, 110, 0.81)
+$backgroundColor = #14191e
+
+#lesionTableHUD
+  display: none
+  position: absolute
+  top: auto
+  left: auto
+  bottom: 3px
+  right: 3px
+
+  z-index: 10000
+  width: 318px
+  height: 326px
+  opacity: 0.95
+  background: black
+  border-radius: 8px
+  border: solid 1px $borderColor;
+
+  .header
+    width: 100%
+    height: 55px
+    line-height: 55px
+    background: $backgroundColor
+    border-bottom: $uiBorderThickness solid $borderColor
+    text-align: center
+    font-weight: 200
+    font-size: 20px
+    color: $textSecondaryColor
+
+  .lesionTableView.scrollArea
+    height: calc(100% - 55px - 70px)
+    padding-bottom: 20px
+
+  .footer
+    width: 100%
+    height: 70px
+    position: absolute
+    bottom: 0
+    background: $backgroundColor
+    border-top: $uiBorderThickness solid $borderColor
+    padding: 10px
+
+    .toolbarSectionButton
+      display: inline-block
+      color: $defaultColor
+      fill: $defaultColor
+      stroke: $defaultColor
+      padding: 0 10px
+      height: $toolbarHeight
+      min-width: 30px
+      cursor: pointer
+      text-align: center
+
+      &.disabled
+        opacity: 0.5
+        cursor: not-allowed
+
+      .buttonLabel
+        font-size: 12px
+
+      .svgContainer
+        margin: 0 auto
+        text-align: center
+
+      svg
+        background-color: transparent
+        margin: 2px
+        width: 21px
+        height: 21px
+
+      &:active, &.active
+        color: $activeColor
+
+        svg
+          fill: $activeColor
+          stroke: $activeColor
+
+      &:hover
+        color: $hoverColor
+
+        svg
+          fill: $hoverColor
+          stroke: $hoverColor

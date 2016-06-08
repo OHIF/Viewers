@@ -49,6 +49,9 @@ Template.lesionTracker.events({
         switchToTab(contentId);
     },
     'click #loadStudyList': function() {
+        // TODO: Make some set of 'closing study' callbacks
+        $('#lesionTableHUD').display('none');
+
         switchToTab('worklistTab');
     }
 });

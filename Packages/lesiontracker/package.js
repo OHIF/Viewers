@@ -125,9 +125,17 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.js', 'client');
     api.addFiles('client/components/lesionLocationDialog/lesionLocationDialog.styl', 'client');
 
+    api.addFiles('client/components/lesionTableView/lesionTableView.html', 'client');
+    api.addFiles('client/components/lesionTableView/lesionTableView.styl', 'client');
+    api.addFiles('client/components/lesionTableView/lesionTableView.js', 'client');
+
     api.addFiles('client/components/lesionTable/lesionTable.html', 'client');
     api.addFiles('client/components/lesionTable/lesionTable.styl', 'client');
     api.addFiles('client/components/lesionTable/lesionTable.js', 'client');
+
+    api.addFiles('client/components/lesionTableHUD/lesionTableHUD.html', 'client');
+    api.addFiles('client/components/lesionTableHUD/lesionTableHUD.styl', 'client');
+    api.addFiles('client/components/lesionTableHUD/lesionTableHUD.js', 'client');
 
     api.addFiles('client/components/lesionTableRow/lesionTableRow.html', 'client');
     api.addFiles('client/components/lesionTableRow/lesionTableRow.styl', 'client');

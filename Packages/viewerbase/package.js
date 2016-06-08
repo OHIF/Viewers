@@ -156,6 +156,7 @@ Package.onUse(function(api) {
     api.export('getInstanceClassDefaultViewport', 'client');
     api.export('showConfirmDialog', 'client');
     api.export('applyWLPreset', 'client');
+    api.export('toggleDialog', 'client');
 
     // Export the ValidateJS Library with our added validators
     //api.export('validate', 'client');
