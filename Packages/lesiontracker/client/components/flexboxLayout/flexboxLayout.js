@@ -4,20 +4,18 @@ Template.flexboxLayout.onCreated(() => {
     instance.timepointViewType = new ReactiveVar();
 });
 
-var resizeTimeout;
+let resizeTimeout;
 Template.flexboxLayout.onRendered(() => {
     const instance = Template.instance();
 
-    instance.autorun(function() {
+    instance.autorun(() => {
         Meteor.clearTimeout(resizeTimeout);
 
         // Trigger a resize any time the layout state changes
-        var studySidebarOpen = instance.state.get('studySidebarOpen');
-        var lesionSidebarOpen = instance.state.get('lesionSidebarOpen');
+        instance.state.get('leftSidebar');
+        instance.state.get('rightSidebar');
 
-        var additionalMeasurementsSidebarOpen = instance.state.get('additionalMeasurementsSidebarOpen');
-
-        resizeTimeout = Meteor.setTimeout(function() {
+        resizeTimeout = Meteor.setTimeout(() => {
             handleResize();
         }, 300);
     });
@@ -28,39 +26,34 @@ Template.flexboxLayout.helpers({
         return Template.instance().timepointViewType;
     },
 
-    buttonGroupData() {
+    sidebarButtonGroupData() {
         const instance = Template.instance();
         return {
             value: instance.timepointViewType,
             options: [{
-                key: 'key',
+                value: 'key',
                 text: 'Key Timepoints'
             }, {
-                key: 'all',
+                value: 'all',
                 text: 'All Timepoints'
             }]
         };
     },
 
-    studySidebarOpen() {
+    leftSidebarOpen() {
         const instance = Template.instance();
-        return instance.state.get('studySidebarOpen');
+        return instance.state.get('leftSidebar');
     },
 
     lesionSidebarOpen() {
-        const instance = Template.instance();
-        return instance.state.get('lesionSidebarOpen');
+        return Template.instance().state.get('rightSidebar') === 'lesions';
     },
 
     additionalMeasurementsSidebarOpen() {
-        const instance = Template.instance();
-        return instance.state.get('additionalMeasurementsSidebarOpen');
+        return Template.instance().state.get('rightSidebar') === 'additional';
     },
 
     rightSidebarOpen() {
-        const instance = Template.instance();
-        const lesionSidebarOpen = instance.data.state.get('lesionSidebarOpen');
-        const additionalMeasurementsSidebarOpen = instance.data.state.get('additionalMeasurementsSidebarOpen');
-        return lesionSidebarOpen || additionalMeasurementsSidebarOpen;
+        return Template.instance().state.get('rightSidebar') !== null;
     }
 });

@@ -1,15 +1,40 @@
-Template.roundedButtonGroup.onRendered(() => {
+Template.roundedButtonGroup.onCreated(() => {
     const instance = Template.instance();
-    const value = instance.data.value;
-    if (!value.get()) {
-        value.set(instance.data.options[0].key);
+    const reactiveValue = instance.data.value;
+
+    // Get the value for ReactiveVar or ReactiveDict objects
+    instance.getValue = () => {
+        return reactiveValue.get(instance.data.key);
+    };
+
+    // Set the value for ReactiveVar or ReactiveDict objects
+    instance.setValue = value => {
+        const args = [value];
+        if (reactiveValue instanceof ReactiveDict) {
+            args.unshift(instance.data.key);
+        }
+
+        reactiveValue.set(...args);
+    };
+
+    // Initialize the value with the first option if there's no value set and options are not toggleable
+    if (!instance.getValue() && !instance.data.toggleable) {
+        instance.setValue(instance.data.options[0].value);
     }
 });
 
 Template.roundedButtonGroup.events({
-    'click [data-key]'(event, instance) {
-        const $element = $(event.currentTarget);
-        const key = $element.attr('data-key');
-        instance.data.value.set(key);
+    'click [data-value]'(event, instance) {
+        event.preventDefault();
+        const $target = $(event.currentTarget);
+        const nullValue = $target.hasClass('active') && instance.data.toggleable;
+        const value = nullValue ? null : $target.attr('data-value');
+        instance.setValue(value);
+    }
+});
+
+Template.roundedButtonGroup.helpers({
+    getValue() {
+        return Template.instance().getValue();
     }
 });

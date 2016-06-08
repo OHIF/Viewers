@@ -1,19 +1,19 @@
 <template name="flexboxLayout">
     <div class="viewerSection">
-        <div class="sidebarMenu sidebar-left {{ #if studySidebarOpen }}sidebar-open{{/if}}">
+        <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
             <div class="timepointButtonContainer p-t-2">
-                {{>roundedButtonGroup buttonGroupData}}
+                {{>roundedButtonGroup sidebarButtonGroupData}}
             </div>
             <hr class="m-y-0">
             {{>studyTimepointBrowser timepointViewType=timepointViewType}}
         </div>
-        <div class="mainContent {{ #if studySidebarOpen }}sidebar-left-open{{/if}} {{ #if rightSidebarOpen }}sidebar-right-open{{/if}}">
+        <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
             {{>viewerMain }}
         </div>
-        <div class="sidebarMenu sidebar-right {{ #if lesionSidebarOpen }}sidebar-open{{/if}}">
+        <div class="sidebarMenu sidebar-right {{#if lesionSidebarOpen}}sidebar-open{{/if}}">
             {{>lesionTable }}
         </div>
-        <div class="sidebarMenu sidebar-right {{ #if additionalMeasurementsSidebarOpen }}sidebar-open{{/if}}">
+        <div class="sidebarMenu sidebar-right {{#if additionalMeasurementsSidebarOpen}}sidebar-open{{/if}}">
             {{>additionalMeasurements }}
         </div>
     </div>

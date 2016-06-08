@@ -1,10 +1,40 @@
-Template.toolbarSection.onRendered(function() {
-    var instance = this;
-
-    instance.state = instance.data.state;
-});
-
 Template.toolbarSection.helpers({
+    leftSidebarToggleButtonData() {
+        const instance = Template.instance();
+        return {
+            toggleable: true,
+            key: 'leftSidebar',
+            value: instance.data.state,
+            options: [{
+                value: 'studies',
+                svgLink: '/packages/lesiontracker/assets/icons.svg#icon-studies',
+                svgWidth: 15,
+                svgHeight: 13,
+                bottomLabel: 'Studies'
+            }]
+        };
+    },
+    rightSidebarToggleButtonData() {
+        const instance = Template.instance();
+        return {
+            toggleable: true,
+            key: 'rightSidebar',
+            value: instance.data.state,
+            options: [{
+                value: 'lesions',
+                svgLink: '/packages/lesiontracker/assets/icons.svg#icon-measurements-lesions',
+                svgWidth: 18,
+                svgHeight: 10,
+                bottomLabel: 'Lesions'
+            }, {
+                value: 'additional',
+                svgLink: '/packages/lesiontracker/assets/icons.svg#icon-measurements-additional',
+                svgWidth: 14,
+                svgHeight: 13,
+                bottomLabel: 'Additional'
+            }]
+        };
+    },
     toolbarButtons: function() {
         var buttonData = [];
         buttonData.push({
@@ -61,20 +91,6 @@ Template.toolbarSection.helpers({
 });
 
 Template.toolbarSection.events({
-    'click #studySidebarToggle': function(event, instance) {
-        var isOpen = instance.data.state.get('studySidebarOpen');
-        instance.data.state.set('studySidebarOpen', !isOpen);
-    },
-    'click #lesionSidebarToggle': function(event, instance) {
-        var isOpen = instance.data.state.get('lesionSidebarOpen');
-        instance.data.state.set('lesionSidebarOpen', !isOpen);
-        instance.data.state.set('additionalMeasurementsSidebarOpen', false);
-    },
-    'click #additionalMeasurementsSidebarToggle': function(event, instance) {
-        var isOpen = instance.data.state.get('additionalMeasurementsSidebarOpen');
-        instance.data.state.set('additionalMeasurementsSidebarOpen', !isOpen);
-        instance.data.state.set('lesionSidebarOpen', false);
-    },
     // TODO: Inherit these from toolbar template somehow
     'click .imageViewerTool': function(e) {
         $(e.currentTarget).tooltip('hide');

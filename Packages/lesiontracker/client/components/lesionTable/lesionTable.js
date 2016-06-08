@@ -12,10 +12,10 @@ Template.lesionTable.helpers({
         return {
             value: instance.lesionTableLayout,
             options: [{
-                key: 'comparison',
+                value: 'comparison',
                 text: 'Comparison'
             }, {
-                key: 'key',
+                value: 'key',
                 text: 'Key Timepoints'
             }]
         };

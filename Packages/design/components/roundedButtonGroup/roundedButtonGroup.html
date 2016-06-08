@@ -1,7 +1,21 @@
 <template name="roundedButtonGroup">
-    <div class="{{class}} viewerRoundedButtonGroup clearfix center-table">
+    <div class="{{class}} roundedButtonGroup clearfix center-table">
         {{#each item in this.options}}
-            <a class="viewerRoundedButton noselect {{inlineIf value.get item.key 'active'}}" data-key="{{item.key}}">{{item.text}}</a>
+            <a class="roundedButtonWrapper noselect {{inlineIf getValue item.value 'active'}}" data-value="{{item.value}}">
+                <div class="roundedButton">
+                    {{#if item.svgLink}}
+                        <svg style="width: {{item.svgWidth}}px; height: {{item.svgHeight}}px">
+                            <use xlink:href="{{item.svgLink}}"></use>
+                        </svg>
+                    {{/if}}
+                    {{#if item.text}}
+                        <span>{{item.text}}</span>
+                    {{/if}}
+                </div>
+                {{#if item.bottomLabel}}
+                    <div class="bottomLabel">{{item.bottomLabel}}</div>
+                {{/if}}
+            </a>
         {{/each}}
     </div>
 </template>

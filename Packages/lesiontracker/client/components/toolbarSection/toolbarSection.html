@@ -1,14 +1,7 @@
 <template name="toolbarSection">
     <div class="toolbarSection">
-        <div id="studySidebarToggle" class="pull-left toolbarSectionButton">
-            <div class="capsule svgContainer">
-                <svg>
-                    <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-studies"></use>
-                </svg>
-            </div>
-            <div class="buttonLabel">
-                Studies
-            </div>
+        <div class="pull-left">
+            {{>roundedButtonGroup leftSidebarToggleButtonData}}
         </div>
         <div class="pull-left">
             {{ #each toolbarButtons }}
@@ -33,7 +26,10 @@
         <div class="pull-right toolbarSectionEntry">
             {{ >caseProgress }}
         </div>
-        <div class="capsule-group pull-right">
+        <div class="pull-right">
+            {{>roundedButtonGroup rightSidebarToggleButtonData}}
+        </div>
+        <!-- <div class="capsule-group pull-right">
             <div id="lesionSidebarToggle" class="capsule-entry">
                 <div class="svgContainer capsule">
                     <svg>
@@ -54,7 +50,7 @@
                     Additional
                 </div>
             </div>
-        </div>
+        </div> -->
         <div id="toggleHUD" class="pull-right toolbarSectionButton">
             <div class="svgContainer">
                 <svg>
