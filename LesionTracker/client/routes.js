@@ -40,20 +40,7 @@ Router.route('/', function() {
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
-            this.render('lesionTracker', routerOptions);
-        }
-
-    } else {
-        this.render('entrySignIn', routerOptions);
-    }
-});
-
-Router.route('/worklist', function() {
-    // Check user is logged in
-    if (Meteor.user() && Meteor.userId()) {
-        if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
-            this.render('emailVerification', routerOptions);
-        } else {
+            Session.set('activeContentId', 'worklistTab');
             this.render('lesionTracker', routerOptions);
         }
 

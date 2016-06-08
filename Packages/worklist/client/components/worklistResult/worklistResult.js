@@ -24,6 +24,10 @@ Template.worklistResult.helpers({
         });
     },
 
+    numberOfStudies: function() {
+        return WorklistStudies.find().count();
+    },
+
     showLoadingText: function() {
         return Session.get('searchResults').showLoadingText;
     },

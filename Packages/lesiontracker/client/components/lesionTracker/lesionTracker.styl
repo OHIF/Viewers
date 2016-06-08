@@ -1,5 +1,7 @@
 @import "{design}/app"
 
+$expandedHeight = 160px
+
 .topBar
   height: $topBarHeight
   color: $textPrimaryColor
@@ -11,6 +13,7 @@
     display: inline-block
 
     img.logoImage
+      display: inline-block
       height: 100%
       max-height: 50px
       margin: 0 5px
@@ -42,11 +45,15 @@
 
   &.studyList
     background-color: rgba(21, 25, 30, 0.7)
-    height: 160px
+    height: $expandedHeight
 
     .brandSection
-      margin-top: 50px
-      margin-left: 50px
+      width: 80%
+      padding-left: 50px
+      line-height: $expandedHeight
+
+      img.logoImage
+        margin: 5px 5px 15px 5px
 
       .logoText
         font-size: 30px

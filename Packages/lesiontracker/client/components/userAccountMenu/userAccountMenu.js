@@ -21,12 +21,6 @@ Template.userAccountMenu.helpers({
         }
 
         return !!Meteor.user().emails[0].verified;
-    },
-    showWorklistMenu: function() {
-        var currentPath = Router.current().route.path(this);
-        if (currentPath !== '/' && currentPath !== '/worklist') {
-            return true;
-        }
     }
 });
 

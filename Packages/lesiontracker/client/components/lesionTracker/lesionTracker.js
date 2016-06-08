@@ -3,20 +3,8 @@
 // use this to repopulate the variable
 ViewerData = Session.get('ViewerData') || {};
 
-Template.lesionTracker.onCreated(function() {
-    // showViewer to go to viewer from audit
-    this.showWorklistMenu = new ReactiveVar(true);
-    // Get url and check worklist
-    var currentRoute = Router.current();
-    if (!currentRoute || !currentRoute.route) {
-        return;
-    }
-
-    var currentPath = currentRoute.route.path(this);
-    if (currentPath === '/' || currentPath === '/worklist') {
-        this.showWorklistMenu.set(false);
-    }
-});
+var worklistContentId = 'worklistTab';
+var viewerContentId = 'viewerTab';
 
 Template.lesionTracker.onRendered(function() {
     var templateData = Template.currentData();
@@ -38,8 +26,6 @@ Template.lesionTracker.onRendered(function() {
 Template.lesionTracker.events({
     'click .js-toggle-studyList': function() {
         var contentId = Session.get('activeContentId');
-        var worklistContentId = 'worklistTab';
-        var viewerContentId = 'viewerTab';
 
         if (contentId !== worklistContentId) {
             switchToTab(worklistContentId);
@@ -52,17 +38,15 @@ Template.lesionTracker.events({
 Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
 
 Template.lesionTracker.helpers({
-    showWorklistMenu: function() {
-        return Template.instance().showWorklistMenu.get();
-    },
     studyListToggleText: function() {
         var contentId = Session.get('activeContentId');
-        if (!contentId) {
+        
+        // If the Viewer has not been opened yet, 'Back to viewer' should
+        // not be displayed
+        var viewerContentExists = !!Object.keys(ViewerData).length;
+        if (!viewerContentExists) {
             return;
         }
-
-        var worklistContentId = 'worklistTab';
-        var viewerContentId = 'viewerTab';
 
         if (contentId === worklistContentId) {
             return 'Back to viewer';
