@@ -1,13 +1,16 @@
+@import "{design}/app"
+
 .studyContextMenu
   z-index: 10000
   display: none
   position: absolute
-  color: whitesmoke
-  background-color: #2d2d2d
+  color:  #2f2f2f
+  background-color: #f2f2f2
 
   width: -moz-fit-content
   width: -webkit-fit-content
   width: fit-content
+  width: 207px
 
   height: -moz-fit-content
   height: -webkit-fit-content
@@ -19,9 +22,13 @@
   -webkit-background-clip: padding-box
   background-clip: padding-box
   border: 1px solid rgba(0, 0, 0, .15)
-  border-radius: 4px
+  border-radius: 3px
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175)
   box-shadow: 0 6px 12px rgba(0, 0, 0, .175)
+
+  hr
+    border-top: solid 1px #d1d1d1
+    margin: 2px
 
   ul
     width: 100%
@@ -38,13 +45,13 @@
         display: block
         text-decoration: none
         cursor: pointer
-        line-height: 25px
-        color: #808080
+        font-size: 15px
+        line-height: 1.7
+        color: black
 
         &:not(.disabled):hover
-          color: #439193
+          color: $activeColor
           text-decoration: none
-          background-color: #1d1d1d
 
         &.disabled
           opacity: 0.4

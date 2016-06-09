@@ -9,7 +9,8 @@ $inputPlaceholderColor = lightgray
 
 $studyListToolbarHeight = 75px
 $theadBackgroundColor =  #151a1f
-$tablePadding = 80px
+$tablePadding = 60px
+$bodyCellHeight = 40px
 
 .studyListToolbar
   height: $studyListToolbarHeight
@@ -100,7 +101,6 @@ $tablePadding = 80px
             &.active, &:active
               color: $activeColor
 
-
           input.worklist-search
             height: 34px
             margin: 0 5px 20px 5px
@@ -144,7 +144,6 @@ $tablePadding = 80px
 
     tbody
       tr
-        height: 22px
         padding: 5px
         background-color: black
 
@@ -152,6 +151,8 @@ $tablePadding = 80px
           background-color: #151a1f
 
         td
+          height: $bodyCellHeight
+          line-height: $bodyCellHeight
           color: $textPrimaryColor
           font-weight: 200
           border-top: 1px solid #436270

@@ -1,4 +1,5 @@
 <template name="lesionTrackerWorklistContextMenu">
+    {{#if studyListFunctionsEnabled}}
     <div id="studyContextMenu" class="studyContextMenu noselect"
          oncontextmenu='return false;'
          unselectable='on'
@@ -7,40 +8,33 @@
             <li>
                 <a id="viewStudies" type="button"
                    title="View Studies">
-                    <i class="fa fa-desktop fa-lg"></i>
                     View
                 </a>
-                <!-- TODO: Make this dynamically accept options-->
+                <hr/>
                 <a id="launchStudyAssociation" type="button"
                    data-toggle="modal"
                    data-target="#associationModal"
                    title="Launch Study Association">
-                    <i class="fa fa-calendar-plus-o fa-lg"></i>
                     Associate
                 </a>
                 <a id="launchRemoveAssociation" type="button"
                    data-toggle="modal"
                    data-target="#confirmRemoveTimepointAssociation"
                     title="Remove Timepoint Association">
-                    <i class="fa fa-eraser fa-lg"></i> Remove Association
+                    Remove Association
                 </a>
-
-                {{#if studyListFunctionsEnabled}}
-                    <a class="disabled"><span class="fa-stack fa-lg">
-                          <i class="fa fa-user fa-stack-1x"></i>
-                          <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                        </span> Anonymize
-                    </a>
-                    <a id="exportSelectedStudies" type="button"
-                       title="Export Selected Studies">
-                        <i class="fa fa-exchange fa-lg"></i> Export
-                    </a>
-                {{/if}}
-                <a class="disabled"><i class="fa fa-trash fa-lg"></i> Delete</a>
-                <a class="disabled"><i class="fa fa-send-o fa-lg"></i> Send</a>
-                <a class="disabled"><i class="fa fa-download fa-lg"></i> Download</a>
-                <a class="disabled"><i class="fa fa-photo fa-lg"></i> View Series Details</a>
+                <hr/>
+                <a class="disabled">View Series Details</a>
+                <a class="disabled">Anonymize</a>
+                <a class="disabled">Send</a>
+                <hr/>
+                <a id="exportSelectedStudies"
+                   title="Export Selected Studies">
+                    Export
+                </a>
+                <a class="disabled">Delete</a>
             </li>
         </ul>
     </div>
+    {{/if}}
 </template>
