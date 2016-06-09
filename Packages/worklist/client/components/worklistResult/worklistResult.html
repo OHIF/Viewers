@@ -10,6 +10,8 @@
             {{>worklistToolbar}}
         </div>
     </div>
+    <div class="theadBackground">
+    </div>
     <div id="studyListContainer">
         <table id="tblStudyList" class="worklistResult table noselect">
             <thead>
@@ -105,7 +107,7 @@
         {{/if}}
 
         {{#if showNotFoundMessage}}
-            <h5 class="text-center">No Studies Found</h5>
+            <div class="notFound">No matching results</div>
         {{/if}}
     </div>
 </template>

@@ -8,6 +8,8 @@ $inputBackgroundColor = #2c363f
 $inputPlaceholderColor = lightgray
 
 $studyListToolbarHeight = 75px
+$theadBackgroundColor =  #151a1f
+$tablePadding = 80px
 
 .studyListToolbar
   height: $studyListToolbarHeight
@@ -36,16 +38,44 @@ $studyListToolbarHeight = 75px
     padding: 0 10px
     line-height: $studyListToolbarHeight
 
+.theadBackground
+  background-color: $theadBackgroundColor
+  width: 100%
+  height: 122px
+  position: absolute
+  z-index: 1
+
 #studyListContainer
+  padding: 0 $tablePadding
+  position: absolute
+  z-index: 2
+
+  .loadingTextDiv
+    color: $textSecondaryColor
+    font-size: 30px
+    font-weight: 200
+
+  .notFound
+    color: $textSecondaryColor
+    font-size: 30px
+    font-weight: 200
+    text-align: center
+
   table#tblStudyList
     thead
-      background-color: #151a1f
+      background-color: $theadBackgroundColor
       white-space: nowrap
-      border-bottom: solid 1px #6fbde2;
 
       tr
         th
           padding: 0
+          border-bottom: solid 1px #6fbde2
+
+          &:first-child
+            padding-left: $tablePadding
+
+          &:last-child
+            padding-right: $tablePadding
 
           div.sortingCell
             display: inline-block
@@ -56,7 +86,6 @@ $studyListToolbarHeight = 75px
             color: $textPrimaryColor
             font-weight: 400
             padding: 20px
-            background: #171717
 
             span
               font-size: 15px
@@ -65,8 +94,12 @@ $studyListToolbarHeight = 75px
             i
               margin: 0 5px
 
-            &:hover, &.active
-              background: #252525
+            &:hover
+              color: $activeColor
+
+            &.active, &:active
+              color: $activeColor
+
 
           input.worklist-search
             height: 34px
@@ -125,6 +158,12 @@ $studyListToolbarHeight = 75px
           white-space: nowrap
 
           transition(all 0.1s ease)
+
+          &:first-child
+            padding-left: $tablePadding
+
+          &:last-child
+            padding-right: $tablePadding
 
         &:hover, &:active, &.active
           background-color: $hoverColor

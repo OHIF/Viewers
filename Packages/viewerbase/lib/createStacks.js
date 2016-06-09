@@ -14,6 +14,10 @@ createStacks = function(study) {
     // Define an empty array of stacks
     var stacks = [];
 
+    if (!study.seriesList) {
+    	return stacks;
+    }
+
     // TODO: Split by multi-frame, modality, image size, etc
     study.seriesList.forEach(function(series) {
         // If the series has no instances, skip it

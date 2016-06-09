@@ -45,6 +45,10 @@ Template.userAccountMenu.onRendered(function() {
     this.autorun(function() {
         // Hook login/logout
         var user = Meteor.user();
+        if (!user) {
+            return;
+        }
+
         var newUserId = user._id;
 
         if (oldUserId === null && newUserId) {
