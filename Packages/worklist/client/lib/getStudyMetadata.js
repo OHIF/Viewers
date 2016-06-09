@@ -49,6 +49,17 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
         // and instance number in ascending order
         sortStudy(study);
 
+        // Add additional metadata to our study from the worklist
+        var worklistStudy = WorklistStudies.findOne({
+            studyInstanceUid: study.studyInstanceUid
+        });
+
+        if (!worklistStudy) {
+            return;
+        }
+
+        $.extend(study, worklistStudy);
+
         // Then we store this data in the cache variable
         StudyMetaData[studyInstanceUid] = study;
 

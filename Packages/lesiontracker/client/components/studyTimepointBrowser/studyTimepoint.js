@@ -1,3 +1,5 @@
+var isActive = {};
+
 // Initialize the timepoint wrapper max-height to enable CSS transition
 Template.studyTimepoint.onRendered(() => {
     const instance = Template.instance();
@@ -21,19 +23,22 @@ Template.studyTimepoint.onRendered(() => {
 
 Template.studyTimepoint.events({
     // Changes the selected study
-    'selectionChanged .studyTimepoint'(event, instance, selection) {
-        const $selection = $(selection);
+    'selectionChanged .studyTimepoint'(event, instance, changed) {
+        const $selection = $(changed.selection);
         const $thumbnails = $selection.find('.studyTimepointThumbnails');
         const $timepoint = instance.$('.studyTimepoint');
+        const studyInstanceUid = changed.studyInstanceUid;
 
         // Set the max-height to inherit to be able to expand the wrapper on its full height
         instance.$('.studyTimepointWrapper').css('max-height', 'inherit');
 
         // Removes selected state from all studies but the triggered study
-        instance.$('.studyTimepointStudy').not(selection).removeClass('active');
+        instance.$('.studyTimepointStudy').not($selection).removeClass('active');
 
         // Toggle selected state for the triggered study
+        $selection.removeClass('loading');
         $selection.toggleClass('active');
+        isActive[studyInstanceUid] = $selection.hasClass('active');
 
         // Recalculates the timepoint height to make CSS transition smoother
         $thumbnails.one('transitionend', () => $timepoint.trigger('displayStateChanged'));
@@ -47,3 +52,13 @@ Template.studyTimepoint.events({
         $wrapper.css('max-height', $timepoint.height());
     }
 });
+
+Template.studyTimepoint.helpers({
+    isActive() {
+        if (!this.studyInstanceUid) {
+            return;
+        }
+
+        return isActive[this.studyInstanceUid];
+    }
+})

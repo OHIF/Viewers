@@ -6,6 +6,14 @@ Template.studyTimepointStudy.onRendered(() => {
     $study.addClass('active');
     $thumbnails.css('max-height', $thumbnails.height());
     $study.removeClass('active');
+
+    // Here we add, remove, and add the active class again because this way
+    // the max-height animation appears smooth to the user.
+    if (instance.data.active) {
+        Meteor.setTimeout(() => {
+            $study.addClass('active');
+        }, 1);
+    }
 });
 
 Template.studyTimepointStudy.events({
@@ -20,7 +28,32 @@ Template.studyTimepointStudy.events({
         const $study = $(event.currentTarget).closest('.studyTimepointStudy');
         const $timepoint = $study.closest('.studyTimepoint');
         const study = $study[0];
-        $timepoint.trigger('selectionChanged', [study]);
+
+        const studyInstanceUid = this.study.studyInstanceUid;
+        const selectionChanged = {
+            selection: [study],
+            studyInstanceUid: studyInstanceUid
+        };
+
+        // Check if the study already has series data,
+        // and if not, retrieve it.
+        if (!this.study.seriesList) {
+            var alreadyLoaded = ViewerStudies.findOne({
+                studyInstanceUid: studyInstanceUid
+            });
+
+            if (!alreadyLoaded) {
+                study.classList.add('loading');
+                getStudyMetadata(studyInstanceUid, (studyData) => {
+                    ViewerStudies.insert(studyData);
+                    $timepoint.trigger('selectionChanged', selectionChanged);
+                });
+            } else {
+                this.study.seriesList = alreadyLoaded.seriesList;
+            }
+        } else {
+            $timepoint.trigger('selectionChanged', selectionChanged);
+        }
     }
 });
 

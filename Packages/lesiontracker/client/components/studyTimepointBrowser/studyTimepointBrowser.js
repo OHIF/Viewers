@@ -3,10 +3,25 @@ Template.studyTimepointBrowser.onCreated(() => {
 
     // Get the studies for a specific timepoint
     instance.getStudies = timepoint => {
-        const query = {
-            selected: true
-        };
-        return ViewerStudies.find(query);
+        return timepoint.studyInstanceUids.map(studyInstanceUid => {
+            const query = {
+                patientId: timepoint.patientId,
+                timepointId: timepoint.timepointId,
+                studyInstanceUid: studyInstanceUid
+            };
+
+            var loadedStudy = ViewerStudies.findOne(query);
+            if (loadedStudy) {
+                return loadedStudy;
+            }
+
+            var notYetLoaded = Studies.findOne(query);
+            if (!notYetLoaded) {
+                throw "No study data available for Study: " + studyInstanceUid;
+            }
+
+            return notYetLoaded;
+        });
     };
 });
 

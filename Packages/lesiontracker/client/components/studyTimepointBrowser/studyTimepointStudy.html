@@ -1,5 +1,6 @@
 <template name="studyTimepointStudy">
-    <div class="studyTimepointStudy">
+    <div class="studyTimepointStudy {{#if this.active}}active{{/if}}">
+        {{ >loadingText }}
         <div class="studyModality">
             <div class="studyModalityBox">
                 {{#if this.study.modalities}}

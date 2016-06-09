@@ -14,6 +14,26 @@ $spacerX = 7px
 $spacerY = 12px
 
 .studyTimepointStudy
+  position: relative
+
+  .loadingTextDiv
+    padding: 25px
+    border-radius: 12px
+    position: absolute
+    opacity: 0
+    z-index: 100
+    background-color: $boxHoverBackgroundColor
+    pointer-events: none
+    margin: 0
+
+  &.loading
+    .loadingTextDiv
+      width: 100%
+      height: 100%
+      opacity: 0.75
+
+    .studyModality
+      opacity: 0.2
 
   &.active
     .studyModality

@@ -151,16 +151,14 @@ Package.onUse(function(api) {
     api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.styl', 'client');
     api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.js', 'client');
 
-    api.addFiles('client/components/studyDateList/studyDateList.html', 'client');
-    api.addFiles('client/components/studyDateList/studyDateList.styl', 'client');
-    api.addFiles('client/components/studyDateList/studyDateList.js', 'client');
-
     api.addFiles('client/components/studyTimepointBrowser/studyTimepoint.html', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepoint.styl', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepoint.js', 'client');
+
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.html', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.styl', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointBrowser.js', 'client');
+
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.html', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
     api.addFiles('client/components/studyTimepointBrowser/studyTimepointStudy.js', 'client');
