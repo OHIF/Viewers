@@ -24,6 +24,7 @@
       cursor: not-allowed
 
     .buttonLabel
+      color: $textSecondaryColor
       font-size: 12px
 
     .svgContainer
@@ -36,19 +37,23 @@
       width: 21px
       height: 21px
 
-    &:active, &.active
-      color: $activeColor
-
-      svg
-        fill: $activeColor
-        stroke: $activeColor
 
     &:hover
-      color: $hoverColor
+
+      .buttonLabel
+        color: $hoverColor
 
       svg
         fill: $hoverColor
         stroke: $hoverColor
+
+    &:active, &.active
+      .buttonLabel
+        color: $activeColor
+
+      svg
+        fill: $activeColor
+        stroke: $activeColor
 
   .toolbarSectionEntry
     color: $defaultColor
