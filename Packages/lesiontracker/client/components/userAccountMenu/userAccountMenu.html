@@ -1,10 +1,10 @@
 <template name="userAccountMenu">
     {{#if currentUser}}
         <div id="userAccountMenu" class="dropdown">
-            <div class="dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{name}} {{currentPath}}
-                <div class="menuButton">
-                    <i class="fa fa-cog"></i> <span class="caret"></span>
+            <div class="dropdown-toggle noselect clearfix" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="userName pull-left m-r-1">{{name}} {{currentPath}}</span>
+                <div class="menuButton pull-right">
+                    <i class="fa fa-cog"></i> <span class="caret-down"></span>
                 </div>
             </div>
             <ul class="dropdown-menu dropdown-menu-right">

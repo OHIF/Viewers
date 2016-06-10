@@ -1,10 +1,10 @@
 <template name="toolbarSection">
     <div class="toolbarSection p-x-2">
-        <div class="clearfix m-t-1">
-            <div class="pull-left">
+        <div class="clearfix">
+            <div class="pull-left m-t-1">
                 {{>roundedButtonGroup leftSidebarToggleButtonData}}
             </div>
-            <div class="toolbarSectionTools pull-left">
+            <div class="toolbarSectionTools pull-left m-t-1">
                 {{ #each toolbarButtons }}
                     {{ >toolbarSectionButton }}
                 {{ /each }}
@@ -24,10 +24,10 @@
             {{ >studySeriesQuickSwitch side="left" viewportIndex=0}}
             {{ >studySeriesQuickSwitch side="right" viewportIndex=1}}
 
-            <div class="pull-right toolbarSectionEntry">
+            <div class="toolbarSectionEntry pull-right m-l-1 p-x-1">
                 {{ >caseProgress }}
             </div>
-            <div class="pull-right">
+            <div class="pull-right m-t-1 m-x-1">
                 {{>roundedButtonGroup rightSidebarToggleButtonData}}
             </div>
             <!-- <div class="capsule-group pull-right">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div> -->
-            <div id="toggleHUD" class="pull-right toolbarSectionButton">
+            <div id="toggleHUD" class="toolbarSectionButton pull-right m-t-1 m-r-3">
                 <div class="svgContainer">
                     <svg>
                         <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-hud"></use>
@@ -62,7 +62,7 @@
                     HUD
                 </div>
             </div>
-            <div class="pull-right toolbarSectionButton" data-toggle="modal" data-target="#optionsModal">
+            <div class="toolbarSectionButton pull-right m-t-1 m-x-1" data-toggle="modal" data-target="#optionsModal">
                 <div class="svgContainer">
                     <svg>
                         <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-trial-info"></use>

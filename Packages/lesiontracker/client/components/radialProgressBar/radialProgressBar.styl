@@ -18,23 +18,24 @@ $progressTextColor = #6fbde2
 
   #svg #bar
     stroke: $activeColor
-    -ms-transform: rotate(270deg); /* IE 9 */
-    -ms-transform-origin: center center; /* IE 9 */
-    -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
-    -webkit-transform-origin: center center; /* Chrome, Safari, Opera */
-    transform: rotate(270deg);
-    transform-origin: center center;
+    -ms-transform: rotate(270deg) /* IE 9 */
+    -ms-transform-origin: center center /* IE 9 */
+    -webkit-transform: rotate(270deg) /* Chrome, Safari, Opera */
+    -webkit-transform-origin: center center /* Chrome, Safari, Opera */
+    transform: rotate(270deg)
+    transform-origin: center center
 
   .progressText
-    position: absolute;
-    width: $circleSize;
-    height: $circleSize;
-    line-height: $circleSize;
-    font-family: Roboto-Bold;
-    font-size: 17px;
-    text-align: center;
-    color: $progressTextColor;
-    top: 0;
+    position: absolute
+    width: $circleSize
+    height: $circleSize
+    line-height: $circleSize
+    font-family: Roboto
+    font-weight: 700
+    font-size: 17px
+    text-align: center
+    color: $progressTextColor
+    top: 0
 
     svg
       width: 17px
