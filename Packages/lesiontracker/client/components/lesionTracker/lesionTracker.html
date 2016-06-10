@@ -1,18 +1,20 @@
 <template name="lesionTracker">
     <div class="topBar {{#if onStudyList}}studyList{{/if}}">
-        <a class="brandSection pull-left" href="http://ohif.org">
-            <img class="logoImage" src="/images/logo.png">
-            <div class="logoText">
-                Open Health Imaging Foundation
+        <div class="clearfix p-x-1 p-t-1">
+            <a class="brandSection pull-left" href="http://ohif.org">
+                <img class="logoImage" src="/images/logo.png">
+                <div class="logoText">
+                    Open Health Imaging Foundation
+                </div>
+            </a>
+            {{ #if studyListToggleText }}
+            <div class="studyListLinkSection pull-left m-x-1 p-x-2 js-toggle-studyList">
+                {{studyListToggleText}}
             </div>
-        </a>
-        {{ #if studyListToggleText }}
-        <div class="studyListLinkSection pull-left js-toggle-studyList">
-            {{studyListToggleText}}
-        </div>
-        {{ /if }}
-        <div class="userAccountSection pull-right">
-            {{>userAccountMenu}}
+            {{ /if }}
+            <div class="userAccountSection pull-right">
+                {{>userAccountMenu}}
+            </div>
         </div>
     </div>
     {{ >timeoutCountdownDialog }}
