@@ -587,7 +587,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             viewportData.push(currentViewportData);
         });
 
-        this.LayoutManager.layoutTempleName = layoutTemplateName;
+        this.LayoutManager.layoutTemplateName = layoutTemplateName;
         this.LayoutManager.layoutProps = layoutProps;
         this.LayoutManager.viewportData = viewportData;
 

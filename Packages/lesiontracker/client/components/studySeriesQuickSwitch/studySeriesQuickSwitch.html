@@ -22,8 +22,12 @@
         </div>
 
         <div class="studyHover js-hide-studies {{ #unless studiesOpen}}hidden{{/unless}}">
+            {{>studyTimepointBrowser timepointViewType=timepointViewType}}
         </div>
         <div class="seriesHover js-hide-series {{ #unless seriesOpen }}tiny{{/unless}}">
+            {{#each thumbnail in (thumbnails currentStudy)}}
+                {{>thumbnailEntry thumbnail}}
+            {{/each}}
         </div>
     </div>
 </template>

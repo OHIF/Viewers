@@ -5,6 +5,6 @@ Template.viewerMain.onRendered(function() {
     var parentElement = instance.$("#layoutManagerTarget").get(0);
     window.layoutManager = new LayoutManager(parentElement, studies);
 
-    ProtocolEngine = new HP.ProtocolEngine(layoutManager, studies);
+    ProtocolEngine = new HP.ProtocolEngine(window.layoutManager, studies);
     HP.setEngine(ProtocolEngine);
 });

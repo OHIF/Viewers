@@ -14,7 +14,7 @@ createStacks = function(study) {
     // Define an empty array of stacks
     var stacks = [];
 
-    if (!study.seriesList) {
+    if (!study || !study.seriesList) {
     	return stacks;
     }
 
