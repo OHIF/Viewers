@@ -51,7 +51,9 @@ LayoutManager = class LayoutManager {
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227
                     var firstInstance = series.instances[0];
-                    if (!firstInstance.rows) {
+
+                    // All imaging modalities must have a valid value for sopClassUid or rows
+                    if (!firstInstance || (!isImage(firstInstance.sopClassUid) && !firstInstance.rows)) {
                         currentViewportData = {};
                     } else {
                         currentViewportData = {
