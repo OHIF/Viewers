@@ -1,12 +1,23 @@
 @import "{design}/app"
 
 $switchSize = 50px
+$switchTop = 5px
+$switchHeight = 70px
+$switchWrapperWidth = 140px
 
 .quickSwitch
   height: 80px
   position: absolute
-  top: 5px
-  width: 140px
+  top: $switchTop
+  width: $switchWrapperWidth
+
+  &.middle
+    left: 'calc(50% - %s)' % ($switchWrapperWidth / 2)
+
+  &.left
+    left: 'calc(50% - %s - 20px)' % $switchWrapperWidth
+  &.right
+    left: calc(50% + 20px)
 
   div.switchSection
     display: inline-block
@@ -42,11 +53,10 @@ $switchSize = 50px
 .mirror-x
   transform(scaleX(-1));
 
-.studyHover
+.studyHover, .seriesHover
   position: absolute
   z-index: 10000
-  top: 70px
-  left: -350px
+  top: $switchHeight
   width: 400px
   height: 500px
   background: black
@@ -54,17 +64,13 @@ $switchSize = 50px
   border-radius: 5px
   transition(all 0.3s ease)
 
+.studyHover
+  left: -350px
+  width: 400px
+
 .seriesHover
-  position: absolute
-  z-index: 10000
-  top: 70px
   left: 50px
   width: 700px
-  height: 900px
-  background: black
-  opacity: 0.8
-  border-radius: 5px
-  transition(all 0.3s ease)
 
   &.tiny
     width: 0
@@ -76,16 +82,22 @@ $switchSize = 50px
     width: 33%
     display: inline-block
 
-$switchSizeSmall = 30px
+$switchSizeSmall = 35px
 @media screen and (max-width: 1600px)
-  .quickSwitch div.switchSection
-    .label
-      font-size: 8px
-      font-weight: 400
-      padding: 0
-    .studySwitch
-      border-radius: 7px
-    .studySwitch, .seriesSwitch
-      &, svg
-        width: $switchSizeSmall
-        height: $switchSizeSmall
+  .quickSwitch
+    &.left
+      left: 'calc(50% - %s - 8px)' % $switchWrapperWidth
+    &.right
+      left: calc(50% + 8px)
+    height: 45px
+    div.switchSection
+      .label
+        font-size: 8px
+        font-weight: 400
+        padding: 0
+      .studySwitch
+        border-radius: 7px
+      .studySwitch, .seriesSwitch
+        &, svg
+          width: $switchSizeSmall
+          height: $switchSizeSmall
