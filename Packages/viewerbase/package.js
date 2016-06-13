@@ -14,6 +14,8 @@ Package.onUse(function(api) {
     api.use('stylus');
     api.use('practicalmeteor:loglevel');
     api.use('momentjs:moment');
+    
+    api.use('validatejs');
 
     // Our custom packages
     api.use('cornerstone');
@@ -24,7 +26,7 @@ Package.onUse(function(api) {
     api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
 
     // Data validation (the Meteor package is currently out-of-date)
-    api.addFiles('client/compatibility/validate.js', 'client');
+    //api.addFiles('client/compatibility/validate.js', 'client');
 
     // ---------- Collections ----------
     api.addFiles('client/collections.js', 'client');
@@ -128,7 +130,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/updateAllViewports.js', 'client');
     api.addFiles('lib/queryStudies.js', 'client');
     api.addFiles('lib/importStudies.js', 'client');
-    api.addFiles('lib/validators.js', 'client');
+    //api.addFiles('lib/validators.js', 'client');
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
     api.addFiles('lib/isImage.js', 'client');

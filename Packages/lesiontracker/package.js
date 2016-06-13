@@ -11,6 +11,8 @@ Package.onUse(function(api) {
     api.use('jquery');
     api.use('stylus');
 
+    api.use('validatejs');
+
     // Control over logging
     api.use('practicalmeteor:loglevel');
 

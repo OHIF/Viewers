@@ -1,3 +1,5 @@
+//import {validate} from '../client/compatibility/validate.js';
+
 validate.validators.equals = function(value, options, key, attributes) {
     if (options && value !== options.value) {
         return key + 'must equal ' + options.value;

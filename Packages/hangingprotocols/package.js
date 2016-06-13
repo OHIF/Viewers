@@ -17,6 +17,8 @@ Package.onUse(function(api) {
     api.use('natestrauser:select2@4.0.1', 'client');
     api.use('clinical:router');
 
+    api.use('validatejs');
+
     // Our custom packages
     api.use('viewerbase');
 

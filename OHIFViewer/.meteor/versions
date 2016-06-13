@@ -92,6 +92,7 @@ twbs:bootstrap@3.3.6
 ui@1.0.11
 underscore@1.0.8
 url@1.0.9
+validatejs@0.0.1
 viewerbase@0.0.1
 webapp@1.2.8
 webapp-hashing@1.0.9
