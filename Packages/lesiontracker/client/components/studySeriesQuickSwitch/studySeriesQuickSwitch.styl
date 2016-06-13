@@ -3,23 +3,23 @@
 $switchSize = 50px
 
 .quickSwitch
-  position: absolute
-  width: 140px
   height: 80px
+  position: absolute
   top: 5px
+  width: 140px
 
   div.switchSection
-    float: left
     display: inline-block
+    float: left
     margin: 0 5px
 
     .label
-      display: block
-      text-transform: uppercase
-      text-align: center
-      font-size: 12px
-      font-weight: 100
       color: $textSecondaryColor
+      display: block
+      font-size: 12px
+      font-weight: 300
+      text-align: center
+      text-transform: uppercase
 
     .studySwitch
       display: block
@@ -75,3 +75,17 @@ $switchSize = 50px
     margin: 0
     width: 33%
     display: inline-block
+
+$switchSizeSmall = 30px
+@media screen and (max-width: 1600px)
+  .quickSwitch div.switchSection
+    .label
+      font-size: 8px
+      font-weight: 400
+      padding: 0
+    .studySwitch
+      border-radius: 7px
+    .studySwitch, .seriesSwitch
+      &, svg
+        width: $switchSizeSmall
+        height: $switchSizeSmall

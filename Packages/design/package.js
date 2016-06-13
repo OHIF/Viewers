@@ -17,6 +17,7 @@ Package.onUse(function(api) {
         'app.styl',
         'styles/global.styl',
         'styles/mixins.styl',
+        'styles/responsive.styl',
         'styles/spacings.styl',
         'styles/variables.styl',
         'styles/webfonts.styl'

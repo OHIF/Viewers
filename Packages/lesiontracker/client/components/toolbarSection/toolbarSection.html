@@ -4,12 +4,12 @@
             <div class="pull-left m-t-1">
                 {{>roundedButtonGroup leftSidebarToggleButtonData}}
             </div>
-            <div class="toolbarSectionTools pull-left m-t-1">
+            <div class="toolbarSectionTools pull-left m-t-1 rm-l-3">
                 {{ #each toolbarButtons }}
                     {{ >toolbarSectionButton }}
                 {{ /each }}
 
-                <div id="moreTools" class="toolbarSectionButton m-l-3">
+                <div id="moreTools" class="toolbarSectionButton rp-x-1 rm-l-3">
                     <div class="svgContainer">
                         <svg>
                             <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-tools-more"></use>
@@ -24,10 +24,10 @@
             {{ >studySeriesQuickSwitch side="left" viewportIndex=0}}
             {{ >studySeriesQuickSwitch side="right" viewportIndex=1}}
 
-            <div class="toolbarSectionEntry pull-right m-l-1 p-x-1">
+            <div class="toolbarSectionEntry pull-right rm-l-1 p-x-1">
                 {{ >caseProgress }}
             </div>
-            <div class="pull-right m-t-1 m-x-1">
+            <div class="pull-right m-t-1 rm-x-1">
                 {{>roundedButtonGroup rightSidebarToggleButtonData}}
             </div>
             <!-- <div class="capsule-group pull-right">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div> -->
-            <div id="toggleHUD" class="toolbarSectionButton pull-right m-t-1 m-r-3">
+            <div id="toggleHUD" class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-3">
                 <div class="svgContainer">
                     <svg>
                         <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-hud"></use>
@@ -62,7 +62,7 @@
                     HUD
                 </div>
             </div>
-            <div class="toolbarSectionButton pull-right m-t-1 m-x-1" data-toggle="modal" data-target="#optionsModal">
+            <div class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-1" data-toggle="modal" data-target="#optionsModal">
                 <div class="svgContainer">
                     <svg>
                         <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-trial-info"></use>

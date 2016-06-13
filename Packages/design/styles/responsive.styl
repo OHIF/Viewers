@@ -1,0 +1,23 @@
+@import "./spacings"
+
+
+// MIN WIDTH 1601
+generateSpacings('r', $spacer-x, $spacer-y)
+
+@media screen and (min-width: 1441px) and (max-width: 1600px)
+  generateSpacings('r', ($spacer-x * 0.9), ($spacer-y * 0.9))
+
+@media screen and (min-width: 1367px) and (max-width: 1440px)
+  generateSpacings('r', ($spacer-x * 0.8), ($spacer-y * 0.8))
+
+@media screen and (min-width: 1281px) and (max-width: 1366px)
+  generateSpacings('r', ($spacer-x * 0.7), ($spacer-y * 0.7))
+
+@media screen and (min-width: 1153px) and (max-width: 1280px)
+  generateSpacings('r', ($spacer-x * 0.6), ($spacer-y * 0.6))
+
+@media screen and (min-width: 1025px) and (max-width: 1152px)
+  generateSpacings('r', ($spacer-x * 0.5), ($spacer-y * 0.5))
+
+@media screen and (max-width: 1024px)
+  generateSpacings('r', ($spacer-x * 0.4), ($spacer-y * 0.4))

@@ -68,7 +68,7 @@ Template.toolbarSection.helpers({
         buttonData.push({
             id: 'bidirectional',
             title: 'Target',
-            classes: 'imageViewerTool m-l-3',
+            classes: 'imageViewerTool rm-l-3',
             svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-measure-target'
         });
 
