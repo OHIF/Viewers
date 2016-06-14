@@ -2,7 +2,11 @@
     <div class="quickSwitch {{side}}">
         <div class="switchSection {{#if equals side "left"}}pull-right{{/if}} js-show-studies">
             <div class="label">Study</div>
-            <div class="studySwitch">
+            <div class="studySwitch"></div>
+            <div class="switchHover studyHover clearfix">
+                <div class="scrollArea">
+                    {{>studyTimepointBrowser timepointViewType=timepointViewType}}
+                </div>
             </div>
         </div>
         <div class="switchSection {{#if equals side "left"}}pull-right{{/if}}">
@@ -19,15 +23,13 @@
                     <rect fill="#22364C" x="0" y="0" width="15" height="15" rx="3"></rect>
                 </svg>
             </div>
-        </div>
-
-        <div class="studyHover js-hide-studies {{ #unless studiesOpen}}hidden{{/unless}}">
-            {{>studyTimepointBrowser timepointViewType=timepointViewType}}
-        </div>
-        <div class="seriesHover js-hide-series {{ #unless seriesOpen }}tiny{{/unless}}">
-            {{#each thumbnail in (thumbnails currentStudy)}}
-                {{>thumbnailEntry thumbnail}}
-            {{/each}}
+            <div class="switchHover seriesHover clearfix">
+                <div class="scrollArea">
+                    {{#each thumbnail in (thumbnails currentStudy)}}
+                        {{>thumbnailEntry thumbnail}}
+                    {{/each}}
+                </div>
+            </div>
         </div>
     </div>
 </template>

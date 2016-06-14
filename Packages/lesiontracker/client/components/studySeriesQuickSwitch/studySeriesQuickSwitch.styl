@@ -6,23 +6,30 @@ $switchHeight = 70px
 $switchWrapperWidth = 140px
 
 .quickSwitch
-  height: 80px
+  height: $switchHeight
   position: absolute
   top: $switchTop
   width: $switchWrapperWidth
 
   &.middle
     left: 'calc(50% - %s)' % ($switchWrapperWidth / 2)
-
   &.left
     left: 'calc(50% - %s - 20px)' % $switchWrapperWidth
   &.right
     left: calc(50% + 20px)
 
-  div.switchSection
+  .switchSection
     display: inline-block
     float: left
+    height: 100%
     margin: 0 5px
+    position: relative
+
+    &:hover
+      .studySwitch, .seriesSwitch
+        opacity: 0
+      .switchHover
+        opacity: 0.8
 
     .label
       color: $textSecondaryColor
@@ -32,65 +39,109 @@ $switchWrapperWidth = 140px
       text-align: center
       text-transform: uppercase
 
+    .studySwitch, .seriesSwitch
+      transition(all 0.3s ease)
+
     .studySwitch
-      display: block
-      margin: 0 auto
-      width: $switchSize
-      height: $switchSize
-      border-radius: 11px
       background-color: $darkUiColor
       border: solid 1px $activeColor
+      border-radius: 11px
+      display: block
+      height: $switchSize
+      margin: 0 auto
+      width: $switchSize
 
     .seriesSwitch
       display: block
-      width: $switchSize
       height: $switchSize
+      width: $switchSize
 
       svg
-        width: $switchSize
         height: $switchSize
+        width: $switchSize
 
 .mirror-x
-  transform(scaleX(-1));
+  transform(scaleX(-1))
 
-.studyHover, .seriesHover
-  position: absolute
-  z-index: 10000
-  top: $switchHeight
-  width: 400px
-  height: 500px
+.switchHover
   background: black
-  opacity: 0.8
   border-radius: 5px
+  opacity: 0
+  overflow: hidden
+  position: absolute
+  top: 18px
+  transform(scale(0))
   transition(all 0.3s ease)
+  z-index: 10000
+
+  .scrollArea
+    margin-right: -20px
+    min-height: 200px
+    max-height: 500px
+    overflow-y: scroll
+    width: calc(100% + 20px)
 
 .studyHover
-  left: -350px
-  width: 400px
+  width: 300px
 
 .seriesHover
-  left: 50px
-  width: 700px
-
-  &.tiny
-    width: 0
-    height: 0
-    opacity: 0
+  width: 711px
 
   .thumbnailEntry
     margin: 0
-    width: 33%
-    display: inline-block
 
+.quickSwitch.left, .quickSwitch.middle
+  .seriesHover .thumbnailEntry
+    float: right
+  .studyHover
+    left: 0
+    transform-origin(0% 0%)
+  .seriesHover
+    right: 0
+    transform-origin(100% 0%)
+
+.quickSwitch.right
+  .seriesHover .thumbnailEntry
+    float: left
+  .studyHover
+    right: 0
+    transform-origin(100% 0%)
+  .seriesHover
+    left: 0
+    transform-origin(0% 0%)
+
+// Responsive layout
 $switchSizeSmall = 35px
+
+@media screen and (max-width: 1024px)
+  .switchSection:hover .switchHover
+    transform(scale(0.5))
+@media screen and (min-width: 1025px) and (max-width: 1152px)
+  .switchSection:hover .switchHover
+    transform(scale(0.6))
+@media screen and (min-width: 1153px) and (max-width: 1280px)
+  .switchSection:hover .switchHover
+    transform(scale(0.7))
+@media screen and (min-width: 1281px) and (max-width: 1440px)
+  .switchSection:hover .switchHover
+    transform(scale(0.8))
+@media screen and (min-width: 1441px) and (max-width: 1600px)
+  .switchSection:hover .switchHover
+    transform(scale(0.9))
+@media screen and (min-width: 1601px)
+  .switchSection:hover .switchHover
+    transform(scale(1))
+
 @media screen and (max-width: 1600px)
   .quickSwitch
+    height: 45px
     &.left
       left: 'calc(50% - %s - 8px)' % $switchWrapperWidth
     &.right
       left: calc(50% + 8px)
-    height: 45px
-    div.switchSection
+    .switchSection
+      .switchHover
+        top: 8px
       .label
         font-size: 8px
         font-weight: 400
@@ -99,5 +150,5 @@ $switchSizeSmall = 35px
         border-radius: 7px
       .studySwitch, .seriesSwitch
         &, svg
-          width: $switchSizeSmall
           height: $switchSizeSmall
+          width: $switchSizeSmall
