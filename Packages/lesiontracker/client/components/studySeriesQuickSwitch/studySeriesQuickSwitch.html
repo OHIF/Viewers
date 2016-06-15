@@ -5,7 +5,7 @@
             <div class="studySwitch"></div>
             <div class="switchHover studyHover clearfix">
                 <div class="scrollArea">
-                    {{>studyTimepointBrowser timepointViewType=timepointViewType}}
+                    {{>studyTimepointBrowser timepointViewType=timepointViewType viewportIndex=viewportIndex}}
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <div class="switchHover seriesHover clearfix">
                 <div class="scrollArea">
                     {{#each thumbnail in (thumbnails currentStudy)}}
-                        {{>thumbnailEntry thumbnail}}
+                        {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
                     {{/each}}
                 </div>
             </div>

@@ -54,11 +54,11 @@ Template.studyTimepoint.events({
 });
 
 Template.studyTimepoint.helpers({
-    isActive() {
-        if (!this.studyInstanceUid) {
+    isActive(study) {
+        if (!study.studyInstanceUid) {
             return;
         }
 
-        return isActive[this.studyInstanceUid];
+        return isActive[study.studyInstanceUid];
     }
 })

@@ -13,7 +13,7 @@ Package.onUse(function(api) {
     api.use('jquery');
     api.use('stylus');
     api.use('practicalmeteor:loglevel');
-    api.use('momentjs:moment');    
+    api.use('momentjs:moment');
     api.use('validatejs');
     api.use('design');
 
@@ -173,21 +173,24 @@ Package.onUse(function(api) {
     api.export('ViewerStudies', 'client');
 
     // UI Helpers
-    api.addFiles('lib/helpers/formatDA.js', 'client');
-    api.addFiles('lib/helpers/logical.js', 'client');
-    api.addFiles('lib/helpers/formatJSDate.js', 'client');
-    api.addFiles('lib/helpers/jsDateFromNow.js', 'client');
-    api.addFiles('lib/helpers/formatNumberPrecision.js', 'client');
-    api.addFiles('lib/helpers/formatTM.js', 'client');
-    api.addFiles('lib/helpers/inlineIf.js', 'client');
-    api.addFiles('lib/helpers/inc.js', 'client');
-    api.addFiles('lib/helpers/getUsername.js', 'client');
-    api.addFiles('lib/helpers/capitalizeFirstLetter.js', 'client');
-    api.addFiles('lib/helpers/objectToPairs.js', 'client');
-    api.addFiles('lib/helpers/objectEach.js', 'client');
-    api.addFiles('lib/helpers/ifTypeIs.js', 'client');
-    api.addFiles('lib/helpers/prettyPrintStringify.js', 'client');
-    api.addFiles('lib/helpers/formatPN.js', 'client');
+    api.addFiles([
+        'lib/helpers/formatDA.js',
+        'lib/helpers/logical.js',
+        'lib/helpers/formatJSDate.js',
+        'lib/helpers/jsDateFromNow.js',
+        'lib/helpers/formatNumberPrecision.js',
+        'lib/helpers/formatTM.js',
+        'lib/helpers/inlineIf.js',
+        'lib/helpers/inc.js',
+        'lib/helpers/isSeriesActive.js',
+        'lib/helpers/getUsername.js',
+        'lib/helpers/capitalizeFirstLetter.js',
+        'lib/helpers/objectToPairs.js',
+        'lib/helpers/objectEach.js',
+        'lib/helpers/ifTypeIs.js',
+        'lib/helpers/prettyPrintStringify.js',
+        'lib/helpers/formatPN.js'
+    ], 'client');
     api.export('formatPN', 'client');
 
     api.addFiles('lib/helpers/isTouchDevice.js', 'client');

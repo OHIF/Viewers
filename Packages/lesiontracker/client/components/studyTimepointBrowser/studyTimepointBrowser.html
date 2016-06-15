@@ -17,7 +17,7 @@
                                 </div>
                                 <div class="timepointModalities">{{modalitiesSummary timepoint}}</div>
                             </div>
-                            {{>studyTimepoint studies=(studies timepoint) index=@index}}
+                            {{>studyTimepoint studies=(studies timepoint) index=@index viewportIndex=viewportIndex}}
                         </div>
                         <hr class="m-y-1">
                     {{/if}}

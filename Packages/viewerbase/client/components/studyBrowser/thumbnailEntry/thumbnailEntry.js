@@ -1,13 +1,13 @@
-function cloneElement(element, targetId) {
+const cloneElement = (element, targetId) => {
     // Clone the DOM element
-    var clone = element.cloneNode(true);
+    const clone = element.cloneNode(true);
 
     // Find any canvas children to clone
-    var clonedCanvases = $(clone).find('canvas');
-    clonedCanvases.each(function(canvasIndex, clonedCanvas) {
+    const clonedCanvases = $(clone).find('canvas');
+    clonedCanvases.each((canvasIndex, clonedCanvas) => {
         // Draw from the original canvas to the cloned canvas
-        var context = clonedCanvas.getContext('2d');
-        var thumbnailCanvas = $(element).find('canvas').get(canvasIndex);
+        const context = clonedCanvas.getContext('2d');
+        const thumbnailCanvas = $(element).find('canvas').get(canvasIndex);
         context.drawImage(thumbnailCanvas, 0, 0);
     });
 
@@ -15,97 +15,98 @@ function cloneElement(element, targetId) {
     clone.id = targetId;
     clone.style.visibility = 'hidden';
     return clone;
-}
+};
 
-function thumbnailDragStartHandler(e, data) {
+const thumbnailDragStartHandler = (event, data) => {
     // Prevent any scrolling behaviour normally caused by the original event
-    e.originalEvent.preventDefault();
+    event.originalEvent.preventDefault();
 
     // Identify the current study and series index from the thumbnail's DOM position
-    var targetThumbnail = e.currentTarget;
-    var imageThumbnail = $(targetThumbnail);
-
-    // Store this data for use during drag and drop
-    OHIF.viewer.dragAndDropData = data;
+    const targetThumbnail = event.currentTarget;
+    const $imageThumbnail = $(targetThumbnail);
 
     // Clone the image thumbnail
-    var targetId = targetThumbnail.id + 'DragClone';
-    var clone = cloneElement(targetThumbnail, targetId);
-    clone.classList.add('imageThumbnailClone');
+    const targetId = 'DragClone';
+    const clone = cloneElement(targetThumbnail, targetId);
+    const $clone = $(clone);
+    $clone.addClass('imageThumbnailClone');
 
     // Set pointerEvents to pass through the clone DOM element
     // This is necessary in order to identify what is below it
     // when using document.elementFromPoint
     clone.style.pointerEvents = 'none';
 
-    // Append the clone to the parent of the target
-    targetThumbnail.parentNode.appendChild(clone);
+    // Append the clone to the body
+    document.body.appendChild(clone);
 
     // Set the cursor x and y positions from the current touch/mouse coordinates
+    let cursorX, cursorY;
     // Handle touchStart cases
-    if (e.type === 'touchstart') {
-        cursorX = e.originalEvent.touches[0].pageX;
-        cursorY = e.originalEvent.touches[0].pageY;
+    if (event.type === 'touchstart') {
+        cursorX = event.originalEvent.touches[0].pageX;
+        cursorY = event.originalEvent.touches[0].pageY;
     } else {
-        cursorX = e.pageX;
-        cursorY = e.pageY;
+        cursorX = event.pageX;
+        cursorY = event.pageY;
 
         // Also hook up event handlers for mouse events
-        $(document).on('mousemove', function(e) {
-            thumbnailDragHandler(e, targetThumbnail);
-        });
-        $(document).on('mouseup', function(e) {
-            thumbnailDragEndHandler(e, targetThumbnail);
-        });
+        const handlers = {};
+        handlers.mousemove = event => thumbnailDragHandler(event);
+        handlers.mouseup = event => thumbnailDragEndHandler(event, data, handlers);
+        $(document).on('mousemove', handlers.mousemove);
+        $(document).on('mouseup', handlers.mouseup);
     }
 
-    // This block gets the current position of the touch/mouse
-    // relative to the thumbnail itself
+    // This block gets the current offset of the touch/mouse
+    // relative to the window
     //
     // i.e. Where did the user grab it from?
-    var position = imageThumbnail.position();
-    var left = position.left;
-    var top = position.top;
+    const offset = $imageThumbnail.offset();
+    const left = offset.left;
+    const top = offset.top;
 
     // This difference is saved for later so the element movement looks normal
-    diffX = cursorX - left;
-    diffY = cursorY - top;
+    const diff = {
+        x: cursorX - left,
+        y: cursorY - top
+    };
+    $clone.data('diff', diff);
 
     // This sets the default style properties of the cloned element so it is
     // ready to be dragged around the page
-    $(clone).css({
-        top: top,
-        left: left,
-        position: 'absolute',
-        'z-index': 100,
-        visibility: 'hidden'
+    $clone.css({
+        left: cursorX - diff.x,
+        position: 'fixed',
+        top: cursorY - diff.y,
+        visibility: 'hidden',
+        'z-index': 100000
     });
-}
+};
 
-function thumbnailDragHandler(e, target) {
+const thumbnailDragHandler = event => {
     // Get the touch/mouse coordinates from the event
-    var cursorX,
-        cursorY;
-    if (e.type === 'touchmove') {
-        cursorX = e.originalEvent.changedTouches[0].pageX;
-        cursorY = e.originalEvent.changedTouches[0].pageY;
+    let cursorX, cursorY;
+    if (event.type === 'touchmove') {
+        cursorX = event.originalEvent.changedTouches[0].pageX;
+        cursorY = event.originalEvent.changedTouches[0].pageY;
     } else {
-        cursorX = e.pageX;
-        cursorY = e.pageY;
+        cursorX = event.pageX;
+        cursorY = event.pageY;
     }
 
     // Find the clone element and update it's position on the page
-    var clone = $('#' + target.id + 'DragClone');
-    clone.css({
-        top: cursorY - diffY,
-        left: cursorX - diffX,
-        position: 'absolute',
-        'z-index': 100,
-        visibility: 'visible'
+    const $clone = $('#DragClone');
+    const diff = $clone.data('diff');
+    $clone.css({
+        left: cursorX - diff.x,
+        position: 'fixed',
+        top: cursorY - diff.y,
+        visibility: 'visible',
+        'z-index': 100000
     });
 
     // Identify the element below the current cursor position
-    var elemBelow = document.elementFromPoint(cursorX + diffX, cursorY + diffY);
+    const elemBelow = document.elementFromPoint(cursorX, cursorY);
 
     // If none exists, stop here
     if (!elemBelow) {
@@ -116,10 +117,10 @@ function thumbnailDragHandler(e, target) {
     $('.imageViewerViewport canvas').removeClass('faded');
 
     // Figure out what to do depending on what we're dragging over
-    var viewportsDraggedOver = $(elemBelow).parents('.imageViewerViewport');
-    if (viewportsDraggedOver.length) {
+    const $viewportsDraggedOver = $(elemBelow).parents('.imageViewerViewport');
+    if ($viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, fade it and change the cursor style
-        viewportsDraggedOver.find('canvas').not('.magnifyTool').addClass('faded');
+        $viewportsDraggedOver.find('canvas').not('.magnifyTool').addClass('faded');
         document.body.style.cursor = 'copy';
     } else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, just change the cursor style
@@ -128,28 +129,32 @@ function thumbnailDragHandler(e, target) {
         // Otherwise, keep the cursor as no-drop style
         document.body.style.cursor = 'no-drop';
     }
-}
+};
 
-function thumbnailDragEndHandler(e, target) {
+const thumbnailDragEndHandler = (event, data, handlers) => {
     // Remove the mouse event listeners
-    $(document).off('mousemove mouseup');
+    if (handlers) {
+        $(document).off('mousemove', handlers.mousemove);
+        $(document).off('mouseup', handlers.mouseup);
+    }
 
     // Reset the cursor style to the default
     document.body.style.cursor = 'auto';
 
     // Get the cloned element
-    var clone = $('#' + target.id + 'DragClone');
+    const $clone = $('#DragClone');
 
     // If it doesn't exist, stop here
-    if (!clone.length) {
+    if (!$clone.length) {
         return;
     }
 
-    var top = clone.position().top;
-    var left = clone.position().left;
+    const top = $clone.offset().top;
+    const left = $clone.offset().left;
+    const diff = $clone.data('diff');
 
     // Identify the element below the cloned element position
-    var elemBelow = document.elementFromPoint(left + diffX, top + diffY);
+    const elemBelow = document.elementFromPoint(left + diff.x, top + diff.y);
 
     // Remove all cloned elements from the page
     $('.imageThumbnailClone').remove();
@@ -165,11 +170,11 @@ function thumbnailDragEndHandler(e, target) {
     // Remove any fade effects on the element below
     elemBelow.classList.remove('faded');
 
-    var element;
-    var viewportsDraggedOver = $(elemBelow).parents('.imageViewerViewport');
-    if (viewportsDraggedOver.length) {
+    let element;
+    const $viewportsDraggedOver = $(elemBelow).closest('.imageViewerViewport');
+    if ($viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, retrieve it
-        element = viewportsDraggedOver.get(0);
+        element = $viewportsDraggedOver.get(0);
     } else if (elemBelow.classList.contains('imageViewerViewport') &&
                elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, retrieve that instead
@@ -179,48 +184,54 @@ function thumbnailDragEndHandler(e, target) {
         return false;
     }
 
-    // If there is no store drag and drop data, stop here
-    if (!OHIF.viewer.dragAndDropData) {
+    // If there is no stored drag and drop data, stop here
+    if (!data) {
         return false;
     }
 
-    var viewportIndex = $('.imageViewerViewport').index(element);
+    // Get the dropped viewport index
+    const viewportIndex = $('.imageViewerViewport').index(element);
 
-    // Removes active class from previous selected series in viewport
-    const previousUid = layoutManager.viewportData[viewportIndex].seriesInstanceUid;
-    if (previousUid) {
-        $(`.thumbnailEntry[data-uid="${previousUid}"]`).removeClass('active');
-    }
-
-    // Rerender the viewport using the drag and drop data
-    layoutManager.rerenderViewportWithNewSeries(viewportIndex, OHIF.viewer.dragAndDropData);
-
-    // Set active state for dragged thumbnail entry
-    const newUid = OHIF.viewer.dragAndDropData.seriesInstanceUid
-    $(`.thumbnailEntry[data-uid="${newUid}"]`).addClass('active');
+    // Rerender the viewport using the dragged thumbnail data
+    layoutManager.rerenderViewportWithNewSeries(viewportIndex, data);
 
     return false;
-}
+};
 
-Template.thumbnailEntry.onRendered(function() {
-    var entry = this.find('.thumbnailEntry');
-    $(entry).data('seriesInstanceUid', Template.parentData(0).seriesInstanceUid);
-    $(entry).data('studyInstanceUid', Template.parentData(1).studyInstanceUid);
+Template.thumbnailEntry.onCreated(() => {
+    const instance = Template.instance();
+
+    // Check if the thumbnails will be draggable or clickable
+    instance.isDragAndDrop = _.isUndefined(instance.data.viewportIndex);
 });
 
 Template.thumbnailEntry.events({
-    // Touch drag/drop events
-    'touchstart .thumbnailEntry, mousedown .thumbnailEntry': function(e) {
-        var data = {
-            studyInstanceUid: this.stack.studyInstanceUid,
-            seriesInstanceUid: this.stack.seriesInstanceUid
-        };
-        thumbnailDragStartHandler(e, data);
+    // Event handlers for drag and drop
+    'touchstart .thumbnailEntry, mousedown .thumbnailEntry'(event, instance) {
+        const data = instance.data.thumbnail.stack;
+        instance.isDragAndDrop && thumbnailDragStartHandler(event, data);
     },
-    'touchmove .thumbnailEntry': function(e) {
-        thumbnailDragHandler(e, e.currentTarget);
+    'touchmove .thumbnailEntry'(event, instance) {
+        instance.isDragAndDrop && thumbnailDragHandler(event);
     },
-    'touchend .thumbnailEntry': function(e) {
-        thumbnailDragEndHandler(e, e.currentTarget);
+    'touchend .thumbnailEntry'(event, instance) {
+        const data = instance.data.thumbnail.stack;
+        instance.isDragAndDrop && thumbnailDragEndHandler(event, data);
+    },
+    // Event handlers for click (quick switch)
+    'click .thumbnailEntry'(event, instance) {
+        if (instance.isDragAndDrop) {
+            return;
+        }
+
+        const data = instance.data.thumbnail.stack;
+        // Rerender the viewport using the clicked thumbnail data
+        layoutManager.rerenderViewportWithNewSeries(instance.data.viewportIndex, data);
+    }
+});
+
+Template.thumbnailEntry.helpers({
+    draggableClass() {
+        return Template.instance().isDragAndDrop ? 'draggable' : '';
     }
 });

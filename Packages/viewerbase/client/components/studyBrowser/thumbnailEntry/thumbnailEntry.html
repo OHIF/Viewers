@@ -1,11 +1,11 @@
 <template name="thumbnailEntry">
-    <div class="thumbnailEntry m-t-1 m-b-2" data-uid="{{this.stack.seriesInstanceUid}}">
+    <div class="thumbnailEntry m-t-1 m-b-2 {{draggableClass}} {{#if isSeriesActive this.thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}">
         <div class="p-x-1">
-            {{>imageThumbnail}}
+            {{>imageThumbnail this.thumbnail}}
         </div>
         <div class="seriesDetails noselect m-a-1">
             <div class="seriesDescription">
-                {{this.stack.seriesDescription}}
+                {{this.thumbnail.stack.seriesDescription}}
             </div>
             <div class="seriesInformation">
                 <div class="seriesInformationIcons">
@@ -13,8 +13,8 @@
                     <div></div>
                 </div>
                 <div class="seriesInformationNumbers">
-                    <div>{{this.stack.seriesNumber}}</div>
-                    <div>{{this.stack.instances.length}}</div>
+                    <div>{{this.thumbnail.stack.seriesNumber}}</div>
+                    <div>{{this.thumbnail.stack.instances.length}}</div>
                 </div>
             </div>
         </div>

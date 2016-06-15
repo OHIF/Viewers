@@ -13,7 +13,6 @@ Template.studySeriesQuickSwitch.helpers({
     },
 
     currentStudy() {
-        console.log('currentStudy');
         var viewportIndex = Template.instance().data.viewportIndex;
         Session.get('CornerstoneNewImage' + viewportIndex);
 
@@ -31,7 +30,6 @@ Template.studySeriesQuickSwitch.helpers({
     },
 
     currentTimepoint() {
-        console.log('currentStudy');
         var viewportIndex = Template.instance().data.viewportIndex;
         Session.get('CornerstoneNewImage' + viewportIndex);
 

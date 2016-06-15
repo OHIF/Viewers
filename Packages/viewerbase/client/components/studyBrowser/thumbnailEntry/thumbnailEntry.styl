@@ -3,12 +3,15 @@
 $seriesCountBackgroundColor = #678696
 
 .thumbnailEntry
-  cursor: copy
-  cursor: -webkit-grab
-  cursor: -moz-grab
+  cursor: pointer
   display: table
-  margin: 0 auto
   font-family: Roboto
+  margin: 0 auto
+
+  &.draggable
+    cursor: copy
+    cursor: -webkit-grab
+    cursor: -moz-grab
 
   .seriesDetails
     color: $textPrimaryColor

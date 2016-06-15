@@ -16,7 +16,7 @@
         </div>
         <div class="studyTimepointThumbnails">
             {{#each thumbnail in (thumbnails this.study)}}
-                {{>thumbnailEntry thumbnail}}
+                {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
             {{/each}}
         </div>
     </div>
