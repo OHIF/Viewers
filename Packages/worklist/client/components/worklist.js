@@ -43,6 +43,20 @@ Template.worklist.helpers({
      */
     worklistTabs: function() {
         return WorklistTabs.find();
+    },
+    showStudyListTab: function() {
+        // StudyListTab is shown by default
+        const instance = Template.instance();
+        if (!instance.data) {
+            return true;
+        }
+
+        var showStudyListTab = instance.data.showStudyListTab;
+        if (showStudyListTab === undefined) {
+            return true;
+        }
+
+        return showStudyListTab;
     }
 });
 

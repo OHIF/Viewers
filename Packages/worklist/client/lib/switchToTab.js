@@ -47,72 +47,82 @@ switchToTab = function(contentId) {
         return;
     }
 
-    // Use the stored ViewerData global object to retrieve the studyInstanceUid
-    // related to this tab
-    var studyInstanceUids = ViewerData[contentId].studyInstanceUids;
+    var studies = ViewerData[contentId].studies;
 
-    // Attempt to retrieve the meta data (it might be cached)
-    getStudiesMetadata(studyInstanceUids, function(studies) {
-        // Tab closed while study data was being retrieved, stop here
-        if (!ViewerData[contentId]) {
-            log.warn('Tab closed while study data was being retrieved');
-            return;
-        }
+    if (studies) {
+        // ViewerData already has the meta data (in cases when worklist is launched externally)
+        viewStudiesInTab(contentId, studies);
+    } else {
+        // Use the stored ViewerData global object to retrieve the studyInstanceUid
+        // related to this tab
+        var studyInstanceUids = ViewerData[contentId].studyInstanceUids;
 
-        // Once we have the study data, store it in a structure with
-        // any other saved data about this tab (e.g. layout structure)
-        var data = jQuery.extend({}, ViewerData[contentId]);
-        data.studies = studies;
-        data.contentId = contentId;
+        // Attempt to retrieve the meta data (it might be cached)
+        getStudiesMetadata(studyInstanceUids, function(studies) {
+            viewStudiesInTab(contentId, studies);
+        });
+    }
+};
 
-        if (ViewerData[contentId].studies && ViewerData[contentId].studies.length) {
-            data.studies = ViewerData[contentId].studies;
-        }
+function viewStudiesInTab(contentId, studies) {
+    // Tab closed while study data was being retrieved, stop here
+    if (!ViewerData[contentId]) {
+        log.warn('Tab closed while study data was being retrieved');
+        return;
+    }
 
+    // Once we have the study data, store it in a structure with
+    // any other saved data about this tab (e.g. layout structure)
+    var data = jQuery.extend({}, ViewerData[contentId]);
+    data.studies = studies;
+    data.contentId = contentId;
 
-        // Add additional metadata to our study from the worklist
-        data.studies.forEach(function(study) {
-            var worklistStudy = WorklistStudies.findOne({
-                studyInstanceUid: study.studyInstanceUid
-            });
+    if (ViewerData[contentId].studies && ViewerData[contentId].studies.length) {
+        data.studies = ViewerData[contentId].studies;
+    }
 
-            if (!worklistStudy) {
-                return;
-            }
-
-            $.extend(study, worklistStudy);
+    // Add additional metadata to our study from the worklist
+    data.studies.forEach(function(study) {
+        var worklistStudy = WorklistStudies.findOne({
+            studyInstanceUid: study.studyInstanceUid
         });
 
-        // Get tab content container given the contentId string
-        // If no such container exists, stop here because something is wrong
-        var container = $('.tab-content').find('#' + contentId).get(0);
-        if (!container) {
-            log.warn('No container present with the contentId: ' + contentId);
+        if (!worklistStudy) {
             return;
         }
 
-        // Remove the loading text template that is inside the tab container by default
-        var viewerContainer = document.createElement('div');
-        viewerContainer.classList.add('viewerContainer');
-        container.innerHTML = '';
-        container.appendChild(viewerContainer);
-
-        // Use Blaze to render the Viewer Template into the container
-        Blaze.renderWithData(Template.viewer, data, viewerContainer);
-
-        // Retrieve the DOM element of the viewer
-        var imageViewer = $('#viewer');
-
-        // If it is present in the DOM (it should be), then apply
-        // styles to prevent page scrolling and overscrolling on mobile devices
-        if (imageViewer) {
-            document.body.style.overflow = 'hidden';
-            document.body.style.height = '100%';
-            document.body.style.width = '100%';
-            document.body.style.minWidth = 0;
-
-            // Prevent overscroll on mobile devices
-            document.body.style.position = 'fixed';
-        }
+        $.extend(study, worklistStudy);
     });
-};
+
+    // Get tab content container given the contentId string
+    // If no such container exists, stop here because something is wrong
+    var container = $('.tab-content').find('#' + contentId).get(0);
+    if (!container) {
+        log.warn('No container present with the contentId: ' + contentId);
+        return;
+    }
+
+    // Remove the loading text template that is inside the tab container by default
+    var viewerContainer = document.createElement('div');
+    viewerContainer.classList.add('viewerContainer');
+    container.innerHTML = '';
+    container.appendChild(viewerContainer);
+
+    // Use Blaze to render the Viewer Template into the container
+    Blaze.renderWithData(Template.viewer, data, viewerContainer);
+
+    // Retrieve the DOM element of the viewer
+    var imageViewer = $('#viewer');
+
+    // If it is present in the DOM (it should be), then apply
+    // styles to prevent page scrolling and overscrolling on mobile devices
+    if (imageViewer) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100%';
+        document.body.style.width = '100%';
+        document.body.style.minWidth = 0;
+
+        // Prevent overscroll on mobile devices
+        document.body.style.position = 'fixed';
+    }
+}

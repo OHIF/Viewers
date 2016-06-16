@@ -1,18 +1,22 @@
 <template name="worklist">
     <ul class="nav noselect" role="tablist" id="tablist">
-        <li role="presentation" class="tabTitle active">
-            <a data-target="#worklistTab" role="tab" data-toggle="tab">Study List</a>
-        </li>
+        {{#if showStudyListTab }}
+            <li role="presentation" class="tabTitle active">
+                <a data-target="#worklistTab" role="tab" data-toggle="tab">Study List</a>
+            </li>
+        {{/if}}
         {{#each worklistTabs }}
             {{>tabTitle }}
         {{/each }}
     </ul>
     <div id="worklistTabs" class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="worklistTab">
-            <div class="worklistContainer">
-                {{> worklistResult }}
+        {{#if showStudyListTab }}
+            <div role="tabpanel" class="tab-pane active" id="worklistTab">
+                <div class="worklistContainer">
+                    {{> worklistResult }}
+                </div>
             </div>
-        </div>
+        {{/if}}
         {{#each worklistTabs }}
             {{>tabContent }}
         {{/each }}
