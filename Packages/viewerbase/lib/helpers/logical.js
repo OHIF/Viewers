@@ -10,8 +10,28 @@ Template.registerHelper('bool', function(value) {
     return !!value;
 });
 
-Template.registerHelper('equals', function(a, b) {
+Template.registerHelper('eq', function(a, b) {
     return a === b;
+});
+
+Template.registerHelper('ne', function(a, b) {
+    return a === b;
+});
+
+Template.registerHelper('gt', function(a, b) {
+    return a > b;
+});
+
+Template.registerHelper('lt', function(a, b) {
+    return a < b;
+});
+
+Template.registerHelper('gte', function(a, b) {
+    return a >= b;
+});
+
+Template.registerHelper('lte', function(a, b) {
+    return a <= b;
 });
 
 Template.registerHelper('not', function(value) {

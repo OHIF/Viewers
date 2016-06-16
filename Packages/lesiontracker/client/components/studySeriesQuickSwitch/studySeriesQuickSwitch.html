@@ -1,6 +1,6 @@
 <template name="studySeriesQuickSwitch">
-    <div class="quickSwitch {{side}}">
-        <div class="switchSection {{#if equals side "left"}}pull-right{{/if}} js-show-studies">
+    <div class="quickSwitch {{side}} clearfix">
+        <div class="switchSection {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
             <div class="label">Study</div>
             <div class="studySwitch"></div>
             <div class="switchHover studyHover clearfix">
@@ -9,27 +9,28 @@
                 </div>
             </div>
         </div>
-        <div class="switchSection {{#if equals side "left"}}pull-right{{/if}}">
-            <div class="label">Series</div>
-            <div class="seriesSwitch {{#if equals side "left"}}mirror-x{{/if}} js-show-series">
-                <svg viewBox="0 0 53 53">
-                    <rect fill="#22364C" x="0" y="38" width="15" height="15" rx="3"></rect>
-                    <rect fill="#22364C" x="19" y="38" width="15" height="15" rx="3"></rect>
-                    <rect fill="#22364C" x="38" y="19" width="15" height="15" rx="3"></rect>
-                    <rect fill="#22364C" x="19" y="19" width="15" height="15" rx="3"></rect>
-                    <rect fill="#40D9B8" x="0" y="19" width="15" height="15" rx="3"></rect>
-                    <rect fill="#22364C" x="38" y="0" width="15" height="15" rx="3"></rect>
-                    <rect fill="#22364C" x="19" y="0" width="15" height="15" rx="3"></rect>
-                    <rect fill="#22364C" x="0" y="0" width="15" height="15" rx="3"></rect>
-                </svg>
-            </div>
-            <div class="switchHover seriesHover clearfix">
-                <div class="scrollArea">
-                    {{#each thumbnail in (thumbnails currentStudy)}}
-                        {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
+        <div class="switchSection {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
+            {{#let thumbnailsList=(thumbnails currentStudy)}}
+                <div class="label">Series</div>
+                <div class="seriesSwitch clearfix">
+                    {{#each thumbnail in thumbnailsList}}
+                        {{#if lt @index 8}}
+                            <div class="seriesItem {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}} {{#if isSeriesActive thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}"></div>
+                        {{else}}
+                            {{#if eq @index 8}}
+                                <div class="seriesItem count {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">{{thumbnailsList.length}}</div>
+                            {{/if}}
+                        {{/if}}
                     {{/each}}
                 </div>
-            </div>
+                <div class="switchHover seriesHover clearfix">
+                    <div class="scrollArea">
+                        {{#each thumbnail in thumbnailsList}}
+                            {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
+                        {{/each}}
+                    </div>
+                </div>
+            {{/let}}
         </div>
     </div>
 </template>

@@ -1,9 +1,10 @@
 @import "{design}/app"
 
-$switchSize = 50px
+$switchSize = 55px
 $switchTop = 5px
 $switchHeight = 70px
 $switchWrapperWidth = 140px
+$seriesSpacing = 2px
 
 .quickSwitch
   height: $switchHeight
@@ -38,11 +39,12 @@ $switchWrapperWidth = 140px
       display: block
       font-size: 12px
       font-weight: 300
+      padding: 0
       text-align: center
       text-transform: uppercase
 
     .studySwitch, .seriesSwitch
-      transition(all 0.3s ease)
+      transition(opacity 0.3s ease)
 
     .studySwitch
       background-color: $darkUiColor
@@ -55,15 +57,26 @@ $switchWrapperWidth = 140px
 
     .seriesSwitch
       display: block
-      height: $switchSize
-      width: $switchSize
+      height: $switchSize + $seriesSpacing
+      width: $switchSize + $seriesSpacing
 
-      svg
-        height: $switchSize
-        width: $switchSize
+      .seriesItem
+        background-color: $boxBackgroundColorDark
+        border-radius: 3px
+        height: 15px
+        margin: $seriesSpacing
+        width: 15px
 
-.mirror-x
-  transform(scaleX(-1))
+        &.count
+          background-color: transparent
+          color: $textPrimaryColor
+          font-size: 12px
+          font-weight: 500
+          line-height: 17px
+          text-align: center
+
+        &.active
+          background-color: $activeColor
 
 .switchHover
   background: black
@@ -113,28 +126,32 @@ $switchWrapperWidth = 140px
     transform-origin(0% 0%)
 
 // Responsive layout
-$switchSizeSmall = 35px
+$switchSmallSize = 35px
+$seriesSmallSpacing = 1px
 
-@media screen and (max-width: 1024px)
+@media screen and (max-width: 1023px)
   .switchSection:hover .seriesHover
     transform(scale(0.5))
-@media screen and (min-width: 1025px) and (max-width: 1152px)
+@media screen and (min-width: 1024px) and (max-width: 1151px)
   .switchSection:hover .seriesHover
-    transform(scale(0.6))
-@media screen and (min-width: 1153px) and (max-width: 1280px)
+    transform(scale(0.63))
+@media screen and (min-width: 1152px) and (max-width: 1279px)
   .switchSection:hover .seriesHover
-    transform(scale(0.7))
-@media screen and (min-width: 1281px) and (max-width: 1440px)
+    transform(scale(0.72))
+@media screen and (min-width: 1280px) and (max-width: 1359px)
   .switchSection:hover .seriesHover
-    transform(scale(0.8))
-@media screen and (min-width: 1441px) and (max-width: 1600px)
+    transform(scale(0.81))
+@media screen and (min-width: 1360px) and (max-width: 1439px)
   .switchSection:hover .seriesHover
-    transform(scale(0.9))
-@media screen and (min-width: 1601px)
+    transform(scale(0.86))
+@media screen and (min-width: 1440px) and (max-width: 1599px)
+  .switchSection:hover .seriesHover
+    transform(scale(0.91))
+@media screen and (min-width: 1600px)
   .switchSection:hover .seriesHover
     transform(scale(1))
 
-@media screen and (max-width: 1600px)
+@media screen and (max-width: 1599px)
   .quickSwitch
     height: 45px
     &.left
@@ -150,7 +167,17 @@ $switchSizeSmall = 35px
         padding: 0
       .studySwitch
         border-radius: 7px
-      .studySwitch, .seriesSwitch
-        &, svg
-          height: $switchSizeSmall
-          width: $switchSizeSmall
+        height: $switchSmallSize
+        width: $switchSmallSize
+      .seriesSwitch
+        height: $switchSmallSize + $seriesSmallSpacing
+        width: $switchSmallSize + $seriesSmallSpacing
+        .seriesItem
+          border-radius: 2px
+          height: 10px
+          margin: $seriesSmallSpacing
+          width: 10px
+          &.count
+            font-size: 10px;
+            font-weight: 300;
+            line-height: 10px;
