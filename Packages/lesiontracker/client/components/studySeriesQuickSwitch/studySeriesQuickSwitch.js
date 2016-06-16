@@ -1,10 +1,33 @@
-Template.studySeriesQuickSwitch.onCreated(function studySeriesQuickSwitchOnCreated() {
-    const instance = this;
-
-    var viewportIndex = instance.data.viewportIndex;
+Template.studySeriesQuickSwitch.onCreated(() => {
+    const instance = Template.instance();
 
     instance.data.timepointViewType = new ReactiveVar();
     instance.data.timepointViewType.set('key');
+
+    instance.getViewportData = viewportIndex => {
+        return layoutManager && layoutManager.viewportData && layoutManager.viewportData[viewportIndex];
+    };
+
+    instance.getCurrentStudy = () => {
+        const viewportIndex = instance.data.viewportIndex;
+        Session.get('CornerstoneNewImage' + viewportIndex);
+
+        layoutManager = window.layoutManager;
+        if (!layoutManager) {
+            return;
+        }
+
+        const viewportData = instance.getViewportData(viewportIndex);
+        if (!viewportData) {
+            return;
+        }
+
+        const study = ViewerStudies.findOne({
+            studyInstanceUid: viewportData.studyInstanceUid
+        });
+
+        return study;
+    };
 });
 
 Template.studySeriesQuickSwitch.helpers({
@@ -13,47 +36,26 @@ Template.studySeriesQuickSwitch.helpers({
     },
 
     currentStudy() {
-        var viewportIndex = Template.instance().data.viewportIndex;
-        Session.get('CornerstoneNewImage' + viewportIndex);
-
-        layoutManager = window.layoutManager;
-        if (!layoutManager) {
-            return;
-        }
-
-        var studyInstanceUid = layoutManager.viewportData[viewportIndex].studyInstanceUid;
-        var study = ViewerStudies.findOne({
-            studyInstanceUid: studyInstanceUid
-        });
-
-        return study;
+        return Template.instance().getCurrentStudy;
     },
 
     currentTimepoint() {
-        var viewportIndex = Template.instance().data.viewportIndex;
-        Session.get('CornerstoneNewImage' + viewportIndex);
+        const instance = Template.instance();
 
-        layoutManager = window.layoutManager;
-        if (!layoutManager) {
-            return;
-        }
+        const study = instance.getCurrentStudy();
 
-        var studyInstanceUid = layoutManager.viewportData[viewportIndex].studyInstanceUid;
-        var study = ViewerStudies.findOne({
-            studyInstanceUid: studyInstanceUid
-        });
-
-        var timepoint = Timepoint.findOne({
+        const timepoint = Timepoint.findOne({
             timepointId: study.timepointId
         });
+        console.warn('>>>>TIMEPOINT', timepoint);
 
         return timepoint;
     },
 
     thumbnails: function(study) {
-        var stacks = createStacks(study);
+        const stacks = createStacks(study);
 
-        var array = [];
+        const array = [];
         stacks.forEach(function(stack, index) {
             array.push({
                 thumbnailIndex: index,

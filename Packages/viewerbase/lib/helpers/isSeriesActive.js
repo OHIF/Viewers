@@ -20,7 +20,7 @@ Template.registerHelper('isSeriesActive', (seriesInstanceUid, viewportIndex) => 
 
     let result = false;
     _.each(viewportData, data => {
-        if (data.seriesInstanceUid === seriesInstanceUid) {
+        if (data && data.seriesInstanceUid === seriesInstanceUid) {
             result = true;
         }
     });
