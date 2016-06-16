@@ -17,7 +17,7 @@ Template.studyTimepointBrowser.onCreated(() => {
 
             var notYetLoaded = Studies.findOne(query);
             if (!notYetLoaded) {
-                throw "No study data available for Study: " + studyInstanceUid;
+                throw 'No study data available for Study: ' + studyInstanceUid;
             }
 
             return notYetLoaded;
@@ -57,12 +57,11 @@ Template.studyTimepointBrowser.helpers({
         // Sort timepoints based on timeline and type
         const sort = {
             sort: {
-                earliestDate: -1,
-                timepointType: -1
+                latestDate: 1
             }
         };
         // Returns all timepoints with sorting
-        return Timepoints.find({}, sort);
+        return Timepoints.find({}, sort).fetch().reverse();
     },
     // Get the studies for a specific timepoint
     studies(timepoint) {
@@ -82,19 +81,15 @@ Template.studyTimepointBrowser.helpers({
     },
     // Build the timepoint title based on its date
     timepointTitle(timepoint, total, index) {
-        if (timepoint.timepointType === 'baseline') {
-            return 'Baseline';
-        }
+        const timepointName = getTimepointName(timepoint);
 
         const states = {
             0: '(Current)',
-            1: '(Prior)',
-            2: '(Nadir)'
+            1: '(Prior)'
         };
         // TODO: [design] find out how to define the nadir timepoint
-        const followUp = total - index - 1;
         const parenthesis = states[index] || '';
-        return `Follow-up ${followUp} ${parenthesis}`;
+        return `${timepointName} ${parenthesis}`;
     },
     // Build the modalities summary for all timepoint's studies
     modalitiesSummary(timepoint) {
