@@ -1,36 +1,40 @@
 <template name="studySeriesQuickSwitch">
-    <div class="quickSwitch {{side}} clearfix">
-        <div class="switchSection {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
-            <div class="label">Study</div>
-            <div class="studySwitch"></div>
-            <div class="switchHover studyHover clearfix">
-                <div class="scrollArea">
-                    {{>studyTimepointBrowser timepointViewType=timepointViewType viewportIndex=viewportIndex}}
-                </div>
-            </div>
-        </div>
-        <div class="switchSection {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
-            {{#let thumbnailsList=(thumbnails currentStudy)}}
-                <div class="label">Series</div>
-                <div class="seriesSwitch clearfix">
-                    {{#each thumbnail in thumbnailsList}}
-                        {{#if lt @index 8}}
-                            <div class="seriesItem {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}} {{#if isSeriesActive thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}"></div>
-                        {{else}}
-                            {{#if eq @index 8}}
-                                <div class="seriesItem count {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">{{thumbnailsList.length}}</div>
-                            {{/if}}
-                        {{/if}}
-                    {{/each}}
-                </div>
-                <div class="switchHover seriesHover clearfix">
-                    <div class="scrollArea">
-                        {{#each thumbnail in thumbnailsList}}
-                            {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
-                        {{/each}}
+    <div class="quickSwitchWrapper {{side}}">
+        <div class="quickSwitch clearfix rp-t-1 {{#if eq side 'left'}}rp-r-3{{else}}rp-l-3{{/if}}">
+            <div class="switchSection rm-x-1 {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
+                <div class="label">Study</div>
+                <div class="studySwitch">
+                    <div class="studyBox"></div>
+                    <div class="switchHover studyHover clearfix">
+                        <div class="scrollArea">
+                            {{>studyTimepointBrowser timepointViewType=timepointViewType viewportIndex=viewportIndex}}
+                        </div>
                     </div>
                 </div>
-            {{/let}}
+            </div>
+            <div class="switchSection rm-x-1 {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
+                {{#let thumbnailsList=(thumbnails currentStudy)}}
+                    <div class="label">Series</div>
+                    <div class="seriesSwitch clearfix">
+                        {{#each thumbnail in thumbnailsList}}
+                            {{#if lt @index 8}}
+                                <div class="seriesItem {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}} {{#if isSeriesActive thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}"></div>
+                            {{else}}
+                                {{#if eq @index 8}}
+                                    <div class="seriesItem count {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">{{thumbnailsList.length}}</div>
+                                {{/if}}
+                            {{/if}}
+                        {{/each}}
+                        <div class="switchHover seriesHover clearfix">
+                            <div class="scrollArea">
+                                {{#each thumbnail in thumbnailsList}}
+                                    {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                {{/let}}
+            </div>
         </div>
     </div>
 </template>

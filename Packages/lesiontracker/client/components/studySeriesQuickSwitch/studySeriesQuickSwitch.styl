@@ -1,59 +1,50 @@
 @import "{design}/app"
 
 $switchSize = 55px
-$switchTop = 5px
-$switchHeight = 70px
-$switchWrapperWidth = 140px
 $seriesSpacing = 2px
 
-.quickSwitch
-  height: $switchHeight
+.quickSwitchWrapper
   position: absolute
-  top: $switchTop
-  width: $switchWrapperWidth
-
+  top: 0
   &.middle
-    left: 'calc(50% - %s)' % ($switchWrapperWidth / 2)
+    left: 50%
+    transform(translateX(-50%))
   &.left
-    left: 'calc(50% - %s - 20px)' % $switchWrapperWidth
+    border-right: 1px solid $uiBorderColor
+    right: 50%
   &.right
-    left: calc(50% + 20px)
+    left: 50%
+
+.quickSwitch
 
   .switchSection
     display: inline-block
     float: left
     height: 100%
-    margin: 0 5px
     position: relative
 
     &:hover
-      .studySwitch, .seriesSwitch
+      .studySwitch .studyBox, .seriesSwitch .seriesItem
         opacity: 0
       .switchHover
         opacity: 0.8
       .studyHover
         transform(scale(1))
 
-    .label
-      color: $textSecondaryColor
-      display: block
-      font-size: 12px
-      font-weight: 300
-      padding: 0
-      text-align: center
-      text-transform: uppercase
-
-    .studySwitch, .seriesSwitch
+    .studySwitch .studyBox, .seriesSwitch .seriesItem
       transition(opacity 0.3s ease)
 
+    .studySwitch, .seriesSwitch
+      position: relative
+
     .studySwitch
-      background-color: $darkUiColor
-      border: solid 1px $activeColor
-      border-radius: 11px
-      display: block
-      height: $switchSize
-      margin: 0 auto
-      width: $switchSize
+      .studyBox
+        background-color: $darkUiColor
+        border: solid 1px $activeColor
+        border-radius: 11px
+        display: block
+        height: $switchSize
+        width: $switchSize
 
     .seriesSwitch
       display: block
@@ -78,13 +69,23 @@ $seriesSpacing = 2px
         &.active
           background-color: $activeColor
 
+    .label
+      color: $textSecondaryColor
+      display: block
+      font-size: 12px
+      font-weight: 300
+      line-height: 34px
+      padding: 0
+      text-align: center
+      text-transform: uppercase
+
 .switchHover
   background: black
   border-radius: 5px
   opacity: 0
   overflow: hidden
   position: absolute
-  top: 18px
+  top: 0
   transform(scale(0))
   transition(all 0.3s ease)
   z-index: 10000
@@ -105,7 +106,7 @@ $seriesSpacing = 2px
   .thumbnailEntry
     margin: 0
 
-.quickSwitch.left, .quickSwitch.middle
+.quickSwitchWrapper.left, .quickSwitchWrapper.middle
   .seriesHover .thumbnailEntry
     float: right
   .studyHover
@@ -115,7 +116,7 @@ $seriesSpacing = 2px
     right: 0
     transform-origin(100% 0%)
 
-.quickSwitch.right
+.quickSwitchWrapper.right
   .seriesHover .thumbnailEntry
     float: left
   .studyHover
@@ -134,38 +135,35 @@ $seriesSmallSpacing = 1px
     transform(scale(0.5))
 @media screen and (min-width: 1024px) and (max-width: 1151px)
   .switchSection:hover .seriesHover
-    transform(scale(0.63))
+    transform(scale(0.61))
 @media screen and (min-width: 1152px) and (max-width: 1279px)
   .switchSection:hover .seriesHover
-    transform(scale(0.72))
+    transform(scale(0.69))
 @media screen and (min-width: 1280px) and (max-width: 1359px)
   .switchSection:hover .seriesHover
-    transform(scale(0.81))
+    transform(scale(0.77))
 @media screen and (min-width: 1360px) and (max-width: 1439px)
   .switchSection:hover .seriesHover
-    transform(scale(0.86))
+    transform(scale(0.82))
 @media screen and (min-width: 1440px) and (max-width: 1599px)
   .switchSection:hover .seriesHover
-    transform(scale(0.91))
-@media screen and (min-width: 1600px)
+    transform(scale(0.87))
+@media screen and (min-width: 1600px) and (max-width: 1919px)
+  .switchSection:hover .seriesHover
+    transform(scale(0.97))
+@media screen and (min-width: 1920px)
   .switchSection:hover .seriesHover
     transform(scale(1))
 
 @media screen and (max-width: 1599px)
   .quickSwitch
-    height: 45px
-    &.left
-      left: 'calc(50% - %s - 8px)' % $switchWrapperWidth
-    &.right
-      left: calc(50% + 8px)
     .switchSection
-      .switchHover
-        top: 8px
       .label
         font-size: 8px
         font-weight: 400
+        line-height: 12px
         padding: 0
-      .studySwitch
+      .studySwitch .studyBox
         border-radius: 7px
         height: $switchSmallSize
         width: $switchSmallSize
@@ -178,6 +176,6 @@ $seriesSmallSpacing = 1px
           margin: $seriesSmallSpacing
           width: 10px
           &.count
-            font-size: 10px;
-            font-weight: 300;
-            line-height: 10px;
+            font-size: 10px
+            font-weight: 300
+            line-height: 10px
