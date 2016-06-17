@@ -50,9 +50,6 @@ Template.worklistResult.helpers({
     }
 });
 
-// Retrieve all studies
-search();
-
 var studyDateFrom;
 var studyDateTo;
 var filter;
@@ -175,6 +172,10 @@ function search() {
 Template.worklistResult.onCreated(function() {
     this.sortOption = new ReactiveVar();
     this.sortingColumns = new ReactiveDict();
+
+    // Retrieve all studies
+    search();
+
     // Set sortOption
     var sortOptionSession = Session.get('sortOption');
     if (sortOptionSession) {
