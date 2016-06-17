@@ -4,6 +4,11 @@ Template.studyTimepointBrowser.onCreated(() => {
     // Defines whether to show all key timepoints or only the current one
     instance.showAdditionalTimepoints = new ReactiveVar(true);
 
+    // Return the current study if it's defined
+    instance.getCurrentStudy = () => {
+        return instance.data.currentStudy && instance.data.currentStudy.get();
+    };
+
     // Get the studies for a specific timepoint
     instance.getStudies = timepoint => {
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
@@ -83,7 +88,7 @@ Template.studyTimepointBrowser.helpers({
     timepoints() {
         const instance = Template.instance();
         // Get the current study
-        const currentStudy = instance.data.currentStudy && instance.data.currentStudy.get();
+        const currentStudy = instance.getCurrentStudy();
         // Build the query
         const query = {};
         if (currentStudy && !instance.showAdditionalTimepoints.get()) {
@@ -112,6 +117,12 @@ Template.studyTimepointBrowser.helpers({
 
         // Show all timepoints when view type is all
         if (instance.data.timepointViewType.get() === 'all') {
+            return true;
+        }
+
+        // Always Show the timepoint for current study
+        const currentStudy = instance.getCurrentStudy();
+        if (currentStudy && _.contains(timepoint.studyInstanceUids, currentStudy.studyInstanceUid)) {
             return true;
         }
 
