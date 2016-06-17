@@ -62,3 +62,8 @@ Template.registerHelper('choose', (...values) => {
     _.each(_.initial(values, 1), value => value && (result = value));
     return result;
 });
+
+// Check if the value is different from undefined
+Template.registerHelper('isDefined', value => {
+    return typeof value !== 'undefined';
+});

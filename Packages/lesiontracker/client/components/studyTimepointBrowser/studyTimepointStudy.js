@@ -1,3 +1,21 @@
+Template.studyTimepointStudy.onCreated(() => {
+    const instance = Template.instance();
+
+    // Set the current study as selected in the studies list
+    instance.select = (isQuickSwitch=false) => {
+        const $study = instance.$('.studyTimepointStudy');
+        const $timepoint = $study.closest('.studyTimepoint');
+
+        const selectionChanged = {
+            selection: [$study[0]],
+            studyInstanceUid: instance.data.study.studyInstanceUid,
+            isQuickSwitch
+        };
+
+        $timepoint.trigger('selectionChanged', selectionChanged);
+    };
+});
+
 // Initialize the study wrapper max-height to enable CSS transition
 Template.studyTimepointStudy.onRendered(() => {
     const instance = Template.instance();
@@ -23,36 +41,37 @@ Template.studyTimepointStudy.events({
             $(event.currentTarget).closest('.studyTimepoint').trigger('displayStateChanged');
         }
     },
-    // Changes the current study selection for the clicked study
-    'click .studyModality'(event, instance) {
-        const $study = $(event.currentTarget).closest('.studyTimepointStudy');
-        const $timepoint = $study.closest('.studyTimepoint');
-        const study = $study[0];
 
-        const studyInstanceUid = this.study.studyInstanceUid;
-        const selectionChanged = {
-            selection: [study],
-            studyInstanceUid: studyInstanceUid
-        };
+    // Transfers the active state to the current study
+    'click .studyQuickSwitchTimepoint .studyModality'(event, instance) {
+        instance.select(true);
+    },
+
+    // Changes the current study selection for the clicked study
+    'click .studySidebarTimepoint .studyModality'(event, instance) {
+        const $study = $(event.currentTarget).closest('.studyTimepointStudy');
+
+        const studyData = instance.data.study;
+        const studyInstanceUid = studyData.studyInstanceUid;
 
         // Check if the study already has series data,
         // and if not, retrieve it.
-        if (!this.study.seriesList) {
-            var alreadyLoaded = ViewerStudies.findOne({
-                studyInstanceUid: studyInstanceUid
+        if (!studyData.seriesList) {
+            const alreadyLoaded = ViewerStudies.findOne({
+                studyInstanceUid
             });
 
             if (!alreadyLoaded) {
-                study.classList.add('loading');
-                getStudyMetadata(studyInstanceUid, (studyData) => {
+                $study.addClass('loading');
+                getStudyMetadata(studyInstanceUid, studyData => {
                     ViewerStudies.insert(studyData);
-                    $timepoint.trigger('selectionChanged', selectionChanged);
+                    instance.select();
                 });
             } else {
-                this.study.seriesList = alreadyLoaded.seriesList;
+                studyData.seriesList = alreadyLoaded.seriesList;
             }
         } else {
-            $timepoint.trigger('selectionChanged', selectionChanged);
+            instance.select();
         }
     }
 });

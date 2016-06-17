@@ -1,4 +1,8 @@
-var isActive = {};
+Template.studyTimepoint.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.isActive = {};
+});
 
 // Initialize the timepoint wrapper max-height to enable CSS transition
 Template.studyTimepoint.onRendered(() => {
@@ -25,23 +29,34 @@ Template.studyTimepoint.events({
     // Changes the selected study
     'selectionChanged .studyTimepoint'(event, instance, changed) {
         const $selection = $(changed.selection);
-        const $thumbnails = $selection.find('.studyTimepointThumbnails');
-        const $timepoint = instance.$('.studyTimepoint');
-        const studyInstanceUid = changed.studyInstanceUid;
 
-        // Set the max-height to inherit to be able to expand the wrapper on its full height
-        instance.$('.studyTimepointWrapper').css('max-height', 'inherit');
+        let $studiesTarget = instance.$('.studyTimepoint');
+        if (changed.isQuickSwitch) {
+            $studiesTarget = $studiesTarget.closest('.studyTimepointBrowser');
+        }
 
         // Removes selected state from all studies but the triggered study
-        instance.$('.studyTimepointStudy').not($selection).removeClass('active');
+        $studiesTarget.find('.studyTimepointStudy').not($selection).removeClass('active');
 
-        // Toggle selected state for the triggered study
-        $selection.removeClass('loading');
-        $selection.toggleClass('active');
-        isActive[studyInstanceUid] = $selection.hasClass('active');
+        if (changed.isQuickSwitch) {
+            // Reset active studies map to allow only one active study
+            instance.isActive = {};
+            // Add selected state for the triggered study
+            $selection.addClass('active');
+        } else {
+            const $timepoint = instance.$('.studyTimepoint');
+            // Set the max-height to inherit to be able to expand the wrapper on its full height
+            instance.$('.studyTimepointWrapper').css('max-height', 'inherit');
+            // Toggle selected state for the triggered study
+            $selection.removeClass('loading');
+            $selection.toggleClass('active');
+            // Recalculates the timepoint height to make CSS transition smoother
+            const $thumbnails = $selection.find('.studyTimepointThumbnails');
+            $thumbnails.one('transitionend', () => $timepoint.trigger('displayStateChanged'));
+        }
 
-        // Recalculates the timepoint height to make CSS transition smoother
-        $thumbnails.one('transitionend', () => $timepoint.trigger('displayStateChanged'));
+        // Set the current study as active
+        instance.isActive[changed.studyInstanceUid] = $selection.hasClass('active');
     },
     // It should be triggered when the timepoint height is changed
     'displayStateChanged .studyTimepoint'(event, instance) {
@@ -55,10 +70,12 @@ Template.studyTimepoint.events({
 
 Template.studyTimepoint.helpers({
     isActive(study) {
+        const instance = Template.instance();
+
         if (!study.studyInstanceUid) {
             return;
         }
 
-        return isActive[study.studyInstanceUid];
+        return instance.isActive[study.studyInstanceUid];
     }
-})
+});

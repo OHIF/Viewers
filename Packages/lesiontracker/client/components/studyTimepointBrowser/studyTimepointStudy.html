@@ -1,23 +1,27 @@
 <template name="studyTimepointStudy">
-    <div class="studyTimepointStudy {{#if this.active}}active{{/if}}">
-        {{ >loadingText }}
-        <div class="studyModality">
-            <div class="studyModalityBox">
-                {{#if this.study.modalities}}
-                    {{this.study.modalities}}
-                {{else}}
-                    UN
-                {{/if}}
+    {{#let isSidebar=(not (isDefined viewportIndex))}}
+        <div class="studyTimepointStudy {{#if isSidebar}}studySidebarTimepoint{{else}}studyQuickSwitchTimepoint{{/if}} {{#if this.active}}active{{/if}}">
+            {{>loadingText}}
+            <div class="studyModality">
+                <div class="studyModalityBox">
+                    {{#if this.study.modalities}}
+                        {{this.study.modalities}}
+                    {{else}}
+                        UN
+                    {{/if}}
+                </div>
+                <div class="studyModalityText">
+                    <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
+                    <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
+                </div>
             </div>
-            <div class="studyModalityText">
-                <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
-                <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
-            </div>
+            {{#if isSidebar}}
+                <div class="studyTimepointThumbnails">
+                    {{#each thumbnail in (studyThumbnails this.study)}}
+                        {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
+                    {{/each}}
+                </div>
+            {{/if}}
         </div>
-        <div class="studyTimepointThumbnails">
-            {{#each thumbnail in (studyThumbnails this.study)}}
-                {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
-            {{/each}}
-        </div>
-    </div>
+    {{/let}}
 </template>
