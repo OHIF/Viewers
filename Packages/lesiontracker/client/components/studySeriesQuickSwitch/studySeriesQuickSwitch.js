@@ -1,67 +1,44 @@
 Template.studySeriesQuickSwitch.onCreated(() => {
     const instance = Template.instance();
 
-    instance.data.timepointViewType = new ReactiveVar();
-    instance.data.timepointViewType.set('key');
+    // Defines the study being shown in the current viewport
+    instance.data.currentStudy = new ReactiveVar();
 
+    // Shows only the key timepoints
+    instance.data.timepointViewType = new ReactiveVar('key');
+
+    // Gets the viewport data for the given viewport index
     instance.getViewportData = viewportIndex => {
+        const layoutManager = window.layoutManager;
         return layoutManager && layoutManager.viewportData && layoutManager.viewportData[viewportIndex];
     };
 
+    // Get the current study being shown in the current viewport
     instance.getCurrentStudy = () => {
         const viewportIndex = instance.data.viewportIndex;
+
+        // Runs this computation everytime the current viewport is changed
         Session.get('CornerstoneNewImage' + viewportIndex);
 
-        layoutManager = window.layoutManager;
-        if (!layoutManager) {
-            return;
-        }
-
+        // Gets the current viewport data
         const viewportData = instance.getViewportData(viewportIndex);
         if (!viewportData) {
             return;
         }
 
-        const study = ViewerStudies.findOne({
+        // Fins the current study and return it
+        return ViewerStudies.findOne({
             studyInstanceUid: viewportData.studyInstanceUid
         });
-
-        return study;
     };
 });
 
 Template.studySeriesQuickSwitch.helpers({
-    seriesOpen() {
-        return Template.instance().seriesOpen.get();
-    },
-
+    // Get the current study and change the reactive variable
     currentStudy() {
-        return Template.instance().getCurrentStudy;
-    },
-
-    currentTimepoint() {
         const instance = Template.instance();
-
-        const study = instance.getCurrentStudy();
-
-        const timepoint = Timepoint.findOne({
-            timepointId: study.timepointId
-        });
-        console.warn('>>>>TIMEPOINT', timepoint);
-
-        return timepoint;
-    },
-
-    thumbnails: function(study) {
-        const stacks = createStacks(study);
-
-        const array = [];
-        stacks.forEach(function(stack, index) {
-            array.push({
-                thumbnailIndex: index,
-                stack: stack
-            });
-        });
-        return array;
+        const currentStudy = instance.getCurrentStudy();
+        instance.data.currentStudy.set(currentStudy);
+        return currentStudy;
     }
 });

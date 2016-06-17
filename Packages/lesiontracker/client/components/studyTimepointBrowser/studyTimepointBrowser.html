@@ -22,6 +22,11 @@
                         <hr class="m-y-1">
                     {{/if}}
                 {{/each}}
+                {{#if and this.currentStudy (not showAdditionalTimepoints)}}
+                    <div class="studyModality additional">
+                        Show additional timepoints
+                    </div>
+                {{/if}}
             </div>
         </div>
     </div>

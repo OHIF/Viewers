@@ -7,13 +7,13 @@
                     <div class="studyBox"></div>
                     <div class="switchHover studyHover clearfix">
                         <div class="scrollArea">
-                            {{>studyTimepointBrowser timepointViewType=timepointViewType viewportIndex=viewportIndex}}
+                            {{>studyTimepointBrowser timepointViewType=this.timepointViewType currentStudy=this.currentStudy viewportIndex=this.viewportIndex}}
                         </div>
                     </div>
                 </div>
             </div>
             <div class="switchSection rm-x-1 {{#if eq side 'left'}}pull-right{{else}}pull-left{{/if}}">
-                {{#let thumbnailsList=(thumbnails currentStudy)}}
+                {{#let thumbnailsList=(studyThumbnails currentStudy)}}
                     <div class="label">Series</div>
                     <div class="seriesSwitch clearfix">
                         {{#each thumbnail in thumbnailsList}}

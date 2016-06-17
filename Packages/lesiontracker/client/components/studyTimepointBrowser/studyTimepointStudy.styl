@@ -53,66 +53,78 @@ $spacerY = 12px
     overflow: hidden
     transition($sidebarTransition)
 
-  .studyModality
-    border: 1px solid $boxBorderColor
-    border-radius: 12px
-    cursor: pointer
-    font-family: Roboto
-    padding: $spacerY $spacerX ($spacerY - 1)
-    position: relative
-    transition($sidebarTransition)
-    z-index: 1
+.studyModality
+  border: 1px solid $boxBorderColor
+  border-radius: 12px
+  cursor: pointer
+  font-family: Roboto
+  padding: $spacerY $spacerX ($spacerY - 1)
+  position: relative
+  transition($sidebarTransition)
+  z-index: 1
 
-    &:hover
-      background-color: $boxHoverBackgroundColor
-      border-color: $boxHoverBorderColor
+  &:hover
+    background-color: $boxHoverBackgroundColor
+    border-color: $boxHoverBorderColor
 
-    .studyModalityText
-      font-size: 13px
-      left: ($spacerX * 3) + $boxWidth + ($nestingMargin * 3)
-      line-height: 14px
-      position: absolute
-      right: $spacerX
-      top: $spacerY
-      .studyModalityDate
-        margin-top: 8px
-        color: $textSecondaryColor
-      .studyModalityDescription
-        margin-top: 8px
-        color: $textPrimaryColor
-
-    .studyModalityBox
+    &.additional
       color: $textSecondaryColor
-      font-size: 22px
-      line-height: $boxWidth
-      margin-left: $nestingMargin * 2
-      margin-top: $nestingMargin * 2
-      position: relative
-      text-align: center
-      text-transform: uppercase
 
-      &
-      &:before
-      &:after
-        background-color: $boxBackgroundColor
-        border: $borderThickness solid $primaryBackgroundColor
-        border-radius: $boxBorderRadius
-        height: $boxWidth + ($borderThickness * 2)
-        transition($sidebarTransition)
-        width: $boxWidth + ($borderThickness * 2)
+  &.additional
+    color: $textPrimaryColor
+    font-size: 16px
+    font-weight: normal
+    height: 91px
+    line-height: 91px
+    padding: 0
+    text-align: center
 
-      &:before
-      &:after
-        display: block
-        content: ''
-        position: absolute
+  .studyModalityText
+    font-size: 13px
+    left: ($spacerX * 3) + $boxWidth + ($nestingMargin * 3)
+    line-height: 14px
+    position: absolute
+    right: $spacerX
+    top: $spacerY
+    .studyModalityDate
+      margin-top: 8px
+      color: $textSecondaryColor
+    .studyModalityDescription
+      margin-top: 8px
+      color: $textPrimaryColor
 
-      &:before
-        top: -($borderThickness + $nestingMargin)
-        left: -($borderThickness + $nestingMargin)
-        z-index: -1
+  .studyModalityBox
+    color: $textSecondaryColor
+    font-size: 22px
+    line-height: $boxWidth
+    margin-left: $nestingMargin * 2
+    margin-top: $nestingMargin * 2
+    position: relative
+    text-align: center
+    text-transform: uppercase
 
-      &:after
-        top: -($borderThickness + ($nestingMargin * 2))
-        left: -($borderThickness + ($nestingMargin * 2))
-        z-index: -2
+    &
+    &:before
+    &:after
+      background-color: $boxBackgroundColor
+      border: $borderThickness solid $primaryBackgroundColor
+      border-radius: $boxBorderRadius
+      height: $boxWidth + ($borderThickness * 2)
+      transition($sidebarTransition)
+      width: $boxWidth + ($borderThickness * 2)
+
+    &:before
+    &:after
+      display: block
+      content: ''
+      position: absolute
+
+    &:before
+      top: -($borderThickness + $nestingMargin)
+      left: -($borderThickness + $nestingMargin)
+      z-index: -1
+
+    &:after
+      top: -($borderThickness + ($nestingMargin * 2))
+      left: -($borderThickness + ($nestingMargin * 2))
+      z-index: -2

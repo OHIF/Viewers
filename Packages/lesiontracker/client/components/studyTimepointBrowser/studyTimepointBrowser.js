@@ -1,6 +1,9 @@
 Template.studyTimepointBrowser.onCreated(() => {
     const instance = Template.instance();
 
+    // Defines whether to show all key timepoints or only the current one
+    instance.showAdditionalTimepoints = new ReactiveVar(true);
+
     // Get the studies for a specific timepoint
     instance.getStudies = timepoint => {
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
@@ -27,6 +30,7 @@ Template.studyTimepointBrowser.onCreated(() => {
 
 Template.studyTimepointBrowser.onRendered(() => {
     const instance = Template.instance();
+
     instance.autorun(() => {
         // Runs this computation everytime the timepointViewType is changed
         const type = instance.data.timepointViewType.get();
@@ -36,6 +40,18 @@ Template.studyTimepointBrowser.onRendered(() => {
         if (type === 'key') {
             // Show only first timepoint expanded for key timepoints
             instance.$('.timepointEntry:first').addClass('active');
+        }
+    });
+
+    let lastStudy;
+    instance.autorun(() => {
+        // Runs this computation everytime the curenty study is changed
+        const currentStudy = instance.data.currentStudy && instance.data.currentStudy.get();
+
+        // Check if the study really changed and update the last study
+        if (currentStudy !== lastStudy) {
+            instance.showAdditionalTimepoints.set(false);
+            lastStudy = currentStudy;
         }
     });
 });
@@ -49,11 +65,32 @@ Template.studyTimepointBrowser.events({
 
         // Toggle active class to group/ungroup timepoint studies
         $timepoint.toggleClass('active');
+    },
+
+    'click .studyModality.additional'(event, instance) {
+        // Show all key timepoints
+        instance.showAdditionalTimepoints.set(true);
     }
 });
 
 Template.studyTimepointBrowser.helpers({
+    // Defines whether to show all key timepoints or only the current one
+    showAdditionalTimepoints() {
+        return Template.instance().showAdditionalTimepoints.get();
+    },
+
+    // Get the timepoints to be listed
     timepoints() {
+        const instance = Template.instance();
+        // Get the current study
+        const currentStudy = instance.data.currentStudy && instance.data.currentStudy.get();
+        // Build the query
+        const query = {};
+        if (currentStudy && !instance.showAdditionalTimepoints.get()) {
+            query['studyInstanceUids'] = {
+                $in: [currentStudy.studyInstanceUid]
+            };
+        }
         // Sort timepoints based on timeline and type
         const sort = {
             sort: {
@@ -61,12 +98,14 @@ Template.studyTimepointBrowser.helpers({
             }
         };
         // Returns all timepoints with sorting
-        return Timepoints.find({}, sort).fetch().reverse();
+        return Timepoints.find(query, sort).fetch().reverse();
     },
+
     // Get the studies for a specific timepoint
     studies(timepoint) {
         return Template.instance().getStudies(timepoint);
     },
+
     // Decides if a timepoint should be shown or omitted
     shouldShowTimepoint(timepoint, index) {
         const instance = Template.instance();
@@ -79,6 +118,7 @@ Template.studyTimepointBrowser.helpers({
         // Show only the latest timepoints and baseline
         return index < 3 || timepoint.timepointType === 'baseline';
     },
+
     // Build the timepoint title based on its date
     timepointTitle(timepoint, total, index) {
         const timepointName = getTimepointName(timepoint);
@@ -91,6 +131,7 @@ Template.studyTimepointBrowser.helpers({
         const parenthesis = states[index] || '';
         return `${timepointName} ${parenthesis}`;
     },
+
     // Build the modalities summary for all timepoint's studies
     modalitiesSummary(timepoint) {
         const instance = Template.instance();
