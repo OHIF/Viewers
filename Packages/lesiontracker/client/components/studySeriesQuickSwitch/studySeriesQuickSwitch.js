@@ -33,6 +33,15 @@ Template.studySeriesQuickSwitch.onCreated(() => {
     };
 });
 
+Template.studySeriesQuickSwitch.events({
+    'mouseenter .js-quick-switch, mouseenter .js-quick-switch .switchSectionSeries'(event, instance) {
+        $(event.currentTarget).addClass('hover');
+    },
+    'mouseleave .js-quick-switch'(event, instance) {
+        instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
+    }
+});
+
 Template.studySeriesQuickSwitch.helpers({
     // Get the current study and change the reactive variable
     currentStudy() {

@@ -23,13 +23,36 @@ $seriesSpacing = 2px
     height: 100%
     position: relative
 
-    &:hover
+    &.switchSectionSeries.hover, &.switchSectionStudy:hover
       .studySwitch .studyBox, .seriesSwitch .seriesItem
         opacity: 0
       .switchHover
         opacity: 0.8
       .studyHover
         transform(scale(1))
+
+    &.switchSectionSeries.hover
+      .seriesHover
+        .thumbnailsWrapper
+          transition(all 0.3s ease)
+          transform(scale(0.8) translateY($switchSize))
+        .thumbnailEntry .seriesDetails
+          opacity: 0
+          visibility: hidden
+
+      &:hover .seriesHover
+        .thumbnailsWrapper
+          transform(scale(1) translateY(0))
+        .thumbnailEntry .seriesDetails
+          opacity: 1
+          transform(translateY(0))
+          transition(all 0.3s ease)
+          transition-delay(0.3s)
+          visibility: visible
+
+    .seriesHover .thumbnailEntry .seriesDetails
+      opacity: 0
+      transform(translateY(-36px))
 
     .studySwitch .studyBox, .seriesSwitch .seriesItem
       transition(opacity 0.3s ease)
@@ -83,7 +106,9 @@ $seriesSpacing = 2px
 
 .switchHover
   background: black
+  border: 10px solid transparent
   border-radius: 5px
+  margin: -10px
   opacity: 0
   overflow: hidden
   position: absolute
@@ -100,10 +125,10 @@ $seriesSpacing = 2px
     width: calc(100% + 20px)
 
 .studyHover
-  width: 300px
+  width: 320px
 
 .seriesHover
-  width: 711px
+  width: 731px
 
   .thumbnailEntry
     margin: 0
@@ -114,7 +139,7 @@ $seriesSpacing = 2px
   .studyHover
     left: 0
     transform-origin(0% 0%)
-  .seriesHover
+  .seriesHover, .thumbnailsWrapper
     right: 0
     transform-origin(100% 0%)
 
@@ -124,7 +149,7 @@ $seriesSpacing = 2px
   .studyHover
     right: 0
     transform-origin(100% 0%)
-  .seriesHover
+  .seriesHover, .thumbnailsWrapper
     left: 0
     transform-origin(0% 0%)
 
@@ -133,28 +158,28 @@ $switchSmallSize = 35px
 $seriesSmallSpacing = 1px
 
 @media screen and (max-width: 1023px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.5))
 @media screen and (min-width: 1024px) and (max-width: 1151px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.61))
 @media screen and (min-width: 1152px) and (max-width: 1279px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.69))
 @media screen and (min-width: 1280px) and (max-width: 1359px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.77))
 @media screen and (min-width: 1360px) and (max-width: 1439px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.82))
 @media screen and (min-width: 1440px) and (max-width: 1599px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.87))
 @media screen and (min-width: 1600px) and (max-width: 1919px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(0.97))
 @media screen and (min-width: 1920px)
-  .switchSection:hover .seriesHover
+  .switchSectionSeries.hover .seriesHover
     transform(scale(1))
 
 @media screen and (max-width: 1599px)
