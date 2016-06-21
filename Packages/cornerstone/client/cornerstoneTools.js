@@ -1,7 +1,11 @@
-/*! cornerstoneTools - v0.7.8 - 2016-03-17 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.8 - 2016-05-17 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
+}
+
+if (typeof dicomParser === 'undefined') {
+    dicomParser = {};
 }
 
 if (typeof cornerstoneTools === 'undefined') {
@@ -18,39 +22,64 @@ if (typeof cornerstoneTools === 'undefined') {
 
     'use strict';
 
+    var scrollTimeout;
+    var scrollTimeoutDelay = 1;
+
     function mouseWheel(e) {
-        // !!!HACK/NOTE/WARNING!!!
-        // for some reason I am getting mousewheel and DOMMouseScroll events on my
-        // mac os x mavericks system when middle mouse button dragging.
-        // I couldn't find any info about this so this might break other systems
-        // webkit hack
-        if (e.originalEvent.type === 'mousewheel' && e.originalEvent.wheelDeltaY === 0) {
-            return;
-        }
-        // firefox hack
-        if (e.originalEvent.type === 'DOMMouseScroll' && e.originalEvent.axis === 1) {
-            return;
-        }
+        clearTimeout(scrollTimeout);
 
-        var element = e.currentTarget;
-        var startingCoords = cornerstone.pageToPixel(element, e.pageX || e.originalEvent.pageX, e.pageY || e.originalEvent.pageY);
+        scrollTimeout = setTimeout(function() {
+            // !!!HACK/NOTE/WARNING!!!
+            // for some reason I am getting mousewheel and DOMMouseScroll events on my
+            // mac os x mavericks system when middle mouse button dragging.
+            // I couldn't find any info about this so this might break other systems
+            // webkit hack
+            if (e.originalEvent.type === 'mousewheel' && e.originalEvent.wheelDeltaY === 0) {
+                return;
+            }
+            // firefox hack
+            if (e.originalEvent.type === 'DOMMouseScroll' && e.originalEvent.axis === 1) {
+                return;
+            }
 
-        e = window.event || e; // old IE support
-        var wheelDelta = e.wheelDelta || -e.detail || -e.originalEvent.detail;
-        var direction = Math.max(-1, Math.min(1, (wheelDelta)));
+            var element = e.currentTarget;
 
-        var mouseWheelData = {
-            element: element,
-            viewport: cornerstone.getViewport(element),
-            image: cornerstone.getEnabledElement(element).image,
-            direction: direction,
-            pageX: e.pageX || e.originalEvent.pageX,
-            pageY: e.pageY || e.originalEvent.pageY,
-            imageX: startingCoords.x,
-            imageY: startingCoords.y
-        };
+            var x;
+            var y;
 
-        $(element).trigger('CornerstoneToolsMouseWheel', mouseWheelData);
+            if (e.pageX !== undefined && e.pageY !== undefined) {
+                x = e.pageX;
+                y = e.pageY;
+            } else if (e.originalEvent &&
+                       e.originalEvent.pageX !== undefined &&
+                       e.originalEvent.pageY !== undefined) {
+                x = e.originalEvent.pageX;
+                y = e.originalEvent.pageY;
+            } else {
+                // IE9 & IE10
+                x = e.x;
+                y = e.y;
+            }
+
+            var startingCoords = cornerstone.pageToPixel(element, x, y);
+
+            e = window.event || e; // old IE support
+            var wheelDelta = e.wheelDelta || -e.detail || -e.originalEvent.detail || -e.originalEvent.deltaY;
+            var direction = Math.max(-1, Math.min(1, (wheelDelta)));
+
+            var mouseWheelData = {
+                element: element,
+                viewport: cornerstone.getViewport(element),
+                image: cornerstone.getEnabledElement(element).image,
+                direction: direction,
+                pageX: x,
+                pageY: y,
+                imageX: startingCoords.x,
+                imageY: startingCoords.y
+            };
+
+            $(element).trigger('CornerstoneToolsMouseWheel', mouseWheelData);
+        }, scrollTimeoutDelay);
     }
 
     var mouseWheelEvents = 'mousewheel DOMMouseScroll';
@@ -2109,6 +2138,7 @@ if (typeof cornerstoneTools === 'undefined') {
             $(mouseEventData.element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.arrowAnnotate.mouseMoveCallback);
             $(mouseEventData.element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.arrowAnnotate.mouseDownCallback);
             $(mouseEventData.element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.arrowAnnotate.mouseDownActivateCallback);
+            $(mouseEventData.element).on('CornerstoneToolsMouseDoubleClick', eventData, cornerstoneTools.arrowAnnotate.mouseDoubleClickCallback);
         }
         
         // associate this data with this imageId so we can render it and manipulate it
@@ -2119,6 +2149,7 @@ if (typeof cornerstoneTools === 'undefined') {
         $(mouseEventData.element).off('CornerstoneToolsMouseMove', cornerstoneTools.arrowAnnotate.mouseMoveCallback);
         $(mouseEventData.element).off('CornerstoneToolsMouseDown', cornerstoneTools.arrowAnnotate.mouseDownCallback);
         $(mouseEventData.element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.arrowAnnotate.mouseDownActivateCallback);
+        $(mouseEventData.element).off('CornerstoneToolsMouseDoubleClick', cornerstoneTools.arrowAnnotate.mouseDoubleClickCallback);
 
         cornerstone.updateImage(mouseEventData.element);
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -2886,11 +2917,12 @@ if (typeof cornerstoneTools === 'undefined') {
             toolCoords = cornerstone.pageToPixel(element, eventData.currentPoints.page.x,
                 eventData.currentPoints.page.y - cornerstoneTools.textStyle.getFontSize() * 4);
         } else {
-            toolCoords = eventData.currentPoints.image;
+            toolCoords = cornerstone.pageToPixel(element, eventData.currentPoints.page.x,
+                eventData.currentPoints.page.y - cornerstoneTools.textStyle.getFontSize() / 2);
         }
 
         var storedPixels;
-        var text;
+        var text = '';
 
         if (toolCoords.x < 0 || toolCoords.y < 0 ||
             toolCoords.x >= image.columns || toolCoords.y >= image.rows) {
@@ -2898,12 +2930,29 @@ if (typeof cornerstoneTools === 'undefined') {
         }
         
         if (image.color) {
-            storedPixels = cornerstone.getStoredPixels(element, toolCoords.x, toolCoords.y, 3, 1);
+            storedPixels = cornerstoneTools.getRGBPixels(element, toolCoords.x, toolCoords.y, 1, 1);
             text = 'R: ' + storedPixels[0] + ' G: ' + storedPixels[1] + ' B: ' + storedPixels[2];
         } else {
             storedPixels = cornerstone.getStoredPixels(element, toolCoords.x, toolCoords.y, 1, 1);
-            var huValue = storedPixels[0] * image.slope + image.intercept;
-            text = parseFloat(huValue.toFixed(3));
+            var sp = storedPixels[0];
+            var mo = sp * eventData.image.slope + eventData.image.intercept;
+            var suv = cornerstoneTools.calculateSUV(eventData.image, sp);
+
+            var modalityTag = 'x00080060';
+            var modality;
+            if (eventData.image.data) {
+                modality = eventData.image.data.string(modalityTag);    
+            }
+            
+            if (modality === 'CT') {
+                text += 'HU: ';
+            }
+
+            // Draw text
+            text += parseFloat(mo.toFixed(2));
+            if (suv) {
+                text += ' SUV: ' + parseFloat(suv.toFixed(2));
+            }
         }
 
         // Prepare text
@@ -2913,25 +2962,25 @@ if (typeof cornerstoneTools === 'undefined') {
 
         // Translate the x/y away from the cursor
         var translation;
+        var handleRadius = 6;
+        var width = context.measureText(text).width;
+
         if (eventData.isTouchEvent === true) {
-            var handleRadius = 6;
-            var width = context.measureText(text).width;
-            
             translation = {
                 x: -width / 2 - 5,
                 y: -cornerstoneTools.textStyle.getFontSize() - 10 - 2 * handleRadius
             };
-
-            context.beginPath();
-            context.strokeStyle = color;
-            context.arc(textCoords.x, textCoords.y, handleRadius, 0, 2 * Math.PI);
-            context.stroke();
         } else {
             translation = {
-                x: 4,
-                y: -4
+                x: 12,
+                y: -(cornerstoneTools.textStyle.getFontSize() + 10) / 2
             };
         }
+
+        context.beginPath();
+        context.strokeStyle = color;
+        context.arc(textCoords.x, textCoords.y, handleRadius, 0, 2 * Math.PI);
+        context.stroke();
 
         cornerstoneTools.drawTextBox(context, text, textCoords.x + translation.x, textCoords.y + translation.y, color);
         context.restore();
@@ -3133,118 +3182,208 @@ if (typeof cornerstoneTools === 'undefined') {
     }
 
     function onImageRendered(e, eventData) {
-
-        // if we have no toolData for this element, return immediately as there is nothing to do
+        // If we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
         if (!toolData) {
             return;
         }
 
-        // we have tool data for this element - iterate over each one and draw it
+        var image = eventData.image;
+        var element = eventData.element;
+        var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
+        var config = cornerstoneTools.ellipticalRoi.getConfiguration();
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
 
-        //activation color 
-        var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-        var config = cornerstoneTools.ellipticalRoi.getConfiguration();
+        // Retrieve the image modality from its metadata, if available
+        var modalityTag = 'x00080060';
+        var modality;
+        if (image.data) {
+            modality = image.data.string(modalityTag);
+        }
 
+        // If we have tool data for this element - iterate over each set and draw it
         for (var i = 0; i < toolData.data.length; i++) {
             context.save();
 
+            var data = toolData.data[i];
+
+            // Apply any shadow settings defined in the tool configuration
             if (config && config.shadow) {
                 context.shadowColor = config.shadowColor || '#000000';
                 context.shadowOffsetX = config.shadowOffsetX || 1;
                 context.shadowOffsetY = config.shadowOffsetY || 1;
             }
 
-            var data = toolData.data[i];
-
-            //differentiate the color of activation tool
+            // Check which color the rendered tool should be
             var color = cornerstoneTools.toolColors.getColorIfActive(data.active);
 
-            // draw the ellipse
-            var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.start);
-            var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
+            // Convert Image coordinates to Canvas coordinates given the element
+            var handleStartCanvas = cornerstone.pixelToCanvas(element, data.handles.start);
+            var handleEndCanvas = cornerstone.pixelToCanvas(element, data.handles.end);
 
-            var widthCanvas = Math.abs(handleStartCanvas.x - handleEndCanvas.x);
-            var heightCanvas = Math.abs(handleStartCanvas.y - handleEndCanvas.y);
+            // Retrieve the bounds of the ellipse (left, top, width, and height)
+            // in Canvas coordinates
             var leftCanvas = Math.min(handleStartCanvas.x, handleEndCanvas.x);
             var topCanvas = Math.min(handleStartCanvas.y, handleEndCanvas.y);
+            var widthCanvas = Math.abs(handleStartCanvas.x - handleEndCanvas.x);
+            var heightCanvas = Math.abs(handleStartCanvas.y - handleEndCanvas.y);
 
+            // Draw the ellipse on the canvas
             context.beginPath();
             context.strokeStyle = color;
             context.lineWidth = lineWidth;
             cornerstoneTools.drawEllipse(context, leftCanvas, topCanvas, widthCanvas, heightCanvas);
             context.closePath();
 
-            // draw the handles
-            var handleOptions = {
-                drawHandlesIfActive: (config && config.drawHandlesOnHover)
-            };
+            // If the tool configuration specifies to only draw the handles on hover / active,
+            // follow this logic
+            if (config && config.drawHandlesOnHover) {
+                // Draw the handles if the tool is active
+                if (data.active === true) {
+                    cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+                } else {
+                    // If the tool is inactive, draw the handles only if each specific handle is being
+                    // hovered over
+                    var handleOptions = {
+                        drawHandlesIfActive: true
+                    };
+                    cornerstoneTools.drawHandles(context, eventData, data.handles, color, handleOptions);
+                }
+            } else {
+                // If the tool has no configuration settings, always draw the handles
+                cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+            }
 
-            cornerstoneTools.drawHandles(context, eventData, data.handles, color, handleOptions);
-
+            // Define variables for the area and mean/standard deviation
             var area,
-                meanStdDev;
+                meanStdDev,
+                meanStdDevSUV;
 
+            // Perform a check to see if the tool has been invalidated. This is to prevent
+            // unnecessary re-calculation of the area, mean, and standard deviation if the
+            // image is re-rendered but the tool has not moved (e.g. during a zoom)
             if (!data.invalidated) {
+                // If the data is not invalidated, retrieve it from the toolData
                 meanStdDev = data.meanStdDev;
+                meanStdDevSUV = data.meanStdDevSUV;
                 area = data.area;
             } else {
-                // TODO: calculate this in web worker for large pixel counts...
-                var width = Math.abs(data.handles.start.x - data.handles.end.x);
-                var height = Math.abs(data.handles.start.y - data.handles.end.y);
-                var left = Math.min(data.handles.start.x, data.handles.end.x);
-                var top = Math.min(data.handles.start.y, data.handles.end.y);
+                // If the data has been invalidated, we need to calculate it again
 
-                var pixels = cornerstone.getPixels(eventData.element, left, top, width, height);
-
+                // Retrieve the bounds of the ellipse in image coordinates
                 var ellipse = {
-                    left: left,
-                    top: top,
-                    width: width,
-                    height: height
+                    left: Math.min(data.handles.start.x, data.handles.end.x),
+                    top: Math.min(data.handles.start.y, data.handles.end.y),
+                    width: Math.abs(data.handles.start.x - data.handles.end.x),
+                    height: Math.abs(data.handles.start.y - data.handles.end.y)
                 };
 
-                // Calculate the mean, stddev, and area
-                meanStdDev = calculateMeanStdDev(pixels, ellipse);
-                area = Math.PI * (width * eventData.image.columnPixelSpacing / 2) * (height * eventData.image.rowPixelSpacing / 2);
+                // First, make sure this is not a color image, since no mean / standard
+                // deviation will be calculated for color images.
+                if (!image.color) {
+                    // Retrieve the array of pixels that the ellipse bounds cover
+                    var pixels = cornerstone.getPixels(element, ellipse.left, ellipse.top, ellipse.width, ellipse.height);
 
-                data.invalidated = false;
+                    // Calculate the mean & standard deviation from the pixels and the ellipse details
+                    meanStdDev = calculateMeanStdDev(pixels, ellipse);
+
+                    if (modality === 'PT') {
+                        // If the image is from a PET scan, use the DICOM tags to 
+                        // calculate the SUV from the mean and standard deviation.
+
+                        // Note that because we are using modality pixel values from getPixels, and
+                        // the calculateSUV routine also rescales to modality pixel values, we are first
+                        // returning the values to storedPixel values before calcuating SUV with them.
+                        // TODO: Clean this up? Should we add an option to not scale in calculateSUV?
+                        meanStdDevSUV = {
+                            mean: cornerstoneTools.calculateSUV(image, (meanStdDev.mean - image.intercept) / image.slope),
+                            stdDev: cornerstoneTools.calculateSUV(image, (meanStdDev.stdDev - image.intercept) / image.slope)
+                        };
+                    }
+
+                    // If the mean and standard deviation values are sane, store them for later retrieval
+                    if (meanStdDev && !isNaN(meanStdDev.mean)) {
+                        data.meanStdDev = meanStdDev;
+                        data.meanStdDevSUV = meanStdDevSUV;
+                    }
+                }
+
+                // Retrieve the pixel spacing values, and if they are not
+                // real non-zero values, set them to 1
+                var columnPixelSpacing = image.columnPixelSpacing || 1;
+                var rowPixelSpacing = image.rowPixelSpacing || 1;
+
+                // Calculate the image area from the ellipse dimensions and pixel spacing
+                area = Math.PI * (ellipse.width * columnPixelSpacing / 2) * (ellipse.height * rowPixelSpacing / 2);
+
+                // If the area value is sane, store it for later retrieval
                 if (!isNaN(area)) {
                     data.area = area;
                 }
 
-                if (!isNaN(meanStdDev.mean) && !isNaN(meanStdDev.stdDev)) {
-                    data.meanStdDev = meanStdDev;
-                    data.mean = meanStdDev.mean;
-                    data.stdev = meanStdDev.stdev;
-                }
+                // Set the invalidated flag to false so that this data won't automatically be recalculated
+                data.invalidated = false;
             }
 
+            // Define an array to store the rows of text for the textbox
             var textLines = [];
-            if (meanStdDev) {
-                var meanText = 'Mean: ' + numberWithCommas(meanStdDev.mean.toFixed(2));
-                textLines.push(meanText);
 
-                var stdDevText = 'StdDev: ' + numberWithCommas(meanStdDev.stdDev.toFixed(2));
+            // If the mean and standard deviation values are present, display them
+            if (meanStdDev && meanStdDev.mean) {
+                // If the modality is CT, add HU to denote Hounsfield Units
+                var moSuffix = '';
+                if (modality === 'CT') {
+                    moSuffix = ' HU';
+                }
+
+                // Create a line of text to display the mean and any units that were specified (i.e. HU)
+                var meanText = 'Mean: ' + numberWithCommas(meanStdDev.mean.toFixed(2)) + moSuffix;
+                // Create a line of text to display the standard deviation and any units that were specified (i.e. HU)
+                var stdDevText = 'StdDev: ' + numberWithCommas(meanStdDev.stdDev.toFixed(2)) + moSuffix;
+
+                // If this image has SUV values to display, concatenate them to the text line
+                if (meanStdDevSUV && meanStdDevSUV.mean !== undefined) {
+                    var SUVtext = ' SUV: ';
+                    meanText += SUVtext + numberWithCommas(meanStdDevSUV.mean.toFixed(2));
+                    stdDevText += SUVtext + numberWithCommas(meanStdDevSUV.stdDev.toFixed(2));
+                }
+
+                // Add these text lines to the array to be displayed in the textbox
+                textLines.push(meanText);
                 textLines.push(stdDevText);
             }
 
-            if (area !== undefined && !isNaN(area)) {
-                // Char code 178 is a superscript 2 for mm^2
-                var areaText = 'Area: ' + numberWithCommas(area.toFixed(2)) + ' mm' + String.fromCharCode(178);
+            // If the area is a sane value, display it
+            if (area) {
+                // Determine the area suffix based on the pixel spacing in the image.
+                // If pixel spacing is present, use millimeters. Otherwise, use pixels.
+                // This uses Char code 178 for a superscript 2
+                var suffix = ' mm' + String.fromCharCode(178);
+                if (!image.rowPixelSpacing || !image.columnPixelSpacing) {
+                    suffix = ' pixels' + String.fromCharCode(178);
+                }
+
+                // Create a line of text to display the area and its units
+                var areaText = 'Area: ' + numberWithCommas(area.toFixed(2)) + suffix;
+
+                // Add this text line to the array to be displayed in the textbox
                 textLines.push(areaText);
             }
 
+            // If the textbox has not been moved by the user, it should be displayed on the right-most
+            // side of the tool. 
             if (!data.handles.textBox.hasMoved) {
+                // Find the rightmost side of the ellipse at its vertical center, and place the textbox here
+                // Note that this calculates it in image coordinates
                 data.handles.textBox.x = Math.max(data.handles.start.x, data.handles.end.x);
                 data.handles.textBox.y = (data.handles.start.y + data.handles.end.y) / 2;
             }
 
-            var textCoords = cornerstone.pixelToCanvas(eventData.element, data.handles.textBox);
+            // Convert the textbox Image coordinates into Canvas coordinates
+            var textCoords = cornerstone.pixelToCanvas(element, data.handles.textBox);
 
-            // Draw text
+            // Set options for the textbox drawing function
             var options = {
                 centering: {
                     x: false,
@@ -3252,18 +3391,30 @@ if (typeof cornerstoneTools === 'undefined') {
                 }
             };
 
+            // Draw the textbox and retrieves it's bounding box for mouse-dragging and highlighting
             var boundingBox = cornerstoneTools.drawTextBox(context, textLines, textCoords.x,
                 textCoords.y, color, options);
 
+            // Store the bounding box data in the handle for mouse-dragging and highlighting
             data.handles.textBox.boundingBox = boundingBox;
 
+            // If the textbox has moved, we would like to draw a line linking it with the tool
+            // This section decides where to draw this line to on the Ellipse based on the location
+            // of the textbox relative to the ellipse.
             if (data.handles.textBox.hasMoved) {
                 // Draw dashed link line between tool and text
+
+                // The initial link position is at the center of the
+                // textbox.
                 var link = {
                     start: {},
-                    end: {}
+                    end: {
+                        x: textCoords.x,
+                        y: textCoords.y
+                    }
                 };
 
+                // First we calculate the ellipse points (top, left, right, and bottom)
                 var ellipsePoints = [ {
                     // Top middle point of ellipse
                     x: leftCanvas + widthCanvas / 2,
@@ -3280,14 +3431,13 @@ if (typeof cornerstoneTools === 'undefined') {
                     // Right middle point of ellipse
                     x: leftCanvas + widthCanvas,
                     y: topCanvas + heightCanvas / 2
-                },
-            ];
+                } ];
 
-                link.end.x = textCoords.x;
-                link.end.y = textCoords.y;
-
+                // We obtain the link starting point by finding the closest point on the ellipse to the
+                // center of the textbox
                 link.start = cornerstoneMath.point.findClosestPoint(ellipsePoints, link.end);
 
+                // Next we calculate the corners of the textbox bounding box
                 var boundingBoxPoints = [ {
                     // Top middle point of bounding box
                     x: boundingBox.left + boundingBox.width / 2,
@@ -3304,11 +3454,13 @@ if (typeof cornerstoneTools === 'undefined') {
                     // Right middle point of bounding box
                     x: boundingBox.left + boundingBox.width,
                     y: boundingBox.top + boundingBox.height / 2
-                },
-            ];
+                }, ];
 
+                // Now we recalculate the link endpoint by identifying which corner of the bounding box
+                // is closest to the start point we just calculated.
                 link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
 
+                // Finally we draw the dashed linking line
                 context.beginPath();
                 context.strokeStyle = color;
                 context.lineWidth = lineWidth;
@@ -5484,10 +5636,25 @@ if (typeof cornerstoneTools === 'undefined') {
                     x: mouseEventData.currentPoints.image.x,
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
-                    active: true
+                    active: true,
+                    hasBoundingBox: true
                 }
             }
         };
+
+        // Create a rectangle representing the image
+        var imageRect = {
+            left: 0,
+            top: 0,
+            width: mouseEventData.image.width,
+            height: mouseEventData.image.height
+        };
+
+        // Check if the current handle is outside the image,
+        // If it is, prevent the handle creation
+        if (!cornerstoneMath.point.insideRect(measurementData.handles.end, imageRect)) {
+            return;
+        }
 
         // Update the current marker for the next marker
         var currentIndex = config.markers.indexOf(config.current);
@@ -5519,12 +5686,13 @@ if (typeof cornerstoneTools === 'undefined') {
 
     ///////// BEGIN IMAGE RENDERING ///////
     function pointNearTool(element, data, coords) {
-        if (!data.textBoundingBox) {
+        if (!data.handles.end.boundingBox) {
             return;
         }
 
-        var distanceToPoint = cornerstoneMath.rect.distanceToPoint(data.textBoundingBox, coords);
-        return (distanceToPoint < 10);
+        var distanceToPoint = cornerstoneMath.rect.distanceToPoint(data.handles.end.boundingBox, coords);
+        var insideBoundingBox = cornerstoneTools.pointInsideBoundingBox(data.handles.end, coords);
+        return (distanceToPoint < 10) || insideBoundingBox;
     }
 
     function onImageRendered(e, eventData) {
@@ -5563,8 +5731,15 @@ if (typeof cornerstoneTools === 'undefined') {
 
             var textCoords = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
 
-            var boundingBox = cornerstoneTools.drawTextBox(context, data.text, textCoords.x - data.textWidth / 2, textCoords.y, color);
-            data.textBoundingBox = boundingBox;
+            var options = {
+                centering: {
+                    x: true,
+                    y: true
+                }
+            };
+
+            var boundingBox = cornerstoneTools.drawTextBox(context, data.text, textCoords.x, textCoords.y - 10, color, options);
+            data.handles.end.boundingBox = boundingBox;
 
             context.restore();
         }
@@ -5583,10 +5758,15 @@ if (typeof cornerstoneTools === 'undefined') {
 
             data.active = false;
             cornerstone.updateImage(element);
-            $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.textMarker.mouseMoveCallback);
-            $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.textMarker.mouseDownCallback);
-            $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.textMarker.mouseDownActivateCallback);
-            $(element).on('CornerstoneToolsMouseDoubleClick', eventData, cornerstoneTools.textMarker.mouseDoubleClickCallback);
+
+            var mouseButtonData = {
+                mouseButtonMask: e.data.mouseButtonMask
+            };
+
+            $(element).on('CornerstoneToolsMouseMove', mouseButtonData, cornerstoneTools.textMarker.mouseMoveCallback);
+            $(element).on('CornerstoneToolsMouseDown', mouseButtonData, cornerstoneTools.textMarker.mouseDownCallback);
+            $(element).on('CornerstoneToolsMouseDownActivate', mouseButtonData, cornerstoneTools.textMarker.mouseDownActivateCallback);
+            $(element).on('CornerstoneToolsMouseDoubleClick', mouseButtonData, cornerstoneTools.textMarker.mouseDoubleClickCallback);
         }
 
         if (e.data && e.data.mouseButtonMask && !cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
@@ -5643,10 +5823,6 @@ if (typeof cornerstoneTools === 'undefined') {
             $(element).on('CornerstoneToolsTouchStart', cornerstoneTools.textMarkerTouch.touchStartCallback);
             $(element).on('CornerstoneToolsTap', cornerstoneTools.textMarkerTouch.tapCallback);
             $(element).on('CornerstoneToolsTouchPress', cornerstoneTools.textMarkerTouch.pressCallback);
-        }
-
-        if (e.data && e.data.mouseButtonMask && !cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
-            return false;
         }
 
         var config = cornerstoneTools.textMarker.getConfiguration();
@@ -6322,6 +6498,13 @@ if (typeof cornerstoneTools === 'undefined') {
 
     function mouseWheelCallback(e, eventData) {
         var ticks = -eventData.direction / 4;
+        
+        // Allow inversion of the mouse wheel scroll via a configuration option
+        var config = cornerstoneTools.zoom.getConfiguration();
+        if (config && config.invert) {
+            ticks *= -1;
+        }
+
         var viewport = changeViewportScale(eventData.viewport, ticks);
         cornerstone.setViewport(eventData.element, viewport);
     }
@@ -7729,6 +7912,7 @@ if (typeof cornerstoneTools === 'undefined') {
                     numRequests[type]--;
                     // console.log(numRequests);
                     failCallback(error);
+                    startAgain();
                 });
                 return;
             }
@@ -7750,6 +7934,7 @@ if (typeof cornerstoneTools === 'undefined') {
                 numRequests[type]--;
                 // console.log(numRequests);
                 failCallback(error);
+                startAgain();
             });
         }
 
@@ -7853,7 +8038,7 @@ if (typeof cornerstoneTools === 'undefined') {
         if (!playClipToolData || !playClipToolData.data || !playClipToolData.data.length) {
             playClipData = {
                 intervalId: undefined,
-                framesPerSecond: framesPerSecond || 30,
+                framesPerSecond: 30,
                 lastFrameTimeStamp: undefined,
                 frameRate: 0,
                 loop: true
@@ -7861,6 +8046,11 @@ if (typeof cornerstoneTools === 'undefined') {
             cornerstoneTools.addToolState(element, toolType, playClipData);
         } else {
             playClipData = playClipToolData.data[0];
+        }
+
+        // If a framerate is specified, update the playClipData now
+        if (framesPerSecond) {
+            playClipData.framesPerSecond = framesPerSecond;
         }
 
         // if already playing, do not set a new interval
@@ -8143,16 +8333,6 @@ Display scroll progress bar across bottom of image.
             return;
         }
 
-        function doneCallback(image) {
-            //console.log('prefetch done: ' + image.imageId);
-            var imageIdIndex = stack.imageIds.indexOf(image.imageId);
-            removeFromList(imageIdIndex);
-        }
-
-        function failCallback(error) {
-            console.log('prefetch errored: ' + error);
-        }
-
         // Clear the requestPool of prefetch requests
         var requestPoolManager = cornerstoneTools.requestPoolManager;
         requestPoolManager.clearRequestStack(requestType);
@@ -8163,6 +8343,22 @@ Display scroll progress bar across bottom of image.
         var imageId,
             nextImageIdIndex,
             preventCache = false;
+
+        function doneCallback(image) {
+            //console.log('prefetch done: ' + image.imageId);
+            var imageIdIndex = stack.imageIds.indexOf(image.imageId);
+            removeFromList(imageIdIndex);
+        }
+
+        // Retrieve the errorLoadingHandler if one exists
+        var errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
+
+        function failCallback(error) {
+            console.log('prefetch errored: ' + error);
+            if (errorLoadingHandler) {
+                errorLoadingHandler(element, imageId, error, 'stackPrefetch');
+            }
+        }
 
         // Prefetch images around the current image (before and after)
         var lowerIndex = nearest.low;
@@ -10288,41 +10484,50 @@ Display scroll progress bar across bottom of image.
 
     'use strict';
 
+    // Returns a decimal value given a fractional value
+    function fracToDec(fractionalValue) {
+        return parseFloat('.' + fractionalValue);
+    }
+
     function calculateSUV(image, storedPixelValue) {
-        // if no dicom data set, return undefined
+        if (!dicomParser) {
+            return;
+        }
+
+        // if no dicom data set, return
         if (image.data === undefined) {
-            return undefined;
+            return;
         }
         
         // image must be PET
         if (image.data.string('x00080060') !== 'PT') {
-            return undefined;
+            return;
         }
 
         var modalityPixelValue = storedPixelValue * image.slope + image.intercept;
 
         var patientWeight = image.data.floatString('x00101030'); // in kg
         if (patientWeight === undefined) {
-            return undefined;
+            return;
         }
 
         var petSequence = image.data.elements.x00540016;
         if (petSequence === undefined) {
-            return undefined;
+            return;
         }
 
         petSequence = petSequence.items[0].dataSet;
-        var startTime = petSequence.time('x00181072');
+        var startTime = dicomParser.parseTM(petSequence.string('x00181072'));
         var totalDose = petSequence.floatString('x00181074');
         var halfLife = petSequence.floatString('x00181075');
-        var acquisitionTime = image.data.time('x00080032');
+        var seriesAcquisitionTime = dicomParser.parseTM(image.data.string('x00080031'));
         
-        if (!startTime || !totalDose || !halfLife || !acquisitionTime) {
-            return undefined;
+        if (!startTime || !totalDose || !halfLife || !seriesAcquisitionTime) {
+            return;
         }
 
-        var acquisitionTimeInSeconds = acquisitionTime.fractionalSeconds + acquisitionTime.seconds + acquisitionTime.minutes * 60 + acquisitionTime.hours * 60 * 60;
-        var injectionStartTimeInSeconds = startTime.fractionalSeconds + startTime.seconds + startTime.minutes * 60 + startTime.hours * 60 * 60;
+        var acquisitionTimeInSeconds = fracToDec(seriesAcquisitionTime.fractionalSeconds) + seriesAcquisitionTime.seconds + seriesAcquisitionTime.minutes * 60 + seriesAcquisitionTime.hours * 60 * 60;
+        var injectionStartTimeInSeconds = fracToDec(startTime.fractionalSeconds) + startTime.seconds + startTime.minutes * 60 + startTime.hours * 60 * 60;
         var durationInSeconds = acquisitionTimeInSeconds - injectionStartTimeInSeconds;
         var correctedDose = totalDose * Math.exp(-durationInSeconds * Math.log(2) / halfLife);
         var suv = modalityPixelValue * patientWeight / correctedDose * 1000;
