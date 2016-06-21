@@ -35,10 +35,12 @@ Template.studySeriesQuickSwitch.onCreated(() => {
 
 Template.studySeriesQuickSwitch.events({
     'mouseenter .js-quick-switch, mouseenter .js-quick-switch .switchSectionSeries'(event, instance) {
+        instance.$('.quickSwitchWrapper').addClass('overlay');
         $(event.currentTarget).addClass('hover');
     },
     'mouseleave .js-quick-switch'(event, instance) {
         instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
+        instance.$('.quickSwitchWrapper').removeClass('overlay');
     }
 });
 
