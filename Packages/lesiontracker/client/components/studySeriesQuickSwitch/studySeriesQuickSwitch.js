@@ -13,24 +13,20 @@ Template.studySeriesQuickSwitch.onCreated(() => {
         return layoutManager && layoutManager.viewportData && layoutManager.viewportData[viewportIndex];
     };
 
-    // Get the current study being shown in the current viewport
-    instance.getCurrentStudy = () => {
-        const viewportIndex = instance.data.viewportIndex;
+    // Gets the current viewport data
+    const viewportIndex = instance.data.viewportIndex;
+    const viewportData = instance.getViewportData(viewportIndex);
+    if (!viewportData) {
+        return;
+    }
 
-        // Runs this computation everytime the current viewport is changed
-        Session.get('CornerstoneNewImage' + viewportIndex);
+    // Fins the current study and return it
+    const study = ViewerStudies.findOne({
+        studyInstanceUid: viewportData.studyInstanceUid
+    });
 
-        // Gets the current viewport data
-        const viewportData = instance.getViewportData(viewportIndex);
-        if (!viewportData) {
-            return;
-        }
-
-        // Fins the current study and return it
-        return ViewerStudies.findOne({
-            studyInstanceUid: viewportData.studyInstanceUid
-        });
-    };
+    // Change the current study to update the thumbnails
+    instance.data.currentStudy.set(study);
 });
 
 Template.studySeriesQuickSwitch.events({
@@ -45,11 +41,8 @@ Template.studySeriesQuickSwitch.events({
 });
 
 Template.studySeriesQuickSwitch.helpers({
-    // Get the current study and change the reactive variable
+    // Get the current study
     currentStudy() {
-        const instance = Template.instance();
-        const currentStudy = instance.getCurrentStudy();
-        instance.data.currentStudy.set(currentStudy);
-        return currentStudy;
+        return Template.instance().data.currentStudy.get();
     }
 });

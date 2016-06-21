@@ -48,11 +48,13 @@ Template.studyTimepointStudy.events({
     },
 
     // Changes the current study selection for the clicked study
-    'click .studySidebarTimepoint .studyModality'(event, instance) {
+    'click .studyModality'(event, instance) {
         const $study = $(event.currentTarget).closest('.studyTimepointStudy');
 
         const studyData = instance.data.study;
         const studyInstanceUid = studyData.studyInstanceUid;
+
+        const isQuickSwitch = !_.isUndefined(instance.data.viewportIndex);
 
         // Check if the study already has series data,
         // and if not, retrieve it.
@@ -65,13 +67,13 @@ Template.studyTimepointStudy.events({
                 $study.addClass('loading');
                 getStudyMetadata(studyInstanceUid, studyData => {
                     ViewerStudies.insert(studyData);
-                    instance.select();
+                    instance.select(isQuickSwitch);
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;
             }
         } else {
-            instance.select();
+            instance.select(isQuickSwitch);
         }
     }
 });

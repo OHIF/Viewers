@@ -30,8 +30,17 @@ Template.studyTimepoint.events({
     'selectionChanged .studyTimepoint'(event, instance, changed) {
         const $selection = $(changed.selection);
 
+        // Defines where will be the studies searched
         let $studiesTarget = instance.$('.studyTimepoint');
+
         if (changed.isQuickSwitch) {
+            // Changes the current quick switch study
+            const study = ViewerStudies.findOne({
+                studyInstanceUid: changed.studyInstanceUid
+            });
+            instance.data.currentStudy.set(study);
+
+            // Changes the target to toggle the selection in all the studies
             $studiesTarget = $studiesTarget.closest('.studyTimepointBrowser');
         }
 

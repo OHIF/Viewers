@@ -49,18 +49,21 @@ $seriesSpacing = 2px
     position: relative
 
     &.switchSectionSeries.hover, &.switchSectionStudy:hover
-      .studySwitch .studyBox, .seriesSwitch .seriesItem
+      .seriesSwitch .seriesItem
         opacity: 0
       .switchHover
         opacity: 1
       .studyHover
-        transform(scale(1))
+        height: auto
+        padding-top: $switchSize
+        transition(padding-top 0.3s ease\, visibility 0s linear 0s)
+        visibility: visible
 
     &.switchSectionSeries.hover
       .seriesHover
         .thumbnailsWrapper
+          transform(scale(0.9) translateY($switchSize))
           transition(all 0.3s ease)
-          transform(scale(0.9) translateY($switchSize*1.5))
         .thumbnailEntry .seriesDetails
           opacity: 0
           visibility: hidden
@@ -79,7 +82,7 @@ $seriesSpacing = 2px
       opacity: 0
       transform(translateY(-36px))
 
-    .studySwitch .studyBox, .seriesSwitch .seriesItem
+    .seriesSwitch .seriesItem
       transition(opacity 0.3s ease)
 
     .studySwitch, .seriesSwitch
@@ -139,8 +142,6 @@ $seriesSpacing = 2px
   overflow: hidden
   position: absolute
   top: 0
-  transform(scale(0))
-  transition(all 0.3s ease)
   z-index: 10000
 
   .scrollArea
@@ -151,9 +152,18 @@ $seriesSpacing = 2px
     width: calc(100% + 20px)
 
 .studyHover
+  height: 0
+  padding-top: 0
+  transition(padding-top 0.3s ease\, visibility 0s linear 0.3s)
+  visibility: hidden
   width: 320px
 
+  .scrollArea
+    height: 500px
+
 .seriesHover
+  transform(scale(0))
+  transition(all 0.3s ease)
   width: 731px
 
   .thumbnailEntry
@@ -164,7 +174,6 @@ $seriesSpacing = 2px
     float: right
   .studyHover
     left: 0
-    transform-origin(0% 0%)
   .seriesHover, .thumbnailsWrapper
     right: 0
     transform-origin(100% 0%)
@@ -174,7 +183,6 @@ $seriesSpacing = 2px
     float: left
   .studyHover
     right: 0
-    transform-origin(100% 0%)
   .seriesHover, .thumbnailsWrapper
     left: 0
     transform-origin(0% 0%)

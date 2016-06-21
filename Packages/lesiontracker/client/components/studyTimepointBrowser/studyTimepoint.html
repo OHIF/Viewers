@@ -2,7 +2,7 @@
     <div class="studyTimepointWrapper">
         <div class="studyTimepoint">
             {{#each study in studies}}
-                {{>studyTimepointStudy study=study active=(isActive study) viewportIndex=viewportIndex}}
+                {{>studyTimepointStudy study=study active=(isActive study) viewportIndex=this.viewportIndex}}
             {{/each}}
         </div>
     </div>
