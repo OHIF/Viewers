@@ -1,7 +1,6 @@
 Template.flexboxLayout.onCreated(() => {
     const instance = Template.instance();
     instance.state = instance.data.state;
-    instance.timepointViewType = new ReactiveVar();
 });
 
 let resizeTimeout;
@@ -22,24 +21,6 @@ Template.flexboxLayout.onRendered(() => {
 });
 
 Template.flexboxLayout.helpers({
-    timepointViewType() {
-        return Template.instance().timepointViewType;
-    },
-
-    sidebarButtonGroupData() {
-        const instance = Template.instance();
-        return {
-            value: instance.timepointViewType,
-            options: [{
-                value: 'key',
-                text: 'Key Timepoints'
-            }, {
-                value: 'all',
-                text: 'All Timepoints'
-            }]
-        };
-    },
-
     leftSidebarOpen() {
         const instance = Template.instance();
         return instance.state.get('leftSidebar');

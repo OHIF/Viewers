@@ -4,9 +4,6 @@ Template.studySeriesQuickSwitch.onCreated(() => {
     // Defines the study being shown in the current viewport
     instance.data.currentStudy = new ReactiveVar();
 
-    // Shows only the key timepoints
-    instance.data.timepointViewType = new ReactiveVar('key');
-
     // Gets the viewport data for the given viewport index
     instance.getViewportData = viewportIndex => {
         const layoutManager = window.layoutManager;
@@ -20,7 +17,7 @@ Template.studySeriesQuickSwitch.onCreated(() => {
         return;
     }
 
-    // Fins the current study and return it
+    // Finds the current study and return it
     const study = ViewerStudies.findOne({
         studyInstanceUid: viewportData.studyInstanceUid
     });

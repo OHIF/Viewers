@@ -1,33 +1,47 @@
 <template name="studyTimepointBrowser">
-    <div class="studyTimepointBrowser noselect">
-        <div class="studyTimepointScrollArea">
-            <div class="p-x-1">
-                {{#each timepoint in timepoints}}
-                    {{#if shouldShowTimepoint timepoint @index}}
-                        <div class="timepointEntry p-y-2">
-                            <div class="timepointHeader">
-                                <div class="timepointDetails clearfix">
-                                    <div class="timepointFollowupTitle pull-left">
-                                        {{timepointTitle timepoint timepoints.count @index}}
+    {{#let timepointList=timepoints}}
+        <div class="studyTimepointBrowser noselect">
+            {{#if shallShowViewType timepointList}}
+                <div class="timepointButtonContainer p-t-2">
+                    {{>roundedButtonGroup viewTypeButtonGroupData}}
+                </div>
+                <hr class="m-y-0">
+            {{/if}}
+            <div class="studyTimepointScrollArea">
+                <div class="p-x-1">
+                    {{#if timepointList.length}}
+                        {{#each timepoint in timepointList}}
+                            {{#if shallShowTimepoint timepoint @index}}
+                                <div class="timepointEntry p-y-2">
+                                    <div class="timepointHeader">
+                                        <div class="timepointDetails clearfix">
+                                            <div class="timepointFollowupTitle pull-left">
+                                                {{timepointTitle timepoint timepoints.count @index}}
+                                            </div>
+                                            <div class="expandIcon pull-right">
+                                                <i class="fa fa-chevron-down"></i>
+                                            </div>
+                                            <div class="timepointDate pull-right m-r-1">{{formatDA timepoint.earliestDate 'D-MMM-YYYY'}}</div>
+                                        </div>
+                                        <div class="timepointModalities">{{modalitiesSummary timepoint}}</div>
                                     </div>
-                                    <div class="expandIcon pull-right">
-                                        <i class="fa fa-chevron-down"></i>
-                                    </div>
-                                    <div class="timepointDate pull-right m-r-1">{{formatDA timepoint.earliestDate 'D-MMM-YYYY'}}</div>
+                                    {{>studyTimepoint studies=(studies timepoint) index=@index viewportIndex=this.viewportIndex currentStudy=this.currentStudy}}
                                 </div>
-                                <div class="timepointModalities">{{modalitiesSummary timepoint}}</div>
+                                <hr class="m-y-1">
+                            {{/if}}
+                        {{/each}}
+                        {{#if and this.currentStudy (not showAdditionalTimepoints)}}
+                            <div class="studyModality additional">
+                                Show additional timepoints
                             </div>
-                            {{>studyTimepoint studies=(studies timepoint) index=@index viewportIndex=this.viewportIndex currentStudy=this.currentStudy}}
+                        {{/if}}
+                    {{else}}
+                        <div class="p-t-2">
+                            {{>studyTimepoint studies=studies viewportIndex=this.viewportIndex currentStudy=this.currentStudy}}
                         </div>
-                        <hr class="m-y-1">
                     {{/if}}
-                {{/each}}
-                {{#if and this.currentStudy (not showAdditionalTimepoints)}}
-                    <div class="studyModality additional">
-                        Show additional timepoints
-                    </div>
-                {{/if}}
+                </div>
             </div>
         </div>
-    </div>
+    {{/let}}
 </template>

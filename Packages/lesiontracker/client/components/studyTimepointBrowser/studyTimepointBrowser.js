@@ -1,6 +1,9 @@
 Template.studyTimepointBrowser.onCreated(() => {
     const instance = Template.instance();
 
+    // Reactive variable to control the view type for all or key timepoints
+    instance.timepointViewType = new ReactiveVar(instance.data.timepointViewType);
+
     // Defines whether to show all key timepoints or only the current one
     instance.showAdditionalTimepoints = new ReactiveVar(true);
 
@@ -11,6 +14,10 @@ Template.studyTimepointBrowser.onCreated(() => {
 
     // Get the studies for a specific timepoint
     instance.getStudies = timepoint => {
+        if (!timepoint) {
+            return ViewerStudies.find().fetch();
+        }
+
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
             const query = {
                 patientId: timepoint.patientId,
@@ -38,7 +45,7 @@ Template.studyTimepointBrowser.onRendered(() => {
 
     instance.autorun(() => {
         // Runs this computation everytime the timepointViewType is changed
-        const type = instance.data.timepointViewType.get();
+        const type = instance.timepointViewType.get();
 
         // Removes all active classes to collapse the timepoints and studies
         instance.$('.timepointEntry, .studyTimepointStudy').removeClass('active');
@@ -79,6 +86,26 @@ Template.studyTimepointBrowser.events({
 });
 
 Template.studyTimepointBrowser.helpers({
+    // Decides if the timepoint view type switch shall be shown or omitted
+    shallShowViewType(timepointList) {
+        const instance = Template.instance();
+        return timepointList.length && !instance.data.timepointViewType;
+    },
+
+    // Returns the button group data for switching between timepoint view types
+    viewTypeButtonGroupData() {
+        return {
+            value: Template.instance().timepointViewType,
+            options: [{
+                value: 'key',
+                text: 'Key Timepoints'
+            }, {
+                value: 'all',
+                text: 'All Timepoints'
+            }]
+        };
+    },
+
     // Defines whether to show all key timepoints or only the current one
     showAdditionalTimepoints() {
         return Template.instance().showAdditionalTimepoints.get();
@@ -111,12 +138,12 @@ Template.studyTimepointBrowser.helpers({
         return Template.instance().getStudies(timepoint);
     },
 
-    // Decides if a timepoint should be shown or omitted
-    shouldShowTimepoint(timepoint, index) {
+    // Decides if a timepoint shall be shown or omitted
+    shallShowTimepoint(timepoint, index) {
         const instance = Template.instance();
 
         // Show all timepoints when view type is all
-        if (instance.data.timepointViewType.get() === 'all') {
+        if (instance.timepointViewType.get() === 'all') {
             return true;
         }
 

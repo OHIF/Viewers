@@ -1,11 +1,7 @@
 <template name="flexboxLayout">
     <div class="viewerSection">
         <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
-            <div class="timepointButtonContainer p-t-2">
-                {{>roundedButtonGroup sidebarButtonGroupData}}
-            </div>
-            <hr class="m-y-0">
-            {{>studyTimepointBrowser timepointViewType=timepointViewType}}
+            {{>studyTimepointBrowser}}
         </div>
         <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
             {{>viewerMain }}
