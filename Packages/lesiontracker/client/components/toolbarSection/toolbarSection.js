@@ -1,4 +1,17 @@
 Template.toolbarSection.helpers({
+    // Returns true if the view shall be split in two viewports
+    splitView() {
+        // Stops here if layout manager is not defined yet
+        if (!window.layoutManager) {
+            return;
+        }
+
+        // Run this computation everytime the viewports are updated
+        Session.get('LayoutManagerUpdated');
+
+        return layoutManager.viewportData.length > 1;
+    },
+
     leftSidebarToggleButtonData() {
         const instance = Template.instance();
         return {
@@ -14,6 +27,7 @@ Template.toolbarSection.helpers({
             }]
         };
     },
+
     rightSidebarToggleButtonData() {
         const instance = Template.instance();
         return {
@@ -35,6 +49,7 @@ Template.toolbarSection.helpers({
             }]
         };
     },
+
     toolbarButtons: function() {
         var buttonData = [];
         buttonData.push({

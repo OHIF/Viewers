@@ -21,8 +21,12 @@
                 </div>
             </div>
 
-            {{ >studySeriesQuickSwitch side="left" viewportIndex=0}}
-            {{ >studySeriesQuickSwitch side="right" viewportIndex=1}}
+            {{#if splitView}}
+                {{>studySeriesQuickSwitch side="right" viewportIndex=1}}
+                {{>studySeriesQuickSwitch side="left" viewportIndex=0}}
+            {{else}}
+                {{>studySeriesQuickSwitch side="middle" viewportIndex=0}}
+            {{/if}}
 
             <div class="toolbarSectionEntry pull-right rm-l-1 p-x-1">
                 {{ >caseProgress }}
