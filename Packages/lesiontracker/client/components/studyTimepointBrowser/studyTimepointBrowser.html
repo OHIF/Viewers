@@ -1,14 +1,11 @@
 <template name="studyTimepointBrowser">
     {{#let timepointList=timepoints}}
-        <div class="studyTimepointBrowser noselect">
-            {{#if shallShowViewType timepointList}}
-                <div class="timepointButtonContainer p-t-2">
-                    {{>roundedButtonGroup viewTypeButtonGroupData}}
-                </div>
-                <hr class="m-y-0">
-            {{/if}}
+        <div class="studyTimepointBrowser noselect {{#if shallShowViewType timepointList}}viewTypeVisible{{/if}}">
+            <div class="timepointButtonContainer p-t-2">
+                {{>roundedButtonGroup viewTypeButtonGroupData}}
+            </div>
             <div class="studyTimepointScrollArea">
-                <div class="p-x-1">
+                <div class="p-l-1">
                     {{#if timepointList.length}}
                         {{#each timepoint in timepointList}}
                             {{#if shallShowTimepoint timepoint @index}}
@@ -27,7 +24,7 @@
                                     </div>
                                     {{>studyTimepoint studies=(studies timepoint) index=@index viewportIndex=this.viewportIndex currentStudy=this.currentStudy}}
                                 </div>
-                                <hr class="m-y-1">
+                                <hr>
                             {{/if}}
                         {{/each}}
                         {{#if and this.currentStudy (not showAdditionalTimepoints)}}

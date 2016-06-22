@@ -15,6 +15,8 @@ $spacerY = 12px
 
 .studyTimepointStudy
   position: relative
+  // required transformation to make inner fixed elements relative to this one
+  transform(scale(1))
 
   .loadingTextDiv
     padding: 25px
@@ -28,9 +30,10 @@ $spacerY = 12px
 
   &.loading
     .loadingTextDiv
-      width: 100%
       height: 100%
+      left: 0
       opacity: 0.75
+      right: 16px
 
     .studyModality
       opacity: 0.2

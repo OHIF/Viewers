@@ -1,11 +1,32 @@
 @import "{design}/app"
 
+$timepointButtonHeight = 55px
+
 .studyTimepointBrowser
   background-color: $primaryBackgroundColor
   float: left
   height: calc(100% - 55px - 50px - 30px)
-  overflow: hidden
+  position: relative
   width: 100%
+
+  .timepointButtonContainer
+    background-color: $primaryBackgroundColor
+    border-bottom: 1px solid $uiBorderColor
+    display: none
+    height: $timepointButtonHeight
+    left: 10px
+    position: absolute
+    right: 10px
+    top: 0
+    z-index: 1
+
+  &.viewTypeVisible
+
+    .timepointButtonContainer
+      display: block
+
+    .studyTimepointScrollArea
+      padding-top: $timepointButtonHeight
 
   .timepointEntry
     &.active
@@ -60,9 +81,25 @@
     height: 100%
     overflow-x: hidden
     overflow-y: auto
-    margin-right: -16px
+    margin-right: -22px
     padding-bottom: 20px
     padding-right: 16px
 
     &::-webkit-scrollbar
       display: none
+
+    hr, .timepointHeader, .studyItem, .studyModality.additional
+      margin-right: 16px
+
+  .studySidebarTimepoint .thumbnailEntry.active:before
+    background-color: $activeColor
+    border-top-right-radius: 7px
+    border-bottom-right-radius: 7px
+    content: ''
+    display: block
+    height: 91px
+    pointer-events: none
+    position: fixed
+    right: 0
+    top: 0
+    width: 5px

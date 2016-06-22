@@ -1,18 +1,20 @@
 <template name="studyTimepointStudy">
     {{#let isSidebar=(not (isDefined viewportIndex))}}
         <div class="studyTimepointStudy {{#if isSidebar}}studySidebarTimepoint{{else}}studyQuickSwitchTimepoint{{/if}} {{#if this.active}}active{{/if}}">
-            {{>loadingText}}
-            <div class="studyModality">
-                <div class="studyModalityBox">
-                    {{#if this.study.modalities}}
-                        {{this.study.modalities}}
-                    {{else}}
-                        UN
-                    {{/if}}
-                </div>
-                <div class="studyModalityText">
-                    <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
-                    <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
+            <div class="studyItem">
+                {{>loadingText}}
+                <div class="studyModality">
+                    <div class="studyModalityBox">
+                        {{#if this.study.modalities}}
+                            {{this.study.modalities}}
+                        {{else}}
+                            UN
+                        {{/if}}
+                    </div>
+                    <div class="studyModalityText">
+                        <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
+                        <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
+                    </div>
                 </div>
             </div>
             {{#if isSidebar}}

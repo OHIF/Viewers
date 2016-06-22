@@ -8,17 +8,11 @@
   width: 100%
 
   .sidebarMenu
-    position: absolute
-    height: 100%
     background: $primaryBackgroundColor
-    -webkit-transition: $sidebarTransition
-    -ms-transition: $sidebarTransition
-    -o-transition: $sidebarTransition
-    -moz-transition: $sidebarTransition
-    transition: $sidebarTransition
-
-    .timepointButtonContainer
-      height: 55px
+    height: 100%
+    position: absolute
+    transition($sidebarTransition)
+    z-index: 1
 
   .sidebar-left
     width: $studiesSidebarMenuWidth
