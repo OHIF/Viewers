@@ -19,7 +19,8 @@ $seriesSpacing = 2px
     left: 50%
 
   &.overlay .quickSwitch
-    z-index: 1
+    transition(z-index 0s linear 0s)
+    z-index: 3
 
   &:before
     background-color: $primaryBackgroundColor
@@ -32,7 +33,7 @@ $seriesSpacing = 2px
     top: 0
     transition(opacity 0.3s ease\, visibility 0s linear 0.3s)
     visibility: hidden
-    z-index: 1
+    z-index: 2
 
   &.overlay:before
     opacity: 0.8
@@ -41,6 +42,8 @@ $seriesSpacing = 2px
 
 .quickSwitch
   position: relative
+  transition(z-index 0s linear 0.3s)
+  z-index: 1
 
   .switchSection
     display: inline-block
