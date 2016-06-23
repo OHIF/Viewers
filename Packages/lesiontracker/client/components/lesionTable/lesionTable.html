@@ -1,15 +1,13 @@
 <template name="lesionTable">
     <div id="lesionTableContainer">
         <div class="lesionTableLayoutChanger viewerRoundedButtonGroup">
-            {{ >roundedButtonGroup buttonGroupData }}
+            {{>roundedButtonGroup buttonGroupData}}
         </div>
         <div class="lesionTableTimepointHeaderRow">
-            <div class="spacer">
-            </div>
-            {{ #each timepoints }}
-            {{ >lesionTableTimepointHeader }}
-            {{ /each }}
+            {{#each timepoints}}
+                {{>lesionTableTimepointHeader}}
+            {{/each}}
         </div>
-        {{ >lesionTableView }}
+        {{>lesionTableView}}
     </div>
 </template>

@@ -8,13 +8,13 @@ $inputBackgroundColor = #2c363f
 $inputPlaceholderColor = lightgray
 
 $studyListToolbarHeight = 75px
-$theadBackgroundColor =  #151a1f
+$theadBackgroundColor =  $uiGrayDarkest
 $tablePadding = 8%
 $bodyCellHeight = 40px
 
 .studyListToolbar
   height: $studyListToolbarHeight
-  background: #151a1f
+  background: $uiGrayDarkest
   border-bottom: 2px solid black
   padding: 0 30px
 
@@ -35,7 +35,7 @@ $bodyCellHeight = 40px
   .studyCount
     font-size: 40px
     font-weight: 100
-    color: #6fbde2
+    color: $uiSkyBlue
     padding: 0 10px
     line-height: $studyListToolbarHeight
 
@@ -149,7 +149,7 @@ $bodyCellHeight = 40px
         background-color: black
 
         &:nth-child(even)
-          background-color: #151a1f
+          background-color: $uiGrayDarkest
 
         td
           height: $bodyCellHeight

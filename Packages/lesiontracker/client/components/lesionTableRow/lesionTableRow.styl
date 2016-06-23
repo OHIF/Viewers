@@ -2,45 +2,51 @@
 
 .lesionTableRow
   display: flex
-  border-top: 2px solid black
   height: 63px
+  margin-top: 2px
   width: 100%
 
   .lesionRowSidebar
-    flex: 1
+    background: $uiGrayDark
     color: $textSecondaryColor
-    background: $darkUiColor
+    flex: 1
     max-width: 30px
+    padding-right: 5px
 
     .lesionNumber
+      font-size: 14px
+      font-weight: 400
+      padding-top: 10px
       text-align: center
-      font-weight: 200
-      padding: 3px
 
     &.active
       border-left: 4px $activeColor solid
 
   .lesionDetails
     flex: 1
-    padding-left: 20px
-    padding-top: 5px
+    padding: 5px 2px 0 14px
     display: flex
     flex-direction: column
     align-items: stretch
 
     .location
       flex: 1
-      font-weight: 200
+      font-weight: 400
       font-size: 14px
       color: $textSecondaryColor
-      height: 20px
+      height: 30px
+      line-height: 30px
+      margin-left: -2px
       width: 100%
 
     .timepointData
       display: flex
+      margin-top: 1px
 
       div
-        font-weight: 200
-        padding-bottom: 10px
         flex: 1
+        font-size: 14px
+        font-weight: 400
         justify-content: space-around
+        line-height: 18px
+        padding-bottom: 10px

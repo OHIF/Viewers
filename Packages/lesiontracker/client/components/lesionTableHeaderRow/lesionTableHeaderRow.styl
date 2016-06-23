@@ -3,59 +3,62 @@
 $headerRowHeight = 63px
 
 .lesionTableHeaderRow
-  border-top: 2px solid black
-  background: #151a1f
+  background-color: $uiGrayDarkest
   color: $textSecondaryColor
-  fill: $textSecondaryColor
-  width: 316px
-  height: $headerRowHeight
   display: flex
+  fill: $textSecondaryColor
+  height: $headerRowHeight
   line-height: $headerRowHeight
+  margin-top: 2px
+  width: 316px
 
   div
+    align-items: stretch
     flex: 1
     justify-content: space-around
-    align-items: stretch
     text-align: center
 
   .add
-    padding: 0 10px
-    max-width: 40px
     cursor: pointer
+    max-width: 30px
+    padding-left: 2px
 
     svg
       height: $headerRowHeight
       max-width: 11px
 
   .type
+    color: $textSecondaryColor
+    font-size: 22px
+    font-weight: 300
+    line-height: $headerRowHeight
     padding: 0 10px
     text-align: left
-    font-weight: 300
-    color: #91b9cd
-    height: $headerRowHeight
-    font-size: 13pt
 
   .numberOfLesions
     float: right
-    color:  #6fbde2
-    font-weight: 100
+    color: $uiSkyBlue
+    font-weight: 300
     font-size: 40px
-    max-width: 50px
-    margin-right: 5px
+    max-width: 54px
     height: $headerRowHeight
-    line-height: $headerRowHeight
+    line-height: 66px
 
   .max
     height: $headerRowHeight
+    max-width: 64px
+    text-align: right
 
     .maxNumLesions
-      margin: 21px auto
-      height: 20px
-      line-height: 20px
-      width: 47px
-      font-size: 12px
-      text-transform: uppercase
-      font-weight: 500
+      background-color: $textSecondaryColor;
       border-radius: 3px
       color: black
-      background-color: $textSecondaryColor;
+      display: table
+      font-size: 12px
+      font-weight: 500
+      height: 19px
+      line-height: 17px
+      margin-left: auto
+      margin-top: 22px
+      padding: 2px 6px 0
+      text-transform: uppercase
