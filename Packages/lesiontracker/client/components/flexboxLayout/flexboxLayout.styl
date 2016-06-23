@@ -33,7 +33,7 @@
     -o-transition: $sidebarTransition
     -moz-transition: $sidebarTransition
     transition: $sidebarTransition
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0)
 
     &.sidebar-left-open.sidebar-right-open
       width: 'calc(100% - %s)' % ($studiesSidebarMenuWidth + $lesionsSidebarMenuWidth)
@@ -45,14 +45,24 @@
       width: 'calc(100% - %s)' % $studiesSidebarMenuWidth
 
     &.sidebar-left-open
-      transform: translate3d($studiesSidebarMenuWidth,0,0);
+      transform: translate3d($studiesSidebarMenuWidth, 0, 0)
 
   .sidebar-right
-    width: $lesionsSidebarMenuWidth
-    order: 3
     flex: 0
+    order: 3
+    padding-left: 6px
     right: - $lesionsSidebarMenuWidth
-    border-left: $uiBorderThickness $uiBorderColor solid
+    width: $lesionsSidebarMenuWidth
+
+    &:before
+      background-color: $uiBorderColor
+      content: ''
+      display: block
+      height: 100%
+      left: 5px
+      position: absolute
+      top: 0
+      width: $uiBorderThickness
 
     &.sidebar-open
       right: 0
