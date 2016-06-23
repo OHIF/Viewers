@@ -28,16 +28,42 @@
     .lesionRowSidebar
       color: $activeColor
 
+  &.response-status .lesionRowSidebar .response-status-icon
+    background-color: $defaultColor
+    border-radius: 11px
+    color: $uiGrayDark
+    font-size: 12px
+    font-weight: 700
+    height: 21px
+    line-height: 22px
+    margin: 5px auto 0
+    text-align: center
+    width: 21px
+
+  &.warning .lesionRowSidebar
+    color: $textPrimaryColor
+    background-color: $uiYellow
+
+    .warning-icon, svg
+      width: 22px
+      height: 20px
+
+    .warning-icon
+      margin: 7px auto 0
+
+    svg
+      fill: $textPrimaryColor
+
   .lesionRowSidebar
     background: $uiGrayDark
     color: $textSecondaryColor
     flex: 1
     max-width: 30px
-    padding-right: 5px
 
     .lesionNumber
       font-size: 14px
       font-weight: 400
+      margin-right: 5px
       padding-top: 10px
       text-align: center
 
