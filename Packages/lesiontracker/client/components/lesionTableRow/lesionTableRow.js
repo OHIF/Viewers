@@ -1,13 +1,3 @@
-Template.lesionTableRow.helpers({
-    timepoints: function() {
-        return Timepoints.find({}, {
-            sort: {
-                timepointName: 1
-            }
-        });
-    }
-});
-
 function doneCallback(measurementData, deleteTool) {
     // If a Lesion or Non-Target is removed via a dialog
     // opened by the Lesion Table, we should clear the data for

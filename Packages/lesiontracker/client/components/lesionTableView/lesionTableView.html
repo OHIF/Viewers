@@ -1,18 +1,18 @@
 <template name="lesionTableView">
     <div class="lesionTableView scrollArea">
-        {{ >lesionTableHeaderRow id="target" type="Targets" measurements=targets}}
-        {{ #each targets }}
-        {{ >lesionTableRow }}
-        {{ /each }}
+        {{>lesionTableHeaderRow id="target" type="Targets" measurements=targets}}
+        {{#each target in targets}}
+            {{>lesionTableRow (extend this rowItem=target)}}
+        {{/each}}
 
-        {{ >lesionTableHeaderRow id="nonTarget" type="Non-targets" measurements=nonTargets}}
-        {{ #each nonTargets }}
-        {{ >lesionTableRow }}
-        {{ /each }}
+        {{>lesionTableHeaderRow id="nonTarget" type="Non-targets" measurements=nonTargets}}
+        {{#each nonTarget in nonTargets}}
+            {{>lesionTableRow (extend this rowItem=nonTarget)}}
+        {{/each}}
 
-        {{ >lesionTableHeaderRow id="newLesions" type="New lesions" measurements=newLesions}}
-        {{ #each nonTargets }}
-        {{ >lesionTableRow }}
-        {{ /each }}
+        {{>lesionTableHeaderRow id="newLesions" type="New lesions" measurements=newLesions}}
+        {{#each newLesion in newLesions}}
+            {{>lesionTableRow (extend this rowItem=newLesion)}}
+        {{/each}}
     </div>
 </template>

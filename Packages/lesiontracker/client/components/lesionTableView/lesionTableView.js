@@ -1,5 +1,5 @@
 Template.lesionTableView.helpers({
-    targets: function () {
+    targets() {
         // All Targets shall be listed first followed by Non-Targets
         return Measurements.find({
             isTarget: true
@@ -9,7 +9,7 @@ Template.lesionTableView.helpers({
             }
         });
     },
-    nonTargets: function () {
+    nonTargets() {
         // All Targets shall be listed first followed by Non-Targets
         return Measurements.find({
             isTarget: false
@@ -19,7 +19,7 @@ Template.lesionTableView.helpers({
             }
         });
     },
-    newLesions: function () {
+    newLesions() {
         // All Targets shall be listed first followed by Non-Targets
         return Measurements.find({
             saved: false

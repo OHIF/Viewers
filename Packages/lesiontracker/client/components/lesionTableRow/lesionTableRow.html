@@ -2,16 +2,16 @@
     <div class="lesionTableRow {{#if descriptionRequired}}warning{{/if}}{{#if responseStatus}}response-status{{/if}}" data-measurementid="{{_id}}">
         <div class='lesionRowSidebar'>
             <div class="lesionNumber">
-                {{lesionNumberAbsolute}}
+                {{rowItem.lesionNumberAbsolute}}
             </div>
-            {{#if descriptionRequired}}
+            {{#if rowItem.descriptionRequired}}
                 <div class="warning-icon">
                     <svg>
                         <use xlink:href=/packages/lesiontracker/assets/icons.svg#icon-ui-warning></use>
                     </svg>
                 </div>
             {{/if}}
-            {{#if responseStatus}}
+            {{#if rowItem.responseStatus}}
                 <div class="response-status-icon">
                     CR
                 </div>
@@ -19,17 +19,17 @@
         </div>
         <div class="lesionDetails">
             <div class='location'>
-                {{ #if location }}
-                    {{location}}
-                {{ else }}
+                {{#if rowItem.location}}
+                    {{rowItem.location}}
+                {{else}}
                     (No description)
-                {{ /if }}
+                {{/if}}
             </div>
             <div class="timepointData">
                 <!--Each time point as a column-->
-                {{# each timepoints }}
-                    {{> lesionTableTimepointCell}}
-                {{/ each }}
+                {{#each timepoints.get}}
+                    {{>lesionTableTimepointCell}}
+                {{/each}}
             </div>
         </div>
     </div>

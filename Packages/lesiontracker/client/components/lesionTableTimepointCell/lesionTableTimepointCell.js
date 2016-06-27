@@ -2,14 +2,14 @@ Template.lesionTableTimepointCell.helpers({
     hasDataAtThisTimepoint: function() {
         // This simple function just checks whether or not timepoint data
         // exists for this Measurement at this Timepoint
-        var lesionData = Template.parentData(1);
+        var lesionData = Template.parentData(1).rowItem;
         return (lesionData &&
             lesionData.timepoints &&
             lesionData.timepoints[this.timepointId]);
     },
     displayData: function() {
         // Search Measurements by lesion and timepoint
-        var lesionData = Template.parentData(1);
+        var lesionData = Template.parentData(1).rowItem;
         if (!lesionData ||
             !lesionData.timepoints ||
             !lesionData.timepoints[this.timepointId]) {
@@ -49,7 +49,7 @@ Template.lesionTableTimepointCell.helpers({
     },
 
     isBidirectional: function() {
-        var lesionData = Template.parentData(1);
+        var lesionData = Template.parentData(1).rowItem;
         if (lesionData.toolType === 'bidirectional') {
             return true;
         }
@@ -77,7 +77,7 @@ Template.lesionTableTimepointCell.events({
     'dblclick .lesionTableTimepointCell': function() {
         log.info('Double clicked on a timepoint cell');
         // Search Measurements by lesion and timepoint
-        var currentMeasurement = Template.parentData(1);
+        var currentMeasurement = Template.parentData(1).rowItem;
 
         // Create some fake measurement data
         var currentTimepointID = this.timepointId;
@@ -110,7 +110,7 @@ Template.lesionTableTimepointCell.events({
         var keyCode = e.which;
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
-            var currentMeasurement = Template.parentData(1);
+            var currentMeasurement = Template.parentData(1).rowItem;
             var currentTimepointID = this.timepointId;
 
             showConfirmDialog(function() {

@@ -4,10 +4,10 @@
             {{>roundedButtonGroup buttonGroupData}}
         </div>
         <div class="lesionTableTimepointHeaderRow">
-            {{#each timepoints}}
+            {{#each timepoints.get}}
                 {{>lesionTableTimepointHeader}}
             {{/each}}
         </div>
-        {{>lesionTableView}}
+        {{>lesionTableView this}}
     </div>
 </template>

@@ -175,6 +175,7 @@ Package.onUse(function(api) {
     // UI Helpers
     api.addFiles([
         'lib/helpers/formatDA.js',
+        'lib/helpers/blaze.js',
         'lib/helpers/logical.js',
         'lib/helpers/formatJSDate.js',
         'lib/helpers/jsDateFromNow.js',
