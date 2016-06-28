@@ -1,8 +1,13 @@
 Template.caseProgress.onCreated(function caseProgressOnCreated() {
     const instance = Template.instance();
 
+    instance.progressPercent = new ReactiveVar();
+    instance.progressText = new ReactiveVar();
+    instance.isLocked = new ReactiveVar();
+    
     if (!instance.data.currentTimepointId) {
-        throw 'Case Progress has no timepointId';
+        console.warn('Case has no timepointId');
+        return;
     }
 
     const currentTimepointId = instance.data.currentTimepointId;
@@ -12,10 +17,6 @@ Template.caseProgress.onCreated(function caseProgressOnCreated() {
 
     const timepointType = timepoint.timepointType;
 
-    instance.progressPercent = new ReactiveVar();
-    instance.progressText = new ReactiveVar();
-
-    instance.isLocked = new ReactiveVar();
     instance.isLocked.set(timepoint.isLocked);
 
     if (timepointType === 'baseline') {

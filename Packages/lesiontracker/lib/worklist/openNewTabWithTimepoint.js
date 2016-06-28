@@ -27,7 +27,7 @@ openNewTabWithTimepoint = function(timepointId, title) {
     // Update the ViewerData global object
     ViewerData[contentId] = {
         title: title,
-        contentId: contentId,
+        contentid: contentId,
         studyInstanceUids: data.studyInstanceUids,
         timepointIds: data.timepointIds,
         currentTimepointId: timepointId

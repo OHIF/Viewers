@@ -340,7 +340,8 @@ getTrialCriteriaConstraints = function(criteriaTypes, imageId) {
         var criteria;
         if (!imageId) {
             criteria = TrialCriteriaConstraints[criteriaType]();
-            return criteria;
+            allCriteria.push(criteria);
+            return;
         }
 
         // Otherwise, retrieve the series metaData to identify the modality of the image
