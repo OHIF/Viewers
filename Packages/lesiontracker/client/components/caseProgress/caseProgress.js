@@ -1,13 +1,55 @@
 Template.caseProgress.onCreated(function caseProgressOnCreated() {
     const instance = Template.instance();
 
+    if (!instance.data.currentTimepointId) {
+        throw 'Case Progress has no timepointId';
+    }
+
+    const currentTimepointId = instance.data.currentTimepointId;
+    const timepoint = Timepoints.findOne({
+        timepointId: currentTimepointId
+    });
+
+    const timepointType = timepoint.timepointType;
+
     instance.progressPercent = new ReactiveVar();
-    instance.progressPercent.set(50);
-
     instance.progressText = new ReactiveVar();
-    instance.progressText.set(5);
 
-    instance.isLocked = new ReactiveVar(false);
+    instance.isLocked = new ReactiveVar();
+    instance.isLocked.set(timepoint.isLocked);
+
+    if (timepointType === 'baseline') {
+        instance.progressPercent.set(100);
+    } else {
+        // Retrieve the initial number of targets left to measure at this
+        // follow-up. Note that this is done outside of the reactive function
+        // below so that new lesions don't change the initial target count.
+        const totalTargets = Measurements.find({
+            isTarget: true
+        }).count();
+
+        // Setup a reactive function to update the progress whenever
+        // a measurement is made
+        instance.autorun(() => {
+            // Obtain the number of Measurements for which the current Timepoint has
+            // no Measurement data
+            let numRemainingMeasurements = 0;
+            Measurements.find().forEach(measurement => {
+                if (!measurement.timepoints[currentTimepointId]) {
+                    numRemainingMeasurements++;
+                }
+            });
+
+            // Update the Case Progress text with the remaining measurement count
+            instance.progressText.set(numRemainingMeasurements);
+
+            // Calculate the Case Progress as a percentage in order to update the
+            // radial progress bar
+            const numMeasurementsMade = Math.max(totalTargets - numRemainingMeasurements, 0);
+            const progressPercent = Math.round(100 * numMeasurementsMade / totalTargets);
+            instance.progressPercent.set(progressPercent);
+        });
+    }
 });
 
 Template.caseProgress.helpers({
@@ -24,7 +66,14 @@ Template.caseProgress.helpers({
     },
 
     progressComplete() {
-        var progressPercent = Template.instance().progressPercent.get();
+        let progressPercent = Template.instance().progressPercent.get();
         return progressPercent === 100;
+    }
+});
+
+Template.caseProgress.events({
+    'click .js-finish-case'() {
+        console.log('Case Finished!');
+        switchToTab('worklistTab');
     }
 });

@@ -6,7 +6,7 @@
  * @param title The title to be used for the tab heading
  */
 openNewTabWithTimepoint = function(timepointId, title) {
-    var contentid = 'viewerTab';
+    var contentId = 'viewerTab';
 
     var timepoint = Timepoints.findOne({
         timepointId: timepointId
@@ -25,15 +25,16 @@ openNewTabWithTimepoint = function(timepointId, title) {
     ViewerData = window.ViewerData || ViewerData;
 
     // Update the ViewerData global object
-    ViewerData[contentid] = {
+    ViewerData[contentId] = {
         title: title,
-        contentid: contentid,
+        contentId: contentId,
         studyInstanceUids: data.studyInstanceUids,
-        timepointIds: data.timepointIds
+        timepointIds: data.timepointIds,
+        currentTimepointId: timepointId
     };
 
     // Switch to the new tab
-    switchToTab(contentid);
+    switchToTab(contentId);
 };
 
 /**

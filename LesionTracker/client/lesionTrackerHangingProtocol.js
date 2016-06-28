@@ -140,12 +140,12 @@ chest.constraint = {
 };
 
 left.studyMatchingRules.push(baseline);
-left.seriesMatchingRules.push(body);
-left.seriesMatchingRules.push(chest);
+//left.seriesMatchingRules.push(body);
+//left.seriesMatchingRules.push(chest);
 
 right.studyMatchingRules.push(followup);
-right.seriesMatchingRules.push(body);
-right.seriesMatchingRules.push(chest);
+//right.seriesMatchingRules.push(body);
+//right.seriesMatchingRules.push(chest);
 
 var first = new HP.Stage(oneByTwo, 'oneByTwo');
 first.viewports.push(left);

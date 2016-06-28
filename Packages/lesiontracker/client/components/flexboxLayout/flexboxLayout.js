@@ -22,8 +22,7 @@ Template.flexboxLayout.onRendered(() => {
 
 Template.flexboxLayout.helpers({
     leftSidebarOpen() {
-        const instance = Template.instance();
-        return instance.state.get('leftSidebar');
+        return Template.instance().state.get('leftSidebar');
     },
 
     lesionSidebarOpen() {

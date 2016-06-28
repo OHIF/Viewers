@@ -13,6 +13,8 @@ Template.viewer.onCreated(function() {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
+    Session.set('currentTimepointId', instance.data.currentTimepointId);
+
     var contentId = this.data.contentId;
 
     OHIF = OHIF || window.OHIF || {
