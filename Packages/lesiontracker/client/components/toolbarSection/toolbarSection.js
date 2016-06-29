@@ -115,7 +115,6 @@ Template.toolbarSection.events({
         var elements = $('.imageViewerViewport');
 
         var activeTool = toolManager.getActiveTool();
-        $('.toolbarSectionButton').removeClass('active');
         if (tool === activeTool) {
             var defaultTool = toolManager.getDefaultTool();
             console.log('Setting active tool to: ' + defaultTool);

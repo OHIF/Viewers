@@ -1,5 +1,5 @@
-var activeTool = "wwwc";
-var defaultTool = "wwwc";
+var activeTool = 'wwwc';
+var defaultTool = 'wwwc';
 
 var tools = {};
 
@@ -132,6 +132,7 @@ toolManager = {
                 } else {
                     tools[toolType].mouse[action](element);
                 }
+
                 tools[toolType].touch[action](element);
             });
         });
@@ -196,22 +197,20 @@ toolManager = {
             elements = $('.imageViewerViewport');
         }
 
-        $('#toolbar .btn-group button').removeClass('active');
-        var toolButton = document.getElementById(tool);
-        if (toolButton) {
-            toolButton.classList.add('active');
-        }
-
         // Otherwise, set the active tool for all viewport elements
         $(elements).each(function(index, element) {
             toolManager.setActiveToolForElement(tool, element);
         });
         activeTool = tool;
+
+        // Store the active tool in the session in order to enable reactivity
+        Session.set('ToolManagerActiveTool', tool);
     },
     getActiveTool: function() {
         if (!activeTool) {
             activeTool = defaultTool;
         }
+
         return activeTool;
     },
     setDefaultTool: function(tool) {
