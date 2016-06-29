@@ -1,39 +1,27 @@
-Template.flexboxLayout.onCreated(() => {
-    const instance = Template.instance();
-    instance.state = instance.data.state;
-});
-
-let resizeTimeout;
-Template.flexboxLayout.onRendered(() => {
-    const instance = Template.instance();
-
-    instance.autorun(() => {
-        Meteor.clearTimeout(resizeTimeout);
-
-        // Trigger a resize any time the layout state changes
-        instance.state.get('leftSidebar');
-        instance.state.get('rightSidebar');
-
-        resizeTimeout = Meteor.setTimeout(() => {
-            handleResize();
-        }, 300);
-    });
+Template.flexboxLayout.events({
+    'transitionend .sidebarMenu'(event, instance) {
+        handleResize();
+    },
+    'transitionend .sidebar-option'(event, instance) {
+        // Prevent this event from bubbling
+        event.stopPropagation();
+    }
 });
 
 Template.flexboxLayout.helpers({
     leftSidebarOpen() {
-        return Template.instance().state.get('leftSidebar');
+        return Template.instance().data.state.get('leftSidebar');
     },
 
     lesionSidebarOpen() {
-        return Template.instance().state.get('rightSidebar') === 'lesions';
+        return Template.instance().data.state.get('rightSidebar') === 'lesions';
     },
 
     additionalMeasurementsSidebarOpen() {
-        return Template.instance().state.get('rightSidebar') === 'additional';
+        return Template.instance().data.state.get('rightSidebar') === 'additional';
     },
 
     rightSidebarOpen() {
-        return Template.instance().state.get('rightSidebar') !== null;
+        return Template.instance().data.state.get('rightSidebar') !== null;
     }
 });

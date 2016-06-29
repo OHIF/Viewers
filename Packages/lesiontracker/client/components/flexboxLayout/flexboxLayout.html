@@ -6,11 +6,13 @@
         <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
             {{>viewerMain}}
         </div>
-        <div class="sidebarMenu sidebar-right {{#if lesionSidebarOpen}}sidebar-open{{/if}}">
-            {{>lesionTable}}
-        </div>
-        <div class="sidebarMenu sidebar-right {{#if additionalMeasurementsSidebarOpen}}sidebar-open{{/if}}">
-            {{>additionalMeasurements}}
+        <div class="sidebarMenu sidebar-right {{#if or lesionSidebarOpen additionalMeasurementsSidebarOpen}}sidebar-open{{/if}}">
+            <div class="sidebar-option {{#if lesionSidebarOpen}}active{{/if}}">
+                {{>lesionTable (extend this)}}
+            </div>
+            <div class="sidebar-option {{#if additionalMeasurementsSidebarOpen}}active{{/if}}">
+                {{>additionalMeasurements (extend this)}}
+            </div>
         </div>
     </div>
 </template>

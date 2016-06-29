@@ -8,51 +8,53 @@
   width: 100%
 
   .sidebarMenu
-    background: $primaryBackgroundColor
     height: 100%
-    position: absolute
+    // required transformation to make inner fixed elements relative to this one
+    transform(scale(1))
     transition($sidebarTransition)
-    z-index: 1
+
+    .sidebar-option
+      height: 100%
+      position: fixed
+      transform(translateX(100%))
+      transition($sidebarTransition)
+      width: 100%
+
+      &.active
+        transform(translateX(0%))
 
   .sidebar-left
-    width: $studiesSidebarMenuWidth
+    max-width: $studiesSidebarMenuWidth
     order: 1
-    flex: 0
-    left: - $studiesSidebarMenuWidth
+    flex: 1
+    margin-left: - $studiesSidebarMenuWidth
     border-right: $uiBorderThickness $uiBorderColor solid
 
     &.sidebar-open
-      left: 0
+      margin-left: 0
 
   .mainContent
+    flex: 1
     order: 2
     width: 100%
     height: 100%
-    -webkit-transition: $sidebarTransition
-    -ms-transition: $sidebarTransition
-    -o-transition: $sidebarTransition
-    -moz-transition: $sidebarTransition
-    transition: $sidebarTransition
-    transform: translate3d(0, 0, 0)
-
-    &.sidebar-left-open.sidebar-right-open
-      width: 'calc(100% - %s)' % ($studiesSidebarMenuWidth + $lesionsSidebarMenuWidth)
-
-    &.sidebar-right-open
-      width: 'calc(100% - %s)' % $lesionsSidebarMenuWidth
-
-    &.sidebar-left-open
-      width: 'calc(100% - %s)' % $studiesSidebarMenuWidth
-
-    &.sidebar-left-open
-      transform: translate3d($studiesSidebarMenuWidth, 0, 0)
+    transition($sidebarTransition)
 
   .sidebar-right
-    flex: 0
+    flex: 1
+    margin-right: - $lesionsSidebarMenuWidth
+    max-width: $lesionsSidebarMenuWidth
     order: 3
     padding-left: 6px
-    right: - $lesionsSidebarMenuWidth
-    width: $lesionsSidebarMenuWidth
+    position: relative
+
+    &[data-timepoints="3"]
+      margin-right: - ($lesionsSidebarMenuWidth + 135.5px)
+      max-width: $lesionsSidebarMenuWidth + 135.5px
+
+    &[data-timepoints="4"]
+      margin-right: - ($lesionsSidebarMenuWidth + 270px)
+      max-width: $lesionsSidebarMenuWidth + 270px
 
     &:before
       background-color: $uiBorderColor
@@ -65,7 +67,7 @@
       width: $uiBorderThickness
 
     &.sidebar-open
-      right: 0
+      margin-right: 0
 
   .studiesListedChanger
     padding: 20px 10px

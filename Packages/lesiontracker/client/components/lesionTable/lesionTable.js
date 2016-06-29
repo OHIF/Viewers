@@ -28,6 +28,27 @@ Template.lesionTable.onCreated(() => {
     });
 });
 
+Template.lesionTable.onRendered(() => {
+    const instance = Template.instance();
+
+    instance.autorun(() => {
+        // Run this computation everytime the lesion table layout is changed
+        instance.data.lesionTableLayout.dep.depend();
+
+        if(instance.data.state.get('rightSidebar') !== 'lesions') {
+            // Remove the amount attribute from sidebar element tag
+            instance.$('#lesionTableContainer').closest('.sidebarMenu').removeAttr('data-timepoints');
+            return;
+        }
+
+        // Get the amount of timepoints being shown
+        const timepointAmount = instance.data.timepoints.get().length;
+
+        // Set the amount in an attribute on sidebar element tag
+        instance.$('#lesionTableContainer').closest('.sidebarMenu').attr('data-timepoints', timepointAmount);
+    });
+});
+
 // Temporary until we have a real window manager with events for series/study changed
 Session.setDefault('NewSeriesLoaded', false);
 
