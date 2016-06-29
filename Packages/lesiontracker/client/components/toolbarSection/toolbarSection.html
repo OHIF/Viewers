@@ -5,9 +5,9 @@
                 {{>roundedButtonGroup leftSidebarToggleButtonData}}
             </div>
             <div class="toolbarSectionTools pull-left m-t-1 rm-l-3">
-                {{ #each toolbarButtons }}
-                    {{ >toolbarSectionButton }}
-                {{ /each }}
+                {{#each toolbarButton in toolbarButtons}}
+                    {{>toolbarSectionButton toolbarButton}}
+                {{/each}}
 
                 <div id="moreTools" class="toolbarSectionButton rp-x-1 rm-l-3">
                     <div class="svgContainer">
@@ -18,6 +18,11 @@
                     <div class="buttonLabel">
                         More <i class="fa fa-caret-down" aria-hidden="true"></i>
                     </div>
+                </div>
+
+                <div class="toolbarSectionDrawerContainer">
+                    <!-- TODO: [design] check which group of tools shall be shown -->
+                    <div class="toolbarSectionDrawer">More tools coming soon</div>
                 </div>
             </div>
 

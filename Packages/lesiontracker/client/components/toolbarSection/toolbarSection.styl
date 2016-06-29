@@ -1,10 +1,49 @@
 @import "{design}/app"
 
 .toolbarSection
-  height: $toolbarHeight
-  padding-top: 6px
-  width: 100%
   border-bottom: $uiBorderColor $uiBorderThickness solid
+  height: $toolbarHeight
+  overflow: hidden
+  padding-top: 6px
+  position: relative
+  transition(height 300ms ease)
+  width: 100%
+
+  &.expanded
+    height: $toolbarHeight + $toolbarDrawerHeight
+
+  .toolbarSectionTools
+    position: relative
+
+    .toolbarSectionDrawerContainer
+      bottom: - ($toolbarDrawerHeight + 12px)
+      height: $toolbarDrawerHeight
+      left: 0
+      position: absolute
+      width: 100%
+
+      .toolbarSectionDrawer
+        background-color: $uiGrayDarkest
+        border-radius: 7px
+        color: $textPrimaryColor
+        content: ''
+        display: block
+        font-size: 18px
+        height: $toolbarDrawerHeight - 12px
+        line-height: $toolbarDrawerHeight - 12px
+        text-align: center
+        width: 100%
+
+    #moreTools
+
+      .buttonLabel i
+        text-align: center
+        transition(all 300ms ease)
+        width: 8px
+
+      &.active .buttonLabel i
+        transform(rotateX(180deg))
+
 
   .toolbarSectionButton
     display: inline-block

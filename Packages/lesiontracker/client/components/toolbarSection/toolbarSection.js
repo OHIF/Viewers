@@ -140,6 +140,12 @@ Template.toolbarSection.events({
     'click #toggleHUD': function(e) {
         var lesionTableHUD = document.getElementById('lesionTableHUD');
         toggleDialog(lesionTableHUD);
+    },
+    'click #moreTools'(event, instance) {
+        const $target = $(event.currentTarget);
+        const isActive = $target.hasClass('active');
+        $target.toggleClass('active', !isActive);
+        $target.closest('.toolbarSection').toggleClass('expanded', !isActive);
     }
 });
 

@@ -1,10 +1,10 @@
 @import "{design}/app"
 
 .viewerSection
-  display: inline-flex
+  display: flex
   flex-flow: row nowrap
   align-items: stretch
-  height: 'calc(100% - %s)' % $toolbarHeight
+  height: 100%
   width: 100%
 
   .sidebarMenu
@@ -38,6 +38,7 @@
     order: 2
     width: 100%
     height: 100%
+    overflow: hidden
     transition($sidebarTransition)
 
   .sidebar-right
