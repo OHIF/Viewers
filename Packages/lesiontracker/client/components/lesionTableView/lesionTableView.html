@@ -10,9 +10,11 @@
             {{>lesionTableRow (extend this rowItem=nonTarget)}}
         {{/each}}
 
-        {{>lesionTableHeaderRow id="newLesion" measurements=newLesions currentTimepointId=currentTimepointId}}
-        {{#each newLesion in newLesions}}
-            {{>lesionTableRow (extend this rowItem=newLesion)}}
-        {{/each}}
+        {{#if gt this.timepoints.get.length 1}}
+            {{>lesionTableHeaderRow id="newLesion" measurements=newLesions currentTimepointId=currentTimepointId}}
+            {{#each newLesion in newLesions}}
+                {{>lesionTableRow (extend this rowItem=newLesion)}}
+            {{/each}}
+        {{/if}}
     </div>
 </template>

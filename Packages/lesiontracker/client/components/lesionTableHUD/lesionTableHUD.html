@@ -1,13 +1,16 @@
 <template name="lesionTableHUD">
-    <div id="lesionTableHUD">
+    <div id="lesionTableHUD" class="{{hudHidden}}">
         <div class="header">
-            Measurements
+            <span>Measurements</span>
+            <svg class="buttonClose">
+                <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-ui-close"></use>
+            </svg>
         </div>
-        {{ >lesionTableView }}
+        {{>lesionTableView}}
         <div class="footer">
-            {{ #each toolbarButtons }}
-                {{ >toolbarSectionButton }}
-            {{ /each }}
+            {{#each toolbarButton in toolbarButtons}}
+                {{>toolbarSectionButton toolbarButton}}
+            {{/each}}
         </div>
     </div>
 </template>

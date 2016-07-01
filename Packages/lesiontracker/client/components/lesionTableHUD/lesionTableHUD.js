@@ -1,4 +1,18 @@
+Template.lesionTableHUD.onRendered(() => {
+    const instance = Template.instance();
+    instance.$('#lesionTableHUD').resizable().draggable();
+});
+
+Template.lesionTableHUD.events({
+    'click .buttonClose'(event, instance) {
+        Session.set('lesionTableHudOpen', false);
+    }
+});
+
 Template.lesionTableHUD.helpers({
+    hudHidden() {
+        return Session.get('lesionTableHudOpen') ? '' : 'hidden';
+    },
     toolbarButtons() {
         var buttonData = [];
 
@@ -25,9 +39,4 @@ Template.lesionTableHUD.helpers({
 
         return buttonData;
     }
-});
-
-Template.lesionTableHUD.onRendered(function() {
-    var dialog = $('#lesionTableHUD');
-    dialog.draggable();
 });

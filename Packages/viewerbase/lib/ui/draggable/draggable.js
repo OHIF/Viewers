@@ -1,6 +1,7 @@
 // Allow attaching to jQuery selectors
 $.fn.draggable = function() {
     makeDraggable(this);
+    return this;
 };
 
 /**

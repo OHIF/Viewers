@@ -117,7 +117,9 @@ Package.onUse(function(api) {
     api.addFiles('lib/toolManager.js', 'client');
     api.addFiles('lib/enablePrefetchOnElement.js', 'client');
     api.addFiles('lib/displayReferenceLines.js', 'client');
-    api.addFiles('lib/draggable.js', 'client');
+    api.addFiles('lib/ui/draggable/draggable.js', 'client');
+    api.addFiles('lib/ui/resizable/resizable.js', 'client');
+    api.addFiles('lib/ui/resizable/resizable.styl', 'client');
     api.addFiles('lib/toggleDialog.js', 'client');
     api.addFiles('lib/setActiveViewport.js', 'client');
     api.addFiles('lib/switchToImageByIndex.js', 'client');

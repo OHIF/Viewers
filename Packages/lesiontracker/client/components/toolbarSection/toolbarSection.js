@@ -106,39 +106,9 @@ Template.toolbarSection.helpers({
 });
 
 Template.toolbarSection.events({
-    // TODO: Inherit these from toolbar template somehow
-    'click .imageViewerTool': function(e) {
-        $(e.currentTarget).tooltip('hide');
-
-        var tool = e.currentTarget.id;
-
-        var elements = $('.imageViewerViewport');
-
-        var activeTool = toolManager.getActiveTool();
-        if (tool === activeTool) {
-            var defaultTool = toolManager.getDefaultTool();
-            console.log('Setting active tool to: ' + defaultTool);
-            toolManager.setActiveTool(defaultTool, elements);
-        } else {
-            console.log('Setting active tool to: ' + tool);
-            toolManager.setActiveTool(tool, elements);
-        }
-    },
-    'click .imageViewerCommand': function(e) {
-        $(e.currentTarget).tooltip('hide');
-
-        var command = e.currentTarget.id;
-        if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
-            return;
-        }
-
-        var activeViewport = Session.get('activeViewport');
-        var element = $('.imageViewerViewport').get(activeViewport);
-        OHIF.viewer.functionList[command](element);
-    },
-    'click #toggleHUD': function(e) {
-        var lesionTableHUD = document.getElementById('lesionTableHUD');
-        toggleDialog(lesionTableHUD);
+    'click #toggleHUD'(event, instance) {
+        const state = Session.get('lesionTableHudOpen');
+        Session.set('lesionTableHudOpen', !state);
     },
     'click #moreTools'(event, instance) {
         const $target = $(event.currentTarget);

@@ -39,7 +39,7 @@
             <div class="pull-right m-t-1 rm-x-1">
                 {{>roundedButtonGroup rightSidebarToggleButtonData}}
             </div>
-            <div id="toggleHUD" class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-3">
+            <div id="toggleHUD" class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-3 {{#if session 'lesionTableHudOpen'}}active{{/if}}">
                 <div class="svgContainer">
                     <svg>
                         <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-hud"></use>

@@ -3,6 +3,11 @@ Template.registerHelper('instance', () => {
     return Template.instance();
 });
 
+// Return the session value for the given key
+Template.registerHelper('session', key => {
+    return Session.get(key);
+});
+
 // Create a new object and extends it with the argument objects
 Template.registerHelper('extend', (...argsArray) => {
     // Create the resulting object

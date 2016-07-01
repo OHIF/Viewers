@@ -1,34 +1,47 @@
 @import "{design}/app"
 
 $borderColor = rgba(77, 99, 110, 0.81)
-$backgroundColor = #14191e
 
 #lesionTableHUD
-  display: none
-  position: absolute
-  top: auto
-  left: auto
-  bottom: 3px
-  right: 3px
-
-  z-index: 10000
-  width: 318px
-  height: 326px
-  opacity: 0.95
   background: black
   border-radius: 8px
   border: solid 1px $borderColor;
+  bottom: 3px
+  height: 326px
+  left: auto
+  opacity: 0.95
+  overflow: hidden
+  position: absolute
+  right: 3px
+  top: auto
+  width: 318px
+  z-index: 10000
+
+  .lesionTableView.scrollArea
+    margin-left: 0
+    padding-left: 0
 
   .header
-    width: 100%
+    background: $uiGrayDarkest
+    border-bottom: $uiBorderThickness solid $borderColor
+    color: $textSecondaryColor
+    font-weight: 300
+    font-size: 20px
     height: 55px
     line-height: 55px
-    background: $backgroundColor
-    border-bottom: $uiBorderThickness solid $borderColor
+    position: relative
     text-align: center
-    font-weight: 200
-    font-size: 20px
-    color: $textSecondaryColor
+    width: 100%
+
+    svg.buttonClose
+      color: $defaultColor
+      cursor: pointer
+      height: 14px
+      position: absolute
+      right: 14px
+      stroke: $defaultColor
+      top: 20px
+      width: 14px
 
   .lesionTableView.scrollArea
     height: calc(100% - 55px - 70px)
@@ -39,7 +52,7 @@ $backgroundColor = #14191e
     height: 70px
     position: absolute
     bottom: 0
-    background: $backgroundColor
+    background: $uiGrayDarkest
     border-top: $uiBorderThickness solid $borderColor
     padding: 10px
 
