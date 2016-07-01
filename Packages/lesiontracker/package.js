@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.2.0.2');
+    api.versionsFrom('1.3.4.1');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -14,6 +14,9 @@ Package.onUse(function(api) {
     api.use('design');
 
     api.use('validatejs');
+
+    // Schema for Data Models
+    api.use('aldeed:simple-schema');
 
     // Control over logging
     api.use('practicalmeteor:loglevel');
@@ -24,11 +27,15 @@ Package.onUse(function(api) {
     // Template overriding
     api.use('aldeed:template-extension@4.0.0');
 
-    // Our custom package
+    // Our custom packages
     api.use('worklist');
     api.use('cornerstone');
+    api.use('reactive-form-controls');
 
     api.addFiles('log.js', [ 'client', 'server' ]);
+
+    // Schema
+    api.addFiles('both/schema/additionalFinding.js', [ 'client', 'server' ]);
 
     // Client-side collections
     api.addFiles('client/collections/LesionLocations.js', 'client');
@@ -86,13 +93,9 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.html', 'client');
 
-    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.html', 'client');
-    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.styl', 'client');
-    api.addFiles('client/components/additionalMeasurements/additionalMeasurements.js', 'client');
-
-    api.addFiles('client/components/additionalMeasurements/radioOptionGroup/radioOptionGroup.html', 'client');
-    api.addFiles('client/components/additionalMeasurements/radioOptionGroup/radioOptionGroup.styl', 'client');
-    api.addFiles('client/components/additionalMeasurements/radioOptionGroup/radioOptionGroup.js', 'client');
+    api.addFiles('client/components/additionalFindings/additionalFindings.html', 'client');
+    api.addFiles('client/components/additionalFindings/additionalFindings.styl', 'client');
+    api.addFiles('client/components/additionalFindings/additionalFindings.js', 'client');
 
     api.addFiles('client/components/studySeriesQuickSwitch/studySeriesQuickSwitch.html', 'client');
     api.addFiles('client/components/studySeriesQuickSwitch/studySeriesQuickSwitch.styl', 'client');
@@ -279,6 +282,7 @@ Package.onUse(function(api) {
     api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
+    api.export('AdditionalFindings', [ 'client', 'server' ]);
     api.export('ImageMeasurements', [ 'client', 'server' ]);
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);

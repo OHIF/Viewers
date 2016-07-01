@@ -1,48 +1,34 @@
-<template name="additionalMeasurements">
-    <div id="additionalMeasurements">
+<template name="additionalFindings">
+    <div class="additionalFindings">
         <div class="scrollArea">
-            <div class="section">
+            <div class="row">
                 <div class="header">
                     Additional Findings: Baseline
                 </div>
-                <div>
-                    {{ >radioOptionGroup measurableDiseaseButtonData}}
-                </div>
+                {{> radioOptionGroup (stateDataWithKey "measurableDisease")}}
             </div>
-
-            <div class="section">
+            <div class="row">
                 <div class="header">
                     Supplementary Measurements
                 </div>
-                <div class="entrySection">
-                    <label>Number of bone lesions</label>
-                    <div>
-                        <select>
-                            <option>0</option>
-                            <option>1-2</option>
-                            <option selected>2-4</option>
-                            <option>>5</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="entrySection">
-                    <label>Regions of metastatic disease</label>
-                    <select id="regionsOfMetastaticDisease">
-                        <option>None</option>
-                        <option>Lymph node</option>
-                    </select>
-                </div>
-                {{ >radioOptionGroup metastaticDiseaseButtonData}}
+                {{> selectInput (stateDataWithKey "numberOfBoneLesions")}}
+                {{> select2Input
+                    key="regionsOfMetastaticDisease"
+                    select2Options=regionsOfMetastaticDiseaseSelect2Options
+                    state=state
+                    currentSchema=currentSchema
+                }}
+                {{> radioOptionGroup (stateDataWithKey "tracerRelatedToMetastaticDisease")}}
             </div>
-            <div class="section">
+            <div class="row">
                 <div class="header">
                     Image Quality
                 </div>
-                {{ >radioOptionGroup imageQualityButtonData}}
-                {{ >radioOptionGroup anatomicalCoverageButtonData}}
-                {{ >radioOptionGroup presenceOfContrastButtonData}}
+                {{> radioOptionGroup (stateDataWithKey "acceptableImageQuality")}}
+                {{> radioOptionGroup (stateDataWithKey "adequateAnatomicalCoverage")}}
+                {{> radioOptionGroup (stateDataWithKey "presenceOfContrast")}}
             </div>
-            <div class="section">
+            <div class="row">
                 <div class="header">
                     Additional Screen Captures
                 </div>
@@ -57,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            <div class="section">
+            <div class="row">
                 <div class="header">
                     Comments
                 </div>

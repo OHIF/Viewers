@@ -30,10 +30,19 @@ Meteor.publish('singlePatientImageMeasurements', function(patientId) {
     });
 });
 
+Meteor.publish('additionalFindings', function() {
+    return AdditionalFindings.find();
+});
+
+Meteor.publish('singlePatientAdditionalFindings', function(patientId) {
+    return AdditionalFindings.find({
+        patientId: patientId
+    });
+});
+
 Meteor.publish('reviewers', function() {
     return Reviewers.find();
 });
-
 
 // Temporary fix to drop all Collections on server restart
 // http://stackoverflow.com/questions/23891631/meteor-how-can-i-drop-all-mongo-collections-and-clear-all-data-on-startup

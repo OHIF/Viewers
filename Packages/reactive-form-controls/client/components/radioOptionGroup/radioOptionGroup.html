@@ -1,0 +1,22 @@
+<template name="radioOptionGroup">
+    <div class="{{class}} form-group">
+        {{ #with getSchema key }}
+        <h5>{{label}}</h5>
+        <div class="radio-group">
+            {{#each option in allowedValues}}
+                <div class="radio-option">
+                    <input type="radio"
+                           id="{{../key}}_{{option}}"
+                           name="{{../key}}"
+                           value="{{option}}"
+                           class="form-control js-form-update"
+                           {{inlineIf value option 'checked'}}/>
+                    <label for="{{../key}}_{{option}}">
+                        {{option}}
+                    </label>
+                </div>
+            {{/each}}
+        </div>
+        {{ /with }}
+    </div>
+</template>

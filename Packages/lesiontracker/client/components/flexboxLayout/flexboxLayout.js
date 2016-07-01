@@ -17,7 +17,7 @@ Template.flexboxLayout.helpers({
         return Template.instance().data.state.get('rightSidebar') === 'lesions';
     },
 
-    additionalMeasurementsSidebarOpen() {
+    additionalFindingsSidebarOpen() {
         return Template.instance().data.state.get('rightSidebar') === 'additional';
     },
 

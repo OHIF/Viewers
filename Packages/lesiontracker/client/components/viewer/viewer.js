@@ -127,6 +127,7 @@ Template.viewer.onCreated(function() {
         instance.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
+        instance.subscribe('singlePatientAdditionalFindings', dataContext.studies[0].patientId);
 
         var subscriptionsReady = instance.subscriptionsReady();
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);

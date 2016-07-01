@@ -1,0 +1,22 @@
+<template name="select2Input">
+    <div class="form-group {{#if isInvalidKey key}}has-error{{/if}}">
+        <label class="control-label">
+            {{#with getSchema key }}
+                {{label}}
+            {{/with }}
+        </label>
+        <div>
+            <select id="{{key}}"
+                    name="{{key}}"
+                    required="{{isRequired}}"
+                    class="form-control js-form-update">
+                {{#each option in options}}
+                    <option value="{{option.id}}">
+                        {{option.text}}
+                    </option>
+                {{/each}}
+            </select>
+            {{> helpBlock}}
+        </div>
+    </div>
+</template>
