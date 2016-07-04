@@ -1,5 +1,10 @@
-@import "./spacings"
+@import "{design}/app.styl"
 
+generateSpacings('', $spacer-x, $spacer-y)
+
+.m-x-auto
+  margin-left: auto !important
+  margin-right: auto !important
 
 // MIN WIDTH 1920
 generateSpacings('r', $spacer-x, $spacer-y)

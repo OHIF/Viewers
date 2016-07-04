@@ -15,15 +15,19 @@ Package.onUse(function(api) {
     // Importable colors / typography settings
     api.addFiles([
         'app.styl',
-        'styles/global.styl',
-        'styles/mixins.styl',
-        'styles/responsive.styl',
-        'styles/spacings.styl',
-        'styles/variables.styl',
-        'styles/webfonts.styl'
+        'styles/imports/mixins.styl',
+        'styles/imports/spacings.styl',
+        'styles/imports/variables.styl'
     ], 'client', {
         isImport: true
     });
+
+    // Common styles
+    api.addFiles([
+        'styles/common/webfonts.styl',
+        'styles/common/global.styl',
+        'styles/common/spacings.styl'
+    ], 'client');
 
     // Rounded Button Group
     api.addFiles([
