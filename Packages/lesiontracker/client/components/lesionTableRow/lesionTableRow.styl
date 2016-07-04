@@ -2,31 +2,39 @@
 
 .lesionTableRow
   display: flex
-  height: 63px
+  margin-left: -6px
   margin-top: 2px
-  width: 100%
+  padding-left: 6px
+  // required transformation to make inner fixed elements relative to this one
+  transform(scale(1))
+  width: calc(100% + 6px)
+
+  &:before
+    background-color: $activeColor
+    border-top-left-radius: 7px
+    border-bottom-left-radius: 7px
+    content: ''
+    display: block
+    height: 100%
+    left: 0
+    opacity: 0
+    pointer-events: none
+    position: fixed
+    top: 0
+    transition(all 0.3s ease)
+    width: 5px
 
   &.active
-    margin-left: -6px
-    padding-left: 6px
-    // required transformation to make inner fixed elements relative to this one
-    transform(scale(1))
 
     &:before
-      background-color: $activeColor
-      border-top-left-radius: 7px
-      border-bottom-left-radius: 7px
-      content: ''
-      display: block
-      height: 100%
-      left: 0
-      pointer-events: none
-      position: fixed
-      top: 0
-      width: 5px
+      opacity: 1
 
     .lesionRowSidebar
       color: $activeColor
+
+    .rowOptions
+      height: 35px
+      visibility: visible
 
   &.response-status .lesionRowSidebar .response-status-icon
     background-color: $defaultColor
@@ -54,11 +62,46 @@
     svg
       fill: $textPrimaryColor
 
+  .rowOptions
+    background-color: $uiGrayDarker
+    height: 0
+    overflow: hidden
+    transition(all 0.3s ease)
+    visibility: hidden
+
+    .rowAction
+      color: $defaultColor
+      cursor: pointer
+      line-height: 35px
+      transition(all 0.3s ease)
+
+      &:hover, &:active
+        color: $textPrimaryColor
+
+        svg
+          fill: $textPrimaryColor
+          stroke: $textPrimaryColor
+
+    svg
+      fill: $defaultColor
+      stroke: $defaultColor
+      transition(all 0.3s ease)
+
+      &.edit-icon
+        width: 14px
+        height: 13px
+
+      &.close-icon
+        width: 11px
+        height: 11px
+
   .lesionRowSidebar
     background: $uiGray
     color: $textSecondaryColor
+    cursor: pointer
     flex: 1
     max-width: 30px
+    transition(all 0.3s ease)
 
     .lesionNumber
       font-size: 14px
@@ -69,13 +112,12 @@
 
   .lesionDetails
     flex: 1
-    padding: 5px 2px 0 14px
-    display: flex
-    flex-direction: column
-    align-items: stretch
+    padding: 5px 2px 0 0
+
+    &>*
+      padding-left: 14px
 
     .location
-      flex: 1
       font-weight: 400
       font-size: 14px
       color: $textSecondaryColor
@@ -86,6 +128,7 @@
 
     .timepointData
       display: flex
+      height: 27px
       margin-top: 1px
 
       div

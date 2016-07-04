@@ -18,6 +18,11 @@ var keys = {
 };
 
 Template.lesionTableRow.events({
+    'click .lesionRowSidebar'(event, instance) {
+        const $row = instance.$('.lesionTableRow');
+        $row.closest('.lesionTableView').find('.lesionTableRow').not($row).removeClass('active');
+        $row.toggleClass('active');
+    },
     'dblclick .location': function() {
         log.info('Double clicked on Lesion Location cell');
 
