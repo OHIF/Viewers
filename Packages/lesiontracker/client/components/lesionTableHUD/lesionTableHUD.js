@@ -1,3 +1,9 @@
+Template.lesionTableHUD.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.data.timepoints = new ReactiveVar(instance.data.timepointApi.latest());
+});
+
 Template.lesionTableHUD.onRendered(() => {
     const instance = Template.instance();
     instance.$('#lesionTableHUD').resizable().draggable();

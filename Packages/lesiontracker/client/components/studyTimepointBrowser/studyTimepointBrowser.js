@@ -116,58 +116,27 @@ Template.studyTimepointBrowser.helpers({
         const instance = Template.instance();
         // Get the current study
         const currentStudy = instance.getCurrentStudy();
-        // Build the query
-        const query = {};
+        // Declare the timepoints
+        let timepoints;
         if (currentStudy && !instance.showAdditionalTimepoints.get()) {
-            query['studyInstanceUids'] = {
-                $in: [currentStudy.studyInstanceUid]
-            };
-        }
-        // Sort timepoints based on timeline and type
-        const sort = {
-            sort: {
-                latestDate: 1
+            // Show only the current study's timepoint
+            timepoints = instance.data.timepointApi.study(currentStudy.studyInstanceUid);
+        } else {
+            if (instance.timepointViewType.get() === 'all') {
+                // Show all timepoints
+                timepoints = instance.data.timepointApi.all();
+            } else {
+                // Show only key timepoints
+                timepoints = instance.data.timepointApi.key();
             }
-        };
-        // Returns all timepoints with sorting
-        return Timepoints.find(query, sort).fetch().reverse();
+        }
+        // Returns the timepoints
+        return timepoints;
     },
 
     // Get the studies for a specific timepoint
     studies(timepoint) {
         return Template.instance().getStudies(timepoint);
-    },
-
-    // Decides if a timepoint shall be shown or omitted
-    shallShowTimepoint(timepoint, index) {
-        const instance = Template.instance();
-
-        // Show all timepoints when view type is all
-        if (instance.timepointViewType.get() === 'all') {
-            return true;
-        }
-
-        // Always Show the timepoint for current study
-        const currentStudy = instance.getCurrentStudy();
-        if (currentStudy && _.contains(timepoint.studyInstanceUids, currentStudy.studyInstanceUid)) {
-            return true;
-        }
-
-        // Show only the latest timepoints and baseline
-        return index < 3 || timepoint.timepointType === 'baseline';
-    },
-
-    // Build the timepoint title based on its date
-    timepointTitle(timepoint, total, index) {
-        const timepointName = getTimepointName(timepoint);
-
-        const states = {
-            0: '(Current)',
-            1: '(Prior)'
-        };
-        // TODO: [design] find out how to define the nadir timepoint
-        const parenthesis = states[index] || '';
-        return `${timepointName} ${parenthesis}`;
     },
 
     // Build the modalities summary for all timepoint's studies

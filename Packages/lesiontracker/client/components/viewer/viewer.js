@@ -1,21 +1,26 @@
+import { TimepointApi } from 'meteor/lesiontracker/lib/api/timepoint';
+
 Session.setDefault('activeViewport', false);
 Session.setDefault('leftSidebar', null);
 Session.setDefault('rightSidebar', null);
 
-Template.viewer.onCreated(function() {
+Template.viewer.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.data.timepointApi = new TimepointApi();
+
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
 
     ValidationErrors.remove({});
 
-    var instance = this;
     instance.data.state = new ReactiveDict();
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
     Session.set('currentTimepointId', instance.data.currentTimepointId);
 
-    var contentId = this.data.contentId;
+    var contentId = instance.data.contentId;
 
     OHIF = OHIF || window.OHIF || {
             viewer: {}
@@ -92,11 +97,11 @@ Template.viewer.onCreated(function() {
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
-        if (!this.data.timepointIds || this.data.timepointIds.length <= 1) {
+        if (!instance.data.timepointIds || instance.data.timepointIds.length <= 1) {
             // Update the viewer data object
             ViewerData[contentId].viewportColumns = 1;
             ViewerData[contentId].viewportRows = 1;
-        } else if (this.data.timepointIds.length > 1) {
+        } else if (instance.data.timepointIds.length > 1) {
             ViewerData[contentId].viewportColumns = 2;
             ViewerData[contentId].viewportRows = 1;
         }
@@ -113,12 +118,12 @@ Template.viewer.onCreated(function() {
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
 
-    this.data.studies.forEach(function(study) {
+    instance.data.studies.forEach(function(study) {
         study.selected = true;
         ViewerStudies.insert(study);
     });
 
-    var patientId = this.data.studies[0].patientId;
+    var patientId = instance.data.studies[0].patientId;
     Session.set('patientId', patientId);
 
     instance.autorun(function() {

@@ -5,12 +5,12 @@
             {{>lesionLocationDialog}}
             {{>nonTargetLesionDialog}}
             {{>nonTargetResponseDialog}}
-            {{>lesionTableHUD}}
+            {{>lesionTableHUD (extend this)}}
             {{! >conformanceCheckFeedback}}
         </div>
         <div id="viewer">
-            {{>toolbarSection}}
-            {{>flexboxLayout}}
+            {{>toolbarSection (extend this)}}
+            {{>flexboxLayout (extend this)}}
         </div>
     {{else}}
         {{>loadingText}}

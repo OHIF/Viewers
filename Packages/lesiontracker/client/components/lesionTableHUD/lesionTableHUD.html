@@ -6,7 +6,7 @@
                 <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-ui-close"></use>
             </svg>
         </div>
-        {{>lesionTableView}}
+        {{>lesionTableView (extend this)}}
         <div class="footer">
             {{#each toolbarButton in toolbarButtons}}
                 {{>toolbarSectionButton toolbarButton}}

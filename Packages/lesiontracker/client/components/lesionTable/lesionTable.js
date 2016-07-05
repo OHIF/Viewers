@@ -4,23 +4,16 @@ Template.lesionTable.onCreated(() => {
     instance.data.lesionTableLayout = new ReactiveVar('comparison');
     instance.data.timepoints = new ReactiveVar([]);
 
+    // Run this computation everytime table layout changes
     instance.autorun(() => {
         // Get the current table layout
         const tableLayout = instance.data.lesionTableLayout.get();
 
-        // Get all the timepoints
-        const allTimepoints = Timepoints.find({}, {
-            sort: {
-                latestDate: -1
-            }
-        }).fetch();
-
-        // Get the last 2 timepoints
-        let timepoints = allTimepoints.slice(0, 2);
-
-        // Concatenate the baseline if the table layout is for key timepoints
-        if (tableLayout === 'key' && allTimepoints.length > 2) {
-            timepoints = timepoints.concat(_.last(allTimepoints));
+        let timepoints;
+        if (tableLayout === 'key') {
+            timepoints = instance.data.timepointApi.key();
+        } else {
+            timepoints = instance.data.timepointApi.latest();
         }
 
         // Return key timepoints
@@ -35,7 +28,7 @@ Template.lesionTable.onRendered(() => {
         // Run this computation everytime the lesion table layout is changed
         instance.data.lesionTableLayout.dep.depend();
 
-        if(instance.data.state.get('rightSidebar') !== 'lesions') {
+        if (instance.data.state.get('rightSidebar') !== 'lesions') {
             // Remove the amount attribute from sidebar element tag
             instance.$('#lesionTableContainer').closest('.sidebarMenu').removeAttr('data-timepoints');
             return;
@@ -82,10 +75,6 @@ Template.lesionTable.events({
 });
 
 Template.lesionTable.helpers({
-    dataContainer() {
-        return {};
-    },
-
     buttonGroupData() {
         const instance = Template.instance();
         return {

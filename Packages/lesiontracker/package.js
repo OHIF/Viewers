@@ -110,7 +110,7 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
-    
+
     api.addFiles('client/components/optionsModal/optionsModal.html', 'client');
     api.addFiles('client/components/optionsModal/optionsModal.styl', 'client');
     api.addFiles('client/components/optionsModal/optionsModal.js', 'client');
@@ -245,6 +245,9 @@ Package.onUse(function(api) {
     api.addFiles('lib/handleMeasurementAdded.js', 'client');
     api.addFiles('lib/handleMeasurementModified.js', 'client');
     api.addFiles('lib/handleMeasurementRemoved.js', 'client');
+
+    // API classes
+    api.addFiles('lib/api/timepoint.js');
 
     // Export global functions
     api.export('pixelSpacingAutorunCheck', 'client');
