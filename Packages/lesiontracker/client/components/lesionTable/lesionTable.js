@@ -4,7 +4,7 @@ Template.lesionTable.onCreated(() => {
     instance.data.lesionTableLayout = new ReactiveVar('comparison');
     instance.data.timepoints = new ReactiveVar([]);
 
-    // Run this computation everytime table layout changes
+    // Run this computation every time table layout changes
     instance.autorun(() => {
         // Get the current table layout
         const tableLayout = instance.data.lesionTableLayout.get();
@@ -25,7 +25,7 @@ Template.lesionTable.onRendered(() => {
     const instance = Template.instance();
 
     instance.autorun(() => {
-        // Run this computation everytime the lesion table layout is changed
+        // Run this computation every time the lesion table layout is changed
         instance.data.lesionTableLayout.dep.depend();
 
         if (instance.data.state.get('rightSidebar') !== 'lesions') {

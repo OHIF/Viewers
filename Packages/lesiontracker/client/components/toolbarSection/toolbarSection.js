@@ -6,7 +6,7 @@ Template.toolbarSection.helpers({
             return;
         }
 
-        // Run this computation everytime the viewports are updated
+        // Run this computation every time the viewports are updated
         Session.get('LayoutManagerUpdated');
 
         return layoutManager.viewportData.length > 1;

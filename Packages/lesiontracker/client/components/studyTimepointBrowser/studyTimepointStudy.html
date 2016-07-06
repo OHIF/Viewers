@@ -20,7 +20,7 @@
             {{#if isSidebar}}
                 <div class="studyTimepointThumbnails">
                     {{#each thumbnail in (studyThumbnails this.study)}}
-                        {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
+                        {{>thumbnailEntry (extend this thumbnail=thumbnail)}}
                     {{/each}}
                 </div>
             {{/if}}

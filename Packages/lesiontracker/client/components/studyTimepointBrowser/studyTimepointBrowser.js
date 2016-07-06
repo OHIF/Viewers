@@ -44,7 +44,7 @@ Template.studyTimepointBrowser.onRendered(() => {
     const instance = Template.instance();
 
     instance.autorun(() => {
-        // Runs this computation everytime the timepointViewType is changed
+        // Runs this computation every time the timepointViewType is changed
         const type = instance.timepointViewType.get();
 
         // Removes all active classes to collapse the timepoints and studies
@@ -57,7 +57,7 @@ Template.studyTimepointBrowser.onRendered(() => {
 
     let lastStudy;
     instance.autorun(() => {
-        // Runs this computation everytime the curenty study is changed
+        // Runs this computation every time the curenty study is changed
         const currentStudy = instance.data.currentStudy && instance.data.currentStudy.get();
 
         // Check if the study really changed and update the last study

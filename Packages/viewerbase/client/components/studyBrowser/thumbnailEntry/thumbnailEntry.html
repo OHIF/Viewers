@@ -1,7 +1,7 @@
 <template name="thumbnailEntry">
     <div class="thumbnailEntry m-t-1 m-b-2 {{draggableClass}} {{#if isSeriesActive this.thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}">
         <div class="p-x-1">
-            {{>imageThumbnail this.thumbnail}}
+            {{>imageThumbnail (extend this)}}
         </div>
         <div class="seriesDetails noselect m-a-1">
             <div class="seriesDescription">

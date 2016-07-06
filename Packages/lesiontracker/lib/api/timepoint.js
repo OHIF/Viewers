@@ -1,7 +1,7 @@
 class TimepointApi {
 
     constructor() {
-        // Run this computation everytime the timepoints are changed
+        // Run this computation every time the timepoints are changed
         Tracker.autorun(() => {
             // Get all the timepoints and store it
             this.timepoints = new Mongo.Collection(null);

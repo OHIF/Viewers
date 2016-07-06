@@ -32,7 +32,7 @@
                         {{/if}}
                     {{else}}
                         <div class="p-t-2">
-                            {{>studyTimepoint studies=studies viewportIndex=this.viewportIndex currentStudy=this.currentStudy}}
+                            {{>studyTimepoint (extend this studies=studies)}}
                         </div>
                     {{/if}}
                 </div>

@@ -29,7 +29,7 @@
                             <div class="scrollArea">
                                 <div class="thumbnailsWrapper">
                                     {{#each thumbnail in thumbnailsList}}
-                                        {{>thumbnailEntry thumbnail=thumbnail viewportIndex=viewportIndex}}
+                                        {{>thumbnailEntry (extend this thumbnail=thumbnail)}}
                                     {{/each}}
                                 </div>
                             </div>
