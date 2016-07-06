@@ -5,28 +5,28 @@
                 <div class="header">
                     Additional Findings: Baseline
                 </div>
-                {{> radioOptionGroup (stateDataWithKey "measurableDisease")}}
+                {{>radioOptionGroup (stateDataWithKey "measurableDisease")}}
             </div>
             <div class="row">
                 <div class="header">
                     Supplementary Measurements
                 </div>
-                {{> selectInput (stateDataWithKey "numberOfBoneLesions")}}
-                {{> select2Input
+                {{>selectInput (stateDataWithKey "numberOfBoneLesions")}}
+                {{>select2Input
                     key="regionsOfMetastaticDisease"
                     select2Options=regionsOfMetastaticDiseaseSelect2Options
                     state=state
                     currentSchema=currentSchema
                 }}
-                {{> radioOptionGroup (stateDataWithKey "tracerRelatedToMetastaticDisease")}}
+                {{>radioOptionGroup (stateDataWithKey "tracerRelatedToMetastaticDisease")}}
             </div>
             <div class="row">
                 <div class="header">
                     Image Quality
                 </div>
-                {{> radioOptionGroup (stateDataWithKey "acceptableImageQuality")}}
-                {{> radioOptionGroup (stateDataWithKey "adequateAnatomicalCoverage")}}
-                {{> radioOptionGroup (stateDataWithKey "presenceOfContrast")}}
+                {{>radioOptionGroup (stateDataWithKey "acceptableImageQuality")}}
+                {{>radioOptionGroup (stateDataWithKey "adequateAnatomicalCoverage")}}
+                {{>radioOptionGroup (stateDataWithKey "presenceOfContrast")}}
             </div>
             <div class="row">
                 <div class="header">

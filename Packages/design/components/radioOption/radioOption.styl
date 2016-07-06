@@ -1,0 +1,35 @@
+@import "{design}/app"
+
+label.radio-option
+  cursor: pointer
+  input
+    height: 0
+    width: 0
+  span
+    padding-left: 20px
+    position: relative
+    &:before
+      background: white
+      border-radius: 8px
+      content: ''
+      display: block
+      height: 16px
+      left: 0
+      position: absolute
+      top: 50%
+      transform(translateY(-50%))
+      width: 16px
+  input:focus + span:before
+    // TODO: [design] define a outline for the design
+    outline: none
+    box-shadow: 0 0 2px 2px $textSecondaryColor
+  input:checked + span:after
+    background: $uiBorderColorDark
+    border-radius: 5px
+    content: ''
+    height: 10px
+    left: 3px
+    position: absolute
+    top: 50%
+    transform(translateY(-50%))
+    width: 10px

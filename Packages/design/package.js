@@ -36,4 +36,10 @@ Package.onUse(function(api) {
         'components/roundedButtonGroup/roundedButtonGroup.js'
     ], 'client');
 
+    // Radio Option
+    api.addFiles([
+        'components/radioOption/radioOption.html',
+        'components/radioOption/radioOption.styl'
+    ], 'client');
+
 });
