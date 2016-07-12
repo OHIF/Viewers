@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 toggleCinePlay = function(element) {
     var viewports = $('.imageViewerViewport');
 

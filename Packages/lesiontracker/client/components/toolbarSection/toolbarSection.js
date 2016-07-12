@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Template.toolbarSection.helpers({
     // Returns true if the view shall be split in two viewports
     splitView() {

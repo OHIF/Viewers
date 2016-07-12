@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Meteor.startup(function() {
     cornerstoneTools.loadHandlerManager.setStartLoadHandler(startLoadingHandler);
     cornerstoneTools.loadHandlerManager.setEndLoadHandler(doneLoadingHandler);

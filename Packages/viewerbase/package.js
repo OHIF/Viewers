@@ -117,9 +117,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/toolManager.js', 'client');
     api.addFiles('lib/enablePrefetchOnElement.js', 'client');
     api.addFiles('lib/displayReferenceLines.js', 'client');
-    api.addFiles('lib/ui/draggable/draggable.js', 'client');
-    api.addFiles('lib/ui/resizable/resizable.js', 'client');
-    api.addFiles('lib/ui/resizable/resizable.styl', 'client');
     api.addFiles('lib/toggleDialog.js', 'client');
     api.addFiles('lib/setActiveViewport.js', 'client');
     api.addFiles('lib/switchToImageByIndex.js', 'client');
@@ -168,7 +165,6 @@ Package.onUse(function(api) {
     api.export('LayoutManager', 'client');
 
     // Global objects
-    api.export('OHIF', 'client');
     api.export('ClientId', 'client');
 
     // Collections
@@ -177,8 +173,6 @@ Package.onUse(function(api) {
     // UI Helpers
     api.addFiles([
         'lib/helpers/formatDA.js',
-        'lib/helpers/blaze.js',
-        'lib/helpers/logical.js',
         'lib/helpers/formatJSDate.js',
         'lib/helpers/jsDateFromNow.js',
         'lib/helpers/formatNumberPrecision.js',

@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Template.matchedProtocols.onRendered(function() {
     $('#matchedProtocols button').tooltip(OHIF.viewer.tooltipConfig);
 });

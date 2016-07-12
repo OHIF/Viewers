@@ -90,6 +90,7 @@ natestrauser:select2@4.0.2
 npm-bcrypt@0.8.6_3
 npm-mongo@1.4.45
 observe-sequence@1.0.12
+ohif:core@0.0.1
 ordered-dict@1.0.8
 orthanc-remote@0.0.1
 peppelg:bootstrap-3-modal@1.0.4

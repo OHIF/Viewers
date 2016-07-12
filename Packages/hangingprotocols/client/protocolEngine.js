@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
 // is instantiated on top of the LayoutManager. If the global ProtocolEngine variable remains
@@ -214,7 +216,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                     score: matchedDetails.score,
                     protocol: protocol
                 });
-            }            
+            }
         });
 
         if (!matched.length) {
@@ -300,7 +302,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         if (!protocol.protocolMatchingRules) {
             return;
         }
-        
+
         var studies = WorklistStudies.find({
             patientId: study.patientId,
             studyDate: {

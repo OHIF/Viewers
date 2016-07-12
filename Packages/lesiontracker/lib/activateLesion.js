@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Activates a set of lesions when lesion table row is clicked
  *

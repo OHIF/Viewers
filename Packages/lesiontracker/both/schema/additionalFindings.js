@@ -4,10 +4,10 @@ SimpleSchema.extendOptions({
     allowedSelect2Values: Match.Optional(Array),
 });
 
-export const AdditionalFinding = new SimpleSchema({
+export const schema = new SimpleSchema({
     measurableDisease: {
         type: String,
-        label: 'Measurable Disease',
+        label: 'Measurable disease',
         allowedValues: ['Present', 'Absent'],
         defaultValue: 'Absent',
         optional: true

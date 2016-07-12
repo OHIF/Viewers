@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Template.toolbarSectionButton.helpers({
     activeClass() {
         const instance = Template.instance();

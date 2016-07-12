@@ -1,14 +1,12 @@
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
-
-// TODO: Check why I can't use absolute paths for this? Keeps saying module not found
-import { AdditionalFinding } from '../../../both/schema/additionalFinding';
+import { schema as AdditionalFindingsSchema } from 'meteor/lesiontracker/both/schema/additionalFindings';
 
 Template.additionalFindings.onCreated(function additionalFindingsOnCreated() {
     console.log('additionalFindingsOnCreated');
     const instance = Template.instance();
 
-    instance.currentSchema = AdditionalFinding;
+    instance.currentSchema = AdditionalFindingsSchema;
     instance.state = new ReactiveDict();
 
     if (!instance.data.currentTimepointId) {

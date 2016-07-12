@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 var allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
     'CornerstoneToolsMouseClick CornerstoneToolsMouseDrag CornerstoneToolsMouseUp ' +
     'CornerstoneToolsMouseWheel CornerstoneToolsTap CornerstoneToolsTouchPress ' +
@@ -115,7 +117,7 @@ function loadSeriesIntoViewport(data, templateData) {
     templateData.imageId = imageId;
 
     // Save the current image ID inside the ViewportLoading object.
-    // 
+    //
     // The ViewportLoading object relates the viewport elements with whichever
     // image is currently being loaded into them. This is useful so that we can
     // place progress (download %) for each image inside the proper viewports.
@@ -144,7 +146,7 @@ function loadSeriesIntoViewport(data, templateData) {
         }
 
         // Update the enabled element with the image and viewport data
-        // This is not usually necessary, but we need them stored in case 
+        // This is not usually necessary, but we need them stored in case
         // a sopClassUid-specific viewport setting is present.
         enabledElement.image = image;
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, image);

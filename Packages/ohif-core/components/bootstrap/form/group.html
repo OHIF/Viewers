@@ -1,0 +1,8 @@
+<template name="group">
+    {{#baseComponent (extend this
+        base="baseDiv"
+        mixins=(concat "group " this.mixins)
+    )}}
+      {{>UI.contentBlock}}
+    {{/baseComponent}}
+</template>

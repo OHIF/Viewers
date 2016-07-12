@@ -1,0 +1,20 @@
+<template name="groupRadio">
+    {{#group (extend this
+        class=(concat 'form-group ' this.class)
+        wrappers=(concat ''
+            this.wrappers
+            (valueIf reactive this.label 'wrapperTitle ' '')
+        )
+    )}}
+        {{>UI.contentBlock}}
+        {{#each item in (reactive this.items)}}
+            {{>inputRadio
+                class=this.radioClass
+                name=this.key
+                value=item.value
+                label=item.label
+                checked=(eq item.value (reactive this.value))
+            }}
+        {{/each}}
+    {{/group}}
+</template>

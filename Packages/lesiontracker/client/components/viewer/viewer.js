@@ -1,4 +1,7 @@
+import { OHIF } from 'meteor/ohif:core';
 import { TimepointApi } from 'meteor/lesiontracker/lib/api/timepoint';
+
+OHIF.viewer = OHIF.viewer || {};
 
 Session.setDefault('activeViewport', false);
 Session.setDefault('leftSidebar', null);
@@ -21,10 +24,6 @@ Template.viewer.onCreated(() => {
     Session.set('currentTimepointId', instance.data.currentTimepointId);
 
     var contentId = instance.data.contentId;
-
-    OHIF = OHIF || window.OHIF || {
-            viewer: {}
-        };
 
     OHIF.viewer.loadIndicatorDelay = 3000;
     OHIF.viewer.defaultTool = 'wwwc';

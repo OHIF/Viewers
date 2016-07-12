@@ -1,0 +1,30 @@
+import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
+import { _ } from 'meteor/underscore';
+
+/*
+ * groupRadio: controls all the radio inputs inside the group
+ */
+OHIF.mixins.groupRadio = new OHIF.Mixin({
+    dependencies: 'group',
+    composition: {
+
+        onCreated() {
+            const instance = Template.instance();
+            const component = instance.component;
+
+            // Get the selected radio's value or select a radio based on value
+            component.value = value => {
+                const isGet = _.isUndefined(value);
+                const $elements = $();
+                component.registeredItems.forEach(child => $elements.add(child.$element));
+                if (isGet) {
+                    return $elements.filter(':checked').val();
+                }
+
+                $elements.filter(`[value='${value}']`).prop('checked', true).trigger('change');
+            };
+        }
+
+    }
+});

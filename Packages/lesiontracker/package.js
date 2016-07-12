@@ -35,7 +35,7 @@ Package.onUse(function(api) {
     api.addFiles('log.js', [ 'client', 'server' ]);
 
     // Schema
-    api.addFiles('both/schema/additionalFinding.js', [ 'client', 'server' ]);
+    api.addFiles('both/schema/additionalFindings.js', [ 'client', 'server' ]);
 
     // Client-side collections
     api.addFiles('client/collections/LesionLocations.js', 'client');

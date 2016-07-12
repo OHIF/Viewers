@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 function getDefaultButtonData() {
     var buttonData = [];
 

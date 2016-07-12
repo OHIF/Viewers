@@ -1,3 +1,6 @@
+import { OHIF } from 'meteor/ohif:core';
+OHIF.viewer = OHIF.viewer || {};
+
 Template.viewer.onCreated(function() {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
@@ -6,10 +9,6 @@ Template.viewer.onCreated(function() {
     Meteor.subscribe('hangingprotocols');
 
     log.info('viewer onCreated');
-
-    OHIF = window.OHIF || {
-        viewer: {}
-    };
 
     OHIF.viewer.loadIndicatorDelay = 500;
     OHIF.viewer.defaultTool = 'wwwc';
@@ -57,7 +56,7 @@ Template.viewer.onCreated(function() {
     }
 
     var contentId = this.data.contentId;
-    
+
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
 
@@ -66,7 +65,7 @@ Template.viewer.onCreated(function() {
     } else {
         log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
-        
+
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
@@ -80,7 +79,7 @@ Template.viewer.onCreated(function() {
 
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
-    
+
     this.data.studies.forEach(function(study) {
         study.selected = true;
         ViewerStudies.insert(study);

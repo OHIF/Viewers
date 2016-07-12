@@ -11,7 +11,7 @@
                     class="form-control js-form-update">
                 {{#each option in allowedValues}}
                 <option value="{{option}}"
-                        selected="{{#if equals selectedOptionValue option}}selected{{/if}}">
+                        selected="{{#if eq selectedOptionValue option}}selected{{/if}}">
                     {{option}}
                 </option>
                 {{/each}}

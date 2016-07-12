@@ -1,0 +1,13 @@
+<template name="inputSelect">
+    {{#baseComponent (extend this
+        base='baseSelect'
+        class=(concat 'form-control ' this.class)
+        mixins=(concat 'select ' this.mixins)
+        wrappers=(concat ''
+            this.wrappers
+            (valueIf reactive this.label 'wrapperLabel ' '')
+        )
+    )}}
+        {{>UI.contentBlock}}
+    {{/baseComponent}}
+</template>

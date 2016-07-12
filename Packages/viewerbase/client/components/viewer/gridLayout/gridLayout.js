@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Template.gridLayout.helpers({
     height: function() {
         var rows = this.rows || 1;

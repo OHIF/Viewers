@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 var activeTool = 'wwwc';
 var defaultTool = 'wwwc';
 

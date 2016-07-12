@@ -1,0 +1,11 @@
+<template name="baseInput">
+    <input
+        type="{{choose this.type 'text'}}"
+        id="{{this.id}}"
+        class="{{this.class}}"
+        name="{{this.name}}"
+        value="{{reactive this.value}}"
+        {{this.tagAttributes}}
+    >
+    {{>UI.contentBlock}}
+</template>

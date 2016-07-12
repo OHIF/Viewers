@@ -1,3 +1,6 @@
+import { _ } from 'meteor/underscore';
+import { Template } from 'meteor/templating';
+
 /**
  * Global Blaze UI helpers to work with logical operations
  */
@@ -61,6 +64,15 @@ Template.registerHelper('choose', (...values) => {
     let result;
     _.each(_.initial(values, 1), value => value && (result = value));
     return result;
+});
+
+// Return the second parameter if the first is true or the third if it's false
+Template.registerHelper('valueIf', (condition, valueIfTrue, valueIfFalse) => {
+    if (condition) {
+        return valueIfTrue;
+    }
+
+    return valueIfFalse;
 });
 
 // Check if the value is different from undefined

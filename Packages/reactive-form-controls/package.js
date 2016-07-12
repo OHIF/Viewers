@@ -18,7 +18,6 @@ Package.onUse(function(api) {
     api.addFiles('client/helpers/getSchema.js', ['client']);
     api.addFiles('client/helpers/isInvalidKey.js', ['client']);
     api.addFiles('client/helpers/stateDataWithKey.js', ['client']);
-    api.addFiles('client/helpers/equals.js', ['client']);
 
     api.addFiles('client/components/helpBlock/helpBlock.html', ['client']);
     api.addFiles('client/components/helpBlock/helpBlock.js', ['client']);

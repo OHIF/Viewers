@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 toggleCinePlay = function() {
     var element = getActiveViewportElement();
     var playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
