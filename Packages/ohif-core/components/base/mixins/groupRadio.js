@@ -16,8 +16,9 @@ OHIF.mixins.groupRadio = new OHIF.Mixin({
             // Get the selected radio's value or select a radio based on value
             component.value = value => {
                 const isGet = _.isUndefined(value);
-                const $elements = $();
-                component.registeredItems.forEach(child => $elements.add(child.$element));
+                const elements = [];
+                component.registeredItems.forEach(child => elements.push(child.$element[0]));
+                const $elements = $(elements);
                 if (isGet) {
                     return $elements.filter(':checked').val();
                 }

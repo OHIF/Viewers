@@ -77,7 +77,7 @@ Template.baseComponent.constructView = function(contentFunc, elseFunc) {
 
         // Throw an error if the wrapper template does not exists
         if (!wrapperTemplate) {
-            throw new Error(`Template ${data.base} not found.`);
+            throw new Error(`Template ${wrapper} not found.`);
         }
 
         // Clone the wrapper template to avoid assigning duplicated handlers

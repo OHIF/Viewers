@@ -8,7 +8,7 @@ import { $ } from 'meteor/jquery';
  * It may be used to manage all components that belong to forms
  */
 OHIF.mixins.formItem = new OHIF.Mixin({
-    dependencies: 'component',
+    dependencies: 'schemaData',
     composition: {
 
         onCreated() {
@@ -113,7 +113,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$(':input:first');
+            component.$element = instance.$(':input').first();
 
             // Set the element to be styled
             component.$style = component.$element;

@@ -44,7 +44,7 @@ OHIF.mixins.form = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the component main and style elements
-            component.$style = component.$element = instance.$('form').first();
+            component.$style = component.$element = instance.$('form:first');
         }
     }
 });

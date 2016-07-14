@@ -45,6 +45,14 @@ OHIF.mixins.group = new OHIF.Mixin({
                 component.registeredItems.forEach(child => child.readonly(isReadonly));
             };
 
+        },
+
+        onRendered() {
+            const instance = Template.instance();
+            const component = instance.component;
+
+            // Set the element to be controlled
+            component.$element = instance.$('.component-group:first');
         }
     }
 });

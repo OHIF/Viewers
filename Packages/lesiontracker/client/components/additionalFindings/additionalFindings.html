@@ -1,70 +1,51 @@
 <template name="additionalFindings">
     <div class="additionalFindings">
         <div class="scrollArea">
-            <div class="row">
-                <div class="header">
-                    Additional Findings: Baseline
+            {{#form schema=currentSchema}}
+                <div class="row">
+                    <div class="header">Additional Findings: Baseline</div>
+                    {{>groupRadio labelClass='form-group' key='measurableDisease'}}
                 </div>
-                {{>radioOptionGroup (stateDataWithKey "measurableDisease")}}
-            </div>
-
-            <!-- <h4>Testing dynamic components</h4>
-            {{#form id="testForm" schema=currentSchema}}
-                {{>inputText key='test' label='testing'}}
-                {{>groupRadio mixins='schemaData' key='acceptableImageQuality'}}
-            {{/form}} -->
-
-            <div class="row">
-                <div class="header">
-                    Supplementary Measurements
+                <div class="row">
+                    <div class="header">Supplementary Measurements</div>
+                    {{>selectInput (stateDataWithKey "numberOfBoneLesions")}}
+                    {{>select2Input
+                        key="regionsOfMetastaticDisease"
+                        select2Options=regionsOfMetastaticDiseaseSelect2Options
+                        state=state
+                        currentSchema=currentSchema
+                    }}
+                    {{>groupRadio labelClass='form-group' key='tracerRelatedToMetastaticDisease'}}
                 </div>
-                {{>selectInput (stateDataWithKey "numberOfBoneLesions")}}
-                {{>select2Input
-                    key="regionsOfMetastaticDisease"
-                    select2Options=regionsOfMetastaticDiseaseSelect2Options
-                    state=state
-                    currentSchema=currentSchema
-                }}
-                {{>radioOptionGroup (stateDataWithKey "tracerRelatedToMetastaticDisease")}}
-            </div>
-            <div class="row">
-                <div class="header">
-                    Image Quality
+                <div class="row">
+                    <div class="header">Image Quality</div>
+                    {{>groupRadio labelClass='form-group' key='acceptableImageQuality'}}
+                    {{>groupRadio labelClass='form-group' key='adequateAnatomicalCoverage'}}
+                    {{>groupRadio labelClass='form-group' key='presenceOfContrast'}}
                 </div>
-                {{>radioOptionGroup (stateDataWithKey "acceptableImageQuality")}}
-                {{>radioOptionGroup (stateDataWithKey "adequateAnatomicalCoverage")}}
-                {{>radioOptionGroup (stateDataWithKey "presenceOfContrast")}}
-            </div>
-            <div class="row">
-                <div class="header">
-                    Additional Screen Captures
-                </div>
-                <div class="entrySection buttonSection">
-                    <div class="svgContainer">
-                        <svg>
-                            <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-create-screen-capture"></use>
-                        </svg>
-                    </div>
-                    <div class="buttonLabel noselect">
-                        Add new screen capture
+                <div class="row">
+                    <div class="header">Additional Screen Captures</div>
+                    <div class="entrySection buttonSection">
+                        <div class="svgContainer">
+                            <svg>
+                                <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-create-screen-capture"></use>
+                            </svg>
+                        </div>
+                        <div class="buttonLabel noselect">Add new screen capture</div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="header">
-                    Comments
-                </div>
-                <div class="entrySection buttonSection">
-                    <div class="svgContainer">
-                        <svg>
-                            <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-create-comment"></use>
-                        </svg>
-                    </div>
-                    <div class="buttonLabel noselect">
-                        Add a comment
+                <div class="row">
+                    <div class="header">Comments</div>
+                    <div class="entrySection buttonSection">
+                        <div class="svgContainer">
+                            <svg>
+                                <use xlink:href="/packages/lesiontracker/assets/icons.svg#icon-create-comment"></use>
+                            </svg>
+                        </div>
+                        <div class="buttonLabel noselect">Add a comment</div>
                     </div>
                 </div>
-            </div>
+            {{/form}}
         </div>
     </div>
 </template>

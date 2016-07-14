@@ -62,7 +62,13 @@ Template.registerHelper('or', (...values) => {
 // Choose the first truthy value in the given values
 Template.registerHelper('choose', (...values) => {
     let result;
-    _.each(_.initial(values, 1), value => value && (result = value));
+    _.each(_.initial(values, 1), value => {
+        if (result) {
+            return;
+        } else if (value) {
+            result = value;
+        }
+    });
     return result;
 });
 

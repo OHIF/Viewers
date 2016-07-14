@@ -4,8 +4,8 @@
         class=(concat 'form-control ' this.class)
         mixins=(concat 'input ' this.mixins)
         wrappers=(concat ''
-            this.wrappers
             (valueIf reactive this.label 'wrapperLabel ' '')
+            this.wrappers
         )
     )}}
         {{>UI.contentBlock}}

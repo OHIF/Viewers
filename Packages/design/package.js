@@ -29,6 +29,11 @@ Package.onUse(function(api) {
         'styles/common/spacings.styl'
     ], 'client');
 
+    // Component styles
+    api.addFiles([
+        'styles/components/radio.styl'
+    ], 'client');
+
     // Rounded Button Group
     api.addFiles([
         'components/roundedButtonGroup/roundedButtonGroup.html',

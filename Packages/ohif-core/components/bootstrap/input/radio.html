@@ -1,12 +1,13 @@
 <template name="inputRadio">
     {{#baseComponent (extend this
         base='baseInput'
+        type='radio'
         mixins=(concat 'input ' this.mixins)
         labelAfter=(valueIf (isDefined this.labelAfter) this.labelAfter true)
         labelClass=(concat 'checkboxLabel' this.labelClass)
         wrappers=(concat ''
-            this.wrappers
             (valueIf reactive this.label 'wrapperLabel ' '')
+            this.wrappers
         )
     )}}
         {{>UI.contentBlock}}

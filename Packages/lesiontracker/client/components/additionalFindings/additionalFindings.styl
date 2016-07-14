@@ -38,6 +38,13 @@
       &:not(:last-child)
         border-bottom: $uiBorderThickness solid $uiBorderColorDark
 
+      & > .wrapperText
+        display: block
+        font-weight: bold
+        line-height: 15px
+        margin: 10px 0 8px
+
+      // TODO: remove
       h5
         font-weight: bold
         margin-bottom: 8px
@@ -48,10 +55,11 @@
         display: inline-block
         padding: 5px
 
-      .radio-group
+      // TODO: remove radio-group
+      .radio-group, .group-radio
         height: 30px
 
-        .radio-option
+        label
           display: inline-block
           float: left
           font-size: 14px

@@ -1,9 +1,10 @@
 <template name="groupRadio">
     {{#group (extend this
-        class=(concat 'form-group ' this.class)
+        class=(concat 'group-radio ' this.class)
+        mixins=(concat "groupRadio " this.mixins)
         wrappers=(concat ''
-            this.wrappers
             (valueIf reactive this.label 'wrapperTitle ' '')
+            this.wrappers
         )
     )}}
         {{>UI.contentBlock}}
