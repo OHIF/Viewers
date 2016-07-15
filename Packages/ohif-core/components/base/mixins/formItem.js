@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
+import { Tracker } from "meteor/tracker";
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -14,6 +15,9 @@ OHIF.mixins.formItem = new OHIF.Mixin({
         onCreated() {
             const instance = Template.instance();
             const component = instance.component;
+
+            // Create a observer to monitor changed values
+            component.changeObserver = new Tracker.Dependency();
 
             // Register the component in the parent component
             component.registerSelf();
@@ -106,6 +110,10 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 return true;
             };
 
+            component.depend = () => {
+                return component.changeObserver.depend();
+            };
+
         },
 
         onRendered() {
@@ -114,9 +122,6 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             // Set the element to be controlled
             component.$element = instance.$(':input').first();
-
-            // Set the element to be styled
-            component.$style = component.$element;
 
             // Set the most outer wrapper element
             component.$wrapper = instance.wrapper.$('*').first();
@@ -133,11 +138,21 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             const instance = Template.instance();
             const component = instance.component;
 
+            // If no style element was defined, set it as the element itself
+            if (!component.$style.length) {
+                component.$style = component.$element;
+            }
+
             // Set the component in jQuery data after all mixins are rendered
             component.$element.data('component', component);
         },
 
         events: {
+
+            // Enable reactivity by changing a Tracker.Dependency observer
+            change(event, instance) {
+                instance.component.changeObserver.changed();
+            },
 
             // TODO: [design] remove log, show error box/hint over the wrapper
             errorin(event, instance) {

@@ -1,19 +1,23 @@
 <template name="additionalFindings">
     <div class="additionalFindings">
         <div class="scrollArea">
-            {{#form schema=currentSchema}}
+            {{#form schema=instance.currentSchema}}
                 <div class="row">
                     <div class="header">Additional Findings: Baseline</div>
                     {{>groupRadio labelClass='form-group' key='measurableDisease'}}
                 </div>
                 <div class="row">
                     <div class="header">Supplementary Measurements</div>
-                    {{>selectInput (stateDataWithKey "numberOfBoneLesions")}}
-                    {{>select2Input
-                        key="regionsOfMetastaticDisease"
-                        select2Options=regionsOfMetastaticDiseaseSelect2Options
-                        state=state
-                        currentSchema=currentSchema
+                    {{>inputSelect class="bone-lesions" labelClass='form-group' key='numberOfBoneLesions' hideSearch=true}}
+                    {{>inputSelect
+                        class="disease-regions"
+                        labelClass='form-group'
+                        key='regionsOfMetastaticDisease'
+                        multiple=true
+                        options=(clone
+                            placeholder='Search Regions'
+                            allowClear=true
+                        )
                     }}
                     {{>groupRadio labelClass='form-group' key='tracerRelatedToMetastaticDisease'}}
                 </div>

@@ -2,79 +2,58 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { schema as AdditionalFindingsSchema } from 'meteor/lesiontracker/both/schema/additionalFindings';
 
-Template.additionalFindings.onCreated(function additionalFindingsOnCreated() {
-    console.log('additionalFindingsOnCreated');
+Template.additionalFindings.onCreated(() => {
     const instance = Template.instance();
 
     instance.currentSchema = AdditionalFindingsSchema;
-    instance.state = new ReactiveDict();
+});
 
-    if (!instance.data.currentTimepointId) {
+Template.additionalFindings.onRendered(() => {
+    const instance = Template.instance();
+
+    // Get the form component
+    const form = instance.$('form:first').data('component');
+
+    const currentTimepointId = instance.data.currentTimepointId;
+    if (!currentTimepointId) {
         console.warn('Case has no timepointId');
         return;
     }
 
-    const currentTimepointId = instance.data.currentTimepointId;
-    if (!currentTimepointId) {
-        console.warn('No currentTimepointId');
-    }
-
-    console.log(AdditionalFindings.find().fetch());
     const additionalFindings = AdditionalFindings.findOne({
         timepointId: currentTimepointId
     });
 
     if (additionalFindings) {
         instance.id = additionalFindings._id;
-
-        // Don't store the MongoDB Id in the ReactiveDict
-        delete additionalFindings._id;
-
-        instance.state.set(additionalFindings);
+        form.value(additionalFindings);
     } else {
         const defaultData = instance.currentSchema.clean({});
-        instance.state.set(defaultData);
+        form.value(defaultData);
 
         // Include patientId and timepointId
         defaultData.patientId = Session.get('patientId');
         defaultData.timepointId = currentTimepointId;
 
-        // TODO: Turn this into a Meteor Call to insert it on the server
+        // TODO: [design] Turn this into a Meteor Call to insert it on the server
         instance.id = AdditionalFindings.insert(defaultData);
     }
-});
 
-Template.additionalFindings.onRendered(function additionalFindingsOnRendered() {
-    const instance = Template.instance();
+    instance.autorun(computation => {
+        // Run this computation everytime the form data is changed
+        form.depend();
 
-    instance.autorun(() => {
-        console.log('Updating AdditionalFindings Collection');
-        console.log(instance.state.all());
+        // Stop here if it's the computation's first run
+        if (computation.firstRun) {
+            return;
+        }
 
-        // TODO: Turn this into a Meteor Call to update it on the server
-        let update = instance.state.all();
+        // Get the form data for AdditionalFindings
+        let formData = form.value();
+
+        // TODO: [design] Turn this into a Meteor Call to update it on the server
         AdditionalFindings.update(instance.id, {
-            $set: update
+            $set: formData
         });
     });
-});
-
-Template.additionalFindings.helpers({
-    // We need these helper methods
-    // since we assign them into instance object instead of instance.data
-    currentSchema() {
-        return Template.instance().currentSchema;
-    },
-
-    state() {
-        return Template.instance().state;
-    },
-
-    regionsOfMetastaticDiseaseSelect2Options() {
-        return {
-            placeholder: 'Search Regions',
-            allowClear: true,
-            multiple: true
-        };
-    }
 });

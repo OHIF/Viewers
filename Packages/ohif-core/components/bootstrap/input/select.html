@@ -1,11 +1,16 @@
 <template name="inputSelect">
     {{#baseComponent (extend this
         base='baseSelect'
-        class=(concat 'form-control ' this.class)
-        mixins=(concat 'select ' this.mixins)
+        mixins=(concat 'select2 ' this.mixins)
         wrappers=(concat ''
             (valueIf reactive this.label 'wrapperLabel ' '')
             this.wrappers
+        )
+        options=(clone this.options
+            multiple=(valueIf this.multiple true false)
+            minimumResultsForSearch=(valueIf this.hideSearch
+                -1 this.minimumResultsForSearch
+            )
         )
     )}}
         {{>UI.contentBlock}}

@@ -4,7 +4,7 @@
         type='radio'
         mixins=(concat 'input ' this.mixins)
         labelAfter=(valueIf (isDefined this.labelAfter) this.labelAfter true)
-        labelClass=(concat 'checkboxLabel' this.labelClass)
+        labelClass=(concat 'checkboxLabel ' this.labelClass)
         wrappers=(concat ''
             (valueIf reactive this.label 'wrapperLabel ' '')
             this.wrappers

@@ -32,8 +32,9 @@
       background-color: $uiGray
 
     .form-group
-      padding: 7px 11px
       color: $textPrimaryColor
+      padding: 7px 11px
+      width: 100%
 
       &:not(:last-child)
         border-bottom: $uiBorderThickness solid $uiBorderColorDark
@@ -44,19 +45,13 @@
         line-height: 15px
         margin: 10px 0 8px
 
-      // TODO: remove
-      h5
-        font-weight: bold
-        margin-bottom: 8px
-
       .control-label
         font-size: 14px
         font-weight: 100
         display: inline-block
         padding: 5px
 
-      // TODO: remove radio-group
-      .radio-group, .group-radio
+      .group-radio
         height: 30px
 
         label
@@ -68,13 +63,11 @@
           line-height: 30px
           width: 50%
 
-      #regionsOfMetastaticDisease
-        width: 285px
-        height: 30px
-        border-radius: 2px
-        background-color: #b6b6b6
-        color: #3e3e3e
-        font-size: 14px
+      .disease-regions + .select2
+        width: 100% !important
+
+      .bone-lesions + .select2
+        width: auto !important
 
     .buttonSection
       cursor: pointer

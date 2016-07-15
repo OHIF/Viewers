@@ -28,9 +28,9 @@ Package.onUse(function(api) {
     api.use('aldeed:template-extension@4.0.0');
 
     // Our custom packages
+    api.use('ohif:core');
     api.use('worklist');
     api.use('cornerstone');
-    api.use('reactive-form-controls');
 
     api.addFiles('log.js', [ 'client', 'server' ]);
 

@@ -59,19 +59,6 @@ Template.registerHelper('or', (...values) => {
     return result;
 });
 
-// Choose the first truthy value in the given values
-Template.registerHelper('choose', (...values) => {
-    let result;
-    _.each(_.initial(values, 1), value => {
-        if (result) {
-            return;
-        } else if (value) {
-            result = value;
-        }
-    });
-    return result;
-});
-
 // Return the second parameter if the first is true or the third if it's false
 Template.registerHelper('valueIf', (condition, valueIfTrue, valueIfFalse) => {
     if (condition) {

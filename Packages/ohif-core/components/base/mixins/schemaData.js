@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 
 // Helper function to get the component's current schema
@@ -14,7 +15,12 @@ const getCurrentSchema = (parentComponent, key) => {
     }
 
     // Get the current schema data using component's key
-    const currentSchema = schema._schema[key];
+    const currentSchema = _.clone(schema._schema[key]);
+
+    // Merge the sub-schema properties if it's an array
+    if (Array.isArray(currentSchema.type())) {
+        _.extend(currentSchema, schema._schema[key + '.$']);
+    }
 
     // Return the component's schema definitions
     return currentSchema;
@@ -50,7 +56,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             // Fill the items if it's an array schema
             if (!data.items && Array.isArray(currentSchema.allowedValues)) {
                 // Initialize the items array
-                data.items = [];
+                const items = [];
 
                 // Get the values and labels arrays from schema
                 const values = currentSchema.allowedValues;
@@ -59,11 +65,14 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
                 // Iterate the allowed values array
                 for (let i = 0; i < values.length; i++) {
                     // Push the current item to the items array
-                    data.items.push({
+                    items.push({
                         value: values[i],
                         label: labels[i] || values[i]
                     });
                 }
+
+                // Add the items to a reactive instance
+                data.items = new ReactiveVar(items);
             }
         },
 

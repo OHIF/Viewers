@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
+import { $ } from 'meteor/jquery';
 
 /*
  * groupRadio: controls all the radio inputs inside the group

@@ -1,9 +1,5 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-SimpleSchema.extendOptions({
-    allowedSelect2Values: Match.Optional(Array),
-});
-
 export const schema = new SimpleSchema({
     measurableDisease: {
         type: String,
@@ -16,7 +12,7 @@ export const schema = new SimpleSchema({
     regionsOfMetastaticDisease: {
         type: [String],
         label: 'Regions of Metastatic Disease',
-        allowedSelect2Values: ['None', 'Lymph Node'], // allowedValues doesn't seem show up in the Schema since this is an Array. There may be a better way to do this
+        allowedValues: ['None', 'Lymph Node'],
         defaultValue: ['None'],
         optional: true
     },

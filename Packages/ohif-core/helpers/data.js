@@ -46,14 +46,15 @@ Template.registerHelper('clone', (...argsArray) => {
     return extend(...newArgs);
 });
 
-// Return the first thrut value in the given arguments
-Template.registerHelper('choose', (...argsArray) => {
-    // Iterate over the given objects
-    for (let i = 0; i < argsArray.length; i++) {
-        // Check if the current value is truth
-        if (!!argsArray[i]) {
-            // Return the current value
-            return argsArray[i];
+// Choose the first truthy value in the given values
+Template.registerHelper('choose', (...values) => {
+    let result;
+    _.each(_.initial(values, 1), value => {
+        if (result) {
+            return;
         }
-    }
+
+        result = value;
+    });
+    return result;
 });

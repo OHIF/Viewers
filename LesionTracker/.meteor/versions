@@ -100,7 +100,6 @@ promise@0.7.3
 random@1.0.10
 rate-limit@1.0.5
 reactive-dict@1.1.8
-reactive-form-controls@0.0.1
 reactive-var@1.0.10
 reload@1.1.10
 retry@1.0.8
