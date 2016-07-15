@@ -10,11 +10,17 @@ Package.onUse(function(api) {
     api.use('ecmascript');
     api.use('standard-app-packages');
     api.use('jquery');
+    api.use('stylus');
     api.use('underscore');
     api.use('templating');
     api.use('reactive-var');
 
     api.use('natestrauser:select2@4.0.1', 'client');
+
+    // UI Styles
+    api.addFiles([
+        'ui/resizable/resizable.styl'
+    ], 'client');
 
     api.mainModule('main.js', 'client');
 });
