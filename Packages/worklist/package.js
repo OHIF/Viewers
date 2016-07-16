@@ -19,6 +19,7 @@ Package.onUse(function (api) {
     api.use('dicomweb');
     api.use('dimseservice');
     api.use('orthanc-remote');
+    api.use('viewerbase');
 
     // TODO: Replace with NPM dependency
     api.use('cornerstone'); // Only for HammerJS
