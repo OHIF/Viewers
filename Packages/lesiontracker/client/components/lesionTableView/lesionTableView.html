@@ -2,18 +2,18 @@
     <div class="lesionTableView scrollArea">
         {{>lesionTableHeaderRow id="target" measurements=targets currentTimepointId=currentTimepointId}}
         {{#each target in targets}}
-            {{>lesionTableRow (extend this rowItem=target)}}
+            {{>lesionTableRow (clone this rowItem=target)}}
         {{/each}}
 
         {{>lesionTableHeaderRow id="nonTarget" measurements=nonTargets currentTimepointId=currentTimepointId}}
         {{#each nonTarget in nonTargets}}
-            {{>lesionTableRow (extend this rowItem=nonTarget)}}
+            {{>lesionTableRow (clone this rowItem=nonTarget)}}
         {{/each}}
 
         {{#if gt this.timepoints.get.length 1}}
             {{>lesionTableHeaderRow id="newLesion" measurements=newLesions currentTimepointId=currentTimepointId}}
             {{#each newLesion in newLesions}}
-                {{>lesionTableRow (extend this rowItem=newLesion)}}
+                {{>lesionTableRow (clone this rowItem=newLesion)}}
             {{/each}}
         {{/if}}
     </div>

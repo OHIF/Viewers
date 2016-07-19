@@ -1,17 +1,17 @@
 <template name="flexboxLayout">
     <div class="viewerSection">
         <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
-            {{>studyTimepointBrowser (extend this)}}
+            {{>studyTimepointBrowser (clone this)}}
         </div>
         <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
-            {{>viewerMain (extend this)}}
+            {{>viewerMain (clone this)}}
         </div>
         <div class="sidebarMenu sidebar-right {{#if or lesionSidebarOpen additionalFindingsSidebarOpen}}sidebar-open{{/if}}">
             <div class="sidebar-option {{#if lesionSidebarOpen}}active{{/if}}">
-                {{>lesionTable (extend this)}}
+                {{>lesionTable (clone this)}}
             </div>
             <div class="sidebar-option {{#if additionalFindingsSidebarOpen}}active{{/if}}">
-                {{>additionalFindings (extend this)}}
+                {{>additionalFindings (clone this)}}
             </div>
         </div>
     </div>

@@ -7,7 +7,7 @@
                     <div class="studyBox"></div>
                     <div class="switchHover studyHover clearfix">
                         <div class="scrollArea">
-                            {{>studyTimepointBrowser (extend this timepointViewType='key')}}
+                            {{>studyTimepointBrowser (clone this timepointViewType='key')}}
                         </div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                             <div class="scrollArea">
                                 <div class="thumbnailsWrapper">
                                     {{#each thumbnail in thumbnailsList}}
-                                        {{>thumbnailEntry (extend this thumbnail=thumbnail)}}
+                                        {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
                                     {{/each}}
                                 </div>
                             </div>

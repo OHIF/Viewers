@@ -2,7 +2,7 @@
     <div class="studyTimepointWrapper">
         <div class="studyTimepoint">
             {{#each study in studies}}
-                {{>studyTimepointStudy (extend this
+                {{>studyTimepointStudy (clone this
                     study=study
                     active=(isActive study)
                 )}}
