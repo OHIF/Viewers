@@ -1,0 +1,62 @@
+@import "{design}/app"
+
+// TODO: [design] can't we use colors that are already in common pallete?
+$gray1 = #C3C3C3
+$gray2 = #B6B6B6
+$gray3 = #676767
+$gray4 = #3E3E3E
+$borderRadius = 2px
+
+span.select2.select2-container
+  font-weight: normal
+
+  span.select2-selection
+    border: 0
+    border-radius: $borderRadius
+
+    &, span.select2-selection__rendered, span.select2-selection__arrow
+      height: 30px
+
+  span.select2-selection__rendered
+    line-height: 34px
+    padding-left: 11px
+
+  span.select2-selection__arrow
+    background-color: $gray1
+    border-left: 1px solid $primaryBackgroundColor
+    border-top-right-radius: $borderRadius
+    border-bottom-right-radius: $borderRadius
+    right: 0
+    top: 0
+    width: 20px
+
+    b
+      display: none
+
+  span.select2-selection--multiple
+    background-color: $gray2
+    min-height: 30px
+
+    input.select2-search__field
+      color: $gray4
+      placeholder-color($gray4)
+
+    li.select2-selection__choice
+      background-color: #FFF
+      border-color: $uiGray
+      border-radius: $borderRadius
+      color: $gray4
+      line-height: 22px
+      margin-top: 3px
+
+    span.select2-selection__choice__remove
+      color: $gray3
+      float: right
+      font-size: 20px
+      font-weight: 300
+      line-height: 20px
+      margin-left: 6px
+      margin-right: 0
+
+    span.select2-selection__clear
+      display: none

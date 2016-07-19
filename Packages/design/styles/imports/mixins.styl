@@ -25,3 +25,13 @@ transform-origin(o)
   -ms-transform-origin: o
   -o-transform-origin: o
   -moz-transform-origin: o
+
+placeholder-color(c)
+  &::-webkit-input-placeholder
+    color: c
+  &:-moz-placeholder
+    color: c
+  &::-moz-placeholder
+    color: c
+  &:-ms-input-placeholder
+    color: c
