@@ -36,7 +36,9 @@
     <title>
       Complete
     </title>
-    <path d="M13.5 0C6.08 0 0 6.04 0 13.42 0 20.8 6.08 26.83 13.5 26.83 20.93 26.83 27 20.8 27 13.42 27 6.04 20.93 0 13.5 0L13.5 0ZM10.8 20.13L4.05 13.42 5.94 11.54 10.8 16.37 21.06 6.17 22.95 8.05 10.8 20.13 10.8 20.13Z" id="Shape"/>
+    <g id="icon-status-complete-group" stroke="none">
+      <path id="icon-status-complete-circle" d="M13.5,0 a13.5 13.5 0 0 1 0 27 a13.5 13.5 0 0 1 0 -27 M23,8 l-2,-2 -10,10, -5,-5 -2,2 7,7Z" />
+    </g>
   </symbol>
   <symbol id="icon-status-lock" viewBox="0 0 16 21">
     <title>

@@ -1,4 +1,4 @@
-Template.caseProgress.onCreated(function caseProgressOnCreated() {
+Template.caseProgress.onCreated(() => {
     const instance = Template.instance();
 
     instance.progressPercent = new ReactiveVar();

@@ -4,15 +4,29 @@
   transition(all 0.3 ease)
 
   .radialProgress
-    float:left
     display: inline-block
-
-  h5
     float:left
-    display: inline-block
 
-  button.btn
+  .caseProgressStatus
+    display: inline-block
     float: left
-    display: inline-block
-    margin: 6px
-    cursor: pointer
+    margin-left: 22px
+
+    h5
+      color: $textPrimaryColor
+      line-height: 46px
+      margin: 0
+      font-size: 15px
+      font-weight: bold
+
+    button.btn
+      background-color: $activeColor
+      border: 1px solid $uiBorderColorActive
+      color: #000
+      cursor: pointer
+      font-size: 15px
+      font-weight: bold
+      height: 37px
+      margin-top: 6px
+      text-align: center
+      width: 126px

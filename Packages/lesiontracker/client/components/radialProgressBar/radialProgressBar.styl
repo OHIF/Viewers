@@ -22,7 +22,7 @@ $circleSize = 46px
     -webkit-transform: rotate(270deg) /* Chrome, Safari, Opera */
     -webkit-transform-origin: center center /* Chrome, Safari, Opera */
     transform: rotate(270deg)
-    transform-origin: center center
+    transform-origin(center center)
 
   .progressText
     position: absolute
@@ -36,5 +36,17 @@ $circleSize = 46px
     top: 0
 
     svg
-      width: 17px
-      height: 17px
+      fill: $uiSkyBlue
+      left: 50%
+      position: absolute
+      stroke: $uiSkyBlue
+      top: 50%
+      transform(translateX(-50%) translateY(-50%))
+
+      &.locked
+        width: 16px
+        height: 21px
+
+      &.complete
+        width: 27px
+        height: 27px
