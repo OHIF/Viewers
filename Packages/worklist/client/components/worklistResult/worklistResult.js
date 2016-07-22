@@ -203,8 +203,10 @@ Template.worklistResult.onCreated(function() {
 });
 
 Template.worklistResult.onRendered(function() {
+    const instance = Template.instance();
+
     // Initialize daterangepicker
-    $('#studyDate').daterangepicker({
+    instance.$('#studyDate').daterangepicker({
         ranges: {
             Today: [moment(), moment()],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],

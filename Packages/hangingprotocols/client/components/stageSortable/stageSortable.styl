@@ -1,14 +1,19 @@
+@import "{design}/app.styl"
+
 #stageSortingContainer
   #stageSortable
     .sortable-item
       padding: 3px
 
       span
-        color: #ffffff
+        color: $defaultColor
         cursor: pointer
 
+        &:hover
+          color: $hoverColor
+        
         &.active
-          color: #46e7ff
+          color: $activeColor
 
     .sortable-handle
       cursor: move
@@ -29,42 +34,43 @@
 
     .deleteStage
       cursor: pointer
-      color: white
-      -webkit-transition: all 0.1s ease
-      -moz-transition: all 0.1s ease
-      transition: all 0.1s ease
-
-      &:active, &:hover
-        color: #48d3ff
+      color: $defaultColor
+      transition(all 0.1s ease)
+      
+      &:hover
+        color: $hoverColor
+        
+      &:active  
+        color: $activeColor
 
   .addStage
     margin: 10px 0
     text-align: center
 
     #addStage
-      cursor: pointer
-      color: #ffffff
-      -webkit-transition: all 0.1s ease
-      -moz-transition: all 0.1s ease
-      transition: all 0.1s ease
-
-      &:active, &:hover
-        color: #48d3ff
+      transition(all 0.1s ease)
+      
+      &:hover
+        color: $hoverColor
+        
+      &:active  
+        color: $activeColor
 
   .moveStageButtons
     margin: 10px 0
     text-align: center
 
     a
+      color: $defaultColor
       cursor: pointer
-      color: #ffffff
       text-decoration: none
-      -webkit-transition: all 0.1s ease
-      -moz-transition: all 0.1s ease
-      transition: all 0.1s ease
-
-      &:active, &:hover
-        color: #48d3ff
+      transition(all 0.1s ease)
+      
+      &:hover
+        color: $hoverColor
+        
+      &:active  
+        color: $activeColor
 
       &[disabled="true"]
         opacity: 0.7

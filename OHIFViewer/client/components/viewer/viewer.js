@@ -1,10 +1,19 @@
 import { OHIF } from 'meteor/ohif:core';
 OHIF.viewer = OHIF.viewer || {};
 
-Template.viewer.onCreated(function() {
+Session.setDefault('activeViewport', false);
+Session.setDefault('leftSidebar', false);
+Session.setDefault('rightSidebar', false);
+
+Template.viewer.onCreated(() => {
+    const instance = Template.instance();
+
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
-    $('.navbar').width('100%');
+
+    instance.data.state = new ReactiveDict();
+    instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
+    instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
     Meteor.subscribe('hangingprotocols');
 
@@ -20,26 +29,27 @@ Template.viewer.onCreated(function() {
     };
 
     OHIF.viewer.functionList = {
-        invert: function(element) {
-            var viewport = cornerstone.getViewport(element);
+        invert: element => {
+            const viewport = cornerstone.getViewport(element);
             viewport.invert = !viewport.invert;
             cornerstone.setViewport(element, viewport);
         },
-        resetViewport: function(element) {
-            var enabledElement = cornerstone.getEnabledElement(element);
+        resetViewport: element => {
+            const enabledElement = cornerstone.getEnabledElement(element);
             if (enabledElement.fitToWindow === false) {
-                var imageId = enabledElement.image.imageId;
-                var instance = cornerstoneTools.metaData.get('instance', imageId);
+                const imageId = enabledElement.image.imageId;
+                const instance = cornerstoneTools.metaData.get('instance', imageId);
 
                 enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, enabledElement.image);
-                var instanceClassDefaultViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
+                
+                const instanceClassDefaultViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
                 cornerstone.setViewport(element, instanceClassDefaultViewport);
             } else {
                 cornerstone.reset(element);
             }
         },
-        clearTools: function(element) {
-            var toolStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
+        clearTools: element => {
+            const toolStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
             toolStateManager.clear(element);
             cornerstone.updateImage(element);
         }
@@ -55,7 +65,7 @@ Template.viewer.onCreated(function() {
         };
     }
 
-    var contentId = this.data.contentId;
+    const contentId = instance.data.contentId;
 
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
@@ -80,27 +90,42 @@ Template.viewer.onCreated(function() {
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
 
-    this.data.studies.forEach(function(study) {
+    instance.data.studies.forEach(study => {
         study.selected = true;
         ViewerStudies.insert(study);
     });
 });
 
-Template.viewer.onRendered(function() {
+Template.viewer.onRendered(() => {
+    const instance = Template.instance();
+
     // Enable hotkeys
     enableHotkeys();
 
-    var parentNode = document.getElementById('layoutManagerTarget');
-    var studies = this.data.studies;
+    const parentNode = document.getElementById('layoutManagerTarget');
+    const studies = instance.data.studies;
     layoutManager = new LayoutManager(parentNode, studies);
 
     ProtocolEngine = new HP.ProtocolEngine(layoutManager, studies);
     HP.setEngine(ProtocolEngine);
 });
 
-Template.viewer.onDestroyed(function() {
+Template.viewer.onDestroyed(() => {
     log.info('onDestroyed');
 
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
 });
+
+Template.viewer.events({
+    'click .js-toggle-studies'() {
+        const instance = Template.instance();
+        const current = instance.data.state.get('leftSidebar');
+        instance.data.state.set('leftSidebar', !current);
+    },
+    'click .js-toggle-protocol-editor'() {
+        const instance = Template.instance();
+        const current = instance.data.state.get('rightSidebar');
+        instance.data.state.set('rightSidebar', !current);
+    },
+})

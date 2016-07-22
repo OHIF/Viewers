@@ -1,0 +1,13 @@
+<template name="flexboxLayout">
+    <div class="viewerSection">
+        <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
+            {{> studyBrowser (clone this)}}
+        </div>
+        <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
+            {{> viewerMain (clone this)}}
+        </div>
+        <div class="sidebarMenu sidebar-right {{#if rightSidebarOpen}}sidebar-open{{/if}}">
+            {{> protocolEditor (clone this)}}
+        </div>
+    </div>
+</template>

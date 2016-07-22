@@ -5,28 +5,26 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.3.4.1');
+    api.versionsFrom('1.3.5.1');
 
-    api.use('standard-app-packages');
     api.use('ecmascript');
+    api.use('standard-app-packages');
     api.use('http');
     api.use('jquery');
     api.use('stylus');
     api.use('practicalmeteor:loglevel');
     api.use('momentjs:moment');
     api.use('validatejs');
-    api.use('design');
-
+    
     // Our custom packages
+    api.use('design');
+    api.use('ohif:core');
     api.use('cornerstone');
 
     api.addFiles('log.js');
 
     // TODO: Use NPM depends for these
     api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
-
-    // Data validation (the Meteor package is currently out-of-date)
-    //api.addFiles('client/compatibility/validate.js', 'client');
 
     // ---------- Collections ----------
     api.addFiles('client/collections.js', 'client');
@@ -82,6 +80,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.js', 'client');
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.styl', 'client');
 
+    api.addFiles('client/components/viewer/viewerMain/viewerMain.html', 'client');
+    api.addFiles('client/components/viewer/viewerMain/viewerMain.js', 'client');
+    api.addFiles('client/components/viewer/viewerMain/viewerMain.styl', 'client');
+
     api.addFiles('client/components/viewer/imageControls/imageControls.html', 'client');
     api.addFiles('client/components/viewer/imageControls/imageControls.js', 'client');
     api.addFiles('client/components/viewer/imageControls/imageControls.styl', 'client');
@@ -95,6 +97,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/cineDialog/cineDialog.styl', 'client');
 
     api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
+    api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.js', 'client');
 
     api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
     api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
@@ -102,10 +105,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/toolbar/toolbar.html', 'client');
     api.addFiles('client/components/viewer/toolbar/toolbar.js', 'client');
     api.addFiles('client/components/viewer/toolbar/toolbar.styl', 'client');
-
-    api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.html', 'client');
-    api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.styl', 'client');
-    api.addFiles('client/components/viewer/toolbarGroupButton/toolbarGroupButton.js', 'client');
 
     // Library functions
     api.addFiles('lib/layoutManager.js', 'client');
@@ -132,6 +131,8 @@ Package.onUse(function(api) {
     //api.addFiles('lib/validators.js', 'client');
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
+    api.addFiles('lib/isImage.js', 'client');
+    api.addFiles('lib/sopClassDictionary.js', 'client');
 
     api.export('resizeViewportElements', 'client');
     api.export('handleResize', 'client');
@@ -156,9 +157,8 @@ Package.onUse(function(api) {
     api.export('showConfirmDialog', 'client');
     api.export('applyWLPreset', 'client');
     api.export('toggleDialog', 'client');
-
-    // Export the ValidateJS Library with our added validators
-    //api.export('validate', 'client');
+    api.export('isImage', 'client');
+    api.export('sopClassDictionary', 'client');
 
     // Viewer management objects
     api.export('toolManager', 'client');

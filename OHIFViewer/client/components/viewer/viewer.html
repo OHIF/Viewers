@@ -1,18 +1,26 @@
 <template name="viewer">
     {{#if Template.subscriptionsReady}}
+    <div class="viewerDialogs">
+        {{> cineDialog}}
+    </div>
     <div id="viewer">
-        <div class="studyBrowserSidebar">
-            {{ >relatedStudySelect }}
-            {{> studyBrowser }}
-        </div>
-        {{> cineDialog }}
-        <div class='viewerMain'>
-            {{> toolbar }}
-            <div id='layoutManagerTarget'>
+        <div id="toolbar">
+            <div class='pull-left'>
+                <a class="btn btn-sm btn-secondary js-toggle-studies">
+                    Studies
+                </a>
+            </div>
+            <div class='pull-left'>
+                {{> toolbar }}
+            </div>
+            <div class='pull-right'>
+                <a class='btn btn-sm btn-secondary js-toggle-protocol-editor'>
+                    Hanging Protocols
+                </a>
             </div>
         </div>
+        {{> flexboxLayout (clone this)}}
     </div>
-    {{ >protocolEditor }}
     {{else}}
         {{>loadingText}}
     {{/if}}

@@ -1,10 +1,14 @@
+@import "{design}/app.styl"
+
+$height = 20px
+
 #protocolEditor
   height: 100%
   width: 450px
   padding: 10px
   position: absolute
   top: 0
-  background: #212121
+  background: $primaryBackgroundCOlor
 
   .navigationButtons
     ul
@@ -31,29 +35,27 @@
         cursor: pointer
         text-decoration: none
         outline: none
-        background: #3e3e3e
-        color: #ffffff
+        background-color: $uiGrayDark
+        border: 1px $uiBorderColorDark solid
+        color: $textSecondaryColor
+        transition: transition($sidebarTransition)
+        border-radius: $height
 
-        -webkit-transition: all 0.3s ease
-        -moz-transition: all 0.3s ease
-        -o-transition: all 0.3s ease
-        -ms-transition: all 0.3s ease
-        transition: all 0.3s ease
-
-      &.active
-        a
-          background: #ffffff
-          color: #3e3e3e
+      &.active a
+        background-color: $activeColor
+        border-color: $uiBorderColorActive
+        color: $textColorActive
+        transition: transition($sidebarTransition)
 
   p
   h2
   h3
   h4
-    color: #f5f5f5
+    color: $defaultColor
 
   label
   ul
-    color: #f5f5f5
+    color: $defaultColor
     font-weight: 400
 
   label
@@ -66,7 +68,7 @@
     width: 40%
     border: none
     background: #212121
-    color: #ffffff
+    color: $defaultColor
     text-align: center
 
   button.btn
@@ -85,7 +87,7 @@
 
     p
       font-size: 8pt
-      color: #B3B3B3
+      color: $defaultColor
       margin: 0 10px
       display: inline-block
 
@@ -137,18 +139,4 @@
       padding: 40px
 
       h3
-        color: #f5f5f5
-
-.cbp-spmenu-right 
-  right: -450px
-
-.cbp-spmenu-right.cbp-spmenu-open 
-  right: 0
-  
-
-/* Transitions */
-
-.cbp-spmenu
-  -webkit-transition: all 0.3s ease
-  -moz-transition: all 0.3s ease
-  transition: all 0.3s ease
+        color: $defaultColor

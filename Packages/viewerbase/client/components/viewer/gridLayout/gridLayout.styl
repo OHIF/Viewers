@@ -1,16 +1,18 @@
+@import "{design}/app.styl"
+
 #imageViewerViewports
   height: 100%
   width: 100%
 
   .viewportContainer
     float: left
-    border: 2px solid #777
+    border: $viewportBorderThickness solid $viewportBorderColor
     
     &.active, &:hover.active
-      border: 2px solid #9A6617
+      border: $viewportBorderThickness solid $viewportBorderColorActive
       
     &:hover
-      border: 2px solid white
+      border: $viewportBorderThickness solid $viewportBorderColorHover
     
     .removable
       width: 100%

@@ -27,13 +27,14 @@ check
 cornerstone
 dicomweb
 design
+ohif:core
+ecmascript
 viewerbase
 worklist
 reactive-var
 practicalmeteor:loglevel
 hangingprotocols
 reactive-dict
-gilbertwat:bootstrap3-daterangepicker
 clinical:router
 fastclick
 standard-minifier-css

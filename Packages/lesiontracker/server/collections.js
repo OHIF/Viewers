@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.publish('timepoints', function() {
     return Timepoints.find();
 });

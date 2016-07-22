@@ -1,37 +1,31 @@
+@import "{design}/app.styl"
+
 #viewer
   border-top: 1px solid #525252
   height: 100%
   width: 100%
+  align-items: stretch
+  background-color: black
+  display: flex
+  flex-flow: column wrap
+  margin: 0
+  padding: 0
+  
+  #toolbar
+  	float: left
+  	height: 30px
+  	
+		a.btn
+	    text-align: center
+	    color: $defaultColor
+	    background-color: $primaryBackgroundColor
+	    transition(all 0.1s ease)
+	    
+	    // Prevent the blue outline in Chrome when a viewport is selected
+	    outline: 0 !important
+	    
+	    &:hover
+	      color: $hoverColor
 
-.noselect
-  -webkit-touch-callout: none
-  -webkit-user-select: none
-  -khtml-user-select: none
-  -moz-user-select: none
-  -ms-user-select: none
-  user-select: none
-
-.studyBrowser
-  width: auto
-
-.viewerMain
-  float: left
-  background-color: gray
-  height: 100%
-  width: calc(100% - 120px)
-
-  -webkit-transition: all 0.3s ease
-  -moz-transition: all 0.3s ease
-  transition: all 0.3s ease
-
-  #layoutManagerTarget
-    height: calc(100% - 30px)
-    width: 100%
-
-.studyBrowserSidebar
-  float: left
-  height: 100%
-  width: 120px
-  overflow: hidden
-  background-color: #000
-  padding-top: 10px
+	    &.active, &:active
+	      color: $activeColor

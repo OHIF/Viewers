@@ -1,8 +1,10 @@
+@import "{design}/app.styl"
+
 table.ruleTable
   thead
     tr
       th
-        color: whitesmoke
+        color: $defaultColor
         text-align: center
 
       th:first-child
@@ -11,7 +13,7 @@ table.ruleTable
   tbody
     tr
       td
-        color: #ffffff
+        color: $defaultColor
         text-align: center
 
         .failWarning
@@ -21,12 +23,13 @@ table.ruleTable
         .deleteRule
           &:hover, &:active
             cursor: pointer
-            color: #48d3ff
-
-            -webkit-transition: all 0.1s ease
-            -moz-transition: all 0.1s ease
-            transition: all 0.1s ease
-
+            transition(all 0.1s ease)
+            
+            &:hover
+              color: $hoverColor
+              
+            &:active  
+              color: $activeColor
 
       td:first-child
         text-align: left
@@ -34,13 +37,14 @@ table.ruleTable
 .addRuleContainer
   margin: 10px 0
   text-align: center
-  color: #ffffff
+  color: $defaultColor
 
   .addRule
-    &:hover, &:active
-      cursor: pointer
-      color: #48d3ff
-
-      -webkit-transition: all 0.1s ease
-      -moz-transition: all 0.1s ease
-      transition: all 0.1s ease
+    cursor: pointer
+    transition(all 0.1s ease)
+    
+    &:hover
+      color: $hoverColor
+      
+    &:active  
+      color: $activeColor

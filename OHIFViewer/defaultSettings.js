@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
     if (Object.keys(Meteor.settings).length > 1) {
         console.log('Using custom LesionTracker settings: ');

@@ -5,8 +5,9 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-    api.versionsFrom('1.2.1');
+    api.versionsFrom('1.3.5.1');
 
+    api.use('ecmascript');
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
@@ -14,6 +15,11 @@ Package.onUse(function (api) {
     api.use('practicalmeteor:loglevel');
     api.use('rwatts:uuid');
     api.use('silentcicero:jszip');
+
+    // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
+    api.use('momentjs:moment');
+
+    api.use('gilbertwat:bootstrap3-daterangepicker');    
 
     // Our custom packages
     api.use('design');

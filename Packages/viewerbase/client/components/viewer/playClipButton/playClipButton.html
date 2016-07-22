@@ -1,14 +1,24 @@
 <template name="playClipButton">
-    <button id="playClip" type="button" class="imageViewerCommand btn btn-sm btn-default"
-            data-container="body" data-toggle="tooltip" data-placement="bottom" title="Play/Stop Clip">
+    <button id="playClip"
+            type="button"
+            class="imageViewerCommand btn btn-sm {{ #if isPlaying }}active{{/if}}"
+            data-container="body"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Play/Stop Clip">
         {{ #if isPlaying }}
             <span class="fa fa-stop"></span>
         {{ else }}
             <span class="fa fa-play"></span>
         {{ /if }}
     </button>
-    <button id="toggleCineDialog"  type="button" class="imageViewerCommand btn btn-sm btn-default"
-            data-container="body" data-toggle="tooltip" data-placement="bottom" title="Toggle CINE Dialog">
+    <button id="toggleCineDialog"
+            type="button"
+            class="imageViewerCommand btn btn-sm"
+            data-container="body"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Toggle CINE Dialog">
         <span class="fa fa-youtube-play"></span>
     </button>
 </template>

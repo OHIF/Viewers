@@ -1,50 +1,27 @@
-.noselect
-  -webkit-touch-callout: none
-  -webkit-user-select: none
-  -khtml-user-select: none
-  -moz-user-select: none
-  -ms-user-select: none
-  user-select: none
+@import "{design}/app"
   
-.navbar
+.topBar
   margin-bottom: 0
   border-radius: 0
-  background-color: #060606
+  background-color: $primaryBackgroundColor
   border: none
-  font-family: "Sanchez"
-  color: #C1C1C1
-
-  -webkit-transition: all 0.3s ease
-  -moz-transition: all 0.3s ease
-  transition: all 0.3s ease
-    
-.navbar-default .navbar-nav > li > a
-  color: #C1C1C1
-  font-weight: bold
-  font-size: 12pt
-    
-.navbar-form
-  height: 50px
-  margin: 0
-  padding: 15px 3px
-  font-weight: bold
-  font-size: 12pt
-  line-height: 20px
+  height: $topBarHeight
+  color: $textPrimaryColor
+  transition(all 0.3s ease)
   
-.navbar-brand
-  display: inline-block
-  
-  img
-    float: left
-    margin-right: 10px
-    margin-top: -5px
+  .brandSection
+    display: inline-block
+    height: 30px
+    text-decoration: none
 
-  h4.name
-    float: left
-    margin: 0
-    font-family: "Sanchez"
-    color: #C1C1C1
+    img.logoImage
+      display: inline-block
+      height: 100%
+      max-height: 50px
+      margin: 0 5px
 
-@media (min-width: 768px)
-  .navbar
-    border-radius: 0px
+    div.logoText
+      display: inline-block
+      font-family: $logoFontFamily
+      font-weight: $logoFontWeight
+      color: $textPrimaryColor

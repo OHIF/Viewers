@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.3.4.1');
+    api.versionsFrom('1.3.5.1');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -82,10 +82,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/caseProgress/caseProgress.html', 'client');
     api.addFiles('client/components/caseProgress/caseProgress.styl', 'client');
     api.addFiles('client/components/caseProgress/caseProgress.js', 'client');
-
-    api.addFiles('client/components/viewerMain/viewerMain.html', 'client');
-    api.addFiles('client/components/viewerMain/viewerMain.styl', 'client');
-    api.addFiles('client/components/viewerMain/viewerMain.js', 'client');
 
     api.addFiles('client/components/lesionTracker/lesionTracker.html', 'client');
     api.addFiles('client/components/lesionTracker/lesionTracker.styl', 'client');
@@ -190,7 +186,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerWorklistContextMenu/lesionTrackerWorklistContextMenu.js', 'client');
 
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.html', 'client');
-    api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.styl', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
 
     api.addFiles('client/components/serverInformationModal/serverInformationModal.html', 'client');
