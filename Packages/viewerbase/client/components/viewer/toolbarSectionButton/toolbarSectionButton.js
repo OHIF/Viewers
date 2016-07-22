@@ -2,6 +2,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.toolbarSectionButton.helpers({
     activeClass() {
+        // TODO: Find a way to prevent the 'flash' after a click, but before this helper runs
         const instance = Template.instance();
 
         // Check if the current tool is the active one
@@ -9,39 +10,32 @@ Template.toolbarSectionButton.helpers({
             // Return the active class
             return 'active';
         }
-
-        return;
     }
 });
 
 Template.toolbarSectionButton.events({
     'click .imageViewerTool'(event, instance) {
-        $(event.currentTarget).tooltip('hide');
+        const tool = event.currentTarget.id;
+        const elements = instance.$('.imageViewerViewport');
 
-        var tool = event.currentTarget.id;
-
-        var elements = $('.imageViewerViewport');
-
-        var activeTool = toolManager.getActiveTool();
+        const activeTool = toolManager.getActiveTool();
         if (tool === activeTool) {
-            var defaultTool = toolManager.getDefaultTool();
-            console.log('Setting active tool to: ' + defaultTool);
+            const defaultTool = toolManager.getDefaultTool();
+            log.info('Setting active tool to: ' + defaultTool);
             toolManager.setActiveTool(defaultTool, elements);
         } else {
-            console.log('Setting active tool to: ' + tool);
+            log.info('Setting active tool to: ' + tool);
             toolManager.setActiveTool(tool, elements);
         }
     },
     'click .imageViewerCommand'(event, instance) {
-        $(event.currentTarget).tooltip('hide');
-
-        var command = event.currentTarget.id;
+        const command = event.currentTarget.id;
         if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
 
-        var activeViewport = Session.get('activeViewport');
-        var element = $('.imageViewerViewport').get(activeViewport);
+        const activeViewport = Session.get('activeViewport');
+        const element = $('.imageViewerViewport').get(activeViewport);
         OHIF.viewer.functionList[command](element);
     }
 });

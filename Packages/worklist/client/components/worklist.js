@@ -19,15 +19,18 @@ WorklistTabs._debugName = 'WorklistTabs';
 WorklistStudies = new Meteor.Collection(null);
 WorklistStudies._debugName = 'WorklistStudies';
 
-Template.worklist.onRendered(function() {
-    var templateData = Template.currentData();
-    if (templateData && templateData.studyInstanceUid) {
-        var studyInstanceUid = templateData.studyInstanceUid;
+
+Session.setDefault('activeContentId', 'worklistTab');
+
+Template.worklist.onRendered(() => {
+    const instance = Template.instance();
+    if (instance.data && instance.data.studyInstanceUid) {
+        const studyInstanceUid = instance.data.studyInstanceUid;
         openNewTab(studyInstanceUid, studyInstanceUid);
     } else {
         // If there is a tab set as active in the Session,
         // switch to that now.
-        var contentId = Session.get('activeContentId');
+        const contentId = Session.get('activeContentId');
 
         // TODO: FIx this it seems to be forcing two switches
         switchToTab(contentId);        
@@ -41,36 +44,22 @@ Template.worklist.helpers({
      * Returns the current set of Worklist Tabs
      * @returns Meteor.Collection The current state of the WorklistTabs Collection
      */
-    worklistTabs: function() {
+    worklistTabs() {
         return WorklistTabs.find();
-    },
-    showStudyListTab: function() {
-        // StudyListTab is shown by default
-        const instance = Template.instance();
-        if (!instance.data) {
-            return true;
-        }
-
-        var showStudyListTab = instance.data.showStudyListTab;
-        if (showStudyListTab === undefined) {
-            return true;
-        }
-
-        return showStudyListTab;
     }
 });
 
 Template.worklist.events({
     'click #tablist a[data-toggle="tab"]': function(e) {
         // If this tab is already active, do nothing
-        var tabButton = $(e.currentTarget);
-        var tabTitle = tabButton.parents('.tabTitle');
+        const tabButton = $(e.currentTarget);
+        const tabTitle = tabButton.parents('.tabTitle');
         if (tabTitle.hasClass('active')) {
             return;
         }
 
         // Otherwise, switch to the tab
-        var contentId = tabButton.data('target').replace('#', '');
+        const contentId = tabButton.data('target').replace('#', '');
         switchToTab(contentId);
     }
 });

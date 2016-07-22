@@ -1,0 +1,33 @@
+@import "{design}/app"
+
+$distance = 12px
+
+.toolbarSectionTools
+  position: relative
+
+  .toolbarSectionDrawerContainer
+    bottom: - ($toolbarDrawerHeight + $distance)
+    height: $toolbarDrawerHeight
+    left: 0
+    position: absolute
+    width: 100%
+
+    .toolbarSectionDrawer
+      background-color: $uiGrayDarker
+      border-radius: 7px
+      color: $textPrimaryColor
+      content: ''
+      display: block
+      font-size: 18px
+      height: $toolbarDrawerHeight - $distance
+      text-align: center
+      width: 100%
+
+  #moreTools
+    .buttonLabel i
+      text-align: center
+      transition(all 300ms ease)
+      width: 8px
+
+    &.active .buttonLabel i
+      transform(rotateX(180deg))

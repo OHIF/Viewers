@@ -1,0 +1,54 @@
+@import "{design}/app"
+
+.toolbarSectionButton
+  display: inline-block
+  color: $defaultColor
+  fill: $defaultColor
+  stroke: $defaultColor
+  min-width: 30px
+  cursor: pointer
+  text-align: center
+
+  &.disabled
+    opacity: 0.5
+    cursor: not-allowed
+
+  .buttonLabel
+    color: $textSecondaryColor
+    font-size: 12px
+
+  .svgContainer
+    margin: 0 auto
+    text-align: center
+    
+    i
+      font-size: 18px
+      line-height: 30px
+
+  svg
+    background-color: transparent
+    margin: 2px
+    width: 21px
+    height: 21px
+
+  &:hover
+    .buttonLabel
+      color: $hoverColor
+
+    svg
+      fill: $hoverColor
+      stroke: $hoverColor
+      
+    i
+      color: $hoverColor
+
+  &:active, &.active
+    .buttonLabel
+      color: $activeColor
+
+    svg
+      fill: $activeColor
+      stroke: $activeColor
+      
+    i
+      color: $activeColor

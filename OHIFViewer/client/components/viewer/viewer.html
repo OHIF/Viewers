@@ -4,21 +4,7 @@
         {{> cineDialog}}
     </div>
     <div id="viewer">
-        <div id="toolbar">
-            <div class='pull-left'>
-                <a class="btn btn-sm btn-secondary js-toggle-studies">
-                    Studies
-                </a>
-            </div>
-            <div class='pull-left'>
-                {{> toolbar }}
-            </div>
-            <div class='pull-right'>
-                <a class='btn btn-sm btn-secondary js-toggle-protocol-editor'>
-                    Hanging Protocols
-                </a>
-            </div>
-        </div>
+        {{> toolbarSection (clone this)}}
         {{> flexboxLayout (clone this)}}
     </div>
     {{else}}

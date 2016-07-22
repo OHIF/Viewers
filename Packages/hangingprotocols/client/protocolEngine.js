@@ -569,7 +569,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             });
 
             currentViewportData.renderedCallback = function(element) {
-                console.log('renderedCallback for ' + element.id);
+                //console.log('renderedCallback for ' + element.id);
                 customSettings.forEach(function(customSetting) {
                     console.log('Applying custom setting: ' + customSetting.id);
                     console.log('with value: ' + customSetting.value);

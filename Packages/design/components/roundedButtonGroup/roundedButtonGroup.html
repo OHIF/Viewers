@@ -11,6 +11,9 @@
                     {{#if item.text}}
                         <span>{{item.text}}</span>
                     {{/if}}
+                    {{#if item.iconClasses}}
+                        <i class="{{item.iconClasses}}"></i>
+                    {{/if}}
                 </div>
                 {{#if item.bottomLabel}}
                     <div class="bottomLabel">{{item.bottomLabel}}</div>

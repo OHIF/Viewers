@@ -37,11 +37,8 @@ Meteor.methods({
      * @returns {boolean}
      */
     importSupported: function() {
-        if (Meteor.settings.dimse && Meteor.settings.defaultServiceType === 'dimse') {
-            return true;
-        }
         //TODO: Support importing studies into dicomWeb
-        return false;
+        return (Meteor.settings.dimse && Meteor.settings.defaultServiceType === 'dimse');
     },
     /**
      * Imports studies from local into worklist

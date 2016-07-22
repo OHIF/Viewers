@@ -1,19 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 
 Template.toolbarSection.helpers({
-    // Returns true if the view shall be split in two viewports
-    splitView() {
-        // Stops here if layout manager is not defined yet
-        if (!window.layoutManager) {
-            return;
-        }
-
-        // Run this computation every time the viewports are updated
-        Session.get('LayoutManagerUpdated');
-
-        return layoutManager.viewportData.length > 1;
-    },
-
     leftSidebarToggleButtonData() {
         const instance = Template.instance();
         return {
@@ -37,17 +24,9 @@ Template.toolbarSection.helpers({
             key: 'rightSidebar',
             value: instance.data.state,
             options: [{
-                value: 'lesions',
-                svgLink: '/packages/viewerbase/assets/icons.svg#icon-measurements-lesions',
-                svgWidth: 18,
-                svgHeight: 10,
-                bottomLabel: 'Lesions'
-            }, {
-                value: 'additional',
-                svgLink: '/packages/viewerbase/assets/icons.svg#icon-measurements-additional',
-                svgWidth: 14,
-                svgHeight: 13,
-                bottomLabel: 'Additional'
+                value: 'hangingprotocols',
+                iconClasses: 'fa fa-cog',
+                bottomLabel: 'Hanging'
             }]
         };
     },
@@ -76,31 +55,31 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'link',
-            title: 'Link',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-link'
-        });
-
-        buttonData.push({
-            id: 'bidirectional',
-            title: 'Target',
-            classes: 'imageViewerTool rm-l-3',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-target'
-        });
-
-        buttonData.push({
-            id: 'nonTarget',
-            title: 'Non-Target',
+            id: 'length',
+            title: 'Length',
             classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+        });
+
+        buttonData.push({
+            id: 'annotate',
+            title: 'Annotate',
+            classes: 'imageViewerTool',
             svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-non-target'
         });
 
         buttonData.push({
-            id: 'length',
-            title: 'Temp',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            id: 'angle',
+            title: 'Angle',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-angle-left'
+        });
+
+        buttonData.push({
+            id: 'resetViewport',
+            title: 'Reset',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-undo'
         });
 
         return buttonData;
@@ -109,38 +88,65 @@ Template.toolbarSection.helpers({
     extraToolbarButtons() {
         let buttonData = [];
 
-        // TODO: Get real icons for CR / UN / EX
         buttonData.push({
-            id: 'crTool',
-            title: 'CR Tool',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-bars'
         });
 
         buttonData.push({
-            id: 'unTool',
-            title: 'UN Tool',
+            id: 'magnify',
+            title: 'Magnify',
             classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            iconClasses: 'fa fa-circle'
         });
         
         buttonData.push({
-            id: 'exTool',
-            title: 'EX Tool',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            id: 'wwwcRegion',
+            title: 'ROI Window',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-square'
+        });
+
+        buttonData.push({
+            id: 'dragProbe',
+            title: 'Probe',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-dot-circle-o'
+        });
+
+        buttonData.push({
+            id: 'ellipticalRoi',
+            title: 'Ellipse',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-circle-o'
+        });
+
+        buttonData.push({
+            id: 'rectangleRoi',
+            title: 'Rectangle',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-square-o'
+        });
+
+        buttonData.push({
+            id: 'invert',
+            title: 'Invert',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-adjust'
+        });
+
+        buttonData.push({
+            id: 'clearTools',
+            title: 'Clear',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-trash'
         });
 
         return buttonData;   
     }
 
-});
-
-Template.toolbarSection.events({
-    'click #toggleHUD'(event, instance) {
-        const state = Session.get('lesionTableHudOpen');
-        Session.set('lesionTableHudOpen', !state);
-    }
 });
 
 Template.toolbarSection.onRendered(function() {

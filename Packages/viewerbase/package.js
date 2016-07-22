@@ -23,6 +23,8 @@ Package.onUse(function(api) {
 
     api.addFiles('log.js');
 
+    api.addAssets('assets/icons.svg', 'client');
+
     // TODO: Use NPM depends for these
     api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
 
@@ -95,6 +97,14 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/cineDialog/cineDialog.html', 'client');
     api.addFiles('client/components/viewer/cineDialog/cineDialog.js', 'client');
     api.addFiles('client/components/viewer/cineDialog/cineDialog.styl', 'client');
+
+    api.addFiles('client/components/viewer/toolbarSectionButton/toolbarSectionButton.html', 'client');
+    api.addFiles('client/components/viewer/toolbarSectionButton/toolbarSectionButton.js', 'client');
+    api.addFiles('client/components/viewer/toolbarSectionButton/toolbarSectionButton.styl', 'client');
+
+    api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.html', 'client');
+    api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.js', 'client');
+    api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.styl', 'client');
 
     api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
     api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.js', 'client');
