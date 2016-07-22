@@ -23,7 +23,11 @@
 
                 <div class="toolbarSectionDrawerContainer">
                     <!-- TODO: [design] check which group of tools shall be shown -->
-                    <div class="toolbarSectionDrawer">More tools coming soon</div>
+                    <div class="toolbarSectionDrawer">
+                        {{#each toolbarButton in extraToolbarButtons}}
+                            {{>toolbarSectionButton toolbarButton}}
+                        {{/each}}
+                    </div>
                 </div>
             </div>
 

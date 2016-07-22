@@ -52,7 +52,7 @@ Template.toolbarSection.helpers({
         };
     },
 
-    toolbarButtons: function() {
+    toolbarButtons() {
         var buttonData = [];
         buttonData.push({
             id: 'zoom',
@@ -104,7 +104,36 @@ Template.toolbarSection.helpers({
         });
 
         return buttonData;
+    },
+
+    extraToolbarButtons() {
+        let buttonData = [];
+
+        // TODO: Get real icons for CR / UN / EX
+        buttonData.push({
+            id: 'crTool',
+            title: 'CR Tool',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-measure-temp'
+        });
+
+        buttonData.push({
+            id: 'unTool',
+            title: 'UN Tool',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-measure-temp'
+        });
+        
+        buttonData.push({
+            id: 'exTool',
+            title: 'EX Tool',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/lesiontracker/assets/icons.svg#icon-tools-measure-temp'
+        });
+
+        return buttonData;   
     }
+
 });
 
 Template.toolbarSection.events({
@@ -121,22 +150,24 @@ Template.toolbarSection.events({
 });
 
 Template.toolbarSection.onRendered(function() {
-    var tooltipButtons = $('[data-toggle="tooltip"]');
+    const instance = Template.instance();
+    const tooltipButtons = instance.$('[data-toggle="tooltip"]');
     tooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
 
     // Enable tooltips for the layout button
-    var extraTooltipButtons = $('[rel="tooltip"]');
+    const extraTooltipButtons = instance.$('[rel="tooltip"]');
     extraTooltipButtons.tooltip(OHIF.viewer.tooltipConfig);
 
     // Set disabled/enabled tool buttons that are set in toolManager
-    var states = toolManager.getToolDefaultStates();
-    var disabledToolButtons = states.disabledToolButtons;
-    var allToolbarButtons = $('#toolbar').find('button');
+    const states = toolManager.getToolDefaultStates();
+    const disabledToolButtons = states.disabledToolButtons;
+    const allToolbarButtons = $('#toolbar').find('button');
     if (disabledToolButtons && disabledToolButtons.length > 0) {
         for (var i = 0; i < allToolbarButtons.length; i++) {
-            var toolbarButton = allToolbarButtons[i];
+            const toolbarButton = allToolbarButtons[i];
             $(toolbarButton).prop('disabled', false);
-            var index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
+
+            const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
             if (index !== -1) {
                 $(toolbarButton).prop('disabled', true);
             }

@@ -1,19 +1,19 @@
 <template name="lesionTableRow">
-    <div class="lesionTableRow {{#if descriptionRequired}}warning{{/if}}{{#if responseStatus}}response-status{{/if}}" data-measurementid="{{_id}}">
+    <div class="lesionTableRow {{#unless rowItem.location}}warning{{/unless}}{{#if responseStatus}}response-status{{/if}}" data-measurementid="{{_id}}">
         <div class='lesionRowSidebar'>
             <div class="lesionNumber">
                 {{rowItem.lesionNumberAbsolute}}
             </div>
-            {{#if rowItem.descriptionRequired}}
+            {{#unless rowItem.location}}
                 <div class="warning-icon">
                     <svg>
                         <use xlink:href=/packages/lesiontracker/assets/icons.svg#icon-ui-warning></use>
                     </svg>
                 </div>
-            {{/if}}
+            {{/unless}}
             {{#if rowItem.responseStatus}}
                 <div class="response-status-icon">
-                    CR
+                    {{ rowItem.responseStatus }}
                 </div>
             {{/if}}
         </div>
