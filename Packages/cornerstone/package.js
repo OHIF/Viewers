@@ -22,6 +22,12 @@ Package.onUse(function(api) {
     api.addFiles('client/cornerstoneWADOImageLoader.js', 'client', {
         bare: true
     });
+    api.addFiles('client/libopenjpeg.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/libCharLS.js', 'client', {
+        bare: true
+    });
     api.addFiles('client/dicomParser.js', 'client', {
         bare: true
     });
