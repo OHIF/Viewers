@@ -1,5 +1,5 @@
 Template.worklistToolbar.onCreated(() => {
-    Meteor.call('importSupported', function(error, result) {
+    Meteor.call('importSupported', (error, result) => {
         if (error || !result) {
             Session.set('importSupported', false);
         } else {

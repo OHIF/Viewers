@@ -3,7 +3,7 @@ Meteor.startup(function() {
         mouse: cornerstoneTools.bidirectional,
         touch: cornerstoneTools.bidirectionalTouch
     });
-    
+
     toolManager.addTool('nonTarget', {
         mouse: cornerstoneTools.nonTarget,
         touch: cornerstoneTools.nonTargetTouch

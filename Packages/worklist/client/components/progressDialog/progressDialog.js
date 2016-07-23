@@ -1,56 +1,69 @@
 progressDialog = {
-    'show': function(title, numberOfTotal) {
-        Session.set("progressDialogSettings", { title: title, numberOfCompleted: 0, numberOfTotal: numberOfTotal });
+    show: function(title, numberOfTotal) {
+        Session.set('progressDialogSettings', {
+            title: title,
+            numberOfCompleted: 0,
+            numberOfTotal: numberOfTotal
+        });
 
         $('#progressDialog').css('display', 'block');
     },
-    'update': function(numberOfCompleted) {
-        var progressDialogSettings = Session.get("progressDialogSettings");
+    update: function(numberOfCompleted) {
+        var progressDialogSettings = Session.get('progressDialogSettings');
         progressDialogSettings.numberOfCompleted = numberOfCompleted;
 
-        Session.set("progressDialogSettings", progressDialogSettings);
+        Session.set('progressDialogSettings', progressDialogSettings);
 
         if (progressDialogSettings.numberOfCompleted === progressDialogSettings.numberOfTotal) {
             progressDialog.close();
         }
     },
-    'close': function() {
-        Session.set("progressDialogSettings", { title: "", numberOfCompleted: 0, numberOfTotal: 1 });
+    close: function() {
+        Session.set('progressDialogSettings', {
+            title: '',
+            numberOfCompleted: 0,
+            numberOfTotal: 1
+        });
+
         $('#progressDialog').css('display', 'none');
     },
-    'setMessage': function(message) {
-        var progressDialogSettings = Session.get("progressDialogSettings");
+    setMessage: function(message) {
+        let progressDialogSettings = Session.get('progressDialogSettings');
         progressDialogSettings.message = message;
-        Session.set("progressDialogSettings", progressDialogSettings);
+        Session.set('progressDialogSettings', progressDialogSettings);
     }
 };
 
 Template.progressDialog.helpers({
-    'progressDialogTitle': function () {
-        if (Session.get("progressDialogSettings") && Session.get("progressDialogSettings").title) {
-            return Session.get("progressDialogSettings").title;
+    progressDialogTitle() {
+        var settings = Session.get('progressDialogSettings');
+        if (!settings) {
+            return;
         }
 
-        return "";
+        return settings.title;
     },
-    'progressStatus': function() {
-        var numberOfCompleted = 0;
-        if (Session.get("progressDialogSettings") && Session.get("progressDialogSettings").numberOfCompleted) {
-            numberOfCompleted = Session.get("progressDialogSettings").numberOfCompleted;
+
+    progressStatus() {
+        const settings = Session.get('progressDialogSettings');
+        if (!settings) {
+            return;
         }
 
-        var numberofTotal = 1;
-        if (Session.get("progressDialogSettings") && Session.get("progressDialogSettings").numberOfTotal) {
-            numberofTotal = Session.get("progressDialogSettings").numberOfTotal;
+        if (settings.numberOfCompleted === undefined ||
+            settings.numberOfTotal === undefined) {
+            return;
         }
 
-        return parseInt((numberOfCompleted / numberofTotal) * 100) + "%";
+        return settings.numberOfCompleted / settings.numberOfTotal;
     },
-    'progressMessage': function() {
-        var progressDialogSettings = Session.get("progressDialogSettings");
-        if (progressDialogSettings && progressDialogSettings.message) {
-            return progressDialogSettings.message;
+
+    progressMessage() {
+        var settings = Session.get('progressDialogSettings');
+        if (!settings) {
+            return;
         }
-        return;
+
+        return settings.message;
     }
 });

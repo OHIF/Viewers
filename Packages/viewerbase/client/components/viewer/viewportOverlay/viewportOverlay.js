@@ -133,12 +133,12 @@ Template.viewportOverlay.helpers({
         Session.get('CornerstoneImageRendered' + this.viewportIndex);
         var element = getElementIfNotEmpty(this.viewportIndex);
         if (!element) {
-            return '';
+            return;
         }
 
         var viewport = cornerstone.getViewport(element);
         if (!viewport) {
-            return '';
+            return;
         }
 
         return (viewport.scale * 100.0);

@@ -14,8 +14,8 @@ Object.keys(ViewerData).forEach(function(contentId) {
 });
 
 Router.configure({
-    layoutTemplate: 'lesionTrackerLayout',
-    loadingTemplate: 'lesionTrackerLayout'
+    layoutTemplate: 'layout',
+    loadingTemplate: 'layout'
 });
 
 Router.onBeforeAction('loading');
@@ -50,7 +50,7 @@ Router.route('/', function() {
 });
 
 Router.route('/viewer/timepoints/:_id', {
-    layoutTemplate: 'lesionTrackerLayout',
+    layoutTemplate: 'layout',
     name: 'viewer',
     onBeforeAction: function() {
         var timepointId = this.params._id;

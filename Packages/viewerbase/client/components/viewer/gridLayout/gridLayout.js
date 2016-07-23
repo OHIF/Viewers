@@ -30,11 +30,3 @@ Template.gridLayout.helpers({
         return viewportData;
     }
 });
-
-Template.gridLayout.onRendered(function() {
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
-});
-
-Template.gridLayout.onDestroyed(function() {
-    OHIF.viewer.updateImageSynchronizer.destroy();
-});

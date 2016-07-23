@@ -55,6 +55,8 @@ Package.onUse(function(api) {
     ], 'client', {
         bare: true
     });
+    
+    api.addFiles('client/tools.js', 'client');
 
     // UI Components
     api.addFiles('client/components/viewer/viewer.html', 'client');
@@ -80,8 +82,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTracker/lesionTracker.html', 'client');
     api.addFiles('client/components/lesionTracker/lesionTracker.styl', 'client');
     api.addFiles('client/components/lesionTracker/lesionTracker.js', 'client');
-
-    api.addFiles('client/components/lesionTrackerLayout/lesionTrackerLayout.html', 'client');
 
     api.addFiles('client/components/additionalFindings/additionalFindings.html', 'client');
     api.addFiles('client/components/additionalFindings/additionalFindings.styl', 'client');

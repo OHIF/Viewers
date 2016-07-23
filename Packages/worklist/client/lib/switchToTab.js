@@ -50,7 +50,6 @@ switchToTab = function(contentId) {
     }
 
     var studies = ViewerData[contentId].studies;
-
     if (studies) {
         // ViewerData already has the meta data (in cases when worklist is launched externally)
         viewStudiesInTab(contentId, studies);

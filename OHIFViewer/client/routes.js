@@ -17,13 +17,12 @@ Router.configure({
 });
 
 Router.onBeforeAction('loading');
-
-Router.route('/', function() {
-    this.render('worklist');
+Router.onBeforeAction(function() {
+    this.next();
 });
 
-Router.route('/worklist', function() {
-    this.render('worklist');
+Router.route('/', function() {
+    this.render('ohifViewer');
 });
 
 Router.route('/viewer/:_id', {
@@ -37,11 +36,12 @@ Router.route('/viewer/:_id', {
         var tabs = WorklistTabs.find({
             studyInstanceUid: studyInstanceUid
         });
+
         if (tabs.count()) {
             return;
         }
 
-        this.render('worklist', {
+        this.render('ohifViewer', {
             data: function() {
                 return {
                     studyInstanceUid: studyInstanceUid
@@ -49,10 +49,4 @@ Router.route('/viewer/:_id', {
             }
         });
     }
-});
-
-Router.onBeforeAction(function() {
-
-    // User is logged in, go ahead and route them
-    this.next();
 });

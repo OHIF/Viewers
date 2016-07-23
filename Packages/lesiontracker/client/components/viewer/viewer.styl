@@ -6,6 +6,23 @@
   display: flex
   flex-flow: column wrap
   height: 100%
+  width: 100%
   margin: 0
   padding: 0
-  width: 100%
+
+
+#imageViewerViewports
+  .viewportContainer
+    border: none !important
+    outline: 0 !important // Prevent blue outline in Chrome
+
+    &:hover
+    &.active
+    &:hover.active
+      border: none !important
+      outline: 0 !important // Prevent blue outline in Chrome
+
+    &:not(:last-child)
+    .removable
+      .imageViewerViewport
+        border-right: $uiBorderThickness solid #436270

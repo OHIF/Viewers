@@ -34,6 +34,7 @@ Package.onUse(function(api) {
     // ---------- Components ----------
 
     // Basic components
+    api.addFiles('client/components/basic/layout/layout.html', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.html', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.styl', 'client');
 
@@ -44,14 +45,14 @@ Package.onUse(function(api) {
     api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
     api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
 
+    api.addFiles('client/components/basic/emailVerification/emailVerification.html', 'client');
+    api.addFiles('client/components/basic/emailVerification/emailVerification.styl', 'client');
+    api.addFiles('client/components/basic/emailVerification/emailVerification.js', 'client');
+
     // Study Browser components
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.html', 'client');
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.js', 'client');
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.styl', 'client');
-
-    api.addFiles('client/components/studyBrowser/relatedStudySelect/relatedStudySelect.html', 'client');
-    api.addFiles('client/components/studyBrowser/relatedStudySelect/relatedStudySelect.js', 'client');
-    api.addFiles('client/components/studyBrowser/relatedStudySelect/relatedStudySelect.styl', 'client');
 
     api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.html', 'client');
     api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.js', 'client');
@@ -139,6 +140,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
     api.addFiles('lib/isImage.js', 'client');
     api.addFiles('lib/sopClassDictionary.js', 'client');
+    api.addFiles('lib/debugReactivity.js', 'client');
 
     api.export('resizeViewportElements', 'client');
     api.export('handleResize', 'client');

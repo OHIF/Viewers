@@ -25,6 +25,11 @@ function loadSeriesIntoViewport(data, templateData) {
     var viewportIndex = $('.imageViewerViewport').index(element);
 
     layoutManager = layoutManager || window.layoutManager;
+    layoutManager.viewportData = layoutManager.viewportData || {};
+    if (layoutManager.viewportData[viewportIndex] === undefined) {
+    	layoutManager.viewportData[viewportIndex] = {};	
+    }
+
     layoutManager.viewportData[viewportIndex].viewportIndex = viewportIndex;
 
     // Get the contentID of the current worklist tab, if the viewport is running

@@ -1,12 +1,14 @@
-// Define the ViewerData global object
-// If there is currently any Session data for this object,
-// use this to repopulate the variable
-ViewerData = Session.get('ViewerData') || {};
-
 const worklistContentId = 'worklistTab';
 const viewerContentId = 'viewerTab';
 
-Template.lesionTracker.onRendered(() => {
+// Define the ViewerData global object
+// If there is currently any Session data for this object,
+// use this to repopulate the variable
+Template.ohifViewer.onCreated(() => {
+    ViewerData = Session.get('ViewerData') || {};
+});
+
+Template.ohifViewer.onRendered(() => {
     const templateData = Template.currentData();
     if (templateData && templateData.studyInstanceUid) {
         const studyInstanceUid = templateData.studyInstanceUid;
@@ -21,7 +23,7 @@ Template.lesionTracker.onRendered(() => {
     }
 });
 
-Template.lesionTracker.events({
+Template.ohifViewer.events({
     'click .js-toggle-studyList'() {
         const contentId = Session.get('activeContentId');
 
@@ -33,12 +35,10 @@ Template.lesionTracker.events({
     }
 });
 
-Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
-
-Template.lesionTracker.helpers({
+Template.ohifViewer.helpers({
     studyListToggleText() {
         const contentId = Session.get('activeContentId');
-        
+
         // If the Viewer has not been opened yet, 'Back to viewer' should
         // not be displayed
         const viewerContentExists = !!Object.keys(ViewerData).length;
@@ -48,7 +48,7 @@ Template.lesionTracker.helpers({
 
         if (contentId === worklistContentId) {
             return 'Back to viewer';
-        } else if (contentId === viewerContentId) {
+        } else {
             return 'Study list';
         }
     },

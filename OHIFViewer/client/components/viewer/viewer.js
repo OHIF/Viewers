@@ -29,23 +29,11 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
-    Meteor.subscribe('hangingprotocols');
-
-    log.info('viewer onCreated');
-
-    if (isTouchDevice()) {
-        OHIF.viewer.tooltipConfig = {
-            trigger: 'manual'
-        };
-    } else {
-        OHIF.viewer.tooltipConfig = {
-            trigger: 'hover'
-        };
-    }
+    instance.subscribe('hangingprotocols');
 
     const contentId = instance.data.contentId;
 
-    if (ViewerData[contentId].loadedSeriesData) {
+    if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
 
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
@@ -53,7 +41,7 @@ Template.viewer.onCreated(() => {
     } else {
         log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
-
+        ViewerData[contentId] = {};
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
@@ -85,4 +73,4 @@ Template.viewer.events({
         const current = instance.data.state.get('rightSidebar');
         instance.data.state.set('rightSidebar', !current);
     },
-})
+});

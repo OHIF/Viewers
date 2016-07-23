@@ -1,8 +1,8 @@
 Template.flexboxLayout.events({
-    'transitionend .sidebarMenu'(event, instance) {
+    'transitionend .sidebarMenu'() {
         handleResize();
     },
-    'transitionend .sidebar-option'(event, instance) {
+    'transitionend .sidebar-option'(event) {
         // Prevent this event from bubbling
         event.stopPropagation();
     }

@@ -1,6 +1,9 @@
 Template.viewerMain.onCreated(() => {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
+
+    // Create the synchronizer used to update reference lines
+    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 });
 
 Template.viewerMain.onRendered(() => {
@@ -21,6 +24,6 @@ Template.viewerMain.onDestroyed(() => {
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
 
-    // Destory the synchronizer used to update reference lines
+    // Destroy the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer.destroy();
 });

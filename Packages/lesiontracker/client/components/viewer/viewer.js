@@ -26,6 +26,8 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
+    instance.subscribe('hangingprotocols');
+    
     Session.set('currentTimepointId', instance.data.currentTimepointId);
 
     const contentId = instance.data.contentId;
@@ -49,18 +51,6 @@ Template.viewer.onCreated(() => {
     OHIF.viewer.defaultHotkeys.bidirectional = 'T'; // Target
     OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
 
-    if (isTouchDevice()) {
-        OHIF.viewer.tooltipConfig = {
-            trigger: 'manual'
-        };
-    } else {
-        OHIF.viewer.tooltipConfig = {
-            trigger: 'hover'
-        };
-    }
-
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
-
     if (ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
@@ -68,20 +58,7 @@ Template.viewer.onCreated(() => {
     } else {
         log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
-
-        ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
-
-        // Update the viewer data object
-        if (!instance.data.timepointIds || instance.data.timepointIds.length <= 1) {
-            // Update the viewer data object
-            ViewerData[contentId].viewportColumns = 1;
-            ViewerData[contentId].viewportRows = 1;
-        } else if (instance.data.timepointIds.length > 1) {
-            ViewerData[contentId].viewportColumns = 2;
-            ViewerData[contentId].viewportRows = 1;
-        }
-
-        ViewerData[contentId].activeViewport = 0;
+        ViewerData[contentId].loadedSeriesData = {};
         Session.set('ViewerData', ViewerData);
     }
 
@@ -108,11 +85,8 @@ Template.viewer.onCreated(() => {
         instance.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientAdditionalFindings', dataContext.studies[0].patientId);
-
-        const subscriptionsReady = instance.subscriptionsReady();
-        log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
-
-        if (subscriptionsReady) {
+        
+        if (instance.subscriptionsReady()) {
             // Set buttons as enabled/disabled when Timepoints collection is ready
             timepointAutoCheck(dataContext);
 

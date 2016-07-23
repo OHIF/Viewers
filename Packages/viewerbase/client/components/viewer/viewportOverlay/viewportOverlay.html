@@ -11,13 +11,13 @@
             <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
         </div>
         <div class="bottomright dicomTag">
-            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 2}}%{{/if}}</div>
             <div>{{compression}}</div>
             <div>{{wwwc}}</div>
         </div>
         <div class="bottomleft dicomTag">
-            <div>Ser: {{seriesNumber}}</div>
-            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
+            <div>{{#if numImages}}Img: {{imageNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
             <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
             <div>{{imageDimensions}}</div>
             <div>{{seriesDescription}}</div>
@@ -33,12 +33,12 @@
             <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
         </div>
         <div class="bottomright dicomTag">
-            <div>Ser: {{seriesNumber}}</div>
-            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
+            <div>{{#if numImages}}Img: {{imageNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
             <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
             <div>{{imageDimensions}}</div>
             <div>{{seriesDescription}}</div>
-            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 2}}%{{/if}}</div>
             <div>{{compression}}</div>
             <div>{{wwwc}}</div>
         </div>
@@ -53,12 +53,12 @@
             <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
         </div>
         <div class="bottomleft dicomTag">
-            <div>Ser: {{seriesNumber}}</div>
-            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
+            <div>{{#if numImages}}Img: {{imageNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
             <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
             <div>{{imageDimensions}}</div>
             <div>{{seriesDescription}}</div>
-            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 2}}%{{/if}}</div>
             <div>{{compression}}</div>
             <div>{{wwwc}}</div>
         </div>

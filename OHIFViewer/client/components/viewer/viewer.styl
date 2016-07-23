@@ -1,31 +1,11 @@
-@import "{design}/app.styl"
+@import "{design}/app"
 
 #viewer
-  border-top: 1px solid #525252
-  height: 100%
-  width: 100%
   align-items: stretch
   background-color: black
   display: flex
   flex-flow: column wrap
+  height: 100%
+  width: 100%
   margin: 0
   padding: 0
-  
-  #toolbar
-  	float: left
-  	height: 30px
-  	
-		a.btn
-	    text-align: center
-	    color: $defaultColor
-	    background-color: $primaryBackgroundColor
-	    transition(all 0.1s ease)
-	    
-	    // Prevent the blue outline in Chrome when a viewport is selected
-	    outline: 0 !important
-	    
-	    &:hover
-	      color: $hoverColor
-
-	    &.active, &:active
-	      color: $activeColor

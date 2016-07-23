@@ -3,18 +3,3 @@
 #imageViewerViewports
   height: 100%
   width: 100%
-
-  .viewportContainer
-    float: left
-    border: $viewportBorderThickness solid $viewportBorderColor
-    
-    &.active, &:hover.active
-      border: $viewportBorderThickness solid $viewportBorderColorActive
-      
-    &:hover
-      border: $viewportBorderThickness solid $viewportBorderColorHover
-    
-    .removable
-      width: 100%
-      height: 100%
-      position: relative // Necessary so that the viewportOverlay is on top of the viewports

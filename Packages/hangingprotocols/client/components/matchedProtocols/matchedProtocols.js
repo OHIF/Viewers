@@ -1,10 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 
-Template.matchedProtocols.onRendered(() => {
-    const instance = Template.instance();
-    instance.$('#matchedProtocols button').tooltip(OHIF.viewer.tooltipConfig);
-});
-
 Template.matchedProtocols.helpers({
     /**
      * Reactively re-render the MatchedProtocols Collection contents
