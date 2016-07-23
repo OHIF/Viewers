@@ -2,6 +2,14 @@ import { OHIF } from 'meteor/ohif:core';
 import { TimepointApi } from 'meteor/lesiontracker/lib/api/timepoint';
 
 OHIF.viewer = OHIF.viewer || {};
+OHIF.viewer.loadIndicatorDelay = 3000;
+OHIF.viewer.defaultTool = 'wwwc';
+OHIF.viewer.refLinesEnabled = true;
+OHIF.viewer.isPlaying = {};
+OHIF.viewer.cine = {
+    framesPerSecond: 24,
+    loop: true
+};
 
 Session.setDefault('activeViewport', false);
 Session.setDefault('leftSidebar', null);
@@ -12,9 +20,6 @@ Template.viewer.onCreated(() => {
 
     instance.data.timepointApi = new TimepointApi();
 
-    // Attach the Window resize listener
-    $(window).on('resize', handleResize);
-
     ValidationErrors.remove({});
 
     instance.data.state = new ReactiveDict();
@@ -23,49 +28,20 @@ Template.viewer.onCreated(() => {
 
     Session.set('currentTimepointId', instance.data.currentTimepointId);
 
-    var contentId = instance.data.contentId;
+    const contentId = instance.data.contentId;
 
-    OHIF.viewer.loadIndicatorDelay = 3000;
-    OHIF.viewer.defaultTool = 'wwwc';
-    OHIF.viewer.refLinesEnabled = true;
-    OHIF.viewer.isPlaying = {};
-    OHIF.viewer.cine = {
-        framesPerSecond: 24,
-        loop: true
-    };
-
-    OHIF.viewer.functionList = {
-        invert: function(element) {
-            var viewport = cornerstone.getViewport(element);
-            viewport.invert = !viewport.invert;
-            cornerstone.setViewport(element, viewport);
-        },
-        resetViewport: function(element) {
-            cornerstone.reset(element);
-        },
-        playClip: function(element) {
-            var viewportIndex = $('.imageViewerViewport').index(element);
-            var isPlaying = OHIF.viewer.isPlaying[viewportIndex] || false;
-            if (isPlaying === true) {
-                cornerstoneTools.stopClip(element);
-            } else {
-                cornerstoneTools.playClip(element);
-            }
-
-            OHIF.viewer.isPlaying[viewportIndex] = !OHIF.viewer.isPlaying[viewportIndex];
-            Session.set('UpdateCINE', Random.id());
-        },
+    OHIF.viewer.functionList = $.extend(OHIF.viewer.functionList, {
         toggleLesionTrackerTools: toggleLesionTrackerTools,
         clearTools: clearTools,
-        bidirectional: function() {
+        bidirectional: () => {
             // Used for hotkeys
             toolManager.setActiveTool('bidirectional');
         },
-        nonTarget: function() {
+        nonTarget: () => {
             // Used for hotkeys
             toolManager.setActiveTool('nonTarget');
         }
-    };
+    });
 
     // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
     OHIF.viewer.defaultHotkeys = OHIF.viewer.defaultHotkeys || {};
@@ -117,23 +93,23 @@ Template.viewer.onCreated(() => {
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
 
-    instance.data.studies.forEach(function(study) {
+    instance.data.studies.forEach(study => {
         study.selected = true;
         ViewerStudies.insert(study);
     });
 
-    var patientId = instance.data.studies[0].patientId;
+    const patientId = instance.data.studies[0].patientId;
     Session.set('patientId', patientId);
 
-    instance.autorun(function() {
-        var dataContext = Template.currentData();
+    instance.autorun(() => {
+        const dataContext = Template.currentData();
         instance.subscribe('singlePatientAssociatedStudies', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientTimepoints', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientAdditionalFindings', dataContext.studies[0].patientId);
 
-        var subscriptionsReady = instance.subscriptionsReady();
+        const subscriptionsReady = instance.subscriptionsReady();
         log.info('autorun viewer.js. Ready: ' + subscriptionsReady);
 
         if (subscriptionsReady) {
@@ -143,9 +119,9 @@ Template.viewer.onCreated(() => {
             TrialResponseCriteria.validateAllDelayed();
 
             ViewerStudies.find().observe({
-                added: function(study) {
+                added: study => {
                     // Find the relevant timepoint given the newly added study
-                    var timepoint = Timepoints.findOne({
+                    const timepoint = Timepoints.findOne({
                         studyInstanceUids: {
                             $in: [study.studyInstanceUid]
                         }
@@ -166,7 +142,7 @@ Template.viewer.onCreated(() => {
             });
 
             ImageMeasurements.find().observe({
-                added: function(data) {
+                added: data => {
                     if (data.clientId === ClientId) {
                         return;
                     }
@@ -176,7 +152,7 @@ Template.viewer.onCreated(() => {
                     // Update each displayed viewport
                     updateAllViewports();
                 },
-                changed: function(data) {
+                changed: data => {
                     if (data.clientId === ClientId) {
                         return;
                     }
@@ -186,7 +162,7 @@ Template.viewer.onCreated(() => {
                     // Update each displayed viewport
                     updateAllViewports();
                 },
-                removed: function(data) {
+                removed: data => {
                     if (data.clientId === ClientId) {
                         return;
                     }
@@ -199,7 +175,7 @@ Template.viewer.onCreated(() => {
             });
 
             Measurements.find().observe({
-                added: function(data) {
+                added: data => {
                     if (data.clientId === ClientId) {
                         TrialResponseCriteria.validateAllDelayed();
                         return;
@@ -214,7 +190,7 @@ Template.viewer.onCreated(() => {
                     // Update each displayed viewport
                     updateAllViewports();
                 },
-                changed: function(data) {
+                changed: data => {
                     if (data.clientId === ClientId) {
                         TrialResponseCriteria.validateAllDelayed();
                         return;
@@ -231,7 +207,7 @@ Template.viewer.onCreated(() => {
 
                     TrialResponseCriteria.validateAllDelayed();
                 },
-                removed: function(data) {
+                removed: data => {
                     log.info('Measurement removed');
 
                     // Check that this Measurement actually contains timepoint data
@@ -241,14 +217,14 @@ Template.viewer.onCreated(() => {
 
                     // Get the Measurement ID and relevant tool so we can remove
                     // tool data for this Measurement
-                    var measurementId = data._id;
-                    var toolType = data.toolType;
+                    const measurementId = data._id;
+                    const toolType = data.toolType;
 
                     // Remove the measurement from all the imageIds on which it exists
                     // as toolData
-                    Object.keys(data.timepoints).forEach(function(timepointId) {
+                    Object.keys(data.timepoints).forEach(timepointId => {
                         // Clear the toolData for this timepoint
-                        var imageId = data.timepoints[timepointId].imageId;
+                        const imageId = data.timepoints[timepointId].imageId;
                         removeToolDataWithMeasurementId(imageId, toolType, measurementId);
 
                         // Set reviewer for this timepoint
@@ -264,14 +240,14 @@ Template.viewer.onCreated(() => {
                     // find the Measurements, whereas on the server it's
                     // only "greater than", since inside this callback the
                     // Measurements have already been decremented.
-                    var measurements = Measurements.find({
+                    const measurements = Measurements.find({
                         patientId: data.patientId,
                         lesionNumberAbsolute: {
                             $gte: data.lesionNumberAbsolute
                         }
                     });
 
-                    measurements.forEach(function(measurement) {
+                    measurements.forEach(measurement => {
                         syncMeasurementAndToolData(measurement);
                     });
 
@@ -289,26 +265,14 @@ Template.viewer.onCreated(() => {
     });
 });
 
-Template.viewer.onRendered(function() {
-    // Enable hotkeys
-    enableHotkeys();
-});
-
-Template.viewer.onDestroyed(function() {
-    // Remove the Window resize listener
-    $(window).off('resize', handleResize);
-
-    OHIF.viewer.updateImageSynchronizer.destroy();
-});
-
 Template.viewer.events({
-    'CornerstoneToolsMeasurementAdded .imageViewerViewport': function(e, template, eventData) {
-        handleMeasurementAdded(e, eventData);
+    'CornerstoneToolsMeasurementAdded .imageViewerViewport'(event, instance, eventData) {
+        handleMeasurementAdded(event, eventData);
     },
-    'CornerstoneToolsMeasurementModified .imageViewerViewport': function(e, template, eventData) {
-        handleMeasurementModified(e, eventData);
+    'CornerstoneToolsMeasurementModified .imageViewerViewport'(event, instance, eventData) {
+        handleMeasurementModified(event, eventData);
     },
-    'CornerstoneToolsMeasurementRemoved .imageViewerViewport': function(e, template, eventData) {
-        handleMeasurementRemoved(e, eventData);
+    'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
+        handleMeasurementRemoved(event, eventData);
     }
 });

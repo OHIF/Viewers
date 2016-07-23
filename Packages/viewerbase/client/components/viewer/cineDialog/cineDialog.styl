@@ -1,3 +1,7 @@
+@import "{design}/app.styl"
+
+$borderColor = rgba(77, 99, 110, 0.81)
+
 #cineDialog
   display: none
   z-index: 1000
@@ -9,32 +13,29 @@
 
   overflow: hidden  
   padding: 10px
-  
-  width: 250px
+  width: 300px
   height: 175px
 
-  border: 1px black solid
-  border-radius: 3px
-  background: white
-  color: black
-  
+  opacity: 0.95
+  border-radius: 8px
+  border: 1px solid $borderColor;
+  background: $uiGrayDarkest
+  color: $textSecondaryColor
+
+  h5, label
+    font-weight: 100
+
   box-sizing: border-box
-  
-  -webkit-user-select: none
-  -moz-user-select: none
-  -o-user-select: none
-  -ms-user-select: none
-  -khtml-user-select: none
-  user-select: none
 
-  #cineButtons
-    padding-bottom: 10px
-    overflow: auto
+  .btn
+    background: $uiGrayDarkest
+    color: $textSecondaryColor
 
-    .cineButton
-      cursor: pointer
-      margin: 0 6px
-      text-decoration: none
+    &:hover
+      color: $hoverColor
+
+    &:active, &.active
+      color: $activeColor
 
   #cineOptions
     padding: 5px 0

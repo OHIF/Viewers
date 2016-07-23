@@ -82,6 +82,27 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-undo'
         });
 
+        buttonData.push({
+            id: 'toggleCinePlay',
+            title: 'Toggle CINE Play',
+            classes: 'imageViewerCommand',
+            buttonTemplateName: 'playClipButton'
+        });
+
+        buttonData.push({
+            id: 'toggleCineDialog',
+            title: 'CINE',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-youtube-play'
+        });
+
+        buttonData.push({
+            id: 'layout',
+            title: 'Layout',
+            iconClasses: 'fa fa-th-large',
+            buttonTemplateName: 'layoutButton'
+        });
+
         return buttonData;
     },
 
@@ -145,12 +166,34 @@ Template.toolbarSection.helpers({
         });
 
         return buttonData;   
+    },
+
+    hangingProtocolButtons() {
+        let buttonData = [];
+
+        buttonData.push({
+            id: 'previousPresentationGroup',
+            title: 'Prev. Stage',
+            iconClasses: 'fa fa-step-backward',
+            buttonTemplateName: 'previousPresentationGroupButton'
+        });
+
+        buttonData.push({
+            id: 'nextPresentationGroup',
+            title: 'Next Stage',
+            iconClasses: 'fa fa-step-forward',
+            buttonTemplateName: 'nextPresentationGroupButton'
+        });
+
+        return buttonData;
     }
 
 });
 
 Template.toolbarSection.onRendered(function() {
     const instance = Template.instance();
+
+    instance.$('#layout').dropdown();
 
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = toolManager.getToolDefaultStates();

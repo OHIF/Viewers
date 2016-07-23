@@ -90,6 +90,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/imageControls/imageControls.js', 'client');
     api.addFiles('client/components/viewer/imageControls/imageControls.styl', 'client');
 
+    api.addFiles('client/components/viewer/layoutButton/layoutButton.html', 'client');
+    api.addFiles('client/components/viewer/layoutButton/layoutButton.js', 'client');
+
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.html', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.js', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.styl', 'client');
@@ -106,15 +109,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.js', 'client');
     api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.styl', 'client');
 
-    api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.html', 'client');
-    api.addFiles('client/components/viewer/simpleToolbarButton/simpleToolbarButton.js', 'client');
-
     api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
     api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
-
-    api.addFiles('client/components/viewer/toolbar/toolbar.html', 'client');
-    api.addFiles('client/components/viewer/toolbar/toolbar.js', 'client');
-    api.addFiles('client/components/viewer/toolbar/toolbar.styl', 'client');
 
     // Library functions
     api.addFiles('lib/layoutManager.js', 'client');
@@ -203,6 +199,14 @@ Package.onUse(function(api) {
 
     api.addFiles('lib/helpers/isTouchDevice.js', 'client');
     api.export('isTouchDevice', 'client');
+
+    // TODO: Clean this up later, no real need to export these
+    // Need to move functionList into viewerbase
+    api.export('toggleCineDialog', 'client');
+    api.export('toggleCinePlay', 'client');
+    api.export('clearTools', 'client');
+    api.export('resetViewport', 'client');
+    api.export('invert', 'client');
 
     api.addFiles('server/methods/importStudies.js', 'server');
 

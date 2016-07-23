@@ -1,19 +1,28 @@
 @import "{design}/app.styl"
 
+$borderColor = rgba(77, 99, 110, 0.81)
+
 .layoutChooser
   width: 92px
   height: 92px
   min-width: 92px // to override bootstrap's dropdown-menu class
   min-height: 92px
-  background-color: $primaryBackgroundColor
-  border: 2px solid $uiBorderColorDark
-  
+
+  //background-color: $primaryBackgroundColor
+  opacity: 0.95
+  border-radius: 8px
+  border: 1px solid $borderColor;
+  background: $uiGrayDarkest
+
+  &.open
+    display: block
+
   table
     margin: 0 auto
     
     td
       cursor: pointer
-      border: 2px solid $uiBorderColorDark
+      border: 1px solid $uiBorderColorDark
       width: 20px
       height: 20px
       transition(background-color 0.1s ease)

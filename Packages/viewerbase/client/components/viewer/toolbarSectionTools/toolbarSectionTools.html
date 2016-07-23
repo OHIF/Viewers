@@ -4,6 +4,7 @@
             {{>toolbarSectionButton toolbarButton}}
         {{/each}}
 
+        {{ #if extraToolbarButtons}}
         <div id="moreTools" class="js-open-more-tools toolbarSectionButton rp-x-1 rm-l-3">
             <div class="svgContainer">
                 <svg>
@@ -24,5 +25,6 @@
                 {{/each}}
             </div>
         </div>
+        {{ /if }}
     </div>
 </template>

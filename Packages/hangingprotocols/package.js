@@ -45,8 +45,11 @@ Package.onUse(function(api) {
     api.addFiles('client/helpers/attributes.js', 'client');
 
     // UI Components
-    api.addFiles('client/components/hangingProtocolButtons/hangingProtocolButtons.html', 'client');
-    api.addFiles('client/components/hangingProtocolButtons/hangingProtocolButtons.js', 'client');
+    api.addFiles('client/components/previousPresentationGroupButton/previousPresentationGroupButton.html', 'client');
+    api.addFiles('client/components/previousPresentationGroupButton/previousPresentationGroupButton.js', 'client');
+
+    api.addFiles('client/components/nextPresentationGroupButton/nextPresentationGroupButton.html', 'client');
+    api.addFiles('client/components/nextPresentationGroupButton/nextPresentationGroupButton.js', 'client');
 
     api.addFiles('client/components/matchedProtocols/matchedProtocols.html', 'client');
     api.addFiles('client/components/matchedProtocols/matchedProtocols.styl', 'client');

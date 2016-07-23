@@ -1,16 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 
-toggleCinePlay = function() {
-    var element = getActiveViewportElement();
-    var playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
-
-    if (isPlaying()) {
-        cornerstoneTools.stopClip(element);
-    } else {
-        cornerstoneTools.playClip(element);
-    }
-};
-
 function updateFramerate(rate) {
     OHIF.viewer.cine.framesPerSecond = rate;
 
@@ -74,6 +63,7 @@ Template.cineDialog.events({
 });
 
 Template.cineDialog.onRendered(function() {
-    var dialog = $('#cineDialog');
+    const instance = Template.instance();
+    const dialog = instance.$('#cineDialog');
     dialog.draggable();
 });

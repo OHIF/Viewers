@@ -1,0 +1,19 @@
+<template name="nextPresentationGroupButton">
+    <div id="{{this.id}}"
+         class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{ #if nextNotAvailable }}disabled{{ /if }}"
+         title="{{this.title}}"
+         disabled="{{ #if nextNotAvailable }}true{{ /if }}">
+    <div class="svgContainer">
+        {{ #if this.svgLink }}
+        <svg>
+            <use xlink:href={{this.svgLink}}></use>
+        </svg>
+        {{ else }}
+        <i class={{iconClasses}}></i>
+        {{ /if }}
+    </div>
+        <div class="buttonLabel">
+            {{this.title}}
+        </div>
+    </div>
+</template>

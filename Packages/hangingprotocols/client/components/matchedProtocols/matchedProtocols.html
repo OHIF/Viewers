@@ -6,7 +6,8 @@
                 aria-haspopup="true"
                 aria-expanded="false"
                 title="Select Hanging Protocol">
-            <i class="fa fa-list-ol"></i><span class="caret"></span>
+            <i class="fa fa-list-ol"></i>
+            <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
             <li>
@@ -14,7 +15,9 @@
             </li>
             {{ #each matchedProtocols }}
             <li>
-                <a class='matchedProtocol {{#if active}}active{{/if}}'>{{name}}</a>
+                <a class='matchedProtocol {{#if active}}active{{/if}}'>
+                    {{name}}
+                </a>
             </li>
             {{ /each }}
         </ul>

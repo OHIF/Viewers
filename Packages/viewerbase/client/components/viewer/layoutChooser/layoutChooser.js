@@ -6,39 +6,41 @@
  * @param currentCell
  */
 function highlightCells(currentCell) {
-    var cells = $('.layoutChooser table td');
+    const cells = $('.layoutChooser table td');
     cells.removeClass('hover');
 
     currentCell = $(currentCell);
-    var table = currentCell.parents('.layoutChooser table').get(0);
-    var rowIndex = currentCell.closest('tr').index();
-    var columnIndex = currentCell.index();
+    const table = currentCell.parents('.layoutChooser table').get(0);
+    const rowIndex = currentCell.closest('tr').index();
+    const columnIndex = currentCell.index();
 
     // Loop through the table row by row
     // and cell by cell to apply the highlighting
     for (var i = 0; i < table.rows.length; i++) {
-        row = table.rows[i];
+        const row = table.rows[i];
         if (i <= rowIndex) {
-           for (var j = 0; j < row.cells.length; j++) {
+            for (var j = 0; j < row.cells.length; j++) {
                 if (j <= columnIndex) {
-                    cell = row.cells[j];
+                    const cell = row.cells[j];
                     cell.classList.add('hover');
                 }
-           }
+            }
         }
     }
 }
+
 Template.layoutChooser.events({
-    'touchstart .layoutChooser table td, mouseenter .layoutChooser table td': function(evt) {
+    'touchstart .layoutChooser table td, mouseenter .layoutChooser table td'(evt) {
         highlightCells(evt.currentTarget);
     },
-    'click .layoutChooser table td': function(evt) {
-        var currentCell = $(evt.currentTarget);
-        var rowIndex = currentCell.closest('tr').index();
-        var columnIndex = currentCell.index();
+
+    'click .layoutChooser table td'(evt) {
+        const currentCell = $(evt.currentTarget);
+        const rowIndex = currentCell.closest('tr').index();
+        const columnIndex = currentCell.index();
 
         // Add 1 because the indices start from zero
-        var layoutProps = {
+        const layoutProps = {
             rows: rowIndex + 1,
             columns: columnIndex + 1
         };
@@ -46,5 +48,8 @@ Template.layoutChooser.events({
         layoutManager.layoutTemplateName = 'gridLayout';
         layoutManager.layoutProps = layoutProps;
         layoutManager.updateViewports();
+
+        const $dropdown = $('.layoutChooser');
+        toggleDialog($dropdown);
     }
 });

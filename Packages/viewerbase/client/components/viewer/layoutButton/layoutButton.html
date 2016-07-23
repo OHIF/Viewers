@@ -1,10 +1,9 @@
-<template name="toolbarSectionButton">
-    {{ #if this.buttonTemplateName }}
-    {{> UI.dynamic template=this.buttonTemplateName data=this }}
-    {{ else }}
+<template name="layoutButton">
     <div id="{{this.id}}"
-         class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}}"
-         title="{{this.title}}">
+         class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} js-dropdown-toggle"
+         title="{{this.title}}"
+         data-target="#layoutChooser"
+         >
         <div class="svgContainer">
             {{ #if this.svgLink }}
             <svg>
@@ -18,5 +17,4 @@
             {{this.title}}
         </div>
     </div>
-    {{ /if }}
 </template>

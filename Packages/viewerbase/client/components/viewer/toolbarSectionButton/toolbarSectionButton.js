@@ -30,7 +30,7 @@ Template.toolbarSectionButton.events({
     },
     'click .imageViewerCommand'(event, instance) {
         const command = event.currentTarget.id;
-        if (!OHIF.viewer.functionList.hasOwnProperty(command)) {
+        if (!OHIF.viewer.functionList || !OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
         }
 
