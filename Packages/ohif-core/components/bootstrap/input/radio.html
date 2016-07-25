@@ -3,7 +3,7 @@
         base='baseInput'
         type='radio'
         mixins=(concat 'input ' this.mixins)
-        labelAfter=(valueIf (isDefined this.labelAfter) this.labelAfter true)
+        labelAfter=(valueIf (isUndefined this.labelAfter) true this.labelAfter)
         labelClass=(concat 'checkboxLabel ' this.labelClass)
         wrappers=(concat ''
             (valueIf reactive this.label 'wrapperLabel ' '')

@@ -15,6 +15,15 @@ tracker                 # Meteor's client-side reactive programming library
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
+clinical:router
+clinical:extended-api
+clinical:active-entry
+clinical:error-pages
+clinical:theming
+clinical:fonts
+clinical:hipaa-audit-log
+clinical:hipaa-logger
+
 design
 ohif:core
 
@@ -40,14 +49,6 @@ lesiontracker
 practicalmeteor:loglevel
 momentjs:moment
 
-clinical:router
-clinical:extended-api
-clinical:active-entry
-clinical:error-pages
-clinical:theming
-clinical:fonts
-clinical:hipaa-audit-log
-clinical:hipaa-logger
 anti:gagarin@=0.4.11
 check
 aldeed:template-extension@4.0.0

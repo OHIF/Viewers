@@ -1,7 +1,7 @@
 <template name="groupRadio">
     {{#group (extend this
         class=(concat 'group-radio ' this.class)
-        mixins=(concat "groupRadio " this.mixins)
+        mixins=(concat 'groupRadio ' this.mixins)
         wrappers=(concat ''
             (valueIf reactive this.label 'wrapperTitle ' '')
             this.wrappers

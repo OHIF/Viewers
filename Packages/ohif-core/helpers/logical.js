@@ -17,7 +17,7 @@ Template.registerHelper('eq', (a, b) => {
 
 // Check if two values are different
 Template.registerHelper('ne', (a, b) => {
-    return a === b;
+    return a !== b;
 });
 
 // Check if the first value is greater than the second one
@@ -66,9 +66,4 @@ Template.registerHelper('valueIf', (condition, valueIfTrue, valueIfFalse) => {
     }
 
     return valueIfFalse;
-});
-
-// Check if the value is different from undefined
-Template.registerHelper('isDefined', value => {
-    return typeof value !== 'undefined';
 });

@@ -15,6 +15,10 @@ Package.onUse(function(api) {
     api.use('templating');
     api.use('reactive-var');
 
+    // Router dependencies
+    api.use('clinical:router@2.0.18', 'client');
+
+    // Component's library dependencies
     api.use('natestrauser:select2@4.0.1', 'client');
 
     // UI Styles
