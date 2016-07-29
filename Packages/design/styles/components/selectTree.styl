@@ -8,12 +8,52 @@ $gray4 = #C0C0C0
 $gray5 = #9B9B9B
 $gray6 = #303030
 
-.select-tree-root
+.select-tree
   background-color: white
+
+  &, a.tree-back, .tree-breadcrumb span, .tree-node, .tree-leaf
+    transition(all 0.3s ease)
+
+.select-tree-root
+  &>*:first-child
+    transition(all 0.3s ease)
+
+.select-tree-root.selected
+  border-color: transparent
+  border-radius: 0
+  // height: 26px
+
+  &, .select-tree
+    background-color: transparent
+
+    &:not(.open)>.tree-options
+      &>.tree-inputs, &>.tree-breadcrumb
+        display: none
+
+    &.open>.tree-options
+      &>.tree-inputs>label:not(.active), &>.tree-breadcrumb a, &>.tree-breadcrumb span
+        color: transparent
+      &>.tree-inputs>label.tree-node:not(.active)
+        border-color: transparent
+
+  .tree-search
+    opacity: 0
+
+  &>.tree-options
+    background-color: transparent
+
+  label.tree-leaf.active
+    box-shadow: 0 0 0 10px white, inset 0 0 0 200px white
+
+.select-tree-root
   border: 1px solid $gray3
   border-radius: 5px
-  display: table
+  display: inline-block
   overflow: hidden
+
+  &>.tree-options
+    transform(scale(1))
+    transition(height 0.3s ease)
 
   .tree-search
     background-color: $gray4
@@ -36,12 +76,32 @@ $gray6 = #303030
     line-height: 32px
     padding: 5px 12px
 
+    .path-link, .tree-current-node
+      display: inline-block
+      font-weight: normal
+      float: left
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+
+      i
+        margin-right: 5px
+
+  .select-tree-node
+    left: 0
+    position: fixed
+    width: 100%
+    z-index: 2
+
   .tree-options
     overflow: hidden
+    position: relative
+    z-index: 2
 
     .tree-node, .tree-leaf
       cursor: pointer
       display: block
+      font-weight: normal
       margin-bottom: 0
       padding: 0 12px
       position: relative
@@ -61,12 +121,13 @@ $gray6 = #303030
         border-bottom: 0
 
     .tree-leaf
+      box-shadow: 0 0 0 200px transparent, inset 0 0 0 200px transparent
       line-height: 26px
 
-    label
-      transition(all 0.3s ease)
+      &.active
+        box-shadow: 0 0 0 200px white, inset 0 0 0 200px white
+        transition(box-shadow 0.3s ease)
+        z-index: 0
 
     &.collapsed
-
-      &>.tree-breadcrumb, &>label:not(.active)
-        display: none
+      z-index: 2

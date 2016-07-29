@@ -20,30 +20,32 @@
                 {{#if this.root}}
                     {{>selectTreeBreadcrumb component=this.component}}
                 {{/if}}
-                {{#each item in (reactive this.items)}}
-                    {{>inputRadio
-                        class=this.radioClass
-                        name=this.key
-                        value=item.value
-                        label=item.label
-                        labelClass=(valueIf (isArray item.items) 'tree-node' 'tree-leaf')
-                        checked=(eq item.value (reactive this.value))
-                    }}
-                {{/each}}
+                <div class="tree-inputs">
+                    {{#each item in (reactive this.items)}}
+                        {{>inputRadio
+                            class=this.radioClass
+                            name=this.key
+                            value=item.value
+                            label=item.label
+                            labelClass=(valueIf (isArray item.items) 'tree-node' 'tree-leaf')
+                            checked=(eq item.value (reactive this.value))
+                        }}
+                    {{/each}}
+                </div>
+                {{#if (and currentNode (isArray currentNode.items))}}
+                    {{>selectTree (clone this
+                        items=currentNode.items
+                        root=(choose this.root this.component)
+                        class='select-tree-node'
+                    )}}
+                {{/if}}
             </div>
-            {{#if (and currentNode (isArray currentNode.items))}}
-                {{>selectTree (clone this
-                    items=currentNode.items
-                    root=(choose this.root this.component)
-                    class='select-tree-node'
-                )}}
-            {{/if}}
         {{/let}}
     {{/group}}
 </template>
 
 <template name="selectTreeBreadcrumb">
-    <div class="tree-breadcrumb">
+    <div class="tree-breadcrumb clearfix">
         {{>selectTreeBreadcrumbParent
             component=this.component.parent
             index=1
@@ -62,11 +64,17 @@
                     component=parent
                     index=(sum this.index 1)
                 }}
-                <a href="#" class="tree-back" data-index="{{this.index}}">{{parentNode.label}}</a>
-                <span>/</span>
-            {{else}}
-                <a href="#" class="tree-back" data-index="{{this.index}}"><i class="fa fa-fast-backward"></i></a>
             {{/if}}
+            <span class="path-link">
+                <a href="#" class="tree-back" data-index="{{this.index}}">
+                    {{#if parentNode}}
+                        <span>{{parentNode.label}}</span>
+                    {{else}}
+                        <i class="fa fa-fast-backward"></i>
+                    {{/if}}
+                </a>
+                {{#if parentNode}}<span>/</span>{{/if}}
+            </span>
         {{/let}}
     {{/let}}
 </template>
