@@ -8,50 +8,63 @@ $gray4 = #C0C0C0
 $gray5 = #9B9B9B
 $gray6 = #303030
 
-.select-tree
-  background-color: white
+.select-tree-root
 
-  &, a.tree-back, .tree-breadcrumb span, .tree-node, .tree-leaf
-    transition(all 0.3s ease)
+  .tree-content
+    background-color: white
+    position: relative
+
+    &
+    .tree-search
+    a.tree-back
+    .tree-breadcrumb span
+    .tree-node
+    .tree-leaf
+      transition(all 0.3s ease)
+
+  &.selected
+
+    label.tree-leaf.active
+      box-shadow: 0 0 0 10px white, inset 0 0 0 200px white
+
+    .tree-content
+      background-color: transparent
+
+    &>.tree-content
+      border-color: transparent
+      border-radius: 0
+
+      .tree-search
+        opacity: 0
+
+    &, .select-tree
+
+      &:not(.open)>.tree-content
+
+        &>.tree-inputs
+        &>.tree-breadcrumb
+          display: none
+
+      &>.tree-content>.tree-options
+
+        &>.tree-inputs>label:not(.active)
+        &>.tree-breadcrumb a
+        &>.tree-breadcrumb span
+          color: transparent
+
+        &>.tree-inputs>label.tree-node:not(.active)
+          border-color: transparent
 
 .select-tree-root
-  &>*:first-child
-    transition(all 0.3s ease)
-
-.select-tree-root.selected
-  border-color: transparent
-  border-radius: 0
-  // height: 26px
-
-  &, .select-tree
-    background-color: transparent
-
-    &:not(.open)>.tree-options
-      &>.tree-inputs, &>.tree-breadcrumb
-        display: none
-
-    &.open>.tree-options
-      &>.tree-inputs>label:not(.active), &>.tree-breadcrumb a, &>.tree-breadcrumb span
-        color: transparent
-      &>.tree-inputs>label.tree-node:not(.active)
-        border-color: transparent
-
-  .tree-search
-    opacity: 0
-
-  &>.tree-options
-    background-color: transparent
-
-  label.tree-leaf.active
-    box-shadow: 0 0 0 10px white, inset 0 0 0 200px white
-
-.select-tree-root
-  border: 1px solid $gray3
-  border-radius: 5px
   display: inline-block
-  overflow: hidden
+  position: relative
 
-  &>.tree-options
+  &>.tree-content
+    border: 1px solid $gray3
+    border-radius: 5px
+    overflow: hidden
+
+  &>.tree-content>.tree-options
     transform(scale(1))
     transition(height 0.3s ease)
 
@@ -89,9 +102,15 @@ $gray6 = #303030
 
   .select-tree-node
     left: 0
+    overflow: hidden
     position: fixed
     width: 100%
     z-index: 2
+
+    &
+    .tree-content
+    .tree-inputs
+      height: 100%
 
   .tree-options
     overflow: hidden
@@ -129,5 +148,87 @@ $gray6 = #303030
         transition(box-shadow 0.3s ease)
         z-index: 0
 
+        &:last-child:after
+          display: block
+          content: ''
+          height: 10px
+
     &.collapsed
-      z-index: 2
+      z-index: 1
+
+  .select-tree-common
+    height: 100%
+    overflow: hidden
+    padding-left: 6px
+    position: absolute
+    right: -100%
+    top: 0
+    width: 100%
+
+    .content
+      background-color: $gray6
+      border: 1px solid $gray5
+      border-radius: 5px
+      color: white
+      opacity: 0.9
+      padding: 5px 12px 12px
+      position: absolute
+      top: 50%
+      transform(translateY(-50%))
+      width: calc(100% - 6px)
+
+      h5.title
+        color: $gray5
+        font-size: 12px
+        font-weight: normal
+        line-height: 20px
+        margin: 0
+
+.select-tree-root
+
+  &>.tree-content
+    transform(scale(0))
+    transform-origin(100% 50%)
+    transition(all 0.3s ease)
+
+  .select-tree-common .content
+    margin-left: calc(-100% - 6px)
+    transition(all 0.3s ease 0.3s)
+
+  &.started
+
+    &>.tree-content
+      transform(scale(1))
+
+    .select-tree-common .content
+      margin-left: 0
+
+  &.interacted
+
+    .select-tree-common
+      overflow: visible
+
+      .content
+        animation-name: selectTreeCommonCloseLeft
+        animation-duration: 0.3s
+        animation-iteration-count: 1
+        animation-direction: alternate
+        animation-timing-function: ease-out
+        animation-fill-mode: forwards
+
+@keyframes selectTreeCommonCloseLeft {
+  from {
+    height: 37px
+    display: table
+    margin-left: 0
+    opacity: 1
+    visibility: visible
+  }
+  to {
+    height: 100%
+    margin-left: calc(-100% - 6px)
+    opacity: 0
+    visibility: hidden
+    width: calc(100% - 6px)
+  }
+}

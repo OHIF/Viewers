@@ -23,8 +23,15 @@ Package.onUse(function(api) {
 
     // UI Styles
     api.addFiles([
-        'ui/resizable/resizable.styl'
+        'client/ui/resizable/resizable.styl'
     ], 'client');
 
-    api.mainModule('main.js', 'client');
+    api.mainModule('main.js', ['client', 'server']);
+
+    // Client imports and routes
+    api.addFiles('client/index.js', 'client');
+
+    // Server imports and methods
+    api.addFiles('server/index.js', 'server');
+
 });

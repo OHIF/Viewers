@@ -4,15 +4,19 @@ import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
 // TODO: use npm dependency
-import transition from 'meteor/ohif:core/lib/third-party/transition-to-from-auto';
+import transition from 'meteor/ohif:core/client/lib/third-party/transition-to-from-auto';
 
 Template.selectTree.onRendered(() => {
     const instance = Template.instance();
     const component = instance.$('.select-tree:first').data('component');
     const rootComponent = instance.data.root || component;
     const rootInstance = rootComponent.templateInstance;
+    const $treeRoot = rootInstance.$('.select-tree-root:first').first();
 
     instance.component = component;
+
+    // Start the component transitions
+    $treeRoot.addClass('started');
 
     // Update the component's viewport height
     instance.updateHeight = () => {
@@ -28,18 +32,9 @@ Template.selectTree.onRendered(() => {
 
     // Put the component in selected state
     instance.setSelected = (flag) => {
-        const $treeRoot = rootInstance.$('.select-tree-root:first').first();
-        const $firstChild = $treeRoot.children().first();
         if (flag) {
-            const search = rootInstance.$('.tree-search').outerHeight() | 0;
-            const leaf = $treeRoot.find('.tree-leaf.active').position().top;
-            const martinTop = search + leaf;
-            // $firstChild.css('margin-top', -martinTop);
-            // $treeRoot.css('margin-top', martinTop).addClass('selected');
             $treeRoot.addClass('selected');
         } else {
-            // $treeRoot.removeClass('selected').css('margin-top', '');
-            // $firstChild.css('margin-top', '');
             $treeRoot.removeClass('selected');
         }
     };
@@ -60,7 +55,7 @@ Template.selectTree.onRendered(() => {
         });
     });
 
-    const selector = '.select-tree:first>.tree-options>.tree-breadcrumb .path-link';
+    const selector = '.select-tree:first>.tree-content>.tree-options>.tree-breadcrumb .path-link';
     instance.$(selector).css('width', 0).each((index, element) => {
         transition({
             element: element,
@@ -72,7 +67,12 @@ Template.selectTree.onRendered(() => {
 });
 
 Template.selectTree.events({
-    'change .select-tree:first>.tree-options>.tree-inputs>label>input'(event, instance) {
+    'click .select-tree-root'(event, instance) {
+        // Detect the first interaction with the component and do the animation
+        $(event.currentTarget).addClass('interacted');
+    },
+
+    'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
         const component = instance.component;
         const $target = $(event.target);
         const $label = $target.closest('label');
@@ -111,7 +111,7 @@ Template.selectTree.events({
         }
     },
 
-    'click .select-tree:first>.tree-options>.tree-breadcrumb .tree-back'(event, instance) {
+    'click .select-tree:first>.tree-content>.tree-options>.tree-breadcrumb .tree-back'(event, instance) {
         const rootComponent = instance.data.root || instance.component;
         const rootInstance = rootComponent.templateInstance;
 

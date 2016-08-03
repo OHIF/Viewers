@@ -1,13 +1,12 @@
-export { OHIF } from './ohif.js';
+/*
+ * Defines the base OHIF object
+ */
 
-import { Meteor } from 'meteor/meteor';
-import { Router } from 'meteor/clinical:router';
+const OHIF = {};
 
-import './lib';
-import './components';
-import './helpers';
-import './ui';
+// Expose the OHIF object to the client if it is on development mode
+if (Meteor.isDevelopment && Meteor.isClient) {
+    window.OHIF = OHIF;
+}
 
-Router.route('/playground', function() {
-    this.render('componentPlayground');
-});
+export { OHIF };
