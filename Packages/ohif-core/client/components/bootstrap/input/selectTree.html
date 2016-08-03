@@ -24,6 +24,7 @@
                     <div class="tree-inputs">
                         {{#each item in (reactive this.items)}}
                             {{>inputRadio
+                                id=(concat this.storageKey '_' (encodeId item.value))
                                 class=this.radioClass
                                 name=this.key
                                 value=item.value
@@ -43,18 +44,10 @@
                 </div>
             {{/let}}
         </div>
-        {{#unless this.root}}
-            {{>selectTreeCommon this}}
-        {{/unless}}
+        {{#if (and (not this.root) this.storageKey)}}
+            {{>selectTreeCommon (clone this component=this.component)}}
+        {{/if}}
     {{/group}}
-</template>
-
-<template name="selectTreeCommon">
-    <div class="select-tree-common">
-        <div class="content">
-            <h5 class="title">Common</h5>
-        </div>
-    </div>
 </template>
 
 <template name="selectTreeBreadcrumb">

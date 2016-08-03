@@ -42,6 +42,23 @@ OHIF.mixins.selectTree = new OHIF.Mixin({
                 // Change the current node
                 instance.data.currentNode.set(node);
             };
+
+            // Return plain data for all the leaves inside current node
+            component.getLeaves = () => {
+                const recursiveSeek = (items, result=[]) => {
+                    _.each(items, item => {
+                        if (item.items) {
+                            recursiveSeek(item.items, result);
+                        } else {
+                            result.push(item);
+                        }
+                    });
+                    return result;
+                };
+
+                return recursiveSeek(instance.data.items);
+            };
+
         }
     }
 });

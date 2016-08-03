@@ -31,3 +31,17 @@ OHIF.string.search = (object, query, property=null, result=[]) => {
     // Return the found items
     return result;
 };
+
+// Encode any string into a safe format for HTML id attribute
+OHIF.string.encodeId = string => {
+    // Return an underscore if the given string is empty or if it's not a string
+    if (string === '' || typeof string !== 'string') {
+        return '_';
+    }
+
+    // Create a converter to replace non accepted chars
+    const converter = match => '_' + match[0].charCodeAt(0).toString(16) + '_';
+
+    // Encode the given string and return it
+    return string.replace(/[^a-zA-Z0-9-]/g, converter);
+};

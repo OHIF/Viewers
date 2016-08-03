@@ -1,3 +1,4 @@
+import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
 import { Template } from 'meteor/templating';
 
@@ -14,3 +15,6 @@ Template.registerHelper('concat', (...args) => {
     });
     return result;
 });
+
+// Encode any string into a safe format for HTML id attribute
+Template.registerHelper('encodeId', string => OHIF.string.encodeId(string));

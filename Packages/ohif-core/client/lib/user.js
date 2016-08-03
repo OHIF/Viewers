@@ -14,8 +14,11 @@ OHIF.user.getData = key => {
     // Check if there is an user logged in
     OHIF.user.validate();
 
+    // Get user profile data
+    const profile = Meteor.user().profile;
+
     // Get the user persistent data
-    const data = Meteor.user().profile.persistent;
+    const data = profile && profile.persistent;
 
     if (data) {
         return data[key];

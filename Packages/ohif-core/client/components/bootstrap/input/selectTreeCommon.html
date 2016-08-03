@@ -1,0 +1,10 @@
+<template name="selectTreeCommon">
+    <div class="select-tree-common">
+        <div class="content">
+            <h5 class="title">Common</h5>
+            {{#each item in items}}
+                <label for="{{this.storageKey}}_{{encodeId item.value}}">{{item.label}}</label>
+            {{/each}}
+        </div>
+    </div>
+</template>

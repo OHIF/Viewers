@@ -1,3 +1,4 @@
+import { OHIF } from 'meteor/ohif:core';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
@@ -67,9 +68,9 @@ Template.selectTree.onRendered(() => {
 });
 
 Template.selectTree.events({
-    'click .select-tree-root'(event, instance) {
+    'click .select-tree-root>.tree-content'(event, instance) {
         // Detect the first interaction with the component and do the animation
-        $(event.currentTarget).addClass('interacted');
+        $(event.currentTarget).parent().addClass('interacted');
     },
 
     'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
@@ -94,6 +95,22 @@ Template.selectTree.events({
         if (isLeaf) {
             // Change the active item
             $label.addClass('active');
+
+            const storageKey = instance.data.storageKey;
+            if (storageKey) {
+                const storedData = _.extend({}, OHIF.user.getData(storageKey));
+
+                const itemKey = OHIF.string.encodeId($target.val());
+                if (storedData[itemKey]) {
+                    storedData[itemKey]++;
+                } else {
+                    storedData[itemKey] = 1;
+                }
+
+                console.warn('>>>>', storageKey, storedData, itemKey);
+
+                OHIF.user.setData(storageKey, storedData);
+            }
 
             // Mark the component as selected
             instance.setSelected(true);
