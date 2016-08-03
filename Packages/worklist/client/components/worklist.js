@@ -30,10 +30,11 @@ Template.worklist.onRendered(() => {
     } else {
         // If there is a tab set as active in the Session,
         // switch to that now.
+        console.log('worklist onRendered');
         const contentId = Session.get('activeContentId');
-
-        // TODO: FIx this it seems to be forcing two switches
-        switchToTab(contentId);        
+        if (contentId !== 'worklistTab') {
+            switchToTab(contentId);
+        }
     }
 
     Meteor.subscribe('hangingprotocols');

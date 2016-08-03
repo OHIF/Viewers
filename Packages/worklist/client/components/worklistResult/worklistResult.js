@@ -1,7 +1,4 @@
-Session.setDefault('searchResults', {
-    showLoadingText: true,
-    showNotFoundMessage: false
-});
+Session.setDefault('showLoadingText', true);
 
 Template.worklistResult.helpers({
     /**
@@ -26,14 +23,6 @@ Template.worklistResult.helpers({
 
     numberOfStudies() {
         return WorklistStudies.find().count();
-    },
-
-    showLoadingText() {
-        return Session.get('searchResults').showLoadingText;
-    },
-
-    showNotFoundMessage() {
-        return Session.get('searchResults').showNotFoundMessage;
     },
 
     sortingColumnsIcons() {
@@ -116,18 +105,19 @@ function convertStringToStudyDate(dateStr) {
  * Inserts the identified studies into the WorklistStudies Collection
  */
 function search() {
+    console.log('search()');
+
     // Show loading message
-    let searchResults = Session.get('searchResults');
-    searchResults.showLoadingText = true;
-    searchResults.showNotFoundMessage = false;
-    Session.set('searchResults', searchResults);
+    Session.set('showLoadingText', true);
 
     // Create the filters to be used for the Worklist Search
     filter = {
         patientName: getFilter($('input#patientName').val()),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
-        studyDescription: getFilter($('input#studyDescription').val())
+        studyDescription: getFilter($('input#studyDescription').val()),
+        studyDateFrom: studyDateFrom,
+        studyDateTo: studyDateTo
     };
 
     // Make sure that modality has a reasonable value, since it is occasionally
@@ -138,14 +128,14 @@ function search() {
     WorklistStudies.remove({});
 
     Meteor.call('WorklistSearch', filter, (error, studies) => {
+        console.log('WorklistSearch');
         if (error) {
             log.warn(error);
             return;
         }
 
         // Hide loading text
-        searchResults.showLoadingText = false;
-        Session.set('searchResults', searchResults);
+        Session.set('showLoadingText', false);
 
         if (!studies) {
             return;
@@ -165,13 +155,6 @@ function search() {
                 WorklistStudies.insert(study);
             }
         });
-
-        if (WorklistStudies.find().count() === 0) {
-            // Show studyNotFound text
-            searchResults.showNotFoundMessage = true;
-            Session.set('searchResults', searchResults);
-        }
-
     });
 }
 
@@ -179,9 +162,6 @@ Template.worklistResult.onCreated(() => {
     let instance = Template.instance();
     instance.sortOption = new ReactiveVar();
     instance.sortingColumns = new ReactiveDict();
-
-    // Retrieve all studies
-    search();
 
     // Set sortOption
     const sortOptionSession = Session.get('sortOption');
@@ -217,6 +197,9 @@ Template.worklistResult.onRendered(() => {
             'Last 30 Days': [moment().subtract(29, 'days'), moment()]
         }
     });
+
+    // Retrieve all studies
+    search();
 });
 
 function resetSortingColumns(instance, sortingColumn) {

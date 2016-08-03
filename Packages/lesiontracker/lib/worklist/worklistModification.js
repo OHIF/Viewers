@@ -68,5 +68,6 @@ function open(studyInstanceUid, title) {
     };
 
     // Switch to the new tab
+    console.log('open');
     switchToTab(contentid);
 }

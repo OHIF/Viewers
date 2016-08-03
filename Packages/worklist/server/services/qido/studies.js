@@ -1,4 +1,22 @@
 /**
+ * Creates a QIDO date string for a date range query
+ * Assumes the year is positive, at most 4 digits long.
+ *
+ * @param date The Date object to be formatted
+ * @returns {string} The formatted date string
+ */
+function dateToString(date) {
+    if(!date) return "";
+    var year = date.getFullYear().toString();
+    var month = (date.getMonth() + 1).toString();
+    var day = date.getDate().toString();
+    year = "0".repeat(4-year.length).concat(year);
+    month= "0".repeat(2-month.length).concat(month);
+    day = "0".repeat(2-day.length).concat(day);
+    return "".concat(year,month,day);
+}
+
+/**
  * Produces a QIDO URL given server details and a set of specified search filter
  * items
  *
@@ -19,8 +37,15 @@ function filterToQIDOURL(server, filter) {
         AccessionNumber: filter.accessionNumber,
         StudyDescription: filter.studyDescription,
         limit: filter.limit || 20,
-        includefield: server.qidoSupportsIncludeField ? 'all' : commaSeparatedFields
+        includefield: server.qidoSupportsIncludeField ? commaSeparatedFields : 'all'
     };
+
+    // build the StudyDate range parameter
+    if (filter.studyDateFrom || filter.sutydDateTo) {
+        var date = "".concat(dateToString(new Date(filter.studyDateFrom)), "-", dateToString(new Date(filter.studyDateTo)));
+        parameters.StudyDate = date;
+    }
+    
     return server.qidoRoot + '/studies?' + encodeQueryData(parameters);
 }
 
@@ -32,6 +57,10 @@ function filterToQIDOURL(server, filter) {
  */
 function resultDataToStudies(resultData) {
     var studies = [];
+
+    if (!resultData || !resultData.length) {
+        return;
+    }
 
     resultData.forEach(function(study) {
         studies.push({
@@ -55,6 +84,7 @@ function resultDataToStudies(resultData) {
             modalities: DICOMWeb.getString(DICOMWeb.getModalities(study['00080060'], study['00080061']))
         });
     });
+    
     return studies;
 }
 

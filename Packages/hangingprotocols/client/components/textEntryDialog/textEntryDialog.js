@@ -57,6 +57,12 @@ openTextEntryDialog = function(title, instructions, currentValue, doneCallback) 
     });
 };
 
+Template.textEntryDialog.onRendered(() => {
+    const instance = Template.instance();
+    const dialog = instance.$('.settingEntryDialog');
+    dialog.draggable();
+});
+
 Template.textEntryDialog.events({
     /**
      * Save the user-specified text

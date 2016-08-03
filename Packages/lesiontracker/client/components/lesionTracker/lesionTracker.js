@@ -1,24 +1,11 @@
-// Define the ViewerData global object
-// If there is currently any Session data for this object,
-// use this to repopulate the variable
-ViewerData = Session.get('ViewerData') || {};
-
 const worklistContentId = 'worklistTab';
 const viewerContentId = 'viewerTab';
 
-Template.lesionTracker.onRendered(() => {
-    const templateData = Template.currentData();
-    if (templateData && templateData.studyInstanceUid) {
-        const studyInstanceUid = templateData.studyInstanceUid;
-        openNewTab(studyInstanceUid, studyInstanceUid);
-    } else {
-        // If there is a tab set as active in the Session,
-        // switch to that now.
-        const contentId = Session.get('activeContentId');
-
-        // TODO: Fix this it seems to be forcing two switches
-        switchToTab(contentId);
-    }
+// Define the ViewerData global object
+// If there is currently any Session data for this object,
+// use this to repopulate the variable
+Template.lesionTracker.onCreated(() => {
+    ViewerData = Session.get('ViewerData') || {};
 });
 
 Template.lesionTracker.events({
@@ -32,8 +19,6 @@ Template.lesionTracker.events({
         }
     }
 });
-
-Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');
 
 Template.lesionTracker.helpers({
     studyListToggleText() {
@@ -52,7 +37,10 @@ Template.lesionTracker.helpers({
             return 'Study list';
         }
     },
+
     onStudyList() {
         return (Session.get('activeContentId') === 'worklistTab');
     }
 });
+
+Session.set('defaultSignInMessage', 'Tumor tracking in your browser.');

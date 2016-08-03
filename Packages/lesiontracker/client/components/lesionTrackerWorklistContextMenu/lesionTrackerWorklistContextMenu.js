@@ -135,6 +135,7 @@ function exportSelectedStudies() {
  * Loads multiple unassociated studies in the Viewer
  */
 function viewStudies() {
+    console.log('viewStudies');
     var selectedStudies = WorklistSelectedStudies.find({}, {
         sort: {
             studyDate: 1

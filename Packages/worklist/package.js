@@ -22,6 +22,7 @@ Package.onUse(function (api) {
     api.use('gilbertwat:bootstrap3-daterangepicker');    
 
     // Our custom packages
+    api.use('ohif:core');
     api.use('design');
     api.use('dicomweb');
     api.use('dimseservice');

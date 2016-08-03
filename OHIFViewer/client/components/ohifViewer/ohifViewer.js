@@ -8,21 +8,6 @@ Template.ohifViewer.onCreated(() => {
     ViewerData = Session.get('ViewerData') || {};
 });
 
-Template.ohifViewer.onRendered(() => {
-    const templateData = Template.currentData();
-    if (templateData && templateData.studyInstanceUid) {
-        const studyInstanceUid = templateData.studyInstanceUid;
-        openNewTab(studyInstanceUid, studyInstanceUid);
-    } else {
-        // If there is a tab set as active in the Session,
-        // switch to that now.
-        const contentId = Session.get('activeContentId');
-
-        // TODO: Fix this it seems to be forcing two switches
-        switchToTab(contentId);
-    }
-});
-
 Template.ohifViewer.events({
     'click .js-toggle-studyList'() {
         const contentId = Session.get('activeContentId');
@@ -52,6 +37,7 @@ Template.ohifViewer.helpers({
             return 'Study list';
         }
     },
+    
     onStudyList() {
         return (Session.get('activeContentId') === 'worklistTab');
     }

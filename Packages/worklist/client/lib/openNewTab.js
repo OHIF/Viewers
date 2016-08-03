@@ -6,6 +6,8 @@
  * @param title The title to be used for the tab heading
  */
 openNewTab = function(studyInstanceUid, title) {
+    console.log('openNewTab');
+    
     // Generate a unique ID to represent this tab
     // We can't just use the Mongo entry ID because
     // then it will change after hot-reloading.

@@ -113,6 +113,12 @@ Template.settingEntryDialog.onCreated(function() {
     template.setting = new ReactiveVar();
 });
 
+Template.settingEntryDialog.onRendered(function() {
+    const template = this;
+    const dialog = template.$('.settingEntryDialog');
+    dialog.draggable();
+});
+
 Template.settingEntryDialog.events({
     /**
      * Save a setting that is being edited

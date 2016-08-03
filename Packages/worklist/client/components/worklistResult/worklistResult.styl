@@ -50,6 +50,7 @@ $bodyCellHeight = 40px
   width: 100%
   padding: 0 $tablePadding
   position: absolute
+  overflow: hidden
   z-index: 2
 
   .loadingTextDiv
@@ -117,26 +118,13 @@ $bodyCellHeight = 40px
             box-sizing: border-box
 
             transition(all 0.15s ease)
+            placeholder-color($inputPlaceholderColor)
 
             &.invisible
               visibility: hidden
 
             &:active, &:hover
               background-color: $inputBackgroundColor
-
-            &::-webkit-input-placeholder /* WebKit, Blink, Edge */
-              color:    $inputPlaceholderColor
-
-            &:-moz-placeholder /* Mozilla Firefox 4 to 18 */
-              color:    $inputPlaceholderColor
-              opacity:  1
-
-            &::-moz-placeholder /* Mozilla Firefox 19+ */
-              color:    $inputPlaceholderColor
-              opacity:  1
-
-            &:-ms-input-placeholder /* Internet Explorer 10-11 */
-              color:    $inputPlaceholderColor
 
       ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
       ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
@@ -176,3 +164,29 @@ $bodyCellHeight = 40px
             border-top: 1px solid #436270
             border-bottom: 1px solid #436270
             background-color: $hoverColor
+
+
+@media only screen and (max-width: 1000px)
+  $tablePaddingMediumScreen = 10px
+  #studyListContainer
+    padding: 0
+
+    table#tblStudyList
+      thead > tr > th
+        &:first-child
+          padding-left: $tablePaddingMediumScreen
+
+        &:last-child
+          padding-right: $tablePaddingMediumScreen
+
+      tbody > tr > td
+        &:first-child
+          padding-left: $tablePaddingMediumScreen
+
+        &:last-child
+          padding-right: $tablePaddingMediumScreen
+
+      th.accessionNumber, td.accessionNumber,
+      th.modalities, td.modalities,
+      th.numberOfStudyRelatedInstances, td.numberOfStudyRelatedInstances
+        display: none

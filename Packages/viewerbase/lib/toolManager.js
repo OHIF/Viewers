@@ -25,16 +25,16 @@ function configureTools() {
     cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
 
     // Set the text box background color
-    cornerstoneTools.textStyle.setBackgroundColor('black');
+    cornerstoneTools.textStyle.setBackgroundColor('rgba(0, 0, 0, 0.95)');
 
     // Set the tool width
     cornerstoneTools.toolStyle.setToolWidth(2);
 
     // Set color for inactive tools
-    cornerstoneTools.toolColors.setToolColor('rgb(255, 255, 0)');
+    cornerstoneTools.toolColors.setToolColor('#ff00ff'); //rgb(255, 255, 0)');
 
     // Set color for active tools
-    cornerstoneTools.toolColors.setActiveColor('rgb(0, 255, 0)');
+    cornerstoneTools.toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
 }
 
 toolManager = {

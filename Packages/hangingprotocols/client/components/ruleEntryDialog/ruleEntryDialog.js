@@ -211,13 +211,16 @@ Template.ruleEntryDialog.onCreated(function() {
 
 Template.ruleEntryDialog.onRendered(function() {
     // Initialize the Comparators Select2 box
-    var template = this;
+    var template = Template.instance();
     template.$('.comparators').select2();
 
     // Get the default Comparator from the Select2 box and use it to
     // initialize the comparatorId ReactiveVar
     var comparatorId = template.$('.comparators').val();
     template.comparatorId.set(comparatorId);
+
+    const dialog = template.$('.ruleEntryDialog');
+    dialog.draggable();
 });
 
 Template.ruleEntryDialog.helpers({

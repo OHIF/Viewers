@@ -3,6 +3,11 @@
     <div class="viewerDialogs">
         {{> cineDialog}}
         {{> layoutChooser }}
+
+        <!-- Hanging Protocol dialogs -->
+        {{ >ruleEntryDialog }}
+        {{ >settingEntryDialog }}
+        {{ >textEntryDialog }}
     </div>
     <div id="viewer">
         {{> toolbarSection (clone this)}}

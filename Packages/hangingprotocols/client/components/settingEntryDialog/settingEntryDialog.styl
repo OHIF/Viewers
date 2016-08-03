@@ -1,3 +1,5 @@
+@import "{design}/app.styl"
+
 .settingEntryDialog
   display: none
   position: absolute
@@ -6,14 +8,17 @@
   left: 0
   right: 0
   z-index: 100
-  width: 50%
-  max-width: 400px
-  height: 230px
+  width: 300px
+  height: 200px
   margin: auto
-  border-radius: 5px
-  padding: 10px 20px 10px 20px
-  background-color: rgba(255,255,255,1)
+  padding: 10px
   outline: none
+
+  opacity: 0.95
+  border-radius: 8px
+  border: 1px solid $uiBorderColor
+  background: $uiGrayDarkest
+  color: $textSecondaryColor
 
   .dialogContent
     text-align: center
@@ -34,3 +39,8 @@
   input.currentValue
     width: 95%
     text-align: center
+    padding: 4px
+    color: black
+    height: 30px
+    border-radius: 2px
+    border: 0
