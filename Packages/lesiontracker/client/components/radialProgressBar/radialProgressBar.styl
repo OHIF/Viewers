@@ -3,26 +3,22 @@
 $circleSize = 46px
 
 .radialProgress
+  position: relative
   height: $circleSize
   width: $circleSize
-  box-shadow: 0 0 1em black
+  vendorize(box-shadow, 0 0 1em black)
   border-radius: 100%
-  position: relative
 
   #svg circle
     stroke-dashoffset: 0
-    transition: stroke-dashoffset 1s linear
-    stroke: #203244
+    stroke: $uiBorderColorDark
     stroke-width: 3px
+    vendorize(transition, stroke-dashoffset 1s linear)
 
   #svg #bar
     stroke: $activeColor
-    -ms-transform: rotate(270deg) /* IE 9 */
-    -ms-transform-origin: center center /* IE 9 */
-    -webkit-transform: rotate(270deg) /* Chrome, Safari, Opera */
-    -webkit-transform-origin: center center /* Chrome, Safari, Opera */
-    transform: rotate(270deg)
-    transform-origin(center center)
+    vendorize(transform, rotate(270deg))
+    vendorize(transform-origin, center center)
 
   .progressText
     position: absolute
@@ -32,14 +28,14 @@ $circleSize = 46px
     font-weight: 700
     font-size: 17px
     text-align: center
-    color: $uiSkyBlue
+    color: $textColorActive
     top: 0
 
     svg
-      fill: $uiSkyBlue
+      fill: $activeColor
       left: 50%
       position: absolute
-      stroke: $uiSkyBlue
+      stroke: $activeColor
       top: 50%
       transform(translateX(-50%) translateY(-50%))
 

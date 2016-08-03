@@ -6,7 +6,7 @@
 
   .dropdown-toggle
     background-color: $primaryBackgroundColor
-    color: $textSecondaryColor
+    color: $defaultColor
     cursor: pointer
     font-size: 13px
     font-weight: 400
@@ -14,19 +14,19 @@
     text-decoration: none
 
     .menuButton
-      border-left: solid 1px #516873
+      border-left: solid 1px $defaultColor
       display: inline-block
       height: 18px
       padding: 0 8px
 
       .fa
-        color: #94a8b3
+        color: $defaultColor
         font-size: 17px
         line-height: 18px
 
       .caret-down
         margin: 0 4px 4px 2px
-        color: #516873
+        color: $uiLightGray
 
   ul.dropdown-menu
     li

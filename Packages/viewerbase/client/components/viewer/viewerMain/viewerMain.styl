@@ -14,6 +14,13 @@
         float: left
         border: $viewportBorderThickness solid $viewportBorderColor
 
+        outline: 0 // Prevent blue outline in Chrome
+
+        &:hover
+        &.active
+        &:hover.active
+          outline: 0 // Prevent blue outline in Chrome
+
         &:hover
           border: $viewportBorderThickness solid $viewportBorderColorHover
           
@@ -24,5 +31,3 @@
           width: 100%
           height: 100%
           position: relative // Necessary so that the viewportOverlay is on top of the viewports
-
-

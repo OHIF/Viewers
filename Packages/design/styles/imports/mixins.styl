@@ -1,3 +1,15 @@
+/*
+    Basic mixin which vendorizes a propery. Usage:
+
+    vendorize(box-sizing, border-box)
+*/
+vendorize(property, value)
+  -webkit-{property} value
+  -moz-{property} value
+  -ms-{property} value
+  -o-{property} value
+  {property} value
+
 animation(a)
   -webkit-animation: a
   -moz-animation: a

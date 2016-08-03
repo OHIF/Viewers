@@ -1,3 +1,14 @@
+@import "{design}/app"
+
+$imageSliderBorderRadius = 57px
+$imageSliderTrackColor = rgba(0,0,0,0)
+$imageSliderBorder = none
+
+// Note that these are backwards due to the magic needed to make a cross-browser vertical slider
+$imageSliderWidth = 12px
+$imageSliderHeight = 39px
+$imageSliderCursor = grab
+
 .imageControls
   position: absolute
   top: 0
@@ -13,101 +24,91 @@
       position: absolute
       left: 20px
 
+      vendorize(transform, rotate(90deg))
+      vendorize(transform-origin, top left)
+
       -webkit-appearance: none
-
-      transform: rotate(90deg)
-      -webkit-transform: rotate(90deg)
-      -moz-transform :rotate(90deg)
-      -o-transform: rotate(90deg)
-      -ms-transform: rotate(90deg)
-
-      transform-origin: top left
-      -webkit-transform-origin: top left
-      -moz-transform-origin: top left
-      -o-transform-origin: top left
-      -ms-transform-origin: top left
+      background-color: $imageSliderTrackColor
 
       // Remove focus highlights on range input
       &:focus
         outline: none
-        -moz-box-shadow: none
-        -webkit-box-shadow: none
-        box-shadow: none
+        vendorize(box-shadow, none)
 
       // Remove focus border in Firefox
       &::-moz-focus-outer
         border: none
-        
+
       // --- Style the range track --- //
       &::-webkit-slider-runnable-track
-        height: 2px
-        border: 2px solid #bdc3c7
-        background-color: darkgrey
+        height: 5px
+        border: none
+        cursor: pointer
+        background-color: $imageSliderTrackColor
         z-index: 6
 
       &::-moz-range-track
-        height: 1px
-        border: 1px solid #bdc3c7
-        background-color: darkgrey
+        height: 2px
+        border: none
+        cursor: pointer
+        background-color: $imageSliderTrackColor
         z-index: 6
 
       &::-ms-track
         width: 100%
         height: 2px
+        border: none
         cursor: pointer
         animate: 0.2s
         background: transparent
-        border-color: transparent
         border-width: 15px 0
-        color: transparent
+        color: $imageSliderTrackColor
 
       // Hide any fill IE tries to add
       &::-ms-fill-lower
-        background: darkgrey
+        background: $imageSliderTrackColor
 
       &::-ms-fill-upper
-        background: darkgrey
+        background: $imageSliderTrackColor
 
       // --- Style the range thumb --- //
       &::-webkit-slider-thumb
         -webkit-appearance: none !important
-        background-color: rgb(169, 169, 169)
-        border: 2px solid rgb(169, 169, 169)
-        border-radius: 2px
-        height: 15px
-        width: 25px
-        cursor: pointer
+        background-color: $imageSliderColor
+        border-radius: $imageSliderBorderRadius
+        border: $imageSliderBorder
+        height: $imageSliderWidth
+        width: $imageSliderHeight
+        cursor: $imageSliderCursor
         margin-top: -7px
 
         &:active
-          background-color: rgb(34, 126, 163)
+          background-color: $activeColor
 
       &::-moz-range-thumb
-        background-color: rgb(169, 169, 169)
-        border: 2px solid rgb(169, 169, 169)
-        border-radius: 2px
-        height: 11px
-        width: 20px
-        cursor: pointer
+        background-color: $imageSliderColor
+        border-radius: $imageSliderBorderRadius
+        border: $imageSliderBorder
+        height: $imageSliderWidth
+        width: $imageSliderHeight
+        cursor: $imageSliderCursor
         z-index: 7
 
         &:active
-          background-color: rgb(34, 126, 163)
+          background-color: $activeColor
 
       &::-ms-thumb
-        background-color: rgb(169, 169, 169)
-        border: 2px solid rgb(169, 169, 169)
-        border-radius: 2px
-        height: 11px
-        width: 20px
-        cursor: pointer
+        background-color: $imageSliderColor
+        border-radius: $imageSliderBorderRadius
+        border: $imageSliderBorder
+        height: $imageSliderWidth
+        width: $imageSliderHeight
+        cursor: $imageSliderCursor
 
         &:active
-          background-color: rgb(34, 126, 163)
+          background-color: $activeColor
 
-    // Set left position in IE, border-width attribute breaks left position of imageSlider
-    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-      #imageSlider {
-        left: 50px
-      }
-    }
+// Set left position in IE, border-width attribute breaks left position of imageSlider
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none)
+  #imageSlider
+    left: 50px
