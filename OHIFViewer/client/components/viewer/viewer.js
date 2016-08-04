@@ -1,5 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 
+//test2
+
 OHIF.viewer = OHIF.viewer || {};
 OHIF.viewer.loadIndicatorDelay = 500;
 OHIF.viewer.defaultTool = 'wwwc';
@@ -35,9 +37,7 @@ Template.viewer.onCreated(() => {
 
     if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
-
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
-
     } else {
         log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
@@ -48,7 +48,6 @@ Template.viewer.onCreated(() => {
         ViewerData[contentId].viewportColumns = 1;
         ViewerData[contentId].viewportRows = 1;
         ViewerData[contentId].activeViewport = 0;
-        Session.set('ViewerData', ViewerData);
     }
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
@@ -56,10 +55,14 @@ Template.viewer.onCreated(() => {
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
 
+    ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
         ViewerStudies.insert(study);
+        ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });
+
+    Session.set('ViewerData', ViewerData);
 });
 
 Template.viewer.events({

@@ -2,6 +2,7 @@ Template.flexboxLayout.events({
     'transitionend .sidebarMenu'() {
         handleResize();
     },
+
     'transitionend .sidebar-option'(event) {
         // Prevent this event from bubbling
         event.stopPropagation();

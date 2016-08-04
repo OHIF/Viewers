@@ -92,6 +92,7 @@ Template.protocolEditor.helpers({
         // If no ProtocolEngine, protocol, or stage is defined, stop here
         if (!ProtocolEngine ||
             !ProtocolEngine.protocol ||
+            !ProtocolEngine.layoutManager ||
             ProtocolEngine.stage === undefined) {
             return;
         }
@@ -105,8 +106,8 @@ Template.protocolEditor.helpers({
         // Update active Stage's layout template and properties based on the displayed
         // layout properties. This is used to update the Stage Model when the user modifies
         // the layout in the viewer
-        stage.viewportStructure.layoutTemplateName = layoutManager.layoutTemplateName;
-        stage.viewportStructure.properties = layoutManager.layoutProps;
+        stage.viewportStructure.layoutTemplateName = ProtocolEngine.layoutManager.layoutTemplateName;
+        stage.viewportStructure.properties = ProtocolEngine.layoutManager.layoutProps;
 
         // If there is a discrepancy between the Stage's number of viewports and the
         // the number of required viewports given the properties above, rectify it

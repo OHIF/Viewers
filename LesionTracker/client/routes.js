@@ -3,16 +3,6 @@ Session.setDefault('ViewerData', {});
 // verifyEmail controls whether emailVerification template will be rendered or not
 var verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
 
-// Re-add any tab data saved in the Session
-Object.keys(ViewerData).forEach(function(contentId) {
-    var tabData = ViewerData[contentId];
-    var data = {
-        title: tabData.title,
-        contentid: tabData.contentid
-    };
-    WorklistTabs.insert(data);
-});
-
 Router.configure({
     layoutTemplate: 'layout',
     loadingTemplate: 'layout'

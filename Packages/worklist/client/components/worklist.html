@@ -5,9 +5,11 @@
                 {{> worklistResult }}
             </div>
         </div>
-        {{#each worklistTabs }}
-            {{>tabContent }}
-        {{/each }}
+        <div role="tabpanel" class="tab-pane" id="viewerTab">
+            <div class="viewerContainer">
+            </div>
+        </div>
+        {{>loadingText}}
     </div>
     {{#each additionalTemplates}}
         {{> UI.dynamic template=this}}

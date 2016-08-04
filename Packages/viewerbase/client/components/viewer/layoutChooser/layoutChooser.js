@@ -45,9 +45,9 @@ Template.layoutChooser.events({
             columns: columnIndex + 1
         };
 
-        layoutManager.layoutTemplateName = 'gridLayout';
-        layoutManager.layoutProps = layoutProps;
-        layoutManager.updateViewports();
+        window.layoutManager.layoutTemplateName = 'gridLayout';
+        window.layoutManager.layoutProps = layoutProps;
+        window.layoutManager.updateViewports();
 
         const $dropdown = $('.layoutChooser');
         toggleDialog($dropdown);

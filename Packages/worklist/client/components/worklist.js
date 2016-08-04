@@ -19,7 +19,6 @@ WorklistTabs._debugName = 'WorklistTabs';
 WorklistStudies = new Meteor.Collection(null);
 WorklistStudies._debugName = 'WorklistStudies';
 
-
 Session.setDefault('activeContentId', 'worklistTab');
 
 Template.worklist.onRendered(() => {
@@ -32,22 +31,12 @@ Template.worklist.onRendered(() => {
         // switch to that now.
         console.log('worklist onRendered');
         const contentId = Session.get('activeContentId');
-        if (contentId !== 'worklistTab') {
+        if (contentId !== 'worklistTab' && ViewerData && ViewerData[contentId]) {
             switchToTab(contentId);
         }
     }
 
     Meteor.subscribe('hangingprotocols');
-});
-
-Template.worklist.helpers({
-    /**
-     * Returns the current set of Worklist Tabs
-     * @returns Meteor.Collection The current state of the WorklistTabs Collection
-     */
-    worklistTabs() {
-        return WorklistTabs.find();
-    }
 });
 
 Template.worklist.events({

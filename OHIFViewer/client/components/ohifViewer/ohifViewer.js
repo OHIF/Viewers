@@ -1,5 +1,7 @@
 const worklistContentId = 'worklistTab';
-const viewerContentId = 'viewerTab';
+let lastContentId;
+
+// Test
 
 // Define the ViewerData global object
 // If there is currently any Session data for this object,
@@ -15,7 +17,7 @@ Template.ohifViewer.events({
         if (contentId !== worklistContentId) {
             switchToTab(worklistContentId);
         } else {
-            switchToTab(viewerContentId);
+            switchToTab(lastContentId);
         }
     }
 });
@@ -23,6 +25,7 @@ Template.ohifViewer.events({
 Template.ohifViewer.helpers({
     studyListToggleText() {
         const contentId = Session.get('activeContentId');
+        Session.get('ViewerData');
 
         // If the Viewer has not been opened yet, 'Back to viewer' should
         // not be displayed
@@ -34,6 +37,7 @@ Template.ohifViewer.helpers({
         if (contentId === worklistContentId) {
             return 'Back to viewer';
         } else {
+            lastContentId = contentId;
             return 'Study list';
         }
     },

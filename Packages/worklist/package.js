@@ -46,9 +46,6 @@ Package.onUse(function (api) {
     api.addFiles('client/components/tabTitle/tabTitle.js', 'client');
     api.addFiles('client/components/tabTitle/tabTitle.styl', 'client');
 
-    api.addFiles('client/components/tabContent/tabContent.html', 'client');
-    api.addFiles('client/components/tabContent/tabContent.styl', 'client');
-
     api.addFiles('client/components/worklistStudy/worklistStudy.html', 'client');
     api.addFiles('client/components/worklistStudy/worklistStudy.js', 'client');
     api.addFiles('client/components/worklistStudy/worklistStudy.styl', 'client');

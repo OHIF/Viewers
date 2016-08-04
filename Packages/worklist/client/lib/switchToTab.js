@@ -15,7 +15,12 @@ switchToTab = function(contentId) {
     $('.tabTitle a[data-target="#' + contentId + '"]').addClass('active');
 
     $('.tab-content .tab-pane').removeClass('active');
-    $('.tab-content .tab-pane#' + contentId).addClass('active');
+    if (contentId !== 'worklistTab') {
+        $('.tab-content .tab-pane#viewerTab').addClass('active');
+    } else {
+        $('.tab-content .tab-pane#' + contentId).addClass('active');
+    }
+    
 
     // Remove any previous Viewers from the DOM
     $('.viewerContainer').remove();
@@ -97,11 +102,7 @@ function viewStudiesInTab(contentId, studies) {
 
     // Get tab content container given the contentId string
     // If no such container exists, stop here because something is wrong
-    var container = $('.tab-content').find('#' + contentId).get(0);
-    if (!container) {
-        log.warn('No container present with the contentId: ' + contentId);
-        return;
-    }
+    var container = $('.tab-content').find('#viewerTab').get(0);
 
     // Remove the loading text template that is inside the tab container by default
     var viewerContainer = document.createElement('div');

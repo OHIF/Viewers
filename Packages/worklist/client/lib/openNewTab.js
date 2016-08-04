@@ -13,14 +13,6 @@ openNewTab = function(studyInstanceUid, title) {
     // then it will change after hot-reloading.
     var contentid = uuid.new();
 
-    // Create a new entry in the WorklistTabs Collection
-    WorklistTabs.insert({
-        title: title,
-        contentid: contentid,
-        studyInstanceUid: studyInstanceUid,
-        active: false
-    });
-
     // Update the ViewerData global object
     ViewerData[contentid] = {
         title: title,

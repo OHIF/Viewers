@@ -10,7 +10,7 @@ Template.viewerMain.onRendered(() => {
     const instance = Template.instance();
 
     const studies = instance.data.studies;
-    const parentElement = instance.$("#layoutManagerTarget").get(0);
+    const parentElement = instance.$('#layoutManagerTarget').get(0);
     window.layoutManager = new LayoutManager(parentElement, studies);
 
     ProtocolEngine = new HP.ProtocolEngine(window.layoutManager, studies);
@@ -26,4 +26,7 @@ Template.viewerMain.onDestroyed(() => {
 
     // Destroy the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer.destroy();
+
+    delete window.layoutManager;
+    delete ProtocolEngine;
 });

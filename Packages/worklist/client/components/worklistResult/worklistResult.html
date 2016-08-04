@@ -94,10 +94,10 @@
         </table>
         {{#if session "showLoadingText"}}
             {{>loadingText}}
+        {{ else }}
+            {{#unless numberOfStudies}}
+                <div class="notFound">No matching results</div>
+            {{/unless}}
         {{/if}}
-
-        {{#unless numberOfStudies}}
-            <div class="notFound">No matching results</div>
-        {{/unless}}
     </div>
 </template>

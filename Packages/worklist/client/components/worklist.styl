@@ -1,15 +1,17 @@
+@import "{design}/app"
+
 body
-  background-color: black
+  background-color: $primaryBackgroundColor
 
 #tblStudyList
   tr
     height: 20px
 
 #worklistTab
-  background-color: black
+  background-color: $primaryBackgroundColor
 
 .worklistContainer
-  background-color: black
+  background-color: $primaryBackgroundColor
   margin: 0 auto
   color: white
         
@@ -17,6 +19,15 @@ body
   width: 100%
   height: calc(100% - 91px)
 
+  .loadingTextDiv
+    color: $textSecondaryColor
+    font-size: 30px
+    font-weight: 200
+
   .tab-pane
     width: 100%
     height: 100%
+
+    .viewerContainer
+      height: 100%
+      width: 100%
