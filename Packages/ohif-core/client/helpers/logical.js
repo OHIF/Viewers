@@ -48,14 +48,20 @@ Template.registerHelper('not', value => {
 // Check if all the given values are true
 Template.registerHelper('and', (...values) => {
     let result = true;
-    _.each(_.initial(values, 1), value => value || (result = false));
+    _.each(arguments, value => value || (result = false));
     return result;
 });
 
 // Check if one of the given values is true
 Template.registerHelper('or', (...values) => {
     let result = false;
-    _.each(_.initial(values, 1), value => value && (result = true));
+    _.each(_.initial(values, 1), value => {
+        if (value instanceof Spacebars.kw) {
+            return;
+        }
+
+        return value && (result = true);
+    });
     return result;
 });
 

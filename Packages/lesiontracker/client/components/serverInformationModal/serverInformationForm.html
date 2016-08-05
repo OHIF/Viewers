@@ -24,10 +24,10 @@
             </div>
         </div>
         <hr>
-        {{#if equals this.serverType.get "dicomWeb"}}
+        {{#if eq this.serverType.get "dicomWeb"}}
           {{>serverInformationDicomWeb this}}
         {{/if}}
-        {{#if equals this.serverType.get "dimse"}}
+        {{#if eq this.serverType.get "dimse"}}
           {{>serverInformationDimse this}}
         {{/if}}
         {{#if this.serverType.get}}

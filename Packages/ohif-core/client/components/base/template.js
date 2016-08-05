@@ -9,6 +9,10 @@ Template.baseComponent.constructView = function(contentFunc, elseFunc) {
     // Get the data passed to the template
     const data = Template.currentData();
 
+    if (!data) {
+        return;
+    }
+
     // Check the base template. If it's not informed set as the custom base
     data.base || (data.base = 'baseCustom');
 

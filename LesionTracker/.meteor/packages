@@ -4,16 +4,16 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-meteor-base             # Packages every Meteor app needs to have
-mobile-experience       # Packages for a great mobile UX
-mongo                   # The database Meteor supports right now
-blaze-html-templates    # Compile .html files into Meteor Blaze views
-session                 # Client-side reactive dictionary for your app
-jquery                  # Helpful client-side library
-tracker                 # Meteor's client-side reactive programming library
+meteor-base@1.0.4             # Packages every Meteor app needs to have
+mobile-experience@1.0.4       # Packages for a great mobile UX
+mongo@1.1.10                   # The database Meteor supports right now
+blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
+session@1.1.6                 # Client-side reactive dictionary for your app
+jquery@1.11.9                  # Helpful client-side library
+tracker@1.1.0                 # Meteor's client-side reactive programming library
 
-es5-shim                # ECMAScript 5 compatibility for older browsers.
-ecmascript              # Enable ECMAScript2015+ syntax in app code
+es5-shim@4.6.13                # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.5.7              # Enable ECMAScript2015+ syntax in app code
 
 clinical:router
 clinical:extended-api
@@ -27,37 +27,37 @@ clinical:hipaa-logger
 design
 ohif:core
 
-insecure                # Allow all DB writes from clients (for prototyping)
+insecure@1.0.7                # Allow all DB writes from clients (for prototyping)
 cornerstone
 worklist
 viewerbase
 dicomweb
-accounts-base
-accounts-password
+accounts-base@1.2.9
+accounts-password@1.2.12
 
 ian:accounts-ui-bootstrap-3
 twbs:bootstrap
-http
+http@1.2.8
 arsnebula:reactive-promise
-promise
-stylus
+promise@0.8.3
+stylus@2.513.4
 fortawesome:fontawesome
-random
-reactive-var
-reactive-dict
+random@1.0.10
+reactive-var@1.0.10
+reactive-dict@1.1.8
 lesiontracker
 practicalmeteor:loglevel
 momentjs:moment
 
 anti:gagarin@=0.4.11
-check
+check@1.2.3
 aldeed:template-extension@4.0.0
 zuuk:stale-session
 gilbertwat:bootstrap3-daterangepicker
-email
+email@1.1.16
 peppelg:bootstrap-3-modal
 simple:reactive-method
 hangingprotocols
-fastclick
-standard-minifier-css
-standard-minifier-js
+fastclick@1.0.12
+standard-minifier-css@1.1.8
+standard-minifier-js@1.1.8

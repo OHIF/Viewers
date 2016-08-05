@@ -58,11 +58,6 @@ Package.onUse(function(api) {
     
     api.addFiles('client/tools.js', 'client');
 
-    // Spacebars helpers
-    api.addFiles('client/helpers/blaze.js', 'client');
-    api.addFiles('client/helpers/logical.js', 'client');
-    api.addFiles('client/helpers/string.js', 'client');
-
     // Utility classes
     api.addFiles('client/utils/form.js', 'client');
 
