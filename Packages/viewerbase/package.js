@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.3.5.1');
+    api.versionsFrom('1.4');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -26,7 +26,13 @@ Package.onUse(function(api) {
     api.addAssets('assets/icons.svg', 'client');
 
     // TODO: Use NPM depends for these
-    api.addFiles('client/compatibility/jquery.hotkeys.js', 'client');
+    api.addFiles('client/compatibility/jquery.hotkeys.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/dialogPolyfill.js', 'client', {
+        bare: true
+    });
+    api.addFiles('client/compatibility/dialogPolyfill.styl', 'client');
 
     // ---------- Collections ----------
     api.addFiles('client/collections.js', 'client');
@@ -74,6 +80,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.html', 'client');
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.js', 'client');
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.styl', 'client');
+
+    api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.html', 'client');
+    api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.js', 'client');
+    api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.styl', 'client');
 
     api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.html', 'client');
     api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.js', 'client');

@@ -374,7 +374,7 @@
 
             // now check to see if there is a handle we can move
             if (!toolData) {
-                return false;
+                return;
             }
 
             for (var i = 0; i < toolData.data.length; i++) {
@@ -389,8 +389,6 @@
                     return false;
                 }
             }
-
-            return false; // false = causes jquery to preventDefault() and stopPropagation() this event
         }
 
 

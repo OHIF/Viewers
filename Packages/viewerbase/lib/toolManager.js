@@ -7,7 +7,7 @@ var tools = {};
 
 var toolDefaultStates = {
     activate: [],
-    deactivate: [],
+    deactivate: ['length', 'angle', 'annotate', 'ellipticalRoi', 'rectangleRoi'],
     enable: [],
     disable: [],
     disabledToolButtons: []
@@ -35,6 +35,15 @@ function configureTools() {
 
     // Set color for active tools
     cornerstoneTools.toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
+
+    // Set the configuration values for the text annotation (Arrow) tool
+    var annotateConfig = {
+        getTextCallback: getAnnotationTextCallback,
+        changeTextCallback: changeAnnotationTextCallback,
+        drawHandles: false,
+        arrowFirst: true
+    };
+    cornerstoneTools.arrowAnnotate.setConfiguration(annotateConfig);
 }
 
 toolManager = {

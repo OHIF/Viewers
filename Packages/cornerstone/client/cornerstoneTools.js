@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.8 - 2016-05-17 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.7.8 - 2016-08-05 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -22,64 +22,39 @@ if (typeof cornerstoneTools === 'undefined') {
 
     'use strict';
 
-    var scrollTimeout;
-    var scrollTimeoutDelay = 1;
-
     function mouseWheel(e) {
-        clearTimeout(scrollTimeout);
+        // !!!HACK/NOTE/WARNING!!!
+        // for some reason I am getting mousewheel and DOMMouseScroll events on my
+        // mac os x mavericks system when middle mouse button dragging.
+        // I couldn't find any info about this so this might break other systems
+        // webkit hack
+        if (e.originalEvent.type === 'mousewheel' && e.originalEvent.wheelDeltaY === 0) {
+            return;
+        }
+        // firefox hack
+        if (e.originalEvent.type === 'DOMMouseScroll' && e.originalEvent.axis === 1) {
+            return;
+        }
 
-        scrollTimeout = setTimeout(function() {
-            // !!!HACK/NOTE/WARNING!!!
-            // for some reason I am getting mousewheel and DOMMouseScroll events on my
-            // mac os x mavericks system when middle mouse button dragging.
-            // I couldn't find any info about this so this might break other systems
-            // webkit hack
-            if (e.originalEvent.type === 'mousewheel' && e.originalEvent.wheelDeltaY === 0) {
-                return;
-            }
-            // firefox hack
-            if (e.originalEvent.type === 'DOMMouseScroll' && e.originalEvent.axis === 1) {
-                return;
-            }
+        var element = e.currentTarget;
+        var startingCoords = cornerstone.pageToPixel(element, e.pageX || e.originalEvent.pageX, e.pageY || e.originalEvent.pageY);
 
-            var element = e.currentTarget;
+        e = window.event || e; // old IE support
+        var wheelDelta = e.wheelDelta || -e.detail || -e.originalEvent.detail;
+        var direction = Math.max(-1, Math.min(1, (wheelDelta)));
 
-            var x;
-            var y;
+        var mouseWheelData = {
+            element: element,
+            viewport: cornerstone.getViewport(element),
+            image: cornerstone.getEnabledElement(element).image,
+            direction: direction,
+            pageX: e.pageX || e.originalEvent.pageX,
+            pageY: e.pageY || e.originalEvent.pageY,
+            imageX: startingCoords.x,
+            imageY: startingCoords.y
+        };
 
-            if (e.pageX !== undefined && e.pageY !== undefined) {
-                x = e.pageX;
-                y = e.pageY;
-            } else if (e.originalEvent &&
-                       e.originalEvent.pageX !== undefined &&
-                       e.originalEvent.pageY !== undefined) {
-                x = e.originalEvent.pageX;
-                y = e.originalEvent.pageY;
-            } else {
-                // IE9 & IE10
-                x = e.x;
-                y = e.y;
-            }
-
-            var startingCoords = cornerstone.pageToPixel(element, x, y);
-
-            e = window.event || e; // old IE support
-            var wheelDelta = e.wheelDelta || -e.detail || -e.originalEvent.detail || -e.originalEvent.deltaY;
-            var direction = Math.max(-1, Math.min(1, (wheelDelta)));
-
-            var mouseWheelData = {
-                element: element,
-                viewport: cornerstone.getViewport(element),
-                image: cornerstone.getEnabledElement(element).image,
-                direction: direction,
-                pageX: x,
-                pageY: y,
-                imageX: startingCoords.x,
-                imageY: startingCoords.y
-            };
-
-            $(element).trigger('CornerstoneToolsMouseWheel', mouseWheelData);
-        }, scrollTimeoutDelay);
+        $(element).trigger('CornerstoneToolsMouseWheel', mouseWheelData);
     }
 
     var mouseWheelEvents = 'mousewheel DOMMouseScroll';
@@ -2138,7 +2113,6 @@ if (typeof cornerstoneTools === 'undefined') {
             $(mouseEventData.element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.arrowAnnotate.mouseMoveCallback);
             $(mouseEventData.element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.arrowAnnotate.mouseDownCallback);
             $(mouseEventData.element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.arrowAnnotate.mouseDownActivateCallback);
-            $(mouseEventData.element).on('CornerstoneToolsMouseDoubleClick', eventData, cornerstoneTools.arrowAnnotate.mouseDoubleClickCallback);
         }
         
         // associate this data with this imageId so we can render it and manipulate it
@@ -2149,7 +2123,6 @@ if (typeof cornerstoneTools === 'undefined') {
         $(mouseEventData.element).off('CornerstoneToolsMouseMove', cornerstoneTools.arrowAnnotate.mouseMoveCallback);
         $(mouseEventData.element).off('CornerstoneToolsMouseDown', cornerstoneTools.arrowAnnotate.mouseDownCallback);
         $(mouseEventData.element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.arrowAnnotate.mouseDownActivateCallback);
-        $(mouseEventData.element).off('CornerstoneToolsMouseDoubleClick', cornerstoneTools.arrowAnnotate.mouseDoubleClickCallback);
 
         cornerstone.updateImage(mouseEventData.element);
         cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -2429,7 +2402,7 @@ if (typeof cornerstoneTools === 'undefined') {
 
         // now check to see if there is a handle we can move
         if (!toolData) {
-            return false;
+            return;
         }
 
         for (var i = 0; i < toolData.data.length; i++) {
@@ -2445,8 +2418,6 @@ if (typeof cornerstoneTools === 'undefined') {
                 return false;
             }
         }
-
-        return false; // false = causes jquery to preventDefault() and stopPropagation() this event
     }
 
     function pressCallback(e, eventData) {
@@ -3415,7 +3386,7 @@ if (typeof cornerstoneTools === 'undefined') {
                 };
 
                 // First we calculate the ellipse points (top, left, right, and bottom)
-                var ellipsePoints = [ {
+                var ellipsePoints = [{
                     // Top middle point of ellipse
                     x: leftCanvas + widthCanvas / 2,
                     y: topCanvas
@@ -3431,14 +3402,14 @@ if (typeof cornerstoneTools === 'undefined') {
                     // Right middle point of ellipse
                     x: leftCanvas + widthCanvas,
                     y: topCanvas + heightCanvas / 2
-                } ];
+                }];
 
                 // We obtain the link starting point by finding the closest point on the ellipse to the
                 // center of the textbox
                 link.start = cornerstoneMath.point.findClosestPoint(ellipsePoints, link.end);
 
                 // Next we calculate the corners of the textbox bounding box
-                var boundingBoxPoints = [ {
+                var boundingBoxPoints = [{
                     // Top middle point of bounding box
                     x: boundingBox.left + boundingBox.width / 2,
                     y: boundingBox.top
@@ -3464,7 +3435,7 @@ if (typeof cornerstoneTools === 'undefined') {
                 context.beginPath();
                 context.strokeStyle = color;
                 context.lineWidth = lineWidth;
-                context.setLineDash([ 2, 3 ]);
+                context.setLineDash([2, 3]);
                 context.moveTo(link.start.x, link.start.y);
                 context.lineTo(link.end.x, link.end.y);
                 context.stroke();
@@ -3489,8 +3460,7 @@ if (typeof cornerstoneTools === 'undefined') {
         toolType: toolType
     });
 
-})($, cornerstone, cornerstoneMath, cornerstoneTools);
- 
+})($, cornerstone, cornerstoneMath, cornerstoneTools); 
 // End Source; src/imageTools/ellipticalRoi.js
 
 // Begin Source: src/imageTools/freehand.js
@@ -5636,8 +5606,7 @@ if (typeof cornerstoneTools === 'undefined') {
                     x: mouseEventData.currentPoints.image.x,
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
-                    active: true,
-                    hasBoundingBox: true
+                    active: true
                 }
             }
         };
@@ -5686,13 +5655,12 @@ if (typeof cornerstoneTools === 'undefined') {
 
     ///////// BEGIN IMAGE RENDERING ///////
     function pointNearTool(element, data, coords) {
-        if (!data.handles.end.boundingBox) {
+        if (!data.textBoundingBox) {
             return;
         }
 
-        var distanceToPoint = cornerstoneMath.rect.distanceToPoint(data.handles.end.boundingBox, coords);
-        var insideBoundingBox = cornerstoneTools.pointInsideBoundingBox(data.handles.end, coords);
-        return (distanceToPoint < 10) || insideBoundingBox;
+        var distanceToPoint = cornerstoneMath.rect.distanceToPoint(data.textBoundingBox, coords);
+        return (distanceToPoint < 10);
     }
 
     function onImageRendered(e, eventData) {
@@ -5739,7 +5707,7 @@ if (typeof cornerstoneTools === 'undefined') {
             };
 
             var boundingBox = cornerstoneTools.drawTextBox(context, data.text, textCoords.x, textCoords.y - 10, color, options);
-            data.handles.end.boundingBox = boundingBox;
+            data.textBoundingBox = boundingBox;
 
             context.restore();
         }
@@ -6379,94 +6347,118 @@ if (typeof cornerstoneTools === 'undefined') {
         // Now that the scale has been updated, determine the offset we need to apply to the center so we can
         // keep the original start location in the same position
         var newCoords = cornerstone.pageToPixel(element, eventData.startPoints.page.x, eventData.startPoints.page.y);
+        
+        // The shift we will use is the difference between the original image coordinates of the point we've selected
+        // and the image coordinates of the same point on the page after the viewport scaling above has been performed
+        // This shift is in image coordinates, and is designed to keep the target location fixed on the page.
         var shift = {
             x: eventData.startPoints.image.x - newCoords.x,
             y: eventData.startPoints.image.y - newCoords.y
         };
 
+        // Correct the required shift using the viewport rotation and flip parameters
         shift = correctShift(shift, viewport);
+        
+        // Apply the shift to the Viewport's translation setting
         viewport.translation.x -= shift.x;
         viewport.translation.y -= shift.y;
+
+        // Update the Viewport with the new translation value
         cornerstone.setViewport(element, viewport);
     }
 
     function translateStrategy(eventData, ticks) {
         var element = eventData.element;
         var image = eventData.image;
+        var config = cornerstoneTools.zoom.getConfiguration();
 
         // Calculate the new scale factor based on how far the mouse has changed
+        // Note that in this case we don't need to update the viewport after the initial
+        // zoom step since we aren't don't intend to keep the target position static on
+        // the page
         var viewport = changeViewportScale(eventData.viewport, ticks);
-        cornerstone.setViewport(element, viewport);
 
-        var config = cornerstoneTools.zoom.getConfiguration();
-        var shift,
-            newCoords;
+        // Define the default shift to take place during this zoom step
+        var shift = {
+            x: 0,
+            y: 0
+        };
 
-        var outwardsTranslateSpeed = 8;
-        var inwardsTranslateSpeed = 8;
+        // Define the parameters for the translate strategy
+        var translateSpeed = 8;
         var outwardsMinScaleToTranslate = 3;
         var minTranslation = 0.01;
 
         if (ticks < 0) {
             // Zoom outwards from the image center
-            shift = {
-                x: viewport.scale < outwardsMinScaleToTranslate ? viewport.translation.x / outwardsTranslateSpeed : 0,
-                y: viewport.scale < outwardsMinScaleToTranslate ? viewport.translation.y / outwardsTranslateSpeed : 0
-            };
-            
-            if (Math.abs(viewport.translation.x) < minTranslation) {
-                viewport.translation.x = 0;
-                shift.x = 0;
-            } else if (Math.abs(viewport.translation.y) < minTranslation) {
-                viewport.translation.y = 0;
-                shift.y = 0;
-            } else if (Math.abs(viewport.translation.x) < minTranslation &&
-                       Math.abs(viewport.translation.y) < minTranslation) {
-                cornerstone.setViewport(element, viewport);
-                return false;
+            if (viewport.scale < outwardsMinScaleToTranslate) {
+                // If the current translation is smaller than the minimum desired translation,
+                // set the translation to zero
+                if (Math.abs(viewport.translation.x) < minTranslation) {
+                    viewport.translation.x = 0;
+                } else {
+                    shift.x = viewport.translation.x / translateSpeed;
+                }
+
+                // If the current translation is smaller than the minimum desired translation,
+                // set the translation to zero
+                if (Math.abs(viewport.translation.y) < minTranslation) {
+                    viewport.translation.y = 0;
+                } else {
+                    shift.y = viewport.translation.y / translateSpeed;
+                }
             }
         } else {
-            newCoords = cornerstone.pageToPixel(element, startPoints.page.x, startPoints.page.y);
+            // Zoom inwards to the current image point
+
+            // Identify the coordinates of the point the user is trying to zoom into
+            // If we are not allowed to zoom outside the image, bound the user-selected position to
+            // a point inside the image
             if (config && config.preventZoomOutsideImage) {
                 startPoints.image = boundPosition(startPoints.image, image.width, image.height);
-                newCoords = boundPosition(newCoords, image.width, image.height);
             }
-            // Zoom inwards to the current image point
+
+            // Calculate the translation value that would place the desired image point in the center
+            // of the viewport
             var desiredTranslation = {
                 x: image.width / 2 - startPoints.image.x,
                 y: image.height / 2 - startPoints.image.y
             };
 
+            // Correct the target location using the viewport rotation and flip parameters
+            desiredTranslation = correctShift(desiredTranslation, viewport);
+
+            // Calculate the difference between the current viewport translation value and the
+            // final desired translation values
             var distanceToDesired = {
                 x: viewport.translation.x - desiredTranslation.x,
                 y: viewport.translation.y - desiredTranslation.y
             };
 
-            shift = {
-                x: distanceToDesired.x / inwardsTranslateSpeed,
-                y: distanceToDesired.y / inwardsTranslateSpeed
-            };
-
+            // If the current translation is smaller than the minimum desired translation,
+            // stop translating in the x-direction
             if (Math.abs(distanceToDesired.x) < minTranslation) {
                 viewport.translation.x = desiredTranslation.x;
-                shift.x = 0;
-            } else if (Math.abs(distanceToDesired.y) < minTranslation) {
+            } else {
+                // Otherwise, shift the viewport by one step
+                shift.x = distanceToDesired.x / translateSpeed;
+            }
+
+            // If the current translation is smaller than the minimum desired translation,
+            // stop translating in the y-direction
+            if (Math.abs(distanceToDesired.y) < minTranslation) {
                 viewport.translation.y = desiredTranslation.y;
-                shift.y = 0;
-            } else if (Math.abs(distanceToDesired.x) < minTranslation &&
-                       Math.abs(distanceToDesired.y) < minTranslation) {
-                cornerstone.setViewport(element, viewport);
-                return false;
+            } else {
+                // Otherwise, shift the viewport by one step
+                shift.y = distanceToDesired.y / translateSpeed;
             }
         }
 
-        shift = correctShift(shift, viewport);
-        if (!shift.x && !shift.y) {
-            return false;
-        }
-
+        // Apply the shift to the Viewport's translation setting
         viewport.translation.x -= shift.x;
         viewport.translation.y -= shift.y;
+
+        // Update the Viewport with the new translation value
         cornerstone.setViewport(element, viewport);
     }
 

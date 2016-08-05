@@ -564,14 +564,17 @@ Template.imageViewerViewport.onDestroyed(function() {
 
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport': function(e) {
+        console.log('activateViewport');
         log.info('imageViewerViewport ActivateViewport');
         setActiveViewport(e.currentTarget);
     },
     'click .imageViewerViewport': function(e) {
+        console.log('click imageViewerViewport handler');
         var viewportIndex = $('.imageViewerViewport').index(e.currentTarget);
         Session.set('activeViewport', viewportIndex);
     },
-    'dblclick .imageViewerViewport': function(e) {
+    'CornerstoneToolsMouseDoubleClick .imageViewerViewport, CornerstoneToolsDoubleTap .imageViewerViewport': function(e) {
+        console.log('CornerstoneToolsMouseDoubleClick handler');
         var viewportIndex = $('.imageViewerViewport').index(e.currentTarget);
         layoutManager.toggleEnlargement(viewportIndex);
     }
