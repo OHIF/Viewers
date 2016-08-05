@@ -1,36 +1,36 @@
 @import "{design}/app.styl"
 
 .imageViewerLoadingIndicator
-  display: none
-  color: $textPrimaryColor
+  color: $textSecondaryColor
 
 .faded
   opacity: 0.5
-  
+
 .imageViewerErrorLoadingIndicator
-  display: none
-  background-color: rgba(0,0,0,0.75)
+  color: $uiYellow
   
   p, h4
     text-align: center
-    color: $textColorActive
     padding: 4px 0
     
   p
     font-size: 11pt
       
 .loadingIndicator
+  display: none
   pointer-events: none // Necessary for click-through to cornerstone element below
+  position: absolute
+  top: 0
   width: 100%
   height: 100%
   font-size: 18px
   z-index: 100
+  background-color: rgba(0,0,0,0.75)
   
   .indicatorContents
     position: absolute
     top: 40%
     width: 100%
-    color: $textSecondaryColor
     font-size: 30px
     font-weight: 200
     text-align: center
