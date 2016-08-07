@@ -50,11 +50,14 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         // Orthanc has a bug here so we can't retrieve sequences at the moment
         // https://groups.google.com/forum/#!topic/orthanc-users/ghKJfvtnK8Y
         //0x00082112: ''  // sourceImageSequence
-    }
+    };
 };
 
 Meteor.startup(function() {
-    if (!Meteor.settings.servers.dimse || !Meteor.settings.servers.dimse.length) return;
+    if (!Meteor.settings.servers.dimse || !Meteor.settings.servers.dimse.length) {
+        return;
+    }
+
     // TODO: [custom-servers] use active server and check if type is DIMSE
     var peers = Meteor.settings.servers.dimse[0].peers;
     console.log('Adding DIMSE peers');
@@ -169,7 +172,9 @@ DIMSE._retrieveInstancesBySeries = function(conn, series, studyInstanceUID, call
 };
 
 DIMSE.retrieveInstancesByStudyOnlyMulti = function(studyInstanceUID, params, options) {
-    if (!studyInstanceUID) return [];
+    if (!studyInstanceUID) {
+        return [];
+    }
 
     var series = DIMSE.retrieveSeries(studyInstanceUID, params, options), instances = [];
     series.forEach(function(seriesData){
@@ -182,7 +187,9 @@ DIMSE.retrieveInstancesByStudyOnlyMulti = function(studyInstanceUID, params, opt
 };
 
 DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options) {
-    if (!studyInstanceUID) return [];
+    if (!studyInstanceUID) {
+        return [];
+    }
 
     var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu){
@@ -222,7 +229,7 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
         });
     });
     return future.wait();
-}
+};
 
 DIMSE.retrieveSeries = function(studyInstanceUID, params, options) {
     var future = new Future;
@@ -264,7 +271,6 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, 
     var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = getInstanceRetrievalParams(studyInstanceUID, seriesInstanceUID);
-
         var result = this.findInstances(Object.assign(defaultParams, params)),
             o = this;
 

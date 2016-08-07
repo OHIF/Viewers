@@ -21,6 +21,7 @@ function getSourceImageInstanceUid(instance) {
  * Returns an object populated with study metadata, including the
  * series list.
  *
+ * @param studyInstanceUid
  * @param resultData
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
@@ -104,6 +105,8 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         series.instances.push(instanceSummary);
     });
 
+    studyData.studyInstanceUid = studyInstanceUid;
+
     return studyData;
 }
 
@@ -113,13 +116,18 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
-    var result = DIMSE.retrieveInstances(studyInstanceUid);
+    // TODO: Find active server
+    const activeServer = Meteor.settings.servers.dimse[0].peers[0];
+    const supportsInstanceRetrievalByStudyUid = activeServer.supportsInstanceRetrievalByStudyUid;
+    let results;
 
-    var study = resultDataToStudyMetadata(studyInstanceUid, result);
-    if (!study) {
-        study = {};
+    // Check explicitly for a value of false, since this property
+    // may be left undefined in config files
+    if (supportsInstanceRetrievalByStudyUid === false) {
+        results = DIMSE.retrieveInstancesByStudyOnly(studyInstanceUid);
+    } else {
+        results = DIMSE.retrieveInstances(studyInstanceUid);
     }
 
-    study.studyInstanceUid = studyInstanceUid;
-    return study;
+    return resultDataToStudyMetadata(studyInstanceUid, results);
 };

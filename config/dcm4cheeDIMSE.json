@@ -1,0 +1,40 @@
+{
+  "servers": {
+    "dicomWeb": [
+      {
+        "name": "DCM4CHEE",
+        "wadoUriRootNOTE": "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
+        "wadoUriRoot": "http://localhost:8043/dcm4chee-arc/aets/DCM4CHEE/wado",
+        "qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+        "wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadouri",
+        "requestOptions": {
+          "auth": "admin:admin",
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+      }
+    }],
+    "dimse": [{
+      "name": "DCM4CHEE_DIMSE",
+      "peers": [
+        {
+          "host": "localhost",
+          "port": 4242,
+          "aeTitle": "DCM4CHEE",
+          "default": true,
+          "supportsInstanceRetrievalByStudyUid": false
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 11112,
+          "aeTitle": "DCM4CHEE",
+          "default": true,
+          "server": true
+        }
+      ]
+    }]
+  },
+  "defaultServiceType": "dimse"
+}

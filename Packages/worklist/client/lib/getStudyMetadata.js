@@ -26,7 +26,6 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
     // If no study metadata is in the cache variable, we need to retrieve it from
     // the server with a call.
     Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
-        log.info('worklistStudy getStudyMetadata: ' + studyInstanceUid);
         console.timeEnd('getStudyMetadata');
 
         if (Meteor.user && Meteor.user()) {
@@ -46,6 +45,10 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
             log.warn(error);
             failCallback(error);
             return;
+        }
+
+        if (!study) {
+            throw "GetStudyMetadata: No study data returned from server";
         }
 
         // Once we have retrieved the data, we sort the series' by series
