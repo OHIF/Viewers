@@ -401,7 +401,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 if (!alreadyLoaded) {
                     getStudyMetadata(priorStudy.studyInstanceUid, study => {
                         study.abstractPriorValue = abstractPriorValue;
-
+                        study.displaySets = createStacks(study);
                         ViewerStudies.insert(study);
                         this.studies.push(study);
                         this.matchImages(viewport);
@@ -586,6 +586,23 @@ HP.ProtocolEngine = class ProtocolEngine {
                 currentViewportData.currentImageIdIndex = details.bestMatch.currentImageIdIndex;
             }
 
+            const study = ViewerStudies.findOne({
+                studyInstanceUid: details.bestMatch.studyInstanceUid
+            });
+
+            // Find the best matched display set. TODO: Fix this to actually
+            // find the most appropriate display set
+            study.displaySets.forEach(displaySet => {
+                if (displaySet.seriesInstanceUid === details.bestMatch.seriesInstanceUid) {
+                    currentViewportData.displaySetInstanceUid = displaySet.displaySetInstanceUid;
+                    return false;
+                }
+            })
+
+            if (!currentViewportData.displaySetInstanceUid) {
+                throw "No matching display set found?";
+            }
+
             viewportData.push(currentViewportData);
         });
 
@@ -594,7 +611,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         this.LayoutManager.viewportData = viewportData;
 
         if (viewportIndex !== undefined && viewportData[viewportIndex]) {
-            this.LayoutManager.rerenderViewportWithNewSeries(viewportIndex, viewportData[viewportIndex]);
+            this.LayoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, viewportData[viewportIndex]);
         } else {
             this.LayoutManager.updateViewports();
         }

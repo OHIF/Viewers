@@ -20,7 +20,6 @@ switchToTab = function(contentId) {
     } else {
         $('.tab-content .tab-pane#' + contentId).addClass('active');
     }
-    
 
     // Remove any previous Viewers from the DOM
     $('.viewerContainer').remove();

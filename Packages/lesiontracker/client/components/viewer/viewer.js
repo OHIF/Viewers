@@ -72,6 +72,7 @@ Template.viewer.onCreated(() => {
 
     instance.data.studies.forEach(study => {
         study.selected = true;
+        study.displaySets = createStacks(study);
         ViewerStudies.insert(study);
     });
 

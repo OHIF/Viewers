@@ -23,6 +23,7 @@ Template.lesionTableRow.events({
         $row.closest('.lesionTableView').find('.lesionTableRow').not($row).removeClass('active');
         $row.toggleClass('active');
     },
+
     'dblclick .location': function() {
         log.info('Double clicked on Lesion Location cell');
 
@@ -33,6 +34,7 @@ Template.lesionTableRow.events({
 
         changeLesionLocationCallback(measurementData, null, doneCallback);
     },
+
     'keydown .location': function(e) {
         var keyCode = e.which;
 
@@ -45,8 +47,8 @@ Template.lesionTableRow.events({
                 text: 'Are you sure you would like to remove the entire measurement?'
             };
 
-            showConfirmDialog(function() {
-                Meteor.call('removeMeasurement', currentMeasurement._id, function(error, response) {
+            showConfirmDialog(() => {
+                Meteor.call('removeMeasurement', currentMeasurement._id, (error, response) => {
                     if (error) {
                         log.warn(error);
                     }

@@ -11,11 +11,12 @@ var allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownA
  *
  * @param data {object} Object containing the study, series, and viewport element to be used
  */
-function loadSeriesIntoViewport(data, templateData) {
-    log.info('imageViewerViewport loadSeriesIntoViewport');
+function loadDisplaySetIntoViewport(data, templateData) {
+    log.info('imageViewerViewport loadDisplaySetIntoViewport');
 
     // Make sure we have all the data required to render the series
-    if (!data.study || !data.series || !data.element) {
+    if (!data.study || !data.displaySet || !data.element) {
+        log.warn('loadDisplaySetIntoViewport: No Study, Display Set, or Element provided');
         return;
     }
 
@@ -53,30 +54,30 @@ function loadSeriesIntoViewport(data, templateData) {
     // Loop through the current series and add metadata to the
     // Cornerstone meta data provider. This will be used to fill information
     // into the viewport overlays, and to calculate reference lines and orientation markers
-    var series = data.series;
-    var numImages = series.instances.length;
+    var displaySet = data.displaySet;
+    var numImages = displaySet.images.length;
     var imageId;
 
-    series.instances.forEach(function(instance, imageIndex) {
+    displaySet.images.forEach(function(image, imageIndex) {
         var metaData = {
-            instance: instance,
-            series: series,
+            instance: image,
+            series: displaySet, // TODO: Check this
             study: data.study,
             numImages: numImages,
             imageIndex: imageIndex + 1
         };
 
-        var numFrames = instance.numFrames;
+        var numFrames = image.numImageFrames;
         if (numFrames > 1) {
             log.info('Multiframe image detected');
             for (var i = 0; i < numFrames; i++) {
                 metaData.frame = i;
-                imageId = getImageId(instance, i);
+                imageId = getImageId(image, i);
                 imageIds.push(imageId);
                 addMetaData(imageId, metaData);
             }
         } else {
-            imageId = getImageId(instance);
+            imageId = getImageId(image);
             imageIds.push(imageId);
             addMetaData(imageId, metaData);
         }
@@ -161,11 +162,11 @@ function loadSeriesIntoViewport(data, templateData) {
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, image);
 
         // Check if there are default viewport settings for this sopClassUid
-        if (!series.instances || !series.instances.length) {
+        if (!displaySet.images || !displaySet.images.length) {
             return;
         }
 
-        var instance = series.instances[0];
+        var instance = displaySet.images[0];
         var instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, image.imageId);
 
         // If there are sopClassUid-specific viewport settings, apply them
@@ -227,7 +228,7 @@ function loadSeriesIntoViewport(data, templateData) {
         cornerstoneTools.addToolState(element, 'stack', stack);
 
         // Set the default CINE settings
-        var frameRate = 1000 / series.instances[0].frameTime;
+        var frameRate = 1000 / displaySet.images[0].frameTime;
         var cineToolData = {
             loop: OHIF.viewer.cine.loop,
             framesPerSecond: frameRate || OHIF.viewer.cine.framesPerSecond
@@ -415,22 +416,23 @@ function loadSeriesIntoViewport(data, templateData) {
 }
 
 /**
- * This function sets series for the study and calls LoadSeriesIntoViewport function
+ * This function sets the display set for the study and calls LoadDisplaySetIntoViewport function
  *
  * @param data includes study data
- * @param seriesInstanceUid series information which is loaded in Template
+ * @param displaySetInstanceUid Display set information which is loaded in Template
  * @param templateData currentData of Template
  *
  */
-function setSeries(data, seriesInstanceUid, templateData) {
+function setDisplaySet(data, displaySetInstanceUid, templateData) {
     var study = data.study;
-    if (!study || !study.seriesList) {
+    if (!study || !study.displaySets) {
+        throw "Study does not exist or has no display sets";
         return;
     }
 
-    study.seriesList.every(function(series) {
-        if (series.seriesInstanceUid === seriesInstanceUid) {
-            data.series = series;
+    study.displaySets.every(displaySet => {
+        if (displaySet.displaySetInstanceUid === displaySetInstanceUid) {
+            data.displaySet = displaySet;
             return false;
         }
 
@@ -438,12 +440,13 @@ function setSeries(data, seriesInstanceUid, templateData) {
     });
 
     // If we didn't find anything, stop here
-    if (!data.series) {
+    if (!data.displaySet) {
+        throw "Display set not found in specified study!";
         return;
     }
 
     // Otherwise, load pass the data object into loadSeriesIntoViewport
-    loadSeriesIntoViewport(data, templateData);
+    loadDisplaySetIntoViewport(data, templateData);
 }
 
 /**
@@ -490,10 +493,6 @@ Meteor.startup(function() {
     cornerstoneTools.magnify.setConfiguration(config);
 });
 
-Template.imageViewerViewport.onCreated(function() {
-    log.info('imageViewerViewport onCreated');
-});
-
 Template.imageViewerViewport.onRendered(function() {
     var templateData = Template.currentData();
     log.info('imageViewerViewport onRendered');
@@ -513,15 +512,16 @@ Template.imageViewerViewport.onRendered(function() {
         element: element,
         viewport: this.data.viewport,
         currentImageIdIndex: this.data.currentImageIdIndex,
+        displaySetInstanceUid: this.data.displaySetInstanceUid,
         studyInstanceUid: this.data.studyInstanceUid,
         seriesInstanceUid: this.data.seriesInstanceUid,
         renderedCallback: this.data.renderedCallback,
         activeViewport: activeViewport
     };
 
-    // If no seriesInstanceUid or studyInstanceUid were supplied, display the drag/drop
+    // If no displaySetInstanceUid was supplied, display the drag/drop
     // instructions and then stop here since we don't know what to display in the viewport.
-    if (!this.data.seriesInstanceUid || !this.data.studyInstanceUid) {
+    if (!this.data.displaySetInstanceUid) {
         element.classList.add('empty');
         $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
         $(element).siblings('.viewportInstructions').show();
@@ -533,10 +533,10 @@ Template.imageViewerViewport.onRendered(function() {
     var study = ViewerStudies.findOne({
         studyInstanceUid: this.data.studyInstanceUid
     });
-    var seriesInstanceUid = this.data.seriesInstanceUid;
+    var displaySetInstanceUid = this.data.displaySetInstanceUid;
 
     data.study = study;
-    setSeries(data, seriesInstanceUid, templateData);
+    setDisplaySet(data, displaySetInstanceUid, templateData);
 });
 
 Template.imageViewerViewport.onDestroyed(function() {

@@ -24,6 +24,27 @@ function getElementIfNotEmpty(viewportIndex) {
     return element;
 }
 
+function getStackDataIfNotEmpty(viewportIndex) {
+    const element = getElementIfNotEmpty(viewportIndex);
+    if (!element) {
+        return;
+    }
+
+    const stackToolData = cornerstoneTools.getToolState(element, 'stack');
+    if (!stackToolData ||
+        !stackToolData.data ||
+        !stackToolData.data.length) {
+        return;
+    }
+
+    const stack = stackToolData.data[0];
+    if (!stack) {
+        return;
+    }
+
+    return stack;
+}
+
 function getPatient(property) {
     Session.get('CornerstoneNewImage' + this.viewportIndex);
     if (!this.imageId) {
@@ -200,6 +221,24 @@ Template.viewportOverlay.helpers({
     },
     numImages: function() {
         return getSeries.call(this, 'numImages');
+    },
+    imageIndex: function() {
+        Session.get('CornerstoneNewImage' + this.viewportIndex);
+        var stack = getStackDataIfNotEmpty(this.viewportIndex);
+        if (!stack || stack.currentImageIdIndex === undefined) {
+            return;
+        }
+
+        return stack.currentImageIdIndex + 1;
+    },
+    numImages: function() {
+        Session.get('CornerstoneNewImage' + this.viewportIndex);
+        var stack = getStackDataIfNotEmpty(this.viewportIndex);
+        if (!stack || !stack.imageIds) {
+            return;
+        }
+
+        return stack.imageIds.length;
     },
     prior: function() {
         // This helper is updated whenever a new image is displayed in the viewport

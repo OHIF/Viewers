@@ -23,6 +23,7 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00200011: '',
         0x00080016: '', // sopClassUid
         0x00080018: '', // sopInstanceUid
+        0x00080060: '', // modality
         0x00200013: '', // instanceNumber
         0x00280010: '', // rows
         0x00280011: '', // columns

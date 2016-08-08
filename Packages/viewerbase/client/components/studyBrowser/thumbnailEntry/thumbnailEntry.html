@@ -1,5 +1,5 @@
 <template name="thumbnailEntry">
-    <div class="thumbnailEntry m-t-1 m-b-2 {{draggableClass}} {{#if isSeriesActive this.thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}">
+    <div class="thumbnailEntry m-t-1 m-b-2 {{draggableClass}} {{#if isDisplaySetActive this.thumbnail.stack.displaySetInstanceUid viewportIndex}}active{{/if}}">
         <div class="p-x-1">
             {{>imageThumbnail (clone this)}}
         </div>
@@ -14,7 +14,7 @@
                 </div>
                 <div class="seriesInformationNumbers">
                     <div>{{this.thumbnail.stack.seriesNumber}}</div>
-                    <div>{{this.thumbnail.stack.instances.length}}</div>
+                    <div>{{this.thumbnail.stack.numImageFrames}}</div>
                 </div>
             </div>
         </div>

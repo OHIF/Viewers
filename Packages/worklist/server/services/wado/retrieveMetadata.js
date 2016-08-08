@@ -82,6 +82,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         var instanceSummary = {
             imageType: DICOMWeb.getString(instance['00080008']),
             sopClassUid: DICOMWeb.getString(instance['00080016']),
+            modality: DICOMWeb.getString(instance['00080060']),
             sopInstanceUid: sopInstanceUid,
             instanceNumber: DICOMWeb.getNumber(instance['00200013']),
             imagePositionPatient: DICOMWeb.getString(instance['00200032']),

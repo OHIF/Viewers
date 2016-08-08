@@ -2,6 +2,10 @@
  * Updates the Hanging Protocol Select2 Input
  */
 function updateProtocolSelect() {
+    if (!ProtocolEngine) {
+        return;
+    }
+    
     // Loop through the available HangingProtocols
     // to create an array with the protocols that includes
     // a property labelled 'text', so that Select2 has something

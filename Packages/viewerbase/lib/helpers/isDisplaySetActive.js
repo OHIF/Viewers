@@ -1,7 +1,7 @@
 /**
  * Boolean helper to identify if a series instance is active in some viewport
  */
-Template.registerHelper('isSeriesActive', (seriesInstanceUid, viewportIndex) => {
+Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIndex) => {
     // Run this computation every time the viewports are updated
     Session.get('LayoutManagerUpdated');
 
@@ -19,7 +19,7 @@ Template.registerHelper('isSeriesActive', (seriesInstanceUid, viewportIndex) => 
 
     let result = false;
     _.each(viewportData, data => {
-        if (data && data.seriesInstanceUid === seriesInstanceUid) {
+        if (data && data.displaySetInstanceUid === displaySetInstanceUid) {
             result = true;
         }
     });

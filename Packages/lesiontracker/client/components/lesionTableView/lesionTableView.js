@@ -9,8 +9,8 @@ Template.lesionTableView.helpers({
             }
         });
     },
+
     nonTargets() {
-        // All Targets shall be listed first followed by Non-Targets
         return Measurements.find({
             isTarget: false
         }, {
@@ -19,8 +19,8 @@ Template.lesionTableView.helpers({
             }
         });
     },
+
     newLesions() {
-        // All Targets shall be listed first followed by Non-Targets
         return Measurements.find({
             saved: false
         }, {

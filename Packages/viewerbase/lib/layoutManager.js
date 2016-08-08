@@ -27,8 +27,8 @@ LayoutManager = class LayoutManager {
         var viewportIndex = 0;
         var self = this;
         this.studies.forEach(function(study) {
-            study.seriesList.forEach(function(series) {
-                if (!series.instances.length) {
+            study.displaySets.forEach(function(displaySet) {
+                if (!displaySet.images.length) {
                     return;
                 }
 
@@ -39,6 +39,7 @@ LayoutManager = class LayoutManager {
                         viewportIndex: existingViewportData.viewportIndex,
                         studyInstanceUid: existingViewportData.studyInstanceUid,
                         seriesInstanceUid: existingViewportData.seriesInstanceUid,
+                        displaySetInstanceUid: existingViewportData.displaySetInstanceUid,
                         sopInstanceUid: existingViewportData.sopInstanceUid,
                         viewport: existingViewportData.viewport,
                         imageId: existingViewportData.imageId,
@@ -50,7 +51,7 @@ LayoutManager = class LayoutManager {
                     // This tests to make sure there is actually image data in this instance
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227
-                    var firstInstance = series.instances[0];
+                    var firstInstance = displaySet.images[0];
 
                     // All imaging modalities must have a valid value for sopClassUid or rows
                     if (!firstInstance || (!isImage(firstInstance.sopClassUid) && !firstInstance.rows)) {
@@ -59,7 +60,8 @@ LayoutManager = class LayoutManager {
                         currentViewportData = {
                             viewportIndex: viewportIndex,
                             studyInstanceUid: study.studyInstanceUid,
-                            seriesInstanceUid: series.seriesInstanceUid,
+                            seriesInstanceUid: displaySet.seriesInstanceUid,
+                            displaySetInstanceUid: displaySet.displaySetInstanceUid,
                             sopInstanceUid: firstInstance.sopInstanceUid,
                             currentImageIdIndex: 0 // TODO Remove this once currentImageIdIndex is removed from imageViewerViewports
                         };
@@ -114,13 +116,12 @@ LayoutManager = class LayoutManager {
 
     /**
      * This function destroys and re-renders the imageViewerViewport template.
-     * It uses the data provided (object containing seriesIndex and studyIndex) to
-     * load a new series into the produced viewport.
+     * It uses the data provided to load a new display set into the produced viewport.
      *
      * @param viewportIndex
-     * @param data An object containing a seriesIndex and studyIndex for a study to load into this viewport
+     * @param data
      */
-    rerenderViewportWithNewSeries(viewportIndex, data) {
+    rerenderViewportWithNewDisplaySet(viewportIndex, data) {
         // The parent container is identified because it is later removed from the DOM
         var element = $('.imageViewerViewport').eq(viewportIndex);
         var container = element.parents('.viewportContainer').get(0);
@@ -128,9 +129,10 @@ LayoutManager = class LayoutManager {
         // Record the current viewportIndex so this can be passed into the re-rendering call
         data.viewportIndex = viewportIndex;
 
-        // Update the dictionary of loaded series for the specified viewport
+        // Update the dictionary of loaded displaySet for the specified viewport
         this.viewportData[viewportIndex] = {
             viewportIndex: viewportIndex,
+            displaySetInstanceUid: data.displaySetInstanceUid,
             seriesInstanceUid: data.seriesInstanceUid,
             studyInstanceUid: data.studyInstanceUid,
             renderedCallback: data.renderedCallback,

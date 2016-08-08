@@ -143,8 +143,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/resizeViewportElements.js', 'client');
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
-    api.addFiles('lib/queryStudies.js', 'client');
-    api.addFiles('lib/importStudies.js', 'client');
+    
     //api.addFiles('lib/validators.js', 'client');
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
@@ -197,7 +196,7 @@ Package.onUse(function(api) {
         'lib/helpers/formatTM.js',
         'lib/helpers/inlineIf.js',
         'lib/helpers/inc.js',
-        'lib/helpers/isSeriesActive.js',
+        'lib/helpers/isDisplaySetActive.js',
         'lib/helpers/getUsername.js',
         'lib/helpers/capitalizeFirstLetter.js',
         'lib/helpers/objectToPairs.js',
@@ -219,14 +218,4 @@ Package.onUse(function(api) {
     api.export('clearTools', 'client');
     api.export('resetViewport', 'client');
     api.export('invert', 'client');
-
-    api.addFiles('server/methods/importStudies.js', 'server');
-
-    api.export('importStudies', 'server');
-    api.export('importSupported', 'server');
-
-    // Collections
-    api.addFiles('both/collections.js', [ 'client', 'server' ]);
-    api.addFiles('server/collections.js', 'server');
-    api.export('StudyImportStatus', [ 'client', 'server' ]);
 });

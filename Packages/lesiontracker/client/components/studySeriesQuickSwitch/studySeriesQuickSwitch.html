@@ -18,7 +18,7 @@
                     <div class="seriesSwitch clearfix">
                         {{#each thumbnail in thumbnailsList}}
                             {{#if lt @index 8}}
-                                <div class="seriesItem {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}} {{#if isSeriesActive thumbnail.stack.seriesInstanceUid viewportIndex}}active{{/if}}"></div>
+                                <div class="seriesItem {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}} {{#if isDisplaySetActive thumbnail.stack.displaySetInstanceUid viewportIndex}}active{{/if}}"></div>
                             {{else}}
                                 {{#if eq @index 8}}
                                     <div class="seriesItem count {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">{{thumbnailsList.length}}</div>

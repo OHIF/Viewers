@@ -36,5 +36,11 @@
       ]
     }]
   },
-  "defaultServiceType": "dimse"
+  "defaultServiceType": "dimse",
+  "public": {
+    "verifyEmail": false,
+    "ui": {
+        "studyListFunctionsEnabled": true
+    }
+  }
 }

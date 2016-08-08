@@ -16,7 +16,7 @@ Template.imageThumbnail.onRendered(() => {
         cornerstone.enable(element);
 
         // Get the image ID
-        const imageInstance = instance.data.thumbnail.stack.instances[0];
+        const imageInstance = instance.data.thumbnail.stack.images[0];
         const imageId = getImageId(imageInstance);
 
         // Activate the loading state
@@ -50,7 +50,7 @@ Template.imageThumbnail.onRendered(() => {
         }
 
         // Wait for the new data and reresh the image thumbnail
-        Meteor.setTimeout(() => {
+        Meteor.defer(() => {
             instance.refreshImage();
         });
     });

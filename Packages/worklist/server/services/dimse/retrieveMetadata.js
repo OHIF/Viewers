@@ -72,6 +72,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         var instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
+            modality: instance[0x00080060],
             sopInstanceUid: sopInstanceUid,
             instanceNumber: parseFloat(instance[0x00200013]),
             imagePositionPatient: instance[0x00200032],

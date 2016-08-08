@@ -193,7 +193,7 @@ const thumbnailDragEndHandler = (event, data, handlers) => {
     const viewportIndex = $('.imageViewerViewport').index(element);
 
     // Rerender the viewport using the dragged thumbnail data
-    layoutManager.rerenderViewportWithNewSeries(viewportIndex, data);
+    window.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, data);
 
     return false;
 };
@@ -226,7 +226,7 @@ Template.thumbnailEntry.events({
 
         const data = instance.data.thumbnail.stack;
         // Rerender the viewport using the clicked thumbnail data
-        layoutManager.rerenderViewportWithNewSeries(instance.data.viewportIndex, data);
+        window.layoutManager.rerenderViewportWithNewDisplaySet(instance.data.viewportIndex, data);
     }
 });
 

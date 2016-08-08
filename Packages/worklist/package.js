@@ -73,11 +73,15 @@ Package.onUse(function (api) {
     api.addFiles('client/lib/switchToTab.js', 'client');
     api.addFiles('client/lib/exportStudies.js', 'client');
     api.addFiles('client/lib/worklist.js', 'client');
+    api.addFiles('client/lib/queryStudies.js', 'client');
+    api.addFiles('client/lib/importStudies.js', 'client');
 
     // Server-side functions
+    api.addFiles('server/collections.js', 'server');
     api.addFiles('server/lib/namespace.js', 'server');
     api.addFiles('server/lib/encodeQueryData.js', 'server');
     api.addFiles('server/methods/getStudyMetadata.js', 'server');
+    api.addFiles('server/methods/importStudies.js', 'server');
     api.addFiles('server/methods/worklistSearch.js', 'server');
 
     // DICOMWeb instance, study, and metadata retrieval
@@ -94,6 +98,8 @@ Package.onUse(function (api) {
     api.addFiles('server/services/remote/instances.js', 'server');
     api.addFiles('server/services/remote/studies.js', 'server');
     api.addFiles('server/services/remote/retrieveMetadata.js', 'server');
+
+    api.addFiles('both/collections.js', [ 'client', 'server' ]);
 
     api.export('Services', 'server');
 
@@ -113,5 +119,5 @@ Package.onUse(function (api) {
     // Export the Collections
     api.export('WorklistTabs', 'client');
     api.export('WorklistStudies', 'client');
-    api.export('WorklistSelectedStudies', 'client');
+    api.export('WorklistSelectedStudies', 'client')
 });
