@@ -65,9 +65,9 @@ Template.studyTimepointStudy.events({
 
             if (!alreadyLoaded) {
                 $study.addClass('loading');
-                getStudyMetadata(studyInstanceUid, studyData => {
+                getStudyMetadata(studyInstanceUid, study => {
                     study.displaySets = createStacks(study);
-                    ViewerStudies.insert(studyData);
+                    ViewerStudies.insert(study);
                     instance.select(isQuickSwitch);
                 });
             } else {

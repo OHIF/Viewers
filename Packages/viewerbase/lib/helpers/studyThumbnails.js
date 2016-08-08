@@ -2,6 +2,10 @@
  * A global Blaze UI helper to get the thumbnails for the given study
  */
 Template.registerHelper('studyThumbnails', study => {
+    if (!study) {
+        return;
+    }
+
     // Find the study's stacks
     const stacks = study.displaySets;
 
