@@ -37,7 +37,7 @@ function filterToQIDOURL(server, filter) {
         AccessionNumber: filter.accessionNumber,
         StudyDescription: filter.studyDescription,
         limit: filter.limit || 20,
-        includefield: server.qidoSupportsIncludeField ? commaSeparatedFields : 'all'
+        includefield: server.qidoSupportsIncludeField ? 'all' : commaSeparatedFields
     };
 
     // build the StudyDate range parameter
@@ -45,7 +45,7 @@ function filterToQIDOURL(server, filter) {
         var date = "".concat(dateToString(new Date(filter.studyDateFrom)), "-", dateToString(new Date(filter.studyDateTo)));
         parameters.StudyDate = date;
     }
-    
+
     return server.qidoRoot + '/studies?' + encodeQueryData(parameters);
 }
 
@@ -84,7 +84,7 @@ function resultDataToStudies(resultData) {
             modalities: DICOMWeb.getString(DICOMWeb.getModalities(study['00080060'], study['00080061']))
         });
     });
-    
+
     return studies;
 }
 

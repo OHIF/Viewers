@@ -22,7 +22,7 @@
                         {{>selectTreeBreadcrumb component=this.component}}
                     {{/if}}
                     <div class="tree-inputs">
-                        {{#each item in (reactive this.items)}}
+                        {{#each item in treeItems}}
                             {{>inputRadio
                                 id=(concat this.storageKey '_' (encodeId item.value))
                                 class=this.radioClass

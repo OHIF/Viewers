@@ -22,9 +22,11 @@ OHIF.string.search = (object, query, property=null, result=[]) => {
         if (_.isString(value) && pattern.test(value)) {
             // Add the current item to the result
             result.push(item);
-        } else if (_.isObject(value)) {
+        }
+
+        if (_.isObject(item)) {
             // Search recursively the item if the current item is an object
-            OHIF.string.search(value, query, property, result);
+            OHIF.string.search(item, query, property, result);
         }
     });
 

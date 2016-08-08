@@ -1,11 +1,19 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
 // TODO: use npm dependency
 import transition from 'meteor/ohif:core/client/lib/third-party/transition-to-from-auto';
+
+Template.selectTree.onCreated(() => {
+    const instance = Template.instance();
+
+    // Create a reactive variable to control the search
+    instance.searchTerm = new ReactiveVar('');
+});
 
 Template.selectTree.onRendered(() => {
     const instance = Template.instance();
@@ -20,8 +28,19 @@ Template.selectTree.onRendered(() => {
     $treeRoot.addClass('started');
 
     // Update the component's viewport height
-    instance.updateHeight = () => {
-        const height = rootInstance.$('.tree-options:last').data('height');
+    instance.updateHeight = searchTerm => {
+        let height;
+
+        // Check if there's a search term
+        if (searchTerm) {
+            // Set the viewport height as same as listed options height
+            height = rootInstance.$('.tree-inputs').height();
+        } else {
+            // Set the viewport height as same as selected node's options height
+            height = rootInstance.$('.tree-options:last').data('height');
+        }
+
+        // Update the viewport's height
         rootInstance.$('.tree-options:first').height(height);
     };
 
@@ -49,9 +68,17 @@ Template.selectTree.onRendered(() => {
         // Run this computation everytime the current node is changed
         instance.data.currentNode.dep.depend();
 
+        // Run this computation everytime the search term is changed
+        const searchTerm = instance.searchTerm.get();
+
+        // Clean the current node selection if the user started the search
+        if (searchTerm) {
+            rootInstance.data.currentNode.set(null);
+        }
+
         // Update the viewport height
         Tracker.afterFlush(() => {
-            instance.updateHeight();
+            instance.updateHeight(searchTerm);
             instance.updateOpen();
         });
     });
@@ -71,6 +98,11 @@ Template.selectTree.events({
     'click .select-tree-root>.tree-content'(event, instance) {
         // Detect the first interaction with the component and do the animation
         $(event.currentTarget).parent().addClass('interacted');
+    },
+
+    'input .tree-search input'(event, instance) {
+        // Change the search term to update the tree items
+        instance.searchTerm.set($(event.currentTarget).val());
     },
 
     'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
@@ -96,10 +128,13 @@ Template.selectTree.events({
             // Change the active item
             $label.addClass('active');
 
+            // Ckeck if there's a storageKey defined
             const storageKey = instance.data.storageKey;
             if (storageKey) {
+                // Get the current stored data
                 const storedData = _.extend({}, OHIF.user.getData(storageKey));
 
+                // Increment or create a counter for the clicked leaf
                 const itemKey = OHIF.string.encodeId($target.val());
                 if (storedData[itemKey]) {
                     storedData[itemKey]++;
@@ -107,8 +142,7 @@ Template.selectTree.events({
                     storedData[itemKey] = 1;
                 }
 
-                console.warn('>>>>', storageKey, storedData, itemKey);
-
+                // Updata the stored data with the new count
                 OHIF.user.setData(storageKey, storedData);
             }
 
@@ -158,5 +192,29 @@ Template.selectTree.events({
                 currentInstance = currentInstance.component.parent.templateInstance;
             }
         }
+    }
+});
+
+Template.selectTree.helpers({
+    treeItems() {
+        const instance = Template.instance();
+
+        // Run this computation everytime the search term is changed
+        const searchTerm = instance.searchTerm.get();
+
+        // Get all the items
+        let items = instance.data.items;
+
+        // Check if the search term was informed
+        if (searchTerm) {
+            // Search the items by the give search term
+            items = OHIF.string.search(items, searchTerm, 'label');
+
+            // Filter only the tree leaves
+            items = _.filter(items, item => !item.items);
+        }
+
+        // Return the tree items
+        return items;
     }
 });

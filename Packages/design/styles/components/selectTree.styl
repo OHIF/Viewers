@@ -158,7 +158,6 @@ $gray6 = #303030
 
   .select-tree-common
     height: 100%
-    overflow: hidden
     padding-left: 6px
     position: absolute
     right: -100%
@@ -191,22 +190,34 @@ $gray6 = #303030
     transform-origin(100% 50%)
     transition(all 0.3s ease)
 
-  .select-tree-common .content
-    margin-left: calc(-100% - 6px)
-    transition(all 0.3s ease 0.3s)
+  .select-tree-common
+    overflow: hidden
+    z-index: -1
+
+    .content
+      margin-left: calc(-100% - 6px)
+      transition(all 0.3s ease 0.3s)
 
   &.started
 
     &>.tree-content
       transform(scale(1))
 
-    .select-tree-common .content
-      margin-left: 0
+    .select-tree-common
+      animation-name: selectTreeCommonOverflow
+      animation-delay: 0.3s
+      animation-duration: 0.3s
+      animation-iteration-count: 1
+      animation-direction: alternate
+      animation-fill-mode: forwards
+
+      .content
+        margin-left: 0
 
   &.interacted
 
     .select-tree-common
-      overflow: visible
+      z-index: 1
 
       .content
         animation-name: selectTreeCommonCloseLeft
@@ -215,6 +226,15 @@ $gray6 = #303030
         animation-direction: alternate
         animation-timing-function: ease-out
         animation-fill-mode: forwards
+
+@keyframes selectTreeCommonOverflow {
+    from {
+        overflow: hidden
+    }
+    to {
+        overflow: visible
+    }
+}
 
 @keyframes selectTreeCommonCloseLeft {
   from {
