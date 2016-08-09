@@ -21,6 +21,10 @@ LayoutManager = class LayoutManager {
         return this.layoutProps.rows * this.layoutProps.columns;
     }
 
+    updateSession() {
+        Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Random.id()));
+    }
+
     setDefaultViewportData() {
         var numViewports = this.getNumberOfViewports();
 
@@ -109,7 +113,7 @@ LayoutManager = class LayoutManager {
         $(this.parentNode).html('');
         Blaze.renderWithData(layoutTemplate, data, this.parentNode);
 
-        Session.set('LayoutManagerUpdated', Random.id());
+        this.updateSession();
 
         this.isZoomed = false;
     }
@@ -157,7 +161,7 @@ LayoutManager = class LayoutManager {
         // Render and insert the template
         Blaze.renderWithData(Template.imageViewerViewport, data, newViewportContainer);
 
-        Session.set('LayoutManagerUpdated', Random.id());
+        this.updateSession();
     }
 
     enlargeViewport(viewportIndex) {
@@ -191,7 +195,7 @@ LayoutManager = class LayoutManager {
         this.zoomedViewportIndex = viewportIndex;
         this.viewportData = data.viewportData;
 
-        Session.set('LayoutManagerUpdated', Random.id());
+        this.updateSession();
     }
 
     resetPreviousLayout() {
