@@ -27,10 +27,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
     layoutManager = layoutManager || window.layoutManager;
     layoutManager.viewportData = layoutManager.viewportData || {};
-    if (layoutManager.viewportData[viewportIndex] === undefined) {
-    	layoutManager.viewportData[viewportIndex] = {};	
-    }
-
+    layoutManager.viewportData[viewportIndex] = layoutManager.viewportData[viewportIndex] || {};
     layoutManager.viewportData[viewportIndex].viewportIndex = viewportIndex;
 
     // Get the contentID of the current worklist tab, if the viewport is running
@@ -378,6 +375,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
             imageId: imageId,
             studyInstanceUid: data.studyInstanceUid,
             seriesInstanceUid: data.seriesInstanceUid,
+            displaySetInstanceUid: data.displaySetInstanceUid,
             currentImageIdIndex: data.currentImageIdIndex,
             viewport: viewport,
             viewportIndex: viewportIndex
