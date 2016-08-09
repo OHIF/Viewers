@@ -55,7 +55,7 @@ Package.onUse(function(api) {
     ], 'client', {
         bare: true
     });
-    
+
     api.addFiles('client/tools.js', 'client');
 
     // Utility classes
@@ -174,6 +174,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.html', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.styl', 'client');
     api.addFiles('client/components/lesionTrackerWorklistStudy/lesionTrackerWorklistStudy.js', 'client');
+
+    api.addFiles('client/components/measureFlow/measureFlow.html', 'client');
+    api.addFiles('client/components/measureFlow/measureFlow.styl', 'client');
+    api.addFiles('client/components/measureFlow/measureFlow.js', 'client');
 
     api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.html', 'client');
     api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.styl', 'client');
