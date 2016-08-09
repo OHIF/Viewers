@@ -3,13 +3,13 @@ import { OHIF } from 'meteor/ohif:core';
 Template.toolbarSection.helpers({
     // Returns true if the view shall be split in two viewports
     splitView() {
+        // Run this computation every time the viewports are updated
+        Session.get('LayoutManagerUpdated');
+
         // Stops here if layout manager is not defined yet
         if (!window.layoutManager) {
             return;
         }
-
-        // Run this computation every time the viewports are updated
-        Session.get('LayoutManagerUpdated');
 
         return layoutManager.viewportData.length > 1;
     },
@@ -123,7 +123,7 @@ Template.toolbarSection.helpers({
             classes: 'imageViewerTool toolbarSectionButton',
             svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
-        
+
         buttonData.push({
             id: 'exTool',
             title: 'EX Tool',
@@ -131,7 +131,7 @@ Template.toolbarSection.helpers({
             svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
 
-        return buttonData;   
+        return buttonData;
     }
 
 });

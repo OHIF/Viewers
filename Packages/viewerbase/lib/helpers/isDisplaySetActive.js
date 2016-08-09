@@ -10,6 +10,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
         return;
     }
 
+    console.warn('>>>>test');
     let viewportData;
     if (_.isUndefined(viewportIndex)) {
         viewportData = layoutManager.viewportData;
