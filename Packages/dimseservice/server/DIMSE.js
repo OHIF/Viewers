@@ -61,11 +61,18 @@ Meteor.startup(function() {
 
     // TODO: [custom-servers] use active server and check if type is DIMSE
     var peers = Meteor.settings.servers.dimse[0].peers;
+    if (!peers || !peers.length) {
+        throw new Meteor.Error('dimse-config', 'No DIMSE Peers provided.');
+    }
+
     console.log('Adding DIMSE peers');
-    if (peers && peers.length) {
+    try {
         peers.forEach(function(peer) {
             conn.addPeer(peer);
         });
+    } catch(error) {
+        console.warn('dimse-addPeers: ' + error);
+        throw new Meteor.Error('dimse-addPeers', error);
     }
 });
 
@@ -75,11 +82,16 @@ DIMSE.associate = function(contexts, callback, options) {
     };
     options = Object.assign(defaults, options);
 
-    conn.associate(options, function(pdu) {
-        // associated
-        console.log('==Associated');
-        callback.call(this, pdu);
-    });
+    try {
+        conn.associate(options, function(pdu) {
+            // associated
+            console.log('==Associated');
+            callback.call(this, pdu);
+        });
+    } catch(error) {
+        console.warn('dimse-associate: ' + error);
+        throw new Meteor.Error('dimse-associate', error);
+    }
 };
 
 DIMSE.retrievePatients = function(params, options) {
