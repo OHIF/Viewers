@@ -2,30 +2,30 @@ Template.imageThumbnail.onRendered(() => {
     const instance = Template.instance();
 
     // Declare DOM and jQuery objects
-    const element = instance.find('.imageThumbnailCanvas');
-    const $element = $(element);
-    const $loading = $element.find('.imageThumbnailLoadingIndicator');
-    const $loadingError = $element.find('.imageThumbnailErrorLoadingIndicator');
+    const $parent = instance.$('.imageThumbnail');
+    const $loading = $parent.find('.imageThumbnailLoadingIndicator');
+    const $loadingError = $parent.find('.imageThumbnailErrorLoadingIndicator');
+    const $element = $parent.find('.imageThumbnailCanvas');
+    const element = $element.get(0);
 
     instance.refreshImage = () => {
         // Disable cornerstone for thumbnail element and remove its canvas
         cornerstone.disable(element);
-        $element.find('canvas').remove();
 
         // Enable cornerstone for thumbnail element angain creating a new canvas
         cornerstone.enable(element);
 
         // Get the image ID
-        const imageInstance = instance.data.thumbnail.stack.images[0];
+        const stack = instance.data.thumbnail.stack;
+        const imageInstance = stack.images[0];
+        const thumbnailIndex = instance.data.thumbnail.thumbnailIndex;
         const imageId = getImageId(imageInstance);
 
         // Activate the loading state
         $loading.css('display', 'block');
 
         // Add the current index on the global thumbnail loading controller
-        const thumbnailIndex = $('.imageThumbnailCanvas').index(element);
         ThumbnailLoading[thumbnailIndex] = imageId;
-        instance.data.thumbnailIndex = thumbnailIndex;
 
         // Define a handler for success on image load
         const loadSuccess = image => {
@@ -35,7 +35,10 @@ Template.imageThumbnail.onRendered(() => {
         };
 
         // Define a handler for error on image load
-        const loadError = error => $loadingError.css('display', 'block');
+        const loadError = () => {
+            $loading.css('display', 'none');
+            $loadingError.css('display', 'block');
+        };
 
         // Call cornerstone image loader with the defined handlers
         cornerstone.loadAndCacheImage(imageId).then(loadSuccess, loadError);
@@ -43,6 +46,8 @@ Template.imageThumbnail.onRendered(() => {
 
     // Run this computation every time the current study is changed
     instance.autorun(() => {
+        const currentData = Template.currentData();
+
         // Check if there is a reactive var set for current study
         if (instance.data.currentStudy) {
             // Register a dependency from this computation on current study
@@ -60,9 +65,10 @@ Template.imageThumbnail.helpers({
     // Executed every time the image loading progress is changed
     percentComplete() {
         const instance = Template.instance();
+        const thumbnailIndex = instance.data.thumbnail.thumbnailIndex;
 
         // Register a dependency from this computation on Session key
-        const percentComplete = Session.get('CornerstoneThumbnailLoadProgress' + instance.data.thumbnailIndex);
+        const percentComplete = Session.get('CornerstoneThumbnailLoadProgress' + thumbnailIndex);
 
         // Return the complete percent amount of the image loading
         if (percentComplete && percentComplete !== 100) {
