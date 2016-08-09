@@ -23,7 +23,8 @@
         "peers": [{
           "host": "localhost",
           "port": 4242,
-          "hostAE": "ORTHANC"
+          "hostAE": "ORTHANC",
+          "aeTitle": "ORTHANC"
         }]
       }
     ]

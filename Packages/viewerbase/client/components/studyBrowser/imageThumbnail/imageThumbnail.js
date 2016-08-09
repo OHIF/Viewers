@@ -46,8 +46,6 @@ Template.imageThumbnail.onRendered(() => {
 
     // Run this computation every time the current study is changed
     instance.autorun(() => {
-        const currentData = Template.currentData();
-
         // Check if there is a reactive var set for current study
         if (instance.data.currentStudy) {
             // Register a dependency from this computation on current study
@@ -55,7 +53,7 @@ Template.imageThumbnail.onRendered(() => {
         }
 
         // Wait for the new data and reresh the image thumbnail
-        Meteor.defer(() => {
+        Tracker.afterFlush(() => {
             instance.refreshImage();
         });
     });
