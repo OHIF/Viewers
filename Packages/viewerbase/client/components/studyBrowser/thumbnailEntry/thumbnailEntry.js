@@ -211,9 +211,11 @@ Template.thumbnailEntry.events({
         const data = instance.data.thumbnail.stack;
         instance.isDragAndDrop && thumbnailDragStartHandler(event, data);
     },
+
     'touchmove .thumbnailEntry'(event, instance) {
         instance.isDragAndDrop && thumbnailDragHandler(event);
     },
+
     'touchend .thumbnailEntry'(event, instance) {
         const data = instance.data.thumbnail.stack;
         instance.isDragAndDrop && thumbnailDragEndHandler(event, data);

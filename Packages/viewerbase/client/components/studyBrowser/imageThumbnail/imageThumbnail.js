@@ -12,13 +12,13 @@ Template.imageThumbnail.onRendered(() => {
         // Disable cornerstone for thumbnail element and remove its canvas
         cornerstone.disable(element);
 
-        // Enable cornerstone for thumbnail element angain creating a new canvas
+        // Enable cornerstone for thumbnail element again creating a new canvas
         cornerstone.enable(element);
 
         // Get the image ID
         const stack = instance.data.thumbnail.stack;
-        const imageInstance = stack.images[0];
         const thumbnailIndex = instance.data.thumbnail.thumbnailIndex;
+        const imageInstance = stack.images[0];
         const imageId = getImageId(imageInstance);
 
         // Activate the loading state
@@ -57,6 +57,17 @@ Template.imageThumbnail.onRendered(() => {
             instance.refreshImage();
         });
     });
+});
+
+Template.imageThumbnail.onDestroyed(() => {
+    const instance = Template.instance();
+
+    // Declare DOM and jQuery objects
+    const $parent = instance.$('.imageThumbnail');
+    const $element = $parent.find('.imageThumbnailCanvas');
+    const element = $element.get(0);
+
+    cornerstone.disable(element);
 });
 
 Template.imageThumbnail.helpers({
