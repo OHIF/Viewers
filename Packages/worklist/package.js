@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-    api.versionsFrom('1.3.5.1');
+    api.versionsFrom('1.4');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -15,6 +15,7 @@ Package.onUse(function (api) {
     api.use('practicalmeteor:loglevel');
     api.use('rwatts:uuid');
     api.use('silentcicero:jszip');
+    api.use('aldeed:simple-schema');
 
     // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
     api.use('momentjs:moment');
@@ -37,6 +38,9 @@ Package.onUse(function (api) {
     // console for debugging purposes
     api.addFiles('log.js');
 
+    api.addFiles('both/collections.js', [ 'client', 'server' ]);
+    api.addFiles('both/schema.js', [ 'client', 'server' ]);
+    
     // Components
     api.addFiles('client/components/worklist.html', 'client');
     api.addFiles('client/components/worklist.js', 'client');
@@ -78,6 +82,7 @@ Package.onUse(function (api) {
 
     // Server-side functions
     api.addFiles('server/collections.js', 'server');
+    api.addFiles('server/validateServerConfiguration.js', 'server');
     api.addFiles('server/lib/namespace.js', 'server');
     api.addFiles('server/lib/encodeQueryData.js', 'server');
     api.addFiles('server/methods/getStudyMetadata.js', 'server');
@@ -99,16 +104,12 @@ Package.onUse(function (api) {
     api.addFiles('server/services/remote/studies.js', 'server');
     api.addFiles('server/services/remote/retrieveMetadata.js', 'server');
 
-    api.addFiles('both/collections.js', [ 'client', 'server' ]);
-
     api.export('Services', 'server');
 
     // Export Worklist helper functions for usage in Routes
-    api.export('getTimepointName', 'client');
     api.export('getStudyMetadata', 'client');
     api.export('getStudiesMetadata', 'client');
     api.export('openNewTab', 'client');
-    api.export('setWorklistSubscriptions', 'client');
     api.export('switchToTab', 'client');
     api.export('progressDialog', 'client');
     api.export('Worklist');

@@ -5,8 +5,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    //api.use("weiwei:dicomservices");
+    api.versionsFrom('1.4');
 
+    api.use('ecmascript');
     api.addFiles('server/require.js', 'server');
     api.addFiles('server/constants.js', 'server');
     api.addFiles('server/elements_data.js', 'server');

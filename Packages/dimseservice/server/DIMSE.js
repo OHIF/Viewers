@@ -56,12 +56,14 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
 
 Meteor.startup(function() {
     if (!Meteor.settings.servers.dimse || !Meteor.settings.servers.dimse.length) {
-        return;
+        console.error('dimse-config: ' + 'No DIMSE Servers provided.');
+        throw new Meteor.Error('dimse-config', 'No DIMSE Servers provided.');
     }
 
     // TODO: [custom-servers] use active server and check if type is DIMSE
     var peers = Meteor.settings.servers.dimse[0].peers;
     if (!peers || !peers.length) {
+        console.error('dimse-config: ' + 'No DIMSE Peers provided.');
         throw new Meteor.Error('dimse-config', 'No DIMSE Peers provided.');
     }
 
@@ -71,7 +73,7 @@ Meteor.startup(function() {
             conn.addPeer(peer);
         });
     } catch(error) {
-        console.warn('dimse-addPeers: ' + error);
+        console.error('dimse-addPeers: ' + error);
         throw new Meteor.Error('dimse-addPeers', error);
     }
 });
@@ -82,6 +84,7 @@ DIMSE.associate = function(contexts, callback, options) {
     };
     options = Object.assign(defaults, options);
 
+    console.log('Associating...');
     try {
         conn.associate(options, function(pdu) {
             // associated
@@ -89,7 +92,7 @@ DIMSE.associate = function(contexts, callback, options) {
             callback.call(this, pdu);
         });
     } catch(error) {
-        console.warn('dimse-associate: ' + error);
+        console.error('dimse-associate: ' + error);
         throw new Meteor.Error('dimse-associate', error);
     }
 };
@@ -165,7 +168,8 @@ DIMSE.retrieveStudies = function(params, options) {
 };
 
 DIMSE._retrieveInstancesBySeries = function(conn, series, studyInstanceUID, callback, params) {
-    var aSeries = series.shift(), seriesInstanceUID = aSeries.getValue(0x0020000E),
+    var aSeries = series.shift(),
+ seriesInstanceUID = aSeries.getValue(0x0020000E),
         defaultParams = getInstanceRetrievalParams(studyInstanceUID, seriesInstanceUID);
 
     var result = conn.findInstances(Object.assign(defaultParams, params)),
@@ -189,8 +193,9 @@ DIMSE.retrieveInstancesByStudyOnlyMulti = function(studyInstanceUID, params, opt
         return [];
     }
 
-    var series = DIMSE.retrieveSeries(studyInstanceUID, params, options), instances = [];
-    series.forEach(function(seriesData){
+    var series = DIMSE.retrieveSeries(studyInstanceUID, params, options),
+ instances = [];
+    series.forEach(function(seriesData) {
         var seriesInstanceUID = seriesData.getValue(0x0020000E);
 
         var relatedInstances = DIMSE.retrieveInstances(studyInstanceUID, seriesInstanceUID, params, options);
@@ -205,7 +210,7 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
     }
 
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu){
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
         var defaultParams = {
             0x0020000D: studyInstanceUID,
             0x00080005: '',
@@ -220,14 +225,16 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
             0x00200011: ''
         };
         var result = this.findSeries(Object.assign(defaultParams, params)),
-            series = [], conn = this, allInstances = [];
+            series = [],
+ conn = this,
+ allInstances = [];
 
         result.on('result', function(msg) {
             series.push(msg);
         });
-        result.on('end', function(){
+        result.on('end', function() {
             if (series.length > 0) {
-                DIMSE._retrieveInstancesBySeries(conn, series, studyInstanceUID, function(relatedInstances, isEnd){
+                DIMSE._retrieveInstancesBySeries(conn, series, studyInstanceUID, function(relatedInstances, isEnd) {
                     allInstances = allInstances.concat(relatedInstances);
                     if (isEnd) {
                         conn.release();
