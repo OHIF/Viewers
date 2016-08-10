@@ -64,7 +64,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
             imageIndex: imageIndex + 1
         };
 
-        var numFrames = image.numImageFrames;
+        var numFrames = image.numFrames;
         if (numFrames > 1) {
             log.info('Multiframe image detected');
             for (var i = 0; i < numFrames; i++) {
