@@ -24,6 +24,9 @@ Template.selectTree.onRendered(() => {
 
     instance.component = component;
 
+    // Set the margin to display the common section
+    $treeRoot.children('.tree-content').css('margin-right', $treeRoot.width());
+
     // Start the component transitions
     $treeRoot.addClass('started');
 
@@ -96,8 +99,14 @@ Template.selectTree.onRendered(() => {
 
 Template.selectTree.events({
     'click .select-tree-root>.tree-content'(event, instance) {
+        // Get the tree root
+        const $treeRoot = $(event.currentTarget).closest('.select-tree-root');
+
         // Detect the first interaction with the component and do the animation
-        $(event.currentTarget).parent().addClass('interacted');
+        $treeRoot.addClass('interacted');
+
+        // Remove the margin after the common section is closed
+        $treeRoot.children('.tree-content').css('margin-right', '');
     },
 
     'input .tree-search input'(event, instance) {

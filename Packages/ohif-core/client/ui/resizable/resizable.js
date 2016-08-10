@@ -39,6 +39,8 @@ class Resizable {
     }
 
     init() {
+        this.defineEventHandlers();
+
         for (var x = -1; x <= 1; x++) {
             for (var y = -1; y <= 1; y++) {
                 this.createBound(x, y);
@@ -49,13 +51,23 @@ class Resizable {
     }
 
     destroy() {
-        this.$element.removeClass('resizable').find('resize-bound').remove();
+        // Remove the instance added classes
+        this.$element.removeClass('resizable resizing');
+
+        // Get the bound borders
+        const $bound = this.$element.find('resize-bound');
+
+        // Remove the bound borders
+        $bound.remove();
+
+        // Detach the event handlers
+        this.detachEventHandlers($bound);
     }
 
-    attachEventHandlers($bound, xDirection, yDirection) {
-        const $window = $(window);
+    defineEventHandlers() {
+        this.initResizeHandler = event => {
+            const $window = $(window);
 
-        const initResizeHandler = event => {
             event.stopPropagation();
 
             this.width = this.initialWidth = this.$element.width();
@@ -73,11 +85,12 @@ class Resizable {
 
             this.$element.addClass('resizing');
 
-            $window.on('mousemove', resizeHandler);
-            $window.on('mouseup', endResizeHandler);
+            $window.on('mousemove', event.data, this.resizeHandler);
+            $window.on('mouseup', event.data, this.endResizeHandler);
         };
 
-        const resizeHandler = event => {
+        this.resizeHandler = event => {
+            const { xDirection, yDirection } = event.data;
             let x, y;
             x = event.clientX < 0 ? 0 : event.clientX;
             x = x > window.innerWidth ? window.innerWidth : x;
@@ -113,14 +126,30 @@ class Resizable {
             }
         };
 
-        const endResizeHandler = event => {
-            $window.off('mousemove', resizeHandler);
-            $window.off('mouseup', endResizeHandler);
+        this.endResizeHandler = event => {
+            const $window = $(window);
+
+            $window.off('mousemove', this.resizeHandler);
+            $window.off('mouseup', this.endResizeHandler);
 
             this.$element.removeClass('resizing');
         };
+    }
 
-        $bound.on('mousedown', initResizeHandler);
+    attachEventHandlers($bound, xDirection, yDirection) {
+        const eventData = {
+            xDirection,
+            yDirection
+        };
+        $bound.on('mousedown', eventData, this.initResizeHandler);
+    }
+
+    detachEventHandlers($bound) {
+        const $window = $(window);
+
+        $bound.off('mousedown', this.initResizeHandler);
+        $window.off('mousemove', this.resizeHandler);
+        $window.off('mouseup', this.endResizeHandler);
     }
 
     createBound(xDirection, yDirection) {
