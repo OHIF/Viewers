@@ -184,4 +184,15 @@
       <path d="m11,0 11,20 -22,0Z m1,7 -2,0 0,6 2,0Z m0,8 -2,0 0,2 2,0Z" />
     </g>
   </symbol>
+  <symbol id="icon-ohif-logo" viewBox="0 0 47 47">
+    <title>
+      Open Health Imaging Foundation
+    </title>
+    <g id="icon-ohif-logo" stroke="#fff" stroke-width="2.5" stroke-miterlimit="10">
+      <rect x="1.25" y="1.25" width="18.8" height="18.8" rx="1" ry="1"/>
+      <rect x="26" y="1.25" width="18.8" height="18.8" rx="1" ry="1"/>
+      <rect x="1.25" y="26" width="18.8" height="18.8" rx="1" ry="1"/>
+      <rect x="26" y="26" width="18.8" height="18.8" rx="1" ry="1"/></svg>
+    </g>
+  </symbol>
 </svg>
