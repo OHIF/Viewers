@@ -1,3 +1,5 @@
+import { remoteGetValue } from '../../lib/remoteGetValue';
+
 function resultDataToStudies(resultData) {
   var studies = [];
 

@@ -69,7 +69,7 @@ Package.onUse(function (api) {
     api.addFiles('client/components/progressDialog/progressDialog.html', 'client');
     api.addFiles('client/components/progressDialog/progressDialog.styl', 'client');
     api.addFiles('client/components/progressDialog/progressDialog.js', 'client');
-
+    
     // Client-side library functions
     api.addFiles('client/lib/getStudyMetadata.js', 'client');
     api.addFiles('client/lib/getStudiesMetadata.js', 'client');
@@ -81,13 +81,16 @@ Package.onUse(function (api) {
     api.addFiles('client/lib/importStudies.js', 'client');
 
     // Server-side functions
-    api.addFiles('server/collections.js', 'server');
+    api.addFiles('server/publications.js', 'server');
     api.addFiles('server/validateServerConfiguration.js', 'server');
-    api.addFiles('server/lib/namespace.js', 'server');
+    api.addFiles('server/lib/remoteGetValue.js', 'server');
     api.addFiles('server/lib/encodeQueryData.js', 'server');
+
     api.addFiles('server/methods/getStudyMetadata.js', 'server');
     api.addFiles('server/methods/importStudies.js', 'server');
     api.addFiles('server/methods/worklistSearch.js', 'server');
+
+    api.addFiles('server/services/namespace.js', 'server');
 
     // DICOMWeb instance, study, and metadata retrieval
     api.addFiles('server/services/qido/instances.js', 'server');

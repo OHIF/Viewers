@@ -4,6 +4,7 @@ export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
         label: 'Username:Password Authentication String',
+        optional: true
     },
     logRequests: {
         type: Boolean,

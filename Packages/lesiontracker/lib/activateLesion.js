@@ -109,7 +109,7 @@ activateLesion = function(measurementId, templateData) {
 
         // Otherwise, re-render the viewport with the required study/series, then
         // add an onRendered callback to activate the measurements
-        rerenderViewportWithNewSeries(element, requiredSeriesData, function(element) {
+        layoutManager.rerenderViewportWithNewDisplaySet(element, requiredSeriesData, function(element) {
             activateMeasurements(element, measurementId, templateData, viewportIndex);
         });
     });

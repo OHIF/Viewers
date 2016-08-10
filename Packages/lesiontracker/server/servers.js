@@ -1,5 +1,7 @@
-Meteor.startup(function() {
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 
+Meteor.startup(function() {
     _.each(Meteor.settings.servers, function(endpoints, serverType) {
         _.each(endpoints, function(endpoint) {
             var server = _.clone(endpoint);
@@ -8,7 +10,6 @@ Meteor.startup(function() {
             Servers.insert(server);
         });
     });
-
 });
 
 class ServersControl {

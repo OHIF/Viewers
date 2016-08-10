@@ -1,3 +1,5 @@
+import { remoteGetValue } from '../../lib/remoteGetValue';
+
 /**
  * Parses data returned from a QIDO search and transforms it into
  * an array of series that are present in the study

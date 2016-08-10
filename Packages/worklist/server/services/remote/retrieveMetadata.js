@@ -1,3 +1,5 @@
+import { remoteGetValue } from '../../lib/remoteGetValue';
+
 /**
  * Parses the SourceImageSequence, if it exists, in order
  * to return a ReferenceSOPInstanceUID. The ReferenceSOPInstanceUID

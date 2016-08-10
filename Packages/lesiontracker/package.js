@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.3.5.1');
+    api.versionsFrom('1.4');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -189,19 +189,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.html', 'client');
     api.addFiles('client/components/lesionTrackerViewportOverlay/lesionTrackerViewportOverlay.js', 'client');
 
-    api.addFiles('client/components/serverInformationModal/serverInformationDicomWeb.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationDicomWeb.js', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationDimse.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationDimse.js', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationForm.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationForm.js', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationFormField.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationList.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationList.js', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationModal.html', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationModal.styl', 'client');
-    api.addFiles('client/components/serverInformationModal/serverInformationModal.js', 'client');
-
     api.addFiles('client/components/userAccountMenu/userAccountMenu.html', 'client');
     api.addFiles('client/components/userAccountMenu/userAccountMenu.styl', 'client');
     api.addFiles('client/components/userAccountMenu/userAccountMenu.js', 'client');
@@ -213,10 +200,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lastLoginModal/lastLoginModal.js', 'client');
 
     // Server functions
-    api.addFiles('server/collections.js', 'server');
-    api.addFiles('server/removeCollections.js', [ 'server' ]);
-    api.addFiles('server/reviewers.js', [ 'server' ]);
     api.addFiles('server/servers.js', 'server');
+    api.addFiles('server/publications.js', 'server');
+    api.addFiles('server/methods.js', [ 'server' ]);
+    api.addFiles('server/reviewers.js', [ 'server' ]);
 
     // Both client and server functions
     api.addFiles('both/collections.js', [ 'client', 'server' ]);
@@ -251,6 +238,23 @@ Package.onUse(function(api) {
     api.addFiles('lib/handleMeasurementAdded.js', 'client');
     api.addFiles('lib/handleMeasurementModified.js', 'client');
     api.addFiles('lib/handleMeasurementRemoved.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationDicomWeb/serverInformationDicomWeb.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationDicomWeb/serverInformationDicomWeb.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationDimse/serverInformationDimse.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationDimse/serverInformationDimse.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationForm.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationForm.js', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationFormField.html', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationList/serverInformationList.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationList/serverInformationList.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.styl', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.js', 'client');
 
     // API classes
     api.addFiles('lib/api/timepoint.js');
@@ -291,8 +295,8 @@ Package.onUse(function(api) {
     api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
-    api.export('AdditionalFindings', [ 'client', 'server' ]);
     api.export('Servers', [ 'client', 'server' ]);
+    api.export('AdditionalFindings', [ 'client', 'server' ]);
     api.export('ImageMeasurements', [ 'client', 'server' ]);
     api.export('Measurements', [ 'client', 'server' ]);
     api.export('Studies', [ 'client', 'server' ]);

@@ -63,7 +63,7 @@ errorLoadingHandler = function(element, imageId, error, source) {
 };
 
 Template.loadingIndicator.helpers({
-    'percentComplete': function(e) {
+    'percentComplete'() {
         var percentComplete = Session.get('CornerstoneLoadProgress' + this.viewportIndex);
         if (percentComplete && percentComplete !== 100) {
             return percentComplete + '%';

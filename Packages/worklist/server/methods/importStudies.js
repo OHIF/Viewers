@@ -1,3 +1,5 @@
+import { StudyImportStatus } from '../../both/collections';
+
 var fs = Npm.require('fs');
 var fiber = Npm.require('fibers');
 

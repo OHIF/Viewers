@@ -144,7 +144,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
     
-    //api.addFiles('lib/validators.js', 'client');
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
     api.addFiles('lib/isImage.js', 'client');

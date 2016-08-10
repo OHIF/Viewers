@@ -55,7 +55,12 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
 };
 
 Meteor.startup(function() {
-    if (!Meteor.settings.servers.dimse || !Meteor.settings.servers.dimse.length) {
+    if (Meteor.settings.defaultServiceType !== 'dimse') {
+        return;
+    }
+
+    if (!Meteor.settings.servers.dimse ||
+        !Meteor.settings.servers.dimse.length) {
         console.error('dimse-config: ' + 'No DIMSE Servers provided.');
         throw new Meteor.Error('dimse-config', 'No DIMSE Servers provided.');
     }

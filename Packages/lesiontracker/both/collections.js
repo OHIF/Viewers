@@ -1,15 +1,17 @@
-Servers = new Mongo.Collection('servers');
-Timepoints = new Meteor.Collection('timepoints');
-Studies = new Meteor.Collection('studies');
-Measurements = new Meteor.Collection('measurements');
+import { Mongo } from 'meteor/mongo';
+
+Timepoints = new Mongo.Collection('timepoints');
+Studies = new Mongo.Collection('studies');
+Measurements = new Mongo.Collection('measurements');
 
 // ImageMeasurements describe temporary measurements that aren't
 // specifically listed in the Lesion Table
-ImageMeasurements = new Meteor.Collection('imageMeasurements');
+ImageMeasurements = new Mongo.Collection('imageMeasurements');
 
 // Additional Findings stores details from the Additional Findings
 // panel, and represents items such as data quality,
-AdditionalFindings = new Meteor.Collection('additionalFindings');
+AdditionalFindings = new Mongo.Collection('additionalFindings');
 
+Servers = new Mongo.Collection('servers');
 WorklistSubscriptions = ['studies', 'timepoints'];
-Reviewers = new Meteor.Collection('reviewers');
+Reviewers = new Mongo.Collection('reviewers');
