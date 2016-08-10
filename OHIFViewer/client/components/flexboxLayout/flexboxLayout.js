@@ -1,11 +1,10 @@
 Template.flexboxLayout.events({
-    'transitionend .sidebarMenu'() {
-        handleResize();
-    },
+    'transitionend .sidebarMenu'(event) {
+        if (!event.target.classList.contains('sidebarMenu')) {
+        	return;
+        }
 
-    'transitionend .sidebar-option'(event) {
-        // Prevent this event from bubbling
-        event.stopPropagation();
+    	handleResize();
     }
 });
 
