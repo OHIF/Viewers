@@ -213,7 +213,11 @@ LayoutManager = class LayoutManager {
         if (this.isZoomed) {
             this.resetPreviousLayout();
         } else {
-            this.enlargeViewport(viewportIndex);
+            // Don't enlarge the viewport if we only have one Viewport
+            // to begin with
+            if (this.getNumberOfViewports() > 1) {
+                this.enlargeViewport(viewportIndex);    
+            }
         }
     }
 };
