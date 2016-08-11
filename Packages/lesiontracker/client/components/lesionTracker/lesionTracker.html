@@ -1,7 +1,9 @@
 <template name="lesionTracker">
     <div class="topBar noselect {{#if onStudyList}}studyList{{/if}}">
         <div class="clearfix p-x-1 p-t-1">
-            <a class="brandSection pull-left" href="http://ohif.org">
+            <a target='_blank'
+               class="brandSection pull-left"
+               href="http://ohif.org">
                 <svg class="logoImage">
                     <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-ohif-logo"></use>
                 </svg>
@@ -10,7 +12,7 @@
                 </div>
             </a>
             {{ #if studyListToggleText }}
-            <a class="btn studyListLinkSection pull-left m-x-1 p-x-2 js-toggle-studyList">
+            <a class="btn studyListLinkSection pull-left m-x-1 p-x-2 p-y-0 js-toggle-studyList">
                 {{studyListToggleText}}
             </a>
             {{ /if }}

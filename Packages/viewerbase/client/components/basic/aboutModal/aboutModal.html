@@ -19,7 +19,8 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <a class='forkOnGithub'
+                    <a target='_blank'
+                       class='forkOnGithub'
                        href="{{githubUrl}}">
                         <img src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
                              alt="Fork me on GitHub"
@@ -30,16 +31,19 @@
                             <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-ohif-logo"></use>
                         </svg>
                         <a class="logoText"
+                           target="_blank"
                            href="http://ohif.org">
                             Open Health Imaging Foundation DICOM Viewer
                         </a>
                     </div>
                     <div class="p-x-1 p-y-1 m-y-2">
                         <a class="btn btn-default inline"
+                           target='_blank'
                            href="https://groups.google.com/forum/#!forum/cornerstone-platform">
                             Visit the forum
                         </a>
                         <a class="btn btn-default inline"
+                           target='_blank'
                            href="https://github.com/OHIF/Viewers/issues">
                             Report an issue
                         </a>
@@ -57,13 +61,14 @@
                                 <tr>
                                     <td>Repository URL</td>
                                     <td>
-                                        <a href="{{githubUrl}}">{{githubUrl}}</a>
+                                        <a target='_blank'
+                                           href="{{githubUrl}}">{{githubUrl}}</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Last Commit Hash</td>
                                     <td>
-                                        <a href="{{githubUrl}}/commit/{{gitRev 'long'}}">
+                                        <a target='_blank' href="{{githubUrl}}/commit/{{gitRev 'long'}}">
                                         {{gitRev 'long'}}
                                         </a>
                                     </td>
@@ -71,7 +76,7 @@
                                 <tr>
                                     <td>Latest Tag</td>
                                     <td>
-                                        <a href="{{githubUrl}}/releases/tag/{{gitRev 'tag'}}">
+                                        <a target='_blank' href="{{githubUrl}}/releases/tag/{{gitRev 'tag'}}">
                                         {{gitRev 'tag'}}
                                         </a>
                                     </td>
@@ -79,7 +84,7 @@
                                 <tr>
                                     <td>Branch</td>
                                     <td>
-                                        <a href="{{githubUrl}}/tree/{{gitRev 'branch'}}">
+                                        <a target='_blank' href="{{githubUrl}}/tree/{{gitRev 'branch'}}">
                                             {{gitRev 'branch'}}
                                         </a>
                                     </td>
