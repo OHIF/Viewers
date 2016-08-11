@@ -199,13 +199,13 @@ Package.onUse(function(api) {
     api.addFiles('client/components/lastLoginModal/lastLoginModal.html', 'client');
     api.addFiles('client/components/lastLoginModal/lastLoginModal.js', 'client');
 
-    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
-    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
-    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
+    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
+    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
+    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
 
-    api.addFiles('client/components/basic/emailVerification/emailVerification.html', 'client');
-    api.addFiles('client/components/basic/emailVerification/emailVerification.styl', 'client');
-    api.addFiles('client/components/basic/emailVerification/emailVerification.js', 'client');
+    api.addFiles('client/components/emailVerification/emailVerification.html', 'client');
+    api.addFiles('client/components/emailVerification/emailVerification.styl', 'client');
+    api.addFiles('client/components/emailVerification/emailVerification.js', 'client');
 
     // Server functions
     api.addFiles('server/servers.js', 'server');
