@@ -40,3 +40,4 @@ fastclick@1.0.12
 standard-minifier-css@1.1.8
 standard-minifier-js@1.1.8
 aldeed:simple-schema
+johdirr:meteor-git-rev

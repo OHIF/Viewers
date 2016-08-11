@@ -10,11 +10,17 @@
                 </div>
             </a>
             {{ #if studyListToggleText }}
-            <div class="studyListLinkSection pull-left m-x-1 p-x-2 js-toggle-studyList">
+            <a class="btn studyListLinkSection pull-left m-x-1 p-x-2 p-y-0 js-toggle-studyList">
                 {{studyListToggleText}}
-            </div>
+            </a>
             {{ /if }}
+            <a class="btn pull-right p-y-0"
+               data-toggle="modal"
+               data-target="#aboutModal">
+                About
+            </a>
         </div>
     </div>
     {{> worklist }}
+    {{> aboutModal }}
 </template>

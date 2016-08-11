@@ -46,6 +46,7 @@ iron:controller@1.0.12
 iron:core@1.0.11
 iron:dynamic-template@1.0.12
 iron:layout@1.0.12
+johdirr:meteor-git-rev@0.0.4
 jquery@1.11.9
 launch-screen@1.0.12
 livedata@1.0.18

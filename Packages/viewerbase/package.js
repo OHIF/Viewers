@@ -47,13 +47,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.html', 'client');
     api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.styl', 'client');
 
-    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
-    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
-    api.addFiles('client/components/basic/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
-
-    api.addFiles('client/components/basic/emailVerification/emailVerification.html', 'client');
-    api.addFiles('client/components/basic/emailVerification/emailVerification.styl', 'client');
-    api.addFiles('client/components/basic/emailVerification/emailVerification.js', 'client');
+    api.addFiles('client/components/basic/aboutModal/aboutModal.html', 'client');
+    api.addFiles('client/components/basic/aboutModal/aboutModal.js', 'client');
+    api.addFiles('client/components/basic/aboutModal/aboutModal.styl', 'client');
 
     // Study Browser components
     api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.html', 'client');
