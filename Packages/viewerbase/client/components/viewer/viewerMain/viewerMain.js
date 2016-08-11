@@ -21,6 +21,8 @@ Template.viewerMain.onRendered(() => {
 });
 
 Template.viewerMain.onDestroyed(() => {
+    log.info('viewerMain onDestroyed');
+    
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
 

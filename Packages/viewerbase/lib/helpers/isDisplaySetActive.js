@@ -6,7 +6,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
     Session.get('LayoutManagerUpdated');
 
     // Stop here if layoutManager is not defined yet
-    if (!layoutManager) {
+    if (!window.layoutManager) {
         return;
     }
 
@@ -26,7 +26,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
 
         // Loop through the viewport data up until the currently displayed
         // number of viewports
-        let viewportData = layoutManager.viewportData;
+        let viewportData = window.layoutManager.viewportData;
         for (let i = 0; i < currentNumberOfViewports; i++) {
             const data = viewportData[i];
 
@@ -37,7 +37,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
             }
         }
     } else {
-        const data = layoutManager.viewportData[viewportIndex];
+        const data = window.layoutManager.viewportData[viewportIndex];
 
         // If the display set is displayed in this viewport, stop here
         if (data && data.displaySetInstanceUid === displaySetInstanceUid) {

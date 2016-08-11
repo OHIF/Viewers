@@ -11,7 +11,7 @@ Template.toolbarSection.helpers({
             return;
         }
 
-        return layoutManager.viewportData.length > 1;
+        return window.layoutManager.viewportData.length > 1;
     },
 
     leftSidebarToggleButtonData() {

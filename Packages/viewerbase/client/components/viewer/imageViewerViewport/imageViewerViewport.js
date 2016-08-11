@@ -25,7 +25,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
     var element = data.element;
     var viewportIndex = $('.imageViewerViewport').index(element);
 
-    layoutManager = layoutManager || window.layoutManager;
+    let layoutManager = window.layoutManager;
     layoutManager.viewportData = layoutManager.viewportData || {};
     layoutManager.viewportData[viewportIndex] = layoutManager.viewportData[viewportIndex] || {};
     layoutManager.viewportData[viewportIndex].viewportIndex = viewportIndex;
@@ -252,6 +252,10 @@ function loadDisplaySetIntoViewport(data, templateData) {
         // (e.g. following a change of window or zoom)
         function onImageRendered(e, eventData) {
             log.info('imageViewerViewport onImageRendered');
+
+            if (!layoutManager.viewportData[viewportIndex]) {
+                log.warn("onImageRendered: LayoutManager has no viewport data for this viewport index?: " + viewportIndex);
+            }
 
             // Use Session to trigger reactive updates in the viewportOverlay helper functions
             // This lets the viewport overlay always display correct window / zoom values
