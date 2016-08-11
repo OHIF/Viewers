@@ -31,21 +31,25 @@ function updateProtocolSelect() {
     protocolSelect.select2().val(ProtocolEngine.protocol.id).trigger('change');
 }
 
-Template.protocolEditor.onRendered(function() {
-    this.timeAgoInterval = Meteor.setInterval(function() {
+Template.protocolEditor.onRendered(() => {
+    const instance = Template.instance();
+
+    instance.timeAgoInterval = Meteor.setInterval(() => {
         // Run this every minute
         Session.set('timeAgoVariable', new Date());
     }, 60000);
 
     // Subscribe to the Hanging Protocols Collection
-    this.subscribe('hangingprotocols', function() {
+    instance.subscribe('hangingprotocols', () => {
         // Update the Protocol select box when the Collection is ready
         updateProtocolSelect();
     });
 });
 
-Template.protocolEditor.onDestroyed(function() {
-    Meteor.clearInterval(this.timeAgoInterval);
+Template.protocolEditor.onDestroyed(() => {
+    const instance = Template.instance();
+
+    Meteor.clearInterval(instance.timeAgoInterval);
 });
 
 Template.protocolEditor.helpers({
@@ -54,13 +58,14 @@ Template.protocolEditor.helpers({
      *
      * @returns {*} The currently active Protocol Model
      */
-    activeProtocol: function() {
+    activeProtocol() {
         // Whenever the Layout Manager is updated, trigger this helper
         Session.get('LayoutManagerUpdated');
 
         // If no ProtocolEngine, protocol, or stage is defined, stop here
         if (!ProtocolEngine ||
             !ProtocolEngine.protocol ||
+            !ProtocolEngine.LayoutManager ||
             ProtocolEngine.stage === undefined) {
             return;
         }
@@ -89,14 +94,14 @@ Template.protocolEditor.helpers({
      *
      * @returns {*} The current Protocol's active Stage model
      */
-    activeStage: function() {
+    activeStage() {
         // Whenever the Layout Manager is updated, trigger this helper
         Session.get('LayoutManagerUpdated');
 
         // If no ProtocolEngine, protocol, or stage is defined, stop here
         if (!ProtocolEngine ||
             !ProtocolEngine.protocol ||
-            !ProtocolEngine.layoutManager ||
+            !ProtocolEngine.LayoutManager ||
             ProtocolEngine.stage === undefined) {
             return;
         }
@@ -110,8 +115,8 @@ Template.protocolEditor.helpers({
         // Update active Stage's layout template and properties based on the displayed
         // layout properties. This is used to update the Stage Model when the user modifies
         // the layout in the viewer
-        stage.viewportStructure.layoutTemplateName = ProtocolEngine.layoutManager.layoutTemplateName;
-        stage.viewportStructure.properties = ProtocolEngine.layoutManager.layoutProps;
+        stage.viewportStructure.layoutTemplateName = ProtocolEngine.LayoutManager.layoutTemplateName;
+        stage.viewportStructure.properties = ProtocolEngine.LayoutManager.layoutProps;
 
         // If there is a discrepancy between the Stage's number of viewports and the
         // the number of required viewports given the properties above, rectify it
@@ -146,8 +151,9 @@ Template.protocolEditor.helpers({
         // Return the current Stage model for the active Protocol
         return ProtocolEngine.getCurrentStageModel();
     },
-    activeViewportUndefined: function() {
-        return (Session.get('activeViewport') === undefined);
+    activeViewportUndefined() {
+        const viewportIndex = Session.get('activeViewport');
+        return (viewportIndex === undefined);
     }
 });
 
@@ -155,7 +161,7 @@ Template.protocolEditor.events({
     /**
      * Creates a new Hanging Protocol and displays it in the Viewer
      */
-    'click #newProtocol': function() {
+    'click #newProtocol'() {
         // Clone the default Protocol
         var protocol = HP.defaultProtocol.createClone();
 
@@ -177,7 +183,7 @@ Template.protocolEditor.events({
     /**
      * Rename the current Protocol
      */
-    'click #renameProtocol': function() {
+    'click #renameProtocol'() {
         var selectedProtocol = this;
         if (selectedProtocol.locked) {
             return;
@@ -233,7 +239,7 @@ Template.protocolEditor.events({
         // Create an HTML5 File Reader
         var reader = new FileReader();
 
-        reader.onload = function() {
+        reader.onload = () => {
             var text = reader.result;
 
             // POST the file to our protocol-import Route
@@ -281,13 +287,13 @@ Template.protocolEditor.events({
      * Allow the Protocols / Stage navigation tabs to toggle the
      * 'active' class when clicked
      */
-    'click .navigationButtons a': function() {
+    'click .navigationButtons a'() {
         $(this).addClass('active').siblings().removeClass('active');
     },
     /**
      * Update the HangingProtocols Collection with the latest changes to the current Protocol
      */
-    'click #saveProtocol': function() {
+    'click #saveProtocol'() {
         var selectedProtocol = this;
         if (selectedProtocol.locked) {
             return;
@@ -311,7 +317,7 @@ Template.protocolEditor.events({
     /**
      * Save the current Protocol as a new document in the HangingProtocols Collection
      */
-    'click #saveAsProtocol': function() {
+    'click #saveAsProtocol'() {
         var selectedProtocol = this;
 
         // Define some details for the text entry dialog
@@ -341,7 +347,7 @@ Template.protocolEditor.events({
     /**
      * Export the currently selected Protocol as a JSON file
      */
-    'click #exportJSON': function() {
+    'click #exportJSON'() {
         // Tell the User's Browser to download the JSON file by routing a hidden iframe to our
         // protocol-export Route. This prevents the tab from changing its current content.
         var selectedProtocol = this;
@@ -350,7 +356,7 @@ Template.protocolEditor.events({
     /**
      * Delete the currently selected Protocol
      */
-    'click #deleteProtocol': function() {
+    'click #deleteProtocol'() {
         var selectedProtocol = this;
         if (selectedProtocol.locked) {
             return;
@@ -361,7 +367,7 @@ Template.protocolEditor.events({
             text: 'Are you sure you would like to remove this Protocol? This cannot be reversed.'
         };
 
-        showConfirmDialog(function() {
+        showConfirmDialog(() => {
             // Send a call to remove the Protocol from the HangingProtocols Collection on the server
             Meteor.call('removeHangingProtocol', selectedProtocol._id);
 
