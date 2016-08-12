@@ -27,8 +27,26 @@ Template.selectTree.onRendered(() => {
     // Set the margin to display the common section
     $treeRoot.children('.tree-content').css('margin-right', $treeRoot.width());
 
+    // Make the component respect the window boundaries
+    $treeRoot.bounded();
+
+    // Check if the component will be rendered on a specific position
+    const position = instance.data.position;
+    if (position) {
+        // Get the dimensions and move it with the given position as its center
+        const width = $treeRoot.outerWidth();
+        const height = $treeRoot.outerHeight();
+        position.left -= Math.round(width / 2);
+        position.top -= Math.round(height / 2);
+
+        // Change the component's position and trigger the bounded event
+        $treeRoot.css(_.extend({}, position, {
+            position: 'fixed'
+        })).trigger('spatialChanged');
+    }
+
     // Start the component transitions
-    $treeRoot.addClass('started');
+    Meteor.defer(() => $treeRoot.addClass('started'));
 
     // Update the component's viewport height
     instance.updateHeight = searchTerm => {
@@ -126,7 +144,7 @@ Template.selectTree.events({
         component.value(eventComponent.value());
 
         // Unset the active leaf
-        rootInstance.$('label').removeClass('active');
+        rootInstance.$('label').removeClass('active').css('width', '');
 
         // Unset the selected state
         instance.setSelected(false);
@@ -135,7 +153,7 @@ Template.selectTree.events({
         const isLeaf = $label.hasClass('tree-leaf');
         if (isLeaf) {
             // Change the active item
-            $label.addClass('active');
+            $label.css('width', $label.outerWidth()).addClass('active');
 
             // Ckeck if there's a storageKey defined
             const storageKey = instance.data.storageKey;

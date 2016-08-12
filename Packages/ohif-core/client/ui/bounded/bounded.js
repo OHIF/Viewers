@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Allow attaching to jQuery selectors
 $.fn.bounded = function(options) {
     _.each(this, element => {
@@ -63,7 +65,7 @@ class Bounded {
         this.$element.removeClass('bounded');
     }
 
-    spatialInfo(element) {
+    static spatialInfo(element) {
         // Create the result object
         const result = {};
 
@@ -105,8 +107,8 @@ class Bounded {
     defineEventHandlers() {
         this.spatialChangedHandler = event => {
             // Get the spatial information for element and its bounding element
-            const elementInfo = this.spatialInfo(this.element);
-            const boundingInfo = this.spatialInfo(this.boundingElement);
+            const elementInfo = Bounded.spatialInfo(this.element);
+            const boundingInfo = Bounded.spatialInfo(this.boundingElement);
 
             // Fix element's x positioning and width
             if (this.allowResizing && elementInfo.width > boundingInfo.width) {
@@ -143,3 +145,5 @@ class Bounded {
     }
 
 }
+
+OHIF.Bounded = Bounded;

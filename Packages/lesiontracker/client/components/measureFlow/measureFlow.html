@@ -1,12 +1,5 @@
 <template name="measureFlow">
-    <div class="measure-flow">
-        <button>Add label</button>
-        {{>selectTree
-            key='label'
-            items=instance.items
-            label='Assign label'
-            searchPlaceholder='Search labels'
-            storageKey='measureLabelCommon'
-        }}
+    <div class="measure-flow {{instance.state.get}}" style="position:fixed; top:200px; left:400px">
+        <button class="btn-add">Add label</button>
     </div>
 </template>

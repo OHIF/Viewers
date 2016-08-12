@@ -1,4 +1,22 @@
+@import "{design}/app"
+
 .measure-flow
+
+  &.open
+
+    .btn-add
+      display: none
+
+  .btn-add
+    background-color: $activeColor
+    border: 2px solid $uiBorderColor
+    border-radius: 14px
+    color: $textColorActive
+    cursor: pointer
+    font-weight: bold
+    height: 24px
+    line-height: 24px
+    padding: 0 14px
 
   .select-tree-root>.tree-content>.tree-options
     margin-right: -20px
