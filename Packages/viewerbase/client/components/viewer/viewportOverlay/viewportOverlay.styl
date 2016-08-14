@@ -31,3 +31,7 @@ $viewportTagPadding = 20px
   .priorIndicator
     font-weight: bold
     color: yellow
+    
+  &.controlsVisible
+    .topright, .bottomright
+      right: "calc(%s + 19px)" % $viewportTagPadding

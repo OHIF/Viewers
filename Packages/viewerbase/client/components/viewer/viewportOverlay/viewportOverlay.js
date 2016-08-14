@@ -219,9 +219,6 @@ Template.viewportOverlay.helpers({
     imageIndex: function() {
         return getInstance.call(this, 'index');
     },
-    numImages: function() {
-        return getSeries.call(this, 'numImages');
-    },
     imageIndex: function() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
         var stack = getStackDataIfNotEmpty(this.viewportIndex);
