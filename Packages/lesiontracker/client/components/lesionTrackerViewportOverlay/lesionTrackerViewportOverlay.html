@@ -1,5 +1,5 @@
 <template name="lesionTrackerViewportOverlay">
-    <div class="imageViewerViewportOverlay noselect">
+    <div class="imageViewerViewportOverlay noselect {{#if gt numImages 1}}controlsVisible{{/if}}">
         <div class="topleft dicomTag">
             <div>{{formatPN patientName}}</div>
             <div>{{patientId}}</div>
@@ -16,11 +16,13 @@
         </div>
         <div class="bottomleft dicomTag">
             <div>Ser: {{seriesNumber}}</div>
-            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
+            <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
             <div>{{frameRate}}</div>
             <div>{{imageDimensions}}</div>
             <div>{{seriesDescription}}</div>
         </div>
-        {{>imageControls}}
+        {{#if gt numImages 1}}
+        {{> imageControls imageIndex=imageIndex numImages=numImages}}
+        {{ /if }}
     </div>
 </template>

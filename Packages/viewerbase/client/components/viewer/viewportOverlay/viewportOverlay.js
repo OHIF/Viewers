@@ -180,6 +180,12 @@ Template.viewportOverlay.helpers({
     patientId: function() {
         return getPatient.call(this, 'id');
     },
+    patientBirthDate: function() {
+        return getPatient.call(this, 'birthDate');
+    },
+    patientSex: function() {
+        return getPatient.call(this, 'sex');
+    },
     studyDate: function() {
         return getStudy.call(this, 'studyDate');
     },
@@ -204,9 +210,67 @@ Template.viewportOverlay.helpers({
     seriesNumber: function() {
         return getSeries.call(this, 'seriesNumber');
     },
-    imageNumber: function() {
+    instanceNumber: function() {
         return getInstance.call(this, 'instanceNumber');
     },
+    thickness() {
+        // Displays Slice Thickness (0018,0050)
+        return getInstance.call(this, 'sliceThickness');
+    },
+
+    location() {
+        // Displays Slice Location (0020,1041), if present.
+        // - Otherwise, displays Table Position (0018,9327)
+        // - TODO: Otherwise, displays a value derived from Image Position (Patient) (0020,0032)
+        const sliceLocation = getInstance.call(this, 'sliceLocation');
+        if (sliceLocation !== '') {
+            return sliceLocation;
+        }
+
+        const tablePosition = getInstance.call(this, 'tablePosition');
+        if (tablePosition !== '') {
+            return tablePosition;
+        }
+
+        return getInstance.call(this, 'imagePositionPatient');
+    },
+
+    spacingBetweenSlices() {
+        // Displays Spacing Between Slices (0018,0088), if present.
+
+        // TODO: Otherwise, displays a value derived from successive values
+        // of Image Position (Patient) (0020,0032) perpendicular to
+        // the Image Orientation (Patient) (0020,0037)
+        return getInstance.call(this, 'spacingBetweenSlices');
+    },
+
+    compression() {
+        // Displays whether or not lossy compression has been applied:
+        //
+        // - Checks Lossy Image Compression (0028,2110)
+        // - If so, displays the value of Lossy Image Compression Ratio (0028,2112)
+        //          and Lossy Image Compression Method (0028,2114)
+
+        Session.get('CornerstoneNewImage' + this.viewportIndex);
+        if (!this.imageId) {
+            return false;
+        }
+
+        var instance = cornerstoneTools.metaData.get('instance', this.imageId);
+        if (!instance) {
+            return '';
+        }
+
+        if (instance.lossyImageCompression === '01' &&
+            instance.lossyImageCompressionRatio !== '') {
+            const compressionMethod = instance.lossyImageCompressionMethod || 'Lossy: ';
+            const compressionRatio = parseFloat(instance.lossyImageCompressionRatio).toFixed(2);
+            return compressionMethod + compressionRatio + ' : 1';
+        }
+
+        return 'Lossless / Uncompressed';
+    },
+
     tagDisplayLeftOnly: function() {
         return getTagDisplay.call(this, 'side') === 'L';
     },
@@ -215,9 +279,6 @@ Template.viewportOverlay.helpers({
     },
     tagDisplaySpecified: function() {
         return getTagDisplay.call(this, 'side');
-    },
-    imageIndex: function() {
-        return getInstance.call(this, 'index');
     },
     imageIndex: function() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);

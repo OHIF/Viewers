@@ -59,7 +59,8 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         modalities: DICOMWeb.getString(anInstance['00080061']),
         studyDescription: DICOMWeb.getString(anInstance['00081030']),
         imageCount: DICOMWeb.getString(anInstance['00201208']),
-        studyInstanceUid: DICOMWeb.getString(anInstance['0020000D'])
+        studyInstanceUid: DICOMWeb.getString(anInstance['0020000D']),
+        institutionName: DICOMWeb.getString(anInstance['00080080'])
     };
 
     resultData.forEach(function(instance) {
@@ -107,7 +108,11 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             viewPosition: DICOMWeb.getString(instance['00185101']),
             numFrames: DICOMWeb.getNumber(instance['00280008']),
             frameTime: DICOMWeb.getNumber(instance['00181063']),
-            sliceThickness: DICOMWeb.getNumber(instance['00180050'])
+            sliceThickness: DICOMWeb.getNumber(instance['00180050']),
+            lossyImageCompression: DICOMWeb.getString(instance['00282110']),
+            derivationDescription: DICOMWeb.getString(instance['00282111']),
+            lossyImageCompressionRatio: DICOMWeb.getString(instance['00282112']),
+            lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
         };
 
         if (server.imageRendering === 'wadouri') {
