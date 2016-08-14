@@ -80,29 +80,31 @@ $spacerY = 12px
     padding: 0
     text-align: center
 
-  .studyModalityText
+  .studyText
     font-size: 13px
     left: ($spacerX * 3) + $boxWidth + ($nestingMargin * 3)
     line-height: 14px
     position: absolute
     right: $spacerX
     top: $spacerY
-    .studyModalityDate
+    .studyDate
       margin-top: 8px
       color: $textSecondaryColor
-    .studyModalityDescription
+    .studyDescription
       margin-top: 8px
       color: $textPrimaryColor
 
   .studyModalityBox
     color: $textSecondaryColor
-    font-size: 22px
     line-height: $boxWidth
     margin-left: $nestingMargin * 2
     margin-top: $nestingMargin * 2
     position: relative
-    text-align: center
-    text-transform: uppercase
+
+    .studyModalityText
+      text-align: center
+      text-transform: uppercase
+      height: 100%
 
     &
     &:before
