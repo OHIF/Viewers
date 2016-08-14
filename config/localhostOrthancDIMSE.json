@@ -1,0 +1,41 @@
+{
+   "servers": {
+     "dicomWeb": [
+      {
+        "name": "Orthanc",
+        "wadoUriRootNOTE" : "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
+        "wadoUriRoot" : "http://52.87.58.190:8043/wado",
+        "qidoRoot": "http://localhost:8042/dicom-web",
+        "wadoRoot": "http://localhost:8042/dicom-web",
+        "qidoSupportsIncludeField": false,
+        "imageRendering" : "wadouri",
+        "requestOptions" : {
+          "auth": "orthanc:orthanc",
+          "logRequests" : true,
+          "logResponses" : false,
+          "logTiming" : true
+        }
+      }
+     ],
+     "dimse": [{
+       "name": "OrthancDIMSE",
+       "peers": [
+         {
+			"host" : "localhost",
+			"port" : 4242,
+			"aeTitle" : "ORTHANC",
+			"default": true,
+            "supportsInstanceRetrievalByStudyUid": true
+         },
+         {
+            "host" : "0.0.0.0",
+            "port" : 11112,
+            "aeTitle" : "OHIFDCM",
+            "default" : true,
+            "server" : true
+         }
+       ]
+     }]
+   },
+   "defaultServiceType": "dimse"
+ }
