@@ -27,6 +27,7 @@
                                 id=(concat this.storageKey '_' (encodeId item.value))
                                 class=this.radioClass
                                 name=this.key
+                                itemData=item
                                 value=item.value
                                 label=item.label
                                 labelClass=(valueIf (isArray item.items) 'tree-node' 'tree-leaf')

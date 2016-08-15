@@ -10,6 +10,48 @@ Template.measureFlow.onCreated(() => {
 
     instance.state = new ReactiveVar('closed');
 
+    instance.items = [{
+        label: 'Category 1',
+        value: 'Category 1',
+        items: [{
+            label: 'Subcategory 1.1',
+            value: 'Subcategory 1.1'
+        }, {
+            label: 'Subcategory 1.2',
+            value: 'Subcategory 1.2',
+            items: [{
+                label: 'Subcategory 1.2.1',
+                value: 'Subcategory 1.2.1'
+            }, {
+                label: 'Subcategory 1.2.2',
+                value: 'Subcategory 1.2.2',
+                items: [{
+                    label: 'Subcategory 1.2.2.1',
+                    value: 'Subcategory 1.2.2.1'
+                }, {
+                    label: 'Subcategory 1.2.2.2',
+                    value: 'Subcategory 1.2.2.2'
+                }]
+            }]
+        }]
+    }, {
+        label: 'Category 2',
+        value: 'Category 2',
+        items: [{
+            label: 'Subcategory 2.1',
+            value: 'Subcategory 2.1'
+        }, {
+            label: 'Subcategory 2.2',
+            value: 'Subcategory 2.2'
+        }, {
+            label: 'Subcategory 2.3',
+            value: 'Subcategory 2.3'
+        }]
+    }, {
+        label: 'Category 3',
+        value: 'Category 3'
+    }];
+
     const items = [
         'Adrenal',
         'Bladder',
@@ -75,20 +117,42 @@ Template.measureFlow.events({
             const parentElement = instance.$('.measure-flow')[0];
 
             // Render the selectTree element
-            Blaze.renderWithData(Template.selectTree, data, parentElement);
+            instance.selectTreeView = Blaze.renderWithData(Template.selectTree, data, parentElement);
         });
     },
     'click .select-tree-common label'(event, instance) {
         instance.commonClicked = true;
     },
+    'change .select-tree-root'(event, instance) {
+        // Stop here if it's an inner input event
+        if (event.target !== event.currentTarget) {
+            return;
+        }
+
+        const $treeRoot = $(event.currentTarget);
+        instance.value = $treeRoot.data('component').value();
+    },
     'click .tree-leaf input'(event, instance) {
-        const $label = $(event.currentTarget).closest('label');
-        const $container = $label.closest('.select-tree-root').find('.tree-options:first');
+        const $target = $(event.currentTarget);
+        const $label = $target.closest('label');
+        const $treeRoot = $label.closest('.select-tree-root');
+        const $container = $treeRoot.find('.tree-options:first');
         if (instance.commonClicked) {
             const labelTop = $label.position().top;
             const containerCenter = Math.round($container.height() / 2);
             const labelCenter = Math.round($label.height() / 2);
             $container.scrollTop(labelTop - containerCenter + labelCenter);
         }
+
+        instance.state.set('selected');
+        Tracker.afterFlush(() => {
+            const $measureFlow = instance.$('.measure-flow');
+            const labelOffset = $label.offset();
+            labelOffset.top -= 10;
+            $measureFlow.css(labelOffset);
+            $measureFlow.children('.tree-leaf').width($label.outerWidth());
+        });
+
+        $container.one('transitionend', event => Blaze.remove(instance.selectTreeView));
     }
 });

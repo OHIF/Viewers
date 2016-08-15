@@ -140,8 +140,8 @@ Template.selectTree.events({
         const rootComponent = instance.data.root || component;
         const rootInstance = rootComponent.templateInstance;
 
-        // Change the component's value
-        component.value(eventComponent.value());
+        // Change the component's node
+        component.node(eventComponent.value());
 
         // Unset the active leaf
         rootInstance.$('label').removeClass('active').css('width', '');
@@ -168,6 +168,10 @@ Template.selectTree.events({
                 } else {
                     storedData[itemKey] = 1;
                 }
+
+                // Set the selected leaf value in the root component
+                const itemData = $target.data('component').templateInstance.data.itemData;
+                rootComponent.value(itemData);
 
                 // Updata the stored data with the new count
                 OHIF.user.setData(storageKey, storedData);
