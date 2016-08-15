@@ -32,7 +32,7 @@ Template.selectTree.onRendered(() => {
 
     // Check if the component will be rendered on a specific position
     const position = instance.data.position;
-    if (position) {
+    if (component === rootComponent && position) {
         // Get the dimensions and move it with the given position as its center
         const width = $treeRoot.outerWidth();
         const height = $treeRoot.outerHeight();
@@ -66,8 +66,9 @@ Template.selectTree.onRendered(() => {
             height = rootInstance.$('.tree-options:last').data('height');
         }
 
-        // Update the viewport's height
-        rootInstance.$('.tree-options:first').height(height);
+        // Update the viewport's height and trigger the bounded event
+        rootInstance.$('.tree-options:first').first().height(height)
+            .on('transitionend', () => $treeRoot.trigger('spatialChanged'));
     };
 
     // Update the opened node
