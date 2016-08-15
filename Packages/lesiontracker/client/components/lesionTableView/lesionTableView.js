@@ -1,32 +1,23 @@
+import { MeasurementApi } from 'meteor/lesiontracker/client/api/measurement';
+
 Template.lesionTableView.helpers({
     targets() {
-        // All Targets shall be listed first followed by Non-Targets
-        return Measurements.find({
-            isTarget: true
-        }, {
-            sort: {
-                lesionNumberAbsolute: 1
-            }
-        });
+        const withPriors = true;
+        return MeasurementApi.targets(withPriors);
     },
 
     nonTargets() {
-        return Measurements.find({
-            isTarget: false
-        }, {
-            sort: {
-                lesionNumberAbsolute: 1
-            }
-        });
+        const withPriors = true;
+        return MeasurementApi.nonTargets(withPriors);
     },
 
     newLesions() {
-        return Measurements.find({
-            saved: false
-        }, {
-            sort: {
-                lesionNumberAbsolute: 1
-            }
-        });
+        return MeasurementApi.newLesions();
+    },
+
+    isFollowup() {
+        const instance = Template.instance();
+        const current = instance.data.timepointApi.current();
+        return (current && current.timepointType === 'followup');
     }
 });

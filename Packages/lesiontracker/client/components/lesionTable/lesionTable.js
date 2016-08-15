@@ -1,3 +1,5 @@
+import { MeasurementApi } from 'meteor/lesiontracker/client/api/measurement';
+
 Template.lesionTable.onCreated(() => {
     const instance = Template.instance();
 
@@ -13,7 +15,7 @@ Template.lesionTable.onCreated(() => {
         if (tableLayout === 'key') {
             timepoints = instance.data.timepointApi.key();
         } else {
-            timepoints = instance.data.timepointApi.latest();
+            timepoints = instance.data.timepointApi.currentAndPrior();
         }
 
         // Return key timepoints
@@ -47,14 +49,10 @@ Session.setDefault('NewSeriesLoaded', false);
 
 Template.lesionTable.onRendered(() => {
     // Find the first measurement by Lesion Number
-    var firstLesion = Measurements.findOne({}, {
-        sort: {
-            lesionNumber: 1
-        }
-    });
+    const firstLesion = MeasurementApi.firstLesion();
 
     // Create an object to store the ContentId inside
-    var templateData = {
+    const templateData = {
         contentId: Session.get('activeContentId')
     };
 

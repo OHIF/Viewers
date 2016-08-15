@@ -1,45 +1,37 @@
+import { MeasurementApi } from 'meteor/lesiontracker/client/api/measurement';
+
 Template.caseProgress.onCreated(() => {
     const instance = Template.instance();
 
     instance.progressPercent = new ReactiveVar();
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar();
-    
-    if (!instance.data.currentTimepointId) {
+
+    const current = instance.data.timepointApi.current();
+    if (!current.timepointId) {
         console.warn('Case has no timepointId');
         return;
     }
 
-    const currentTimepointId = instance.data.currentTimepointId;
-    const timepoint = Timepoints.findOne({
-        timepointId: currentTimepointId
-    });
+    instance.isLocked.set(current.isLocked);
 
-    const timepointType = timepoint.timepointType;
+    // Retrieve the initial number of targets left to measure at this
+    // follow-up. Note that this is done outside of the reactive function
+    // below so that new lesions don't change the initial target count.
+    const withPriors = true;
+    const totalTargets = MeasurementApi.targets(withPriors).length;
 
-    instance.isLocked.set(timepoint.isLocked);
-
-    if (timepointType === 'baseline') {
+    // If we're currently reviewing a Baseline timepoint, don't do any
+    // progress measurement.
+    if (current.timepointType === 'baseline') {
         instance.progressPercent.set(100);
     } else {
-        // Retrieve the initial number of targets left to measure at this
-        // follow-up. Note that this is done outside of the reactive function
-        // below so that new lesions don't change the initial target count.
-        const totalTargets = Measurements.find({
-            isTarget: true
-        }).count();
-
         // Setup a reactive function to update the progress whenever
         // a measurement is made
         instance.autorun(() => {
             // Obtain the number of Measurements for which the current Timepoint has
             // no Measurement data
-            let numRemainingMeasurements = 0;
-            Measurements.find().forEach(measurement => {
-                if (!measurement.timepoints[currentTimepointId]) {
-                    numRemainingMeasurements++;
-                }
-            });
+            const numRemainingMeasurements = MeasurementApi.unmarked().length;
 
             // Update the Case Progress text with the remaining measurement count
             instance.progressText.set(numRemainingMeasurements);
@@ -67,7 +59,7 @@ Template.caseProgress.helpers({
     },
 
     progressComplete() {
-        let progressPercent = Template.instance().progressPercent.get();
+        const progressPercent = Template.instance().progressPercent.get();
         return progressPercent === 100;
     }
 });

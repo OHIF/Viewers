@@ -1,3 +1,5 @@
+import { MeasurementApi } from 'meteor/lesiontracker/client/api/measurement';
+
 const toolTypesById = {
     target: 'bidirectional',
     nonTarget: 'nonTarget',
@@ -14,20 +16,13 @@ Template.lesionTableHeaderRow.onCreated(() => {
     const instance = Template.instance();
     instance.maxNumLesions = new ReactiveVar();
 
+    const current = instance.data.timepointApi.current();
+    const timepointType = current.timepointType;
+
     if (!instance.data.currentTimepointId) {
         console.warn('Case has no timepointId');
         return;
     }
-
-    // Give the header a proper name
-    instance.data.type = namesById[instance.data.id];
-
-    const currentTimepointId = instance.data.currentTimepointId;
-    const timepoint = Timepoints.findOne({
-        timepointId: currentTimepointId
-    });
-
-    const timepointType = timepoint.timepointType;
 
     // TODO: Check if we have criteria where maximum limits are applied to
     // Non-Targets and/or New Lesions
@@ -57,17 +52,35 @@ Template.lesionTableHeaderRow.onCreated(() => {
 });
 
 Template.lesionTableHeaderRow.helpers({
-    numberOfLesions: function() {
-        const instance = Template.instance();
-        return instance.data.measurements.count();
+    type() {
+        // Give the header a proper name
+        const id = Template.instance().data.id;
+        return namesById[id];
     },
-    maxNumLesions: function() {
+
+    numberOfLesions() {
+        return Template.instance().data.measurements.length;
+    },
+
+    maxNumLesions() {
         return Template.instance().maxNumLesions.get();
+    },
+
+    anyUnmarkedLesionsLeft() {
+        const id = Template.instance().data.id;
+        if (id === 'target') {
+            return MeasurementApi.unmarkedTargets().length;
+        } else if (id === 'nonTarget') {
+            return MeasurementApi.unmarkedNonTargets().length;
+        }
+
+        // Keep the 'Add' button for the New Lesions header row
+        return true;
     }
 });
 
 Template.lesionTableHeaderRow.events({
-    'click .js-setTool': function(event, instance) {
+    'click .js-setTool'(event, instance) {
         const id = instance.data.id;
         const toolType = toolTypesById[id];
         toolManager.setActiveTool(toolType);

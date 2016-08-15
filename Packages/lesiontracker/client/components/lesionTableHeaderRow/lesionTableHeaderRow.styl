@@ -63,7 +63,7 @@ $headerRowHeight = 63px
     text-align: right
 
     .maxNumLesions
-      background-color: $textSecondaryColor;
+      background-color: $textSecondaryColor
       border-radius: 3px
       color: black
       display: table
@@ -75,3 +75,9 @@ $headerRowHeight = 63px
       margin-top: 22px
       padding: 2px 6px 0
       text-transform: uppercase
+      transition($sidebarTransition)
+
+    &.warning
+      .maxNumLesions
+        color: $textPrimaryColor
+        background-color: $uiYellow

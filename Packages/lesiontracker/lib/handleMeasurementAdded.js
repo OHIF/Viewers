@@ -11,8 +11,9 @@ handleMeasurementAdded = function(e, eventData) {
             TrialResponseCriteria.validateDelayed(measurementData);
             // Set reviewer for this timepoint
             if (measurementData.studyInstanceUid) {
-                Meteor.call('setReviewer',measurementData.studyInstanceUid);
+                Meteor.call('setReviewer', measurementData.studyInstanceUid);
             }
+
             break;
         case 'ellipticalRoi':
         case 'length':

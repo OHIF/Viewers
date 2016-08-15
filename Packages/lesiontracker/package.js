@@ -265,7 +265,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.js', 'client');
 
     // API classes
-    api.addFiles('lib/api/timepoint.js');
+    api.addFiles('client/api/timepoint.js');
+    api.addFiles('client/api/measurement.js');
 
     // Export global functions
     api.export('pixelSpacingAutorunCheck', 'client');

@@ -133,19 +133,16 @@ Template.toolbarSection.helpers({
 
         return buttonData;
     }
-
 });
 
 Template.toolbarSection.events({
-    'click #toggleHUD'(event, instance) {
+    'click #toggleHUD'() {
         const state = Session.get('lesionTableHudOpen');
         Session.set('lesionTableHudOpen', !state);
     }
 });
 
 Template.toolbarSection.onRendered(function() {
-    const instance = Template.instance();
-
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
