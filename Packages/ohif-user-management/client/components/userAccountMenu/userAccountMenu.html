@@ -1,0 +1,44 @@
+<template name="userAccountMenu">
+    {{#if currentUser}}
+        <div id="userAccountMenu" class="dropdown">
+            <div class="dropdown-toggle noselect clearfix" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="userName pull-left m-r-1">{{name}} {{currentPath}}</span>
+                <div class="menuButton pull-right">
+                    <i class="fa fa-cog"></i> <span class="caret-down"></span>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-right">
+                {{#if showStudyListMenu}}
+                    <li>
+                        <a href="studylist" id="studylist">
+                            <i class="fa fa-list-ul"></i> Study List
+                        </a>
+                    </li>
+                {{else}}
+                    <li>
+                        <a href="/audit" id="audit">
+                            <i class="fa fa-list-ul"></i> View Audit Log
+                        </a>
+                    </li>
+                {{/if}}
+                <li role="separator" class="divider"></li>
+                <li>
+                    <a id="serverInformation">
+                        <i class="fa fa-server fa-lg"></i> Server Information
+                    </a>
+                </li>
+                <li role="separator" class="divider"></li>
+                <li>
+                    <a href="changePassword" id="changePassword">
+                        <i class="fa fa-lock"></i> Change Password
+                    </a>
+                </li>
+                <li>
+                    <a id="logoutButton">
+                        <i class="fa fa-power-off"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {{/if}}
+</template>

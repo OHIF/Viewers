@@ -31,8 +31,8 @@ Router.route('/', function() {
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
-            Session.set('activeContentId', 'worklistTab');
-            this.render('lesionTracker', routerOptions);
+            Session.set('activeContentId', 'studylistTab');
+            this.render('app', routerOptions);
         }
 
     } else {
@@ -46,16 +46,7 @@ Router.route('/viewer/timepoints/:_id', {
     onBeforeAction: function() {
         var timepointId = this.params._id;
 
-        // Check if this study is already loaded in a tab
-        // If it is, stop here so we don't keep adding tabs on hot-code reloads
-        var tab = WorklistTabs.findOne({
-            timepointId: timepointId
-        });
-        if (tab) {
-            return;
-        }
-
-        this.render('lesionTracker', routerOptions);
+        this.render('app', routerOptions);
         openNewTabWithTimepoint(timepointId);
     }
 });

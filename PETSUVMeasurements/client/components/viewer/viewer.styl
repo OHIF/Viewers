@@ -1,0 +1,22 @@
+@import "{design}/app"
+
+#viewer
+  background-color: black
+  height: 100%
+  width: 100%
+
+#imageViewerViewports
+  .viewportContainer
+    border: none !important
+    outline: 0 !important // Prevent blue outline in Chrome
+
+    &:hover
+    &.active
+    &:hover.active
+      border: none !important
+      outline: 0 !important // Prevent blue outline in Chrome
+
+    &:not(:last-child)
+    .removable
+      .imageViewerViewport
+        theme('border-right', '%s solid $uiBorderColor' % $uiBorderThickness)
