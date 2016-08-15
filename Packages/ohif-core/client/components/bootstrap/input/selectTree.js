@@ -45,8 +45,13 @@ Template.selectTree.onRendered(() => {
         })).trigger('spatialChanged');
     }
 
-    // Start the component transitions
-    Meteor.defer(() => $treeRoot.addClass('started'));
+    Meteor.defer(() => {
+        // Start the component transitions
+        $treeRoot.addClass('started');
+
+        // Focus the search box
+        $treeRoot.find('.tree-search input').focus();
+    });
 
     // Update the component's viewport height
     instance.updateHeight = searchTerm => {
