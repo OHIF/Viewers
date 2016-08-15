@@ -1,15 +1,15 @@
-animateZoomIn()
-  animation-name: zoomInOut
+animationDefaults()
   animation-duration: 0.3s
   animation-iteration-count: 1
   animation-direction: alternate
   animation-timing-function: ease-out
+
+animateZoomIn()
+  animationDefaults()
+  animation-name: zoomInOut
   animation-fill-mode: forwards
 
 animateFadeIn()
+  animationDefaults()
   animation-name: fadeInOut
-  animation-duration: 0.3s
-  animation-iteration-count: 1
-  animation-direction: alternate
-  animation-timing-function: ease-out
   animation-fill-mode: forwards

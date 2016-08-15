@@ -1,12 +1,13 @@
 @import "{design}/app"
 
 .measure-flow
+  position: relative
 
   &.open,
   &.selected
 
     .btn-add
-      display: none
+      opacity: 0
 
   .btn-add
     background-color: $activeColor
@@ -16,8 +17,14 @@
     cursor: pointer
     font-weight: bold
     height: 24px
+    left: 0
     line-height: 24px
+    opacity: 1
+    position: absolute
     padding: 0 14px
+    top: 0
+    transition(opacity 0.3s ease)
+    white-space: nowrap
 
   .select-tree-root>.tree-content
     width: 213px
