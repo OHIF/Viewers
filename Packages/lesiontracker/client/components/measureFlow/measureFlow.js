@@ -91,7 +91,7 @@ Template.measureFlow.onCreated(() => {
 });
 
 Template.measureFlow.events({
-    'click .measure-flow .btn-add'(event, instance) {
+    'click .measure-flow .btn-add, click .measure-flow .btn-rename'(event, instance) {
         // Set the open state for the component
         instance.state.set('open');
 
