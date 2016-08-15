@@ -2,7 +2,8 @@
 
 .measure-flow
 
-  &.open
+  &.open,
+  &.selected
 
     .btn-add
       display: none
@@ -18,13 +19,65 @@
     line-height: 24px
     padding: 0 14px
 
-  .select-tree-root>.tree-content>.tree-options
-    margin-right: -20px
-    max-height: 250px
-    overflow-x: hidden
-    overflow-y: scroll
-    position: relative
-    z-index: 2
+  .select-tree-root>.tree-content
+    width: 213px
+
+    &>.tree-options
+      margin-right: -17px
+      max-height: 250px
+      overflow-x: hidden
+      overflow-y: scroll
+      position: relative
+      z-index: 2
 
     .tree-inputs
       position: relative
+
+  &>.tree-leaf
+    position: relative
+
+    &:before
+      animateZoomIn()
+      background-color: $activeColor
+      border-radius: 20px
+      color: $uiGray
+      content: '\f00c'
+      display: block
+      font-family: FontAwesome
+      font-size: 24px
+      height: 40px
+      left: -46px
+      line-height: 40px
+      position: absolute
+      text-align: center
+      top: 3px
+      width: 40px
+
+    span
+      background: white
+      font-weight: normal
+      height: 46px
+      line-height: 46px
+      padding: 0 12px
+
+    input, span
+      display: none
+
+    .actions
+      margin-top: 16px
+
+      button
+        background-color: transparent
+        border-radius: 16px
+        border: 1px solid $uiBorderColor
+        color: $textPrimaryColor
+        font-weight: normal
+        height: 31px
+        line-height: 31px
+        padding: 0 12px
+        text-align: center
+
+  &.selected>.tree-leaf
+
+    span
+      display: block
