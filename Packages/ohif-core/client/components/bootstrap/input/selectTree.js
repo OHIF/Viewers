@@ -134,8 +134,14 @@ Template.selectTree.events({
     },
 
     'input .tree-search input'(event, instance) {
+        // Get the tree root
+        const $treeRoot = $(event.currentTarget).closest('.select-tree-root');
+
         // Change the search term to update the tree items
         instance.searchTerm.set($(event.currentTarget).val());
+
+        // Change the component state
+        $treeRoot.addClass('interacted');
     },
 
     'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
