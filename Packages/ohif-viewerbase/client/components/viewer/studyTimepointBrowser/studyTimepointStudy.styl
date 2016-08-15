@@ -1,0 +1,131 @@
+@import "{design}/app"
+
+$boxBorderColor = transparent
+$boxHoverBackgroundColor = #14191E
+$boxHoverBorderColor = #2d4660
+$boxActiveBorderColor = #131D29
+$boxWidth = 50px
+$borderThickness = 2px
+$boxBorderRadius = 8px
+$nestingMargin = 6px
+$spacerX = 7px
+$spacerY = 12px
+
+.studyTimepointStudy
+  position: relative
+  // required transformation to make inner fixed elements relative to this one
+  transform(scale(1))
+
+  .loadingTextDiv
+    padding: 25px
+    border-radius: 12px
+    position: absolute
+    opacity: 0
+    z-index: 100
+    background-color: $boxHoverBackgroundColor
+    pointer-events: none
+    margin: 0
+
+  &.loading
+    .loadingTextDiv
+      height: 100%
+      left: 0
+      opacity: 0.75
+      right: 16px
+
+    .studyModality
+      opacity: 0.2
+
+  &.active
+    .studyModality
+      .studyModalityBox
+        theme('color', '$primaryBackgroundColor')
+        &
+        &:before
+        &:after
+          theme('background-color', '$activeColor')
+          border-color: $boxActiveBorderColor
+
+  &:not(.active) .studyTimepointThumbnails
+    max-height: 0 !important
+
+  .studyTimepointThumbnails
+    overflow: hidden
+    transition($sidebarTransition)
+
+.studyModality
+  border: 1px solid $boxBorderColor
+  border-radius: 12px
+  cursor: pointer
+  padding: $spacerY $spacerX ($spacerY - 1)
+  position: relative
+  transition($sidebarTransition)
+  z-index: 1
+
+  &:hover
+    background-color: $boxHoverBackgroundColor
+    border-color: $boxHoverBorderColor
+
+    &.additional
+      theme('color', '$textSecondaryColor')
+
+  &.additional
+    theme('color', '$textPrimaryColor')
+    font-size: 16px
+    font-weight: normal
+    height: 91px
+    line-height: 91px
+    padding: 0
+    text-align: center
+
+  .studyText
+    font-size: 13px
+    left: ($spacerX * 3) + $boxWidth + ($nestingMargin * 3)
+    line-height: 14px
+    position: absolute
+    right: $spacerX
+    top: $spacerY
+    .studyDate
+      margin-top: 8px
+      theme('color', '$textSecondaryColor')
+    .studyDescription
+      margin-top: 8px
+      theme('color', '$textPrimaryColor')
+
+  .studyModalityBox
+    theme('color', '$textSecondaryColor')
+    line-height: $boxWidth
+    margin-left: $nestingMargin * 2
+    margin-top: $nestingMargin * 2
+    position: relative
+
+    .studyModalityText
+      text-align: center
+      text-transform: uppercase
+      height: 100%
+
+    &
+    &:before
+    &:after
+      theme('border', '$borderThickness solid $primaryBackgroundColor')
+      theme('background-color', '$boxBackgroundColor')
+      border-radius: $boxBorderRadius
+      height: $boxWidth + ($borderThickness * 2)
+      transition($sidebarTransition)
+      width: $boxWidth + ($borderThickness * 2)
+
+    &:before
+    &:after
+      display: block
+      content: ''
+      position: absolute
+
+    &:before
+      top: -($borderThickness + $nestingMargin)
+      left: -($borderThickness + $nestingMargin)
+      z-index: -1
+
+    &:after
+      top: -($borderThickness + ($nestingMargin * 2))
+      left: -($borderThickness + ($nestingMargin * 2))
+      z-index: -2

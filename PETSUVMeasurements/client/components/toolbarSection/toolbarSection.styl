@@ -1,0 +1,24 @@
+@import "{design}/app"
+
+.toolbarSection
+  theme('border-bottom', '%s solid $uiBorderColor' % $uiBorderThickness)
+  flex: 0 0 auto
+  height: $toolbarHeight
+  overflow: hidden
+  padding-top: 6px
+  position: relative
+  transition(height 300ms ease)
+  width: 100%
+
+  &.expanded
+    height: $toolbarHeight + $toolbarDrawerHeight
+
+  .toolbarSectionEntry
+    theme('color', '$defaultColor')
+    cursor: pointer
+    display: inline-block
+    theme('fill', '$defaultColor')
+    margin-top: 3px
+    min-width: 30px
+    theme('stroke', '$defaultColor')
+    text-align: center

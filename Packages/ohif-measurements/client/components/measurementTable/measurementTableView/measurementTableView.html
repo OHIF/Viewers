@@ -1,0 +1,41 @@
+<template name="measurementTableView">
+    <div class="measurementTableView scrollArea">
+        {{ #let config=measurementConfiguration}}
+            {{ #each measurementType in config.measurementTools}}
+                {{#if measurementType.options.showInMeasurementTable }}
+                    {{#let collection=(groupByMeasurementNumber measurementType.id)}}
+                        {{>measurementTableHeaderRow
+                            measurementType=measurementType
+                            measurements=collection
+                            currentTimepointId=currentTimepointId
+                            timepointApi=timepointApi
+                            measurementApi=measurementApi}}
+
+                        {{#each entry in collection}}
+                            {{>measurementTableRow (clone this rowItem=entry)}}
+                        {{/each}}
+                    {{/let}}
+                {{/if}}
+            {{ /each }}
+
+            {{#if config.newMeasurementTool }}
+                {{ #let new=newMeasurements }}
+                    {{#if new }}
+                        {{#let collection=new tool=config.newMeasurementTool}}
+                            {{>measurementTableHeaderRow
+                                measurementType=tool.measurementType
+                                measurements=collection
+                                currentTimepointId=currentTimepointId
+                                timepointApi=timepointApi
+                                measurementApi=measurementApi}}
+
+                            {{#each entry in collection}}
+                                {{>measurementTableRow (clone this rowItem=entry)}}
+                            {{/each}}
+                        {{/let}}
+                    {{/if}}
+                {{/let}}
+            {{/if}}
+        {{/let}}
+    </div>
+</template>

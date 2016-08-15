@@ -1,0 +1,14 @@
+<template name="viewer">
+    {{#if Template.subscriptionsReady}}
+        <div class="viewerDialogs">
+            {{>confirmDeleteDialog}}
+            {{>measurementTableHUD (clone this)}}
+        </div>
+        <div id="viewer">
+            {{>toolbarSection (clone this)}}
+            {{>viewerSection (clone this)}}
+        </div>
+    {{else}}
+        {{>loadingText}}
+    {{/if}}
+</template>

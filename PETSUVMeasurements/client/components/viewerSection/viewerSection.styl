@@ -1,0 +1,78 @@
+@import "{design}/app"
+
+.viewerSection
+  display: flex
+  flex: 1
+  flex-flow: row nowrap
+  align-items: stretch
+  height: calc(100% - 78px);
+  width: 100%
+
+  .sidebarMenu
+    height: 100%
+    // required transformation to make inner fixed elements relative to this one
+    transform(scale(1))
+    transition($sidebarTransition)
+
+    .sidebar-option
+      height: 100%
+      position: fixed
+      transform(translateX(100%))
+      transition($sidebarTransition)
+      width: 100%
+
+      &.active
+        transform(translateX(0%))
+
+  .sidebar-left
+    theme('border-right', '%s solid $uiBorderColor' % $uiBorderThickness)
+    flex: 1
+    margin-left: - $studiesSidebarMenuWidth
+    max-width: $studiesSidebarMenuWidth
+    order: 1
+
+    &.sidebar-open
+      margin-left: 0
+
+  .mainContent
+    flex: 1
+    order: 2
+    width: 100%
+    height: 100%
+    overflow: hidden
+    transition($sidebarTransition)
+
+  .sidebar-right
+    flex: 1
+    margin-left: -12px
+    margin-right: - $lesionsSidebarMenuWidth
+    max-width: $lesionsSidebarMenuWidth
+    order: 3
+    padding-left: 6px
+    position: relative
+
+    &[data-timepoints="3"]
+      margin-right: - ($lesionsSidebarMenuWidth + 135.5px)
+      max-width: $lesionsSidebarMenuWidth + 135.5px
+
+    &[data-timepoints="4"]
+      margin-right: - ($lesionsSidebarMenuWidth + 270px)
+      max-width: $lesionsSidebarMenuWidth + 270px
+
+    &:before
+      theme('background-color', '$uiBorderColor')
+      content: ''
+      display: block
+      height: 100%
+      left: 5px
+      position: absolute
+      top: 0
+      width: $uiBorderThickness
+
+    &.sidebar-open
+      margin-right: 0
+
+  .studiesListedChanger
+    theme('border-bottom', '%s solid $uiBorderColor' % $uiBorderThickness)
+    padding: 20px 10px
+    text-align: center

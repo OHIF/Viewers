@@ -1,0 +1,17 @@
+<template name="caseProgress">
+    <div class="caseProgress">
+        {{#unless progressComplete}}
+        {{>radialProgressBar isLocked=isLocked progressPercent=progressPercent progressText=progressText}}
+        {{ /unless }}
+        {{#if isLocked}}
+            <div class="caseProgressStatus">
+                <h5>Locked</h5>
+            </div>
+        {{/if}}
+        {{#if progressComplete}}
+            <div class="caseProgressStatus">
+                <button class="btn js-finish-case">Enter response</button>
+            </div>
+        {{/if}}
+    </div>
+</template>
