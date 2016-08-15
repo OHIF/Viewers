@@ -1,0 +1,22 @@
+@import "{design}/app"
+
+.measurementTableTimepointHeader
+  flex: 1
+  justify-content: space-around
+
+  div
+    theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+    font-weight: 400
+    padding-left: 12px
+    text-align: left
+
+  .timepointName
+    theme('color', '$textSecondaryColor')
+    font-size: 12px
+    line-height: 12px
+
+  .timepointDate
+    theme('color', '$textPrimaryColor')
+    font-size: 14px
+    line-height: 20px
+    padding-bottom: 6px

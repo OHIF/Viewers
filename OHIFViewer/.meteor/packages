@@ -4,6 +4,16 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
+# OHIF Packages
+design
+ohif:core
+ohif:cornerstone
+ohif:viewerbase
+ohif:study-list
+ohif:dicom-services
+ohif:hanging-protocols
+# ohif:user-management
+
 twbs:bootstrap
 http@1.2.10
 arsnebula:reactive-promise
@@ -24,24 +34,17 @@ random@1.0.10
 ejson@1.0.13
 spacebars@1.0.12
 check@1.2.4
-cornerstone
-dicomweb
 aldeed:simple-schema          # Third party package to deal with schemas
-design
-ohif:core
 ecmascript@0.5.9
-viewerbase
-worklist
 reactive-var@1.0.11
+
 practicalmeteor:loglevel
-hangingprotocols
 reactive-dict@1.1.8
 clinical:router
 fastclick@1.0.13
 standard-minifier-css@1.3.2
 standard-minifier-js@1.2.1
 johdirr:meteor-git-rev
-wadoproxy
 aldeed:template-extension
 peppelg:bootstrap-3-modal
 shell-server@0.2.1

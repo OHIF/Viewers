@@ -1,0 +1,24 @@
+<template name="measurementTableHeaderRow">
+    <div class="measurementTableHeaderRow">
+        {{ #if anyUnmarkedLesionsLeft}}
+        <div class="add js-setTool">
+            <svg>
+                <use xlink:href=/packages/ohif_viewerbase/assets/icons.svg#icon-ui-add></use>
+            </svg>
+        </div>
+        {{ /if }}
+        <div class="type">
+            {{measurementType.name}}
+        </div>
+        <div class="max {{ # if gt numberOfMeasurements maxNumMeasurements }}warning{{/if}}">
+        {{ #if maxNumMeasurements }}
+            <p class="maxNumMeasurements">
+                Max {{maxNumMeasurements}}
+            </p>
+        {{/if}}
+        </div>
+        <div class="numberOfMeasurements">
+            {{numberOfMeasurements}}
+        </div>
+    </div>
+</template>

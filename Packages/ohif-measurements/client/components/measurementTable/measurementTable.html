@@ -1,0 +1,16 @@
+<template name="measurementTable">
+    <div id="measurementTableContainer">
+        {{#if this.timepoints.get.length}}
+            <div class="measurementTableLayoutChanger viewerRoundedButtonGroup">
+                {{>roundedButtonGroup buttonGroupData}}
+            </div>
+        {{/if}}
+        <div class="measurementTableTimepointHeaderRow">
+            {{#each timepoint in this.timepoints.get}}
+                {{>measurementTableTimepointHeader (clone this timepoint)}}
+            {{/each}}
+            <!-- TODO: Add header for cross-sectional / non-longitudinal data -->
+        </div>
+        {{>measurementTableView (clone this)}}
+    </div>
+</template>

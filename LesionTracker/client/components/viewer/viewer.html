@@ -1,0 +1,17 @@
+<template name="viewer">
+    {{#if and Template.subscriptionsReady dataSourcesReady}}
+        <div class="viewerDialogs">
+            {{>confirmDeleteDialog}}
+            {{>measurementLocationDialog (clone this)}}
+            {{>nonTargetLesionDialog (clone this)}}
+            {{>nonTargetResponseDialog (clone this)}}
+            {{>measurementTableHUD (clone this)}}
+        </div>
+        <div id="viewer">
+            {{>toolbarSection (clone this)}}
+            {{>viewerSection (clone this)}}
+        </div>
+    {{else}}
+        {{>loadingText}}
+    {{/if}}
+</template>

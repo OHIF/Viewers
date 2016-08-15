@@ -1,0 +1,74 @@
+# Meteor packages used by this project, one per line.
+# Check this file (and the other files in this directory) into your repository.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+npm-bcrypt@0.9.1
+
+meteor-base@1.0.4             # Packages every Meteor app needs to have
+mobile-experience@1.0.4       # Packages for a great mobile UX
+mongo@1.1.12                  # The database Meteor supports right now
+blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
+session@1.1.6                 # Client-side reactive dictionary for your app
+jquery@1.11.9                 # Helpful client-side library
+tracker@1.1.0                 # Meteor's client-side reactive programming library
+
+es5-shim@4.6.14               # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.5.8              # Enable ECMAScript2015+ syntax in app code
+
+insecure
+
+clinical:router
+clinical:extended-api
+clinical:active-entry
+clinical:error-pages
+clinical:theming
+clinical:fonts
+clinical:hipaa-audit-log
+clinical:hipaa-logger
+
+aldeed:simple-schema          # Third party package to deal with schemas
+
+# OHIF Packages
+design
+ohif:core
+ohif:cornerstone
+ohif:viewerbase
+ohif:study-list
+ohif:dicom-services
+ohif:hanging-protocols
+ohif:user-management
+ohif:petsuv
+
+accounts-base@1.2.11
+accounts-password@1.3.0
+
+ian:accounts-ui-bootstrap-3
+twbs:bootstrap
+http@1.2.9
+arsnebula:reactive-promise
+promise@0.8.4
+stylus@2.513.5
+fortawesome:fontawesome
+random@1.0.10
+reactive-var@1.0.10
+reactive-dict@1.1.8
+practicalmeteor:loglevel
+momentjs:moment
+
+anti:gagarin@=0.4.11
+check@1.2.3
+aldeed:template-extension@4.0.0
+zuuk:stale-session
+gilbertwat:bootstrap3-daterangepicker
+email@1.1.17
+peppelg:bootstrap-3-modal
+simple:reactive-method
+fastclick@1.0.12
+standard-minifier-css@1.2.0
+standard-minifier-js@1.2.0
+johdirr:meteor-git-rev
+u2622:persistent-session
+shell-server
+aldeed:collection2

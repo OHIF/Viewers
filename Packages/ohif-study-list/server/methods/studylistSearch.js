@@ -1,0 +1,25 @@
+Meteor.methods({
+    /**
+     * Use the specified filter to conduct a search from the DICOM server
+     *
+     * @param filter
+     */
+    StudyListSearch(filter) {
+        // Get the server data. This is user-defined in the config.json files or through servers
+        // configuration modal
+        const server = getCurrentServer();
+
+        if (!server) {
+            throw 'No properly configured server was available over DICOMWeb or DIMSE.';
+        }
+
+        console.log(server);
+        console.log(Services);
+
+        if (server.type === 'dicomWeb') {
+            return Services.QIDO.Studies(server, filter);
+        } else if (server.type === 'dimse') {
+            return Services.DIMSE.Studies(filter);
+        }
+    }
+});

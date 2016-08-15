@@ -1,0 +1,43 @@
+@import "{design}/app"
+
+.studylistPagination
+    font-size: 13px
+    font-weight: normal !important
+
+  .rows-per-page
+    padding-top: 20px
+
+    label
+      font-weight: normal
+
+    select
+      theme('background-color', '$primaryBackgroundColor')
+      color: white
+
+  .page-number
+    text-align: right
+
+    label
+      font-weight: normal
+
+      ul#pagination
+
+        li
+          a
+            padding: 4px 8px
+            theme('background-color', '$primaryBackgroundColor')
+            color: white
+
+            &:hover
+              theme('color', '$activeColor')
+
+        .active
+          a
+            theme('background-color', '$uiGray')
+            border-color: #ddd
+            color: white
+            
+        .disabled
+          a:hover
+            color: inherit
+

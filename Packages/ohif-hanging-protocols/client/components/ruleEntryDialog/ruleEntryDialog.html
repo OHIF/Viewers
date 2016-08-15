@@ -1,0 +1,47 @@
+<template name="ruleEntryDialog">
+    <div class="ruleEntryDialog dialog-animated">
+        <div class="dialogHeader">
+            <h5>Rule Editor</h5>
+        </div>
+        <div class="dialogContent">
+            <div class="row">
+                <div class="col-xs-12">
+                    <select class="attributes" style="width: 95%;">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <select class="comparators" style="width: 95%;">
+                        {{ #each comparators }}
+                        <option value={{id}}>{{name}}</option>
+                        {{ /each }}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    {{ #if ifTypeIs currentValue "string"}}
+                    <input class='currentValue' type="text" value={{currentValue}}>
+                    {{ /if }}
+
+                    {{ #if ifTypeIs currentValue "undefined"}}
+                    <input class='currentValue' type="text" value={{currentValue}}>
+                    {{ /if }}
+
+                    {{ #if ifTypeIs currentValue "number"}}
+                    <input class='currentValue' type="number" value={{currentValue}}>
+                    {{ /if }}
+
+                    {{ #if ifTypeIs currentValue "boolean"}}
+                    <input class='currentValue' type="checkbox" {{valueIf currentValue "selected" ''}}>
+                    {{ /if }}
+                </div>
+            </div>
+        </div>
+        <div class="dialogFooter">
+            <button id="cancel" class="btn btn-link" tabindex="1">Cancel</button>
+            <button id="save" class="btn btn-primary" tabindex="0">OK</button>
+        </div>
+    </div>
+</template>
