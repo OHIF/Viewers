@@ -21,7 +21,7 @@
                     {{#if this.root}}
                         {{>selectTreeBreadcrumb component=this.component}}
                     {{/if}}
-                    <div class="tree-inputs">
+                    <div class="tree-inputs clearfix">
                         {{#each item in treeItems}}
                             {{>inputRadio
                                 id=(concat this.storageKey '_' (encodeId item.value))

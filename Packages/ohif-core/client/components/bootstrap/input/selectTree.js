@@ -25,7 +25,10 @@ Template.selectTree.onRendered(() => {
     instance.component = component;
 
     // Set the margin to display the common section
-    $treeRoot.children('.tree-content').css('margin-right', $treeRoot.width());
+    const isTreeColumns = instance.data.treeColumns;
+    const marginProperty = isTreeColumns ? 'margin-left' : 'margin-right';
+    const marginWidth = isTreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
+    $treeRoot.children('.tree-content').css(marginProperty, marginWidth);
 
     // Make the component respect the window boundaries
     $treeRoot.bounded();

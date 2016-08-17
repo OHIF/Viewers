@@ -119,6 +119,7 @@ Template.measureFlow.events({
                 label: 'Assign label',
                 searchPlaceholder: 'Search labels',
                 storageKey: 'measureLabelCommon',
+                treeColumns: instance.data.treeColumns,
                 position
             };
 
@@ -206,13 +207,13 @@ Template.measureFlow.events({
         // Change the measure flow state to selected
         instance.state.set('selected');
 
+        // Get the clicked label window offset
+        const labelOffset = $label.offset();
+
         // Wait for the DOM re-rendering
         Tracker.afterFlush(() => {
             // Get the measure flow div
             const $measureFlow = instance.$('.measure-flow');
-
-            // Get the clicked label window offset
-            const labelOffset = $label.offset();
 
             // Subtract the label box shadow height from the label's position
             labelOffset.top -= 10;
