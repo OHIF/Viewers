@@ -7731,14 +7731,6 @@ if (typeof cornerstoneTools === 'undefined') {
             return;
         }
 
-        var activeViewportIndex = Session.get('activeViewport');
-        var viewportIndex = $('.imageViewerViewport').index(referenceElement);
-
-        //  Only show reference lines in relation to the active viewport
-        if (viewportIndex != activeViewportIndex) {
-            return;
-        }
-
         var targetImagePlane = cornerstoneTools.metaData.get('imagePlane', targetImage.imageId);
         var referenceImagePlane = cornerstoneTools.metaData.get('imagePlane', referenceImage.imageId);
 
