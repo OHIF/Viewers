@@ -1,12 +1,122 @@
-.measure-flow
+@import "{design}/app"
 
-  .select-tree-root>.tree-content>.tree-options
-    margin-right: -20px
-    max-height: 250px
-    overflow-x: hidden
-    overflow-y: scroll
-    position: relative
-    z-index: 2
+.measure-flow
+  position: relative
+
+  &.open,
+  &.selected
+
+    .btn-add
+      opacity: 0
+
+  .btn-add
+    background-color: $activeColor
+    border: 2px solid $uiBorderColor
+    border-radius: 14px
+    color: $textColorActive
+    cursor: pointer
+    font-weight: bold
+    height: 24px
+    left: 0
+    line-height: 24px
+    opacity: 1
+    position: absolute
+    padding: 0 14px
+    top: 0
+    transition(opacity 0.3s ease)
+    white-space: nowrap
+
+  .select-tree-root>.tree-content
+    width: 213px
+
+    &>.tree-options
+      margin-right: -17px
+      max-height: 250px
+      overflow-x: hidden
+      overflow-y: scroll
+      position: relative
+      z-index: 2
 
     .tree-inputs
       position: relative
+
+  &>.tree-leaf
+    position: relative
+
+    &:before
+      animateZoomIn()
+      background-color: $activeColor
+      border-radius: 20px
+      color: $uiGray
+      content: '\f00c'
+      display: block
+      font-family: FontAwesome
+      font-size: 24px
+      height: 40px
+      left: -46px
+      line-height: 40px
+      position: absolute
+      text-align: center
+      top: 3px
+      width: 40px
+
+    span
+      background: white
+      font-weight: normal
+      height: 46px
+      line-height: 46px
+      padding: 0 12px
+
+    input, span
+      display: none
+
+    .actions
+      margin-top: 16px
+      opacity: 0
+
+      &:not(.fadeOut)
+        animateFadeIn()
+        animation-delay: 0.3s
+
+      &.fadeOut
+        animateFadeOut()
+
+      button
+        background-color: transparent
+        border-radius: 16px
+        border: 1px solid $uiBorderColor
+        color: $textPrimaryColor
+        font-weight: normal
+        height: 31px
+        line-height: 31px
+        padding: 0 12px
+        text-align: center
+
+    .description
+      margin-top: -10px
+      margin-bottom: 26px
+
+      textarea
+        background-color: white
+        box-shadow: 0 10px white
+        border: 0
+        line-height: 20px
+        outline: none
+        overflow: hidden
+        padding: 0 12px
+        resize: none
+        transition(height 0.3s ease)
+        width: 100%
+
+    .descriptionText
+      background-color: white
+      box-shadow: 0 10px white
+      line-height: 20px
+      margin-bottom: 26px
+      margin-top: -10px
+      padding: 0 12px
+
+  &.selected>.tree-leaf
+
+    span
+      display: block

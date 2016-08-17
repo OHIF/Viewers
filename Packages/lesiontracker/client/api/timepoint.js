@@ -19,12 +19,42 @@ class TimepointApi {
         return this.timepoints.find().fetch();
     }
 
-    // Return only the current and prior timepoints
-    latest() {
-        const options = {
-            limit: 2
-        };
-        return this.timepoints.find({}, options).fetch();
+    // Return only the current timepoint
+    current() {
+        return this.timepoints.findOne({
+            timepointId: this.currentTimepointId
+        });
+    }
+
+    prior() {
+        const latestDate = this.current().latestDate;
+        return this.timepoints.findOne({
+            latestDate: {
+                $lt: latestDate
+            }
+        }, {
+            sort: {
+                latestDate: -1
+            },
+        });
+    }
+
+    // Return only the current and prior Timepoints
+    currentAndPrior() {
+        let timepoints = [this.current()];
+        const prior = this.prior();
+        if (prior) {
+            timepoints.push(prior);
+        }
+
+        return timepoints;
+    }
+
+    // Return only the baseline timepoint
+    baseline() {
+        return this.timepoints.findOne({
+            timepointType: 'baseline'
+        });
     }
 
     // Return only the key timepoints (current, prior, nadir and baseline)

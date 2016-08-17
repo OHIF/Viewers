@@ -15,6 +15,9 @@ OHIF.mixins.selectTree = new OHIF.Mixin({
             const rootComponent = instance.data.root || component;
             const rootInstance = rootComponent.templateInstance;
 
+            // Store the component's current value
+            instance.currentValue = null;
+
             // Create the component's value storage property
             instance.data.currentNode = new ReactiveVar(null);
 
@@ -25,7 +28,23 @@ OHIF.mixins.selectTree = new OHIF.Mixin({
             component.value = value => {
                 const isGet = _.isUndefined(value);
 
-                // Return the current node value
+                // Return the current value
+                if (isGet) {
+                    return rootInstance.currentValue;
+                }
+
+                // Change the current value
+                rootInstance.currentValue = value;
+
+                // Trigger the change event
+                component.$element.trigger('change');
+            };
+
+            // Method to manipulate nodes
+            component.node = node => {
+                const isGet = _.isUndefined(node);
+
+                // Return the current node
                 if (isGet) {
                     const currentNode = instance.data.currentNode.get();
                     return currentNode ? currentNode.value : null;
@@ -35,12 +54,12 @@ OHIF.mixins.selectTree = new OHIF.Mixin({
                 const items = component.templateInstance.data.items;
 
                 // Get the node for the selected value
-                const node = _.findWhere(items, {
-                    value: value
+                const currentNode = _.findWhere(items, {
+                    value: node
                 });
 
                 // Change the current node
-                instance.data.currentNode.set(node);
+                instance.data.currentNode.set(currentNode);
             };
 
             // Return plain data for all the leaves inside current node
@@ -59,6 +78,14 @@ OHIF.mixins.selectTree = new OHIF.Mixin({
                 return recursiveSeek(instance.data.items);
             };
 
+        },
+
+        onRendered() {
+            const instance = Template.instance();
+            const component = instance.component;
+
+            // Define the main element
+            component.$element = instance.$('.select-tree:first').first();
         }
     }
 });

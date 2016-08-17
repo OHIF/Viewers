@@ -37,13 +37,19 @@ function configureTools() {
     cornerstoneTools.toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
 
     // Set the configuration values for the text annotation (Arrow) tool
-    var annotateConfig = {
+    const annotateConfig = {
         getTextCallback: getAnnotationTextCallback,
         changeTextCallback: changeAnnotationTextCallback,
         drawHandles: false,
         arrowFirst: true
     };
     cornerstoneTools.arrowAnnotate.setConfiguration(annotateConfig);
+
+    const zoomConfig = {
+        minScale: 0.05,
+        maxScale: 10
+    };
+    cornerstoneTools.zoom.setConfiguration(zoomConfig);
 }
 
 toolManager = {

@@ -43,12 +43,15 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         seriesList: seriesList,
         patientName: anInstance[0x00100010],
         patientId: anInstance[0x00100020],
+        patientBirthDate: anInstance[0x00100030],
+        patientSex: anInstance[0x00100040],
         accessionNumber: anInstance[0x00080050],
         studyDate: anInstance[0x00080020],
         modalities: anInstance[0x00080061],
         studyDescription: anInstance[0x00081030],
         imageCount: anInstance[0x00201208],
-        studyInstanceUid: anInstance[0x0020000D]
+        studyInstanceUid: anInstance[0x0020000D],
+        institutionName: anInstance[0x00080080]
     };
 
     resultData.forEach(function(instanceRaw) {
@@ -78,7 +81,9 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             imagePositionPatient: instance[0x00200032],
             imageOrientationPatient: instance[0x00200037],
             frameOfReferenceUID: instance[0x00200052],
+            sliceThickness: parseFloat(instance[0x00180050]),
             sliceLocation: parseFloat(instance[0x00201041]),
+            tablePosition: parseFloat(instance[0x00189327]),
             samplesPerPixel: parseFloat(instance[0x00280002]),
             photometricInterpretation: instance[0x00280004],
             rows: parseFloat(instance[0x00280010]),
@@ -96,7 +101,12 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             laterality: instance[0x00200062],
             viewPosition: instance[0x00185101],
             numFrames: parseFloat(instance[0x00280008]),
-            frameTime: parseFloat(instance[0x00181063])
+            frameTime: parseFloat(instance[0x00181063]),
+            lossyImageCompression: instance[0x00282110],
+            derivationDescription: instance[0x00282111],
+            lossyImageCompressionRatio: instance[0x00282112],
+            lossyImageCompressionMethod: instance[0x00282114],
+            spacingBetweenSlices: instance[0x00180088]
         };
 
         // Retrieve the actual data over WADO-URI

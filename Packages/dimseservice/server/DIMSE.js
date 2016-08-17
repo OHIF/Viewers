@@ -12,15 +12,18 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
     return {
         0x0020000D: studyInstanceUID ? studyInstanceUID : '',
         0x0020000E: (studyInstanceUID && seriesInstanceUID) ? seriesInstanceUID : '',
-        0x00080005: '',
-        0x00080020: '',
-        0x00080030: '',
-        0x00080090: '',
-        0x00100010: '',
-        0x00100020: '',
-        0x00200010: '',
-        0x0008103E: '',
-        0x00200011: '',
+        0x00080005: '', // specificCharacterSet
+        0x00080020: '', // studyDate
+        0x00080030: '', // studyDescription
+        0x00080090: '', // referringPhysicianName
+        0x00100010: '', // patientName
+        0x00100020: '', // patientId
+        0x00100030: '', // patientBirthDate
+        0x00100040: '', // patientSex
+        0x00200010: '', // studyId
+        0x0008103E: '', // seriesDescription
+        0x00200011: '', // seriesNumber
+        0x00080080: '', // institutionName
         0x00080016: '', // sopClassUid
         0x00080018: '', // sopInstanceUid
         0x00080060: '', // modality
@@ -37,7 +40,9 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00281052: '', // rescaleIntercept
         0x00281053: '', // rescaleSlope
         0x00280002: '', // samplesPerPixel
+        0x00180050: '', // sliceThickness
         0x00201041: '', // sliceLocation
+        0x00189327: '', // tablePosition
         0x00281050: '', // windowCenter
         0x00281051: '', // windowWidth
         0x00280030: '', // pixelSpacing
@@ -47,9 +52,14 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00200032: '', // imagePositionPatient
         0x00200037: '', // imageOrientationPatient
         0x00200052: '', // frameOfReferenceUID
+        0x00282110: '', // lossyImageCompression
+        0x00282112: '', // lossyImageCompressionRatio
+        0x00282114: '', // lossyImageCompressionMethod,
+        0x00180088: ''  // spacingBetweenSlices
 
         // Orthanc has a bug here so we can't retrieve sequences at the moment
         // https://groups.google.com/forum/#!topic/orthanc-users/ghKJfvtnK8Y
+        //0x00282111: '', // derivationDescription
         //0x00082112: ''  // sourceImageSequence
     };
 };

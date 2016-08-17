@@ -26,6 +26,7 @@ Package.onUse(function(api) {
     // Common styles
     api.addFiles([
         'styles/common/webfonts.styl',
+        'styles/common/keyframes.styl',
         'styles/common/global.styl',
         'styles/common/spacings.styl'
     ], 'client');

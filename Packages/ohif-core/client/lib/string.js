@@ -7,7 +7,7 @@ OHIF.string = {};
 // Search for some string inside any object or array
 OHIF.string.search = (object, query, property=null, result=[]) => {
     // Create the search pattern
-    const pattern = new RegExp($.trim(query).replace(/\s/gi, '|'), 'i');
+    const pattern = new RegExp($.trim(query), 'i');
 
     _.each(object, item => {
         // Stop here if item is empty

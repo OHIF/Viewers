@@ -27,8 +27,31 @@ Template.selectTree.onRendered(() => {
     // Set the margin to display the common section
     $treeRoot.children('.tree-content').css('margin-right', $treeRoot.width());
 
-    // Start the component transitions
-    $treeRoot.addClass('started');
+    // Make the component respect the window boundaries
+    $treeRoot.bounded();
+
+    // Check if the component will be rendered on a specific position
+    const position = instance.data.position;
+    if (component === rootComponent && position) {
+        // Get the dimensions and move it with the given position as its center
+        const width = $treeRoot.outerWidth();
+        const height = $treeRoot.outerHeight();
+        position.left -= Math.round(width / 2);
+        position.top -= Math.round(height / 2);
+
+        // Change the component's position and trigger the bounded event
+        $treeRoot.css(_.extend({}, position, {
+            position: 'fixed'
+        })).trigger('spatialChanged');
+    }
+
+    Meteor.defer(() => {
+        // Start the component transitions
+        $treeRoot.addClass('started');
+
+        // Focus the search box
+        $treeRoot.find('.tree-search input').focus();
+    });
 
     // Update the component's viewport height
     instance.updateHeight = searchTerm => {
@@ -43,8 +66,9 @@ Template.selectTree.onRendered(() => {
             height = rootInstance.$('.tree-options:last').data('height');
         }
 
-        // Update the viewport's height
-        rootInstance.$('.tree-options:first').height(height);
+        // Update the viewport's height and trigger the bounded event
+        rootInstance.$('.tree-options:first').first().height(height)
+            .on('transitionend', () => $treeRoot.trigger('spatialChanged'));
     };
 
     // Update the opened node
@@ -110,23 +134,29 @@ Template.selectTree.events({
     },
 
     'input .tree-search input'(event, instance) {
+        // Get the tree root
+        const $treeRoot = $(event.currentTarget).closest('.select-tree-root');
+
         // Change the search term to update the tree items
         instance.searchTerm.set($(event.currentTarget).val());
+
+        // Change the component state
+        $treeRoot.addClass('interacted');
     },
 
     'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
         const component = instance.component;
-        const $target = $(event.target);
+        const $target = $(event.currentTarget);
         const $label = $target.closest('label');
         const eventComponent = $target.data('component');
         const rootComponent = instance.data.root || component;
         const rootInstance = rootComponent.templateInstance;
 
-        // Change the component's value
-        component.value(eventComponent.value());
+        // Change the component's node
+        component.node(eventComponent.value());
 
         // Unset the active leaf
-        rootInstance.$('label').removeClass('active');
+        rootInstance.$('label').removeClass('active').css('width', '');
 
         // Unset the selected state
         instance.setSelected(false);
@@ -135,7 +165,7 @@ Template.selectTree.events({
         const isLeaf = $label.hasClass('tree-leaf');
         if (isLeaf) {
             // Change the active item
-            $label.addClass('active');
+            $label.css('width', $label.outerWidth()).addClass('active');
 
             // Ckeck if there's a storageKey defined
             const storageKey = instance.data.storageKey;
@@ -150,6 +180,10 @@ Template.selectTree.events({
                 } else {
                     storedData[itemKey] = 1;
                 }
+
+                // Set the selected leaf value in the root component
+                const itemData = $target.data('component').templateInstance.data.itemData;
+                rootComponent.value(itemData);
 
                 // Updata the stored data with the new count
                 OHIF.user.setData(storageKey, storedData);
@@ -200,6 +234,27 @@ Template.selectTree.events({
                 // Change the current instance
                 currentInstance = currentInstance.component.parent.templateInstance;
             }
+        }
+    },
+
+    'click .select-tree-common label'(event, instance) {
+        // Get the clicked label
+        const $target = $(event.currentTarget);
+
+        // Build the input selector based on the label target
+        const inputSelector = '#' + $target.attr('for');
+
+        // Check if the input is not rendered
+        if (!$(inputSelector).length) {
+            // Change the search terms with the clicked label string
+
+            instance.$('.tree-search input').val($target.text()).trigger('input');
+            // Wait for options rerendering
+
+            Tracker.afterFlush(() => {
+                // Wait for components initialization
+                Meteor.defer(() => $(inputSelector).click());
+            });
         }
     }
 });

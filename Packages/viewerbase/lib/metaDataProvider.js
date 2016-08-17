@@ -26,7 +26,8 @@ addMetaData = function(imageId, data) {
         studyInstanceUid: studyMetaData.studyInstanceUid,
         studyDate: studyMetaData.studyDate,
         studyTime: studyMetaData.studyTime,
-        studyDescription: studyMetaData.studyDescription
+        studyDescription: studyMetaData.studyDescription,
+        institutionName: studyMetaData.institutionName
     };
 
     metaData.series = {
@@ -37,23 +38,13 @@ addMetaData = function(imageId, data) {
         numImages: numImages
     };
 
-    metaData.instance = {
-        wadouri: instanceMetaData.wadouri,
-        imageType: instanceMetaData.imageType,
-        photometricInterpretation: instanceMetaData.photometricInterpretation,
-        sopInstanceUid: instanceMetaData.sopInstanceUid,
-        sopClassUid: instanceMetaData.sopClassUid,
-        instanceNumber: instanceMetaData.instanceNumber,
-        laterality: instanceMetaData.laterality,
-        viewPosition: instanceMetaData.viewPosition,
-        sliceThickness: instanceMetaData.sliceThickness,
-        frameTime: instanceMetaData.frameTime,
-        index: imageIndex
-    };
+    metaData.instance = instanceMetaData;
 
     metaData.patient = {
         name: studyMetaData.patientName,
-        id: studyMetaData.patientId
+        id: studyMetaData.patientId,
+        birthDate: studyMetaData.patientBirthDate,
+        sex: studyMetaData.patientSex
     };
 
     // If there is sufficient information, populate

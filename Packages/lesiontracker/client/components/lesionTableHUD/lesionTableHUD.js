@@ -1,7 +1,7 @@
 Template.lesionTableHUD.onCreated(() => {
     const instance = Template.instance();
 
-    instance.data.timepoints = new ReactiveVar(instance.data.timepointApi.latest());
+    instance.data.timepoints = new ReactiveVar(instance.data.timepointApi.currentAndPrior());
 });
 
 Template.lesionTableHUD.onRendered(() => {

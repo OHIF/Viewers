@@ -13,8 +13,8 @@ $gray6 = #303030
   .tree-content
     background-color: white
     position: relative
+    transition(transform 0.3s ease\, background-color 0.3s ease\, border-color 0.3s ease\, border-radius 0.3s ease)
 
-    &
     .tree-search
     a.tree-back
     .tree-breadcrumb span
@@ -146,6 +146,7 @@ $gray6 = #303030
 
       &.active
         box-shadow: 0 0 0 200px white, inset 0 0 0 200px white
+        position: fixed
         transition(box-shadow 0.3s ease)
         z-index: 0
 
@@ -192,7 +193,6 @@ $gray6 = #303030
   &>.tree-content
     transform(scale(0))
     transform-origin(100% 50%)
-    transition(all 0.3s ease)
 
   .select-tree-common
     overflow: hidden

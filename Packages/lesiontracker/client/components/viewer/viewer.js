@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
-import { TimepointApi } from 'meteor/lesiontracker/lib/api/timepoint';
+import { TimepointApi } from 'meteor/lesiontracker/client/api/timepoint';
+import { MeasurementApi } from 'meteor/lesiontracker/client/api/measurement';
 
 OHIF.viewer = OHIF.viewer || {};
 OHIF.viewer.loadIndicatorDelay = 3000;
@@ -17,8 +18,6 @@ Session.setDefault('rightSidebar', null);
 
 Template.viewer.onCreated(() => {
     const instance = Template.instance();
-
-    instance.data.timepointApi = new TimepointApi();
 
     ValidationErrors.remove({});
 
@@ -90,6 +89,17 @@ Template.viewer.onCreated(() => {
         if (instance.subscriptionsReady()) {
             // Set buttons as enabled/disabled when Timepoints collection is ready
             timepointAutoCheck(dataContext);
+
+            // Wait until the Timepoint subscription is ready to initialize the TimepointApi
+            instance.data.timepointApi = new TimepointApi();
+            instance.data.timepointApi.currentTimepointId = instance.data.currentTimepointId;
+
+            // Provide the necessary data to the Measurement API
+            MeasurementApi.currentTimepointId = instance.data.currentTimepointId;
+            const prior = instance.data.timepointApi.prior();
+            if (prior) {
+                MeasurementApi.priorTimepointId = prior.timepointId;
+            }
 
             TrialResponseCriteria.validateAllDelayed();
 

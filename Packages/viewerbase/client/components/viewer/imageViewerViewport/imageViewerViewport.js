@@ -86,32 +86,6 @@ function loadDisplaySetIntoViewport(data, templateData) {
         imageIds: imageIds
     };
 
-    // Show or hide the image scrollbar depending
-    // on the number of images in the stack
-    var currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
-    var imageControls = currentOverlay.find('.imageControls');
-    currentOverlay.find('.imageControls').height($(element).height());
-
-    if (stack.imageIds.length === 1) {
-        imageControls.hide();
-        currentOverlay.find('.topright, .bottomright').css('right', '3px');
-    } else {
-        imageControls.show();
-        currentOverlay.find('.topright, .bottomright').css('right', '39px');
-
-        // Update the maximum value of the slider
-        var currentImageSlider = currentOverlay.find('#imageSlider');
-        currentImageSlider.attr('max', stack.imageIds.length);
-        currentImageSlider.val(1);
-
-        // Set it's width to its parent's height
-        // (because webkit is stupid and can't style vertical sliders)
-        var scrollbar = currentOverlay.find('#scrollbar');
-        scrollbar.height(scrollbar.parent().height() - 20);
-        var overlayHeight = currentImageSlider.parent().height();
-        currentImageSlider.width(overlayHeight);
-    }
-
     // Get the current image ID for the stack that will be rendered
     imageId = imageIds[stack.currentImageIdIndex];
 
@@ -296,11 +270,6 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
             var stack = toolData.data[0];
 
-            // Update the imageSlider value
-            var currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
-            var currentImageSlider = currentOverlay.find('#imageSlider');
-            currentImageSlider.val(stack.currentImageIdIndex + 1);
-
             // If this viewport is displaying a stack of images, save the current image
             // index in the stack to the global ViewerData object, as well as the Meteor Session.
             var stack = cornerstoneTools.getToolState(element, 'stack');
@@ -318,27 +287,6 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
-
-        function OnStackScroll(e, eventData) {
-            // Get the element and stack data
-            var element = e.target;
-            var toolData = cornerstoneTools.getToolState(element, 'stack');
-            if (!toolData || !toolData.data || !toolData.data.length) {
-                return;
-            }
-
-            var stack = toolData.data[0];
-
-            // Update the imageSlider value
-            var currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
-            var currentImageSlider = currentOverlay.find('#imageSlider');
-            currentImageSlider.val(stack.currentImageIdIndex + 1);
-        }
-
-        $(element).off('CornerstoneStackScroll', OnStackScroll);
-        if (stack.imageIds.length > 1) {
-            $(element).on('CornerstoneStackScroll', OnStackScroll);
-        }
 
         // Define a function to trigger an event whenever a new viewport is being used
         // This is used to update the value of the "active viewport", when the user interacts

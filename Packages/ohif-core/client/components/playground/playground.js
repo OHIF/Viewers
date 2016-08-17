@@ -42,3 +42,8 @@ Template.componentPlayground.onCreated(() => {
         value: 'Category 3'
     }];
 });
+
+Template.componentPlayground.onRendered(() => {
+    const instance = Template.instance();
+    instance.$('.measure-flow').draggable();
+});

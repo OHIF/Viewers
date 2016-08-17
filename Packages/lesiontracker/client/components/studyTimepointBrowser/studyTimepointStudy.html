@@ -5,15 +5,17 @@
                 {{>loadingText}}
                 <div class="studyModality">
                     <div class="studyModalityBox">
-                        {{#if this.study.modalities}}
-                            {{this.study.modalities}}
-                        {{else}}
-                            UN
-                        {{/if}}
+                        <div class="studyModalityText" style="{{modalityStyle}}">
+                            {{#if this.study.modalities}}
+                                {{ modalities }}
+                            {{else}}
+                                UN
+                            {{/if}}
+                        </div>
                     </div>
-                    <div class="studyModalityText">
-                        <div class="studyModalityDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
-                        <div class="studyModalityDescription">{{this.study.studyDescription}}</div>
+                    <div class="studyText">
+                        <div class="studyDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
+                        <div class="studyDescription">{{this.study.studyDescription}}</div>
                     </div>
                 </div>
             </div>
