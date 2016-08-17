@@ -12,7 +12,7 @@ Template.toolbarSection.helpers({
                 svgLink: '/packages/viewerbase/assets/icons.svg#icon-studies',
                 svgWidth: 15,
                 svgHeight: 13,
-                bottomLabel: 'Studies'
+                bottomLabel: 'Series'
             }]
         };
     },
