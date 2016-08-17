@@ -9,6 +9,8 @@ Template.measureFlow.onCreated(() => {
     const instance = Template.instance();
 
     instance.state = new ReactiveVar('closed');
+    instance.description = new ReactiveVar('');
+    instance.descriptionEdit = new ReactiveVar(false);
 
     instance.items = [{
         label: 'Category 1',
@@ -119,6 +121,40 @@ Template.measureFlow.events({
             // Render the selectTree element
             instance.selectTreeView = Blaze.renderWithData(Template.selectTree, data, parentElement);
         });
+    },
+    'click .measure-flow .btn-description'(event, instance) {
+        // Fade out the action buttons
+        instance.$('.measure-flow .actions').addClass('fadeOut');
+
+        // Set the description edit mode
+        instance.descriptionEdit.set(true);
+
+        // Wait for DOM rerendering, resize and focus the description textarea
+        Tracker.afterFlush(() => {
+            const $textarea = instance.$('textarea');
+            $textarea.trigger('input').focus();
+        });
+    },
+    'input textarea, change textarea'(event, instance) {
+        const element = event.currentTarget;
+        const $element = $(element);
+
+        // Resize the textarea based on its content length
+        $element.css('max-height', 0);
+        $element.height(element.scrollHeight);
+        $element.css('max-height', '');
+    },
+    'keydown textarea'(event, instance) {
+        // Unset the description edit mode if ENTER or ESC was pressed
+        if (event.which === 13 || event.which === 27) {
+            instance.$('.measure-flow .actions').removeClass('fadeOut');
+            instance.descriptionEdit.set(false);
+        }
+
+        // Keep the current description if ENTER was pressed
+        if (event.which === 13) {
+            instance.description.set($(event.currentTarget).val());
+        }
     },
     'click .select-tree-common label'(event, instance) {
         instance.commonClicked = true;

@@ -4,9 +4,22 @@
         {{#if eq instance.state.get 'selected'}}
             <div class="tree-leaf">
                 <span>{{instance.value.label}}</span>
+                {{#if instance.descriptionEdit.get}}
+                    <div class="description clearfix">
+                        <textarea
+                            class="pull-left"
+                            rows="1"
+                            style="{{#unless instance.description.get}}height:0{{/unless}}"
+                        >{{instance.description.get}}</textarea>
+                    </div>
+                {{else}}
+                    {{#if instance.description.get}}
+                        <div class="descriptionText">{{instance.description.get}}</div>
+                    {{/if}}
+                {{/if}}
                 <div class="actions clearfix">
                     <button class="pull-left btn-rename">Rename</button>
-                    <button class="pull-right brn-description">Add description</button>
+                    <button class="pull-right btn-description">{{valueIf instance.description.get 'Edit' 'Add'}} description</button>
                 </div>
             </div>
         {{/if}}

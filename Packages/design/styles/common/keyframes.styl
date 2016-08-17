@@ -1,19 +1,19 @@
 @import "{design}/app.styl"
 
-@keyframes zoomInOut {
-    from {
-        transform(scale(0))
-    }
-    to {
-        transform(scale(1))
-    }
-}
+@keyframes zoomIn
+  from
+    transform(scale(0))
+  to
+    transform(scale(1))
 
-@keyframes fadeInOut {
-    from {
-        opacity: 0
-    }
-    to {
-        opacity: 1
-    }
-}
+@keyframes fadeIn
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+@keyframes fadeOut
+  from
+    opacity: 1
+  to
+    opacity: 0

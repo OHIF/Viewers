@@ -73,8 +73,13 @@
     .actions
       margin-top: 16px
       opacity: 0
-      animateFadeIn()
-      animation-delay: 0.3s
+
+      &:not(.fadeOut)
+        animateFadeIn()
+        animation-delay: 0.3s
+
+      &.fadeOut
+        animateFadeOut()
 
       button
         background-color: transparent
@@ -86,6 +91,30 @@
         line-height: 31px
         padding: 0 12px
         text-align: center
+
+    .description
+      margin-top: -10px
+      margin-bottom: 26px
+
+      textarea
+        background-color: white
+        box-shadow: 0 10px white
+        border: 0
+        line-height: 20px
+        outline: none
+        overflow: hidden
+        padding: 0 12px
+        resize: none
+        transition(height 0.3s ease)
+        width: 100%
+
+    .descriptionText
+      background-color: white
+      box-shadow: 0 10px white
+      line-height: 20px
+      margin-bottom: 26px
+      margin-top: -10px
+      padding: 0 12px
 
   &.selected>.tree-leaf
 
