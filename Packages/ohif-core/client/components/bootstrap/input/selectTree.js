@@ -147,6 +147,18 @@ Template.selectTree.events({
         $treeRoot.addClass('interacted');
     },
 
+    'keydown .tree-search input'(event, instance) {
+        // Get the search term
+        const searchTerm = $(event.currentTarget).val().trim();
+
+        const $labels = instance.$('.tree-inputs:first>label');
+
+        // Select the label if ENTER was pressed and there is only one result
+        if (searchTerm.length && $labels.length === 1 && event.which === 13) {
+            $labels.find('input').click();
+        }
+    },
+
     'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
         const component = instance.component;
         const $target = $(event.currentTarget);
