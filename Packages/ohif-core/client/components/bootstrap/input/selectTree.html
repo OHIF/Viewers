@@ -45,8 +45,8 @@
                 </div>
             {{/let}}
         </div>
-        {{#if (and (not this.root) this.storageKey)}}
-            {{>selectTreeCommon (clone this component=this.component)}}
+        {{#if (and (not this.root) (or this.storageKey this.commonItems))}}
+            {{>selectTreeCommon (clone this component=this.component treeInstance=instance)}}
         {{/if}}
     {{/group}}
 </template>

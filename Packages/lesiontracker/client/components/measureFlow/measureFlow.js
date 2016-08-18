@@ -56,36 +56,49 @@ Template.measureFlow.onCreated(() => {
 
     const items = [
         'Adrenal',
-        'Bladder',
-        'Bone',
-        'Brain',
-        'Breast',
-        'Colon',
-        'Esophagus',
-        'Extremities',
-        'Gallbladder',
-        'Kidney',
-        'Liver',
-        'Lung',
-        'Lymph Node',
         'Muscle',
+        'Bladder',
         'Neck',
-        'Other: Soft Tissue',
+        'Bone',
+        'Other Soft Tissue',
+        'Brain',
         'Ovary',
+        'Breast',
         'Pancreas',
-        'Pelvis',
-        'Peritoneum/Omentum',
+        'Colon',
         'Prostate',
-        'Retroperitoneum',
+        'Esophagus',
         'Small Bowel',
+        'Extremities',
         'Spleen',
+        'Gallbladder',
         'Stomach',
+        'Kidney',
         'Subcutaneous'
     ];
 
     instance.items = [];
     _.each(items, item => {
         instance.items.push({
+            label: item,
+            value: item
+        });
+    });
+
+    const commonItems = [
+        'Abdomen/Chest Wall',
+        'Lung',
+        'Lymph Node',
+        'Liver',
+        'Mediastinum/Hilum',
+        'Pelvis',
+        'Peritoneum/Omentum',
+        'Retroperitoneum'
+    ];
+
+    instance.commonItems = [];
+    _.each(commonItems, item => {
+        instance.commonItems.push({
             label: item,
             value: item
         });
@@ -116,6 +129,7 @@ Template.measureFlow.events({
             const data = {
                 key: 'label',
                 items: instance.items,
+                commonItems: instance.commonItems,
                 label: 'Assign label',
                 searchPlaceholder: 'Search labels',
                 storageKey: 'measureLabelCommon',
