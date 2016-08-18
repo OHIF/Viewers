@@ -11,6 +11,45 @@ import transition from 'meteor/ohif:core/client/lib/third-party/transition-to-fr
 Template.selectTree.onCreated(() => {
     const instance = Template.instance();
 
+    // Return the common items
+    instance.getCommonItems = () => {
+        const instance = Template.instance();
+
+        // Return the common items if given
+        if (instance.data.commonItems) {
+            return instance.data.commonItems;
+        }
+
+        // Get all the tree leaves
+        const leaves = instance.data.component.getLeaves();
+
+        // Generate an object with encoded keys from the tree leaves
+        leavesObject = {};
+        _.each(leaves, leaf => {
+            leavesObject[OHIF.string.encodeId(leaf.value)] = leaf;
+        });
+
+        // Get the current items ranking
+        const ranking = OHIF.user.getData(instance.data.storageKey);
+
+        // Sort the items based on how many times each one was used
+        const sorted = [];
+        _.each(ranking, (count, key) => sorted.push([key, count]));
+        sorted.sort((a, b) => b[1] - a[1]);
+
+        // Create the result and push every item respecting the ranking order
+        const result = [];
+        _.each(sorted, item => {
+            const current = leavesObject[item[0]];
+            if (current) {
+                result.push(current);
+            }
+        });
+
+        // Return the resulting array
+        return result;
+    };
+
     // Create a reactive variable to control the search
     instance.searchTerm = new ReactiveVar('');
 });
@@ -270,6 +309,23 @@ Template.selectTree.helpers({
 
             // Filter only the tree leaves
             items = _.filter(items, item => !item.items);
+        } else if (instance.data.hideCommon) {
+            // Get the values of common items
+            const commonValues = _.pluck(instance.getCommonItems(), 'value');
+
+            // Filter only the items that are not common
+            items = _.filter(items, item => !_.contains(commonValues, item.value));
+        }
+
+        // Return the items sorted for tree columns
+        if (instance.data.treeColumns) {
+            const begin = items.splice(0, Math.ceil(items.length / 2));
+            const sortedItems = [];
+            _.each(begin, (item, index) => {
+                sortedItems.push(item);
+                items[index] && sortedItems.push(items[index]);
+            });
+            items = sortedItems;
         }
 
         // Return the tree items

@@ -121,6 +121,15 @@
 
     .select-tree-root
 
+      &.interacted .select-tree-common .content
+        animation-name: none
+
+      &.selected .select-tree-common .content
+        animation-name: selectTreeCommonCloseLeft
+
+      .tree-search input
+        display: none
+
       .select-tree-common
         padding-left: 0
         padding-right: 6px
