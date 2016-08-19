@@ -11,11 +11,13 @@
         <div class="tree-content">
             {{#let currentNode=this.currentNode.get}}
                 {{#if (and (not this.root) (ne this.search false))}}
-                    {{>inputText
+                    {{#inputText
                         label=this.label
                         labelClass='tree-search'
                         placeholder=(choose this.searchPlaceholder 'Search')
                     }}
+                        <i class="fa fa-search"></i>
+                    {{/inputText}}
                 {{/if}}
                 <div class="tree-options {{#if currentNode}}collapsed{{/if}}">
                     {{#if this.root}}

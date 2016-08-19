@@ -39,22 +39,11 @@
   &>.tree-leaf
     position: relative
 
-    &:before
-      animateZoomIn()
+    .icon-check
       background-color: $activeColor
-      border-radius: 20px
-      color: $uiGray
-      content: '\f00c'
-      display: block
-      font-family: FontAwesome
-      font-size: 24px
-      height: 40px
       left: -46px
-      line-height: 40px
       position: absolute
-      text-align: center
       top: 3px
-      width: 40px
 
     span
       background: white
@@ -127,8 +116,9 @@
       &.selected .select-tree-common .content
         animation-name: selectTreeCommonCloseLeft
 
-      .tree-search input
-        display: none
+      .tree-search
+        input, i
+          display: none
 
       .select-tree-common
         padding-left: 0
@@ -170,3 +160,25 @@
     width: calc(100% - 6px)
   }
 }
+
+.icon-check
+  background-color: white
+  border-radius: 20px
+  display: block
+  height: 40px
+  overflow: hidden
+  position: relative
+  width: 40px
+
+  &:before
+    border: 2px solid black
+    border-left-width: 0
+    border-top-width: 0
+    content: ''
+    display: block
+    height: 18px
+    left: 15px
+    position: absolute
+    top: 9px
+    transform(rotate(45deg))
+    width: 9px

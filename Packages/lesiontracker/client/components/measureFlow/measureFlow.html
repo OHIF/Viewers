@@ -3,6 +3,7 @@
         <button class="btn-add">Add label</button>
         {{#if eq instance.state.get 'selected'}}
             <div class="tree-leaf">
+                <i class="icon-check"></i>
                 <span>{{instance.value.label}}</span>
                 {{#if instance.descriptionEdit.get}}
                     <div class="description clearfix">
