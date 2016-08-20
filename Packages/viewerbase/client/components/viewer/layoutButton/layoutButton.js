@@ -11,6 +11,7 @@ Template.layoutButton.events({
             left: $button.offset().left + 'px'
         });
 
+        // Open or close the layout chooser dialog
         toggleDialog($dropdown);
     }
 });
