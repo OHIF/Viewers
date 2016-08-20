@@ -14,7 +14,7 @@ export const DICOMWebRequestOptions = new SimpleSchema({
     logResponses: {
         type: Boolean,
         defaultValue: false,
-        label: 'Log Responses?',  
+        label: 'Log Responses?',
     },
     logTiming: {
         type: Boolean,
@@ -116,6 +116,11 @@ export const UISettings = new SimpleSchema({
         type: Boolean,
         label: 'Study List Functions Enabled?',
         defaultValue: true
+    },
+    leftSidebarOpen: {
+        type: Boolean,
+        label: 'Left sidebar open by default?',
+        defaultValue: false
     }
 });
 

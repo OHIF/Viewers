@@ -22,7 +22,8 @@
   "public": {
     "verifyEmail": false,
     "ui": {
-        "studyListFunctionsEnabled": true
+        "studyListFunctionsEnabled": true,
+        "leftSidebarOpen": true
     }
   }
 }

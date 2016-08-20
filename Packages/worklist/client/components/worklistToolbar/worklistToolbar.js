@@ -1,3 +1,9 @@
+import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { $ } from 'meteor/jquery';
+
 Template.worklistToolbar.onCreated(() => {
     Meteor.call('importSupported', (error, result) => {
         if (error || !result) {
@@ -11,26 +17,20 @@ Template.worklistToolbar.onCreated(() => {
 Template.worklistToolbar.events({
     'change .js-import-files'(event) {
         //  Get selected files located in the client machine
-        var selectedFiles = $.map(event.currentTarget.files, (value) => {
-            return value;
-        });
-        
+        const selectedFiles = $.map(event.currentTarget.files, value => value);
+
         importStudies(selectedFiles);
     },
 
     'click .js-import-files'(event) {
         // Reset file input
-        var fileInput = event.currentTarget;
-        $(fileInput).val('');
+        $(event.currentTarget).val('');
     }
 });
 
 Template.worklistToolbar.helpers({
     importSupported() {
-        var importSupported = Session.get('importSupported');
-        var studyListFunctionsEnabled = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui &&
-            Meteor.settings.public.ui.studyListFunctionsEnabled || false;
-
-        return (importSupported && studyListFunctionsEnabled);
+        const importSupported = Session.get('importSupported');
+        return (importSupported && OHIF.uiSettings.studyListFunctionsEnabled);
     }
 });

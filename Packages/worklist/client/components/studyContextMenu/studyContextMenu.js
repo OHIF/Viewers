@@ -82,10 +82,3 @@ Template.studyContextMenu.events({
         closeHandler(dialog);
     }
 });
-
-Template.studyContextMenu.helpers({
-    'studyListFunctionsEnabled': function() {
-        var studyListFunctionsEnabled = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui &&
-            Meteor.settings.public.ui.studyListFunctionsEnabled || false;        return studyListFunctionsEnabled;
-    }
-});

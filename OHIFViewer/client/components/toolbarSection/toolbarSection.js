@@ -1,4 +1,14 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
+import { $ } from 'meteor/jquery';
+
+Template.toolbarSection.onCreated(() => {
+    const instance = Template.instance();
+
+    if (OHIF.uiSettings.leftSidebarOpen) {
+        instance.data.state.set('leftSidebar', 'studies');
+    }
+});
 
 Template.toolbarSection.helpers({
     leftSidebarToggleButtonData() {
@@ -122,7 +132,7 @@ Template.toolbarSection.helpers({
             classes: 'imageViewerTool toolbarSectionButton',
             iconClasses: 'fa fa-circle'
         });
-        
+
         buttonData.push({
             id: 'wwwcRegion',
             title: 'ROI Window',
@@ -165,7 +175,7 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-trash'
         });
 
-        return buttonData;   
+        return buttonData;
     },
 
     hangingProtocolButtons() {

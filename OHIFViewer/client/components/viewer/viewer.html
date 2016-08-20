@@ -1,20 +1,20 @@
 <template name="viewer">
     {{#if Template.subscriptionsReady}}
     <div class="viewerDialogs">
-        {{> cineDialog}}
-        {{> layoutChooser }}
-        {{> annotationDialogs }}
+        {{>cineDialog}}
+        {{>layoutChooser}}
+        {{>annotationDialogs}}
 
         <!-- Hanging Protocol dialogs -->
-        {{ >ruleEntryDialog }}
-        {{ >settingEntryDialog }}
-        {{ >textEntryDialog }}
+        {{>ruleEntryDialog}}
+        {{>settingEntryDialog}}
+        {{>textEntryDialog}}
     </div>
     <div id="viewer">
-        {{> toolbarSection (clone this)}}
-        {{> flexboxLayout (clone this)}}
+        {{>toolbarSection (clone this)}}
+        {{>flexboxLayout (clone this)}}
     </div>
     {{else}}
-        {{> loadingText}}
+        {{>loadingText}}
     {{/if}}
 </template>
