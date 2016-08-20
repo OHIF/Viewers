@@ -16,37 +16,66 @@ $seriesCountBackgroundColor = #678696
     color: $textPrimaryColor
     font-size: 14px
     line-height: 1.3em
+    margin-top: 5px
+    max-width: 217px
     min-height: 36px
     position: relative
     word-wrap: break-word
 
+    &.info-only
+      min-height: auto
+
+      .seriesDescription
+        display: none
+
+      .seriesInformation
+        display: flex
+        float: none
+        max-width: none
+        padding-right: none
+
+        .item
+          flex: 1
+          text-align: center
+
+          .icon, .value
+            display: inline
+            float: none
+            line-height: 25px
+
+          .value
+            margin-left: 0
+            width: auto
+
   .seriesDescription
     float: left
-    margin-right: 54px
     width: calc(100% - 50px)
 
   .seriesInformation
+    display: table
     float: right
-    width: 50px
+    padding-right: 4px
+    max-width: 50px
 
-    .seriesInformationNumbers
-    .seriesInformationIcons
-      margin-right: 4px
+    .item-frames .icon
+      height: 18px
 
-    .seriesInformationNumbers
+    .value
       color: $textSecondaryColor
+      display: inline-block
       float: right
       font-size: 12px
+      margin-left: 4px
+      width: calc(100% - 15px)
 
-    .seriesInformationIcons
-      float: right
+    .icon
+      color: $activeColor
+      display: inline-block
+      float: left
+      font-size: 10px
+      font-weight: 900
       text-align: right
-
-      strong
-        color: $activeColor
-        display: block
-        font-size: 10px
-        font-weight: 900
+      width: 11px
 
       div
         background-color: $seriesCountBackgroundColor
@@ -64,6 +93,6 @@ $seriesCountBackgroundColor = #678696
         &:after
           border: 1px solid $primaryBackgroundColor
           content: ''
-          display: block
+          display: inline-block
           height: 11px
           width: 11px

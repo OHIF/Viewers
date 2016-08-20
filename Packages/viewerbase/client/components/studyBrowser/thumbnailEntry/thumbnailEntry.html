@@ -1,24 +1,30 @@
 <template name="thumbnailEntry">
-    <div class="thumbnailEntry noselect m-t-1 m-b-2 {{draggableClass}} {{#if isDisplaySetActive this.thumbnail.stack.displaySetInstanceUid viewportIndex}}active{{/if}}">
-        <div class="p-x-1">
-            {{>imageThumbnail (clone this)}}
-        </div>
-        <div class="seriesDetails clearfix m-x-1">
-            <div class="seriesDescription">
-                {{this.thumbnail.stack.seriesDescription}}
+    {{#let stack=this.thumbnail.stack}}
+        <div class="thumbnailEntry noselect m-t-1 m-b-2 {{draggableClass}} {{#if isDisplaySetActive stack.displaySetInstanceUid viewportIndex}}active{{/if}}">
+            <div class="p-x-1">
+                {{>imageThumbnail (clone this)}}
             </div>
-            <div class="seriesInformation">
-                <div class="seriesInformationNumbers">
-                    <div>{{this.thumbnail.stack.seriesNumber}}</div>
-                    {{#unless isUndefined instanceNumber}}<div>{{instanceNumber}}</div>{{/unless}}
-                    <div>{{this.thumbnail.stack.numImageFrames}}</div>
+            <div class="seriesDetails clearfix m-x-1 {{#unless stack.seriesDescription}}info-only{{/unless}}">
+                <div class="seriesDescription">
+                    {{stack.seriesDescription}}
                 </div>
-                <div class="seriesInformationIcons">
-                    <strong>S:</strong>
-                    {{#unless isUndefined instanceNumber}}<strong>I:</strong>{{/unless}}
-                    <div></div>
+                <div class="seriesInformation">
+                    <div class="item item-series clearfix">
+                        <div class="icon">S:</div>
+                        <div class="value">{{stack.seriesNumber}}</div>
+                    </div>
+                    {{#unless isUndefined instanceNumber}}
+                        <div class="item item-series clearfix">
+                            <div class="icon">I:</div>
+                            <div class="value">{{instanceNumber}}</div>
+                        </div>
+                    {{/unless}}
+                    <div class="item item-frames clearfix">
+                        <div class="icon"><div></div></div>
+                        <div class="value">{{stack.numImageFrames}}</div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {{/let}}
 </template>
