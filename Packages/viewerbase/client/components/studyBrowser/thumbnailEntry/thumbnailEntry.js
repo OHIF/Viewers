@@ -220,15 +220,28 @@ Template.thumbnailEntry.events({
         const data = instance.data.thumbnail.stack;
         instance.isDragAndDrop && thumbnailDragEndHandler(event, data);
     },
+
     // Event handlers for click (quick switch)
     'click .thumbnailEntry'(event, instance) {
-        if (instance.isDragAndDrop) {
-            return;
-        }
+        if (!instance.isDragAndDrop) {
+            // Get the thumbnail stack data
+            const data = instance.data.thumbnail.stack;
 
+            // Rerender the viewport using the clicked thumbnail data
+            window.layoutManager.rerenderViewportWithNewDisplaySet(instance.data.viewportIndex, data);
+        }
+    },
+
+    // Event handlers for double click
+    'dblclick .thumbnailEntry'(event, instance) {
+        // Get the active viewport index
+        const viewportIndex = Session.get('activeViewport') || 0;
+
+        // Get the thumbnail stack data
         const data = instance.data.thumbnail.stack;
+
         // Rerender the viewport using the clicked thumbnail data
-        window.layoutManager.rerenderViewportWithNewDisplaySet(instance.data.viewportIndex, data);
+        window.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, data);
     }
 });
 
