@@ -359,6 +359,9 @@ function loadDisplaySetIntoViewport(data, templateData) {
         if (data.renderedCallback && typeof data.renderedCallback === 'function') {
             data.renderedCallback(element);
         }
+
+        // Update the LayoutManagerUpdated session key
+        layoutManager.updateSession();
     }, function(error) {
         // If something goes wrong while loading the image, fire the error handler.
         errorLoadingHandler(element, imageId, error);
