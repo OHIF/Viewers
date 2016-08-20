@@ -248,5 +248,8 @@ Template.thumbnailEntry.events({
 Template.thumbnailEntry.helpers({
     draggableClass() {
         return Template.instance().isDragAndDrop ? 'draggable' : '';
+    },
+    instanceNumber() {
+        return Template.instance().data.thumbnail.stack.images[0].instanceNumber;
     }
 });

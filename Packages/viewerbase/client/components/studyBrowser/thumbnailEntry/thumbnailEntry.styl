@@ -21,12 +21,13 @@ $seriesCountBackgroundColor = #678696
     word-wrap: break-word
 
   .seriesDescription
+    float: left
     margin-right: 54px
+    width: calc(100% - 50px)
 
   .seriesInformation
-    position: absolute
-    right: 0
-    top: 0
+    float: right
+    width: 50px
 
     .seriesInformationNumbers
     .seriesInformationIcons
@@ -34,15 +35,16 @@ $seriesCountBackgroundColor = #678696
 
     .seriesInformationNumbers
       color: $textSecondaryColor
-      float: left
+      float: right
       font-size: 12px
 
     .seriesInformationIcons
-      float: left
+      float: right
       text-align: right
 
       strong
         color: $activeColor
+        display: block
         font-size: 10px
         font-weight: 900
 

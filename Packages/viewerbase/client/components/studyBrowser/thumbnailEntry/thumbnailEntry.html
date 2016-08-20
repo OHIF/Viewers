@@ -3,18 +3,20 @@
         <div class="p-x-1">
             {{>imageThumbnail (clone this)}}
         </div>
-        <div class="seriesDetails m-a-1">
+        <div class="seriesDetails clearfix m-x-1">
             <div class="seriesDescription">
                 {{this.thumbnail.stack.seriesDescription}}
             </div>
             <div class="seriesInformation">
-                <div class="seriesInformationIcons">
-                    <strong>S:</strong>
-                    <div></div>
-                </div>
                 <div class="seriesInformationNumbers">
                     <div>{{this.thumbnail.stack.seriesNumber}}</div>
+                    {{#unless isUndefined instanceNumber}}<div>{{instanceNumber}}</div>{{/unless}}
                     <div>{{this.thumbnail.stack.numImageFrames}}</div>
+                </div>
+                <div class="seriesInformationIcons">
+                    <strong>S:</strong>
+                    {{#unless isUndefined instanceNumber}}<strong>I:</strong>{{/unless}}
+                    <div></div>
                 </div>
             </div>
         </div>
