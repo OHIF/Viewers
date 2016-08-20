@@ -105,7 +105,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
     var options = {
         renderer: 'webgl'
     };
-    
+
     // NOTE: This uses the experimental WebGL renderer for Cornerstone!
     // If you have problems, replace it with this line instead:
     // cornerstone.enable(element);
@@ -513,16 +513,32 @@ Template.imageViewerViewport.onDestroyed(function() {
 });
 
 Template.imageViewerViewport.events({
-    'ActivateViewport .imageViewerViewport': function(e) {
+    'ActivateViewport .imageViewerViewport'(event) {
         log.info('imageViewerViewport ActivateViewport');
-        setActiveViewport(e.currentTarget);
+        setActiveViewport(event.currentTarget);
     },
-    'click .imageViewerViewport': function(e) {
-        var viewportIndex = $('.imageViewerViewport').index(e.currentTarget);
-        Session.set('activeViewport', viewportIndex);
+
+    'click .imageViewerViewport'(event) {
+        setActiveViewport(event.currentTarget);
     },
-    'CornerstoneToolsMouseDoubleClick .imageViewerViewport, CornerstoneToolsDoubleTap .imageViewerViewport': function(e) {
-        var viewportIndex = $('.imageViewerViewport').index(e.currentTarget);
+
+    'CornerstoneToolsMouseDoubleClick .imageViewerViewport, CornerstoneToolsDoubleTap .imageViewerViewport'(event) {
+        // Get the double clicked viewport index
+        const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
+
+        // Enlarge the double clicked viewport
         layoutManager.toggleEnlargement(viewportIndex);
+
+        // Wait for DOM re-rendering and update the active viewport
+        Tracker.afterFlush(() => {
+            // Check if the viewer is zoomed
+            if (layoutManager.isZoomed) {
+                // Set the active viewport as the only one visible
+                setActiveViewport($('.imageViewerViewport')[0]);
+            } else {
+                // Set the active viewport as the previous zoomed viewport
+                setActiveViewport($('.imageViewerViewport').eq(window.layoutManager.zoomedViewportIndex));
+            }
+        });
     }
 });

@@ -7,7 +7,7 @@ setActiveViewport = function(element) {
 
     // When an ActivateViewport event is fired, update the Meteor Session
     // with the viewport index that it was fired from.
-    Session.set("activeViewport", viewportIndex);
+    Session.set('activeViewport', viewportIndex);
 
     // Add the 'active' class to the parent container to highlight the active viewport
     $('#imageViewerViewports .viewportContainer').removeClass('active');
@@ -21,5 +21,5 @@ setActiveViewport = function(element) {
     // Set the div to focused, so keypress events are handled
     //$(element).focus();
     //.focus() event breaks in FF&IE
-    $(element).triggerHandler("focus");
+    $(element).triggerHandler('focus');
 };
