@@ -15,14 +15,13 @@ LayoutManager = class LayoutManager {
         this.viewportData = [];
 
         this.isZoomed = false;
+
+        const updateSessionFn = () => Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Random.id()));
+        this.updateSession = _.throttle(updateSessionFn, 300);
     }
 
     getNumberOfViewports() {
         return this.layoutProps.rows * this.layoutProps.columns;
-    }
-
-    updateSession() {
-        Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Random.id()));
     }
 
     setDefaultViewportData() {
@@ -216,7 +215,7 @@ LayoutManager = class LayoutManager {
             // Don't enlarge the viewport if we only have one Viewport
             // to begin with
             if (this.getNumberOfViewports() > 1) {
-                this.enlargeViewport(viewportIndex);    
+                this.enlargeViewport(viewportIndex);
             }
         }
     }
