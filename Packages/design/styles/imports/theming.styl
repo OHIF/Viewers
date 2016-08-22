@@ -1,0 +1,25 @@
+parseSpaceVars($theme, $value)
+  $valueSplit = split(' ', $value)
+  $list = ''
+  pop($list)
+  for $property in $valueSplit
+    if ($theme[$property])
+      push($list, $theme[$property])
+    else
+      push($list, $property)
+  join(' ', $list)
+
+parseCommaVars($theme, $value)
+  $valueSplit = split(',', $value)
+  $list = ''
+  pop($list)
+  for $sentence in $valueSplit
+    push($list, parseSpaceVars($theme, $sentence))
+  unquote(join(',', $list))
+
+theme($property, $value)
+  / {selector()}
+    {$property}: parseCommaVars($themes[$defaultTheme], $value)
+  for $themeName, $theme in $themes
+    / body.theme-{$themeName} {selector()}
+      {$property}: parseCommaVars($theme, $value)

@@ -10,10 +10,13 @@
       opacity: 0
 
   .btn-add
-    background-color: $activeColor
-    border: 2px solid $uiBorderColor
+    // color: $textColorActive
+    // background-color: $activeColor
+    // border: 2px solid $uiBorderColor
+    theme('color', '$textColorActive')
+    theme('background-color', '$activeColor')
+    theme('border', '2px solid $uiBorderColor')
     border-radius: 14px
-    color: $textColorActive
     cursor: pointer
     font-weight: bold
     height: 24px
@@ -25,6 +28,9 @@
     top: 0
     transition(opacity 0.3s ease)
     white-space: nowrap
+
+    // / {selector()}
+    //   color: $themes['tide']['uiYellow'] !important
 
   .select-tree-root>.tree-content
     width: 213px

@@ -18,7 +18,9 @@ Package.onUse(function(api) {
         'styles/imports/mixins.styl',
         'styles/imports/spacings.styl',
         'styles/imports/variables.styl',
+        'styles/imports/theming.styl',
         'styles/imports/theme-tide.styl',
+        'styles/imports/theme-tigerlilly.styl'
     ], 'client', {
         isImport: true
     });
