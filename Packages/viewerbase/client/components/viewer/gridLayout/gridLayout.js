@@ -1,32 +1,47 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
 
 Template.gridLayout.helpers({
-    height: function() {
-        var rows = this.rows || 1;
+    // Get the height percentage for each viewport
+    height() {
+        const instance = Template.instance();
+        const rows = instance.data.rows || 1;
         return 100 / rows;
     },
-    width: function() {
-        var columns = this.columns || 1;
+
+    // Get the width percentage for each viewport
+    width() {
+        const instance = Template.instance();
+        const columns = instance.data.columns || 1;
         return 100 / columns;
     },
-    viewports: function() {
-        var numViewports = this.rows * this.columns;
-        var viewportData = this.viewportData;
-        var numViewportsWithData = this.viewportData.length;
 
+    // Return the viewports list
+    viewports() {
+        const instance = Template.instance();
+        const rows = instance.data.rows;
+        const columns = instance.data.columns;
+        const numViewports = rows * columns;
+        const viewportData = instance.data.viewportData;
+        const numViewportsWithData = viewportData.length;
+
+        // Check if the viewportData length is different from the given
         if (numViewportsWithData < numViewports) {
+            // Add the missing viewports
             var difference = numViewports - numViewportsWithData;
             for (var i = 0; i < difference; i++) {
                 viewportData.push({
                     viewportIndex: numViewportsWithData + i + 1,
-                    rows: this.rows,
-                    columns: this.columns
+                    rows,
+                    columns
                 });
             }
         } else if (numViewportsWithData > numViewports) {
+            // Remove the additional viewports
             return viewportData.slice(0, numViewports);
         }
 
+        // Return the viewports
         return viewportData;
     }
 });

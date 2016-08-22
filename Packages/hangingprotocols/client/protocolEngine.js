@@ -467,6 +467,32 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                     if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {
                         highestImageMatchingScore = totalMatchScore;
+
+                        // Set the displaySet ID
+                        study.displaySets.every(displaySet => {
+                            // Skip displaySet if it has no images
+                            if (!displaySet.images.length) {
+                                return true;
+                            }
+
+                            // Skip displaySet if series is different
+                            if (displaySet.seriesInstanceUid !== series.seriesInstanceUid) {
+                                return true;
+                            }
+
+                            // Try to find the current instance
+                            const instanceFound = _.findWhere(displaySet.images, {
+                                sopInstanceUid: instance.sopInstanceUid
+                            });
+
+                            // If the instance was found, set the displaySet ID
+                            if (instanceFound) {
+                                imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
+                                imageDetails.imageId = getImageId(instance);
+                                return false;
+                            }
+                        });
+
                         bestMatch = imageDetails;
                     }
 
@@ -584,20 +610,13 @@ HP.ProtocolEngine = class ProtocolEngine {
                 currentViewportData.seriesInstanceUid = details.bestMatch.seriesInstanceUid;
                 currentViewportData.sopInstanceUid = details.bestMatch.sopInstanceUid;
                 currentViewportData.currentImageIdIndex = details.bestMatch.currentImageIdIndex;
+                currentViewportData.displaySetInstanceUid = details.bestMatch.displaySetInstanceUid;
+                currentViewportData.imageId = details.bestMatch.imageId;
             }
 
             const study = ViewerStudies.findOne({
                 studyInstanceUid: details.bestMatch.studyInstanceUid
             });
-
-            // Find the best matched display set. TODO: Fix this to actually
-            // find the most appropriate display set
-            study.displaySets.forEach(displaySet => {
-                if (displaySet.seriesInstanceUid === details.bestMatch.seriesInstanceUid) {
-                    currentViewportData.displaySetInstanceUid = displaySet.displaySetInstanceUid;
-                    return false;
-                }
-            })
 
             if (!currentViewportData.displaySetInstanceUid) {
                 throw "No matching display set found?";

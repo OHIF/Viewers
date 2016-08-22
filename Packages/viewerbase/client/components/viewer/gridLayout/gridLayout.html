@@ -1,11 +1,11 @@
 <template name="gridLayout">
     <div id='imageViewerViewports'>
-        {{ #each viewports }}
-        <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
-            <div class="removable">
-                {{ >imageViewerViewport}}
+        {{#each viewport in viewports}}
+            <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
+                <div class="removable">
+                    {{>imageViewerViewport (clone viewport)}}
+                </div>
             </div>
-        </div>
-        {{ /each }}
+        {{/each}}
     </div>
 </template>

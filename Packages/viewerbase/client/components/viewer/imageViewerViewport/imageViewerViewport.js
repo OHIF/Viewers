@@ -379,7 +379,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
 function setDisplaySet(data, displaySetInstanceUid, templateData) {
     var study = data.study;
     if (!study || !study.displaySets) {
-        throw "Study does not exist or has no display sets";
+        throw 'Study does not exist or has no display sets';
         return;
     }
 
@@ -394,7 +394,7 @@ function setDisplaySet(data, displaySetInstanceUid, templateData) {
 
     // If we didn't find anything, stop here
     if (!data.displaySet) {
-        throw "Display set not found in specified study!";
+        throw 'Display set not found in specified study!';
         return;
     }
 

@@ -39,13 +39,13 @@ createStacks = function(study) {
             if (isMultiFrame(instance)) {
                 displaySet = makeDisplaySet(series, [ instance ]);
                 displaySet.isClip = true;
-                
+
                 // Include the study instance Uid for drag/drop purposes
                 displaySet.studyInstanceUid = study.studyInstanceUid;
 
                 // Override the default value of instances.length
                 displaySet.numImageFrames = instance.numFrames;
-                
+
                 displaySets.push(displaySet);
             } else if (isSingleImageModality(instance.modality)) {
                 displaySet = makeDisplaySet(series, [ instance ]);
@@ -80,7 +80,7 @@ function makeDisplaySet(series, instances) {
 
     // Sort the images in this series
     displaySet.images.sort(function(a, b) {
-        if (a.instanceNumber && b.instanceNumber && 
+        if (a.instanceNumber && b.instanceNumber &&
             a.instanceNumber !== b.instanceNumber) {
             return a.instanceNumber - b.instanceNumber;
         }
