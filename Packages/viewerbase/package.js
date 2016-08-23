@@ -15,7 +15,7 @@ Package.onUse(function(api) {
     api.use('practicalmeteor:loglevel');
     api.use('momentjs:moment');
     api.use('validatejs');
-    
+
     // Our custom packages
     api.use('design');
     api.use('ohif:core');
@@ -119,6 +119,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
     api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
 
+    api.addFiles('client/components/viewer/displaySetNavigation/displaySetNavigation.html', 'client');
+    api.addFiles('client/components/viewer/displaySetNavigation/displaySetNavigation.js', 'client');
+
     // Library functions
     api.addFiles('lib/layoutManager.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
@@ -139,7 +142,7 @@ Package.onUse(function(api) {
     api.addFiles('lib/resizeViewportElements.js', 'client');
     api.addFiles('lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('lib/updateAllViewports.js', 'client');
-    
+
     api.addFiles('lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('lib/setMammogramViewportAlignment.js', 'client');
     api.addFiles('lib/isImage.js', 'client');

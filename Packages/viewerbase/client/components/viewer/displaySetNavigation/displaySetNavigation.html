@@ -1,0 +1,16 @@
+<template name="displaySetNavigation">
+    <div id="{{this.id}}"
+         class="toolbarSectionButton rp-x-1 {{this.classes}} {{#if isPrevious}}js-prev{{else}}js-next{{/if}}"
+         title="{{this.title}}">
+        <div class="svgContainer">
+            {{#if isPrevious}}
+                <i class="fa fa-toggle-up fa-fw"></i>
+            {{else}}
+                <i class="fa fa-toggle-down fa-fw"></i>
+            {{/if}}
+        </div>
+        <div class="buttonLabel">
+            {{#if isPrevious}}Previous{{else}}Next{{/if}}
+        </div>
+    </div>
+</template>

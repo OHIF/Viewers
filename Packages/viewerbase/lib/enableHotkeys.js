@@ -12,8 +12,10 @@ Meteor.startup(function() {
         stackScroll: 'S',
         pan: 'P',
         magnify: 'M',
-        scrollDown: ['DOWN', 'PAGEDOWN'],
-        scrollUp: ['UP', 'PAGEUP'],
+        scrollDown: 'DOWN',
+        scrollUp: 'UP',
+        nextDisplaySet: 'PAGEDOWN',
+        previousDisplaySet: 'PAGEUP',
         nextPanel: 'RIGHT',
         previousPanel: 'LEFT',
         invert: 'I',
@@ -141,6 +143,12 @@ Meteor.startup(function() {
                 flashButton(button);
                 switchToImageRelative(-1);
             }
+        },
+        previousDisplaySet() {
+            OHIF.viewer.moveDisplaySet(false);
+        },
+        nextDisplaySet() {
+            OHIF.viewer.moveDisplaySet(true);
         },
         nextPanel: function() {
             nextActivePanel();

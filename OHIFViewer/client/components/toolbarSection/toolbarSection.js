@@ -93,6 +93,22 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
+            id: 'previousDisplaySet',
+            title: 'Previous',
+            classes: 'imageViewerCommand',
+            buttonTemplateName: 'displaySetNavigation',
+            isPrevious: true
+        });
+
+        buttonData.push({
+            id: 'nextDisplaySet',
+            title: 'Next',
+            classes: 'imageViewerCommand',
+            buttonTemplateName: 'displaySetNavigation',
+            isPrevious: false
+        });
+
+        buttonData.push({
             id: 'toggleCinePlay',
             title: 'Toggle CINE Play',
             classes: 'imageViewerCommand',

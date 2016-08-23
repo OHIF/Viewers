@@ -116,6 +116,20 @@ function loadDisplaySetIntoViewport(data, templateData) {
     var endLoadingHandler = cornerstoneTools.loadHandlerManager.getEndLoadHandler();
     var errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
 
+    // Get the current viewport settings
+    var viewport = cornerstone.getViewport(element);
+
+    // Store the current series data inside the Layout Manager
+    layoutManager.viewportData[viewportIndex] = {
+        imageId: imageId,
+        studyInstanceUid: data.studyInstanceUid,
+        seriesInstanceUid: data.seriesInstanceUid,
+        displaySetInstanceUid: data.displaySetInstanceUid,
+        currentImageIdIndex: data.currentImageIdIndex,
+        viewport: viewport,
+        viewportIndex: viewportIndex
+    };
+
     // Start loading the image.
     cornerstone.loadAndCacheImage(imageId).then(function(image) {
         var enabledElement;
@@ -187,9 +201,6 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         // Add stack state managers for the stack tool, CINE tool, and reference lines
         cornerstoneTools.addStackStateManager(element, ['stack', 'playClip', 'referenceLines']);
-
-        // Get the current viewport settings
-        var viewport = cornerstone.getViewport(element);
 
         // Enable orientation markers, if applicable
         updateOrientationMarkers(element);
@@ -321,17 +332,6 @@ function loadDisplaySetIntoViewport(data, templateData) {
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
         $(element).off(allCornerstoneEvents, sendActivationTrigger);
         $(element).on(allCornerstoneEvents, sendActivationTrigger);
-
-        // Store the current series data inside the Layout Manager
-        layoutManager.viewportData[viewportIndex] = {
-            imageId: imageId,
-            studyInstanceUid: data.studyInstanceUid,
-            seriesInstanceUid: data.seriesInstanceUid,
-            displaySetInstanceUid: data.displaySetInstanceUid,
-            currentImageIdIndex: data.currentImageIdIndex,
-            viewport: viewport,
-            viewportIndex: viewportIndex
-        };
 
         ViewerData[contentId].loadedSeriesData = layoutManager.viewportData;
 
