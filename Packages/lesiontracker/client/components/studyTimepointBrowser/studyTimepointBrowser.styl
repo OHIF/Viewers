@@ -3,15 +3,15 @@
 $timepointButtonHeight = 55px
 
 .studyTimepointBrowser
-  background-color: $primaryBackgroundColor
+  theme('background-color', '$primaryBackgroundColor')
   float: left
   height: 100%
   position: relative
   width: 100%
 
   .timepointButtonContainer
-    background-color: $primaryBackgroundColor
-    border-bottom: 1px solid $uiBorderColor
+    theme('background-color', '$primaryBackgroundColor')
+    theme('border-bottom', '1px solid $uiBorderColor')
     display: none
     height: $timepointButtonHeight
     left: 10px
@@ -38,7 +38,7 @@ $timepointButtonHeight = 55px
         transform: rotateX(180deg)
       .timepointFollowupTitle
         font-size: 14px
-        color: $textSecondaryColor
+        theme('color', '$textSecondaryColor')
         text-transform: uppercase
 
   .timepointHeader
@@ -50,7 +50,7 @@ $timepointButtonHeight = 55px
     .timepointFollowupTitle
     .timepointDate
     .timepointModalities
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
       transition($sidebarTransition)
 
     &:hover
@@ -59,7 +59,7 @@ $timepointButtonHeight = 55px
       .expandIcon i
       .timepointDate
       .timepointModalities
-        color: $textPrimaryColor !important
+        theme('color', '$textPrimaryColor') !important
 
     .timepointDetails
     .timepointModalities
@@ -70,10 +70,10 @@ $timepointButtonHeight = 55px
       overflow: hidden
 
     .expandIcon i
-      color: $defaultColor
+      theme('color', '$defaultColor')
 
     .timepointFollowupTitle
-      color: $textPrimaryColor
+      theme('color', '$textPrimaryColor')
       padding-top: 2px
 
   .studyTimepointScrollArea
@@ -91,7 +91,7 @@ $timepointButtonHeight = 55px
       margin-right: 16px
 
   .studySidebarTimepoint .thumbnailEntry.active:before
-    background-color: $activeColor
+    theme('background-color', '$activeColor')
     border-top-right-radius: 7px
     border-bottom-right-radius: 7px
     content: ''

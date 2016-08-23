@@ -4,7 +4,7 @@ table.ruleTable
   thead
     tr
       th
-        color: $defaultColor
+        theme('color', '$defaultColor')
         text-align: center
 
       th:first-child
@@ -13,7 +13,7 @@ table.ruleTable
   tbody
     tr
       td
-        color: $defaultColor
+        theme('color', '$defaultColor')
         text-align: center
 
         .failWarning
@@ -26,10 +26,10 @@ table.ruleTable
             transition(all 0.1s ease)
             
             &:hover
-              color: $hoverColor
+              theme('color', '$hoverColor')
               
             &:active  
-              color: $activeColor
+              theme('color', '$activeColor')
 
       td:first-child
         text-align: left
@@ -37,14 +37,14 @@ table.ruleTable
 .addRuleContainer
   margin: 10px 0
   text-align: center
-  color: $defaultColor
+  theme('color', '$defaultColor')
 
   .addRule
     cursor: pointer
     transition(all 0.1s ease)
     
     &:hover
-      color: $hoverColor
+      theme('color', '$hoverColor')
       
     &:active  
-      color: $activeColor
+      theme('color', '$activeColor')

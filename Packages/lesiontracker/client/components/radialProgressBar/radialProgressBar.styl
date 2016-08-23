@@ -11,12 +11,12 @@ $circleSize = 46px
 
   #svg circle
     stroke-dashoffset: 0
-    stroke: $uiBorderColorDark
+    theme('stroke', '$uiBorderColorDark')
     stroke-width: 3px
     vendorize(transition, stroke-dashoffset 1s linear)
 
   #svg #bar
-    stroke: $activeColor
+    theme('stroke', '$activeColor')
     vendorize(transform, rotate(270deg))
     vendorize(transform-origin, center center)
 
@@ -28,14 +28,14 @@ $circleSize = 46px
     font-weight: 700
     font-size: 17px
     text-align: center
-    color: $activeColor
+    theme('color', '$activeColor')
     top: 0
 
     svg
-      fill: $activeColor
+      theme('fill', '$activeColor')
       left: 50%
       position: absolute
-      stroke: $activeColor
+      theme('stroke', '$activeColor')
       top: 50%
       transform(translateX(-50%) translateY(-50%))
 

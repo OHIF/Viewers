@@ -1,3 +1,9 @@
+$themes = {}
+$defaultTheme = 'tide'
+
+@import "./theme-tide.styl"
+@import "./theme-tigerlilly.styl"
+
 parseSpaceVars($theme, $value)
   $valueSplit = split(' ', $value)
   $list = ''
@@ -21,5 +27,6 @@ theme($property, $value)
   / {selector()}
     {$property}: parseCommaVars($themes[$defaultTheme], $value)
   for $themeName, $theme in $themes
-    / body.theme-{$themeName} {selector()}
-      {$property}: parseCommaVars($theme, $value)
+    for $selectorPiece in split(',', selector())
+      / body.theme-{$themeName} {$selectorPiece}
+        {$property}: parseCommaVars($theme, $value)

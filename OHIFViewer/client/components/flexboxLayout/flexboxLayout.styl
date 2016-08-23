@@ -27,11 +27,11 @@ $lesionsSidebarMenuWidth = 450px
         transform(translateX(0%))
 
   .sidebar-left
-    max-width: $studiesSidebarMenuWidth
-    order: 1
+    theme('border-right', '%s solid $uiBorderColor' % $uiBorderThickness)
     flex: 1
     margin-left: - $studiesSidebarMenuWidth
-    border-right: $uiBorderThickness $uiBorderColor solid
+    max-width: $studiesSidebarMenuWidth
+    order: 1
 
     &.sidebar-open
       margin-left: 0
@@ -62,7 +62,7 @@ $lesionsSidebarMenuWidth = 450px
       max-width: $lesionsSidebarMenuWidth + 270px
 
     &:before
-      background-color: $uiBorderColor
+      theme('background-color', '$uiBorderColor')
       content: ''
       display: block
       height: 100%
@@ -75,6 +75,6 @@ $lesionsSidebarMenuWidth = 450px
       margin-right: 0
 
   .studiesListedChanger
+    theme('border-bottom', '%s solid $uiBorderColor' % $uiBorderThickness)
     padding: 20px 10px
     text-align: center
-    border-bottom: $uiBorderThickness $uiBorderColor solid

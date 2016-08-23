@@ -10,9 +10,6 @@
       opacity: 0
 
   .btn-add
-    // color: $textColorActive
-    // background-color: $activeColor
-    // border: 2px solid $uiBorderColor
     theme('color', '$textColorActive')
     theme('background-color', '$activeColor')
     theme('border', '2px solid $uiBorderColor')
@@ -46,7 +43,7 @@
     position: relative
 
     .icon-check
-      background-color: $activeColor
+      theme('background-color', '$activeColor')
       left: -46px
       position: absolute
       top: 3px
@@ -73,10 +70,10 @@
         animateFadeOut()
 
       button
+        theme('border', '1px solid $uiBorderColor')
+        theme('color', '$textPrimaryColor')
         background-color: transparent
         border-radius: 16px
-        border: 1px solid $uiBorderColor
-        color: $textPrimaryColor
         font-weight: normal
         height: 31px
         line-height: 31px

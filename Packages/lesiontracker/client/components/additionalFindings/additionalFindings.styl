@@ -22,22 +22,22 @@
       display: none
 
     .header
+      theme('background-color', '$uiGray')
+      theme('color', '$textPrimaryColor')
       height: 33px
       line-height: 33px
       font-weight: bold
       font-size: 14px
       padding: 1px 13px 0
-      color: $textPrimaryColor
-      background-color: $uiGray
 
     .form-group
-      color: $textPrimaryColor
+      theme('color', '$textPrimaryColor')
       margin-bottom: 0
       padding: 7px 27px 7px 11px
       width: 100%
 
       &:not(:last-child)
-        border-bottom: $uiBorderThickness solid $uiBorderColorDark
+        theme('border-bottom', '%s solid $uiBorderColorDark' % $uiBorderThickness)
 
       & > .wrapperText
         display: block
@@ -81,21 +81,21 @@
     .buttonSection
       cursor: pointer
       height: 90px
-      color: $defaultColor
+      theme('color', '$defaultColor')
 
       &:hover
-        color: $hoverColor
+        theme('color', '$hoverColor')
 
         .svgContainer
           svg
-            fill: $hoverColor
+            theme('fill', '$hoverColor')
 
       &:active
-        color: $activeColor
+        theme('color', '$activeColor')
 
         .svgContainer
           svg
-            fill: $activeColor
+            theme('fill', '$activeColor')
 
       div
         float: left
@@ -112,4 +112,4 @@
         svg
           width: 36px
           height: 36px
-          fill: $textPrimaryColor
+          theme('fill', '$textPrimaryColor')

@@ -5,18 +5,18 @@
   justify-content: space-around
 
   div
-    border-left: $uiBorderColor $uiBorderThickness solid
+    theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
     font-weight: 400
     padding-left: 12px
     text-align: left
 
   .timepointName
-    color: $textSecondaryColor
+    theme('color', '$textSecondaryColor')
     font-size: 12px
     line-height: 12px
 
   .timepointDate
-    color: $textPrimaryColor
+    theme('color', '$textPrimaryColor')
     font-size: 14px
     line-height: 20px
     padding-bottom: 6px

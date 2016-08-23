@@ -2,9 +2,9 @@
 
 .toolbarSectionButton
   display: inline-block
-  color: $defaultColor
-  fill: $defaultColor
-  stroke: $defaultColor
+  theme('color', '$defaultColor')
+  theme('fill', '$defaultColor')
+  theme('stroke', '$defaultColor')
   min-width: 30px
   cursor: pointer
   text-align: center
@@ -14,7 +14,7 @@
     cursor: not-allowed
 
   .buttonLabel
-    color: $textSecondaryColor
+    theme('color', '$textSecondaryColor')
     font-size: 12px
     font-weight: 500
 
@@ -34,22 +34,22 @@
 
   &:hover
     .buttonLabel
-      color: $hoverColor
+      theme('color', '$hoverColor')
 
     svg
-      fill: $hoverColor
-      stroke: $hoverColor
+      theme('fill', '$hoverColor')
+      theme('stroke', '$hoverColor')
       
     i
-      color: $hoverColor
+      theme('color', '$hoverColor')
 
   &:active, &.active
     .buttonLabel
-      color: $activeColor
+      theme('color', '$activeColor')
 
     svg
-      fill: $activeColor
-      stroke: $activeColor
+      theme('fill', '$activeColor')
+      theme('stroke', '$activeColor')
       
     i
-      color: $activeColor
+      theme('color', '$activeColor')

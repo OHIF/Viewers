@@ -75,7 +75,7 @@ $imageSliderCursor = grab
       // --- Style the range thumb --- //
       &::-webkit-slider-thumb
         -webkit-appearance: none !important
-        background-color: $imageSliderColor
+        theme('background-color', '$imageSliderColor')
         border-radius: $imageSliderBorderRadius
         border: $imageSliderBorder
         height: $imageSliderWidth
@@ -84,10 +84,10 @@ $imageSliderCursor = grab
         margin-top: -7px
 
         &:active
-          background-color: $activeColor
+          theme('background-color', '$activeColor')
 
       &::-moz-range-thumb
-        background-color: $imageSliderColor
+        theme('background-color', '$imageSliderColor')
         border-radius: $imageSliderBorderRadius
         border: $imageSliderBorder
         height: $imageSliderWidth
@@ -96,10 +96,10 @@ $imageSliderCursor = grab
         z-index: 7
 
         &:active
-          background-color: $activeColor
+          theme('background-color', '$activeColor')
 
       &::-ms-thumb
-        background-color: $imageSliderColor
+        theme('background-color', '$imageSliderColor')
         border-radius: $imageSliderBorderRadius
         border: $imageSliderBorder
         height: $imageSliderWidth
@@ -107,7 +107,7 @@ $imageSliderCursor = grab
         cursor: $imageSliderCursor
 
         &:active
-          background-color: $activeColor
+          theme('background-color', '$activeColor')
 
 // Set left position in IE, border-width attribute breaks left position of imageSlider
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none)

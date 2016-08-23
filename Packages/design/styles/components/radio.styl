@@ -3,12 +3,12 @@
 .group-radio
   label
     cursor: pointer
-    
+
     input
       height: 0
       width: 0
       visibility: hidden
-      
+
     span
       padding-left: 23px
       position: relative
@@ -23,14 +23,14 @@
         top: 50%
         transform(translateY(-50%))
         width: 16px
-    
+
     input:focus + span:before
       // TODO: [design] define a outline for the design
+      theme('box-shadow', '0 0 2px 2px $textSecondaryColor')
       outline: none
-      box-shadow: 0 0 2px 2px $textSecondaryColor
-    
+
     input:checked + span:after
-      background: $uiBorderColorDark
+      theme('background', '$uiBorderColorDark')
       border-radius: 5px
       content: ''
       height: 10px

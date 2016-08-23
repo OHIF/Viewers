@@ -13,7 +13,7 @@ $seriesCountBackgroundColor = #678696
     cursor: -moz-grab
 
   .seriesDetails
-    color: $textPrimaryColor
+    theme('color', '$textPrimaryColor')
     font-size: 14px
     line-height: 1.3em
     min-height: 36px
@@ -33,7 +33,7 @@ $seriesCountBackgroundColor = #678696
       margin-right: 4px
 
     .seriesInformationNumbers
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
       float: left
       font-size: 12px
 
@@ -42,7 +42,7 @@ $seriesCountBackgroundColor = #678696
       text-align: right
 
       strong
-        color: $activeColor
+        theme('color', '$activeColor')
         font-size: 10px
         font-weight: 900
 
@@ -52,7 +52,7 @@ $seriesCountBackgroundColor = #678696
         position: relative
 
         &:after
-          background-color: $activeColor
+          theme('background-color', '$activeColor')
           box-shadow: 1px 1px rgba(0, 0, 0, .115)
           left: -5px
           position: absolute
@@ -60,7 +60,7 @@ $seriesCountBackgroundColor = #678696
 
         &
         &:after
-          border: 1px solid $primaryBackgroundColor
+          theme('border', '1px solid $primaryBackgroundColor')
           content: ''
           display: block
           height: 11px

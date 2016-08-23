@@ -5,7 +5,7 @@
   height: 100%
 
   .dropdown-toggle
-    color: $defaultColor
+    theme('color', '$defaultColor')
     cursor: pointer
     font-size: 13px
     font-weight: 400
@@ -13,19 +13,19 @@
     text-decoration: none
 
     .menuButton
-      border-left: solid 1px $defaultColor
+      theme('border-left', 'solid 1px $defaultColor')
       display: inline-block
       height: 18px
       padding: 0 8px
 
       .fa
-        color: $defaultColor
+        theme('color', '$defaultColor')
         font-size: 17px
         line-height: 18px
 
       .caret-down
+        theme('color', '$uiLightGray')
         margin: 0 4px 4px 2px
-        color: $uiLightGray
 
   ul.dropdown-menu
     li

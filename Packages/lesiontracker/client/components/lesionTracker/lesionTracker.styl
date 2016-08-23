@@ -9,8 +9,8 @@ $expandedHeight = 160px
 
 .topBar
   height: $topBarHeight
-  color: $textPrimaryColor
-  background-color: $primaryBackgroundColor
+  theme('color', '$textPrimaryColor')
+  theme('background-color', '$primaryBackgroundColor')
   transition(all 0.5s ease)
 
   .brandSection
@@ -26,14 +26,14 @@ $expandedHeight = 160px
       display: inline-block
       font-family: $logoFontFamily
       font-weight: $logoFontWeight
-      color: $textPrimaryColor
+      theme('color', '$textPrimaryColor')
       line-height: 30px
 
   .studyListLinkSection
-    border-left: $uiBorderThickness solid $uiBorderColor;
-    
+    theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+
   .btn
-    color: $textSecondaryColor
+    theme('color', '$textSecondaryColor')
     cursor: pointer
     font-size: 13px
     font-weight: 500
@@ -41,10 +41,10 @@ $expandedHeight = 160px
     margin-top: 3px
 
     &:hover
-      color: $hoverColor
+      theme('color', '$hoverColor')
 
     &:active
-      color: $activeColor
+      theme('color', '$activeColor')
 
   &.studyList
     background-color: rgba(21, 25, 30, 0.7)
@@ -75,5 +75,5 @@ $expandedHeight = 160px
   .tab-pane
     .viewerContainer
       .loadingTextDiv
-        color: $textSecondaryColor
+        theme('color', '$textSecondaryColor')
         font-size: 30px

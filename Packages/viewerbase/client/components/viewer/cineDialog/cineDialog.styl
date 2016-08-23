@@ -1,6 +1,9 @@
 @import "{design}/app.styl"
 
 #cineDialog
+  theme('border', '1px solid $uiBorderColor')
+  theme('background', '$uiGrayDarkest')
+  theme('color', '$textSecondaryColor')
   display: none
   z-index: 1000
   position: absolute
@@ -8,17 +11,12 @@
   left: auto
   bottom: 3px
   right: 3px
-
   overflow: hidden
   padding: 10px
   width: 300px
   height: 175px
-
   opacity: 0.95
   border-radius: 8px
-  border: 1px solid $uiBorderColor
-  background: $uiGrayDarkest
-  color: $textSecondaryColor
 
   h5, label
     font-weight: 400
@@ -26,14 +24,14 @@
   box-sizing: border-box
 
   .btn
-    background: $uiGrayDarkest
-    color: $textSecondaryColor
+    theme('background', '$uiGrayDarkest')
+    theme('color', '$textSecondaryColor')
 
     &:hover
-      color: $hoverColor
+      theme('color', '$hoverColor')
 
     &:active, &.active
-      color: $activeColor
+      theme('color', '$activeColor')
 
   #cineOptions
     padding: 5px 0

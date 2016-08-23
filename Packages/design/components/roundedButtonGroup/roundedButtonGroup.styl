@@ -1,7 +1,7 @@
 @import "{design}/app"
 
 $height = 25px
-$textColorActive = #2D2D2D
+$textColorButtonActive = #2D2D2D
 
 .roundedButtonGroup
 
@@ -15,9 +15,9 @@ $textColorActive = #2D2D2D
 
     .roundedButton
       align-items: center
-      background-color: $uiGrayDark
-      border: 2px $uiBorderColorDark solid
-      color: $textSecondaryColor
+      theme('background-color', '$uiGrayDark')
+      theme('border', '2px solid $uiBorderColorDark')
+      theme('color', '$textSecondaryColor')
       display: flex
       font-size: 11px
       font-weight: 500
@@ -29,19 +29,19 @@ $textColorActive = #2D2D2D
       transition: transition($sidebarTransition)
 
       svg
-        fill: $defaultColor
-        stroke: $defaultColor
+        theme('fill', '$defaultColor')
+        theme('stroke', '$defaultColor')
 
       svg
       span
         margin: 0 2px
-        
+
       i
         line-height: 15px
         font-size: 15px
 
     .bottomLabel
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
       font-size: 12px
       font-weight: 500
       line-height: 12px
@@ -58,16 +58,16 @@ $textColorActive = #2D2D2D
       border-top-right-radius: $height
 
     &:hover .roundedButton
-      background-color: $boxBackgroundColor
-      color: $uiGrayDark
+      theme('color', '$uiGrayDark')
+      theme('background-color', '$boxBackgroundColor')
 
     &.active .roundedButton
-      background-color: $activeColor
-      border-color: $uiBorderColorActive
-      color: $textColorActive
+      theme('background-color', '$activeColor')
+      theme('border-color', '$uiBorderColorActive')
+      color: $textColorButtonActive
 
     &:hover .roundedButton
     &.active .roundedButton
       svg
-        fill: $uiGrayDark
-        stroke: $uiGrayDark
+        theme('fill', '$uiGrayDark')
+        theme('stroke', '$uiGrayDark')

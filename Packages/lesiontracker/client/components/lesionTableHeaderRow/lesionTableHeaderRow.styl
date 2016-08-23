@@ -3,10 +3,10 @@
 $headerRowHeight = 63px
 
 .lesionTableHeaderRow
-  background-color: $uiGrayDarker
-  color: $textSecondaryColor
+  theme('background-color', '$uiGrayDarker')
+  theme('color', '$textSecondaryColor')
   display: flex
-  fill: $textSecondaryColor
+  theme('fill', '$textSecondaryColor')
   height: $headerRowHeight
   line-height: $headerRowHeight
   margin-top: 2px
@@ -35,13 +35,13 @@ $headerRowHeight = 63px
       max-width: 11px
 
       &:hover
-        fill: $hoverColor
+        theme('fill', '$hoverColor')
 
       &:active
-        fill: $activeColor
+        theme('fill', '$activeColor')
 
   .type
-    color: $textSecondaryColor
+    theme('color', '$textSecondaryColor')
     font-size: 22px
     font-weight: 300
     line-height: $headerRowHeight
@@ -49,8 +49,8 @@ $headerRowHeight = 63px
     text-align: left
 
   .numberOfLesions
+    theme('color', '$uiSkyBlue')
     float: right
-    color: $uiSkyBlue
     font-weight: 300
     font-size: 40px
     max-width: 54px
@@ -63,7 +63,7 @@ $headerRowHeight = 63px
     text-align: right
 
     .maxNumLesions
-      background-color: $textSecondaryColor
+      theme('background-color', '$textSecondaryColor')
       border-radius: 3px
       color: black
       display: table
@@ -79,5 +79,5 @@ $headerRowHeight = 63px
 
     &.warning
       .maxNumLesions
-        color: $textPrimaryColor
-        background-color: $uiYellow
+        theme('background-color', '$uiYellow')
+        theme('color', '$textPrimaryColor')
