@@ -6,7 +6,6 @@ OHIF.viewer = OHIF.viewer || {};
 OHIF.viewer.loadIndicatorDelay = 3000;
 OHIF.viewer.defaultTool = 'wwwc';
 OHIF.viewer.refLinesEnabled = true;
-OHIF.viewer.isPlaying = {};
 OHIF.viewer.cine = {
     framesPerSecond: 24,
     loop: true
@@ -26,7 +25,7 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
     instance.subscribe('hangingprotocols');
-    
+
     Session.set('currentTimepointId', instance.data.currentTimepointId);
 
     const contentId = instance.data.contentId;
@@ -85,7 +84,7 @@ Template.viewer.onCreated(() => {
         instance.subscribe('singlePatientMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientImageMeasurements', dataContext.studies[0].patientId);
         instance.subscribe('singlePatientAdditionalFindings', dataContext.studies[0].patientId);
-        
+
         if (instance.subscriptionsReady()) {
             // Set buttons as enabled/disabled when Timepoints collection is ready
             timepointAutoCheck(dataContext);

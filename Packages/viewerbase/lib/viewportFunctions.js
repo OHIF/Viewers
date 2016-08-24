@@ -1,9 +1,12 @@
-getActiveViewportElement = function() {
-    var viewportIndex = Session.get("activeViewport") || 0;
+import { Session } from 'meteor/session';
+import { $ } from 'meteor/jquery';
+
+getActiveViewportElement = () => {
+    const viewportIndex = Session.get('activeViewport') || 0;
     return $('.imageViewerViewport').get(viewportIndex);
 };
 
-zoomIn = function() {
+zoomIn = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     const scaleIncrement = 0.15;
@@ -12,7 +15,7 @@ zoomIn = function() {
     cornerstone.setViewport(element, viewport);
 };
 
-zoomOut = function() {
+zoomOut = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     const scaleIncrement = 0.15;
@@ -21,12 +24,12 @@ zoomOut = function() {
     cornerstone.setViewport(element, viewport);
 };
 
-zoomToFit = function() {
+zoomToFit = () => {
     const element = getActiveViewportElement();
     cornerstone.fitToWindow(element);
 };
 
-rotateL = function() {
+rotateL = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     viewport.rotation -= 90;
@@ -34,7 +37,7 @@ rotateL = function() {
     updateOrientationMarkers(element, viewport);
 };
 
-rotateR = function() {
+rotateR = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     viewport.rotation += 90;
@@ -42,14 +45,14 @@ rotateR = function() {
     updateOrientationMarkers(element, viewport);
 };
 
-invert = function() {
+invert = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     viewport.invert = (viewport.invert === false);
     cornerstone.setViewport(element, viewport);
 };
 
-flipV = function() {
+flipV = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     viewport.vflip = (viewport.vflip === false);
@@ -57,7 +60,7 @@ flipV = function() {
     updateOrientationMarkers(element, viewport);
 };
 
-flipH = function() {
+flipH = () => {
     const element = getActiveViewportElement();
     let viewport = cornerstone.getViewport(element);
     viewport.hflip = (viewport.hflip === false);
@@ -65,7 +68,7 @@ flipH = function() {
     updateOrientationMarkers(element, viewport);
 };
 
-resetViewport = function() {
+resetViewport = () => {
     const element = getActiveViewportElement();
     const enabledElement = cornerstone.getEnabledElement(element);
     if (enabledElement.fitToWindow === false) {
@@ -73,7 +76,7 @@ resetViewport = function() {
         const instance = cornerstoneTools.metaData.get('instance', imageId);
 
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, enabledElement.image);
-        
+
         const instanceClassDefaultViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
         cornerstone.setViewport(element, instanceClassDefaultViewport);
     } else {
@@ -81,43 +84,53 @@ resetViewport = function() {
     }
 };
 
-clearTools = function() {
+clearTools = () => {
     const element = getActiveViewportElement();
     const toolStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
     toolStateManager.clear(element);
     cornerstone.updateImage(element);
 };
 
-toggleCinePlay = function() {
+// Toggle the play/stop state for the cornerstone clip tool
+toggleCinePlay = () => {
+    // Get the active viewport element
     const element = getActiveViewportElement();
-    var viewportIndex = Session.get('activeViewport');
 
-    var isPlaying = OHIF.viewer.isPlaying[viewportIndex] || false;
-    if (isPlaying) {
+    // Check if it's playing the clip to toggle it
+    if (isPlaying()) {
         cornerstoneTools.stopClip(element);
     } else {
         cornerstoneTools.playClip(element);
     }
 
-    OHIF.viewer.isPlaying[viewportIndex] = !OHIF.viewer.isPlaying[viewportIndex];
+    // Update the UpdateCINE session property
     Session.set('UpdateCINE', Random.id());
 };
 
-toggleCineDialog = function() {
-    var cineDialog = document.getElementById('cineDialog');
+// Show/hide the CINE dialog
+toggleCineDialog = () => {
+    const cineDialog = document.getElementById('cineDialog');
     toggleDialog(cineDialog);
-}
+};
 
-isPlaying = function() {
+// Check if the clip is playing on the active viewport
+isPlaying = () => {
+    // Create a dependency on LayoutManagerUpdated and UpdateCINE session
     Session.get('UpdateCINE');
-    var activeViewport = Session.get('activeViewport');
+    Session.get('LayoutManagerUpdated');
 
-    // TODO=Check best way to make sure this is always defined
-    // Right now it is initialized in enableHotkeys AND in
-    // imageViewer onCreated, but this appears to break some things
-    if (!OHIF.viewer.isPlaying) {
-        return;
+    // Get the viewport element and its current playClip tool state
+    const element = getActiveViewportElement();
+    const toolState = cornerstoneTools.getToolState(element, 'playClip');
+
+    // Stop here if the tool state is not defined yet
+    if (!toolState) {
+        return false;
     }
 
-    return !!OHIF.viewer.isPlaying[activeViewport];
+    // Get the clip state
+    const clipState = toolState.data[0];
+
+    // Return true if the clip is playing
+    return !_.isUndefined(clipState.intervalId);
 };
