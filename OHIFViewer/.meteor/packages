@@ -41,3 +41,4 @@ standard-minifier-css@1.1.8
 standard-minifier-js@1.1.8
 aldeed:simple-schema
 johdirr:meteor-git-rev
+aldeed:template-extension
