@@ -3,6 +3,7 @@ accounts-password@1.2.12
 aldeed:simple-schema@1.5.3
 aldeed:template-extension@4.0.0
 allow-deny@1.0.5
+amplify@1.0.0
 anti:gagarin@0.4.11
 anti:i18n@0.4.3
 arsnebula:reactive-promise@0.9.1
@@ -124,6 +125,7 @@ tracker@1.1.0
 twbs:bootstrap@3.3.6
 typ:accounts-ldap@1.0.1
 typ:ldapjs@0.7.3
+u2622:persistent-session@0.4.4
 ui@1.0.11
 underscore@1.0.9
 url@1.0.10

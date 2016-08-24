@@ -64,3 +64,4 @@ fastclick@1.0.12
 standard-minifier-css@1.1.8
 standard-minifier-js@1.1.8
 johdirr:meteor-git-rev
+u2622:persistent-session

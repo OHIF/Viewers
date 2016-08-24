@@ -197,7 +197,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.js', 'client');
 
     api.addFiles('client/components/lastLoginModal/lastLoginModal.html', 'client');
-    api.addFiles('client/components/lastLoginModal/lastLoginModal.js', 'client');
 
     api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
     api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
