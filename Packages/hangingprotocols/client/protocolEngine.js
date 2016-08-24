@@ -462,37 +462,29 @@ HP.ProtocolEngine = class ProtocolEngine {
                         sopInstanceUid: instance.sopInstanceUid,
                         currentImageIdIndex: index,
                         matchingScore: totalMatchScore,
-                        matchDetails: matchDetails
+                        matchDetails: matchDetails,
+                        sortingInfo: {
+                            score: totalMatchScore,
+                            study: study.studyDate + study.studyTime,
+                            series: series.seriesNumber, // TODO: change for seriesDateTime
+                            instance: instance.instanceNumber // TODO: change for acquisitionTime
+                        }
                     };
+
+                    // Find the displaySet
+                    const filter = {
+                        sopInstanceUid: instance.sopInstanceUid
+                    };
+                    const displaySet = _.filter(study.displaySets, ds => _.findWhere(ds.images, filter))[0];
+
+                    // If the instance was found, set the displaySet ID
+                    if (displaySet) {
+                        imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
+                        imageDetails.imageId = getImageId(instance);
+                    }
 
                     if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {
                         highestImageMatchingScore = totalMatchScore;
-
-                        // Set the displaySet ID
-                        study.displaySets.every(displaySet => {
-                            // Skip displaySet if it has no images
-                            if (!displaySet.images.length) {
-                                return true;
-                            }
-
-                            // Skip displaySet if series is different
-                            if (displaySet.seriesInstanceUid !== series.seriesInstanceUid) {
-                                return true;
-                            }
-
-                            // Try to find the current instance
-                            const instanceFound = _.findWhere(displaySet.images, {
-                                sopInstanceUid: instance.sopInstanceUid
-                            });
-
-                            // If the instance was found, set the displaySet ID
-                            if (instanceFound) {
-                                imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
-                                imageDetails.imageId = getImageId(instance);
-                                return false;
-                            }
-                        });
-
                         bestMatch = imageDetails;
                     }
 
@@ -500,6 +492,20 @@ HP.ProtocolEngine = class ProtocolEngine {
                 });
             });
         });
+
+        // Sort the matchingScores
+        const sortingFunction = OHIF.utils.sortBy({
+            name: 'score',
+            reverse: true
+        }, {
+            name: 'study',
+            reverse: true
+        }, {
+            name: 'series'
+        }, {
+            name: 'instance'
+        });
+        matchingScores.sort((a, b) => sortingFunction(a.sortingInfo, b.sortingInfo));
 
         return {
             bestMatch: bestMatch,
@@ -605,21 +611,27 @@ HP.ProtocolEngine = class ProtocolEngine {
                 });
             };
 
-            if (details.bestMatch) {
-                currentViewportData.studyInstanceUid = details.bestMatch.studyInstanceUid;
-                currentViewportData.seriesInstanceUid = details.bestMatch.seriesInstanceUid;
-                currentViewportData.sopInstanceUid = details.bestMatch.sopInstanceUid;
-                currentViewportData.currentImageIdIndex = details.bestMatch.currentImageIdIndex;
-                currentViewportData.displaySetInstanceUid = details.bestMatch.displaySetInstanceUid;
-                currentViewportData.imageId = details.bestMatch.imageId;
+            let currentMatch = details.bestMatch;
+            let currentPosition = 1;
+            const scoresLength = details.matchingScores.length;
+            while (currentPosition < scoresLength && _.findWhere(viewportData, {
+                imageId: currentMatch.imageId
+            })) {
+                currentMatch = details.matchingScores[currentPosition];
+                currentPosition++;
             }
 
-            const study = ViewerStudies.findOne({
-                studyInstanceUid: details.bestMatch.studyInstanceUid
-            });
+            if (currentMatch.imageId) {
+                currentViewportData.studyInstanceUid = currentMatch.studyInstanceUid;
+                currentViewportData.seriesInstanceUid = currentMatch.seriesInstanceUid;
+                currentViewportData.sopInstanceUid = currentMatch.sopInstanceUid;
+                currentViewportData.currentImageIdIndex = currentMatch.currentImageIdIndex;
+                currentViewportData.displaySetInstanceUid = currentMatch.displaySetInstanceUid;
+                currentViewportData.imageId = currentMatch.imageId;
+            }
 
             if (!currentViewportData.displaySetInstanceUid) {
-                throw "No matching display set found?";
+                throw 'No matching display set found?';
             }
 
             viewportData.push(currentViewportData);
