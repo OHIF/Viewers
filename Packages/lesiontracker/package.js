@@ -101,6 +101,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/activeEntry/activeEntry.styl', 'client');
     api.addFiles('client/components/activeEntry/activeEntry.js', 'client');
 
+    api.addFiles('client/components/activeEntry/activeEntrySignIn/activeEntrySignIn.js', 'client');
+
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
 
@@ -211,6 +213,7 @@ Package.onUse(function(api) {
     api.addFiles('server/publications.js', 'server');
     api.addFiles('server/methods.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);
+    api.addFiles('server/createDemoUser.js', [ 'server' ]);
 
     // Both client and server functions
     api.addFiles('both/collections.js', [ 'client', 'server' ]);
