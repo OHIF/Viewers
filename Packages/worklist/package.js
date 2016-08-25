@@ -69,6 +69,10 @@ Package.onUse(function (api) {
     api.addFiles('client/components/progressDialog/progressDialog.html', 'client');
     api.addFiles('client/components/progressDialog/progressDialog.styl', 'client');
     api.addFiles('client/components/progressDialog/progressDialog.js', 'client');
+
+    api.addFiles('client/components/worklistPagination/worklistPagination.html', 'client');
+    api.addFiles('client/components/worklistPagination/worklistPagination.styl', 'client');
+    api.addFiles('client/components/worklistPagination/worklistPagination.js', 'client');
     
     // Client-side library functions
     api.addFiles('client/lib/getStudyMetadata.js', 'client');
@@ -79,6 +83,7 @@ Package.onUse(function (api) {
     api.addFiles('client/lib/worklist.js', 'client');
     api.addFiles('client/lib/queryStudies.js', 'client');
     api.addFiles('client/lib/importStudies.js', 'client');
+    api.addFiles('client/lib/jquery.twbsPagination/jquery.twbsPagination.min.js', 'client');
 
     // Server-side functions
     api.addFiles('server/publications.js', 'server');

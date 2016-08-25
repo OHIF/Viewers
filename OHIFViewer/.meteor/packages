@@ -42,3 +42,4 @@ standard-minifier-js@1.1.8
 aldeed:simple-schema
 johdirr:meteor-git-rev
 wadoproxy
+aldeed:template-extension

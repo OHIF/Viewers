@@ -85,7 +85,13 @@ Meteor.methods({
     },
 
     getPriorLoginDate: function() {
-        return Meteor.users.findOne({_id: Meteor.userId()}, {fields: {priorLoginDate: 1}});
+        return Meteor.users.findOne({
+            _id: Meteor.userId()
+        }, {
+            fields: {
+                priorLoginDate: 1
+            }
+        }).priorLoginDate;
     }
 });
 

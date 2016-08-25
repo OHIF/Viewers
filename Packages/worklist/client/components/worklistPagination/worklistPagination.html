@@ -1,0 +1,29 @@
+<template name="worklistPagination">
+        <div class="worklistPagination">
+            <div class="row">
+                <div class="col-xs-4 col-sm-3 col-md-3">
+                    {{#with recordCount}}
+                         <div class="form-inline form-group rows-per-page">
+                            <label>
+                                <span>Show</span>
+                                <select class="js-select-rows-per-page">
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+
+                                <span class="rows-per-page-label">rows per page</span>
+                            </label>
+                        </div>
+                    {{/with}}
+                </div>
+                <div class="col-xs-8 col-sm-9 col-md-9">
+                    <div class="form-inline form-group page-number">
+                        <label>
+                            <ul id="pagination" class="no-margins"></ul>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+</template>

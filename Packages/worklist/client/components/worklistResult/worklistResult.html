@@ -92,6 +92,10 @@
             {{/each}}
             </tbody>
         </table>
+
+        <!-- Pagination -->
+        {{> worklistPagination }}
+
         {{#if session "showLoadingText"}}
             {{>loadingText}}
         {{ else }}
