@@ -1,0 +1,30 @@
+@import "{design}/app"
+
+.selectedStudyContainer
+  margin-bottom: 15px;
+
+  .tblStudyDetails
+    tbody > tr > td > label
+      color: $textPrimaryColor
+
+    tbody > tr > td > input[type="text"]
+      height: 28px
+      background-color: $primaryBackgroundColor
+      color: $textPrimaryColor
+      width: calc(100% - 10px)
+      border-radius: 4px
+      box-sizing: border-box
+
+  .tblSeriesDetails
+    thead > tr > th
+      text-align: center
+
+    tbody > tr
+
+      td
+        text-align: center
+        color: $textPrimaryColor
+
+    .loadingTextDiv
+      font-size: 13px
+      color: $textSecondaryColor

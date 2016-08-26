@@ -74,6 +74,12 @@ Package.onUse(function (api) {
     api.addFiles('client/components/worklistPagination/worklistPagination.html', 'client');
     api.addFiles('client/components/worklistPagination/worklistPagination.styl', 'client');
     api.addFiles('client/components/worklistPagination/worklistPagination.js', 'client');
+
+    api.addFiles('client/components/viewSeriesDetailsModal/viewSeriesDetailsModal.html', 'client');
+
+    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.html', 'client');
+    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.styl', 'client');
+    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.js', 'client');
     
     // Client-side library functions
     api.addFiles('client/lib/getStudyMetadata.js', 'client');

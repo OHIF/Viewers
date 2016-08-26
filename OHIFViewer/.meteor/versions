@@ -73,6 +73,7 @@ observe-sequence@1.0.12
 ohif:core@0.0.1
 ordered-dict@1.0.8
 orthanc-remote@0.0.1
+peppelg:bootstrap-3-modal@1.0.4
 practicalmeteor:chai@2.1.0_1
 practicalmeteor:loglevel@1.2.0_2
 promise@0.8.3
