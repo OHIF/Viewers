@@ -29,6 +29,7 @@ Package.onUse(function (api) {
     api.use('dimseservice');
     api.use('orthanc-remote');
     api.use('viewerbase');
+    api.use('wadoproxy');
 
     // TODO: Replace with NPM dependency
     api.use('cornerstone'); // Only for HammerJS
