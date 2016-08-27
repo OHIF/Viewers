@@ -1,0 +1,36 @@
+$spacer = 1rem
+
+$spacer-x = $spacer
+$spacer-y = $spacer
+
+generateSpacings($prefix, $spacerX, $spacerY)
+  $spacerAxis = $spacerX,
+                $spacerY
+
+  $spacings = 0 0,
+              1 1,
+              2 1.5,
+              3 3g
+
+  $properties = m margin,
+                p padding
+
+  $sides = t top 1,
+           r right 0,
+           b bottom 1,
+           l left 0
+
+  $axes = x left right 0,
+          y top bottom 1
+
+  for $property in $properties
+    for $spacing in $spacings
+      .{$prefix}{$property[0]}-a-{$spacing[0]}
+        {$property[1]} $spacing[1]*$spacer !important
+      for $side in $sides
+        .{$prefix}{$property[0]}-{$side[0]}-{$spacing[0]}
+          {$property[1]}-{$side[1]} $spacing[1]*$spacerAxis[$side[2]] !important
+      for $axis in $axes
+        .{$prefix}{$property[0]}-{$axis[0]}-{$spacing[0]}
+          {$property[1]}-{$axis[1]} $spacing[1]*$spacerAxis[$axis[3]] !important
+          {$property[1]}-{$axis[2]} $spacing[1]*$spacerAxis[$axis[3]] !important

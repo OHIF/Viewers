@@ -1,23 +1,25 @@
 <template name="studyContextMenu">
+    {{#if studyListFunctionsEnabled}}
     <div id="studyContextMenu" class="studyContextMenu noselect"
          oncontextmenu='return false;'
          unselectable='on'
          onselectstart='return false;'>
         <ul>
             <li>
-                <a class="disabled"><span class="fa-stack fa-lg">
-                      <i class="fa fa-user fa-stack-1x"></i>
-                      <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                    </span> Anonymize
+                <a id="viewSeriesDetails" type="button"
+                   title="View Series Details">
+                    View Series Details
                 </a>
-                <a class="disabled"><i class="fa fa-trash fa-lg"></i> Delete</a>
-                <a class="disabled"><i class="fa fa-send-o fa-lg"></i> Send</a>
-                <a id="exportSelectedStudies" type="button"
+                <a class="disabled">Anonymize</a>
+                <a class="disabled">Send</a>
+                <hr/>
+                <a class="disabled">Delete</a>
+                <a id="exportSelectedStudies"
                    title="Export Selected Studies">
-                    <i class="fa fa-exchange fa-lg"></i> Export</a>
-                <a class="disabled"><i class="fa fa-download fa-lg"></i> Download</a>
-                <a class="disabled"><i class="fa fa-photo fa-lg"></i> View Series Details</a>
+                    Export
+                </a>
             </li>
         </ul>
     </div>
+    {{/if}}
 </template>

@@ -1,0 +1,42 @@
+<template name="lesionTracker">
+    <div class="topBar noselect {{#if onStudyList}}studyList{{/if}}">
+        <div class="clearfix p-x-1 p-t-1">
+            <a target='_blank'
+               class="brandSection pull-left"
+               href="http://ohif.org">
+                <svg class="logoImage">
+                    <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-ohif-logo"></use>
+                </svg>
+                <div class="logoText">
+                    Open Health Imaging Foundation
+                </div>
+            </a>
+            {{ #if studyListToggleText }}
+            <a class="btn studyListLinkSection pull-left m-x-1 p-x-2 p-y-0 js-toggle-studyList">
+                {{studyListToggleText}}
+            </a>
+            {{ /if }}
+            <div class="userAccountSection pull-right">
+                {{>userAccountMenu}}
+            </div>
+        </div>
+    </div>
+    {{ >timeoutCountdownDialog }}
+    <div id="worklistTabs" class="tab-content">
+        <div class="tab-pane active" id="worklistTab">
+            <div class="worklistContainer">
+                {{> worklistResult }}
+            </div>
+        </div>
+        <div class="tab-pane" id="viewerTab">
+        </div>
+    </div>
+    {{ >associationModal }}
+    {{ >optionsModal }}
+    {{ >serverInformationModal }}
+    {{ >confirmRemoveTimepointAssociation }}
+    {{ >lastLoginModal }}
+    {{ >studyContextMenu }}
+    {{ >progressDialog}}
+    {{ >viewSeriesDetailsModal }}
+</template>

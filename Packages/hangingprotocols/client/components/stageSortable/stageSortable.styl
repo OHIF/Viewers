@@ -1,0 +1,81 @@
+@import "{design}/app.styl"
+
+#stageSortingContainer
+  padding: 0 20px
+
+  #stageSortable
+    .sortable-item
+      padding: 3px
+
+      span
+        color: $defaultColor
+        cursor: pointer
+
+        &:hover
+          color: $hoverColor
+        
+        &.active
+          color: $activeColor
+
+    .sortable-handle
+      cursor: move
+      cursor: -webkit-grabbing
+      width: 15px
+      height: 15px
+      margin: 0 5px
+      filter: invert(100%)
+      -webkit-filter: invert(100%)
+      background-image: unquote("url(/packages/hangingprotocols/assets/dots.svg)")
+
+    .sortable.target
+      flex: 1 1 auto
+      margin-left: 1em
+
+    .sortable-ghost
+      opacity: 0.6
+
+    .deleteStage
+      cursor: pointer
+      color: $defaultColor
+      transition(all 0.1s ease)
+      
+      &:hover
+        color: $hoverColor
+        
+      &:active  
+        color: $activeColor
+
+  .addStage
+    margin: 10px 0
+    text-align: center
+    color: $defaultColor
+
+    #addStage
+      transition(all 0.1s ease)
+      
+      &:hover
+        color: $hoverColor
+        
+      &:active  
+        color: $activeColor
+
+  .moveStageButtons
+    margin: 10px 0
+    text-align: center
+
+    a
+      color: $defaultColor
+      cursor: pointer
+      text-decoration: none
+      transition(all 0.1s ease)
+      
+      &:hover
+        color: $hoverColor
+        
+      &:active  
+        color: $activeColor
+
+      &[disabled="true"]
+        opacity: 0.7
+        cursor: disabled
+        pointer-events: none

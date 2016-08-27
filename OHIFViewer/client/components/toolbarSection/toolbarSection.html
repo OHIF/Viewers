@@ -1,0 +1,18 @@
+<template name="toolbarSection">
+    <div class="toolbarSection noselect p-x-2">
+        <div class="clearfix">
+            <div class="pull-left m-t-1">
+                {{>roundedButtonGroup leftSidebarToggleButtonData}}
+            </div>
+            {{> toolbarSectionTools
+                toolbarButtons=toolbarButtons
+                extraToolbarButtons=extraToolbarButtons}}
+            <div class="pull-right m-t-1 rm-x-1">
+                {{> roundedButtonGroup rightSidebarToggleButtonData}}
+            </div>
+            <div class="pull-right">
+                {{> toolbarSectionTools toolbarButtons=hangingProtocolButtons}}
+            </div>
+        </div>
+    </div>
+</template>

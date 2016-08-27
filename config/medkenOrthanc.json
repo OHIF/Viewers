@@ -1,20 +1,46 @@
 {
-  "dicomWeb" : {
-    "endpoints": [
+  "servers": {
+    "dicomWeb": [
       {
         "name": "Medken Orthanc",
-        "wadoUriRootNOTE" : "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
-        "wadoUriRoot" : "http://dicom-orthanc.medken.com/wado",
+        "wadoUriRootNOTE": "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
+        "wadoUriRoot": "http://dicom-orthanc.medken.com/wado",
         "qidoRoot": "http://dicom-orthanc.medken.com/dicom-web",
         "wadoRoot": "http://dicom-orthanc.medken.com/dicom-web",
         "qidoSupportsIncludeField": false,
-        "imageRendering" : "wadouri",
-        "requestOptions" : {
-          "logRequests" : false,
-          "logResponses" : false,
-          "logTiming" : true
+        "imageRendering": "wadouri",
+        "requestOptions": {
+          "logRequests": false,
+          "logResponses": false,
+          "logTiming": true
         }
       }
-    ]
+    ],
+    "dimse" : [{
+      "name": "ORTHANC_DIMSE",
+      "peers": [
+        {
+          "host": "208.100.41.100",
+          "port": 4242,
+          "aeTitle": "MKORTHANC",
+          "default": true
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 11112,
+          "aeTitle": "OHIFDCM",
+          "default": true,
+          "server": true
+        }
+      ]
+    }]
+  },
+  "defaultServiceType": "dimse",
+  "medkenpanel" : {
+    "prefix" : "admin"
+  },
+  "fhir" : {
+    "host" : "localhost",
+    "port" : 3937
   }
 }

@@ -5,14 +5,13 @@ var http = require('http'),
     httpProxy = require('http-proxy');
 
 var proxy =  httpProxy.createProxyServer({
-    target: 'http://192.168.99.100:8080',
+    target: 'http://localhost:8080',
     auth: 'user:user'
-}).listen(8080);
+}).listen(8043);
 
 proxy.on('proxyRes', function(proxyReq, req, res, options) {
   // add the CORS header to the response
   res.setHeader('Access-Control-Allow-Origin', '*');
-  console.log(proxyReq);
 });
 
 proxy.on('error', function(e) {

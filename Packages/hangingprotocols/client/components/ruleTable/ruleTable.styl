@@ -1,0 +1,50 @@
+@import "{design}/app.styl"
+
+table.ruleTable
+  thead
+    tr
+      th
+        color: $defaultColor
+        text-align: center
+
+      th:first-child
+        text-align: left
+
+  tbody
+    tr
+      td
+        color: $defaultColor
+        text-align: center
+
+        .failWarning
+          color: red
+
+        .editRule
+        .deleteRule
+          &:hover, &:active
+            cursor: pointer
+            transition(all 0.1s ease)
+            
+            &:hover
+              color: $hoverColor
+              
+            &:active  
+              color: $activeColor
+
+      td:first-child
+        text-align: left
+
+.addRuleContainer
+  margin: 10px 0
+  text-align: center
+  color: $defaultColor
+
+  .addRule
+    cursor: pointer
+    transition(all 0.1s ease)
+    
+    &:hover
+      color: $hoverColor
+      
+    &:active  
+      color: $activeColor

@@ -1,0 +1,16 @@
+<template name="baseForm">
+    <form
+        id="{{this.id}}"
+        class="{{this.class}}"
+        name="{{this.name}}"
+        action="{{this.action}}"
+        method="{{this.method}}"
+        autocomplete="{{this.autocomplete}}"
+        enctype="{{this.enctype}}"
+        novalidate="{{this.novalidate}}"
+        target="{{this.target}}"
+        {{this.tagAttributes}}
+    >
+        {{>UI.contentBlock}}
+    </form>
+</template>

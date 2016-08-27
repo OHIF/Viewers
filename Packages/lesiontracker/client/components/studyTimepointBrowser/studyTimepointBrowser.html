@@ -1,0 +1,42 @@
+<template name="studyTimepointBrowser">
+    {{#let timepointList=timepoints}}
+        <div class="studyTimepointBrowser noselect {{#if shallShowViewType timepointList}}viewTypeVisible{{/if}}">
+            <div class="timepointButtonContainer p-t-2">
+                {{>roundedButtonGroup viewTypeButtonGroupData}}
+            </div>
+            <div class="studyTimepointScrollArea">
+                <div class="p-l-1">
+                    {{#if timepointList.length}}
+                        {{#each timepoint in timepointList}}
+                            <div class="timepointEntry p-y-2">
+                                <div class="timepointHeader">
+                                    <div class="timepointDetails clearfix">
+                                        <div class="timepointFollowupTitle pull-left">
+                                            {{timepointApi.title timepoint}}
+                                        </div>
+                                        <div class="expandIcon pull-right">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </div>
+                                        <div class="timepointDate pull-right m-r-1">{{formatDA timepoint.earliestDate 'D-MMM-YYYY'}}</div>
+                                    </div>
+                                    <div class="timepointModalities">{{modalitiesSummary timepoint}}</div>
+                                </div>
+                                {{>studyTimepoint studies=(studies timepoint) index=@index viewportIndex=this.viewportIndex currentStudy=this.currentStudy}}
+                            </div>
+                            <hr>
+                        {{/each}}
+                        {{#if and this.currentStudy (not showAdditionalTimepoints)}}
+                            <div class="studyModality additional">
+                                Show additional timepoints
+                            </div>
+                        {{/if}}
+                    {{else}}
+                        <div class="p-t-2">
+                            {{>studyTimepoint (clone this studies=studies)}}
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    {{/let}}
+</template>

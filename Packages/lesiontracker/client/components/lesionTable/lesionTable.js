@@ -1,87 +1,89 @@
-Template.lesionTable.helpers({
-    measurement: function() {
-        // All Targets shall be listed first followed by Non-Targets
-        return Measurements.find({}, {
-            sort: {
-                isTarget: -1,
-                lesionNumberAbsolute: 1
-            }
-        });
-    },
-    timepoints: function() {
-        return Timepoints.find({}, {
-            sort: {
-                latestDate: 1
-            }
-        });
-    }
+import { MeasurementApi } from 'meteor/lesiontracker/client/api/measurement';
+
+Template.lesionTable.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.data.lesionTableLayout = new ReactiveVar('comparison');
+    instance.data.timepoints = new ReactiveVar([]);
+
+    // Run this computation every time table layout changes
+    instance.autorun(() => {
+        // Get the current table layout
+        const tableLayout = instance.data.lesionTableLayout.get();
+
+        let timepoints;
+        if (tableLayout === 'key') {
+            timepoints = instance.data.timepointApi.key();
+        } else {
+            timepoints = instance.data.timepointApi.currentAndPrior();
+        }
+
+        // Return key timepoints
+        instance.data.timepoints.set(timepoints);
+    });
 });
 
-Template.lesionTable.events({
-    'click table#tblLesion tbody tr': function(e, template) {
-        // Retrieve the lesion id from the DOM data for this row
-        var measurementId = $(e.currentTarget).data('measurementid');
+Template.lesionTable.onRendered(() => {
+    const instance = Template.instance();
 
-        activateLesion(measurementId, template.data);
-    },
-    'mousedown div#dragbar': function(e, template) {
-        var pY = e.pageY;
-        var draggableParent = $(e.currentTarget).parent();
-        var startHeight = draggableParent.height();
-        template.dragging.set(true);
+    instance.autorun(() => {
+        // Run this computation every time the lesion table layout is changed
+        instance.data.lesionTableLayout.dep.depend();
 
-        $(document).on('mouseup', function(e) {
-            template.dragging.set(false);
-            $(document).off('mouseup').off('mousemove');
-        });
+        if (instance.data.state.get('rightSidebar') !== 'lesions') {
+            // Remove the amount attribute from sidebar element tag
+            instance.$('#lesionTableContainer').closest('.sidebarMenu').removeAttr('data-timepoints');
+            return;
+        }
 
-        $(document).on('mousemove', function(e) {
-            var topPosition = e.pageY - pY;
-            var newHeight = startHeight - topPosition;
+        // Get the amount of timepoints being shown
+        const timepointAmount = instance.data.timepoints.get().length;
 
-            // Min lesion table height = 5px
-            if (newHeight < 5) {
-                return;
-            }
-
-            draggableParent.css({
-                top: topPosition,
-                height: newHeight
-            });
-
-            var viewportAndLesionTableHeight = $('#viewportAndLesionTable').height();
-            var newPercentageHeightofLesionTable = (startHeight - topPosition) / viewportAndLesionTableHeight * 100;
-            var newPercentageHeightofViewermain = 100 - newPercentageHeightofLesionTable;
-            $('.viewerMain').height(newPercentageHeightofViewermain + '%');
-
-            // Resize viewport
-            resizeViewportElements();
-        });
-    }
-});
-
-Template.lesionTable.onCreated(function() {
-    this.dragging = new ReactiveVar(false);
+        // Set the amount in an attribute on sidebar element tag
+        instance.$('#lesionTableContainer').closest('.sidebarMenu').attr('data-timepoints', timepointAmount);
+    });
 });
 
 // Temporary until we have a real window manager with events for series/study changed
 Session.setDefault('NewSeriesLoaded', false);
 
-Template.lesionTable.onRendered(function() {
+Template.lesionTable.onRendered(() => {
     // Find the first measurement by Lesion Number
-    var firstLesion = Measurements.findOne({}, {
-        sort: {
-            lesionNumber: 1
-        }
-    });
+    const firstLesion = MeasurementApi.firstLesion();
 
     // Create an object to store the ContentId inside
-    var templateData = {
+    const templateData = {
         contentId: Session.get('activeContentId')
     };
 
     // Activate the first lesion
     if (firstLesion) {
         activateLesion(firstLesion._id, templateData);
+    }
+});
+
+Template.lesionTable.events({
+    /**
+     * Retrieve the lesion id from the DOM data for this row
+     */
+    /*'click table#tblLesion tbody tr': function(e, template) {
+          var measurementId = $(e.currentTarget).data('measurementid');
+          activateLesion(measurementId, template.data);
+    },*/
+});
+
+Template.lesionTable.helpers({
+    buttonGroupData() {
+        const instance = Template.instance();
+        return {
+            value: instance.data.lesionTableLayout,
+            options: [{
+                value: 'comparison',
+                text: 'Comparison'
+            }, {
+                value: 'key',
+                text: 'Key Timepoints'
+            }]
+        };
     }
 });

@@ -1,0 +1,48 @@
+@import "{design}/app"
+
+$circleSize = 46px
+
+.radialProgress
+  position: relative
+  height: $circleSize
+  width: $circleSize
+  vendorize(box-shadow, 0 0 1em black)
+  border-radius: 100%
+
+  #svg circle
+    stroke-dashoffset: 0
+    stroke: $uiBorderColorDark
+    stroke-width: 3px
+    vendorize(transition, stroke-dashoffset 1s linear)
+
+  #svg #bar
+    stroke: $activeColor
+    vendorize(transform, rotate(270deg))
+    vendorize(transform-origin, center center)
+
+  .progressText
+    position: absolute
+    width: $circleSize
+    height: $circleSize
+    line-height: $circleSize
+    font-weight: 700
+    font-size: 17px
+    text-align: center
+    color: $activeColor
+    top: 0
+
+    svg
+      fill: $activeColor
+      left: 50%
+      position: absolute
+      stroke: $activeColor
+      top: 50%
+      transform(translateX(-50%) translateY(-50%))
+
+      &.locked
+        width: 16px
+        height: 21px
+
+      &.complete
+        width: 27px
+        height: 27px

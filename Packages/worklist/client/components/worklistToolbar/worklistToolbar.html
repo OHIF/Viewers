@@ -1,0 +1,12 @@
+<template name="worklistToolbar">
+    <div class='worklistToolbar'>
+        {{#if importSupported }}
+        <div class="addNewStudy btn-file">
+            <label for="btnImport">
+                <i class="fa fa-plus"></i> Add new study
+            </label>
+            <input id="btnImport" class='js-import-files' type="file" webkitdirectory directory multiple>
+        </div>
+        {{/if }}
+    </div>
+</template>

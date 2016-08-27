@@ -15,7 +15,21 @@ resizeViewportElements = function() {
     viewportResizeTimer = setTimeout(function() {
         var elements = $('.imageViewerViewport').not('.empty');
         elements.each(function(index, element) {
+            var enabledElement;
+            try {
+                enabledElement = cornerstone.getEnabledElement(element);
+            } catch(error) {
+                return;
+            }
+
             cornerstone.resize(element, true);
+
+            if (enabledElement.fitToWindow === false) {
+                var imageId = enabledElement.image.imageId;
+                var instance = cornerstoneTools.metaData.get('instance', imageId);
+                var instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
+                cornerstone.setViewport(element, instanceClassViewport);
+            }
 
             // TODO= Refactor this into separate scrollbar resize function
             var currentOverlay = $(element).siblings('.imageViewerViewportOverlay');

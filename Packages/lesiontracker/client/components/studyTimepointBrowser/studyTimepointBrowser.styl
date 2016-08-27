@@ -1,0 +1,104 @@
+@import "{design}/app"
+
+$timepointButtonHeight = 55px
+
+.studyTimepointBrowser
+  background-color: $primaryBackgroundColor
+  float: left
+  height: 100%
+  position: relative
+  width: 100%
+
+  .timepointButtonContainer
+    background-color: $primaryBackgroundColor
+    border-bottom: 1px solid $uiBorderColor
+    display: none
+    height: $timepointButtonHeight
+    left: 10px
+    position: absolute
+    right: 10px
+    top: 0
+    z-index: 1
+
+  &.viewTypeVisible
+
+    .timepointButtonContainer
+      display: block
+
+    .studyTimepointScrollArea
+      padding-top: $timepointButtonHeight
+
+  .timepointEntry
+    &.active
+      .timepointModalities
+        height: 0
+      .timepointDate
+        display: none
+      .expandIcon i
+        transform: rotateX(180deg)
+      .timepointFollowupTitle
+        font-size: 14px
+        color: $textSecondaryColor
+        text-transform: uppercase
+
+  .timepointHeader
+    cursor: pointer
+    font-size: 13px
+
+    &
+    .expandIcon i
+    .timepointFollowupTitle
+    .timepointDate
+    .timepointModalities
+      color: $textSecondaryColor
+      transition($sidebarTransition)
+
+    &:hover
+      &
+      .timepointFollowupTitle
+      .expandIcon i
+      .timepointDate
+      .timepointModalities
+        color: $textPrimaryColor !important
+
+    .timepointDetails
+    .timepointModalities
+      line-height: 25px
+
+    .timepointModalities
+      height: 25px
+      overflow: hidden
+
+    .expandIcon i
+      color: $defaultColor
+
+    .timepointFollowupTitle
+      color: $textPrimaryColor
+      padding-top: 2px
+
+  .studyTimepointScrollArea
+    height: 100%
+    overflow-x: hidden
+    overflow-y: auto
+    margin-right: -22px
+    padding-bottom: 20px
+    padding-right: 16px
+
+    &::-webkit-scrollbar
+      display: none
+
+    hr, .timepointHeader, .studyItem, .studyModality.additional
+      margin-right: 16px
+
+  .studySidebarTimepoint .thumbnailEntry.active:before
+    background-color: $activeColor
+    border-top-right-radius: 7px
+    border-bottom-right-radius: 7px
+    content: ''
+    display: block
+    height: 91px
+    pointer-events: none
+    position: fixed
+    right: 0
+    top: 0
+    width: 5px

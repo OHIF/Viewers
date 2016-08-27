@@ -1,0 +1,14 @@
+@import "{design}/app"
+
+.toolbarSection
+  border-bottom: $uiBorderColor $uiBorderThickness solid
+  flex: 0 0 auto
+  height: $toolbarHeight
+  overflow: hidden
+  padding-top: 6px
+  position: relative
+  transition(height 300ms ease)
+  width: 100%
+
+  &.expanded
+    height: $toolbarHeight + $toolbarDrawerHeight

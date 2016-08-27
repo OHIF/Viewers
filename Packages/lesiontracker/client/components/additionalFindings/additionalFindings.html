@@ -1,0 +1,55 @@
+<template name="additionalFindings">
+    <div class="additionalFindings">
+        <div class="scrollArea">
+            {{#form schema=instance.currentSchema}}
+                <div class="row">
+                    <div class="header">Additional Findings: Baseline</div>
+                    {{>groupRadio labelClass='form-group' key='measurableDisease'}}
+                </div>
+                <div class="row">
+                    <div class="header">Supplementary Measurements</div>
+                    {{>inputSelect class="bone-lesions" labelClass='form-group' key='numberOfBoneLesions' hideSearch=true}}
+                    {{>inputSelect
+                        class="disease-regions"
+                        labelClass='form-group'
+                        key='regionsOfMetastaticDisease'
+                        multiple=true
+                        options=(clone
+                            placeholder='Choose a region...'
+                            allowClear=true
+                        )
+                    }}
+                    {{>groupRadio labelClass='form-group' key='tracerRelatedToMetastaticDisease'}}
+                </div>
+                <div class="row">
+                    <div class="header">Image Quality</div>
+                    {{>groupRadio labelClass='form-group' key='acceptableImageQuality'}}
+                    {{>groupRadio labelClass='form-group' key='adequateAnatomicalCoverage'}}
+                    {{>groupRadio labelClass='form-group' key='presenceOfContrast'}}
+                </div>
+                <div class="row">
+                    <div class="header">Additional Screen Captures</div>
+                    <div class="entrySection buttonSection">
+                        <div class="svgContainer">
+                            <svg>
+                                <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-create-screen-capture"></use>
+                            </svg>
+                        </div>
+                        <div class="buttonLabel noselect">Add new screen capture</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="header">Comments</div>
+                    <div class="entrySection buttonSection">
+                        <div class="svgContainer">
+                            <svg>
+                                <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-create-comment"></use>
+                            </svg>
+                        </div>
+                        <div class="buttonLabel noselect">Add a comment</div>
+                    </div>
+                </div>
+            {{/form}}
+        </div>
+    </div>
+</template>

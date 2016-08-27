@@ -1,6 +1,20 @@
 <template name="layoutButton">
-    <button id="layout" type="button" class="btn btn-sm btn-default dropdown-toggle" data-container="body" data-toggle="dropdown" aria-expanded="false" data-placement="right" title="Layout" rel="tooltip">
-        <span class="fa fa-th-large"></span>
-    </button>
-    {{  >layoutChooser }}
+    <div id="{{this.id}}"
+         class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} js-dropdown-toggle"
+         title="{{this.title}}"
+         data-target="#layoutChooser"
+         >
+        <div class="svgContainer">
+            {{ #if this.svgLink }}
+            <svg>
+                <use xlink:href={{this.svgLink}}></use>
+            </svg>
+            {{ else }}
+            <i class={{iconClasses}}></i>
+            {{ /if }}
+        </div>
+        <div class="buttonLabel">
+            {{this.title}}
+        </div>
+    </div>
 </template>

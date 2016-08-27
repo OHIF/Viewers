@@ -1,11 +1,13 @@
-var activeTool = "wwwc";
-var defaultTool = "wwwc";
+import { OHIF } from 'meteor/ohif:core';
+
+var activeTool = 'wwwc';
+var defaultTool = 'wwwc';
 
 var tools = {};
 
 var toolDefaultStates = {
     activate: [],
-    deactivate: [],
+    deactivate: ['length', 'angle', 'annotate', 'ellipticalRoi', 'rectangleRoi'],
     enable: [],
     disable: [],
     disabledToolButtons: []
@@ -23,16 +25,31 @@ function configureTools() {
     cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
 
     // Set the text box background color
-    cornerstoneTools.textStyle.setBackgroundColor('black');
+    cornerstoneTools.textStyle.setBackgroundColor('rgba(0, 0, 0, 0.95)');
 
     // Set the tool width
     cornerstoneTools.toolStyle.setToolWidth(2);
 
     // Set color for inactive tools
-    cornerstoneTools.toolColors.setToolColor('rgb(255, 255, 0)');
+    cornerstoneTools.toolColors.setToolColor('#ff00ff'); //rgb(255, 255, 0)');
 
     // Set color for active tools
-    cornerstoneTools.toolColors.setActiveColor('rgb(0, 255, 0)');
+    cornerstoneTools.toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
+
+    // Set the configuration values for the text annotation (Arrow) tool
+    const annotateConfig = {
+        getTextCallback: getAnnotationTextCallback,
+        changeTextCallback: changeAnnotationTextCallback,
+        drawHandles: false,
+        arrowFirst: true
+    };
+    cornerstoneTools.arrowAnnotate.setConfiguration(annotateConfig);
+
+    const zoomConfig = {
+        minScale: 0.05,
+        maxScale: 10
+    };
+    cornerstoneTools.zoom.setConfiguration(zoomConfig);
 }
 
 toolManager = {
@@ -132,6 +149,7 @@ toolManager = {
                 } else {
                     tools[toolType].mouse[action](element);
                 }
+
                 tools[toolType].touch[action](element);
             });
         });
@@ -196,22 +214,20 @@ toolManager = {
             elements = $('.imageViewerViewport');
         }
 
-        $('#toolbar .btn-group button').removeClass('active');
-        var toolButton = document.getElementById(tool);
-        if (toolButton) {
-            toolButton.classList.add('active');
-        }
-
         // Otherwise, set the active tool for all viewport elements
         $(elements).each(function(index, element) {
             toolManager.setActiveToolForElement(tool, element);
         });
         activeTool = tool;
+
+        // Store the active tool in the session in order to enable reactivity
+        Session.set('ToolManagerActiveTool', tool);
     },
     getActiveTool: function() {
         if (!activeTool) {
             activeTool = defaultTool;
         }
+
         return activeTool;
     },
     setDefaultTool: function(tool) {

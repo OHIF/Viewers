@@ -1,0 +1,18 @@
+<template name="viewer">
+    {{#if Template.subscriptionsReady}}
+        <div class="viewerDialogs">
+            {{>confirmDeleteDialog}}
+            {{>lesionLocationDialog}}
+            {{>nonTargetLesionDialog}}
+            {{>nonTargetResponseDialog}}
+            {{>lesionTableHUD (clone this)}}
+            {{! >conformanceCheckFeedback}}
+        </div>
+        <div id="viewer">
+            {{>toolbarSection (clone this)}}
+            {{>flexboxLayout (clone this)}}
+        </div>
+    {{else}}
+        {{>loadingText}}
+    {{/if}}
+</template>

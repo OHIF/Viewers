@@ -1,0 +1,26 @@
+<template name="matchedProtocols">
+    <div id='matchedProtocols' class="btn-group">
+        {{ #if matchedProtocols }}
+        <button type="button" class="btn btn-sm dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                title="Select Hanging Protocol">
+            <i class="fa fa-list-ol"></i>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <h5>Select a Hanging Protocol</h5>
+            </li>
+            {{ #each matchedProtocols }}
+            <li>
+                <a class='matchedProtocol {{#if active}}active{{/if}}'>
+                    {{name}}
+                </a>
+            </li>
+            {{ /each }}
+        </ul>
+        {{ /if }}
+    </div>
+</template>

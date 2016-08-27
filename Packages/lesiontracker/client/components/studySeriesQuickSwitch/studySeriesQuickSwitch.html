@@ -1,0 +1,42 @@
+<template name="studySeriesQuickSwitch">
+    <div class="quickSwitchWrapper {{side}}">
+        <div class="quickSwitch js-quick-switch clearfix rp-t-1 {{#if eq side 'right'}}rp-l-3{{/if}}{{#if eq side 'left'}}rp-r-3{{/if}}">
+            <div class="switchSection switchSectionStudy rp-x-1 {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">
+                <div class="label">Study</div>
+                <div class="studySwitch">
+                    <div class="studyBox"></div>
+                    <div class="switchHover studyHover clearfix">
+                        <div class="scrollArea">
+                            {{>studyTimepointBrowser (clone this timepointViewType='key')}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="switchSection switchSectionSeries rp-x-1 {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">
+                {{#let thumbnailsList=(studyThumbnails currentStudy)}}
+                    <div class="label">Series</div>
+                    <div class="seriesSwitch clearfix">
+                        {{#each thumbnail in thumbnailsList}}
+                            {{#if lt @index 8}}
+                                <div class="seriesItem {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}} {{#if isDisplaySetActive thumbnail.stack.displaySetInstanceUid viewportIndex}}active{{/if}}"></div>
+                            {{else}}
+                                {{#if eq @index 8}}
+                                    <div class="seriesItem count {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">{{thumbnailsList.length}}</div>
+                                {{/if}}
+                            {{/if}}
+                        {{/each}}
+                        <div class="switchHover seriesHover clearfix">
+                            <div class="scrollArea">
+                                <div class="thumbnailsWrapper">
+                                    {{#each thumbnail in thumbnailsList}}
+                                        {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
+                                    {{/each}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/let}}
+            </div>
+        </div>
+    </div>
+</template>

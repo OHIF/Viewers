@@ -9,6 +9,10 @@ handleMeasurementModified = function(e, eventData) {
             log.info('CornerstoneToolsMeasurementModified');
             LesionManager.updateLesionData(measurementData);
             TrialResponseCriteria.validateDelayed(measurementData);
+            // Set reviewer for this timepoint
+            if (measurementData.studyInstanceUid) {
+                Meteor.call('setReviewer',measurementData.studyInstanceUid);
+            }
             break;
         case 'ellipticalRoi':
         case 'length':

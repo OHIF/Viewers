@@ -1,0 +1,24 @@
+<template name="lesionTableHeaderRow">
+    <div class="lesionTableHeaderRow">
+        {{ #if anyUnmarkedLesionsLeft}}
+        <div class="add js-setTool">
+            <svg>
+                <use xlink:href=/packages/viewerbase/assets/icons.svg#icon-ui-add></use>
+            </svg>
+        </div>
+        {{ /if }}
+        <div class="type">
+            {{type}}
+        </div>
+        <div class="max {{ # if gt numberOfLesions maxNumLesions }}warning{{/if}}">
+        {{ #if maxNumLesions }}
+            <p class="maxNumLesions">
+                Max {{maxNumLesions}}
+            </p>
+        {{/if}}
+        </div>
+        <div class="numberOfLesions">
+            {{numberOfLesions}}
+        </div>
+    </div>
+</template>

@@ -1,0 +1,27 @@
+<template name="serverInformationModal">
+    <div class="modal" id="serverInformationModal" tabindex="-1" role="dialog" aria-labelledby="serverInformationModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                {{#let isList=(eq instance.container.mode.get "list")}}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="serverInformationModalLabel">Server Information</h4>
+                    </div>
+                    <div class="modal-body">
+                        {{#if isList}}
+                            {{>serverInformationList instance.container}}
+                        {{else}}
+                            {{>serverInformationForm instance.container}}
+                        {{/if}}
+                    </div>
+                    <div class="modal-footer">
+                        {{#unless isList}}
+                            <button type="button" class="btn btn-default js-back">Back</button>
+                        {{/unless}}
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                {{/let}}
+            </div>
+        </div>
+    </div>
+</template>

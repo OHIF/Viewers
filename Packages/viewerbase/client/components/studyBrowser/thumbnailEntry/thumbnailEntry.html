@@ -1,6 +1,22 @@
 <template name="thumbnailEntry">
-    <div class="thumbnailEntry">
-        {{ >imageThumbnail }}
-        <div class='seriesDescription noselect'>{{seriesDescription}}</div>
+    <div class="thumbnailEntry m-t-1 m-b-2 {{draggableClass}} {{#if isDisplaySetActive this.thumbnail.stack.displaySetInstanceUid viewportIndex}}active{{/if}}">
+        <div class="p-x-1">
+            {{>imageThumbnail (clone this)}}
+        </div>
+        <div class="seriesDetails noselect m-a-1">
+            <div class="seriesDescription">
+                {{this.thumbnail.stack.seriesDescription}}
+            </div>
+            <div class="seriesInformation">
+                <div class="seriesInformationIcons">
+                    <strong>S:</strong>
+                    <div></div>
+                </div>
+                <div class="seriesInformationNumbers">
+                    <div>{{this.thumbnail.stack.seriesNumber}}</div>
+                    <div>{{this.thumbnail.stack.numImageFrames}}</div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>

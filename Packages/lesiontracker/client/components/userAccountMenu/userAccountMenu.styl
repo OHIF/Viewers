@@ -1,34 +1,32 @@
+@import "{design}/app"
+
 #userAccountMenu
-  position: relative
-  float: right
+  padding: 4px 0
   height: 100%
-  line-height: 40px
-  z-index: 999
 
-  .list-group
-    background-color: transparent
-    color: white
-    line-height: 35px
-    margin-left: 10px
-    .list-group-item
-      padding: 5px 10px
-      width: 200px
-    a#userName
-      padding: 0
-      background-color: transparent
-      color: white
-      border: solid 1px transparent
-      text-align: right
+  .dropdown-toggle
+    color: $defaultColor
+    cursor: pointer
+    font-size: 13px
+    font-weight: 400
+    line-height: 18px
+    text-decoration: none
+
+    .menuButton
+      border-left: solid 1px $defaultColor
       display: inline-block
-      width: auto
-    #userMenu
-      position: absolute
-      right: 0
-      .externalItem
-        a
-          color: #555
+      height: 18px
+      padding: 0 8px
 
-    .list-group-submenu
-      .sub-sub-item
-        padding-left: 20px
-        padding-right: 20px
+      .fa
+        color: $defaultColor
+        font-size: 17px
+        line-height: 18px
+
+      .caret-down
+        margin: 0 4px 4px 2px
+        color: $uiLightGray
+
+  ul.dropdown-menu
+    li
+      cursor: pointer

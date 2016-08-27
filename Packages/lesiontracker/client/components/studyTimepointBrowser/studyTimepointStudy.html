@@ -1,0 +1,31 @@
+<template name="studyTimepointStudy">
+    {{#let isSidebar=(isUndefined viewportIndex)}}
+        <div class="studyTimepointStudy {{#if isSidebar}}studySidebarTimepoint{{else}}studyQuickSwitchTimepoint{{/if}} {{#if this.active}}active{{/if}}">
+            <div class="studyItem">
+                {{>loadingText}}
+                <div class="studyModality">
+                    <div class="studyModalityBox">
+                        <div class="studyModalityText" style="{{modalityStyle}}">
+                            {{#if this.study.modalities}}
+                                {{ modalities }}
+                            {{else}}
+                                UN
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="studyText">
+                        <div class="studyDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
+                        <div class="studyDescription">{{this.study.studyDescription}}</div>
+                    </div>
+                </div>
+            </div>
+            {{#if isSidebar}}
+                <div class="studyTimepointThumbnails">
+                    {{#each thumbnail in (studyThumbnails this.study)}}
+                        {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
+                    {{/each}}
+                </div>
+            {{/if}}
+        </div>
+    {{/let}}
+</template>

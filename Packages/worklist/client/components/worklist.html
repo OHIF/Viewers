@@ -1,21 +1,15 @@
 <template name="worklist">
-    <ul class="nav noselect" role="tablist" id="tablist">
-        <li role="presentation" class="tabTitle active">
-            <a data-target="#worklistTab" role="tab" data-toggle="tab">Study List</a>
-        </li>
-        {{#each worklistTabs }}
-            {{>tabTitle }}
-        {{/each }}
-    </ul>
     <div id="worklistTabs" class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="worklistTab">
             <div class="worklistContainer">
                 {{> worklistResult }}
             </div>
         </div>
-        {{#each worklistTabs }}
-            {{>tabContent }}
-        {{/each }}
+        <div role="tabpanel" class="tab-pane" id="viewerTab">
+            <div class="viewerContainer">
+            </div>
+        </div>
+        {{>loadingText}}
     </div>
     {{#each additionalTemplates}}
         {{> UI.dynamic template=this}}

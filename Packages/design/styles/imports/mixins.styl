@@ -1,0 +1,56 @@
+/*
+    Basic mixin which vendorizes a propery. Usage:
+
+    vendorize(box-sizing, border-box)
+*/
+vendorize(property, value)
+  -webkit-{property} value
+  -moz-{property} value
+  -ms-{property} value
+  -o-{property} value
+  {property} value
+
+animation(a)
+  -webkit-animation: a
+  -moz-animation: a
+  -ms-animation: a
+  -o-animation: a
+  animation: a
+
+transition(t)
+  transition: t
+  -webkit-transition: t
+  -ms-transition: t
+  -o-transition: t
+  -moz-transition: t
+
+transition-delay(d)
+  transition-delay: d
+  -webkit-transition-delay: d
+  -ms-transition-delay: d
+  -o-transition-delay: d
+  -moz-transition-delay: d
+
+transform(t)
+  transform: t
+  -webkit-transform: t
+  -ms-transform: t
+  -o-transform: t
+  -moz-transform: t
+
+transform-origin(o)
+  transform-origin: o
+  -webkit-transform-origin: o
+  -ms-transform-origin: o
+  -o-transform-origin: o
+  -moz-transform-origin: o
+
+placeholder-color(c)
+  &::-webkit-input-placeholder
+    color: c
+  &:-moz-placeholder
+    color: c
+  &::-moz-placeholder
+    color: c
+  &:-ms-input-placeholder
+    color: c

@@ -59,6 +59,10 @@ Template.associationModal.events({
             // Sort the study dates, so we can get a range for these values
             studyDates = studyDates.sort();
 
+            // HipaaEventType to log changes in collections
+            var hipaaEventType;
+            var hipaaEvent;
+
             // Check if these studies are already associated with an existing Timepoint
             var existingTimepoint;
             if (timepointType === 'baseline') {
@@ -91,6 +95,7 @@ Template.associationModal.events({
                     }
                 });
                 timepointId = existingTimepoint.timepointId;
+                hipaaEventType = 'modify';
             } else {
                 // Create a new timepoint to represent the (baseline or follow-up) studies
                 var timepoint = {
@@ -105,7 +110,19 @@ Template.associationModal.events({
                 // Insert this timepoint into the Timepoints Collection
                 Timepoints.insert(timepoint);
                 timepointId = timepoint.timepointId;
+                hipaaEventType = 'create';
             }
+
+            // Log
+            hipaaEvent = {
+                eventType: hipaaEventType,
+                userId: Meteor.userId(),
+                userName: Meteor.user().profile.fullName,
+                collectionName: "Timepoints",
+                recordId: timepointId,
+                patientId: relatedStudies[0].patientId,
+                patientName: relatedStudies[0].patientName
+            };
 
             // Loop through these studies to associate them with the newly created timepoint
             relatedStudies.forEach(function(study) {
@@ -121,6 +138,8 @@ Template.associationModal.events({
                             timepointId: timepointId
                         }
                     });
+                    // Log modify
+                    hipaaEventType = 'modify';
                 } else {
                     // If no such study exists, update the entry with the new timepointId
 
@@ -130,7 +149,22 @@ Template.associationModal.events({
                     // Attach the timepointId and insert it into the Studies Collection
                     study.timepointId = timepointId;
                     Studies.insert(study);
+
+                    // Log create
+                    hipaaEventType = 'create';
                 }
+
+                // Log
+                hipaaEvent = {
+                    eventType: hipaaEventType,
+                    userId: Meteor.userId(),
+                    userName: Meteor.user().profile.fullName,
+                    collectionName: "Studies",
+                    recordId: study.studyInstanceUid,
+                    patientId: study.patientId,
+                    patientName: study.patientName
+                };
+                HipaaLogger.logEvent(hipaaEvent);
             });
         });
 

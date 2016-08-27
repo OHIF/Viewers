@@ -1,0 +1,89 @@
+<template name="selectTree">
+    {{#group (extend this
+        class=(concat
+            'select-tree '
+            (valueIf this.root '' 'select-tree-root ')
+            this.class
+        )
+        mixins=(concat 'selectTree ' this.mixins)
+    )}}
+        {{>UI.contentBlock}}
+        <div class="tree-content">
+            {{#let currentNode=this.currentNode.get}}
+                {{#if (and (not this.root) (ne this.search false))}}
+                    {{#inputText
+                        label=this.label
+                        labelClass='tree-search'
+                        placeholder=(choose this.searchPlaceholder 'Search')
+                    }}
+                        <i class="fa fa-search"></i>
+                    {{/inputText}}
+                {{/if}}
+                <div class="tree-options {{#if currentNode}}collapsed{{/if}}">
+                    {{#if this.root}}
+                        {{>selectTreeBreadcrumb component=this.component}}
+                    {{/if}}
+                    <div class="tree-inputs clearfix">
+                        {{#each item in treeItems}}
+                            {{>inputRadio
+                                id=(concat this.storageKey '_' (encodeId item.value))
+                                class=this.radioClass
+                                name=this.key
+                                itemData=item
+                                value=item.value
+                                label=item.label
+                                labelClass=(valueIf (isArray item.items) 'tree-node' 'tree-leaf')
+                                checked=(eq item.value (reactive this.value))
+                            }}
+                        {{/each}}
+                    </div>
+                    {{#if (and currentNode (isArray currentNode.items))}}
+                        {{>selectTree (clone this
+                            items=currentNode.items
+                            root=(choose this.root this.component)
+                            class='select-tree-node'
+                        )}}
+                    {{/if}}
+                </div>
+            {{/let}}
+        </div>
+        {{#if (and (not this.root) (or this.storageKey this.commonItems))}}
+            {{>selectTreeCommon (clone this component=this.component treeInstance=instance)}}
+        {{/if}}
+    {{/group}}
+</template>
+
+<template name="selectTreeBreadcrumb">
+    <div class="tree-breadcrumb clearfix">
+        {{>selectTreeBreadcrumbParent
+            component=this.component.parent
+            index=1
+        }}
+        {{#let currentNode=this.component.parent.templateInstance.data.currentNode.get}}
+            <span class="tree-current-node">{{currentNode.label}}</span>
+        {{/let}}
+    </div>
+</template>
+
+<template name="selectTreeBreadcrumbParent">
+    {{#let parent=this.component.parent}}
+        {{#let parentNode=(reactive parent.templateInstance.data.currentNode)}}
+            {{#if parentNode}}
+                {{>selectTreeBreadcrumbParent
+                    component=parent
+                    index=(sum this.index 1)
+                }}
+            {{/if}}
+            <span class="path-link">
+                <a href="#" class="tree-back" data-index="{{this.index}}">
+                    {{#if parentNode}}
+                        <span>{{parentNode.label}}</span>
+                    {{else}}
+                        <i class="fa fa-fast-backward"></i>
+                    {{/if}}
+                </a>
+                {{#if parentNode}}<span>/</span>{{/if}}
+            </span>
+        {{/let}}
+    {{/let}}
+</template>

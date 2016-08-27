@@ -1,0 +1,73 @@
+@import "{design}/app"
+
+$height = 25px
+$textColorActive = #2D2D2D
+
+.roundedButtonGroup
+
+  .roundedButtonWrapper
+    cursor: pointer
+    display: inline-block
+    float: left
+    margin-left: -1px
+    text-decoration: none
+    text-align: center
+
+    .roundedButton
+      align-items: center
+      background-color: $uiGrayDark
+      border: 2px $uiBorderColorDark solid
+      color: $textSecondaryColor
+      display: flex
+      font-size: 11px
+      font-weight: 500
+      justify-content: center
+      height: $height
+      line-height: $height
+      padding: 0 22px
+      text-transform: uppercase
+      transition: transition($sidebarTransition)
+
+      svg
+        fill: $defaultColor
+        stroke: $defaultColor
+
+      svg
+      span
+        margin: 0 2px
+        
+      i
+        line-height: 15px
+        font-size: 15px
+
+    .bottomLabel
+      color: $textSecondaryColor
+      font-size: 12px
+      font-weight: 500
+      line-height: 12px
+      margin-top: 8px
+
+    &:first-child
+      margin-left: 0
+      .roundedButton
+        border-bottom-left-radius: $height
+        border-top-left-radius: $height
+
+    &:last-child .roundedButton
+      border-bottom-right-radius: $height
+      border-top-right-radius: $height
+
+    &:hover .roundedButton
+      background-color: $boxBackgroundColor
+      color: $uiGrayDark
+
+    &.active .roundedButton
+      background-color: $activeColor
+      border-color: $uiBorderColorActive
+      color: $textColorActive
+
+    &:hover .roundedButton
+    &.active .roundedButton
+      svg
+        fill: $uiGrayDark
+        stroke: $uiGrayDark

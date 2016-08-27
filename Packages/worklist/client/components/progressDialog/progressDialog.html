@@ -1,0 +1,19 @@
+<template name="progressDialog">
+    <div id="progressDialog" tabindex="0">
+        <div class="dialogHeader">
+            <h5>{{progressDialogTitle}}</h5>
+        </div>
+        <div class="dialogContent">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active"
+                     role="progressbar"
+                     style="width:{{progressStatus}}">
+                    {{formatNumberPrecision progressStatus 0}}%
+                </div>
+            </div>
+            <div id="message">
+                {{{progressMessage}}}
+            </div>
+        </div>
+    </div>
+</template>

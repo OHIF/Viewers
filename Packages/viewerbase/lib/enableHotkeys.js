@@ -1,4 +1,4 @@
-OHIF = window.OHIF || {};
+import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
 
@@ -31,7 +31,7 @@ Meteor.startup(function() {
         WLPresetBone: ['NUMPAD4', '4'],
         WLPresetBrain: ['NUMPAD5', '5']
     };
-    
+
     // For now
     OHIF.viewer.hotkeys = OHIF.viewer.defaultHotkeys;
 
@@ -262,7 +262,7 @@ function bindHotkey(hotkey, task) {
     } else {
         fn = hotkeyFunctions[task];
 
-        // If the function doesn't exist in the 
+        // If the function doesn't exist in the
         // hotkey function list, try the viewer-specific function list
         if (!fn && OHIF.viewer && OHIF.viewer.functionList) {
             fn = OHIF.viewer.functionList[task];

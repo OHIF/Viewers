@@ -1,0 +1,29 @@
+<template name="lesionTableView">
+    <div class="lesionTableView scrollArea">
+        {{>lesionTableHeaderRow id="target"
+                                measurements=targets
+                                currentTimepointId=currentTimepointId
+                                timepointApi=timepointApi}}
+        {{#each target in targets}}
+            {{>lesionTableRow (clone this rowItem=target)}}
+        {{/each}}
+
+        {{>lesionTableHeaderRow id="nonTarget"
+                                measurements=nonTargets
+                                currentTimepointId=currentTimepointId
+                                timepointApi=timepointApi}}
+        {{#each nonTarget in nonTargets}}
+            {{>lesionTableRow (clone this rowItem=nonTarget)}}
+        {{/each}}
+
+        {{#if gt this.timepoints.get.length 1}}
+            {{>lesionTableHeaderRow id="newLesion"
+                                    measurements=newLesions
+                                    currentTimepointId=currentTimepointId
+                                    timepointApi=timepointApi}}
+            {{#each newLesion in newLesions}}
+                {{>lesionTableRow (clone this rowItem=newLesion)}}
+            {{/each}}
+        {{/if}}
+    </div>
+</template>

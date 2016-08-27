@@ -1,0 +1,48 @@
+<template name="cineDialog">
+    <div id="cineDialog" class="noselect">
+        <h5>CINE Controls</h5>
+        <div class="btn-group">
+            <a id="cineFirstButton" title="Skip to first image" class="btn" data-toggle="tooltip">
+                <i class="fa fa-fast-backward"></i>
+            </a>
+            <a id="cineBackButton" title="Previous image" class="btn" data-toggle="tooltip">
+                <i class="fa fa-step-backward"></i>
+            </a>
+            <a id="cineSlowPlaybackButton" title="Slow playback" class="btn" data-toggle="tooltip">
+                <i class="fa fa-backward"></i>
+            </a>
+            <a id="cinePlayButton" title="Play / Stop" class="btn {{#if isPlaying}}active{{/if}}" data-toggle="tooltip">
+                {{#if isPlaying}}
+                    <i class="fa fa-fw fa-stop"></i>
+                    {{else}}
+                    <i class="fa fa-fw fa-play"></i>
+                {{/if}}
+            </a>
+            <a id="cineFastForwardButton" title="Increase playback speed" class="btn" data-toggle="tooltip">
+                <i class="fa fa-forward"></i>
+            </a>
+            <a id="cineNextButton" title="Next image" class="btn" data-toggle="tooltip">
+                <i class="fa fa-step-forward"></i>
+            </a>
+            <a id="cineLastButton" title="Skip to last image" class="btn" data-toggle="tooltip">
+                <i class="fa fa-fast-forward"></i>
+            </a>
+        </div>
+        <div id="cineOptions">
+            <div id="loopSection">
+                <label for="cineLoopCheckbox">Loop?</label>
+                <input type="checkbox" checked id="cineLoopCheckbox" />
+            </div>
+            <div id="fpsSection">
+                <label for="cineSlider">
+                    Cine Speed: <span id="fps">{{framerate}}</span>
+                </label>
+                <input type="range"
+                       id="cineSlider"
+                       min="1"
+                       max="90"
+                       value="{{framerate}}"/>
+            </div>
+        </div>
+    </div>
+</template>

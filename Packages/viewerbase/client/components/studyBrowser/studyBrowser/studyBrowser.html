@@ -1,9 +1,11 @@
 <template name="studyBrowser">
     <div class="studyBrowser">
         <div class="scrollableStudyThumbnails">
-        {{ #each studies }}
-            {{ >thumbnails }}
-        {{ /each }}
+            {{#each study in studies}}
+                {{#each thumbnail in (studyThumbnails study)}}
+                    {{>thumbnailEntry thumbnail=thumbnail}}
+                {{/each}}
+            {{/each}}
         </div>
     </div>
 </template>

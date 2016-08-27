@@ -1,8 +1,13 @@
+@import "{design}/app.styl"
+
 .imageViewerViewport
   width: 100%
   height: 100%
   background-color: black
-      
+
+  // Prevent the blue outline in Chrome when a viewport is selected
+  outline: 0 !important
+
   // Prevents the entire page from getting larger
   // when the magnify tool is near the sides/corners of the page
   overflow: hidden
@@ -10,7 +15,7 @@
 .viewportInstructions
   display: none
   font-size: 13px
-  color: #e4ad00
+  color: $textSecondaryColor
   line-height: 18px
   pointer-events: none // Necessary for drag/drop through to cornerstone element below
   text-align: center
@@ -24,18 +29,9 @@
   
 /* These are some good CSS settings for a circular magnifying glass 
    Try removing the border-radius to make a square magnifying glass */
-.magnifyTool{
-    border: 4px white solid;
-    box-shadow: 2px 2px 10px #1e1e1e;
-    border-radius: 50%;
-    display: none;
-    cursor: none;
-}
-/* prevents selection when left click dragging */
-.disable-selection {
-    -moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;
-}
-/* prevents cursor from changing to the i bar on the overlays*/
-.noIbar {
-    cursor:default;
-}
+.magnifyTool
+  border: 4px white solid
+  box-shadow: 2px 2px 10px #1e1e1e
+  border-radius: 50%
+  display: none
+  cursor: none

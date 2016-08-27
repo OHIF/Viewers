@@ -1,0 +1,33 @@
+<template name="stageDetails">
+    <div id="stageDetails" class="protocolEditorSection">
+        <div class="row">
+            <div class="col-xs-12">
+                {{ #with activeViewport }}
+                <div class="stageEditorSection">
+                    <h3>Viewport Settings</h3>
+                    <hr/>
+                    {{ >settingsTable settings=viewportSettings}}
+                </div>
+
+                <div class="stageEditorSection">
+                    <h3>Study Matching Rules</h3>
+                    <hr/>
+                    {{ >ruleTable level="study" rules=studyMatchingRules attributes=studyAttributes}}
+                </div>
+
+                <div class="stageEditorSection">
+                    <h3>Series Matching Rules</h3>
+                    <hr/>
+                    {{ >ruleTable level="series" rules=seriesMatchingRules attributes=seriesAttributes}}
+                </div>
+
+                <div class="stageEditorSection">
+                    <h3>Image Matching Rules</h3>
+                    <hr/>
+                    {{ >ruleTable level="instance" rules=imageMatchingRules attributes=instanceAttributes}}
+                </div>
+                {{ /with }}
+            </div>
+        </div>
+    </div>
+</template>

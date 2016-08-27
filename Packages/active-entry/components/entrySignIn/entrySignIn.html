@@ -16,27 +16,54 @@
           <h1 id="signInPageTitle" class="title-auth">Sign In.</h1>
           <p id="signInPageMessage" class="subtitle-auth" style="{{getSignInMessageColor}}">{{{getSignInMessage}}}</p>
 
-          <form>
-            <div class="input-symbol">
-              <input id="signInPageEmailInput" type="text" name="email" placeholder="Your Email" style="{{getEmailValidationStyling}}" />
-              <i class="fa fa-envelope-o" title="Your Email"></i>
-            </div>
-            <br><br>
+            {{#if isLDAPSet}}
+                <form>
+                    {{#if ldapErrorMessages}}
+                        <div id="errorMessages" class="list-errors">
+                            {{#each ldapErrorMessages}}
+                                <div class="alert alert-danger list-item">{{this}}</div>
+                            {{/each}}
+                        </div>
+                    {{/if}}
+                    <div class="input-symbol">
+                        <input id="signInLDAPUsernameInput" type="text" name="username" placeholder="Username" style="{{getLDAPUsernameValidationStyling}}" />
+                        <i class="fa fa-envelope-o" title="Your Email"></i>
+                    </div>
+                    <br><br>
 
-            <div class="input-symbol">
-              <input id="signInPagePasswordInput" type="password" name="password" placeholder="Password" style={{getPasswordValidationStyling}} />
-              <span class="fa fa-lock" title="Password"></span>
-            </div>
-          </form>
+                    <div class="input-symbol">
+                        <input id="signInLDAPPasswordInput" type="password" name="password" placeholder="Password" style={{getLDAPPasswordValidationStyling}} />
+                        <span class="fa fa-lock" title="Password"></span>
+                    </div>
+                </form>
 
-          <br><br>
-          <button id="signInToAppButton" class="btn-primary btn-main btn-large disabledButton" disabled style="{{getButtonColor}}">{{getButtonText}}</button>
+                <br><br>
+                <button id="signInLDAPToAppButton" class="btn-primary btn-main btn-large" style="{{getButtonColor}}">{{getButtonText}}</button>
+            {{else}}
+                <form>
 
-          <br><br>
-          <button id="needAnAccountButton" class="btn-gray btn-main btn-large">Need an account?</button>
+                    <div class="input-symbol">
+                        <input id="signInPageEmailInput" type="text" name="email" placeholder="Your Email" style="{{getEmailValidationStyling}}" />
+                        <i class="fa fa-envelope-o" title="Your Email"></i>
+                    </div>
+                    <br><br>
 
-          <br><br>
-          <button id="forgotPasswordButton" class="btn-gray btn-main btn-large">Forgot password?</button>
+                    <div class="input-symbol">
+                        <input id="signInPagePasswordInput" type="password" name="password" placeholder="Password" style={{getPasswordValidationStyling}} />
+                        <span class="fa fa-lock" title="Password"></span>
+                    </div>
+                </form>
+
+                <br><br>
+                <button id="signInToAppButton" class="btn-primary btn-main btn-large disabledButton" disabled style="{{getButtonColor}}">{{getButtonText}}</button>
+
+                <br><br>
+                <button id="needAnAccountButton" class="btn-gray btn-main btn-large">Need an account?</button>
+
+                <br><br>
+                <button id="forgotPasswordButton" class="btn-gray btn-main btn-large">Forgot password?</button>
+
+            {{/if}}
 
         {{/if}}
       </div>

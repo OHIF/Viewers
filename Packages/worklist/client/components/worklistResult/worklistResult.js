@@ -1,45 +1,67 @@
-Session.setDefault("searchResults", {showLoadingText: true, showNotFoundMessage: false});
+Session.setDefault('showLoadingText', true);
 
 Template.worklistResult.helpers({
     /**
      * Returns a sorted instance of the WorklistStudies Collection
      * by Patient name and Study Date in Ascending order.
      */
-    studies: function() {
-        var sortOption = Session.get('sortOption');
-        if (sortOption) {
-            return WorklistStudies.find({}, {
-                sort: sortOption
-            });
+    studies() {
+        const instance = Template.instance();
+        let studies;
+        let sortOption = {
+            patientName: 1,
+            studyDate: 1
+        };
+
+        // Update sort option if session is defined
+        if (Session.get('sortOption')) {
+            sortOption = Session.get('sortOption');
         }
 
-        return WorklistStudies.find({}, {
-            sort: {
-                patientName: 1,
-                studyDate: 1
+        // Pagination parameters
+        const rowsPerPage = instance.rowsPerPage.get();
+        const currentPage = instance.currentPage.get();
+        const offset = rowsPerPage * currentPage;
+        const limit = offset + rowsPerPage;
+
+        studies = WorklistStudies.find({}, {
+            sort: sortOption
+        }).fetch();
+
+        if (!studies) {
+            return;
+        }
+
+        // Update record count
+        instance.recordCount.set(studies.length);
+
+        // Limit studies
+        return studies.slice(offset, limit);
+    },
+
+    numberOfStudies() {
+        return WorklistStudies.find().count();
+    },
+
+    sortingColumnsIcons() {
+        const instance = Template.instance();
+        
+        let sortingColumnsIcons = {};
+        Object.keys(instance.sortingColumns.keys).forEach(key => {
+            const value = instance.sortingColumns.get(key);
+
+            if (value === 1) {
+                sortingColumnsIcons[key] = 'fa fa-fw fa-sort-up';
+            } else if (value === -1) {
+                sortingColumnsIcons[key] = 'fa fa-fw fa-sort-down';
+            } else {
+                // fa-fw is blank
+                sortingColumnsIcons[key] = 'fa fa-fw';
             }
-        });
-    },
-
-    showLoadingText: function() {
-        return Session.get("searchResults").showLoadingText;
-    },
-
-    showNotFoundMessage: function() {
-        return Session.get("searchResults").showNotFoundMessage;
-    },
-
-    sortingColumnsIcons: function() {
-        var sortingColumnsIcons = {};
-        Object.keys(Template.instance().sortingColumns.keys).forEach(function(key) {
-            sortingColumnsIcons[key] = Template.instance().sortingColumns.get(key) === 1 ? "fa fa-sort-up": (Template.instance().sortingColumns.get(key) === -1 ? "fa fa-sort-down":"");
         });
         return sortingColumnsIcons;
     }
 });
-
-// Retrieve all studies
-search();
 
 var studyDateFrom;
 var studyDateTo;
@@ -72,13 +94,27 @@ function isIndexOf(mainVal, searchVal) {
 }
 
 /**
+ * Replace object if undefined
+ */
+function replaceUndefinedColumnValue(text) {
+    if (text === undefined || text === 'undefined') {
+        return '';
+    } else {
+        return text.toUpperCase();
+    }
+}
+
+/**
+
+
+/**
  * Convert string to study date
  */
 function convertStringToStudyDate(dateStr) {
-    var y = dateStr.substring(0, 4);
-    var m = dateStr.substring(4, 6);
-    var d = dateStr.substring(6, 8);
-    var newDateStr = m + '/' + d + '/' + y;
+    const y = dateStr.substring(0, 4);
+    const m = dateStr.substring(4, 6);
+    const d = dateStr.substring(6, 8);
+    const newDateStr = m + '/' + d + '/' + y;
     return new Date(newDateStr);
 }
 
@@ -87,11 +123,10 @@ function convertStringToStudyDate(dateStr) {
  * Inserts the identified studies into the WorklistStudies Collection
  */
 function search() {
+    console.log('search()');
+
     // Show loading message
-    var searchResults = Session.get("searchResults");
-    searchResults.showLoadingText = true;
-    searchResults.showNotFoundMessage = false;
-    Session.set("searchResults", searchResults);
+    Session.set('showLoadingText', true);
 
     // Create the filters to be used for the Worklist Search
     filter = {
@@ -99,32 +134,37 @@ function search() {
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
         studyDescription: getFilter($('input#studyDescription').val()),
-        modality: getFilter($('input#modality').val())
+        studyDateFrom: studyDateFrom,
+        studyDateTo: studyDateTo
     };
+
+    // Make sure that modality has a reasonable value, since it is occasionally
+    // returned as 'undefined'
+    const modality = replaceUndefinedColumnValue($('input#modality').val());
 
     // Clear all current studies
     WorklistStudies.remove({});
 
-    Meteor.call('WorklistSearch', filter, function(error, studies) {
+    Meteor.call('WorklistSearch', filter, (error, studies) => {
+        console.log('WorklistSearch');
         if (error) {
             log.warn(error);
             return;
         }
 
         // Hide loading text
-        searchResults.showLoadingText = false;
-        Session.set("searchResults", searchResults);
+        Session.set('showLoadingText', false);
 
         if (!studies) {
             return;
         }
 
         // Loop through all identified studies
-        studies.forEach(function(study) {
-
+        studies.forEach(study => {
             // Search the rest of the parameters that aren't done via the server call
-            if ((new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === "") &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === "")) {
+            if (isIndexOf(study.modalities, modality) &&
+                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === '') &&
+                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = parseInt(study.numberOfStudyRelatedInstances);
@@ -133,98 +173,117 @@ function search() {
                 WorklistStudies.insert(study);
             }
         });
-
-        if (WorklistStudies.find().count() === 0) {
-            // Show notFound text
-            searchResults.showNotFoundMessage = true;
-            Session.set("searchResults", searchResults);
-        }
-
     });
 }
 
-Template.worklistResult.onCreated(function() {
-    this.sortOption = new ReactiveVar();
-    this.sortingColumns = new ReactiveDict();
+Template.worklistResult.onCreated(() => {
+    let instance = Template.instance();
+    instance.sortOption = new ReactiveVar();
+    instance.sortingColumns = new ReactiveDict();
+
+    // Pagination parameters
+
+    // Rows per page is 25 as default
+    instance.rowsPerPage = new ReactiveVar(25);
+
+    // Set currentPage indexed 0
+    instance.currentPage = new ReactiveVar(0);
+    instance.recordCount = new ReactiveVar();
+
     // Set sortOption
-    var sortOptionSession = Session.get('sortOption');
+    const sortOptionSession = Session.get('sortOption');
     if (sortOptionSession) {
-        this.sortingColumns.set(sortOptionSession);
+        instance.sortingColumns.set(sortOptionSession);
     } else {
-        this.sortingColumns.set('patientName', 1);
-        this.sortingColumns.set('studyDate', 1);
+        instance.sortingColumns.set({
+            patientName: 1,
+            studyDate: 1,
+            patientId: 0,
+            accessionNumber: 0,
+            studyDescription: 0,
+            modality: 0,
+            numberOfStudyRelatedInstances: 0
+        });
     }
 
-    var self = this;
     if (Worklist.subscriptions) {
-        Worklist.subscriptions.forEach(function(collectionName) {
-            self.subscribe(collectionName);
+        Worklist.subscriptions.forEach(collectionName => {
+            instance.subscribe(collectionName);
         });
     }
 });
 
-Template.worklistResult.onRendered(function() {
+Template.worklistResult.onRendered(() => {
+    const instance = Template.instance();
+
     // Initialize daterangepicker
-    $("#studyDate").daterangepicker({
+    instance.$('#studyDate').daterangepicker({
         ranges: {
-            'Today': [moment(), moment()],
+            Today: [moment(), moment()],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()]
         }
     });
+
+    // Retrieve all studies
+    search();
 });
 
-function resetSortingColumns(template, sortingColumn) {
-    Object.keys(template.sortingColumns.keys).forEach(function(key) {
+function resetSortingColumns(instance, sortingColumn) {
+    Object.keys(instance.sortingColumns.keys).forEach(key => {
         if (key !== sortingColumn) {
-            template.sortingColumns.set(key, null);
+            instance.sortingColumns.set(key, null);
         }
     });
 }
 
 Template.worklistResult.events({
-    'keydown input': function(e) {
-        if (e.which === 13) { //  Enter
+    'keydown input'(event) {
+        if (event.which === 13) { //  Enter
             search();
         }
     },
-    'onsearch input': function() {
+
+    'onsearch input'() {
         search();
     },
 
-    'change #studyDate': function(e, template) {
-        var dateRange = $(e.currentTarget).val();
+    'change #studyDate'(event) {
+        let dateRange = $(event.currentTarget).val();
+        
         // Remove all space chars
-        dateRange = dateRange.replace(/ /g,'');
+        dateRange = dateRange.replace(/ /g, '');
+
         // Split dateRange into subdates
-        var dates = dateRange.split("-");
+        const dates = dateRange.split('-');
         studyDateFrom = dates[0];
         studyDateTo = dates[1];
 
-        if (dateRange !== "") {
+        if (dateRange !== '') {
             search();
         }
     },
 
-    'click a.sortingCell': function(e, template) {
-        var elementId = e.currentTarget.id;
-        // Remove _ from id
-        var columnName = elementId.replace("_", '');
+    'click div.sortingCell'(event, instance) {
+        const elementId = event.currentTarget.id;
 
-        var sortOption= {};
-        resetSortingColumns(template, columnName);
-        var columnObject = template.sortingColumns.get(columnName);
+        // Remove _ from id
+        const columnName = elementId.replace('_', '');
+
+        let sortOption = {};
+        resetSortingColumns(instance, columnName);
+
+        const columnObject = instance.sortingColumns.get(columnName);
         if (columnObject) {
-            template.sortingColumns.set(columnName, columnObject * -1);
+            instance.sortingColumns.set(columnName, columnObject * -1);
             sortOption[columnName] = columnObject * -1;
         } else {
-            template.sortingColumns.set(columnName, 1);
+            instance.sortingColumns.set(columnName, 1);
             sortOption[columnName] = 1;
         }
 
-        template.sortOption.set(sortOption);
+        instance.sortOption.set(sortOption);
         Session.set('sortOption', sortOption);
     }
-
 });
 

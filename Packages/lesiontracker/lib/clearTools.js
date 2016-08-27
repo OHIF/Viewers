@@ -8,6 +8,14 @@ clearTools = function() {
     var seriesInstanceUids = []; // Holds seriesInstanceUid of imageViewerViewport elements
     viewportElements.each(function(index, element) {
         var enabledElement = cornerstone.getEnabledElement(element);
+        var study = cornerstoneTools.metaData.get('study', enabledElement.image.imageId);
+        if (!study) {
+            return;
+        }
+        // Set reviewer for this timepoint
+        if (study.studyInstanceUid) {
+            Meteor.call('setReviewer',study.studyInstanceUid);
+        }
         var series = cornerstoneTools.metaData.get('series', enabledElement.image.imageId);
         if (!series) {
             return;

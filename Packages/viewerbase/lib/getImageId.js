@@ -9,6 +9,10 @@ getImageId = function(instance, frame) {
         return;
     }
 
+    if (instance.url) {
+        return instance.url;
+    }
+
     if (instance.wadouri) {
         var imageId = 'dicomweb:' + instance.wadouri; // WADO-URI;
         if (frame !== undefined) {

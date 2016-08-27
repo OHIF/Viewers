@@ -1,0 +1,24 @@
+@import "{design}/app"
+
+.toolbarSection
+  border-bottom: $uiBorderColor $uiBorderThickness solid
+  flex: 0 0 auto
+  height: $toolbarHeight
+  overflow: hidden
+  padding-top: 6px
+  position: relative
+  transition(height 300ms ease)
+  width: 100%
+
+  &.expanded
+    height: $toolbarHeight + $toolbarDrawerHeight
+
+  .toolbarSectionEntry
+    color: $defaultColor
+    cursor: pointer
+    display: inline-block
+    fill: $defaultColor
+    margin-top: 3px
+    min-width: 30px
+    stroke: $defaultColor
+    text-align: center

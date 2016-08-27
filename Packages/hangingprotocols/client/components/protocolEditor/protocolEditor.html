@@ -1,0 +1,126 @@
+<template name="protocolEditor">
+    <div id='protocolEditor'>
+        <div class="row">
+            <div class="navigationButtons col-xs-12">
+                <ul class="nav nav-pills">
+                    <li class="active">
+                        <a data-toggle="tab" href="#protocolRulePane">
+                            Protocol
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#activeViewportEditor">
+                            Active Viewport
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="tab-content">
+            <div id="protocolRulePane" class="tab-pane active">
+                {{#with activeProtocol}}
+                <div id="selectProtocol" class="protocolEditorSection">
+                    <select id="protocolSelect" style="width: 50%">
+                    </select>
+                    <div class="dropdown protocolDropdown">
+                        <button type="button" class="btn btn-sm dropdown-toggle" id="protocolDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <i class="fa fa-cog"></i> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="protocolDropdown">
+                            <li>
+                                <a id="newProtocol">
+                                    New <i class="fa fa-file-text"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="btn-file">
+                                    Import <input type="file"> <i class="fa fa-upload"></i>
+                                </a>
+                            </li>
+                            {{ #unless locked }}
+                            <li>
+                                <a id="renameProtocol">
+                                    Rename <i class="fa fa-pencil"></i>
+                                </a>
+                            </li>
+                            {{ /unless }}
+                            <li>
+                                <a id="saveAsProtocol">
+                                    Save As <i class="fa fa-files-o"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a id="exportJSON">
+                                    Export <i class="fa fa-download"></i>
+                                </a>
+                            </li>
+                            {{ #unless locked }}
+                            <li>
+                                <a id="deleteProtocol">
+                                    Delete <i class="fa fa-trash-o"></i>
+                                </a>
+                            </li>
+                            {{ /unless }}
+                        </ul>
+                    </div>
+                </div>
+                <div id="editProtocol" class="protocolEditorSection">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p>Created: {{formatJSDate createdDate}}{{ #if createdBy }} by {{getUsername createdBy}}{{/if}}</p>
+                            <p>Last modified: {{formatJSDate modifiedDate}}{{ #if createdBy }} by {{getUsername modifiedBy}}{{/if}}</p>
+                            <p>Number of Priors Referenced: {{numberOfPriorsReferenced}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h3>Protocol Applicability</h3>
+                        <hr/>
+                        {{ >ruleTable level="protocol" rules=protocolMatchingRules attributes=studyAttributes}}
+                    </div>
+                    <div class="row">
+                        <h3>Stages</h3>
+                        <hr/>
+                        {{ >stageSortable stages=stages}}
+                    </div>
+                </div>
+                {{/with}}
+            </div>
+
+            <div id="activeViewportEditor" class="tab-pane">
+                {{ #if activeViewportUndefined }}
+                    <div class="noActiveViewport">
+                        <h2>Select a Viewport</h2>
+                        <hr/>
+                        <p>
+                            Upon selecting a Viewport, this section will show a list of rules that can be used
+                            to determine which images will populate the specified Viewport. You can specify these
+                            rules to be evaluated at the study, series, or image level.
+                        </p>
+                    </div>
+                {{ /if }}
+                {{#with activeStage}}
+                {{ >stageDetails }}
+                {{/with}}
+            </div>
+        </div>
+
+        {{#with activeProtocol}}
+        <div id="protocolOptions" class="protocolEditorSection">
+            {{ #if locked }}
+            <button id="saveProtocol" type="button" class="btn btn-sm" disabled>
+                Locked <i class="fa fa-lock" aria-hidden="true"></i>
+            </button>
+            {{ else }}
+            <button id="saveProtocol" type="button" class="btn btn-sm">
+                Save Changes <i class="fa fa-floppy-o" aria-hidden="true"></i>
+            </button>
+            {{ /if }}
+
+            {{#if modifiedDate}}
+            <p class="lastSavedText">Last saved {{jsDateFromNow modifiedDate}}</p>
+            {{/if}}
+        </div>
+        <iframe id="download_iframe" style="display:none;"></iframe>
+        {{/with}}
+    </div>
+</template>

@@ -19,11 +19,13 @@ TrialCriteriaConstraints = {
  */
 function RECIST(image) {
     var acquisitionSliceThickness;
+
+    var isChestXray;
     if (image) {
         acquisitionSliceThickness = image.acquisitionSliceThickness;
 
         // TODO: Use metaData to determine if this is a chest X-ray
-        var isChestXray = false;
+        isChestXray = false;
     }
 
     // Define the RECIST 1.1 structure
@@ -340,7 +342,8 @@ getTrialCriteriaConstraints = function(criteriaTypes, imageId) {
         var criteria;
         if (!imageId) {
             criteria = TrialCriteriaConstraints[criteriaType]();
-            return criteria;
+            allCriteria.push(criteria);
+            return;
         }
 
         // Otherwise, retrieve the series metaData to identify the modality of the image

@@ -44,6 +44,7 @@ function setLesionNumberCallback(measurementData, eventData, doneCallback) {
 // If there already exists a lesion with this specific lesion number,
 // related to the chosen location.
 function getLesionLocationCallback(measurementData, eventData) {
+    return;
     Template.lesionLocationDialog.measurementData = measurementData;
 
     // Reset the doneCallback saved in the template so we don't call the change event's done callback
@@ -110,6 +111,7 @@ function getLesionLocationCallback(measurementData, eventData) {
 }
 
 changeLesionLocationCallback = function(measurementData, eventData, doneCallback) {
+    return;
     Template.lesionLocationDialog.measurementData = measurementData;
     Template.lesionLocationDialog.doneCallback = doneCallback;
 
@@ -183,6 +185,14 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
             selected: true
         }
     });
+
+    // Set reviewer for this timepoint
+    Object.keys(measurement.timepoints).forEach(function(key) {
+        if (measurement.timepoints[key].studyInstanceUid) {
+            Meteor.call('setReviewer',measurement.timepoints[key].studyInstanceUid);
+        }
+    });
+    
 };
 
 var config = {

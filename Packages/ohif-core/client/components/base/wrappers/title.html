@@ -1,0 +1,11 @@
+<template name="wrapperTitle">
+    <div class="wrapperTitle {{this.labelClass}}">
+        {{#if this.labelAfter}}
+            {{>UI.contentBlock}}
+        {{/if}}
+        <span class="wrapperText">{{reactive this.label}}</span>
+        {{#unless this.labelAfter}}
+            {{>UI.contentBlock}}
+        {{/unless}}
+    </div>
+</template>

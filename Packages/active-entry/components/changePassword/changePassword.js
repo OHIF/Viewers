@@ -90,40 +90,11 @@ Template.changePassword.events({
     ActiveEntry.errorMessages.set('changePasswordError', null);
 
 
-    if (ActiveEntry.successMessages.get('password') && ActiveEntry.successMessages.get('confirm') && oldPassword) {
-      Meteor.call("checkPasswordExistence", new String(password).hashCode(), function(error, result) {
-        if (error) {
-          console.warn(error.message);
-          ActiveEntry.errorMessages.set('changePasswordError', error.message);
-
-        } else {
-          if (result) {
-            ActiveEntry.errorMessages.set('changePasswordError', 'Password is used before. Please change your new password.');
-          } else {
-            ActiveEntry.errorMessages.set('changePasswordError', null);
-
-            // If password is not found in password history, change the password
-            Accounts.changePassword(oldPassword, confirmPassword, function(error) {
-              if (error) {
-                console.warn(error);
-                ActiveEntry.errorMessages.set('changePasswordError', error.message);
-              } else {
-                // Save the new password
-                ActiveEntry.insertHashedPassword(confirmPassword);
-
-                // Update password expiration date
-                ActiveEntry.updatePasswordSetDate();
-
-                // Logout
-                ActiveEntry.signOut();
-                // Go to signIn page for new entry
-                Router.go('/entrySignIn');
-              }
-            });
-          }
-        }
-      });
+    if (ActiveEntry.errorMessages.get('password') || ActiveEntry.errorMessages.get('confirm') || !oldPassword) {
+      return;
     }
+
+    ActiveEntry.changePassword(oldPassword, password);
 
   }
 });

@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Activates a set of lesions when lesion table row is clicked
  *
@@ -107,7 +109,7 @@ activateLesion = function(measurementId, templateData) {
 
         // Otherwise, re-render the viewport with the required study/series, then
         // add an onRendered callback to activate the measurements
-        rerenderViewportWithNewSeries(element, requiredSeriesData, function(element) {
+        layoutManager.rerenderViewportWithNewDisplaySet(element, requiredSeriesData, function(element) {
             activateMeasurements(element, measurementId, templateData, viewportIndex);
         });
     });

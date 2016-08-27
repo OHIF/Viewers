@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 applyWLPreset = function(presetName, element) {
     log.info("Applying WL Preset: " + presetName);
     var viewport = cornerstone.getViewport(element);

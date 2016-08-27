@@ -8,7 +8,10 @@ Template.hipaaRibbon.events({
   "change #endDateInput": function (event, template) {
     Session.set("endDateFilter", $('#endDateInput').val() + "T00:00:00.000Z");
   },
-
+  'change #actionFilter': function(e) {
+      var actionType = e.currentTarget.value;
+    Session.set("hipaaTypeFilter", actionType);
+  },
   'click #filterCreatedButton': function () {
     Session.set("hipaaTypeFilter", 'create');
   },
@@ -20,6 +23,9 @@ Template.hipaaRibbon.events({
   },
   'click #filterAllButton': function () {
     Session.set("hipaaTypeFilter", '');
+  },
+  'click #searchClear': function() {
+    Session.set("hipaaSearchFilter", '');
   }
 });
 

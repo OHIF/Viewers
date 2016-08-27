@@ -1,6 +1,5 @@
 handleMeasurementAdded = function(e, eventData) {
     var measurementData = eventData.measurementData;
-
     switch (measurementData.toolType) {
         case 'nonTarget':
         case 'bidirectional':
@@ -10,6 +9,11 @@ handleMeasurementAdded = function(e, eventData) {
             log.info('CornerstoneToolsMeasurementAdded');
             LesionManager.updateLesionData(measurementData);
             TrialResponseCriteria.validateDelayed(measurementData);
+            // Set reviewer for this timepoint
+            if (measurementData.studyInstanceUid) {
+                Meteor.call('setReviewer', measurementData.studyInstanceUid);
+            }
+
             break;
         case 'ellipticalRoi':
         case 'length':
@@ -33,4 +37,5 @@ handleMeasurementAdded = function(e, eventData) {
 
             break;
     }
+
 };

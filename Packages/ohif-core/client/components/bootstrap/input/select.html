@@ -1,0 +1,18 @@
+<template name="inputSelect">
+    {{#baseComponent (extend this
+        base='baseSelect'
+        mixins=(concat 'select2 ' this.mixins)
+        wrappers=(concat ''
+            (valueIf reactive this.label 'wrapperLabel ' '')
+            this.wrappers
+        )
+        options=(clone this.options
+            multiple=(valueIf this.multiple true false)
+            minimumResultsForSearch=(valueIf this.hideSearch
+                -1 this.minimumResultsForSearch
+            )
+        )
+    )}}
+        {{>UI.contentBlock}}
+    {{/baseComponent}}
+</template>

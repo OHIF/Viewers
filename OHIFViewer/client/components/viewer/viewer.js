@@ -1,84 +1,78 @@
-Template.viewer.onCreated(function() {
-    // Attach the Window resize listener
-    $(window).on('resize', handleResize);
+import { OHIF } from 'meteor/ohif:core';
 
-    log.info('viewer onCreated');
+OHIF.viewer = OHIF.viewer || {};
+OHIF.viewer.loadIndicatorDelay = 500;
+OHIF.viewer.defaultTool = 'wwwc';
+OHIF.viewer.refLinesEnabled = true;
+OHIF.viewer.isPlaying = {};
+OHIF.viewer.cine = {
+    framesPerSecond: 24,
+    loop: true
+};
 
-    OHIF = window.OHIF || {
-        viewer: {}
-    };
+OHIF.viewer.functionList = {
+    toggleCineDialog: toggleCineDialog,
+    toggleCinePlay: toggleCinePlay,
+    clearTools: clearTools,
+    resetViewport: resetViewport,
+    invert: invert
+};
 
-    OHIF.viewer.loadIndicatorDelay = 500;
-    OHIF.viewer.defaultTool = 'wwwc';
-    OHIF.viewer.refLinesEnabled = true;
-    OHIF.viewer.isPlaying = {};
+Session.setDefault('activeViewport', false);
+Session.setDefault('leftSidebar', false);
+Session.setDefault('rightSidebar', false);
 
-    OHIF.viewer.functionList = {
-        invert: function(element) {
-            var viewport = cornerstone.getViewport(element);
-            viewport.invert = !viewport.invert;
-            cornerstone.setViewport(element, viewport);
-        },
-        resetViewport: function(element) {
-            cornerstone.reset(element);
-        },
-        clearTools: function(element) {
-            var toolStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
-            toolStateManager.clear(element);
-            cornerstone.updateImage(element);
-        },
-        previousPresentationGroup: function() {
-            WindowManager.previousPresentationGroup();
-        },
-        nextPresentationGroup: function() {
-            WindowManager.nextPresentationGroup();
-        }
-    };
+Template.viewer.onCreated(() => {
+    const instance = Template.instance();
 
-    if (isTouchDevice()) {
-        OHIF.viewer.tooltipConfig = {
-            trigger: 'manual'
-        };
-    } else {
-        OHIF.viewer.tooltipConfig = {
-            trigger: 'hover'
-        };
-    }
+    instance.data.state = new ReactiveDict();
+    instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
+    instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
-    var contentId = this.data.contentId;
-    
-    if (ViewerData[contentId].loadedSeriesData) {
+    instance.subscribe('hangingprotocols');
+
+    const contentId = instance.data.contentId;
+
+    if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {
         log.info('Reloading previous loadedSeriesData');
-
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
-
     } else {
         log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
-        
+        ViewerData[contentId] = {};
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
         ViewerData[contentId].viewportColumns = 1;
         ViewerData[contentId].viewportRows = 1;
         ViewerData[contentId].activeViewport = 0;
-        Session.set('ViewerData', ViewerData);
     }
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});
-    
-    this.data.studies.forEach(function(study) {
+
+    ViewerData[contentId].studyInstanceUids = [];
+    instance.data.studies.forEach(study => {
         study.selected = true;
+        study.displaySets = createStacks(study);
         ViewerStudies.insert(study);
+        ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });
 
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
+    Session.set('ViewerData', ViewerData);
 });
 
-Template.viewer.onDestroyed(function() {
-    log.info('onDestroyed');
-    OHIF.viewer.updateImageSynchronizer.destroy();
+Template.viewer.events({
+    'click .js-toggle-studies'() {
+        const instance = Template.instance();
+        const current = instance.data.state.get('leftSidebar');
+        instance.data.state.set('leftSidebar', !current);
+    },
+    'click .js-toggle-protocol-editor'() {
+        const instance = Template.instance();
+        const current = instance.data.state.get('rightSidebar');
+        instance.data.state.set('rightSidebar', !current);
+    },
 });

@@ -1,0 +1,16 @@
+<template name="lesionTableHUD">
+    <div id="lesionTableHUD" class="{{hudHidden}}">
+        <div class="header">
+            <span>Measurements</span>
+            <svg class="buttonClose">
+                <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-ui-close"></use>
+            </svg>
+        </div>
+        {{>lesionTableView (clone this)}}
+        <div class="footer">
+            {{#each toolbarButton in toolbarButtons}}
+                {{>toolbarSectionButton toolbarButton}}
+            {{/each}}
+        </div>
+    </div>
+</template>

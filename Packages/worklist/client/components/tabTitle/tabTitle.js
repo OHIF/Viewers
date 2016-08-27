@@ -6,6 +6,8 @@ Template.tabTitle.events({
      * @param e The click event used to close the tab
      */
     'click .close': function(e) {
+        console.log('click .close');
+        
         // Identify the tab title DOM node
         var tab = $(e.currentTarget).parents('a[data-toggle="tab"]').eq(0);
 

@@ -1,6 +1,8 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * This function disables reference lines for a specific viewport element.
- * It also enables reference lines for all other viewports with the 
+ * It also enables reference lines for all other viewports with the
  * class .imageViewerViewport.
  *
  * @param element {node} DOM Node representing the viewport element

@@ -37,7 +37,20 @@ function removeTimepointAssociations() {
         Meteor.call('removeAssociatedStudy', study._id, function(error) {
             if (error) {
                 log.warn(error);
+                return;
             }
+
+            // Log
+            var hipaaEvent = {
+                eventType: 'delete',
+                userId: Meteor.userId(),
+                userName: Meteor.user().profile.fullName,
+                collectionName: "Studies",
+                recordId: study.studyInstanceUid,
+                patientId: study.patientId,
+                patientName: study.patientName
+            };
+            HipaaLogger.logEvent(hipaaEvent);
         });
 
         // Find the Timepoint that was previously referenced
@@ -64,13 +77,38 @@ function removeTimepointAssociations() {
                     studyInstanceUids: timepoint.studyInstanceUids
                 }
             });
+
+            // Log
+            var hipaaEvent = {
+                eventType: 'modify',
+                userId: Meteor.userId(),
+                userName: Meteor.user().profile.fullName,
+                collectionName: "Timepoints",
+                recordId: study.timepointId,
+                patientId: study.patientId,
+                patientName: study.patientName
+            };
+            HipaaLogger.logEvent(hipaaEvent);
         } else {
             // If no more Studies are associated with this Timepoint, we should remove it
             // from the Timepoints Collection via a server call
             Meteor.call('removeTimepoint', timepoint._id, function(error) {
                 if (error) {
                     log.warn(error);
+                    return;
                 }
+
+                // Log
+                var hipaaEvent = {
+                    eventType: 'delete',
+                    userId: Meteor.userId(),
+                    userName: Meteor.user().profile.fullName,
+                    collectionName: "Timepoints",
+                    recordId: study.timepointId,
+                    patientId: study.patientId,
+                    patientName: study.patientName
+                };
+                HipaaLogger.logEvent(hipaaEvent);
             });
         }
     });
@@ -81,10 +119,10 @@ function removeTimepointAssociations() {
  */
 function exportSelectedStudies() {
     var selectedStudies = WorklistSelectedStudies.find({}, {
-            sort: {
-                studyDate: 1
-            }
-        }).fetch();
+        sort: {
+            studyDate: 1
+        }
+    }).fetch();
 
     if (!selectedStudies) {
         return;
@@ -97,11 +135,12 @@ function exportSelectedStudies() {
  * Loads multiple unassociated studies in the Viewer
  */
 function viewStudies() {
+    console.log('viewStudies');
     var selectedStudies = WorklistSelectedStudies.find({}, {
-            sort: {
-                studyDate: 1
-            }
-        }).fetch();
+        sort: {
+            studyDate: 1
+        }
+    }).fetch();
 
     if (!selectedStudies) {
         return;
@@ -134,3 +173,11 @@ function viewStudies() {
     // Switch to the new tab
     switchToTab(contentid);
 }
+
+Template.studyContextMenu.helpers({
+    'studyListFunctionsEnabled': function() {
+        var studyListFunctionsEnabled = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui &&
+            Meteor.settings.public.ui.studyListFunctionsEnabled || false;
+        return studyListFunctionsEnabled;
+    }
+});

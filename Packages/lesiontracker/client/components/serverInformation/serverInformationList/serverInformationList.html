@@ -1,0 +1,43 @@
+<template name="serverInformationList">
+    <table id="tblServer" class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each servers}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.type}}</td>
+                    <td class="text-right">
+                        <div class="btn-group" role="group" aria-label="Actions">
+                            <button class="btn btn-sm btn-default js-use-server" title="Use this server" disabled="{{#if isActive this}}disabled{{/if}}">
+                                {{#if isActive this}}
+                                    <i class="fa fa-check-square-o"></i>
+                                {{else}}
+                                    <i class="fa fa-square-o"></i>
+                                {{/if}}
+                            </button>
+                            <button class="btn btn-sm btn-default js-edit-server" title="Edit">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger js-remove-server" title="Remove">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {{else}}
+                <tr>
+                    <td class="text-center" colspan="3">No servers found</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <button class="btn btn-default js-add-server">
+        <i class="fa fa-plus"></i> Add a new server
+    </button>
+</template>

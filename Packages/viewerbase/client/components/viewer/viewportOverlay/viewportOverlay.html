@@ -1,5 +1,6 @@
 <template name="viewportOverlay">
-    <div class="imageViewerViewportOverlay noselect">
+    <div class="imageViewerViewportOverlay noselect {{#if gt numImages 1}}controlsVisible{{/if}}">
+        {{ #unless tagDisplaySpecified }}
         <div class="topleft dicomTag">
             <div>{{formatPN patientName}}</div>
             <div>{{patientId}}</div>
@@ -10,17 +11,65 @@
             <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
         </div>
         <div class="bottomright dicomTag">
-            <div>Zoom: {{formatNumberPrecision zoom 2}}%</div>
+            <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
             <div>{{compression}}</div>
             <div>{{wwwc}}</div>
         </div>
         <div class="bottomleft dicomTag">
-            <div>Ser: {{seriesNumber}}</div>
-            <div>Img: {{imageNumber}} ({{imageIndex}}/{{numImages}})</div>
-            <div>{{frameRate}}</div>
+            <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
+            <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
+            <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
             <div>{{imageDimensions}}</div>
+            <div>{{#if location}}Loc: {{location}} mm{{/if}}
+                 {{#if thickness}}Thick: {{thickness}} mm{{/if}}
+                 {{#if spacingBetweenSlices}}Spacing: {{spacingBetweenSlices}} mm{{/if}}
+            </div>
             <div>{{seriesDescription}}</div>
         </div>
-        {{>imageControls}}
+        {{ /unless }}
+
+        {{ #if tagDisplayRightOnly }}
+        <div class="topright dicomTag">
+            <div>{{formatPN patientName}}</div>
+            <div>{{patientId}}</div>
+            <div class='priorIndicator'>{{prior}}</div>
+            <div>{{studyDescription}}</div>
+            <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
+        </div>
+        <div class="bottomright dicomTag">
+            <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
+            <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
+            <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+            <div>{{imageDimensions}}</div>
+            <div>{{seriesDescription}}</div>
+            <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
+            <div>{{compression}}</div>
+            <div>{{wwwc}}</div>
+        </div>
+        {{ /if }}
+
+        {{ #if tagDisplayLeftOnly }}
+        <div class="topleft dicomTag">
+            <div>{{formatPN patientName}}</div>
+            <div>{{patientId}}</div>
+            <div class='priorIndicator'>{{prior}}</div>
+            <div>{{studyDescription}}</div>
+            <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
+        </div>
+        <div class="bottomleft dicomTag">
+            <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
+            <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
+            <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+            <div>{{imageDimensions}}</div>
+            <div>{{seriesDescription}}</div>
+            <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
+            <div>{{compression}}</div>
+            <div>{{wwwc}}</div>
+        </div>
+        {{ /if }}
+
+        {{#if gt numImages 1}}
+        {{> imageControls imageIndex=imageIndex numImages=numImages}}
+        {{ /if }}
     </div>
 </template>

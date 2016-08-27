@@ -13,6 +13,7 @@ Package.onUse(function(api) {
     api.addFiles('server/getName.js', 'server');
     api.addFiles('server/getNumber.js', 'server');
     api.addFiles('server/getString.js', 'server');
+    api.addFiles('server/getModalities.js', 'server');
 
     api.export('DICOMWeb', ['client', 'server']);
 });

@@ -1,31 +1,25 @@
 <template name="worklistStudy">
     <tr class="worklistStudy noselect">
-        <td>
+        <td class="patientName">
             {{formatPN patientName}}
         </td>
-        <td>
+        <td class="patientId">
             {{patientId}}
         </td>
-        {{#unless isTouchDevice}}
-        <td>
+        <td class="accessionNumber">
             {{accessionNumber}}
         </td>
-        {{/unless}}
-        <td>
+        <td class="studyDate">
             {{formatDA studyDate}}
         </td>
-        {{#unless isTouchDevice}}
-        <td>
+        <td class="modalities">
             {{modalities}}
         </td>
-        {{/unless}}
-        <td>
+        <td class="studyDescription">
             {{studyDescription}}
         </td>
-        {{#unless isTouchDevice}}
-        <td>
+        <td class="numberOfStudyRelatedInstances">
             {{numberOfStudyRelatedInstances}}
         </td>
-        {{/unless}}
     </tr>
 </template>

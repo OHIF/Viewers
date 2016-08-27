@@ -1,5 +1,5 @@
 Package.describe({
-  name: "orthancremote",
+  name: "orthanc-remote",
   summary: "Orthanc Remote",
   version: '0.0.1'
 });

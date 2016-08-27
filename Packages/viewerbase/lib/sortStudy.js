@@ -5,8 +5,8 @@
  * @param {Object} study The study instance
  */
 sortStudy = function(study) {
-    if (!study) {
-        return;
+    if (!study || !study.seriesList) {
+        throw "Insufficient study data was provided to sortStudy";
     }
     
     study.seriesList.sort(function(a, b) {

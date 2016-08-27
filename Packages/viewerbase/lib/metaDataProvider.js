@@ -26,7 +26,8 @@ addMetaData = function(imageId, data) {
         studyInstanceUid: studyMetaData.studyInstanceUid,
         studyDate: studyMetaData.studyDate,
         studyTime: studyMetaData.studyTime,
-        studyDescription: studyMetaData.studyDescription
+        studyDescription: studyMetaData.studyDescription,
+        institutionName: studyMetaData.institutionName
     };
 
     metaData.series = {
@@ -37,22 +38,13 @@ addMetaData = function(imageId, data) {
         numImages: numImages
     };
 
-    metaData.instance = {
-        wadouri: instanceMetaData.wadouri,
-        imageType: instanceMetaData.imageType,
-        photometricInterpretation: instanceMetaData.photometricInterpretation,
-        sopInstanceUid: instanceMetaData.sopInstanceUid,
-        sopClassUid: instanceMetaData.sopClassUid,
-        instanceNumber: instanceMetaData.instanceNumber,
-        laterality: instanceMetaData.laterality,
-        viewPosition: instanceMetaData.viewPosition,
-        sliceThickness: instanceMetaData.sliceThickness,
-        index: imageIndex
-    };
+    metaData.instance = instanceMetaData;
 
     metaData.patient = {
         name: studyMetaData.patientName,
-        id: studyMetaData.patientId
+        id: studyMetaData.patientId,
+        birthDate: studyMetaData.patientBirthDate,
+        sex: studyMetaData.patientSex
     };
 
     // If there is sufficient information, populate
@@ -86,6 +78,21 @@ addMetaData = function(imageId, data) {
 
     // Add the metaData to the imageId lookup object
     metaDataLookup[imageId] = metaData;
+};
+
+/**
+ * Adds a set of metaData to the Cornerstone metaData provider given a specific
+ * imageId, type, and dataset
+ *
+ * @param imageId
+ * @param type (e.g. series, instance, tagDisplay)
+ * @param data
+ */
+addSpecificMetadata = function(imageId, type, data) {
+    var metaData = {};
+    metaData[type] = data;
+
+    metaDataLookup[imageId] = $.extend(metaDataLookup[imageId], metaData);
 };
 
 /**

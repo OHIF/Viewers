@@ -5,16 +5,6 @@ Router.route('/forgotPassword', {
   template: "forgotPassword"
 });
 
-Router.route('/resetPassword/:token', {
-  template: 'resetPassword',
-  name: 'resetPassword',
-    onBeforeAction: function() {
-        var token = this.params.token;
-        Session.set('_resetPasswordToken', token);
-        this.next();
-    }
-});
-
 Template.forgotPassword.helpers({
     getForgotPasswordMessageColor: function (){
         if (ActiveEntry.errorMessages.get('forgotPassword')) {
@@ -37,48 +27,10 @@ Template.forgotPassword.helpers({
 Template.forgotPassword.events({
   "submit": function (event, template) {
     event.preventDefault();
-
     console.log('send reminder!');
+    ActiveEntry.successMessages.set("forgotPassword", "Your password reset email is sending...");
     var emailAddress = $('#signInPageEmailInput').val();
     ActiveEntry.forgotPassword(emailAddress);
   }
 });
 
-// Reset password template
-Template.resetPassword.helpers({
-  resetPassword: function(){
-      return Session.get('_resetPasswordToken');
-  },
-  resetPasswordErrorMessages: function() {
-    if (ActiveEntry.errorMessages.get("password")) {
-      return [ActiveEntry.errorMessages.get("password")];
-    }
-    if (ActiveEntry.errorMessages.get("confirm")) {
-        return [ActiveEntry.errorMessages.get("confirm")];
-    }
-
-    return;
-  }
-});
-
-Template.resetPassword.events({
-    'keyup #resetPasswordInput': function (event, template) {
-        var password = $('#resetPasswordInput').val();
-        ActiveEntry.verifyPassword(password);
-        ActiveEntry.errorMessages.set('forgotPassword', null);
-    },
-    'keyup #resetPasswordConfirmInput': function (event, template) {
-
-        var password = $('#resetPasswordInput').val();
-        var confirmPassword = $('#resetPasswordConfirmInput').val();
-
-        ActiveEntry.verifyConfirmPassword(password, confirmPassword);
-        ActiveEntry.errorMessages.set('forgotPassword', null);
-    },
-    'click #resetPasswordButton': function(e, template) {
-        e.preventDefault();
-        var password = $('#resetPasswordInput').val();
-        var passwordConfirm = $('#resetPasswordConfirmInput').val();
-        ActiveEntry.resetPassword(password, passwordConfirm);
-    }
-});

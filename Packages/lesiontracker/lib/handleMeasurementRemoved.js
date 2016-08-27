@@ -16,6 +16,10 @@ handleMeasurementRemoved = function(e, eventData) {
             if (!measurement) {
                 return;
             }
+            // Set reviewer for this timepoint
+            if (measurementData.studyInstanceUid) {
+                Meteor.call('setReviewer', measurementData.studyInstanceUid);
+            }
 
             clearMeasurementTimepointData(measurement._id, measurementData.timepointId);
             break;

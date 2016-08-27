@@ -7,10 +7,10 @@ Meteor.startup(function() {
             },
             signIn: {
                 displayFullName: true,
-                destination: '/worklist'
+                destination: '/'
             },
             signUp: {
-                destination: '/worklist'
+                destination: '/'
             },
             themeColors: {
                 primary: ''

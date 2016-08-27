@@ -1,0 +1,13 @@
+<template name="inputText">
+    {{#baseComponent (extend this
+        base='baseInput'
+        class=(concat 'form-control ' this.class)
+        mixins=(concat 'input ' this.mixins)
+        wrappers=(concat ''
+            (valueIf reactive this.label 'wrapperLabel ' '')
+            this.wrappers
+        )
+    )}}
+        {{>UI.contentBlock}}
+    {{/baseComponent}}
+</template>

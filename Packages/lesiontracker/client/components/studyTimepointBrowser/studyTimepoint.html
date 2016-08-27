@@ -1,0 +1,12 @@
+<template name="studyTimepoint">
+    <div class="studyTimepointWrapper">
+        <div class="studyTimepoint">
+            {{#each study in studies}}
+                {{>studyTimepointStudy (clone this
+                    study=study
+                    active=(isActive study)
+                )}}
+            {{/each}}
+        </div>
+    </div>
+</template>

@@ -1,0 +1,41 @@
+<template name="toolbarSection">
+    <div class="toolbarSection noselect p-x-2">
+        <div class="clearfix">
+            <div class="pull-left m-t-1">
+                {{>roundedButtonGroup leftSidebarToggleButtonData}}
+            </div>
+
+            {{>toolbarSectionTools toolbarButtons=toolbarButtons extraToolbarButtons=extraToolbarButtons}}
+
+            {{#if splitView}}
+                {{>studySeriesQuickSwitch (clone this side="right" viewportIndex=1)}}
+                {{>studySeriesQuickSwitch (clone this side="left" viewportIndex=0)}}
+            {{else}}
+                {{>studySeriesQuickSwitch (clone this side="middle" viewportIndex=0)}}
+            {{/if}}
+
+            <div class="toolbarSectionEntry pull-right rm-l-1 p-x-1">
+                {{>caseProgress}}
+            </div>
+            <div class="pull-right m-t-1 rm-x-1">
+                {{>roundedButtonGroup rightSidebarToggleButtonData}}
+            </div>
+            <div id="toggleHUD" class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-3 {{#if session 'lesionTableHudOpen'}}active{{/if}}">
+                <div class="svgContainer">
+                    <svg>
+                        <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-hud"></use>
+                    </svg>
+                </div>
+                <div class="buttonLabel">HUD</div>
+            </div>
+            <div class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-1" data-toggle="modal" data-target="#optionsModal">
+                <div class="svgContainer">
+                    <svg>
+                        <use xlink:href="/packages/viewerbase/assets/icons.svg#icon-trial-info"></use>
+                    </svg>
+                </div>
+                <div class="buttonLabel">Trial</div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,39 +1,40 @@
 Template.lesionTableTimepointCell.helpers({
-    hasDataAtThisTimepoint: function() {
+    hasDataAtThisTimepoint() {
         // This simple function just checks whether or not timepoint data
         // exists for this Measurement at this Timepoint
-        var lesionData = Template.parentData(1);
+        const lesionData = Template.parentData(1).rowItem;
         return (lesionData &&
             lesionData.timepoints &&
             lesionData.timepoints[this.timepointId]);
     },
-    displayData: function() {
+    displayData() {
         // Search Measurements by lesion and timepoint
-        var lesionData = Template.parentData(1);
+        const lesionData = Template.parentData(1).rowItem;
         if (!lesionData ||
             !lesionData.timepoints ||
             !lesionData.timepoints[this.timepointId]) {
             return;
         }
 
-        var data = lesionData.timepoints[this.timepointId];
+        const data = lesionData.timepoints[this.timepointId];
 
         // Check whether this is a Nodal or Extranodal Measurement
-        var targetType = lesionData.isTarget ? 'target' : 'nonTarget';
-        var nodalType = lesionData.isNodal ? 'nodal' : 'extraNodal';
+        const targetType = lesionData.isTarget ? 'target' : 'nonTarget';
+        const nodalType = lesionData.isNodal ? 'nodal' : 'extraNodal';
 
         // Get criteria types
-        var criteriaTypes = TrialCriteriaTypes.find({
+        const criteriaTypes = TrialCriteriaTypes.find({
             selected: true
-        }).map(function(criteria) {
+        }).map(criteria => {
             return criteria.id;
         });
-        var currentConstraints = getTrialCriteriaConstraints(criteriaTypes, data.imageId);
+
+        const currentConstraints = getTrialCriteriaConstraints(criteriaTypes, data.imageId);
 
         if (lesionData.toolType === 'bidirectional') {
             if (data.shortestDiameter) {
                 if (currentConstraints) {
-                    var criteria = currentConstraints[targetType][nodalType];
+                    const criteria = currentConstraints[targetType][nodalType];
                     if (criteria && Object.keys(criteria)[0] === 'shortestDiameter') {
                         return data.shortestDiameter + ' x ' + data.longestDiameter;
                     }
@@ -48,12 +49,9 @@ Template.lesionTableTimepointCell.helpers({
         }
     },
 
-    isBidirectional: function() {
-        var lesionData = Template.parentData(1);
-        if (lesionData.toolType === 'bidirectional') {
-            return true;
-        }
-        return false
+    isBidirectional() {
+        const lesionData = Template.parentData(1).rowItem;
+        return lesionData.toolType === 'bidirectional';
     }
 });
 
@@ -68,7 +66,7 @@ function doneCallback(measurementData, deleteTool) {
 }
 
 // Delete a lesion if Ctrl+D or DELETE is pressed while a lesion is selected
-var keys = {
+const keys = {
     D: 68,
     DELETE: 46
 };
@@ -77,18 +75,17 @@ Template.lesionTableTimepointCell.events({
     'dblclick .lesionTableTimepointCell': function() {
         log.info('Double clicked on a timepoint cell');
         // Search Measurements by lesion and timepoint
-        var currentMeasurement = Template.parentData(1);
+        const currentMeasurement = Template.parentData(1).rowItem;
 
         // Create some fake measurement data
-        var currentTimepointID = this.timepointId;
+        const currentTimepointID = this.timepointId;
 
-        var timepointData = currentMeasurement.timepoints[currentTimepointID];
-
+        const timepointData = currentMeasurement.timepoints[currentTimepointID];
         if (!timepointData) {
             return;
         }
 
-        var measurementData = {
+        let measurementData = {
             id: currentMeasurement._id,
             timepointId: currentTimepointID,
             response: timepointData.response,
@@ -107,11 +104,11 @@ Template.lesionTableTimepointCell.events({
         }
     },
     'keydown .lesionTableTimepointCell': function(e) {
-        var keyCode = e.which;
+        const keyCode = e.which;
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
-            var currentMeasurement = Template.parentData(1);
-            var currentTimepointID = this.timepointId;
+            const currentMeasurement = Template.parentData(1).rowItem;
+            const currentTimepointID = this.timepointId;
 
             showConfirmDialog(function() {
                 clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);

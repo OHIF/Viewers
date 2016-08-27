@@ -13,6 +13,8 @@ function closeHandler(dialog) {
  */
 openStudyContextMenu = function(e) {
     Worklist.functions['exportSelectedStudies'] = exportSelectedStudies;
+    Worklist.functions['viewSeriesDetails'] = viewSeriesDetails;
+
 
     Template.studyContextMenu.study = $(e.currentTarget);
 
@@ -68,6 +70,25 @@ function exportSelectedStudies() {
     exportStudies(selectedStudies);
 }
 
+/**
+ * Display series details of study in modal
+ */
+function viewSeriesDetails() {
+    var selectedStudies = WorklistSelectedStudies.find({}, {
+        sort: {
+            studyDate: 1
+        }
+    }).fetch();
+
+    if (!selectedStudies) {
+        return;
+    }
+
+    Modal.show('viewSeriesDetailsModal', {
+        selectedStudies: selectedStudies
+    });
+}
+
 Template.studyContextMenu.events({
     'click a': function(e) {
         var study = Template.studyContextMenu.study;
@@ -80,5 +101,12 @@ Template.studyContextMenu.events({
 
         var dialog = $('#studyContextMenu');
         closeHandler(dialog);
+    }
+});
+
+Template.studyContextMenu.helpers({
+    'studyListFunctionsEnabled': function() {
+        var studyListFunctionsEnabled = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui &&
+            Meteor.settings.public.ui.studyListFunctionsEnabled || false;        return studyListFunctionsEnabled;
     }
 });

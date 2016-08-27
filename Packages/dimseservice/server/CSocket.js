@@ -5,14 +5,15 @@ function time() {
 }
 
 function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 var Envelope = function(command, dataset) {
     EventEmitter.call(this);
     this.command = command;
     this.dataset = dataset;
-}
+};
+
 util.inherits(Envelope, EventEmitter);
 
 CSocket = function(socket, options) {
@@ -39,34 +40,43 @@ CSocket = function(socket, options) {
     this.options = options;
 
     var o = this;
-    this.socket.on("connect", function(){
+    this.socket.on('connect', function() {
+        console.log('Connect');
         o.ready();
     });
-    this.socket.on("data", function(data) {
+    this.socket.on('data', function(data) {
         o.received(data);
     });
-    this.socket.on("error", function(he) {
-        console.log("Error: ", he);
+    this.socket.on('error', function(he) {
+        console.log('Error: ', he);
+        throw 'Error: ' + he;
     });
-    this.socket.on("close", function() {
+    this.socket.on('timeout', function(he) {
+        console.log('Timeout: ', he);
+        throw 'Timeout: ' + he;
+    });
+    this.socket.on('close', function() {
         if (o.intervalId) {
             clearInterval(o.intervalId);
         }
-        o.connected = false;
-        console.log("Connection closed");
-        o.emit('close');        
-    })
 
-    this.on("released", function() {
+        o.connected = false;
+        console.log('Connection closed');
+        o.emit('close');        
+    });
+
+    this.on('released', function() {
         this.released();
     });
-    this.on('aborted', function() {
+    this.on('aborted', function(pdu) {
+        console.warn('Association aborted with reason ' + pdu.reason);
         this.released();
-    })
+    });
     this.on('message', function(pdvs) {
         this.receivedMessage(pdvs);
     });    
 };
+
 util.inherits(CSocket, EventEmitter);
 
 CSocket.prototype.setCallingAE = function(ae) {
@@ -83,22 +93,23 @@ CSocket.prototype.associate = function() {
     associateRQ.setCallingAETitle(this.callingAe);
     associateRQ.setApplicationContextItem(new ApplicationContextItem());
 
-    var contextItems = []
+    var contextItems = [];
     this.presentationContexts.forEach(function(context) {
-      var contextItem = new PresentationContextItem(),
-          syntaxes = [];
-      context.transferSyntaxes.forEach(function(transferSyntax) {
-          var transfer = new TransferSyntaxItem();
-          transfer.setTransferSyntaxName(transferSyntax);
-          syntaxes.push(transfer);
-      });
-      contextItem.setTransferSyntaxesItems(syntaxes);
-      contextItem.setPresentationContextID(context.id);
+        var contextItem = new PresentationContextItem(),
+            syntaxes = [];
 
-      var abstractItem = new AbstractSyntaxItem();
-      abstractItem.setAbstractSyntaxName(context.abstractSyntax);
-      contextItem.setAbstractSyntaxItem(abstractItem);
-      contextItems.push(contextItem);
+        context.transferSyntaxes.forEach(function(transferSyntax) {
+            var transfer = new TransferSyntaxItem();
+            transfer.setTransferSyntaxName(transferSyntax);
+            syntaxes.push(transfer);
+        });
+        contextItem.setTransferSyntaxesItems(syntaxes);
+        contextItem.setPresentationContextID(context.id);
+
+        var abstractItem = new AbstractSyntaxItem();
+        abstractItem.setAbstractSyntaxName(context.abstractSyntax);
+        contextItem.setAbstractSyntaxItem(abstractItem);
+        contextItems.push(contextItem);
     });
     associateRQ.setPresentationContextItems(contextItems);
 
@@ -122,49 +133,64 @@ CSocket.prototype.associate = function() {
 CSocket.prototype.getContext = function(id) {
     for (var k in this.presentationContexts) {
         var ctx = this.presentationContexts[k];
-        if (id == ctx.id) return ctx;
+        if (id === ctx.id) {
+            return ctx;
+        }
     }
+
     return null;
-}
+};
 
 CSocket.prototype.getSyntax = function(contextId) {
     if (!this.negotiatedContexts[contextId]) return null;
 
     return this.negotiatedContexts[contextId].transferSyntax;
-}
+};
 
 CSocket.prototype.getContextByUID = function(uid) {
     for (var k in this.negotiatedContexts) {
         var ctx = this.negotiatedContexts[k];
-        if (ctx.abstractSyntax == uid) {
+        if (ctx.abstractSyntax === uid) {
             return ctx;
         }
     }
+
     return null;
-}
+};
 
 CSocket.prototype.getContextId = function(contextId) {
-    if (!this.negotiatedContexts[contextId]) return null;
+    if (!this.negotiatedContexts[contextId]) {
+        return null;
+    }
 
     return this.negotiatedContexts[contextId].id;
-}
+};
 
 CSocket.prototype.setPresentationContexts = function(uids) {
     var contexts = [],
         id = 0;
     uids.forEach(function(uid) {
-        contexts.push({
-            id: ++id,
-            abstractSyntax: uid,
-            transferSyntaxes: [C.IMPLICIT_LITTLE_ENDIAN, C.EXPLICIT_LITTLE_ENDIAN, C.EXPLICIT_BIG_ENDIAN]
-        });
+        id++;
+        if (typeof uid === 'string') {
+            contexts.push({
+                id: id,
+                abstractSyntax: uid,
+                transferSyntaxes: [C.IMPLICIT_LITTLE_ENDIAN, C.EXPLICIT_LITTLE_ENDIAN, C.EXPLICIT_BIG_ENDIAN]
+            });
+        } else {
+            contexts.push({
+                id: id,
+                abstractSyntax: uid.context,
+                transferSyntaxes: uid.syntaxes
+            });
+        }
     });
     this.presentationContexts = contexts;
 };
 
 CSocket.prototype.newMessageId = function() {
     return (++this.messageIdCounter) % 65536;
-}
+};
 
 CSocket.prototype.resetReceive = function() {
     this.receiving = this.receiveLength = null;
@@ -174,9 +200,7 @@ CSocket.prototype.send = function(pdu, afterCbk) {
     //console.log('SEND PDU-TYPE: ', pdu.type);
     var toSend = pdu.buffer();
     //console.log('send buffer', toSend.toString('hex'));
-    this.socket.write(toSend, afterCbk ? afterCbk : function() {
-        //console.log('Data written');
-    });
+    return this.socket.write(toSend, afterCbk ? afterCbk : null);
 };
 
 CSocket.prototype.release = function() {
@@ -189,7 +213,7 @@ CSocket.prototype.released = function() {
 };
 
 CSocket.prototype.ready = function() {
-    console.log("Connection established");
+    console.log('Connection established');
     this.connected = true;
     this.started = time();
 
@@ -209,8 +233,6 @@ CSocket.prototype.checkIdle = function() {
         this.idleClose();
     } else if (this.lastReceived && (current - this.lastReceived >= idl)) {
         this.idleClose();
-    } else {
-        //console.log('keep idling')
     }
 };
 
@@ -220,7 +242,6 @@ CSocket.prototype.idleClose = function() {
 };
 
 CSocket.prototype.received = function(data) {
-    var i = 0;
     do {
         data = this.process(data);
     } while (data !== null);
@@ -228,7 +249,6 @@ CSocket.prototype.received = function(data) {
 };
 
 CSocket.prototype.process = function(data) {
-    //console.log("Data received");
     if (this.receiving === null) {
         if (this.minRecv) {
             data = Buffer.concat([this.minRecv, data], this.minRecv.length + data.length);
@@ -255,6 +275,7 @@ CSocket.prototype.process = function(data) {
                 process = data.slice(0, len + 6);
                 remaining = data.slice(len + 6, cmp + 6);
             }
+
             this.resetReceive();
             this.interpret(new ReadStream(process), this);
             if (remaining) {
@@ -262,6 +283,7 @@ CSocket.prototype.process = function(data) {
             }
         }
     } else {
+        console.log('Data received');
         var newData = Buffer.concat([this.receiving, data], this.receiving.length + data.length),
             pduLength = newData.length - 6;
 
@@ -273,6 +295,7 @@ CSocket.prototype.process = function(data) {
                 remaining = newData.slice(this.receiveLength + 6, pduLength + 6);
                 newData = newData.slice(0, this.receiveLength + 6);
             }
+
             this.resetReceive();
             this.interpret(new ReadStream(newData));
             if (remaining) {
@@ -280,6 +303,7 @@ CSocket.prototype.process = function(data) {
             }
         }
     }
+
     return null;
 };
 
@@ -294,8 +318,9 @@ CSocket.prototype.interpret = function(stream) {
             pdu.presentationContextItems.forEach(function(ctx) {
                 var requested = o.getContext(ctx.presentationContextID);
                 if (!requested) {
-                    throw "Accepted presentation context not found";
+                    throw 'Accepted presentation context not found';
                 }
+
                 o.negotiatedContexts[ctx.presentationContextID] = {
                     id: ctx.presentationContextID,
                     transferSyntax: ctx.transferSyntaxesItems[0].transferSyntaxName,
@@ -318,7 +343,7 @@ CSocket.prototype.interpret = function(stream) {
             this.emit('released');
         } else if (pdu.is(C.ITEM_TYPE_PDU_AABORT)) {
             //console.log('Aborted');
-            this.emit('aborted');
+            this.emit('aborted', pdu);
         } else if (pdu.is(C.ITEM_TYPE_PDU_PDATA)) {
             pdatas.push(pdu);
         }
@@ -342,11 +367,13 @@ CSocket.prototype.interpret = function(stream) {
                         break;
                     }
                 }
+
                 if (pdvs[i].isLast) {
                     this.emit('message', pdvs[i]);
                 } else {
                     this.pendingPDVs = [pdvs[i]];
                 }
+
                 i = j;
             } else {
                 this.emit('message', pdvs[i++]);
@@ -363,16 +390,21 @@ CSocket.prototype.receivedMessage = function(pdv) {
         this.lastCommand = msg;
 
         if (msg.isResponse()) {
+            var replyId = msg.respondedTo(),
+                listener = this.messages[replyId].listener;
+
             if (msg.is(C.COMMAND_C_GET_RSP) || msg.is(C.COMMAND_C_MOVE_RSP)) {
                 //console.log('remaining', msg.getNumOfRemainingSubOperations(), msg.getNumOfCompletedSubOperations());
             }
+
             if (msg.failure()) {
-                //console.log("message failed with status ", msg.getStatus().toString(16));
+                console.log('message failed with status ', msg.getStatus().toString(16));
             }
+
+            listener.emit('response', msg);
             if (msg.isFinal()) {
-                var replyId = msg.respondedTo();
-                if (this.messages[replyId].listener) {
-                    this.messages[replyId].listener.emit('end', msg);
+                if (listener) {
+                    listener.emit('end', msg);
 
                     if (!msg.haveData())
                         delete this.messages[replyId];
@@ -392,7 +424,7 @@ CSocket.prototype.receivedMessage = function(pdv) {
 
     } else {
         if (!this.lastCommand) {
-            throw "Only dataset?";
+            throw 'Only dataset?';
         } else if (!this.lastCommand.haveData()) {
             throw "Last command didn't indicate presence of data";
         }
@@ -402,7 +434,7 @@ CSocket.prototype.receivedMessage = function(pdv) {
             if (this.messages[replyId].listener) {
                 var flag = this.lastCommand.failure() ? true : false;
 
-                this.messages[replyId].listener.emit("result", msg, flag);
+                this.messages[replyId].listener.emit('result', msg, flag);
 
                 if (this.lastCommand.failure()) {
                     delete this.messages[replyId];
@@ -418,7 +450,7 @@ CSocket.prototype.receivedMessage = function(pdv) {
                     if (this.lastGets.length > 0) {
                         useId = this.lastGets[0];
                     } else {
-                        throw "Where does this c-store came from?";
+                        throw 'Where does this c-store came from?';
                     }
                 } else console.log('move ', moveMessageId);
                 //this.storeResponse(useId, msg);
@@ -436,7 +468,7 @@ CSocket.prototype.wrapToPData = function(message, context) {
     pdv.setMessage(message);
     pdata.setPresentationDataValueItems([pdv]);   
     return pdata;
-}
+};
 
 CSocket.prototype.sendMessage = function(context, command, dataset) {
     var nContext = this.getContextByUID(context),
@@ -448,7 +480,7 @@ CSocket.prototype.sendMessage = function(context, command, dataset) {
     msgData.listener = new Envelope(command);
 
     var o = this;
-    msgData.listener.on('cancel', function(){
+    msgData.listener.on('cancel', function() {
         var cancelMessage = null;
         if (this.command.is(C.COMMAND_C_FIND_RQ) || this.command.is(C.COMMAND_C_MOVE_RQ)) {
             cancelMessage = new CCancelRQ();
@@ -463,20 +495,22 @@ CSocket.prototype.sendMessage = function(context, command, dataset) {
     command.setSyntax(C.IMPLICIT_LITTLE_ENDIAN);
     command.setContextId(context);
     command.setMessageId(messageId);
-    if (dataset)
+    if (dataset) {
         command.setDataSetPresent(C.DATA_SET_PRESENT);
+    }
 
     this.lastSent = command;
     if (command.is(C.COMMAND_C_GET_RQ)) {
         this.lastGets.push(messageId);
     }
+
     var pdata = this.wrapToPData(command);
 
     msgData.command = command;
     this.messages[messageId] = msgData;
-
+    console.log('Sending command ' + command.typeString());
     this.send(pdata);
-    if (dataset) {
+    if (dataset && typeof dataset === 'object') {
         dataset.setSyntax(syntax);
         var dsData = new PDataTF(),
             dPdv = new PresentationDataValueItem(cid);
@@ -485,7 +519,16 @@ CSocket.prototype.sendMessage = function(context, command, dataset) {
         dsData.setPresentationDataValueItems([dPdv]);
         this.send(dsData);
     }
+
     return msgData.listener;
+};
+
+CSocket.prototype.sendPData = function(pdv, after) {
+    var pdata = new PDataTF();
+    pdata.setPresentationDataValueItems([pdv]);
+    //console.log('Sending pdata');
+    //console.log(pdata.totalLength());
+    this.send(pdata, after);
 };
 
 CSocket.prototype.verify = function() {
@@ -501,7 +544,9 @@ CSocket.prototype.wrapMessage = function(data) {
         var datasetMessage = new DataSetMessage();
         datasetMessage.setElements(data);
         return datasetMessage;
-    } else return data;
+    } else {
+        return data;
+    }
 };
 
 CSocket.prototype.find = function(params, options) {
@@ -515,12 +560,20 @@ CSocket.prototype.move = function(destination, params, options) {
     return this.sendMessage(options.context, moveMessage, this.wrapMessage(params));
 };
 
+CSocket.prototype.storeInstance = function(sopClassUID, sopInstanceUID, options) {
+    var storeMessage = new CStoreRQ();
+    storeMessage.setAffectedSOPInstanceUID(sopInstanceUID);
+    storeMessage.setAffectedSOPClassUID(sopClassUID);
+
+    return this.sendMessage(sopClassUID, storeMessage, true);
+};
+
 CSocket.prototype.moveInstances = function(destination, params, options) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_IMAGE,
     }, params);
     options = Object.assign({
-        context : C.SOP_STUDY_ROOT_MOVE
+        context: C.SOP_STUDY_ROOT_MOVE
     }, options);     
 
     return this.move(destination, sendParams, options);
@@ -529,13 +582,13 @@ CSocket.prototype.moveInstances = function(destination, params, options) {
 CSocket.prototype.findPatients = function(params, options) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_PATIENT,
-        0x00100010: "",
-        0x00100020: "",
-        0x00100030: "",
-        0x00100040: "",
+        0x00100010: '',
+        0x00100020: '',
+        0x00100030: '',
+        0x00100040: '',
     }, params);
     options = Object.assign({
-        context : C.SOP_PATIENT_ROOT_FIND
+        context: C.SOP_PATIENT_ROOT_FIND
     }, options);
 
     return this.find(sendParams, options);
@@ -544,13 +597,13 @@ CSocket.prototype.findPatients = function(params, options) {
 CSocket.prototype.findStudies = function(params, options) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_STUDY,
-        0x00080020: "",
-        0x00100010: "",
-        0x00080061: "",
-        0x0020000D: ""
+        0x00080020: '',
+        0x00100010: '',
+        0x00080061: '',
+        0x0020000D: ''
     }, params);
     options = Object.assign({
-        context : C.SOP_STUDY_ROOT_FIND
+        context: C.SOP_STUDY_ROOT_FIND
     }, options);   
 
     return this.find(sendParams, options);
@@ -559,13 +612,13 @@ CSocket.prototype.findStudies = function(params, options) {
 CSocket.prototype.findSeries = function(params, options) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_SERIES,
-        0x00080020: "",
-        0x0020000E: "",
-        0x0008103E: "",
-        0x0020000D: ""
+        0x00080020: '',
+        0x0020000E: '',
+        0x0008103E: '',
+        0x0020000D: ''
     }, params);
     options = Object.assign({
-        context : C.SOP_STUDY_ROOT_FIND
+        context: C.SOP_STUDY_ROOT_FIND
     }, options);     
 
     return this.find(sendParams, options);
@@ -574,13 +627,13 @@ CSocket.prototype.findSeries = function(params, options) {
 CSocket.prototype.findInstances = function(params, options) {
     var sendParams = Object.assign({
         0x00080052: C.QUERY_RETRIEVE_LEVEL_IMAGE,
-        0x00080020: "",
-        0x0020000E: "",
-        0x0008103E: "",
-        0x0020000D: ""
+        0x00080020: '',
+        0x0020000E: '',
+        0x0008103E: '',
+        0x0020000D: ''
     }, params);
     options = Object.assign({
-        context : C.SOP_STUDY_ROOT_FIND
+        context: C.SOP_STUDY_ROOT_FIND
     }, options);     
 
     return this.find(sendParams, options);
