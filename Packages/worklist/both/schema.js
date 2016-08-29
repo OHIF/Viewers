@@ -26,8 +26,16 @@ export const DICOMWebRequestOptions = new SimpleSchema({
 export const DICOMWebServer = new SimpleSchema({
     name: {
         type: String,
-        label: 'Name',
+        label: 'Server Name',
         max: 100
+    },
+    type: {
+        type: String,
+        label: 'Server Type',
+        allowedValues: ['dicomWeb', 'dimse'],
+        valuesLabels: ['DICOM Web', 'DIMSE'],
+        optional: true,
+        emptyOption: true
     },
     wadoUriRoot: {
         type: String,

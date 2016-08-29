@@ -34,4 +34,7 @@ Package.onUse(function(api) {
     // Server imports and methods
     api.addFiles('server/index.js', 'server');
 
+    // Client and server imports
+    api.addFiles('both/index.js', ['client', 'server']);
+
 });

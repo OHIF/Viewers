@@ -17,6 +17,11 @@ const getCurrentSchema = (parentComponent, key) => {
     // Get the current schema data using component's key
     const currentSchema = _.clone(schema._schema[key]);
 
+    // Stop here if no schema was found for the given key
+    if (!currentSchema) {
+        return;
+    }
+
     // Merge the sub-schema properties if it's an array
     if (Array.isArray(currentSchema.type())) {
         _.extend(currentSchema, schema._schema[key + '.$']);
@@ -51,6 +56,11 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             // Use schema's label if it was not defined
             if (!data.label) {
                 data.label = new ReactiveVar(currentSchema.label);
+            }
+
+            // Set the emptyOption data attribute if given on schema
+            if (currentSchema.emptyOption) {
+                data.emptyOption = currentSchema.emptyOption;
             }
 
             // Fill the items if it's an array schema

@@ -26,6 +26,7 @@ spacebars@1.0.12
 check@1.2.3
 cornerstone
 dicomweb
+aldeed:simple-schema          # Third party package to deal with schemas
 design
 ohif:core
 ecmascript@0.5.7

@@ -1,33 +1,19 @@
 <template name="serverInformationForm">
-    <form class="server-information-form">
-        <input type="hidden" name="_id">
+    {{#form class='server-information-form' schema=instance.currentSchema}}
+        {{>inputHidden key='_id'}}
         <div class="row">
             <div class="col-lg-6">
-                <div class="form-group">
-                    <label class="wrapper">
-                        <strong>Server Name</strong>
-                        <input type="text" name="name" class="form-control">
-                    </label>
-                </div>
+                {{>inputText labelClass='form-group' key='name'}}
             </div>
             <div class="col-lg-6">
-                <div class="form-group">
-                    <label class="wrapper">
-                        <strong>Server Type</strong>
-                        <select name="type" class="form-control js-server-type">
-                            <option>Select</option>
-                            <option value="dicomWeb">DICOM Web</option>
-                            <option value="dimse">DIMSE</option>
-                        </select>
-                    </label>
-                </div>
+                {{>inputSelect labelClass='form-group' key='type' hideSearch=true}}
             </div>
         </div>
         <hr>
-        {{#if eq this.serverType.get "dicomWeb"}}
+        {{#if eq this.serverType.get 'dicomWeb'}}
           {{>serverInformationDicomWeb this}}
         {{/if}}
-        {{#if eq this.serverType.get "dimse"}}
+        {{#if eq this.serverType.get 'dimse'}}
           {{>serverInformationDimse this}}
         {{/if}}
         {{#if this.serverType.get}}
@@ -35,5 +21,5 @@
                 <input type="submit" class="btn btn-primary" value="Save">
             </div>
         {{/if}}
-    </form>
+    {{/form}}
 </template>

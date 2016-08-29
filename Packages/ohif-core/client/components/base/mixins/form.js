@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 /*
  * form: controls a form and its registered inputs
@@ -11,9 +12,19 @@ OHIF.mixins.form = new OHIF.Mixin({
             const instance = Template.instance();
             const component = instance.component;
 
-            // Define the form's data schema
-            const schema = instance.data.schema;
-            component.schema = schema && schema.newContext();
+            // Run this computation every time the schema property is changed
+            instance.autorun(() => {
+                let schema;
+
+                // Check if the schema is reactive
+                if (instance.data.schema instanceof ReactiveVar) {
+                    // Register a dependency on schema property
+                    schema = instance.data.schema.get();
+                }
+
+                // Set the form's data schema
+                component.schema = schema && schema.newContext();
+            });
 
             // Check if the form data is valid in its schema
             component.validate = () => {
