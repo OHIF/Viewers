@@ -55,7 +55,7 @@ class TimepointApi {
         }
 
         const prior = this.prior();
-        if (current && prior._id !== current._id) {
+        if (current && prior && prior._id !== current._id) {
             timepoints.push(prior);
         }
 
