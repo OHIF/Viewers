@@ -209,8 +209,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/emailVerification/emailVerification.js', 'client');
 
     // Server functions
-    api.addFiles('server/servers.js', 'server');
     api.addFiles('server/publications.js', 'server');
+    api.addFiles('server/servers.js', 'server');
     api.addFiles('server/methods.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);
     api.addFiles('server/createDemoUser.js', [ 'server' ]);
