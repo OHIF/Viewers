@@ -13,18 +13,38 @@ Template.serverInformationForm.onRendered(() => {
     const instance = Template.instance();
 
     instance.data.$form = instance.$('form');
+    instance.data.form = instance.data.$form.data('component');
 
+    // Handle the server type
     instance.autorun(() => {
+        // Get the server type component
         const typeComponent = instance.$('[data-key=type]').data('component');
+
+        // Run this computation every time the user change the server type
         typeComponent.changeObserver.depend();
-        instance.data.serverType.set(typeComponent.value());
+
+        // Get the current server type value
+        const type = typeComponent.value();
+
+        // Set the serverType reactive value
+        instance.data.serverType.set(type);
+
+        // Change the schema based on the selected server type
+        if (type === 'dimse') {
+            instance.currentSchema.set(dimseSchema);
+        } else {
+            instance.currentSchema.set(dicomSchema);
+        }
     });
 
+    // Handle the form mode (edit or add)
     instance.autorun(() => {
         const mode = instance.data.mode.get();
+
+        // Check if it is on edit mode and load the saved data
         if (mode === 'edit') {
             var data = instance.data.currentItem.get();
-            FormUtils.setFormData(instance.data.$form, data);
+            instance.data.form.value(data);
         }
     });
 });

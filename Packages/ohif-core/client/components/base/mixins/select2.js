@@ -8,6 +8,43 @@ import { $ } from 'meteor/jquery';
 OHIF.mixins.select2 = new OHIF.Mixin({
     dependencies: 'select',
     composition: {
+        onCreated() {
+            const instance = Template.instance();
+
+            // Check if this select will include a placeholder
+            const placeholder = instance.data.options && instance.data.options.placeholder;
+            if (placeholder) {
+                // Get the option items
+                let items = instance.data.items;
+
+                // Check if the items are reactive and get them if true
+                const isReactive = items instanceof ReactiveVar;
+                if (isReactive) {
+                    items = items.get();
+                }
+
+                // Check if there is already an empty option on items list
+                const query = {
+                    value: ''
+                };
+                if (!_.findWhere(items, query)) {
+                    // Clone the current items
+                    const newItems = _.clone(items) || [];
+                    newItems.unshift({
+                        label: placeholder,
+                        value: ''
+                    });
+
+                    // Set the new items list including the empty option
+                    if (isReactive) {
+                        instance.data.items.set(newItems);
+                    } else {
+                        instance.data.items = newItems;
+                    }
+                }
+            }
+        },
+
         onRendered() {
             const instance = Template.instance();
             const component = instance.component;

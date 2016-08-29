@@ -1,5 +1,19 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
+const serverNameDefinitions = {
+    type: String,
+    label: 'Server Name',
+    max: 100
+};
+
+const serverTypeDefinitions = {
+    type: String,
+    label: 'Server Type',
+    allowedValues: ['dicomWeb', 'dimse'],
+    valuesLabels: ['DICOM Web', 'DIMSE'],
+    optional: true
+};
+
 export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
@@ -24,19 +38,8 @@ export const DICOMWebRequestOptions = new SimpleSchema({
 });
 
 export const DICOMWebServer = new SimpleSchema({
-    name: {
-        type: String,
-        label: 'Server Name',
-        max: 100
-    },
-    type: {
-        type: String,
-        label: 'Server Type',
-        allowedValues: ['dicomWeb', 'dimse'],
-        valuesLabels: ['DICOM Web', 'DIMSE'],
-        optional: true,
-        emptyOption: true
-    },
+    name: serverNameDefinitions,
+    type: serverTypeDefinitions,
     wadoUriRoot: {
         type: String,
         label: 'WADO URI root',
@@ -56,7 +59,8 @@ export const DICOMWebServer = new SimpleSchema({
     imageRendering: {
         type: String,
         label: 'Image rendering',
-        defaultValue: 'wadouri'
+        allowedValues: ['wadouri', 'orthanc'],
+        valuesLabels: ['WADO URI', 'ORTHANC']
     },
     qidoRoot: {
         type: String,
@@ -112,11 +116,8 @@ export const DIMSEPeer = new SimpleSchema({
 });
 
 export const DIMSEServer = new SimpleSchema({
-    name: {
-        type: String,
-        label: 'Server Name',
-        max: 100
-    },
+    name: serverNameDefinitions,
+    type: serverTypeDefinitions,
     peers: {
         type: [ DIMSEPeer ],
         label: 'DIMSE Peers',
