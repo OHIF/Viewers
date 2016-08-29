@@ -4,7 +4,7 @@
       {
         "name": "DCM4CHEE",
         "wadoUriRootNOTE": "either this uri is not correct for wado-uri or wado-uri is not configured on orthanc currently",
-        "wadoUriRoot": "http://localhost:8043/dcm4chee-arc/aets/DCM4CHEE/wado",
+        "wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
         "qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
         "wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
         "qidoSupportsIncludeField": false,
