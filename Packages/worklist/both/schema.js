@@ -3,23 +3,23 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
-        label: 'Username:Password Authentication String',
+        label: 'Authentication',
         optional: true
     },
     logRequests: {
         type: Boolean,
         defaultValue: true,
-        label: 'Log Requests?',
+        label: 'Requests',
     },
     logResponses: {
         type: Boolean,
         defaultValue: false,
-        label: 'Log Responses?',  
+        label: 'Responses',
     },
     logTiming: {
         type: Boolean,
         defaultValue: true,
-        label: 'Log Timing?',
+        label: 'Timing',
     },
 });
 
@@ -31,34 +31,34 @@ export const DICOMWebServer = new SimpleSchema({
     },
     wadoUriRoot: {
         type: String,
-        label: 'WADO URI Root',
-        max: 1000
-    },
-    qidoRoot: {
-        type: String,
-        label: 'QIDO Root',
+        label: 'WADO URI root',
         max: 1000
     },
     // TODO: Remove this
     wadoUriRootNOTE: {
         type: String,
-        label: 'WADO URI Root Note',
+        label: 'WADO URI root note',
         optional: true
     },
     wadoRoot: {
         type: String,
-        label: 'WADO Root',
+        label: 'WADO root',
+        max: 1000
+    },
+    imageRendering: {
+        type: String,
+        label: 'Image rendering',
+        defaultValue: 'wadouri'
+    },
+    qidoRoot: {
+        type: String,
+        label: 'QIDO root',
         max: 1000
     },
     qidoSupportsIncludeField: {
         type: Boolean,
-        label: 'QIDO Supports Include Field?',
+        label: 'QIDO supports including fields',
         defaultValue: false
-    },
-    imageRendering: {
-        type: String,
-        label: 'Image Rendering',
-        defaultValue: 'wadouri'
     },
     requestOptions: {
         type: DICOMWebRequestOptions,
@@ -67,9 +67,17 @@ export const DICOMWebServer = new SimpleSchema({
 });
 
 export const DIMSEPeer = new SimpleSchema({
+    aeTitle: {
+        type: String,
+        label: 'Application Entity (AE) Title',
+    },
+    hostAE: {
+        type: String,
+        label: 'Application Entity (AE) Host',
+    },
     host: {
         type: String,
-        label: 'Host URL',
+        label: 'Host Domain/IP',
     },
     port: {
         type: Number,
@@ -78,18 +86,14 @@ export const DIMSEPeer = new SimpleSchema({
         defaultValue: 11112,
         max: 65535
     },
-    aeTitle: {
-        type: String,
-        label: 'Application Entity (AE) Title',
-    },
     default: {
         type: Boolean,
-        label: 'Default?',
+        label: 'Default',
         defaultValue: false
     },
     server: {
         type: Boolean,
-        label: 'Server?',
+        label: 'Server',
         defaultValue: false
     },
     supportsInstanceRetrievalByStudyUid: {
@@ -102,7 +106,7 @@ export const DIMSEPeer = new SimpleSchema({
 export const DIMSEServer = new SimpleSchema({
     name: {
         type: String,
-        label: 'Name',
+        label: 'Server Name',
         max: 100
     },
     peers: {
