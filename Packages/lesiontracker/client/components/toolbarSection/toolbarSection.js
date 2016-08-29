@@ -53,7 +53,10 @@ Template.toolbarSection.helpers({
     },
 
     toolbarButtons() {
-        var buttonData = [];
+        // Check if the measure tools shall be disabled
+        const isMesureDisabled = !Template.instance().data.timepointApi.currentTimepointId;
+        const buttonData = [];
+
         buttonData.push({
             id: 'zoom',
             title: 'Zoom',
@@ -86,14 +89,16 @@ Template.toolbarSection.helpers({
             id: 'bidirectional',
             title: 'Target',
             classes: 'imageViewerTool rm-l-3',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-target'
+            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-target',
+            disabled: isMesureDisabled
         });
 
         buttonData.push({
             id: 'nonTarget',
             title: 'Non-Target',
             classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-non-target'
+            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-non-target',
+            disabled: isMesureDisabled
         });
 
         buttonData.push({
@@ -107,28 +112,33 @@ Template.toolbarSection.helpers({
     },
 
     extraToolbarButtons() {
-        let buttonData = [];
+        // Check if the measure tools shall be disabled
+        const isMesureDisabled = !Template.instance().data.timepointApi.currentTimepointId;
+        const buttonData = [];
 
         // TODO: Get real icons for CR / UN / EX
         buttonData.push({
             id: 'crTool',
             title: 'CR Tool',
             classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            disabled: isMesureDisabled
         });
 
         buttonData.push({
             id: 'unTool',
             title: 'UN Tool',
             classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            disabled: isMesureDisabled
         });
 
         buttonData.push({
             id: 'exTool',
             title: 'EX Tool',
             classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            disabled: isMesureDisabled
         });
 
         return buttonData;

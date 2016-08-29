@@ -15,6 +15,11 @@ Template.toolbarSectionButton.helpers({
 
 Template.toolbarSectionButton.events({
     'click .imageViewerTool'(event, instance) {
+        // Stop here if the tool is disabled
+        if ($(event.currentTarget).hasClass('disabled')) {
+            return;
+        }
+
         const tool = event.currentTarget.id;
         const elements = instance.$('.imageViewerViewport');
 
@@ -29,6 +34,11 @@ Template.toolbarSectionButton.events({
         }
     },
     'click .imageViewerCommand'(event, instance) {
+        // Stop here if the tool is disabled
+        if ($(event.currentTarget).hasClass('disabled')) {
+            return;
+        }
+
         const command = event.currentTarget.id;
         if (!OHIF.viewer.functionList || !OHIF.viewer.functionList.hasOwnProperty(command)) {
             return;
