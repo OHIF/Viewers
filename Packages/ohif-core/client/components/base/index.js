@@ -10,6 +10,7 @@ import './mixins/formItem.js';
 import './mixins/group.js';
 import './mixins/groupRadio.js';
 import './mixins/input.js';
+import './mixins/checkbox.js';
 import './mixins/schemaData.js';
 import './mixins/select.js';
 import './mixins/select2.js';
