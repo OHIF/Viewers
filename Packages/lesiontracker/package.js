@@ -58,9 +58,6 @@ Package.onUse(function(api) {
 
     api.addFiles('client/tools.js', 'client');
 
-    // Utility classes
-    api.addFiles('client/utils/form.js', 'client');
-
     // UI Components
     api.addFiles('client/components/viewer/viewer.html', 'client');
     api.addFiles('client/components/viewer/viewer.styl', 'client');

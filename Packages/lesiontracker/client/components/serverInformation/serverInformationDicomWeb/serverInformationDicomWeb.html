@@ -29,25 +29,25 @@
     </div>
     <hr>
     <h4>Request options</h4>
-    <div class="row">
+    {{#group class='row' key='requestOptions'}}
         <div class="col-lg-6">
-            {{>inputText labelClass='form-group' key='requestOptions.auth'}}
+            {{>inputText labelClass='form-group' key='auth'}}
         </div>
         <div class="col-lg-6">
             <strong>Logging options</strong>
             <div class="form-group">
                 <div class="form-control clearfix">
                     <div class="checkbox pull-left">
-                        {{>inputCheckbox key='requestOptions.logRequests'}}
+                        {{>inputCheckbox key='logRequests'}}
                     </div>
                     <div class="checkbox pull-left">
-                        {{>inputCheckbox key='requestOptions.logResponses'}}
+                        {{>inputCheckbox key='logResponses'}}
                     </div>
                     <div class="checkbox pull-left">
-                        {{>inputCheckbox key='requestOptions.logTiming'}}
+                        {{>inputCheckbox key='logTiming'}}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {{/group}}
 </template>

@@ -73,16 +73,27 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
             };
 
+            // Search for the parent form component
+            component.getForm = () => {
+                let currentComponent = component;
+                while (currentComponent) {
+                    currentComponent = currentComponent.parent;
+                    if (currentComponent && currentComponent.isForm) {
+                        return currentComponent;
+                    }
+                }
+            };
+
             // Check if the component value is valid in its form's schema
             component.validate = () => {
                 // Get the component's form
-                const form = component.parent;
+                const form = component.getForm();
 
                 // Get the form's data schema
                 const schema = form && form.schema;
 
                 // Get the current component's key
-                const key = instance.data.key;
+                const key = instance.data.pathKey;
 
                 // Return true if validation is not needed
                 if (!key || !schema || !component.$wrapper.is(':visible')) {
@@ -156,11 +167,13 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             // TODO: [design] remove log, show error box/hint over the wrapper
             errorin(event, instance) {
+                event.stopPropagation();
                 console.log('ERROR when validating component', instance.component);
             },
 
             // TODO: [design] hide error box/hint
             errorout(event, instance) {
+                event.stopPropagation();
             }
 
         }

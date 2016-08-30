@@ -7,7 +7,13 @@ import { _ } from 'meteor/underscore';
 // Helper function to get the component's current schema
 const getCurrentSchema = (parentComponent, key) => {
     // Get the parent component schema
-    const schema = parentComponent && parentComponent.schema;
+    let schema = parentComponent && parentComponent.schema;
+
+    // Try to get the form schema if it was not found
+    if (parentComponent && !schema) {
+        const form = parentComponent.getForm();
+        schema = form && form.schema;
+    }
 
     // Stop here if there's no key or schema defined
     if (!key || !schema) {
@@ -45,8 +51,18 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             // Get the parent component
             const parent = OHIF.blaze.getParentComponent(Blaze.currentView);
 
+            // Get he parent component key
+            let parentKey = parent && parent.templateInstance.data.pathKey;
+
+            // Set the path key for this component
+            data.pathKey = data.key || '';
+            if (data.pathKey && typeof parentKey === 'string') {
+                const prefix = parentKey ? `${parentKey}.` : '';
+                data.pathKey = `${prefix}${data.pathKey}`;
+            }
+
             // Get the current schema data using component's key
-            const currentSchema = getCurrentSchema(parent, data.key);
+            const currentSchema = getCurrentSchema(parent, data.pathKey);
 
             // Stop here if there's no schema data for current key
             if (!currentSchema) {

@@ -31,7 +31,7 @@ OHIF.blaze.getParentView = (view, parentViewName) => {
 };
 
 // Search for the parent component of the given view
-OHIF.blaze.getParentComponent = (view) => {
+OHIF.blaze.getParentComponent = view => {
     let currentView = view;
     while (currentView) {
         currentView = currentView.originalParentView || currentView.parentView;
