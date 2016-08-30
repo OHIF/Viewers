@@ -26,6 +26,24 @@ OHIF.mixins.form = new OHIF.Mixin({
                 component.schema = schema && schema.newContext();
             });
 
+            // Get a registered item in form by its key
+            component.item = itemKey => {
+                let found;
+
+                // Iterate over each registered form item
+                component.registeredItems.forEach(child => {
+                    const key = child.templateInstance.data.key;
+
+                    // Change the found item if current key is the same as given
+                    if (key === itemKey) {
+                        found = child;
+                    }
+                });
+
+                // Return the found item or undefined if it was not found
+                return found;
+            };
+
             // Check if the form data is valid in its schema
             component.validate = () => {
                 // Assume validation result as true

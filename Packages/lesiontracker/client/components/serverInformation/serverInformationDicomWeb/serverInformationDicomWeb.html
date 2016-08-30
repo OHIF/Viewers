@@ -30,28 +30,21 @@
     <hr>
     <h4>Request options</h4>
     <div class="row">
-        {{>serverInformationFormField name="requestOptions.auth" label="Authentication"}}
+        <div class="col-lg-6">
+            {{>inputText labelClass='form-group' key='requestOptions.auth'}}
+        </div>
         <div class="col-lg-6">
             <strong>Logging options</strong>
             <div class="form-group">
                 <div class="form-control clearfix">
                     <div class="checkbox pull-left">
-                        <label>
-                            <input type="checkbox" name="requestOptions.logRequests">
-                            <span>Requests</span>
-                        </label>
+                        {{>inputCheckbox key='requestOptions.logRequests'}}
                     </div>
                     <div class="checkbox pull-left">
-                        <label>
-                            <input type="checkbox" name="requestOptions.logResponses">
-                            <span>Responses</span>
-                        </label>
+                        {{>inputCheckbox key='requestOptions.logResponses'}}
                     </div>
                     <div class="checkbox pull-left">
-                        <label>
-                            <input type="checkbox" name="requestOptions.logTiming">
-                            <span>Timing</span>
-                        </label>
+                        {{>inputCheckbox key='requestOptions.logTiming'}}
                     </div>
                 </div>
             </div>
