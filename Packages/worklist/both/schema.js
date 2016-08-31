@@ -86,6 +86,7 @@ export const DIMSEPeer = new SimpleSchema({
     hostAE: {
         type: String,
         label: 'Application Entity (AE) Host',
+        optional: true
     },
     host: {
         type: String,
