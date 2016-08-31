@@ -11,6 +11,13 @@
         target="{{this.target}}"
         {{this.tagAttributes}}
     >
+        {{#if validationErrors}}
+            <div class="validation-error-container alert alert-danger" role="alert">
+                {{#each error in validationErrors}}
+                    <p><a href="#" class="text-danger" data-target="{{error.key}}">{{error.message}}</a></p>
+                {{/each}}
+            </div>
+        {{/if}}
         {{>UI.contentBlock}}
     </form>
 </template>

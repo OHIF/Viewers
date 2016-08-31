@@ -25,3 +25,10 @@ SimpleSchema.addValidator(function() {
         return 'required';
     }
 });
+
+// Including [label] for some messages
+SimpleSchema.messages({
+    maxCount: '[label] can not have more than [maxCount] values',
+    minCount: '[label] must have at least [minCount] values',
+    notAllowed: '[label] has an invalid value: "[value]"'
+});

@@ -105,8 +105,14 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                     [key]: component.value()
                 });
 
+                // Get the validation result
+                const validationResult = schema.validateOne(document, key);
+
+                // Notify the form that the validation ran
+                form.validationRan();
+
                 // Check if the document validation failed
-                if (!schema.validateOne(document, key)) {
+                if (!validationResult) {
                     // Set the component in error state and display the message
                     component.error(schema.keyErrorMessage(key));
 
@@ -136,6 +142,9 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             // Set the most outer wrapper element
             component.$wrapper = instance.wrapper.$('*').first();
+
+            // Add the pathKey to the wrapper element
+            component.$wrapper.attr('data-key', instance.data.pathKey);
         },
 
         onDestroyed() {
@@ -154,8 +163,9 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 component.$style = component.$element;
             }
 
-            // Set the component in jQuery data after all mixins are rendered
+            // Set the component in element and wrapper jQuery data
             component.$element.data('component', component);
+            component.$wrapper.data('component', component);
         },
 
         events: {

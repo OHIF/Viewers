@@ -90,7 +90,8 @@ export const DIMSEPeer = new SimpleSchema({
     },
     host: {
         type: String,
-        label: 'Host Domain/IP'
+        label: 'Host Domain/IP',
+        regEx: SimpleSchema.RegEx.WeakDomain
     },
     port: {
         type: Number,

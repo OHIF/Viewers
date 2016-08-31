@@ -19,7 +19,7 @@ Template.serverInformationForm.onRendered(() => {
     // Handle the server type
     instance.autorun(() => {
         // Get the server type component
-        const typeComponent = instance.$('[data-key=type]').data('component');
+        const typeComponent = instance.$('[data-key=type] :input').data('component');
 
         // Run this computation every time the user change the server type
         typeComponent.depend();
