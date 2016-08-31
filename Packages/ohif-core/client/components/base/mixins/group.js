@@ -30,23 +30,43 @@ OHIF.mixins.group = new OHIF.Mixin({
             component.value = value => {
                 const isGet = _.isUndefined(value);
                 const isArray = instance.data.arrayValues;
+
+                // Create the result data as array or object
                 const result = isArray ? [] : {};
 
+                // Get the group current value and return it
                 if (isGet) {
+                    // Iterate over each registered item and extract its value
                     component.registeredItems.forEach(child => {
-                        if (!isArray) {
+                        // Check if it is an array or an object group
+                        if (isArray) {
+                            // Push the item value to the result array
+                            result.push(child.value());
+                        } else {
+                            // Get the item key
                             const key = child.templateInstance.data.key;
+
+                            //Check if a key is set for the item
                             if (key) {
+                                // Add the item value to the result object
                                 result[key] = child.value();
                             }
-                        } else {
-                            result.push(child.value());
                         }
                     });
+
+                    // Return the resulting data as array or object
                     return result;
                 }
 
+                // Get the group current value
                 const groupValue = typeof value === 'object' ? value : result;
+
+                // Stop here if there is no value defined for this group
+                if (!groupValue) {
+                    return;
+                }
+
+                // Iterate over each registered item and set its value
                 let i = 0;
                 component.registeredItems.forEach(child => {
                     const key = isArray ? i : child.templateInstance.data.key;
@@ -54,6 +74,8 @@ OHIF.mixins.group = new OHIF.Mixin({
                     child.value(childValue);
                     i++;
                 });
+
+                // Trigger the change event after setting the new value
                 component.$element.trigger('change');
             };
 
