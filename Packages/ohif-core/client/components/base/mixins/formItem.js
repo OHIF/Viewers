@@ -160,9 +160,18 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
         events: {
 
-            // Enable reactivity by changing a Tracker.Dependency observer
+            // Handle the change event for the component
             change(event, instance) {
-                instance.component.changeObserver.changed();
+                const component = instance.component;
+
+                // Prevent execution on upper components
+                if (event.currentTarget === component.$element[0]) {
+                    // Enable reactivity by changing a Tracker.Dependency observer
+                    component.changeObserver.changed();
+
+                    // Revalidate the component
+                    component.validate();
+                }
             },
 
             // TODO: [design] remove log, show error box/hint over the wrapper

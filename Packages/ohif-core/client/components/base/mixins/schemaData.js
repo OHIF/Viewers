@@ -30,7 +30,6 @@ const getCurrentSchema = (parentComponent, key) => {
 
     // Merge the sub-schema properties if it's an array
     if (Array.isArray(currentSchema.type())) {
-        console.warn('>>>>IS ARRAY', currentSchema);
         _.extend(currentSchema, schema._schema[key + '.$']);
     }
 
