@@ -53,7 +53,16 @@ Template.serverInformationForm.onRendered(() => {
 Template.serverInformationForm.events({
     submit(event, instance) {
         event.preventDefault();
-        var formData = instance.data.form.value();
+
+        // Stop here if the form validation fails
+        if (!instance.data.form.validate()) {
+            return;
+        }
+
+        // Get the current form data
+        const formData = instance.data.form.value();
+
+        // Call the save method
         Meteor.call('serverSave', formData, function(error) {
             if (error) {
                 // TODO: check for errors: not-authorized, data-write
