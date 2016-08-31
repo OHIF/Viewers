@@ -23,18 +23,18 @@ export const DICOMWebRequestOptions = new SimpleSchema({
     logRequests: {
         type: Boolean,
         defaultValue: true,
-        label: 'Requests',
+        label: 'Requests'
     },
     logResponses: {
         type: Boolean,
         defaultValue: false,
-        label: 'Responses',
+        label: 'Responses'
     },
     logTiming: {
         type: Boolean,
         defaultValue: true,
-        label: 'Timing',
-    },
+        label: 'Timing'
+    }
 });
 
 export const DICOMWebServer = new SimpleSchema({
@@ -81,7 +81,7 @@ export const DICOMWebServer = new SimpleSchema({
 export const DIMSEPeer = new SimpleSchema({
     aeTitle: {
         type: String,
-        label: 'AE Title',
+        label: 'AE Title'
     },
     hostAE: {
         type: String,
@@ -90,7 +90,7 @@ export const DIMSEPeer = new SimpleSchema({
     },
     host: {
         type: String,
-        label: 'Host Domain/IP',
+        label: 'Host Domain/IP'
     },
     port: {
         type: Number,
@@ -120,8 +120,9 @@ export const DIMSEServer = new SimpleSchema({
     name: serverNameDefinitions,
     type: serverTypeDefinitions,
     peers: {
-        type: [ DIMSEPeer ],
-        label: 'DIMSE Peers',
+        type: [DIMSEPeer],
+        label: 'Peer List',
+        minCount: 1
     }
 });
 
@@ -147,12 +148,12 @@ export const PublicServerConfig = new SimpleSchema({
 
 export const Servers = new SimpleSchema({
     dicomWeb: {
-        type: [ DICOMWebServer ],
+        type: [DICOMWebServer],
         label: 'DICOMWeb Servers',
         optional: true
     },
     dimse: {
-        type: [ DIMSEServer ],
+        type: [DIMSEServer],
         label: 'DIMSE Servers',
         optional: true
     }

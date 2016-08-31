@@ -30,6 +30,7 @@ const getCurrentSchema = (parentComponent, key) => {
 
     // Merge the sub-schema properties if it's an array
     if (Array.isArray(currentSchema.type())) {
+        console.warn('>>>>IS ARRAY', currentSchema);
         _.extend(currentSchema, schema._schema[key + '.$']);
     }
 
@@ -103,6 +104,35 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
                 // Add the items to a reactive instance
                 data.items = new ReactiveVar(items);
             }
+        },
+
+        onCreated() {
+            const instance = Template.instance();
+            const component = instance.component;
+
+            // Create a data parser according to current schema key
+            component.parseData = value => {
+                // Get the current schema data using component's key
+                const currentSchema = getCurrentSchema(component.parent, instance.data.pathKey);
+
+                // Stop here if there's no schema data for current key
+                if (!currentSchema) {
+                    return;
+                }
+
+                // Check if the schema is a Number
+                if (currentSchema.type === Number) {
+                    return parseFloat(value);
+                }
+
+                // Check if the schema is a Boolean
+                if (currentSchema.type === Boolean) {
+                    return !!value;
+                }
+
+                // Return the original value if none of the checks matched
+                return value;
+            };
         },
 
         onMixins() {

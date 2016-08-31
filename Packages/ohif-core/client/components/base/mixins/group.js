@@ -98,13 +98,19 @@ OHIF.mixins.group = new OHIF.Mixin({
             };
 
             // Check if the form data is valid in its schema
+            const validateSelf = component.validate;
             component.validate = () => {
                 // Assume validation result as true
                 let result = true;
 
                 // Return true if there's no data schema defined
-                if (!component.schema) {
+                if (component.isForm && !component.schema) {
                     return result;
+                }
+
+                // Validate the component itself if it has a key
+                if (instance.data.pathKey && !validateSelf()) {
+                    result = false;
                 }
 
                 // Iterate over each registered form item and validate it
@@ -112,7 +118,7 @@ OHIF.mixins.group = new OHIF.Mixin({
                     const key = child.templateInstance.data.key;
 
                     // Change result to false if any form item is invalid
-                    if (key && !child.validate()) {
+                    if ((key || instance.data.arrayValues) && !child.validate()) {
                         result = false;
                     }
                 });

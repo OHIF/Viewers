@@ -31,7 +31,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             component.value = value => {
                 const isGet = _.isUndefined(value);
                 if (isGet) {
-                    return component.$element.val();
+                    return component.parseData(component.$element.val());
                 }
 
                 component.$element.val(value).trigger('change');

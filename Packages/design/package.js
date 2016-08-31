@@ -37,7 +37,8 @@ Package.onUse(function(api) {
     api.addFiles([
         'styles/components/radio.styl',
         'styles/components/select2.styl',
-        'styles/components/selectTree.styl'
+        'styles/components/selectTree.styl',
+        'styles/components/states.styl'
     ], 'client');
 
     // Rounded Button Group

@@ -16,7 +16,7 @@ OHIF.mixins.checkbox = new OHIF.Mixin({
             component.value = value => {
                 const isGet = _.isUndefined(value);
                 if (isGet) {
-                    return component.$element.is(':checked');
+                    return component.parseData(component.$element.is(':checked'));
                 }
 
                 component.$element.prop('checked', value);

@@ -21,7 +21,7 @@ OHIF.mixins.groupRadio = new OHIF.Mixin({
                 component.registeredItems.forEach(child => elements.push(child.$element[0]));
                 const $elements = $(elements);
                 if (isGet) {
-                    return $elements.filter(':checked').val();
+                    return component.parseData($elements.filter(':checked').val());
                 }
 
                 $elements.filter(`[value='${value}']`).prop('checked', true).trigger('change');
