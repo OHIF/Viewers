@@ -1,29 +1,29 @@
-Template.serverInformationDimse.onCreated(function() {
-    var instance = Template.instance();
+Template.serverInformationDimse.onCreated(() => {
+    const instance = Template.instance();
     instance.peers = new ReactiveVar([]);
-    instance.autorun(function() {
-        var currentItem = instance.data.currentItem.get();
+    instance.autorun(() => {
+        const currentItem = instance.data.currentItem.get();
         if (currentItem) {
             instance.peers.set(currentItem.peers || []);
         }
     });
 });
 
-Template.serverInformationDimse.onRendered(function() {
-    var instance = Template.instance();
-    instance.autorun(function() {
-        var mode = instance.data.mode.get();
+Template.serverInformationDimse.onRendered(() => {
+    const instance = Template.instance();
+    instance.autorun(() => {
+        const mode = instance.data.mode.get();
         if (mode === 'edit') {
-            var data = instance.data.currentItem.get();
-            FormUtils.setFormData(instance.data.$form, data);
+            const data = instance.data.currentItem.get();
+            instance.data.form.value(data);
         }
     });
 });
 
 Template.serverInformationDimse.events({
-    'click .js-new-peer': function(event, instance) {
+    'click .js-new-peer'(event, instance) {
         event.preventDefault();
-        var peers = instance.peers.get();
+        const peers = instance.peers.get();
         peers.push({});
         instance.peers.set(peers);
     }

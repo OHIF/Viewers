@@ -1,5 +1,5 @@
-Template.serverInformationDicomWeb.onRendered(function() {
-    var instance = Template.instance();
+Template.serverInformationDicomWeb.onRendered(() => {
+    const instance = Template.instance();
     instance.autorun(function() {
         const mode = instance.data.mode.get();
         if (mode === 'edit') {

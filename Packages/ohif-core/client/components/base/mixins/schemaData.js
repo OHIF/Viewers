@@ -52,10 +52,13 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             const parent = OHIF.blaze.getParentComponent(Blaze.currentView);
 
             // Get he parent component key
-            let parentKey = parent && parent.templateInstance.data.pathKey;
+            const parentKey = parent && parent.templateInstance.data.pathKey;
+
+            // Check if the parent is an array group
+            const isParentArray = parent && parent.templateInstance.data.arrayValues;
 
             // Set the path key for this component
-            data.pathKey = data.key || '';
+            data.pathKey = data.key || (isParentArray ? '$' : '');
             if (data.pathKey && typeof parentKey === 'string') {
                 const prefix = parentKey ? `${parentKey}.` : '';
                 data.pathKey = `${prefix}${data.pathKey}`;
@@ -107,7 +110,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             const component = instance.component;
 
             // Get the current schema data using component's key
-            const currentSchema = getCurrentSchema(component.parent, instance.data.key);
+            const currentSchema = getCurrentSchema(component.parent, instance.data.pathKey);
 
             // Stop here if there's no schema data for current key
             if (!currentSchema) {

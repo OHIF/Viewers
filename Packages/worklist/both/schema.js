@@ -81,11 +81,11 @@ export const DICOMWebServer = new SimpleSchema({
 export const DIMSEPeer = new SimpleSchema({
     aeTitle: {
         type: String,
-        label: 'Application Entity (AE) Title',
+        label: 'AE Title',
     },
     hostAE: {
         type: String,
-        label: 'Application Entity (AE) Host',
+        label: 'AE Host',
         optional: true
     },
     host: {

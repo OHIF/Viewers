@@ -29,22 +29,30 @@ OHIF.mixins.group = new OHIF.Mixin({
             // Get or set the child components values
             component.value = value => {
                 const isGet = _.isUndefined(value);
+                const isArray = instance.data.arrayValues;
+                const result = isArray ? [] : {};
+
                 if (isGet) {
-                    const result = {};
                     component.registeredItems.forEach(child => {
-                        const key = child.templateInstance.data.key;
-                        if (key) {
-                            result[key] = child.value();
+                        if (!isArray) {
+                            const key = child.templateInstance.data.key;
+                            if (key) {
+                                result[key] = child.value();
+                            }
+                        } else {
+                            result.push(child.value());
                         }
                     });
                     return result;
                 }
 
-                const groupValue = typeof value === 'object' ? value : {};
+                const groupValue = typeof value === 'object' ? value : result;
+                let i = 0;
                 component.registeredItems.forEach(child => {
-                    const key = child.templateInstance.data.key;
+                    const key = isArray ? i : child.templateInstance.data.key;
                     const childValue = _.isUndefined(groupValue[key]) ? null : groupValue[key];
                     child.value(childValue);
+                    i++;
                 });
                 component.$element.trigger('change');
             };
