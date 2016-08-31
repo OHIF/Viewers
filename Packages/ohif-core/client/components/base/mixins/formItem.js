@@ -1,6 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
-import { Tracker } from "meteor/tracker";
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -101,9 +101,9 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
 
                 // Create the data document for validation
-                const document = {
+                const document = OHIF.blaze.getNestedObject({
                     [key]: component.value()
-                };
+                });
 
                 // Check if the document validation failed
                 if (!schema.validateOne(document, key)) {
