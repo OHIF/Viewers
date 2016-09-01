@@ -3,10 +3,16 @@ import { Template } from 'meteor/templating';
 
 Template.displaySetNavigation.events({
     'click .js-next'(event, instance) {
-        OHIF.viewer.moveDisplaySet(true);
+        OHIF.viewer.moveDisplaySets(true);
     },
 
     'click .js-prev'(event, instance) {
-        OHIF.viewer.moveDisplaySet(false);
+        OHIF.viewer.moveDisplaySets(false);
+    }
+});
+
+Template.displaySetNavigation.helpers({
+    disableButton(isPrevious) {
+
     }
 });

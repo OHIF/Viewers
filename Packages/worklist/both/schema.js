@@ -121,6 +121,16 @@ export const UISettings = new SimpleSchema({
         type: Boolean,
         label: 'Left sidebar open by default?',
         defaultValue: false
+    },
+    displaySetNavigationLoopOverSeries: {
+        type: Boolean,
+        label: 'The UP/DOWN display set navigation buttons will start over when reach the last display set in viewport?',
+        defaultValue: true
+    },
+    displaySetNavigationMultipleViewports: {
+        type: Boolean,
+        label: 'The UP/DOWN display set navigation buttons will iterate over all the viewports at once?',
+        defaultValue: false
     }
 });
 

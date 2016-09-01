@@ -9,7 +9,7 @@
                 <i class="fa fa-toggle-down fa-fw"></i>
             {{/if}}
         </div>
-        <div class="buttonLabel">
+        <div class="buttonLabel" disabled="{{#if (disableButton isPrevious)}}disabled{{/if}}">
             {{#if isPrevious}}Previous{{else}}Next{{/if}}
         </div>
     </div>
