@@ -35,6 +35,16 @@ OHIF.mixins.form = new OHIF.Mixin({
 
             // Set the component main and style elements
             component.$style = component.$element = instance.$('form:first');
+
+            instance.autorun(() => {
+                // Run this computation everytime the validation is triggered
+                component.validationObserver.depend();
+
+                // Focus the first error field if some validation failed
+                if (component.schema && component.schema._invalidKeys.length) {
+                    instance.$('.state-error :input:first').focus();
+                }
+            });
         },
 
         events: {
