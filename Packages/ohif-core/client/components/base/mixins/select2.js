@@ -65,7 +65,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
         },
 
         events: {
-            'focus .select2-hidden-accessible'(event, instance) {
+            'focusin .select2-hidden-accessible'(event, instance) {
+                event.preventDefault();
+
                 // Redirect the focus to select2 focus control in case of hidden
                 // accessible being focused (e.g. clicking on outer label)
                 $(event.currentTarget).nextAll('.select2:first').find('.select2-selection').focus();

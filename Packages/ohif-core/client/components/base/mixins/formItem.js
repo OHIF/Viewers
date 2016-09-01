@@ -65,11 +65,22 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
                 // Set or remove the error message
                 if (errorMessage) {
-                    component.$element.trigger('errorin');
                     component.$wrapper.attr('data-error', errorMessage);
                 } else {
-                    component.$element.trigger('errorout');
                     component.$wrapper.removeAttr('data-error', errorMessage);
+                }
+            };
+
+            // Toggle the state over the component
+            component.toggleTooltip = (isShow, message) => {
+                if (isShow) {
+                    console.warn('>>>>message', message);
+                    component.$wrapper.tooltip({
+                        trigger: 'manual',
+                        title: message
+                    }).tooltip('show');
+                } else {
+                    component.$wrapper.tooltip('destroy');
                 }
             };
 
@@ -184,15 +195,28 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
             },
 
-            // TODO: [design] remove log, show error box/hint over the wrapper
-            errorin(event, instance) {
+            focus(event, instance) {
+                const component = instance.component;
+
+                // Prevent event bubbling
                 event.stopPropagation();
-                console.log('ERROR when validating component', instance.component);
+
+                // Check for error state and message
+                const errorMessage = component.$wrapper.attr('data-error');
+                if (errorMessage) {
+                    // Show the tooltip with the error message
+                    component.toggleTooltip(true, errorMessage);
+                }
             },
 
-            // TODO: [design] hide error box/hint
-            errorout(event, instance) {
+            blur(event, instance) {
+                const component = instance.component;
+
+                // Prevent event bubbling
                 event.stopPropagation();
+
+                // Hide any tooltips
+                component.toggleTooltip(false);
             }
 
         }
