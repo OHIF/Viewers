@@ -12,6 +12,9 @@ OHIF.mixins.group = new OHIF.Mixin({
             const instance = Template.instance();
             const component = instance.component;
 
+            // Set the group identifier flag
+            component.isGroup = true;
+
             // Run this computation every time the schema property is changed
             instance.autorun(() => {
                 let schema = instance.data.schema;

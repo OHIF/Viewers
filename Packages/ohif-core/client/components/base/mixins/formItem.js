@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -53,6 +54,19 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 component.$wrapper[method]();
             };
 
+            // Check if the focus is inside this element
+            component.hasFocus = () => {
+                // Get the focused element
+                const focused = $(':focus')[0];
+
+                // Check if the focused element is inside the component
+                const contains = $.contains(component.$wrapper[0], focused);
+                const isEqual = component.$wrapper[0] === focused;
+
+                // Return true if he component has the focus
+                return contains || isEqual;
+            };
+
             // Add or remove a state from the component
             component.state = (state, flag) => {
                 component.$wrapper.toggleClass(`state-${state}`, !!flag);
@@ -71,18 +85,49 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
             };
 
-            // Toggle the state over the component
+            // Toggle the tooltip over the component
             component.toggleTooltip = (isShow, message) => {
-                if (isShow) {
-                    console.warn('>>>>message', message);
+                if (isShow && message) {
+                    // Stop here if the tooltip is already created
+                    if (component.$wrapper.next('.tooltip').length) {
+                        return;
+                    }
+
+                    // Create the tooltip
                     component.$wrapper.tooltip({
                         trigger: 'manual',
                         title: message
                     }).tooltip('show');
                 } else {
+                    // Destroy the tooltip
                     component.$wrapper.tooltip('destroy');
                 }
             };
+
+            // Toggle a state message as a tooltip over the component
+            component.toggleMessage = isShow => {
+                // Check if the action is to hide
+                if (!isShow) {
+                    Meteor.setTimeout(() => {
+                        // Check if the component has the focus
+                        if (component.hasFocus()) {
+                            // Prevent the tooltip from being hidden
+                            return;
+                        }
+
+                        // Hide the tooltip
+                        component.toggleTooltip(false);
+                    }, 100);
+                    return;
+                }
+
+                // Check for error state and message
+                const errorMessage = component.$wrapper.attr('data-error');
+                if (errorMessage) {
+                    // Show the tooltip with the error message
+                    component.toggleTooltip(true, errorMessage);
+                }
+            },
 
             // Search for the parent form component
             component.getForm = () => {
@@ -198,25 +243,31 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             focus(event, instance) {
                 const component = instance.component;
 
+                // Stop here if it is an group
+                if (component.isGroup || component.isCustomFocus) {
+                    return;
+                }
+
                 // Prevent event bubbling
                 event.stopPropagation();
 
-                // Check for error state and message
-                const errorMessage = component.$wrapper.attr('data-error');
-                if (errorMessage) {
-                    // Show the tooltip with the error message
-                    component.toggleTooltip(true, errorMessage);
-                }
+                // Check for state messages and show it
+                component.toggleMessage(true);
             },
 
             blur(event, instance) {
                 const component = instance.component;
 
+                // Stop here if it is an group
+                if (component.isGroup || component.isCustomFocus) {
+                    return;
+                }
+
                 // Prevent event bubbling
                 event.stopPropagation();
 
-                // Hide any tooltips
-                component.toggleTooltip(false);
+                // Hide state messages
+                component.toggleMessage(false);
             }
 
         }
