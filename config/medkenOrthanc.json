@@ -27,7 +27,7 @@
         },
         {
           "host": "0.0.0.0",
-          "port": 11112,
+          "port": 11119,
           "aeTitle": "OHIFDCM",
           "default": true,
           "server": true
