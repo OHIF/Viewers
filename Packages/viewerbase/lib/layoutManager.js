@@ -25,68 +25,74 @@ LayoutManager = class LayoutManager {
     }
 
     setDefaultViewportData() {
-        var numViewports = this.getNumberOfViewports();
+        const self = this;
 
-        var viewportIndex = 0;
-        var self = this;
-        var oldViewportData = self.viewportData;
-        var running = true;
-        self.viewportData = [];
-        this.studies.forEach(function(study) {
-            study.displaySets.forEach(function(displaySet) {
-                if (!displaySet.images.length || !running) {
-                    return;
-                }
+        // Get the number of vieports to be rendered
+        const viewportsAmount = this.getNumberOfViewports();
 
-                var currentViewportData;
-                var existingViewportData = oldViewportData[viewportIndex];
-                if (oldViewportData[viewportIndex]) {
-                    currentViewportData = {
-                        viewportIndex: existingViewportData.viewportIndex,
-                        studyInstanceUid: existingViewportData.studyInstanceUid,
-                        seriesInstanceUid: existingViewportData.seriesInstanceUid,
-                        displaySetInstanceUid: existingViewportData.displaySetInstanceUid,
-                        sopInstanceUid: existingViewportData.sopInstanceUid,
-                        viewport: existingViewportData.viewport,
-                        imageId: existingViewportData.imageId,
-                        currentImageIdIndex: existingViewportData.currentImageIdIndex // TODO Remove this once currentImageIdIndex is removed from imageViewerViewports
-                    };
-                } else {
-                    // This tests to make sure there is actually image data in this instance
-                    // TODO: Change this when we add PDF and MPEG support
-                    // See https://ohiforg.atlassian.net/browse/LT-227
-                    var firstInstance = displaySet.images[0];
+        // Store the old viewport data and reset the current
+        const oldViewportData = self.viewportData;
 
-                    // All imaging modalities must have a valid value for sopClassUid or rows
-                    if (!firstInstance || (!isImage(firstInstance.sopClassUid) && !firstInstance.rows)) {
-                        currentViewportData = {};
-                    } else {
-                        currentViewportData = {
-                            viewportIndex: viewportIndex,
-                            studyInstanceUid: study.studyInstanceUid,
-                            seriesInstanceUid: displaySet.seriesInstanceUid,
-                            displaySetInstanceUid: displaySet.displaySetInstanceUid,
-                            sopInstanceUid: firstInstance.sopInstanceUid,
-                            currentImageIdIndex: 0 // TODO Remove this once currentImageIdIndex is removed from imageViewerViewports
-                        };
-                    }
-                }
+        // Get the studies and display sets sequence map
+        const sequenceMap = OHIF.viewer.getDisplaySetSequenceMap();
 
-                self.viewportData.push(currentViewportData);
+        // Check if the display sets are sequenced
+        const isSequenced = OHIF.viewer.isDisplaySetsSequenced(sequenceMap);
 
-                viewportIndex++;
+        // Define the current viewport index and the viewport data array
+        let currentViewportIndex = 0;
+        if (viewportsAmount > oldViewportData.length && isSequenced) {
+            // Keep the displayed display sets
+            self.viewportData = oldViewportData;
+            currentViewportIndex = oldViewportData.length - 1;
+        } else if (viewportsAmount <= oldViewportData.length) {
+            // Reduce the original displayed display sets
+            self.viewportData = oldViewportData.slice(0, viewportsAmount);
+            return;
+        } else {
+            // Reset all display sets
+            self.viewportData = [];
+        }
 
-                if (viewportIndex === numViewports) {
-                    running = false;
-                    return false;
-                }
+        // Get all the display sets for the viewer studies
+        let displaySets = [];
+        this.studies.forEach(study => {
+            study.displaySets.forEach(displaySet => {
+                displaySet.images.length && displaySets.push(displaySet);
             });
-
-            if (viewportIndex === numViewports) {
-                running = false;
-                return false;
-            }
         });
+
+        // Get the display sets that will be appended to the current ones
+        let appendix;
+        const currentLength = self.viewportData.length;
+        if (currentLength) {
+            // TODO: isolate displaySets array by study (maybe a map?)
+            const endIndex = currentViewportIndex + (viewportsAmount - currentLength) + 1;
+            appendix = displaySets.slice(currentViewportIndex + 1, endIndex);
+        } else {
+            // Get available display sets from the first to the grid size
+            appendix = displaySets.slice(0, viewportsAmount - 1);
+        }
+
+        // Generate the additional data based on the appendix
+        const additionalData = [];
+        appendix.forEach((displaySet, index) => {
+            additionalData.push({
+                viewportIndex: currentViewportIndex + index,
+                studyInstanceUid: displaySet.studyInstanceUid,
+                seriesInstanceUid: displaySet.seriesInstanceUid,
+                displaySetInstanceUid: displaySet.displaySetInstanceUid,
+                sopInstanceUid: displaySet.images[0].sopInstanceUid
+            });
+        });
+
+        // Append the additional data with the viewport data
+        self.viewportData = self.viewportData.concat(additionalData);
+
+        // Push empty objects if the amount is lesser than the grid size
+        while (self.viewportData.length < viewportsAmount) {
+            self.viewportData.push({});
+        }
     }
 
     updateViewports() {

@@ -97,7 +97,7 @@ Template.toolbarSection.helpers({
             title: 'Previous',
             classes: 'imageViewerCommand',
             buttonTemplateName: 'displaySetNavigation',
-            isPrevious: true
+            isNext: false
         });
 
         buttonData.push({
@@ -105,7 +105,7 @@ Template.toolbarSection.helpers({
             title: 'Next',
             classes: 'imageViewerCommand',
             buttonTemplateName: 'displaySetNavigation',
-            isPrevious: false
+            isNext: true
         });
 
         buttonData.push({

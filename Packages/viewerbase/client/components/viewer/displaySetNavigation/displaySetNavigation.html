@@ -1,16 +1,16 @@
 <template name="displaySetNavigation">
     <div id="{{this.id}}"
-         class="toolbarSectionButton rp-x-1 {{this.classes}} {{#if isPrevious}}js-prev{{else}}js-next{{/if}}"
+         class="toolbarSectionButton rp-x-1 {{this.classes}} {{#if isNext}}js-next{{else}}js-prev{{/if}} {{#if (disableButton isNext)}}disabled{{/if}}"
          title="{{this.title}}">
         <div class="svgContainer">
-            {{#if isPrevious}}
-                <i class="fa fa-toggle-up fa-fw"></i>
-            {{else}}
+            {{#if isNext}}
                 <i class="fa fa-toggle-down fa-fw"></i>
+            {{else}}
+                <i class="fa fa-toggle-up fa-fw"></i>
             {{/if}}
         </div>
-        <div class="buttonLabel" disabled="{{#if (disableButton isPrevious)}}disabled{{/if}}">
-            {{#if isPrevious}}Previous{{else}}Next{{/if}}
+        <div class="buttonLabel">
+            {{#if isNext}}Next{{else}}Previous{{/if}}
         </div>
     </div>
 </template>
