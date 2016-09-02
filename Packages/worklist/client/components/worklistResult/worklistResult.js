@@ -167,7 +167,7 @@ function search() {
                 (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
-                study.numberOfStudyRelatedInstances = parseInt(study.numberOfStudyRelatedInstances);
+                study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : 0;
 
                 // Insert any matching studies into the WorklistStudies Collection
                 WorklistStudies.insert(study);
