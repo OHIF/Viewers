@@ -29,15 +29,18 @@ LayoutManager = class LayoutManager {
 
         var viewportIndex = 0;
         var self = this;
+        var oldViewportData = self.viewportData;
+        var running = true;
+        self.viewportData = [];
         this.studies.forEach(function(study) {
             study.displaySets.forEach(function(displaySet) {
-                if (!displaySet.images.length) {
+                if (!displaySet.images.length || !running) {
                     return;
                 }
 
                 var currentViewportData;
-                var existingViewportData = self.viewportData[viewportIndex];
-                if (self.viewportData[viewportIndex]) {
+                var existingViewportData = oldViewportData[viewportIndex];
+                if (oldViewportData[viewportIndex]) {
                     currentViewportData = {
                         viewportIndex: existingViewportData.viewportIndex,
                         studyInstanceUid: existingViewportData.studyInstanceUid,
@@ -48,8 +51,6 @@ LayoutManager = class LayoutManager {
                         imageId: existingViewportData.imageId,
                         currentImageIdIndex: existingViewportData.currentImageIdIndex // TODO Remove this once currentImageIdIndex is removed from imageViewerViewports
                     };
-
-                    self.viewportData[viewportIndex] = currentViewportData;
                 } else {
                     // This tests to make sure there is actually image data in this instance
                     // TODO: Change this when we add PDF and MPEG support
@@ -69,18 +70,20 @@ LayoutManager = class LayoutManager {
                             currentImageIdIndex: 0 // TODO Remove this once currentImageIdIndex is removed from imageViewerViewports
                         };
                     }
-
-                    self.viewportData.push(currentViewportData);
                 }
+
+                self.viewportData.push(currentViewportData);
 
                 viewportIndex++;
 
                 if (viewportIndex === numViewports) {
+                    running = false;
                     return false;
                 }
             });
 
             if (viewportIndex === numViewports) {
+                running = false;
                 return false;
             }
         });
