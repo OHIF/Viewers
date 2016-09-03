@@ -2,6 +2,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 OHIF.viewer = {};
 
+// Return the display sets map sequence of display sets and viewports
 OHIF.viewer.getDisplaySetSequenceMap = () => {
     // Get the viewport data list
     const viewportDataList = window.layoutManager.viewportData;
@@ -24,7 +25,7 @@ OHIF.viewer.getDisplaySetSequenceMap = () => {
             displaySetInstanceUid: viewportData.displaySetInstanceUid
         });
 
-        // Get the current instance index
+        // Get the current instance index (using 9999 to sort greater than -1)
         let displaySetIndex = _.indexOf(displaySets, displaySet);
         displaySetIndex = displaySetIndex < 0 ? 9999 : displaySetIndex;
 
@@ -46,6 +47,7 @@ OHIF.viewer.getDisplaySetSequenceMap = () => {
     return sequenceMap;
 };
 
+// Check if all the display sets and viewports are sequenced
 OHIF.viewer.isDisplaySetsSequenced = definedSequenceMap => {
     let isSequenced = true;
 
@@ -62,8 +64,8 @@ OHIF.viewer.isDisplaySetsSequenced = definedSequenceMap => {
                 lastViewportIndex !== null &&
                 lastDisplaySetIndex !== null &&
                 displaySetIndex !== null &&
-                (viewportIndex - 1) !== lastViewportIndex &&
-                (displaySetIndex - 1) !== lastDisplaySetIndex
+                (viewportIndex - 1 !== lastViewportIndex ||
+                displaySetIndex - 1 !== lastDisplaySetIndex)
             ) {
                 // Set the sequenced flag as false;
                 isSequenced = false;
@@ -80,6 +82,7 @@ OHIF.viewer.isDisplaySetsSequenced = definedSequenceMap => {
     return isSequenced;
 };
 
+// Check if is possible to move display sets on a specific direction
 OHIF.viewer.canMoveDisplaySets = isNext => {
     // Get the setting that defines if the display set navigation is multiple
     const isMultiple = OHIF.uiSettings.displaySetNavigationMultipleViewports;
@@ -95,9 +98,45 @@ OHIF.viewer.canMoveDisplaySets = isNext => {
     // Get the studies and display sets sequence map
     const sequenceMap = OHIF.viewer.getDisplaySetSequenceMap();
 
-    // Return false for moving backward if display sets are not sequenced
-    if (isMultiple && !isNext && !OHIF.viewer.isDisplaySetsSequenced(sequenceMap)) {
-        return false;
+    // Check if the display sets are sequenced
+    const isSequenced = OHIF.viewer.isDisplaySetsSequenced(sequenceMap);
+
+    // Check if is next and looping is blocked
+    if (isNext && !allowLooping) {
+        // Check if the end was reached
+        let endReached = true;
+        sequenceMap.forEach((studyViewports, study) => {
+            const firstIndex = studyViewports[0].displaySetIndex;
+            const steps = studyViewports.length;
+            const amount = study.displaySets.length;
+            const lastStepIndex = amount - (amount % steps);
+            if (firstIndex + steps !== lastStepIndex + steps) {
+                endReached = false;
+            }
+        });
+
+        // Return false if end is not reached yet
+        if ((!isMultiple || isSequenced) && endReached) {
+            return false;
+        }
+    }
+
+    // Check if is previous and looping is blocked
+    if (!isNext && !allowLooping) {
+        // Check if the begin was reached
+        let beginReached = true;
+        sequenceMap.forEach((studyViewports, study) => {
+            const firstIndex = studyViewports[0].displaySetIndex;
+            const steps = studyViewports.length;
+            if (firstIndex - steps !== -steps) {
+                beginReached = false;
+            }
+        });
+
+        // Return false if begin is not reached yet
+        if ((!isMultiple || isSequenced) && beginReached) {
+            return false;
+        }
     }
 
     return true;
@@ -166,6 +205,8 @@ OHIF.viewer.moveMultipleViewportDisplaySets = isNext => {
     // Check if the display sets are sequenced
     const isSequenced = OHIF.viewer.isDisplaySetsSequenced(sequenceMap);
 
+    const displaySetsToRender = [];
+
     // Iterate over the studies map and move its display sets
     sequenceMap.forEach((studyViewports, study) => {
         // Sort the viewports on the study by the display set index
@@ -176,32 +217,41 @@ OHIF.viewer.moveMultipleViewportDisplaySets = isNext => {
 
         // Calculate the base index
         const firstIndex = studyViewports[0].displaySetIndex;
-        const amount = studyViewports.length;
-        const rest = firstIndex % amount;
+        const steps = studyViewports.length;
+        const rest = firstIndex % steps;
         let baseIndex = rest ? firstIndex - rest : firstIndex;
         const direction = isNext ? 1 : -1;
-        baseIndex += amount * direction;
+        baseIndex += steps * direction;
+
+        const amount = displaySets.length;
 
         // Check if the indexes are sequenced or will overflow the array bounds
-        if (!isSequenced) {
+        if (baseIndex >= amount) {
+            const lastStepIndex = amount - (amount % steps);
+            if (firstIndex + steps !== lastStepIndex + steps) {
+                // Reset the index if the display sets are sequenced but shifted
+                baseIndex = lastStepIndex;
+            } else if (!allowLooping) {
+                // Stop here if looping is not allowed
+                return;
+            } else {
+                // Start over the series if looping is allowed
+                baseIndex = 0;
+            }
+        } else if (baseIndex < 0) {
+            if (firstIndex > 0) {
+                // Reset the index if the display sets are sequenced but shifted
+                baseIndex = 0;
+            } else if (!allowLooping) {
+                // Stop here if looping is not allowed
+                return;
+            } else {
+                // Go to the series' end if looping is allowed
+                baseIndex = (amount - 1) - ((amount - 1) % steps);
+            }
+        } else if (!isSequenced) {
             // Reset the sequence if indexes are not sequenced
             baseIndex = 0;
-        } else if (baseIndex >= displaySets.length) {
-            // Stop here if looping is not allowed
-            if (!allowLooping) {
-                return;
-            }
-
-            // Start over the series if looping is allowed
-            baseIndex = 0;
-        } else if (baseIndex < 0) {
-            // Stop here if looping is not allowed
-            if (!allowLooping) {
-                return;
-            }
-
-            // Go to the series' end if looping is allowed
-            baseIndex = (displaySets.length - 1) - ((displaySets.length - 1) % amount);
         }
 
         // Iterate over the current study viewports
@@ -212,9 +262,24 @@ OHIF.viewer.moveMultipleViewportDisplaySets = isNext => {
             // Get the display set data for the new index
             const displaySetData = displaySets[newIndex] || {};
 
-            // Rerender the viewport using the new display set data
-            window.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
+            // Add the current display set that on the render list
+            displaySetsToRender.push(displaySetData);
         });
+    });
+
+    // Sort the display sets
+    const sortingFunction = OHIF.utils.sortBy({
+        name: 'studyInstanceUid'
+    }, {
+        name: 'seriesNumber'
+    }, {
+        name: 'instanceNumber'
+    });
+    displaySetsToRender.sort((a, b) => sortingFunction(a, b));
+
+    // Iterate over each display set data and render on its respective viewport
+    displaySetsToRender.forEach((data, index) => {
+        window.layoutManager.rerenderViewportWithNewDisplaySet(index, data);
     });
 };
 

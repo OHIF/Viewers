@@ -46,10 +46,19 @@ createStacks = function(study) {
                 // Override the default value of instances.length
                 displaySet.numImageFrames = instance.numFrames;
 
+                // Include the instance number
+                displaySet.instanceNumber = instance.instanceNumber;
+
                 displaySets.push(displaySet);
             } else if (isSingleImageModality(instance.modality)) {
                 displaySet = makeDisplaySet(series, [ instance ]);
+
+                // Include the study instance Uid
                 displaySet.studyInstanceUid = study.studyInstanceUid;
+
+                // Include the instance number
+                displaySet.instanceNumber = instance.instanceNumber;
+
                 displaySets.push(displaySet);
             } else {
                 stackableInstances.push(instance);
@@ -85,6 +94,9 @@ function makeDisplaySet(series, instances) {
             return a.instanceNumber - b.instanceNumber;
         }
     });
+
+    // Include the first image instance number
+    displaySet.instanceNumber = displaySet.images[0].instanceNumber;
 
     // Create a unique ID for this stack so we can reference it
     displaySet.displaySetInstanceUid = Random.id();

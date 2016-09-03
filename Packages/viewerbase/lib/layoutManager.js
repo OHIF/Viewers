@@ -67,8 +67,9 @@ LayoutManager = class LayoutManager {
         const currentLength = self.viewportData.length;
         if (currentLength) {
             // TODO: isolate displaySets array by study (maybe a map?)
-            const endIndex = currentViewportIndex + (viewportsAmount - currentLength) + 1;
-            appendix = displaySets.slice(currentViewportIndex + 1, endIndex);
+            const beginIndex = sequenceMap.values().next().value[0].displaySetIndex + currentLength;
+            const endIndex = beginIndex + (viewportsAmount - currentLength);
+            appendix = displaySets.slice(beginIndex, endIndex);
         } else {
             // Get available display sets from the first to the grid size
             appendix = displaySets.slice(0, viewportsAmount - 1);
