@@ -1,10 +1,10 @@
-Template.serverInformationDicomWeb.onRendered(function() {
-    var instance = Template.instance();
+Template.serverInformationDicomWeb.onRendered(() => {
+    const instance = Template.instance();
     instance.autorun(function() {
-        var mode = instance.data.mode.get();
+        const mode = instance.data.mode.get();
         if (mode === 'edit') {
-            var data = instance.data.currentItem.get();
-            FormUtils.setFormData(instance.data.$form, data);
+            const data = instance.data.currentItem.get();
+            instance.data.form.value(data);
         }
     });
 });

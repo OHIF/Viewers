@@ -5,7 +5,7 @@
     margin: 0 10px
 
     label
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
       font-weight: 400
       cursor: pointer
 
@@ -13,10 +13,10 @@
         pointer-events: none
 
       &:hover
-        color: $hoverColor
+        theme('color', '$hoverColor')
 
       &:active
-        color: $activeColor
+        theme('color', '$activeColor')
 
     input
       width: 0.1px;

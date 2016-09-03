@@ -22,8 +22,8 @@ span.select2.select2-container
     padding-left: 11px
 
   span.select2-selection__arrow
+    theme('border-left', '1px solid $primaryBackgroundColor')
     background-color: $gray1
-    border-left: 1px solid $primaryBackgroundColor
     border-top-right-radius: $borderRadius
     border-bottom-right-radius: $borderRadius
     right: 0
@@ -42,8 +42,8 @@ span.select2.select2-container
       placeholder-color($gray4)
 
     li.select2-selection__choice
+      theme('border-color', '$uiGray')
       background-color: #FFF
-      border-color: $uiGray
       border-radius: $borderRadius
       color: $gray4
       font-size: 12px

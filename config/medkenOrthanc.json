@@ -15,20 +15,26 @@
           "logTiming": true
         }
       }
-    ]
+    ],
+    "dimse" : [{
+      "name": "ORTHANC_DIMSE",
+      "peers": [
+        {
+          "host": "208.100.41.100",
+          "port": 4242,
+          "aeTitle": "MKORTHANC",
+          "default": true
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 11119,
+          "aeTitle": "OHIFDCM",
+          "default": true,
+          "server": true
+        }
+      ]
+    }]
   },
-  "dimse" : [{
-    "host" : "208.100.41.100",
-    "port" : 4242,
-    "aeTitle" : "MKORTHANC",
-    "default": true
-  },{
-    "host" : "0.0.0.0",
-    "port" : 11112,    
-    "aeTitle" : "OHIFDCM",
-    "default" : true,
-    "server" : true
-  }],
   "defaultServiceType": "dimse",
   "medkenpanel" : {
     "prefix" : "admin"

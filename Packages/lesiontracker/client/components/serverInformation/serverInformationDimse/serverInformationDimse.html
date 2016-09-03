@@ -1,43 +1,45 @@
 <template name="serverInformationDimse">
     <div class="panel panel-default panel-body">
         <div class="clearfix">
-            <h4 class="pull-left">Peer list</h4>
+            <h4 class="pull-left">Peer List</h4>
             <button class="btn btn-primary pull-right js-new-peer">New peer</button>
         </div>
         <hr>
-        <div class="row">
+        {{#group class='row' key='peers' arrayValues=true}}
             {{#each peer in instance.peers.get}}
-                <div class="col-lg-6">
+                {{#group class='col-lg-6'}}
                     <div class="panel panel-default panel-body">
                         <div class="row">
-                            {{>serverInformationFormField name=(concat "peers[]." @index ".aeTitle") label="AE title"}}
-                            {{>serverInformationFormField name=(concat "peers[]." @index ".hostAE") label="AE host"}}
-                            {{>serverInformationFormField name=(concat "peers[]." @index ".host") label="Host"}}
-                            {{>serverInformationFormField name=(concat "peers[]." @index ".port") label="Port"}}
+                            <div class="col-lg-6">
+                                {{>inputText class='form-control' key='aeTitle'}}
+                            </div>
+                            <div class="col-lg-6">
+                                {{>inputText class='form-control' key='hostAE'}}
+                            </div>
+                            <div class="col-lg-6">
+                                {{>inputText class='form-control' key='host'}}
+                            </div>
+                            <div class="col-lg-6">
+                                {{>inputText class='form-control' key='port'}}
+                            </div>
                             <div class="col-lg-12">
                                 <strong>Settings</strong>
                                 <div class="form-group">
                                     <div class="form-control clearfix">
                                         <div class="checkbox pull-left">
-                                            <label>
-                                                <input type="checkbox" name="peers[].{{@index}}.default">
-                                                <span>Default</span>
-                                            </label>
+                                            {{>inputCheckbox key='default'}}
                                         </div>
                                         <div class="checkbox pull-left">
-                                            <label>
-                                                <input type="checkbox" name="peers[].{{@index}}.server">
-                                                <span>Server</span>
-                                            </label>
+                                            {{>inputCheckbox key='server'}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {{/group}}
             {{/each}}
-        </div>
+        {{/group}}
     </div>
     <hr>
 </template>

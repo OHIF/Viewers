@@ -16,14 +16,33 @@ Template.imageControls.onRendered(() => {
 })
 
 Template.imageControls.events({
-    'input #imageSlider, change #imageSlider': function(e) {
+    'keydown #imageSlider'(event) {
+        // We don't allow direct keyboard up/down input on the
+        // image sliders since the natural direction is reversed (0 is at the top)
+
+        // Prevent the browser's default behaviour (scrolling)
+        event.preventDefault();
+
+        // Store the KeyCodes in an object for readability
+        const keys = {
+            DOWN: 40,
+            UP: 38
+        };
+
+        if (event.which === keys.DOWN) {
+            OHIF.viewer.hotkeyFunctions.scrollDown();
+        } else if (event.which === keys.UP) {
+            OHIF.viewer.hotkeyFunctions.scrollUp();
+        }
+    },
+    'input #imageSlider, change #imageSlider'(event) {
         // Note that we throttle requests to prevent the
         // user's ultrafast scrolling from firing requests too quickly.
         clearTimeout(slideTimeout);
         slideTimeout = setTimeout(() => {
             // Using the slider in an inactive viewport
             // should cause that viewport to become active
-            const slider = $(e.currentTarget);
+            const slider = $(event.currentTarget);
             const newActiveElement = slider.parents().eq(2).siblings('.imageViewerViewport').get(0);
             setActiveViewport(newActiveElement);
 

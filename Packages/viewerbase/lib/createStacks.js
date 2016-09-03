@@ -30,8 +30,8 @@ createStacks = function(study) {
         // series into another display set.
         let stackableInstances = [];
         series.instances.forEach(instance => {
-            // All imaging modalities must have a valid value for rows (or columns)
-            if (!instance.rows) {
+            // All imaging modalities must have a valid value for sopClassUid or rows
+            if (!isImage(instance.sopClassUid) && !instance.rows) {
                 return;
             }
 

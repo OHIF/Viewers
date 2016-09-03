@@ -2,11 +2,26 @@
 
 html body
   font-family: 'Roboto', 'OpenSans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif
-  // Try to fix LT-273, need a monitor to test on though.
-  //text-rendering: optimizeLegibility
 
 html hr
-  border-top: 1px solid $uiBorderColor
+  theme('border-top', '1px solid $uiBorderColor')
+
+label.form-group
+  width: 100%
+
+  &>span.select2
+    display: block
+    width: 100% !important
+
+    span.select2-selection
+      min-height: 34px
+
+      span.select2-selection__rendered
+          height: 34px
+          line-height: 34px
+
+      span.select2-selection__arrow
+          height: 34px
 
 .center-table
   display: table
@@ -32,9 +47,9 @@ html hr
 
 .modal-dialog
   .modal-content
-    background: $primaryBackgroundColor
-    border-color: $uiBorderColor
-    color: $textSecondaryColor
+    theme('background', '$primaryBackgroundColor')
+    theme('border-color', '$uiBorderColor')
+    theme('color', '$textSecondaryColor')
 
     .modal-header, .modal-footer
-      border-color: $uiBorderColor
+      theme('border-color', '$uiBorderColor')

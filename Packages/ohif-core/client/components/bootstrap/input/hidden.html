@@ -1,0 +1,7 @@
+<template name="inputHidden">
+    {{>baseComponent (extend this
+        base='baseInput'
+        type='hidden'
+        mixins=(concat 'input ' this.mixins)
+    )}}
+</template>

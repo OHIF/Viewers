@@ -30,7 +30,7 @@ OHIF.mixins.selectTree = new OHIF.Mixin({
 
                 // Return the current value
                 if (isGet) {
-                    return rootInstance.currentValue;
+                    return component.parseData(rootInstance.currentValue);
                 }
 
                 // Change the current value

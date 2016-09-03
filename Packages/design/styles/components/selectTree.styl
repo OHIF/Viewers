@@ -76,6 +76,7 @@ $gray6 = #303030
     display: block
     margin: 0
     padding: 5px
+    position: relative
     text-align: center
 
     span
@@ -85,6 +86,14 @@ $gray6 = #303030
     input
       border-color: $gray5
       font-weight: normal
+      padding-left: 34px
+
+      & ~ i
+        color: $gray1
+        font-size: 18px
+        left: 16px
+        position: absolute
+        top: 37px
 
   .tree-breadcrumb
     line-height: 32px
@@ -146,7 +155,6 @@ $gray6 = #303030
 
       &.active
         box-shadow: 0 0 0 200px white, inset 0 0 0 200px white
-        position: fixed
         transition(box-shadow 0.3s ease)
         z-index: 0
 
@@ -172,7 +180,7 @@ $gray6 = #303030
       border-radius: 5px
       color: white
       opacity: 0.9
-      padding: 5px 12px 12px
+      padding: 0 15px 12px
       position: absolute
       top: 50%
       transform(translateY(-50%))
@@ -180,13 +188,21 @@ $gray6 = #303030
 
       h5.title
         color: $gray5
-        font-size: 12px
         font-weight: normal
         line-height: 20px
-        margin: 0
+        margin: 12px 0 16px
 
       label
+        cursor: pointer
         display: block
+        font-weight: 300
+        line-height: 26px
+        margin: 0
+        padding-left: 3px
+        transition(padding 0.3s ease)
+
+        &:hover
+          padding-left: 0
 
 .select-tree-root
 
@@ -218,7 +234,7 @@ $gray6 = #303030
       .content
         margin-left: 0
 
-  &.interacted
+  &.interacted, &.selected
 
     .select-tree-common
       z-index: 1

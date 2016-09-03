@@ -55,6 +55,7 @@ Template.measureFlow.onCreated(() => {
     }];
 
     const items = [
+        'Abdomen/Chest Wall',
         'Adrenal',
         'Bladder',
         'Bone',
@@ -68,9 +69,10 @@ Template.measureFlow.onCreated(() => {
         'Liver',
         'Lung',
         'Lymph Node',
+        'Mediastinum/Hilum',
         'Muscle',
         'Neck',
-        'Other: Soft Tissue',
+        'Other Soft Tissue',
         'Ovary',
         'Pancreas',
         'Pelvis',
@@ -86,6 +88,25 @@ Template.measureFlow.onCreated(() => {
     instance.items = [];
     _.each(items, item => {
         instance.items.push({
+            label: item,
+            value: item
+        });
+    });
+
+    const commonItems = [
+        'Abdomen/Chest Wall',
+        'Lung',
+        'Lymph Node',
+        'Liver',
+        'Mediastinum/Hilum',
+        'Pelvis',
+        'Peritoneum/Omentum',
+        'Retroperitoneum'
+    ];
+
+    instance.commonItems = [];
+    _.each(commonItems, item => {
+        instance.commonItems.push({
             label: item,
             value: item
         });
@@ -116,9 +137,12 @@ Template.measureFlow.events({
             const data = {
                 key: 'label',
                 items: instance.items,
+                commonItems: instance.commonItems,
+                hideCommon: instance.data.hideCommon,
                 label: 'Assign label',
                 searchPlaceholder: 'Search labels',
                 storageKey: 'measureLabelCommon',
+                treeColumns: instance.data.treeColumns,
                 position
             };
 
@@ -206,13 +230,13 @@ Template.measureFlow.events({
         // Change the measure flow state to selected
         instance.state.set('selected');
 
+        // Get the clicked label window offset
+        const labelOffset = $label.offset();
+
         // Wait for the DOM re-rendering
         Tracker.afterFlush(() => {
             // Get the measure flow div
             const $measureFlow = instance.$('.measure-flow');
-
-            // Get the clicked label window offset
-            const labelOffset = $label.offset();
 
             // Subtract the label box shadow height from the label's position
             labelOffset.top -= 10;

@@ -7,7 +7,14 @@ Template.caseProgress.onCreated(() => {
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar();
 
+    // Get the current timepoint
     const current = instance.data.timepointApi.current();
+
+    // Stop here if no timepoint was found
+    if (!current) {
+        return;
+    }
+
     if (!current.timepointId) {
         console.warn('Case has no timepointId');
         return;

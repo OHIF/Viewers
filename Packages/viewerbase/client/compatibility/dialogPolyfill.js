@@ -230,7 +230,8 @@ var dialogPolyfill = (function() {
 
         // TODO: Only install when any dialogs are open.
         document.addEventListener('submit', function(ev) {
-            var method = ev.target.getAttribute('method').toLowerCase();
+            var method = ev.target.getAttribute('method');
+            method = method ? method.toLowerCase() : '';
             if (method != 'dialog') { return; }
             ev.preventDefault();
 

@@ -7,7 +7,13 @@ import { _ } from 'meteor/underscore';
 // Helper function to get the component's current schema
 const getCurrentSchema = (parentComponent, key) => {
     // Get the parent component schema
-    const schema = parentComponent && parentComponent.schema;
+    let schema = parentComponent && parentComponent.schema;
+
+    // Try to get the form schema if it was not found
+    if (parentComponent && !schema) {
+        const form = parentComponent.getForm();
+        schema = form && form.schema;
+    }
 
     // Stop here if there's no key or schema defined
     if (!key || !schema) {
@@ -16,6 +22,11 @@ const getCurrentSchema = (parentComponent, key) => {
 
     // Get the current schema data using component's key
     const currentSchema = _.clone(schema._schema[key]);
+
+    // Stop here if no schema was found for the given key
+    if (!currentSchema) {
+        return;
+    }
 
     // Merge the sub-schema properties if it's an array
     if (Array.isArray(currentSchema.type())) {
@@ -40,8 +51,21 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             // Get the parent component
             const parent = OHIF.blaze.getParentComponent(Blaze.currentView);
 
+            // Get he parent component key
+            const parentKey = parent && parent.templateInstance.data.pathKey;
+
+            // Check if the parent is an array group
+            const isParentArray = parent && parent.templateInstance.data.arrayValues;
+
+            // Set the path key for this component
+            data.pathKey = data.key || (isParentArray ? '$' : '');
+            if (data.pathKey && typeof parentKey === 'string') {
+                const prefix = parentKey ? `${parentKey}.` : '';
+                data.pathKey = `${prefix}${data.pathKey}`;
+            }
+
             // Get the current schema data using component's key
-            const currentSchema = getCurrentSchema(parent, data.key);
+            const currentSchema = getCurrentSchema(parent, data.pathKey);
 
             // Stop here if there's no schema data for current key
             if (!currentSchema) {
@@ -51,6 +75,11 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             // Use schema's label if it was not defined
             if (!data.label) {
                 data.label = new ReactiveVar(currentSchema.label);
+            }
+
+            // Set the emptyOption data attribute if given on schema
+            if (currentSchema.emptyOption) {
+                data.emptyOption = currentSchema.emptyOption;
             }
 
             // Fill the items if it's an array schema
@@ -76,12 +105,41 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             }
         },
 
+        onCreated() {
+            const instance = Template.instance();
+            const component = instance.component;
+
+            // Create a data parser according to current schema key
+            component.parseData = value => {
+                // Get the current schema data using component's key
+                const currentSchema = getCurrentSchema(component.parent, instance.data.pathKey);
+
+                // Stop here if there's no schema data for current key
+                if (!currentSchema) {
+                    return;
+                }
+
+                // Check if the schema is a Number
+                if (currentSchema.type === Number) {
+                    return parseFloat(value);
+                }
+
+                // Check if the schema is a Boolean
+                if (currentSchema.type === Boolean) {
+                    return !!value;
+                }
+
+                // Return the original value if none of the checks matched
+                return value;
+            };
+        },
+
         onMixins() {
             const instance = Template.instance();
             const component = instance.component;
 
             // Get the current schema data using component's key
-            const currentSchema = getCurrentSchema(component.parent, instance.data.key);
+            const currentSchema = getCurrentSchema(component.parent, instance.data.pathKey);
 
             // Stop here if there's no schema data for current key
             if (!currentSchema) {

@@ -1,64 +1,76 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
+const serverNameDefinitions = {
+    type: String,
+    label: 'Server Name',
+    max: 100
+};
+
+const serverTypeDefinitions = {
+    type: String,
+    label: 'Server Type',
+    allowedValues: ['dicomWeb', 'dimse'],
+    valuesLabels: ['DICOM Web', 'DIMSE'],
+    optional: true
+};
+
 export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
-        label: 'Username:Password Authentication String',
+        label: 'Authentication',
         optional: true
     },
     logRequests: {
         type: Boolean,
         defaultValue: true,
-        label: 'Log Requests?',
+        label: 'Requests'
     },
     logResponses: {
         type: Boolean,
         defaultValue: false,
-        label: 'Log Responses?',
+        label: 'Responses'
     },
     logTiming: {
         type: Boolean,
         defaultValue: true,
-        label: 'Log Timing?',
-    },
+        label: 'Timing'
+    }
 });
 
 export const DICOMWebServer = new SimpleSchema({
-    name: {
-        type: String,
-        label: 'Name',
-        max: 100
-    },
+    name: serverNameDefinitions,
+    type: serverTypeDefinitions,
     wadoUriRoot: {
         type: String,
-        label: 'WADO URI Root',
-        max: 1000
-    },
-    qidoRoot: {
-        type: String,
-        label: 'QIDO Root',
+        label: 'WADO URI root',
         max: 1000
     },
     // TODO: Remove this
     wadoUriRootNOTE: {
         type: String,
-        label: 'WADO URI Root Note',
+        label: 'WADO URI root note',
         optional: true
     },
     wadoRoot: {
         type: String,
-        label: 'WADO Root',
+        label: 'WADO root',
+        max: 1000
+    },
+    imageRendering: {
+        type: String,
+        label: 'Image rendering',
+        allowedValues: ['', 'wadouri', 'orthanc'],
+        valuesLabels: ['', 'WADO URI', 'ORTHANC']
+    },
+    qidoRoot: {
+        type: String,
+        label: 'QIDO root',
         max: 1000
     },
     qidoSupportsIncludeField: {
         type: Boolean,
-        label: 'QIDO Supports Include Field?',
+        label: 'QIDO supports including fields',
         defaultValue: false
-    },
-    imageRendering: {
-        type: String,
-        label: 'Image Rendering',
-        defaultValue: 'wadouri'
     },
     requestOptions: {
         type: DICOMWebRequestOptions,
@@ -67,9 +79,19 @@ export const DICOMWebServer = new SimpleSchema({
 });
 
 export const DIMSEPeer = new SimpleSchema({
+    aeTitle: {
+        type: String,
+        label: 'AE Title'
+    },
+    hostAE: {
+        type: String,
+        label: 'AE Host',
+        optional: true
+    },
     host: {
         type: String,
-        label: 'Host URL',
+        label: 'Host Domain/IP',
+        regEx: SimpleSchema.RegEx.WeakDomain
     },
     port: {
         type: Number,
@@ -78,18 +100,14 @@ export const DIMSEPeer = new SimpleSchema({
         defaultValue: 11112,
         max: 65535
     },
-    aeTitle: {
-        type: String,
-        label: 'Application Entity (AE) Title',
-    },
     default: {
         type: Boolean,
-        label: 'Default?',
+        label: 'Default',
         defaultValue: false
     },
     server: {
         type: Boolean,
-        label: 'Server?',
+        label: 'Server',
         defaultValue: false
     },
     supportsInstanceRetrievalByStudyUid: {
@@ -100,14 +118,12 @@ export const DIMSEPeer = new SimpleSchema({
 });
 
 export const DIMSEServer = new SimpleSchema({
-    name: {
-        type: String,
-        label: 'Name',
-        max: 100
-    },
+    name: serverNameDefinitions,
+    type: serverTypeDefinitions,
     peers: {
-        type: [ DIMSEPeer ],
-        label: 'DIMSE Peers',
+        type: [DIMSEPeer],
+        label: 'Peer List',
+        minCount: 1
     }
 });
 
@@ -148,12 +164,12 @@ export const PublicServerConfig = new SimpleSchema({
 
 export const Servers = new SimpleSchema({
     dicomWeb: {
-        type: [ DICOMWebServer ],
+        type: [DICOMWebServer],
         label: 'DICOMWeb Servers',
         optional: true
     },
     dimse: {
-        type: [ DIMSEServer ],
+        type: [DIMSEServer],
         label: 'DIMSE Servers',
         optional: true
     }

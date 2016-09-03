@@ -10,10 +10,10 @@
       opacity: 0
 
   .btn-add
-    background-color: $activeColor
-    border: 2px solid $uiBorderColor
+    theme('color', '$textColorActive')
+    theme('background-color', '$activeColor')
+    theme('border', '2px solid $uiBorderColor')
     border-radius: 14px
-    color: $textColorActive
     cursor: pointer
     font-weight: bold
     height: 24px
@@ -26,14 +26,13 @@
     transition(opacity 0.3s ease)
     white-space: nowrap
 
+    // / {selector()}
+    //   color: $themes['tide']['uiYellow'] !important
+
   .select-tree-root>.tree-content
     width: 213px
 
     &>.tree-options
-      margin-right: -17px
-      max-height: 250px
-      overflow-x: hidden
-      overflow-y: scroll
       position: relative
       z-index: 2
 
@@ -43,22 +42,11 @@
   &>.tree-leaf
     position: relative
 
-    &:before
-      animateZoomIn()
-      background-color: $activeColor
-      border-radius: 20px
-      color: $uiGray
-      content: '\f00c'
-      display: block
-      font-family: FontAwesome
-      font-size: 24px
-      height: 40px
+    .icon-check
+      theme('background-color', '$activeColor')
       left: -46px
-      line-height: 40px
       position: absolute
-      text-align: center
       top: 3px
-      width: 40px
 
     span
       background: white
@@ -82,10 +70,10 @@
         animateFadeOut()
 
       button
+        theme('border', '1px solid $uiBorderColor')
+        theme('color', '$textPrimaryColor')
         background-color: transparent
         border-radius: 16px
-        border: 1px solid $uiBorderColor
-        color: $textPrimaryColor
         font-weight: normal
         height: 31px
         line-height: 31px
@@ -120,3 +108,80 @@
 
     span
       display: block
+
+  &.tree-columns
+
+    .select-tree-root
+
+      &.interacted .select-tree-common .content
+        animation-name: none
+
+      &.selected .select-tree-common .content
+        animation-name: selectTreeCommonCloseLeft
+
+      .tree-search
+        input, i
+          display: none
+
+      .select-tree-common
+        padding-left: 0
+        padding-right: 6px
+        right: auto
+        left: 0
+        width: 33.333333333333%
+
+      &>.tree-content
+        transform-origin(0% 50%)
+        width: 426px
+
+      .select-tree-common .content
+        right: -100%
+
+      &.started .select-tree-common .content
+        right: 6px
+
+      &.interacted .select-tree-common .content
+        animation-name: selectTreeCommonCloseRight
+
+      .tree-inputs>label
+        float: left
+        width: 50%
+
+@keyframes selectTreeCommonCloseRight {
+  from {
+    height: 37px
+    display: table
+    right: 6px
+    opacity: 1
+    visibility: visible
+  }
+  to {
+    height: 100%
+    right: -100%
+    opacity: 0
+    visibility: hidden
+    width: calc(100% - 6px)
+  }
+}
+
+.icon-check
+  background-color: white
+  border-radius: 20px
+  display: block
+  height: 40px
+  overflow: hidden
+  position: relative
+  width: 40px
+
+  &:before
+    border: 2px solid black
+    border-left-width: 0
+    border-top-width: 0
+    content: ''
+    display: block
+    height: 18px
+    left: 15px
+    position: absolute
+    top: 9px
+    transform(rotate(45deg))
+    width: 9px

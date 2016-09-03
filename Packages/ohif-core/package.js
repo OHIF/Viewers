@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 
     // Component's library dependencies
     api.use('natestrauser:select2@4.0.1', 'client');
+    api.use('aldeed:simple-schema');
 
     // UI Styles
     api.addFiles([
@@ -33,5 +34,8 @@ Package.onUse(function(api) {
 
     // Server imports and methods
     api.addFiles('server/index.js', 'server');
+
+    // Client and server imports
+    api.addFiles('both/index.js', ['client', 'server']);
 
 });

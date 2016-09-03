@@ -3,8 +3,6 @@
 $boxBorderColor = transparent
 $boxHoverBackgroundColor = #14191E
 $boxHoverBorderColor = #2d4660
-$boxActiveBackgroundColor = $activeColor
-$boxActiveTextColor = $primaryBackgroundColor
 $boxActiveBorderColor = #131D29
 $boxWidth = 50px
 $borderThickness = 2px
@@ -41,11 +39,11 @@ $spacerY = 12px
   &.active
     .studyModality
       .studyModalityBox
-        color: $boxActiveTextColor
+        theme('color', '$primaryBackgroundColor')
         &
         &:before
         &:after
-          background-color: $boxActiveBackgroundColor
+          theme('background-color', '$activeColor')
           border-color: $boxActiveBorderColor
 
   &:not(.active) .studyTimepointThumbnails
@@ -69,10 +67,10 @@ $spacerY = 12px
     border-color: $boxHoverBorderColor
 
     &.additional
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
 
   &.additional
-    color: $textPrimaryColor
+    theme('color', '$textPrimaryColor')
     font-size: 16px
     font-weight: normal
     height: 91px
@@ -89,13 +87,13 @@ $spacerY = 12px
     top: $spacerY
     .studyDate
       margin-top: 8px
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
     .studyDescription
       margin-top: 8px
-      color: $textPrimaryColor
+      theme('color', '$textPrimaryColor')
 
   .studyModalityBox
-    color: $textSecondaryColor
+    theme('color', '$textSecondaryColor')
     line-height: $boxWidth
     margin-left: $nestingMargin * 2
     margin-top: $nestingMargin * 2
@@ -109,8 +107,8 @@ $spacerY = 12px
     &
     &:before
     &:after
-      background-color: $boxBackgroundColor
-      border: $borderThickness solid $primaryBackgroundColor
+      theme('border', '$borderThickness solid $primaryBackgroundColor')
+      theme('background-color', '$boxBackgroundColor')
       border-radius: $boxBorderRadius
       height: $boxWidth + ($borderThickness * 2)
       transition($sidebarTransition)

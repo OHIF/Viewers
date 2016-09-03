@@ -10,7 +10,7 @@
   width: calc(100% + 6px)
 
   &:before
-    background-color: $activeColor
+    theme('background-color', '$activeColor')
     border-top-left-radius: 7px
     border-bottom-left-radius: 7px
     content: ''
@@ -30,16 +30,16 @@
       opacity: 1
 
     .lesionRowSidebar
-      color: $activeColor
+      theme('color', '$activeColor')
 
     .rowOptions
       height: 35px
       visibility: visible
 
   &.response-status .lesionRowSidebar .response-status-icon
-    background-color: $defaultColor
+    theme('background-color', '$defaultColor')
+    theme('color', '$uiGray')
     border-radius: 11px
-    color: $uiGray
     font-size: 12px
     font-weight: 700
     height: 21px
@@ -49,8 +49,8 @@
     width: 21px
 
   &.warning .lesionRowSidebar
-    color: $textPrimaryColor
-    background-color: $uiYellow
+    theme('background-color', '$uiYellow')
+    theme('color', '$textPrimaryColor')
 
     .warning-icon, svg
       width: 22px
@@ -60,31 +60,31 @@
       margin: 7px auto 0
 
     svg
-      fill: $textPrimaryColor
+      theme('fill', '$textPrimaryColor')
 
   .rowOptions
-    background-color: $uiGrayDarker
+    theme('background-color', '$uiGrayDarker')
     height: 0
     overflow: hidden
     transition(all 0.3s ease)
     visibility: hidden
 
     .rowAction
-      color: $defaultColor
+      theme('color', '$defaultColor')
       cursor: pointer
       line-height: 35px
       transition(all 0.3s ease)
 
       &:hover, &:active
-        color: $textPrimaryColor
+        theme('color', '$textPrimaryColor')
 
         svg
-          fill: $textPrimaryColor
-          stroke: $textPrimaryColor
+          theme('fill', '$textPrimaryColor')
+          theme('stroke', '$textPrimaryColor')
 
     svg
-      fill: $defaultColor
-      stroke: $defaultColor
+      theme('fill', '$defaultColor')
+      theme('stroke', '$defaultColor')
       transition(all 0.3s ease)
 
       &.edit-icon
@@ -96,8 +96,8 @@
         height: 11px
 
   .lesionRowSidebar
-    background: $uiGray
-    color: $textSecondaryColor
+    theme('background', '$uiGray')
+    theme('color', '$textSecondaryColor')
     cursor: pointer
     flex: 1
     max-width: 30px
@@ -120,7 +120,7 @@
     .location
       font-weight: 400
       font-size: 14px
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
       height: 30px
       line-height: 30px
       margin-left: -2px

@@ -1,5 +1,8 @@
 import { Mongo } from 'meteor/mongo';
 
+// Servers describe the DICOM servers configurations
+Servers = new Mongo.Collection('servers');
+
 Timepoints = new Mongo.Collection('timepoints');
 Studies = new Mongo.Collection('studies');
 Measurements = new Mongo.Collection('measurements');
@@ -12,6 +15,5 @@ ImageMeasurements = new Mongo.Collection('imageMeasurements');
 // panel, and represents items such as data quality,
 AdditionalFindings = new Mongo.Collection('additionalFindings');
 
-Servers = new Mongo.Collection('servers');
 WorklistSubscriptions = ['studies', 'timepoints'];
 Reviewers = new Mongo.Collection('reviewers');

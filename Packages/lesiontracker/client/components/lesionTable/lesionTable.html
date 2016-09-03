@@ -1,13 +1,17 @@
 <template name="lesionTable">
     <div id="lesionTableContainer">
-        <div class="lesionTableLayoutChanger viewerRoundedButtonGroup">
-            {{>roundedButtonGroup buttonGroupData}}
-        </div>
-        <div class="lesionTableTimepointHeaderRow">
-            {{#each this.timepoints.get}}
-                {{>lesionTableTimepointHeader}}
-            {{/each}}
-        </div>
-        {{>lesionTableView (clone this)}}
+        {{#if this.timepoints.get.length}}
+            <div class="lesionTableLayoutChanger viewerRoundedButtonGroup">
+                {{>roundedButtonGroup buttonGroupData}}
+            </div>
+            <div class="lesionTableTimepointHeaderRow">
+                {{#each this.timepoints.get}}
+                    {{>lesionTableTimepointHeader}}
+                {{/each}}
+            </div>
+            {{>lesionTableView (clone this)}}
+        {{else}}
+            <h3 class="p-x-1 text-center">No associated timepoint</h3>
+        {{/if}}
     </div>
 </template>

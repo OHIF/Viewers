@@ -3,12 +3,12 @@
 $height = 20px
 
 #protocolEditor
+  theme('background', '$primaryBackgroundColor')
   height: 100%
   width: 450px
   padding: 10px 0
   position: absolute
   top: 0
-  background: $primaryBackgroundColor
 
   .navigationButtons
     ul
@@ -35,27 +35,27 @@ $height = 20px
         cursor: pointer
         text-decoration: none
         outline: none
-        background-color: $uiGrayDark
-        border: 2px $uiBorderColorDark solid
-        color: $textSecondaryColor
+        theme('background-color', '$uiGrayDark')
+        theme('border', '2px solid $uiBorderColorDark')
+        theme('color', '$textSecondaryColor')
         transition: transition($sidebarTransition)
         border-radius: $height
 
       &.active a
-        background-color: $activeColor
-        border-color: $uiBorderColorActive
-        color: $textColorActive
+        theme('background-color', '$activeColor')
+        theme('border-color', '$uiBorderColorActive')
+        theme('color', '$textColorActive')
         transition: transition($sidebarTransition)
 
   p
   h2
   h3
   h4
-    color: $defaultColor
+    theme('color', '$defaultColor')
 
   label
   ul
-    color: $defaultColor
+    theme('color', '$defaultColor')
     font-weight: 400
 
   label
@@ -68,7 +68,7 @@ $height = 20px
     width: 40%
     border: none
     background: #212121
-    color: $defaultColor
+    theme('color', '$defaultColor')
     text-align: center
 
   button.btn
@@ -85,11 +85,11 @@ $height = 20px
     bottom: 0
     width: 100%
     margin-bottom: 0
-    background: $uiGrayDarker
+    theme('background', '$uiGrayDarker')
 
     p
       font-size: 8pt
-      color: $defaultColor
+      theme('color', '$defaultColor')
       margin: 0 10px
       display: inline-block
 
@@ -107,11 +107,11 @@ $height = 20px
   #selectProtocol
     text-align: center
 
-    .btn-file 
+    .btn-file
       position: relative
       overflow: hidden
-      
-    .btn-file input[type=file] 
+
+    .btn-file input[type=file]
       position: absolute
       top: 0
       right: 0
@@ -141,4 +141,4 @@ $height = 20px
       padding: 40px
 
       h3
-        color: $defaultColor
+        theme('color', '$defaultColor')

@@ -1,0 +1,15 @@
+<template name="inputCheckbox">
+    {{#baseComponent (extend this
+        base='baseInput'
+        type='checkbox'
+        mixins=(concat 'checkbox ' this.mixins)
+        labelAfter=(valueIf (isUndefined this.labelAfter) true this.labelAfter)
+        labelClass=(concat 'checkboxLabel ' this.labelClass)
+        wrappers=(concat ''
+            (valueIf reactive this.label 'wrapperLabel ' '')
+            this.wrappers
+        )
+    )}}
+        {{>UI.contentBlock}}
+    {{/baseComponent}}
+</template>

@@ -1,5 +1,8 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
+import { _ } from 'meteor/underscore';
+import { $ } from 'meteor/jquery';
 
 /*
  * form: controls a form and its registered inputs
@@ -11,40 +14,83 @@ OHIF.mixins.form = new OHIF.Mixin({
             const instance = Template.instance();
             const component = instance.component;
 
-            // Define the form's data schema
-            const schema = instance.data.schema;
-            component.schema = schema && schema.newContext();
+            // Set the form identifier flag
+            component.isForm = true;
 
-            // Check if the form data is valid in its schema
+            component.validationObserver = new Tracker.Dependency();
+
+            // Reset the pathKey
+            instance.data.pathKey = '';
+
+            // Debound the observer call to prevent tons of re-rendering
+            component.validationRan = _.debounce(() => {
+                // Enable reactivity by changing a Tracker.Dependency observer
+                component.validationObserver.changed();
+            }, 200);
+
+            // Change the validation function to focus the fields with error
+            const validateSelf = component.validate;
             component.validate = () => {
-                // Assume validation result as true
-                let result = true;
+                // Call the original validation function
+                validateSelf();
 
-                // Return true if there's no data schema defined
-                if (!component.schema) {
-                    return result;
+                // Focus the first error field if some validation failed
+                if (component.schema && component.schema._invalidKeys.length) {
+                    instance.$('.state-error :input:first').focus();
                 }
-
-                // Iterate over each registered form item and validate it
-                component.registeredItems.forEach(child => {
-                    const key = child.templateInstance.data.key;
-
-                    // Change result to false if any form item is invalid
-                    if (key && !child.validate()) {
-                        result = false;
-                    }
-                });
-
-                // Return the validation result
-                return result;
             };
         },
+
         onRendered() {
             const instance = Template.instance();
             const component = instance.component;
 
             // Set the component main and style elements
             component.$style = component.$element = instance.$('form:first');
+        },
+
+        events: {
+            'click .validation-error-container a'(event, instance) {
+                // Get the target key
+                const targetKey = $(event.currentTarget).attr('data-target');
+
+                // Focus the first input inside the element with error state
+                instance.$(`.state-error[data-key="${targetKey}"] :input:first`).focus();
+            }
+        },
+
+        helpers: {
+            validationErrors() {
+                const instance = Template.instance();
+                const component = instance.component;
+
+                // Create a dependency on child components validation
+                component.validationObserver.depend();
+
+                // Stop here if no schema was defined for the form
+                if (!component.schema) {
+                    return;
+                }
+
+                // Check if there were some validation errors
+                if (component.schema._invalidKeys.length) {
+                    const result = [];
+
+                    // Iterate over each validation error and add to result
+                    component.schema._invalidKeys.forEach(item => {
+                        const label = component.schema._schema[item.name].label;
+                        let message = component.schema.keyErrorMessage(item.name);
+                        message = message.replace(label, `<strong>${label}</strong>`);
+                        result.push({
+                            key: item.name,
+                            message: Spacebars.SafeString(message)
+                        });
+                    });
+
+                    // Return the resulting validation errors
+                    return result;
+                }
+            }
         }
     }
 });

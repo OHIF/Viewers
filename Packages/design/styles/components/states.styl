@@ -1,0 +1,29 @@
+@import "{design}/app"
+
+.state-error
+    &+.tooltip
+
+        .tooltip-inner
+            color: white
+            theme('background-color', '$uiStateErrorBorder')
+
+        &.top .tooltip-arrow
+            theme('border-top-color', '$uiStateErrorBorder')
+        &.right .tooltip-arrow
+            theme('border-right-color', '$uiStateErrorBorder')
+        &.bottom .tooltip-arrow
+            theme('border-bottom-color', '$uiStateErrorBorder')
+        &.left .tooltip-arrow
+            theme('border-left-color', '$uiStateErrorBorder')
+
+
+    &:not(.component-group)
+        &.form-control, .form-control
+            theme('background-color', '$uiStateError')
+            theme('border-color', '$uiStateErrorBorder')
+            theme('color', '$uiStateErrorText')
+
+        .select2-selection
+            theme('background-color', '$uiStateError')
+            theme('border-color', '$uiStateErrorBorder')
+            theme('color', '$uiStateErrorText')

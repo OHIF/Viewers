@@ -11,8 +11,8 @@
 
     #imageViewerViewports
       .viewportContainer
+        theme('border', '%s solid $uiBorderColorDark' % $viewportBorderThickness)
         float: left
-        border: $viewportBorderThickness solid $viewportBorderColor
 
         outline: 0 // Prevent blue outline in Chrome
 
@@ -22,10 +22,10 @@
           outline: 0 // Prevent blue outline in Chrome
 
         &:hover
-          border: $viewportBorderThickness solid $viewportBorderColorHover
-          
+          theme('border', '%s solid $uiBorderColor' % $viewportBorderThickness)
+
         &.active, &:hover.active
-          border: $viewportBorderThickness solid $viewportBorderColorActive
+          theme('border', '%s solid $uiBorderColorActive' % $viewportBorderThickness)
 
         .removable
           width: 100%

@@ -16,7 +16,8 @@ var data = {
         'optionsModal',
         'serverInformationModal',
         'confirmRemoveTimepointAssociation',
-        'lastLoginModal'
+        'lastLoginModal',
+        'viewSeriesDetailsModal'
     ]
 };
 

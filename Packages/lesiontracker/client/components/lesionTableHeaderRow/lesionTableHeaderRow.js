@@ -16,7 +16,14 @@ Template.lesionTableHeaderRow.onCreated(() => {
     const instance = Template.instance();
     instance.maxNumLesions = new ReactiveVar();
 
+    // Get the current timepoint
     const current = instance.data.timepointApi.current();
+
+    // Stop here if no timepoint was found
+    if (!current) {
+        return;
+    }
+
     const timepointType = current.timepointType;
 
     if (!instance.data.currentTimepointId) {

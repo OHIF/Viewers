@@ -15,7 +15,7 @@ $seriesSpacing = 2px
       transform(translateX(-50%))
 
   &.left
-    border-right: 1px solid $uiBorderColor
+    theme('border-right', '1px solid $uiBorderColor')
     right: 50%
 
   &.right
@@ -26,7 +26,7 @@ $seriesSpacing = 2px
     z-index: 3
 
   &:before
-    background-color: $primaryBackgroundColor
+    theme('background-color', '$primaryBackgroundColor')
     bottom: 0
     content: ''
     left: 0
@@ -98,10 +98,10 @@ $seriesSpacing = 2px
       .studyTimepointBrowser
         background-color: transparent
       .studyTimepointStudy.active .studyModality
-        box-shadow: inset 0 0 0 3px $activeColor
+        theme('box-shadow', 'inset 0 0 0 3px $activeColor')
       .studyBox
-        background-color: $uiGrayDark
-        border: solid 1px $activeColor
+        theme('background-color', '$uiGrayDark')
+        theme('border', 'solid 1px $activeColor')
         border-radius: 11px
         display: block
         height: $switchSize
@@ -113,7 +113,7 @@ $seriesSpacing = 2px
       width: $switchSize + $seriesSpacing
 
       .seriesItem
-        background-color: $boxBackgroundColorDark
+        theme('background-color', '$boxBackgroundColor')Dark
         border-radius: 3px
         height: 15px
         margin: $seriesSpacing
@@ -121,17 +121,17 @@ $seriesSpacing = 2px
 
         &.count
           background-color: transparent
-          color: $textPrimaryColor
+          theme('color', '$textPrimaryColor')
           font-size: 12px
           font-weight: 500
           line-height: 17px
           text-align: center
 
         &.active
-          background-color: $activeColor
+          theme('background-color', '$activeColor')
 
     .label
-      color: $textSecondaryColor
+      theme('color', '$textSecondaryColor')
       display: block
       font-size: 12px
       font-weight: 300

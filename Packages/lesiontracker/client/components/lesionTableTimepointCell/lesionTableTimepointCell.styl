@@ -1,6 +1,6 @@
 @import "{design}/app"
 
 .lesionTableTimepointCell
-  border-left: $uiBorderThickness $uiBorderColor solid
-  color: $textPrimaryColor
+  theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+  theme('color', '$textPrimaryColor')
   padding: 0 10px

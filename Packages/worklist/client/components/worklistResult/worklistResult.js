@@ -6,19 +6,37 @@ Template.worklistResult.helpers({
      * by Patient name and Study Date in Ascending order.
      */
     studies() {
-        const sortOption = Session.get('sortOption');
-        if (sortOption) {
-            return WorklistStudies.find({}, {
-                sort: sortOption
-            });
+        const instance = Template.instance();
+        let studies;
+        let sortOption = {
+            patientName: 1,
+            studyDate: 1
+        };
+
+        // Update sort option if session is defined
+        if (Session.get('sortOption')) {
+            sortOption = Session.get('sortOption');
         }
 
-        return WorklistStudies.find({}, {
-            sort: {
-                patientName: 1,
-                studyDate: 1
-            }
-        });
+        // Pagination parameters
+        const rowsPerPage = instance.rowsPerPage.get();
+        const currentPage = instance.currentPage.get();
+        const offset = rowsPerPage * currentPage;
+        const limit = offset + rowsPerPage;
+
+        studies = WorklistStudies.find({}, {
+            sort: sortOption
+        }).fetch();
+
+        if (!studies) {
+            return;
+        }
+
+        // Update record count
+        instance.recordCount.set(studies.length);
+
+        // Limit studies
+        return studies.slice(offset, limit);
     },
 
     numberOfStudies() {
@@ -149,7 +167,7 @@ function search() {
                 (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
-                study.numberOfStudyRelatedInstances = parseInt(study.numberOfStudyRelatedInstances);
+                study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : 0;
 
                 // Insert any matching studies into the WorklistStudies Collection
                 WorklistStudies.insert(study);
@@ -162,6 +180,15 @@ Template.worklistResult.onCreated(() => {
     let instance = Template.instance();
     instance.sortOption = new ReactiveVar();
     instance.sortingColumns = new ReactiveDict();
+
+    // Pagination parameters
+
+    // Rows per page is 25 as default
+    instance.rowsPerPage = new ReactiveVar(25);
+
+    // Set currentPage indexed 0
+    instance.currentPage = new ReactiveVar(0);
+    instance.recordCount = new ReactiveVar();
 
     // Set sortOption
     const sortOptionSession = Session.get('sortOption');

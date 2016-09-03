@@ -26,7 +26,8 @@ Package.onUse(function (api) {
 
   api.use([
     'zuuk:stale-session@1.0.8',
-    'typ:accounts-ldap'
+    'typ:accounts-ldap',
+    'random'
   ], ['client', 'server']);
 
   api.addFiles([

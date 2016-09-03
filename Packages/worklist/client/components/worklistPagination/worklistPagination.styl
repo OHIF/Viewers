@@ -1,0 +1,39 @@
+@import "{design}/app"
+
+.worklistPagination
+    font-size: 13px
+    font-weight: normal !important
+
+  .rows-per-page
+    padding-top: 20px
+
+    label
+      font-weight: normal
+
+    select
+      background-color: $primaryBackgroundColor
+      color: white
+
+  .page-number
+    text-align: right
+
+    label
+      font-weight: normal
+
+      ul#pagination
+
+        li
+          a
+            padding: 4px 8px
+            background-color: $primaryBackgroundColor
+            color: white
+
+            &:hover
+              color: $activeColor
+
+        .active
+
+          a
+            background-color: $uiGrayDarker
+            color: white
+

@@ -26,8 +26,14 @@ class TimepointApi {
         });
     }
 
+    // Return the prior timepoint
     prior() {
-        const latestDate = this.current().latestDate;
+        const current = this.current();
+        if (!current) {
+            return;
+        }
+
+        const latestDate = current.latestDate;
         return this.timepoints.findOne({
             latestDate: {
                 $lt: latestDate
@@ -41,9 +47,15 @@ class TimepointApi {
 
     // Return only the current and prior Timepoints
     currentAndPrior() {
-        let timepoints = [this.current()];
+        const timepoints = [];
+
+        const current = this.current();
+        if (current) {
+            timepoints.push(current);
+        }
+
         const prior = this.prior();
-        if (prior) {
+        if (current && prior && prior._id !== current._id) {
             timepoints.push(prior);
         }
 

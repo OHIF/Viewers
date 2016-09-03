@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
-import { Tracker } from "meteor/tracker";
+import { Tracker } from 'meteor/tracker';
+import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -31,7 +32,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             component.value = value => {
                 const isGet = _.isUndefined(value);
                 if (isGet) {
-                    return component.$element.val();
+                    return component.parseData(component.$element.val());
                 }
 
                 component.$element.val(value).trigger('change');
@@ -53,6 +54,19 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 component.$wrapper[method]();
             };
 
+            // Check if the focus is inside this element
+            component.hasFocus = () => {
+                // Get the focused element
+                const focused = $(':focus')[0];
+
+                // Check if the focused element is inside the component
+                const contains = $.contains(component.$wrapper[0], focused);
+                const isEqual = component.$wrapper[0] === focused;
+
+                // Return true if he component has the focus
+                return contains || isEqual;
+            };
+
             // Add or remove a state from the component
             component.state = (state, flag) => {
                 component.$wrapper.toggleClass(`state-${state}`, !!flag);
@@ -65,24 +79,77 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
                 // Set or remove the error message
                 if (errorMessage) {
-                    component.$element.trigger('errorin');
                     component.$wrapper.attr('data-error', errorMessage);
                 } else {
-                    component.$element.trigger('errorout');
                     component.$wrapper.removeAttr('data-error', errorMessage);
+                }
+            };
+
+            // Toggle the tooltip over the component
+            component.toggleTooltip = (isShow, message) => {
+                if (isShow && message) {
+                    // Stop here if the tooltip is already created
+                    if (component.$wrapper.next('.tooltip').length) {
+                        return;
+                    }
+
+                    // Create the tooltip
+                    component.$wrapper.tooltip({
+                        trigger: 'manual',
+                        title: message
+                    }).tooltip('show');
+                } else {
+                    // Destroy the tooltip
+                    component.$wrapper.tooltip('destroy');
+                }
+            };
+
+            // Toggle a state message as a tooltip over the component
+            component.toggleMessage = isShow => {
+                // Check if the action is to hide
+                if (!isShow) {
+                    Meteor.setTimeout(() => {
+                        // Check if the component has the focus
+                        if (component.hasFocus()) {
+                            // Prevent the tooltip from being hidden
+                            return;
+                        }
+
+                        // Hide the tooltip
+                        component.toggleTooltip(false);
+                    }, 100);
+                    return;
+                }
+
+                // Check for error state and message
+                const errorMessage = component.$wrapper.attr('data-error');
+                if (errorMessage) {
+                    // Show the tooltip with the error message
+                    component.toggleTooltip(true, errorMessage);
+                }
+            },
+
+            // Search for the parent form component
+            component.getForm = () => {
+                let currentComponent = component;
+                while (currentComponent) {
+                    currentComponent = currentComponent.parent;
+                    if (currentComponent && currentComponent.isForm) {
+                        return currentComponent;
+                    }
                 }
             };
 
             // Check if the component value is valid in its form's schema
             component.validate = () => {
                 // Get the component's form
-                const form = component.parent;
+                const form = component.getForm();
 
                 // Get the form's data schema
                 const schema = form && form.schema;
 
                 // Get the current component's key
-                const key = instance.data.key;
+                const key = instance.data.pathKey;
 
                 // Return true if validation is not needed
                 if (!key || !schema || !component.$wrapper.is(':visible')) {
@@ -90,12 +157,18 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
 
                 // Create the data document for validation
-                const document = {
+                const document = OHIF.blaze.getNestedObject({
                     [key]: component.value()
-                };
+                });
+
+                // Get the validation result
+                const validationResult = schema.validateOne(document, key);
+
+                // Notify the form that the validation ran
+                form.validationRan();
 
                 // Check if the document validation failed
-                if (!schema.validateOne(document, key)) {
+                if (!validationResult) {
                     // Set the component in error state and display the message
                     component.error(schema.keyErrorMessage(key));
 
@@ -125,6 +198,9 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             // Set the most outer wrapper element
             component.$wrapper = instance.wrapper.$('*').first();
+
+            // Add the pathKey to the wrapper element
+            component.$wrapper.attr('data-key', instance.data.pathKey);
         },
 
         onDestroyed() {
@@ -143,24 +219,55 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 component.$style = component.$element;
             }
 
-            // Set the component in jQuery data after all mixins are rendered
+            // Set the component in element and wrapper jQuery data
             component.$element.data('component', component);
+            component.$wrapper.data('component', component);
         },
 
         events: {
 
-            // Enable reactivity by changing a Tracker.Dependency observer
+            // Handle the change event for the component
             change(event, instance) {
-                instance.component.changeObserver.changed();
+                const component = instance.component;
+
+                // Prevent execution on upper components
+                if (event.currentTarget === component.$element[0]) {
+                    // Enable reactivity by changing a Tracker.Dependency observer
+                    component.changeObserver.changed();
+
+                    // Revalidate the component
+                    component.validate();
+                }
             },
 
-            // TODO: [design] remove log, show error box/hint over the wrapper
-            errorin(event, instance) {
-                console.log('ERROR when validating component', instance.component);
+            focus(event, instance) {
+                const component = instance.component;
+
+                // Stop here if it is an group
+                if (component.isGroup || component.isCustomFocus) {
+                    return;
+                }
+
+                // Prevent event bubbling
+                event.stopPropagation();
+
+                // Check for state messages and show it
+                component.toggleMessage(true);
             },
 
-            // TODO: [design] hide error box/hint
-            errorout(event, instance) {
+            blur(event, instance) {
+                const component = instance.component;
+
+                // Stop here if it is an group
+                if (component.isGroup || component.isCustomFocus) {
+                    return;
+                }
+
+                // Prevent event bubbling
+                event.stopPropagation();
+
+                // Hide state messages
+                component.toggleMessage(false);
             }
 
         }

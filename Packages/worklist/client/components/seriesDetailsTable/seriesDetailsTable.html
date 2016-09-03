@@ -1,0 +1,104 @@
+<template name="seriesDetailsTable">
+    {{#unless selectedStudies.length}}
+        <p align="center">Series details not found</p>
+    {{/unless}}
+    {{#each selectedStudies}}
+        <div class="selectedStudyContainer">
+            <table class="table table-responsive tblStudyDetails">
+                <tbody>
+                <tr>
+                    <td class="center patientID">
+                        <div>
+                            <span>Patient ID</span>
+                        </div>
+                        <input type="text"
+                               class="form-control"
+                               id="patientID"
+                               placeholder="Patient ID"
+                               disabled="disabled"
+                               value="{{ patientId }}">
+                    </td>
+                    <td class="patientName">
+                        <div>
+                            <span>Patient Name</span>
+                        </div>
+                        <input type="text"
+                               class="form-control"
+                               id="patientName"
+                               placeholder="Patient Name"
+                               disabled="disabled"
+                               value="{{ formatPN patientName }}">
+                    </td>
+                    <td class="accessionNumber">
+                        <div>
+                            <span>Accession Number</span>
+                        </div>
+                        <input type="text"
+                               class="form-control"
+                               id="accessionNumber"
+                               placeholder="Accession Number"
+                               disabled="disabled"
+                               value="{{ accessionNumber }}">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="studyDescription">
+                        <div>
+                            <span>Study Description</span>
+                        </div>
+                        <input type="text"
+                               class="form-control"
+                               id="studyDescription"
+                               placeholder="Study Description"
+                               disabled="disabled"
+                               value="{{ studyDescription }}">
+                    </td>
+                    <td class="studyDate">
+                        <div>
+                            <span>Study Date</span>
+                        </div>
+                        <input type="text"
+                               class="form-control"
+                               id="studyDate"
+                               placeholder="Study Date"
+                               disabled="disabled"
+                               value="{{ formatDA studyDate }}">
+                    </td>
+
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="table table-responsive tblSeriesDetails">
+                <thead>
+                <tr>
+                    <th class="header">Number</th>
+                    <th class="header">Modality</th>
+                    <th class="header">Description</th>
+                    <th class="header">Instances</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {{#if displaySeriesLoadingText}}
+                    <tr>
+                        <td colspan="4" class="center">
+                            {{> loadingText }}
+                        </td>
+                    </tr>
+                {{/if}}
+
+                {{#each seriesList}}
+                    <tr>
+                        <td class="center">{{ seriesNumber }}</td>
+                        <td class="center">{{ modality }}</td>
+                        <td class="center">{{ seriesDescription }}</td>
+                        <td class="center">{{ instances.length }}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+    {{/each}}
+</template>

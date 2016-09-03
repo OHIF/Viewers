@@ -58,9 +58,6 @@ Package.onUse(function(api) {
 
     api.addFiles('client/tools.js', 'client');
 
-    // Utility classes
-    api.addFiles('client/utils/form.js', 'client');
-
     // UI Components
     api.addFiles('client/components/viewer/viewer.html', 'client');
     api.addFiles('client/components/viewer/viewer.styl', 'client');
@@ -100,6 +97,8 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/activeEntry/activeEntry.styl', 'client');
     api.addFiles('client/components/activeEntry/activeEntry.js', 'client');
+
+    api.addFiles('client/components/activeEntry/activeEntrySignIn/activeEntrySignIn.js', 'client');
 
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
     api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
@@ -197,7 +196,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.js', 'client');
 
     api.addFiles('client/components/lastLoginModal/lastLoginModal.html', 'client');
-    api.addFiles('client/components/lastLoginModal/lastLoginModal.js', 'client');
 
     api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
     api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
@@ -208,10 +206,11 @@ Package.onUse(function(api) {
     api.addFiles('client/components/emailVerification/emailVerification.js', 'client');
 
     // Server functions
-    api.addFiles('server/servers.js', 'server');
     api.addFiles('server/publications.js', 'server');
+    api.addFiles('server/servers.js', 'server');
     api.addFiles('server/methods.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);
+    api.addFiles('server/createDemoUser.js', [ 'server' ]);
 
     // Both client and server functions
     api.addFiles('both/collections.js', [ 'client', 'server' ]);

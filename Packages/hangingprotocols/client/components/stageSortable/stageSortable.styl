@@ -8,14 +8,14 @@
       padding: 3px
 
       span
-        color: $defaultColor
+        theme('color', '$defaultColor')
         cursor: pointer
 
         &:hover
-          color: $hoverColor
+          theme('color', '$hoverColor')
         
         &.active
-          color: $activeColor
+          theme('color', '$activeColor')
 
     .sortable-handle
       cursor: move
@@ -36,44 +36,44 @@
 
     .deleteStage
       cursor: pointer
-      color: $defaultColor
+      theme('color', '$defaultColor')
       transition(all 0.1s ease)
       
       &:hover
-        color: $hoverColor
+        theme('color', '$hoverColor')
         
       &:active  
-        color: $activeColor
+        theme('color', '$activeColor')
 
   .addStage
     margin: 10px 0
     text-align: center
-    color: $defaultColor
+    theme('color', '$defaultColor')
 
     #addStage
       transition(all 0.1s ease)
       
       &:hover
-        color: $hoverColor
+        theme('color', '$hoverColor')
         
       &:active  
-        color: $activeColor
+        theme('color', '$activeColor')
 
   .moveStageButtons
     margin: 10px 0
     text-align: center
 
     a
-      color: $defaultColor
+      theme('color', '$defaultColor')
       cursor: pointer
       text-decoration: none
       transition(all 0.1s ease)
       
       &:hover
-        color: $hoverColor
+        theme('color', '$hoverColor')
         
       &:active  
-        color: $activeColor
+        theme('color', '$activeColor')
 
       &[disabled="true"]
         opacity: 0.7

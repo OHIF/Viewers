@@ -29,6 +29,7 @@ Package.onUse(function (api) {
     api.use('dimseservice');
     api.use('orthanc-remote');
     api.use('viewerbase');
+    api.use('wadoproxy');
 
     // TODO: Replace with NPM dependency
     api.use('cornerstone'); // Only for HammerJS
@@ -69,6 +70,16 @@ Package.onUse(function (api) {
     api.addFiles('client/components/progressDialog/progressDialog.html', 'client');
     api.addFiles('client/components/progressDialog/progressDialog.styl', 'client');
     api.addFiles('client/components/progressDialog/progressDialog.js', 'client');
+
+    api.addFiles('client/components/worklistPagination/worklistPagination.html', 'client');
+    api.addFiles('client/components/worklistPagination/worklistPagination.styl', 'client');
+    api.addFiles('client/components/worklistPagination/worklistPagination.js', 'client');
+
+    api.addFiles('client/components/viewSeriesDetailsModal/viewSeriesDetailsModal.html', 'client');
+
+    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.html', 'client');
+    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.styl', 'client');
+    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.js', 'client');
     
     // Client-side library functions
     api.addFiles('client/lib/getStudyMetadata.js', 'client');
@@ -79,6 +90,7 @@ Package.onUse(function (api) {
     api.addFiles('client/lib/worklist.js', 'client');
     api.addFiles('client/lib/queryStudies.js', 'client');
     api.addFiles('client/lib/importStudies.js', 'client');
+    api.addFiles('client/lib/jquery.twbsPagination/jquery.twbsPagination.min.js', 'client');
 
     // Server-side functions
     api.addFiles('server/publications.js', 'server');

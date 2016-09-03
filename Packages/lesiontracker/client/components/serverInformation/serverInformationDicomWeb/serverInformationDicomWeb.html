@@ -1,30 +1,27 @@
 <template name="serverInformationDicomWeb">
     <div class="row">
-        {{>serverInformationFormField name="wadoUriRoot" label="WADO URI root"}}
-        {{>serverInformationFormField name="wadoUriRootNOTE" label="WADO URI root note"}}
-        {{>serverInformationFormField name="wadoRoot" label="WADO root"}}
         <div class="col-lg-6">
-            <div class="form-group">
-                <label class="wrapper">
-                    <strong>Image rendering</strong>
-                    <select name="imageRendering" class="form-control">
-                        <option>Select</option>
-                        <option value="wadouri">WADO URI</option>
-                        <option value="orthanc">ORTHANC</option>
-                    </select>
-                </label>
-            </div>
+            {{>inputText labelClass='form-group' key='wadoUriRoot'}}
         </div>
-        {{>serverInformationFormField name="qidoRoot" label="QIDO root"}}
+        <div class="col-lg-6">
+            {{>inputText labelClass='form-group' key='wadoUriRootNOTE'}}
+        </div>
+        <div class="col-lg-6">
+            {{>inputText labelClass='form-group' key='wadoRoot'}}
+        </div>
+        <div class="col-lg-6">
+            {{>inputSelect labelClass='form-group' key='imageRendering' hideSearch=true
+                options=(clone placeholder='Select an option')}}
+        </div>
+        <div class="col-lg-6">
+            {{>inputText labelClass='form-group' key='qidoRoot'}}
+        </div>
         <div class="col-lg-6">
             <strong>QIDO options</strong>
             <div class="form-group">
                 <div class="form-control">
                     <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="qidoSupportsIncludeField">
-                            <span>QIDO supports including fields</span>
-                        </label>
+                        {{>inputCheckbox key='qidoSupportsIncludeField'}}
                     </div>
                 </div>
             </div>
@@ -32,32 +29,25 @@
     </div>
     <hr>
     <h4>Request options</h4>
-    <div class="row">
-        {{>serverInformationFormField name="requestOptions.auth" label="Authentication"}}
+    {{#group class='row' key='requestOptions'}}
+        <div class="col-lg-6">
+            {{>inputText labelClass='form-group' key='auth'}}
+        </div>
         <div class="col-lg-6">
             <strong>Logging options</strong>
             <div class="form-group">
                 <div class="form-control clearfix">
                     <div class="checkbox pull-left">
-                        <label>
-                            <input type="checkbox" name="requestOptions.logRequests">
-                            <span>Requests</span>
-                        </label>
+                        {{>inputCheckbox key='logRequests'}}
                     </div>
                     <div class="checkbox pull-left">
-                        <label>
-                            <input type="checkbox" name="requestOptions.logResponses">
-                            <span>Responses</span>
-                        </label>
+                        {{>inputCheckbox key='logResponses'}}
                     </div>
                     <div class="checkbox pull-left">
-                        <label>
-                            <input type="checkbox" name="requestOptions.logTiming">
-                            <span>Timing</span>
-                        </label>
+                        {{>inputCheckbox key='logTiming'}}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {{/group}}
 </template>

@@ -1,17 +1,17 @@
 @import "{design}/app"
 
 body
-  background-color: $primaryBackgroundColor
+  theme('background-color', '$primaryBackgroundColor')
 
 #tblStudyList
   tr
     height: 20px
 
 #worklistTab
-  background-color: $primaryBackgroundColor
+  theme('background-color', '$primaryBackgroundColor')
 
 .worklistContainer
-  background-color: $primaryBackgroundColor
+  theme('background-color', '$primaryBackgroundColor')
   margin: 0 auto
   color: white
   float: left;
@@ -22,7 +22,7 @@ body
   height: calc(100% - 91px)
 
   .loadingTextDiv
-    color: $textSecondaryColor
+    theme('color', '$textSecondaryColor')
     font-size: 30px
 
   .tab-pane

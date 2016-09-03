@@ -18,7 +18,9 @@ Package.onUse(function(api) {
         'styles/imports/mixins.styl',
         'styles/imports/spacings.styl',
         'styles/imports/variables.styl',
+        'styles/imports/theming.styl',
         'styles/imports/theme-tide.styl',
+        'styles/imports/theme-tigerlilly.styl'
     ], 'client', {
         isImport: true
     });
@@ -35,7 +37,8 @@ Package.onUse(function(api) {
     api.addFiles([
         'styles/components/radio.styl',
         'styles/components/select2.styl',
-        'styles/components/selectTree.styl'
+        'styles/components/selectTree.styl',
+        'styles/components/states.styl'
     ], 'client');
 
     // Rounded Button Group
