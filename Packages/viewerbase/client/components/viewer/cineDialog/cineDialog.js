@@ -1,7 +1,23 @@
 import { OHIF } from 'meteor/ohif:core';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 Template.cineDialog.onCreated(() => {
     const instance = Template.instance();
+
+    instance.schema = new SimpleSchema({
+        loop: {
+            type: Boolean,
+            label: 'Loop',
+            defaultValue: true
+        },
+        speed: {
+            type: Number,
+            label: 'Cine Speed',
+            defaultValue: 24,
+            min: 1,
+            max: 90
+        }
+    });
 
     instance.updateFramerate = rate => {
         OHIF.viewer.cine.framesPerSecond = rate;

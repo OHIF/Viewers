@@ -1,5 +1,5 @@
 <template name="cineDialog">
-    <div id="cineDialog" class="noselect">
+    {{#form id='cineDialog' class='noselect' schema=instance.schema}}
         <h5>CINE Controls</h5>
         <div class="btn-group">
             <a id="cineFirstButton" title="Skip to first image" class="btn" data-toggle="tooltip">
@@ -14,7 +14,7 @@
             <a id="cinePlayButton" title="Play / Stop" class="btn {{#if isPlaying}}active{{/if}}" data-toggle="tooltip">
                 {{#if isPlaying}}
                     <i class="fa fa-fw fa-stop"></i>
-                    {{else}}
+                {{else}}
                     <i class="fa fa-fw fa-play"></i>
                 {{/if}}
             </a>
@@ -30,19 +30,13 @@
         </div>
         <div id="cineOptions">
             <div id="loopSection">
-                <label for="cineLoopCheckbox">Loop?</label>
-                <input type="checkbox" checked id="cineLoopCheckbox" />
+                {{>inputCheckbox id='cineLoopCheckbox' key='loop'}}
             </div>
             <div id="fpsSection">
-                <label for="cineSlider">
-                    Cine Speed: <span id="fps">{{framerate}}</span>
-                </label>
-                <input type="range"
-                       id="cineSlider"
-                       min="1"
-                       max="90"
-                       value="{{framerate}}"/>
+                {{#inputRange id='cineSlider' key='speed' labelClass='form-group'}}
+                    {{#section 'labelAfterText'}}: <span id="fps">{{framerate}}</span>{{/section}}
+                {{/inputRange}}
             </div>
         </div>
-    </div>
+    {{/form}}
 </template>

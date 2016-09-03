@@ -77,6 +77,16 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
                 data.label = new ReactiveVar(currentSchema.label);
             }
 
+            // Set the min value
+            if (_.isUndefined(data.min) && currentSchema.min) {
+                data.min = currentSchema.min;
+            }
+
+            // Set the max value
+            if (_.isUndefined(data.max) && currentSchema.max) {
+                data.max = currentSchema.max;
+            }
+
             // Set the emptyOption data attribute if given on schema
             if (currentSchema.emptyOption) {
                 data.emptyOption = currentSchema.emptyOption;

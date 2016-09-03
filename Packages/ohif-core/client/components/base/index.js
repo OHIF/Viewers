@@ -3,6 +3,10 @@ import './component.js';
 import './mixin.js';
 import './template.js';
 
+// Section
+import './section/section.html';
+import './section/section.js';
+
 // Mixins
 import './mixins/component.js';
 import './mixins/form.js';

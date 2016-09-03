@@ -134,3 +134,5 @@ isPlaying = () => {
     // Return true if the clip is playing
     return !_.isUndefined(clipState.intervalId);
 };
+// Create an event listener to update playing state when a clip stops playing
+$(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Random.id()));

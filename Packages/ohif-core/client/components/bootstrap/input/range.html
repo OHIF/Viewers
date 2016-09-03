@@ -1,0 +1,13 @@
+<template name="inputRange">
+    {{#baseComponent (extend this
+        base='baseInput'
+        type='range'
+        mixins=(concat 'input ' this.mixins)
+        wrappers=(concat ''
+            (valueIf reactive this.label 'wrapperLabel ' '')
+            this.wrappers
+        )
+    )}}
+        {{>UI.contentBlock}}
+    {{/baseComponent}}
+</template>

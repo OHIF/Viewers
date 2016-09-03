@@ -50,22 +50,26 @@ Template.baseComponent.constructView = function(contentFunc, elseFunc) {
     let contentFunction = () => {
         // Create the most inner content function
         const innerContentFunction = () => {
-            // Assign properties to all wrappers after template's creation
-            template.onCreated(() => {
-                const instance = Template.instance();
-
-                // Assign the template most outer wrapper
-                instance.wrapper = wrapperInstances[0] || instance;
-
-                // Iterate over all wrappers and assign the component to them
-                wrapperInstances.forEach(wrappeInstance => {
-                    wrappeInstance.component = instance.component;
-                });
-            });
-
             // Return the view instance
             return template.constructView(contentFunc, elseFunc);
         };
+
+        // Assign properties to all wrappers after template's creation
+        template.onCreated(() => {
+            const instance = Template.instance();
+
+            // create the base structure to aplly specific component mixins
+            instance.component = new OHIF.Component(instance);
+
+            // Assign the template most outer wrapper
+            instance.wrapper = wrapperInstances[0] || instance;
+
+            // Iterate over all wrappers and assign the component to them
+            wrapperInstances.forEach(wrapperInstance => {
+                wrapperInstance.view._wrapperComponent = instance.component;
+                wrapperInstance.component = instance.component;
+            });
+        });
 
         // Apply the mixins to the component
         OHIF.Mixin.initAll(template, data);

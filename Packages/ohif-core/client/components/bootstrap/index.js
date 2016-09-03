@@ -5,6 +5,7 @@ import './input/checkbox.html';
 import './input/hidden.html';
 import './input/groupRadio.html';
 import './input/radio.html';
+import './input/range.html';
 import './input/select.html';
 import './input/text.html';
 import './input/selectTree.html';

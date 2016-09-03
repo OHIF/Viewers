@@ -6,6 +6,10 @@
         name="{{this.name}}"
         value="{{reactive this.value}}"
         placeholder="{{this.placeholder}}"
+        checked="{{#if this.checked}}checked{{/if}}"
+        min="{{this.min}}"
+        max="{{this.max}}"
+        maxlength="{{choose this.maxlength this.max}}"
         {{this.tagAttributes}}
     >
     {{>UI.contentBlock}}
