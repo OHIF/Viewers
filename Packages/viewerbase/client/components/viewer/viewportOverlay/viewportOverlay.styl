@@ -2,6 +2,9 @@
 
 $viewportTagPadding = 20px
 
+.imageViewerViewport.empty ~ .imageViewerViewportOverlay
+  display: none
+
 .imageViewerViewportOverlay
   color: $textSecondaryColor
 
@@ -27,11 +30,11 @@ $viewportTagPadding = 20px
     bottom: $viewportTagPadding
     right: $viewportTagPadding
     text-align: right
-    
+
   .priorIndicator
     font-weight: bold
     color: yellow
-    
+
   &.controlsVisible
     .topright, .bottomright
       right: "calc(%s + 19px)" % $viewportTagPadding

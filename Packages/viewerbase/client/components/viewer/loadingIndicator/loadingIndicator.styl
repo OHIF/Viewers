@@ -8,29 +8,32 @@
 
 .imageViewerErrorLoadingIndicator
   color: $uiYellow
-  
+
   p, h4
-    text-align: center
     padding: 4px 0
-    
+    text-align: center
+    word-wrap: break-word
+
   p
     font-size: 11pt
-      
+
 .loadingIndicator
+  background-color: rgba(0,0,0,0.75)
   display: none
+  font-size: 18px
+  height: 100%
+  overflow: hidden
   pointer-events: none // Necessary for click-through to cornerstone element below
   position: absolute
   top: 0
   width: 100%
-  height: 100%
-  font-size: 18px
   z-index: 100
-  background-color: rgba(0,0,0,0.75)
-  
+
   .indicatorContents
-    position: absolute
-    top: 40%
-    width: 100%
     font-size: 30px
     font-weight: 300
+    position: absolute
     text-align: center
+    top: 50%
+    transform(translateY(-50%))
+    width: 100%
