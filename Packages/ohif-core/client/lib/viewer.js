@@ -109,7 +109,8 @@ OHIF.viewer.canMoveDisplaySets = isNext => {
             const firstIndex = studyViewports[0].displaySetIndex;
             const steps = studyViewports.length;
             const amount = study.displaySets.length;
-            const lastStepIndex = amount - (amount % steps);
+            const move = (amount % steps) || steps;
+            const lastStepIndex = amount - move;
             if (firstIndex + steps !== lastStepIndex + steps) {
                 endReached = false;
             }
@@ -227,7 +228,8 @@ OHIF.viewer.moveMultipleViewportDisplaySets = isNext => {
 
         // Check if the indexes are sequenced or will overflow the array bounds
         if (baseIndex >= amount) {
-            const lastStepIndex = amount - (amount % steps);
+            const move = (amount % steps) || steps;
+            const lastStepIndex = amount - move;
             if (firstIndex + steps !== lastStepIndex + steps) {
                 // Reset the index if the display sets are sequenced but shifted
                 baseIndex = lastStepIndex;
