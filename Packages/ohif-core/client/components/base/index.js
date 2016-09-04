@@ -21,6 +21,7 @@ import './mixins/select2.js';
 import './mixins/selectTree.js';
 
 // Templates
+import './templates/button.html';
 import './templates/custom.html';
 import './templates/div.html';
 import './templates/form.html';
@@ -29,4 +30,4 @@ import './templates/select.html';
 
 // wrappers
 import './wrappers/label.html';
-import './wrappers/title.html';
+import './wrappers/labelContent.html';

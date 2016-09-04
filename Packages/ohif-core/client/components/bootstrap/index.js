@@ -1,3 +1,4 @@
+import './form/button.html';
 import './form/form.html';
 import './form/group.html';
 

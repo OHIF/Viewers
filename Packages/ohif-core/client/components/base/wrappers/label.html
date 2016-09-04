@@ -1,11 +1,15 @@
 <template name="wrapperLabel">
-    <label class="wrapperLabel {{this.labelClass}}">
-        {{#if this.labelAfter}}
-            {{>UI.contentBlock}}
-        {{/if}}
-        <span class="wrapperText">{{>section 'labelBeforeText'}}{{reactive this.label}}{{>section 'labelAfterText'}}</span>
-        {{#unless this.labelAfter}}
-            {{>UI.contentBlock}}
-        {{/unless}}
-    </label>
+    {{#unless this.labelAsDiv}}
+        <label class="wrapperLabel {{this.labelClass}}">
+            {{#wrapperLabelContent}}
+                {{>UI.contentBlock}}
+            {{/wrapperLabelContent}}
+        </label>
+    {{else}}
+        <div class="wrapperLabel {{this.labelClass}}">
+            {{#wrapperLabelContent}}
+                {{>UI.contentBlock}}
+            {{/wrapperLabelContent}}
+        </div>
+    {{/unless}}
 </template>

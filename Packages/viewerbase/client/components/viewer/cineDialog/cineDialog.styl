@@ -4,24 +4,28 @@
   theme('border', '1px solid $uiBorderColor')
   theme('background', '$uiGrayDarkest')
   theme('color', '$textSecondaryColor')
-  display: none
-  z-index: 1000
-  position: absolute
-  top: auto
-  left: auto
+  border-radius: 8px
   bottom: 3px
-  right: 3px
+  box-sizing: border-box
+  display: none
+  height: 150px
+  left: auto
+  opacity: 0.95
   overflow: hidden
   padding: 10px
+  position: absolute
+  right: 3px
+  top: auto
   width: 300px
-  height: 175px
-  opacity: 0.95
-  border-radius: 8px
+  z-index: 1000
+
+  h5
+    font-size: 20px
+    line-height: 35px
+    margin: 0
 
   h5, label
     font-weight: 400
-
-  box-sizing: border-box
 
   .btn
     theme('background', '$uiGrayDarkest')
@@ -33,9 +37,25 @@
     &:active, &.active
       theme('color', '$activeColor')
 
-  #cineOptions
+  .cine-navigation
+    position: absolute
+    right: 24px
+    top: 4px
+
+    .btn
+      padding: 0 4px
+
+      i
+        font-size: 36px
+        line-height: 36px
+
+  .cine-controls
+    display: table
+    margin: 0 auto
+
+  .cine-options
     padding: 5px 0
     overflow: auto
 
-    #loopSection
+    .loop-section
       padding-right: 12px

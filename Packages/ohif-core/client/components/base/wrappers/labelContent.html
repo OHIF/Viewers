@@ -1,0 +1,9 @@
+<template name="wrapperLabelContent">
+    {{#if this.labelAfter}}
+        {{>UI.contentBlock}}
+    {{/if}}
+    <span class="wrapperText">{{>section 'labelBeforeText'}}{{reactive this.label}}{{>section 'labelAfterText'}}</span>
+    {{#unless this.labelAfter}}
+        {{>UI.contentBlock}}
+    {{/unless}}
+</template>

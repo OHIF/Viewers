@@ -2,6 +2,7 @@
     {{#baseComponent (extend this
         base='baseInput'
         type='range'
+        class=(concat 'form-control ' this.class)
         mixins=(concat 'input ' this.mixins)
         wrappers=(concat ''
             (valueIf reactive this.label 'wrapperLabel ' '')

@@ -23,8 +23,8 @@ Template.cineDialog.onCreated(() => {
         OHIF.viewer.cine.framesPerSecond = rate;
 
         // Update playClip toolData for this imageId
-        var element = getActiveViewportElement();
-        var playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
+        const element = getActiveViewportElement();
+        const playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
         playClipToolData.data[0].framesPerSecond = OHIF.viewer.cine.framesPerSecond;
 
         // If the movie is playing, stop/start to update the framerate
@@ -38,12 +38,19 @@ Template.cineDialog.onCreated(() => {
 });
 
 Template.cineDialog.onRendered(() => {
-    const instance = Template.instance();
-    const dialog = instance.$('#cineDialog');
-    dialog.draggable();
+    // Make the CINE dialog bounded and draggable
+    Template.instance().$('#cineDialog').bounded().draggable();
 });
 
 Template.cineDialog.events({
+    'click #cineDisplaySetPrevious'(event, instance) {
+        OHIF.viewer.moveDisplaySets(false);
+    },
+
+    'click #cineDisplaySetNext'(event, instance) {
+        OHIF.viewer.moveDisplaySets(true);
+    },
+
     'click #cineFirstButton'(event, instance) {
         switchToImageByIndex(0);
     },
@@ -79,16 +86,20 @@ Template.cineDialog.events({
     },
 
     'change #cineLoopCheckbox'(event, instance) {
-        var element = getActiveViewportElement();
-        var playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
+        const element = getActiveViewportElement();
+        const playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
         playClipToolData.data[0].loop = $(event.currentTarget).is(':checked');
         OHIF.viewer.cine.loop = playClipToolData.data[0].loop;
     },
 
     'input #cineSlider'(event, instance) {
         // Update the FPS text onscreen
-        var rate = parseFloat($(event.currentTarget).val());
+        const rate = parseFloat($(event.currentTarget).val());
         instance.updateFramerate(rate);
+    },
+
+    submit(event, instance) {
+        event.preventDefault();
     }
 });
 

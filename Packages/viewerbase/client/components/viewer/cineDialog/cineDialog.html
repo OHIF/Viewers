@@ -1,40 +1,52 @@
 <template name="cineDialog">
     {{#form id='cineDialog' class='noselect' schema=instance.schema}}
         <h5>CINE Controls</h5>
-        <div class="btn-group">
-            <a id="cineFirstButton" title="Skip to first image" class="btn" data-toggle="tooltip">
-                <i class="fa fa-fast-backward"></i>
-            </a>
-            <a id="cineBackButton" title="Previous image" class="btn" data-toggle="tooltip">
-                <i class="fa fa-step-backward"></i>
-            </a>
-            <a id="cineSlowPlaybackButton" title="Slow playback" class="btn" data-toggle="tooltip">
-                <i class="fa fa-backward"></i>
-            </a>
-            <a id="cinePlayButton" title="Play / Stop" class="btn {{#if isPlaying}}active{{/if}}" data-toggle="tooltip">
-                {{#if isPlaying}}
-                    <i class="fa fa-fw fa-stop"></i>
-                {{else}}
-                    <i class="fa fa-fw fa-play"></i>
-                {{/if}}
-            </a>
-            <a id="cineFastForwardButton" title="Increase playback speed" class="btn" data-toggle="tooltip">
-                <i class="fa fa-forward"></i>
-            </a>
-            <a id="cineNextButton" title="Next image" class="btn" data-toggle="tooltip">
-                <i class="fa fa-step-forward"></i>
-            </a>
-            <a id="cineLastButton" title="Skip to last image" class="btn" data-toggle="tooltip">
-                <i class="fa fa-fast-forward"></i>
-            </a>
-        </div>
-        <div id="cineOptions">
-            <div id="loopSection">
-                {{>inputCheckbox id='cineLoopCheckbox' key='loop'}}
+        <div class="cine-navigation">
+            <div class="btn-group">
+                {{#button id='cineDisplaySetPrevious' title='Previous display set'}}
+                    <i class="fa fa-toggle-up"></i>
+                {{/button}}
+                {{#button id='cineDisplaySetNext' title='Next display set'}}
+                    <i class="fa fa-toggle-down"></i>
+                {{/button}}
             </div>
-            <div id="fpsSection">
-                {{#inputRange id='cineSlider' key='speed' labelClass='form-group'}}
-                    {{#section 'labelAfterText'}}: <span id="fps">{{framerate}}</span>{{/section}}
+        </div>
+        <div class="cine-controls">
+            <div class="btn-group">
+                {{#button id='cineFirstButton' title='Skip to first image'}}
+                    <i class="fa fa-fast-backward"></i>
+                {{/button}}
+                {{#button id='cineBackButton' title='Previous image'}}
+                    <i class="fa fa-step-backward"></i>
+                {{/button}}
+                {{#button id='cineSlowPlaybackButton' title='Slow playback'}}
+                    <i class="fa fa-backward"></i>
+                {{/button}}
+                {{#button id='cinePlayButton' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
+                    {{#if isPlaying}}
+                        <i class="fa fa-fw fa-stop"></i>
+                    {{else}}
+                        <i class="fa fa-fw fa-play"></i>
+                    {{/if}}
+                {{/button}}
+                {{#button id='cineFastForwardButton' title='Increase playback speed'}}
+                    <i class="fa fa-forward"></i>
+                {{/button}}
+                {{#button id='cineNextButton' title='Next image'}}
+                    <i class="fa fa-step-forward"></i>
+                {{/button}}
+                {{#button id='cineLastButton' title='Skip to last image'}}
+                    <i class="fa fa-fast-forward"></i>
+                {{/button}}
+            </div>
+        </div>
+        <div class="cine-options">
+            <div class="fps-section">
+                {{#inputRange id='cineSlider' key='speed' class='p-a-0' labelClass='form-group m-a-0' labelAsDiv=true}}
+                    {{#section 'labelAfterText'}}:
+                        <span id="fps">{{framerate}}</span>
+                        {{>inputCheckbox id='cineLoopCheckbox' key='loop' labelClass='pull-right m-a-0'}}
+                    {{/section}}
                 {{/inputRange}}
             </div>
         </div>
