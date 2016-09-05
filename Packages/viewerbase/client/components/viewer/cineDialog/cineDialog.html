@@ -4,10 +4,10 @@
         <h5>CINE Controls</h5>
         <div class="cine-navigation">
             <div class="btn-group">
-                {{#button action='displaySetPrevious' title='Previous display set'}}
+                {{#button disabled=(displaySetDisabled false) action='displaySetPrevious' title='Previous display set'}}
                     <i class="fa fa-toggle-up"></i>
                 {{/button}}
-                {{#button action='displaySetNext' title='Next display set'}}
+                {{#button disabled=(displaySetDisabled true) action='displaySetNext' title='Next display set'}}
                     <i class="fa fa-toggle-down"></i>
                 {{/button}}
             </div>

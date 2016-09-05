@@ -134,5 +134,10 @@ Template.cineDialog.helpers({
     framerate() {
         Session.get('UpdateCINE');
         return OHIF.viewer.cine.framesPerSecond.toFixed(1);
+    },
+
+    displaySetDisabled(isNext) {
+        Session.get('LayoutManagerUpdated');
+        return !OHIF.viewer.canMoveDisplaySets(isNext) ? 'disabled' : '';
     }
 });
