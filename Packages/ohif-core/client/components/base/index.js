@@ -8,6 +8,7 @@ import './section/section.html';
 import './section/section.js';
 
 // Mixins
+import './mixins/button.js';
 import './mixins/component.js';
 import './mixins/form.js';
 import './mixins/formItem.js';

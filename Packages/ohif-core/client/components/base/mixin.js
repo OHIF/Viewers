@@ -28,6 +28,11 @@ class Mixin {
             // Get the dependent mixin to be initizalized
             const mixin = Mixin.getMixin(dependency);
 
+            // Throw an error if a cyclic dependency was found on this mixin
+            if (mixin === this) {
+                throw new Error(`Mixin ${dependency} has a cyclic dependency.`);
+            }
+
             // Initizalize the mixin dependencies recursively
             mixin.init(template, data, applied, behaviors);
         });

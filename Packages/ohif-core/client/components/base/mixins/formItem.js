@@ -140,6 +140,32 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
             };
 
+            // Get the current component API
+            component.getApi = () => {
+                const api = instance.data.api;
+
+                // Check if the API was not given
+                if (!api) {
+                    // Stop here if the component is form and API was not given
+                    if (component.isForm) {
+                        return;
+                    }
+
+                    // Get the current component's form
+                    const form = component.getForm();
+
+                    // Stop here if the component has no form
+                    if (!form) {
+                        return;
+                    }
+
+                    return form.getApi();
+                }
+
+                // Return the given API
+                return api;
+            };
+
             // Check if the component value is valid in its form's schema
             component.validate = () => {
                 // Get the component's form

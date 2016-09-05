@@ -1,51 +1,52 @@
 <template name="cineDialog">
-    {{#form id='cineDialog' class='noselect' schema=instance.schema}}
+    {{#form id='cineDialog' class='noselect' schema=instance.schema api=instance.api}}
+        {{>inputHidden key='intervalId'}}
         <h5>CINE Controls</h5>
         <div class="cine-navigation">
             <div class="btn-group">
-                {{#button id='cineDisplaySetPrevious' title='Previous display set'}}
+                {{#button action='displaySetPrevious' title='Previous display set'}}
                     <i class="fa fa-toggle-up"></i>
                 {{/button}}
-                {{#button id='cineDisplaySetNext' title='Next display set'}}
+                {{#button action='displaySetNext' title='Next display set'}}
                     <i class="fa fa-toggle-down"></i>
                 {{/button}}
             </div>
         </div>
         <div class="cine-controls">
             <div class="btn-group">
-                {{#button id='cineFirstButton' title='Skip to first image'}}
+                {{#button action='cineFirst' title='Skip to first image'}}
                     <i class="fa fa-fast-backward"></i>
                 {{/button}}
-                {{#button id='cineBackButton' title='Previous image'}}
+                {{#button action='cinePrevious' title='Previous image'}}
                     <i class="fa fa-step-backward"></i>
                 {{/button}}
-                {{#button id='cineSlowPlaybackButton' title='Slow playback'}}
+                {{#button action='cineSlowDown' title='Slow playback'}}
                     <i class="fa fa-backward"></i>
                 {{/button}}
-                {{#button id='cinePlayButton' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
+                {{#button action='cineToggle' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
                     {{#if isPlaying}}
                         <i class="fa fa-fw fa-stop"></i>
                     {{else}}
                         <i class="fa fa-fw fa-play"></i>
                     {{/if}}
                 {{/button}}
-                {{#button id='cineFastForwardButton' title='Increase playback speed'}}
+                {{#button action='cineSpeedUp' title='Increase playback speed'}}
                     <i class="fa fa-forward"></i>
                 {{/button}}
-                {{#button id='cineNextButton' title='Next image'}}
+                {{#button action='cineNext' title='Next image'}}
                     <i class="fa fa-step-forward"></i>
                 {{/button}}
-                {{#button id='cineLastButton' title='Skip to last image'}}
+                {{#button action='cineLast' title='Skip to last image'}}
                     <i class="fa fa-fast-forward"></i>
                 {{/button}}
             </div>
         </div>
         <div class="cine-options">
+            {{>inputCheckbox key='loop' labelClass='pull-right m-a-0'}}
             <div class="fps-section">
-                {{#inputRange id='cineSlider' key='speed' class='p-a-0' labelClass='form-group m-a-0' labelAsDiv=true}}
+                {{#inputRange key='framesPerSecond' class='p-a-0' labelClass='form-group m-a-0' labelAsDiv=true}}
                     {{#section 'labelAfterText'}}:
                         <span id="fps">{{framerate}}</span>
-                        {{>inputCheckbox id='cineLoopCheckbox' key='loop' labelClass='pull-right m-a-0'}}
                     {{/section}}
                 {{/inputRange}}
             </div>
