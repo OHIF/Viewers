@@ -1,10 +1,9 @@
 @import "{design}/app.styl"
 
 .annotationDialog
-  theme('border', '1px solid $uiBorderColor')
-  theme('background', '$uiGrayDarkest')
+  theme('border', '1px solid $uiBorderColor', 0.95)
+  theme('background', '$uiGrayDarkest', 0.95)
   theme('color', '$textSecondaryColor')
-  display: none
   z-index: 1000
   position: absolute
   top: 0
@@ -16,7 +15,6 @@
   padding: 10px
   width: 300px
   height: 140px
-  opacity: 0.95
   border-radius: 8px
 
   h5, label

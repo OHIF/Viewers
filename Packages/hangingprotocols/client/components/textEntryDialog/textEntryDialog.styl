@@ -1,10 +1,9 @@
 @import "{design}/app.styl"
 
 .textEntryDialog
-  theme('border', '1px solid $uiBorderColor')
-  theme('background', '$uiGrayDarkest')
+  theme('border', '1px solid $uiBorderColor', 0.95)
+  theme('background', '$uiGrayDarkest', 0.95)
   theme('color', '$textSecondaryColor')
-  display: none
   position: absolute
   top: 0
   bottom: 0
@@ -16,7 +15,6 @@
   margin: auto
   padding: 10px
   outline: none
-  opacity: 0.95
   border-radius: 8px
 
   .dialogContent

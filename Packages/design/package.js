@@ -35,6 +35,7 @@ Package.onUse(function(api) {
 
     // Component styles
     api.addFiles([
+        'styles/components/dialog.styl',
         'styles/components/radio.styl',
         'styles/components/select2.styl',
         'styles/components/selectTree.styl',

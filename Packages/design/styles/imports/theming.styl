@@ -1,32 +1,69 @@
 $themes = {}
 $defaultTheme = 'tide'
 
+// Import the theme variables
 @import "./theme-tide.styl"
 @import "./theme-tigerlilly.styl"
 
-parseSpaceVars($theme, $value)
-  $valueSplit = split(' ', $value)
-  $list = ''
-  pop($list)
-  for $property in $valueSplit
-    if ($theme[$property])
-      push($list, $theme[$property])
-    else
-      push($list, $property)
-  join(' ', $list)
+/*
+ * Process each theme variable in the given value, splitting it by space
+ */
+parseSpaceVars($theme, $value, $alpha)
+    // Split values by space
+    $valueSplit = split(' ', $value)
 
-parseCommaVars($theme, $value)
-  $valueSplit = split(',', $value)
-  $list = ''
-  pop($list)
-  for $sentence in $valueSplit
-    push($list, parseSpaceVars($theme, $sentence))
-  unquote(join(',', $list))
+    // Create an empty list
+    $list = ''
+    pop($list)
 
-theme($property, $value)
-  / {selector()}
-    {$property}: parseCommaVars($themes[$defaultTheme], $value)
-  for $themeName, $theme in $themes
-    for $selectorPiece in split(',', selector())
-      / body.theme-{$themeName} {$selectorPiece}
-        {$property}: parseCommaVars($theme, $value)
+    // Iterate over split values
+    for $property in $valueSplit
+        // Try to get the theme with current property key
+        $val = $theme[$property]
+        if ($val)
+            if($val is a 'color')
+                // Apply given alpha if it's a color
+                $val = alpha($val, $alpha)
+            // Push the processed theme variable to the list
+            push($list, $val)
+        else
+            // Push the property itself if not found in theme variables
+            push($list, $property)
+
+    // Merge the resulting processed list by joining values back with space
+    join(' ', $list)
+
+/*
+ * Process each theme variable in the given value, splitting it by comma
+ */
+parseCommaVars($theme, $value, $alpha)
+    // Split values by comma
+    $valueSplit = split(',', $value)
+
+    // Create an empty list
+    $list = ''
+    pop($list)
+
+    // Iterate over split values
+    for $sentence in $valueSplit
+        // Procces the values splitting by space
+        push($list, parseSpaceVars($theme, $sentence, $alpha))
+
+    // Merge the resulting processed list by joining values back with comma
+    unquote(join(',', $list))
+
+/*
+ * Return a processed theme variable or color with alpha
+ */
+theme($property, $value, $alpha=1)
+
+    // Crete the selector for default theme
+    / {selector()}
+        {$property}: parseCommaVars($themes[$defaultTheme], $value, $alpha)
+
+    // Create the selector for each registered theme
+    for $themeName, $theme in $themes
+        for $selectorPiece in split(',', selector())
+            // prefix the selector with the body.theme-{themeName} selector
+            / body.theme-{$themeName} {$selectorPiece}
+                {$property}: parseCommaVars($theme, $value, $alpha)

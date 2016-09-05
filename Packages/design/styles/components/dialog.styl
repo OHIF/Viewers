@@ -1,0 +1,12 @@
+@import "{design}/app"
+
+.viewerDialogs>*
+
+    &:not(.dialog-closed):not(.dialog-open)
+        display: none
+
+    &.dialog-closed
+        animateSlideOutUp()
+
+    &.dialog-open
+        animateSlideInDown()

@@ -145,10 +145,10 @@ Meteor.startup(function() {
             }
         },
         previousDisplaySet() {
-            OHIF.viewer.moveDisplaySet(false);
+            OHIF.viewer.moveDisplaySets(false);
         },
         nextDisplaySet() {
-            OHIF.viewer.moveDisplaySet(true);
+            OHIF.viewer.moveDisplaySets(true);
         },
         nextPanel: function() {
             nextActivePanel();

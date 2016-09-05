@@ -1,23 +1,22 @@
 @import "{design}/app.styl"
 
 #cineDialog
-  theme('border', '1px solid $uiBorderColor')
-  theme('background', '$uiGrayDarkest')
+  theme('border', '1px solid $uiBorderColor', 0.95)
+  theme('background', '$uiGrayDarkest', 0.95)
   theme('color', '$textSecondaryColor')
   border-radius: 8px
   bottom: 3px
   box-sizing: border-box
-  display: none
   height: 150px
-  left: auto
-  opacity: 0.95
+  left: 50%
   overflow: hidden
   padding: 10px
   position: absolute
   right: 3px
-  top: auto
+  top: 50%
   width: 300px
   z-index: 1000
+  transform(translateX(-50%) translateY(-50%))
 
   h5
     font-size: 20px
@@ -28,8 +27,8 @@
     font-weight: 400
 
   .btn
-    theme('background', '$uiGrayDarkest')
     theme('color', '$textSecondaryColor')
+    background-color: transparent
 
     &:hover
       theme('color', '$hoverColor')
