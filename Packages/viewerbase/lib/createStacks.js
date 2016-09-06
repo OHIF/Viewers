@@ -75,7 +75,8 @@ function makeDisplaySet(series, instances) {
         seriesDescription: series.seriesDescription,
         numImageFrames: instances.length,
         frameRate: instance.frameTime,
-        images: instances
+        images: instances,
+        modality: series.modality
     };
 
     // Sort the images in this series
