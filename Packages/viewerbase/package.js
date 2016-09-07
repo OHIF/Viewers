@@ -119,6 +119,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
     api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
 
+    api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
+    api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
+    api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
+
     // Library functions
     api.addFiles('lib/layoutManager.js', 'client');
     api.addFiles('lib/createStacks.js', 'client');
