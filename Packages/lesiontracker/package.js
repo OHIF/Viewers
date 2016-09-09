@@ -197,10 +197,6 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/lastLoginModal/lastLoginModal.html', 'client');
 
-    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
-    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
-    api.addFiles('client/components/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
-
     api.addFiles('client/components/emailVerification/emailVerification.html', 'client');
     api.addFiles('client/components/emailVerification/emailVerification.styl', 'client');
     api.addFiles('client/components/emailVerification/emailVerification.js', 'client');

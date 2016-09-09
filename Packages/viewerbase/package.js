@@ -174,6 +174,7 @@ Package.onUse(function(api) {
     api.export('toggleDialog', 'client');
     api.export('isImage', 'client');
     api.export('sopClassDictionary', 'client');
+    api.export('addMetaData', 'client');
 
     // Viewer management objects
     api.export('toolManager', 'client');
