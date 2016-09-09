@@ -17,6 +17,9 @@ OHIF.mixins.form = new OHIF.Mixin({
             // Set the form identifier flag
             component.isForm = true;
 
+            // Set the form validated flag
+            component.isValidatedAlready = false;
+
             component.validationObserver = new Tracker.Dependency();
 
             // Reset the pathKey
@@ -33,6 +36,9 @@ OHIF.mixins.form = new OHIF.Mixin({
             component.validate = () => {
                 // Call the original validation function
                 validateSelf();
+
+                // Change the form validated flag to true
+                component.isValidatedAlready = true;
 
                 // Focus the first error field if some validation failed
                 if (component.schema && component.schema._invalidKeys.length) {

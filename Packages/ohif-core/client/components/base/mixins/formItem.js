@@ -235,8 +235,11 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                     // Enable reactivity by changing a Tracker.Dependency observer
                     component.changeObserver.changed();
 
-                    // Revalidate the component
-                    component.validate();
+                    const form = component.getForm();
+                    if (form && form.isValidatedAlready) {
+                        // Revalidate the component if form is already validated
+                        component.validate();
+                    }
                 }
             },
 
