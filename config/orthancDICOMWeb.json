@@ -23,7 +23,7 @@
     "verifyEmail": false,
     "ui": {
         "studyListFunctionsEnabled": true,
-        "leftSidebarOpen": true,
+        "leftSidebarOpen": false,
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true
     }
