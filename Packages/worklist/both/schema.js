@@ -45,12 +45,6 @@ export const DICOMWebServer = new SimpleSchema({
         label: 'WADO URI root',
         max: 1000
     },
-    // TODO: Remove this
-    wadoUriRootNOTE: {
-        type: String,
-        label: 'WADO URI root note',
-        optional: true
-    },
     wadoRoot: {
         type: String,
         label: 'WADO root',

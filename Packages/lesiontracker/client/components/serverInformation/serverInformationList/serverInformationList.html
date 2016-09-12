@@ -22,7 +22,7 @@
                                         <i class="fa fa-square-o"></i>
                                     {{/if}}
                                 {{/button}}
-                                {{#button class='btn-sm btn-default' action='edit' params=server title='Edit'}}
+                                {{#button class='btn-sm btn-default' action='edit' params=server title='Edit' disabled=(eq server.origin 'json')}}
                                     <i class="fa fa-pencil"></i>
                                 {{/button}}
                                 {{#button class='btn-sm btn-danger' action='delete' params=server title='Remove' disabled=(eq server.origin 'json')}}
