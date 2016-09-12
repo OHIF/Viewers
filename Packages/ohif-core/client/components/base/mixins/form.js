@@ -35,7 +35,7 @@ OHIF.mixins.form = new OHIF.Mixin({
             const validateSelf = component.validate;
             component.validate = () => {
                 // Call the original validation function
-                validateSelf();
+                const validationResult = validateSelf();
 
                 // Change the form validated flag to true
                 component.isValidatedAlready = true;
@@ -44,6 +44,8 @@ OHIF.mixins.form = new OHIF.Mixin({
                 if (component.schema && component.schema._invalidKeys.length) {
                     instance.$('.state-error :input:first').focus();
                 }
+
+                return validationResult;
             };
         },
 
@@ -56,6 +58,7 @@ OHIF.mixins.form = new OHIF.Mixin({
         },
 
         events: {
+            submit: event => event.preventDefault(),
             'click .validation-error-container a'(event, instance) {
                 // Get the target key
                 const targetKey = $(event.currentTarget).attr('data-target');

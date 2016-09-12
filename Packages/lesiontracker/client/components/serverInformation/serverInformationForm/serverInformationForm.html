@@ -1,5 +1,5 @@
 <template name="serverInformationForm">
-    {{#form class='server-information-form' schema=instance.currentSchema}}
+    {{#form class='server-information-form' schema=instance.currentSchema api=instance.api}}
         {{>inputHidden key='_id'}}
         <div class="row">
             <div class="col-lg-6">
@@ -20,7 +20,7 @@
         {{/if}}
         {{#if this.serverType.get}}
             <div>
-                <input type="submit" class="btn btn-primary" value="Save">
+                {{#button class='btn-primary' action='save'}}Save{{/button}}
             </div>
         {{/if}}
     {{/form}}

@@ -119,10 +119,6 @@ Template.cineDialog.events({
         // Update the FPS text onscreen
         const rate = parseFloat($(event.currentTarget).val());
         instance.updateFramerate(rate);
-    },
-
-    submit(event, instance) {
-        event.preventDefault();
     }
 });
 
