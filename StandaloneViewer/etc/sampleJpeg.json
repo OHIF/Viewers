@@ -1,0 +1,31 @@
+{
+    "studies": [{
+        "studyInstanceUid": "23.23.21.3.32",
+        "patientName": "Patient Name",
+        "seriesList": [{
+            "seriesInstanceUid": "1.23.2.32.1.2.1.3.2",
+            "seriesDescription": "Wikipedia Samples",
+            "instances": [
+                {
+                    "sopInstanceUid": "1.2.3.2.32.18.8",
+                    "rows": 1,
+                    "url": "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
+                }, {
+                    "sopInstanceUid": "1.2.3.2.32.18.9",
+                    "rows": 1,
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sample_Floorplan.jpg/800px-Sample_Floorplan.jpg"
+                }
+            ]
+        }, {
+            "seriesInstanceUid": "1.33.2.32.1.2.1.3.2",
+            "seriesDescription": "JPS-sample",
+            "instances": [
+                {
+                    "sopInstanceUid": "1.2.3.2.32.18.10",
+                    "rows": 1,
+                    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/JPS-sample.jpg/800px-JPS-sample.jpg"
+                }
+            ]
+        }]
+    }]
+}

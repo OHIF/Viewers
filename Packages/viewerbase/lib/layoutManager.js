@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Displays Series in Viewports given a Protocol and list of Studies
 LayoutManager = class LayoutManager {
     constructor(parentNode, studies) {
@@ -41,7 +43,7 @@ LayoutManager = class LayoutManager {
 
         // Define the current viewport index and the viewport data array
         let currentViewportIndex = 0;
-        if (viewportsAmount > oldViewportData.length && isSequenced) {
+        if (viewportsAmount > oldViewportData.length && oldViewportData.length && isSequenced) {
             // Keep the displayed display sets
             self.viewportData = oldViewportData;
             currentViewportIndex = oldViewportData.length - 1;
@@ -72,7 +74,7 @@ LayoutManager = class LayoutManager {
             appendix = displaySets.slice(beginIndex, endIndex);
         } else {
             // Get available display sets from the first to the grid size
-            appendix = displaySets.slice(0, viewportsAmount - 1);
+            appendix = displaySets.slice(0, viewportsAmount);
         }
 
         // Generate the additional data based on the appendix
