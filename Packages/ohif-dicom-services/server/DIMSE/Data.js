@@ -39,6 +39,10 @@ Tag.prototype.element = function() {
     return this.value & 0xffff;
 };
 
+Tag.prototype.isPixelDataTag = function() {
+    return this.is(0x7fe00010);
+}
+
 tagFromNumbers = function(group, element) {
     return new Tag(((group << 16) | element) >>> 0);
 };
@@ -816,8 +820,12 @@ elementDataByTag = function(tag) {
 };
 
 elementKeywordByTag = function(tag) {
-    var nk = elementDataByTag(tag);
-    return nk.keyword;
+    try {
+        var nk = elementDataByTag(tag);
+        return nk.keyword;
+    } catch (ex) {
+        return 'UnknownTag';
+    }
 };
 
 vrByType = function(type) {
@@ -950,14 +958,29 @@ DataElement.prototype.readBytes = function(stream) {
         element = stream.read(C.TYPE_UINT16),
         tag = tagFromNumbers(group, element);
 
-    var length = null,
-   vr = null,
-   edata = elementDataByTag(tag.value),
+    var length = null, vr = null, edata, vm;
+
+    try {
+        edata = elementDataByTag(tag.value);
         vm = edata.vm;
+    } catch (ex) {
+        edata = null;
+        vm = null;
+    }
 
     if (this.implicit) {
         length = stream.read(C.TYPE_UINT32);
-        vr = edata.vr;
+        if (!edata) {
+          if (length == 0xffffffff) {
+            vr = 'SQ';
+          } else if (tag.isPixelDataTag()) {
+            vr = 'OW';
+          } else {
+            vr = 'UN';  
+          }
+        } else {
+            vr = edata.vr;
+        }
     } else {
         vr = stream.read(C.TYPE_ASCII, 2);
         if (explicitVRList.indexOf(vr) !== -1) {
