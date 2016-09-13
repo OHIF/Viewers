@@ -135,7 +135,8 @@ function search() {
         accessionNumber: getFilter($('input#accessionNumber').val()),
         studyDescription: getFilter($('input#studyDescription').val()),
         studyDateFrom: studyDateFrom,
-        studyDateTo: studyDateTo
+        studyDateTo: studyDateTo,
+        modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : ""
     };
 
     // Make sure that modality has a reasonable value, since it is occasionally
