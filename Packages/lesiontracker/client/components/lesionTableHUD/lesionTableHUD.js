@@ -17,7 +17,7 @@ Template.lesionTableHUD.events({
 
 Template.lesionTableHUD.helpers({
     hudHidden() {
-        return Session.get('lesionTableHudOpen') ? 'dialog-closed' : 'dialog-open';
+        return Session.get('lesionTableHudOpen') ? 'dialog-open' : 'dialog-closed';
     },
     toolbarButtons() {
         var buttonData = [];
