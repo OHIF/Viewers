@@ -37,11 +37,11 @@ Template.viewer.onCreated(() => {
     OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
 
     if (ViewerData[contentId].loadedSeriesData) {
-        log.info('Reloading previous loadedSeriesData');
+        OHIF.log.info('Reloading previous loadedSeriesData');
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
 
     } else {
-        log.info('Setting default ViewerData');
+        OHIF.log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
         ViewerData[contentId].loadedSeriesData = {};
         Session.set('ViewerData', ViewerData);

@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 clearMeasurementTimepointData = function(measurementId, timepointId) {
     var data = Measurements.findOne(measurementId);
 
@@ -16,7 +18,7 @@ clearMeasurementTimepointData = function(measurementId, timepointId) {
 };
 
 function removeToolDataWithMeasurementId(imageId, toolType, measurementId) {
-    log.info('removeToolDataWithMeasurementId');
+    OHIF.log.info('removeToolDataWithMeasurementId');
     var toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
 
     // Find any related toolData
@@ -39,8 +41,8 @@ function removeToolDataWithMeasurementId(imageId, toolType, measurementId) {
         }
     });
 
-    log.info('Removing Indices: ');
-    log.info(toRemove);
+    OHIF.log.info('Removing Indices: ');
+    OHIF.log.info(toRemove);
 
     // If any toolData entries need to be removed, splice them from
     // the toolData array

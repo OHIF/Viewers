@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Parses the SourceImageSequence, if it exists, in order
  * to return a ReferenceSOPInstanceUID. The ReferenceSOPInstanceUID
@@ -26,7 +28,7 @@ function getSourceImageInstanceUid(instance) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 function resultDataToStudyMetadata(studyInstanceUid, resultData) {
-    log.info('resultDataToStudyMetadata');
+    OHIF.log.info('resultDataToStudyMetadata');
     var seriesMap = {};
     var seriesList = [];
 

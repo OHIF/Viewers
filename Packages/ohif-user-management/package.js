@@ -17,9 +17,6 @@ Package.onUse(function(api) {
     api.use('aldeed:simple-schema');
     api.use('aldeed:collection2');
 
-    // Control over logging
-    api.use('practicalmeteor:loglevel');
-
     // Template overriding
     api.use('aldeed:template-extension@4.0.0');
 
@@ -27,8 +24,6 @@ Package.onUse(function(api) {
     api.use('design');
     api.use('ohif:core');
     api.use('ohif:study-list');
-
-    api.addFiles('log.js', [ 'client', 'server' ]);
 
     api.addFiles('both/collections.js', ['client', 'server']);
     //api.addFiles('both/schema/reviewers.js', ['client', 'server']);

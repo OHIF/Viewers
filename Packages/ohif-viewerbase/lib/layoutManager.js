@@ -3,7 +3,7 @@ import { OHIF } from 'meteor/ohif:core';
 // Displays Series in Viewports given a Protocol and list of Studies
 LayoutManager = class LayoutManager {
     constructor(parentNode, studies) {
-        log.info('LayoutManager');
+        OHIF.log.info('LayoutManager');
 
         this.parentNode = parentNode;
         this.studies = studies;
@@ -99,7 +99,7 @@ LayoutManager = class LayoutManager {
     }
 
     updateViewports() {
-        log.info('updateViewports');
+        OHIF.log.info('updateViewports');
 
         if (!this.viewportData ||
             !this.viewportData.length ||
@@ -176,7 +176,7 @@ LayoutManager = class LayoutManager {
     }
 
     enlargeViewport(viewportIndex) {
-        log.info('Zooming Into Viewport: ' + viewportIndex);
+        OHIF.log.info('Zooming Into Viewport: ' + viewportIndex);
 
         if (!this.viewportData ||
             !this.viewportData.length) {

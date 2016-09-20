@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Template.viewerMain.onCreated(() => {
     // Attach the Window resize listener
     $(window).on('resize', handleResize);
@@ -23,8 +25,8 @@ Template.viewerMain.onRendered(() => {
 });
 
 Template.viewerMain.onDestroyed(() => {
-    log.info('viewerMain onDestroyed');
-    
+    OHIF.log.info('viewerMain onDestroyed');
+
     // Remove the Window resize listener
     $(window).off('resize', handleResize);
 

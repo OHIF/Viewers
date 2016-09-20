@@ -12,11 +12,11 @@ var allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownA
  * @param data {object} Object containing the study, series, and viewport element to be used
  */
 function loadDisplaySetIntoViewport(data, templateData) {
-    log.info('imageViewerViewport loadDisplaySetIntoViewport');
+    OHIF.log.info('imageViewerViewport loadDisplaySetIntoViewport');
 
     // Make sure we have all the data required to render the series
     if (!data.study || !data.displaySet || !data.element) {
-        log.warn('loadDisplaySetIntoViewport: No Study, Display Set, or Element provided');
+        OHIF.log.warn('loadDisplaySetIntoViewport: No Study, Display Set, or Element provided');
         return;
     }
 
@@ -66,7 +66,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         var numFrames = image.numFrames;
         if (numFrames > 1) {
-            log.info('Multiframe image detected');
+            OHIF.log.info('Multiframe image detected');
             for (var i = 0; i < numFrames; i++) {
                 metaData.frame = i;
                 imageId = getImageId(image, i);
@@ -136,7 +136,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
         try {
             enabledElement = cornerstone.getEnabledElement(element);
         } catch (error) {
-            log.warn('Viewport destroyed before loaded image could be displayed');
+            OHIF.log.warn('Viewport destroyed before loaded image could be displayed');
             return;
         }
 
@@ -236,10 +236,10 @@ function loadDisplaySetIntoViewport(data, templateData) {
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
         function onImageRendered(e, eventData) {
-            log.info('imageViewerViewport onImageRendered');
+            OHIF.log.info('imageViewerViewport onImageRendered');
 
             if (!layoutManager.viewportData[viewportIndex]) {
-                log.warn("onImageRendered: LayoutManager has no viewport data for this viewport index?: " + viewportIndex);
+                OHIF.log.warn("onImageRendered: LayoutManager has no viewport data for this viewport index?: " + viewportIndex);
             }
 
             // Use Session to trigger reactive updates in the viewportOverlay helper functions
@@ -264,7 +264,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
         // Define a function to run whenever the Cornerstone viewport changes images
         // (e.g. during scrolling)
         function onNewImage(e, eventData) {
-            log.info('imageViewerViewport onNewImage');
+            OHIF.log.info('imageViewerViewport onNewImage');
 
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
@@ -317,7 +317,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
                 return;
             }
 
-            log.info('imageViewerViewport sendActivationTrigger');
+            OHIF.log.info('imageViewerViewport sendActivationTrigger');
 
             // Otherwise, trigger an 'ActivateViewport' event to be handled by the Template event
             // handler
@@ -444,7 +444,7 @@ Meteor.startup(function() {
 
 Template.imageViewerViewport.onRendered(function() {
     var templateData = Template.currentData();
-    log.info('imageViewerViewport onRendered');
+    OHIF.log.info('imageViewerViewport onRendered');
 
     // When the imageViewerViewport template is rendered
     var element = this.find('.imageViewerViewport');
@@ -489,7 +489,7 @@ Template.imageViewerViewport.onRendered(function() {
 });
 
 Template.imageViewerViewport.onDestroyed(function() {
-    log.info('imageViewerViewport onDestroyed');
+    OHIF.log.info('imageViewerViewport onDestroyed');
 
     // When a viewport element is being destroyed
     var element = this.find('.imageViewerViewport');
@@ -505,7 +505,7 @@ Template.imageViewerViewport.onDestroyed(function() {
             cornerstoneTools.stopClip(element);
         }
     } catch (error) {
-        log.warn(error);
+        OHIF.log.warn(error);
     }
 
     // Disable the viewport element with Cornerstone
@@ -516,7 +516,7 @@ Template.imageViewerViewport.onDestroyed(function() {
 
 Template.imageViewerViewport.events({
     'ActivateViewport .imageViewerViewport'(event) {
-        log.info('imageViewerViewport ActivateViewport');
+        OHIF.log.info('imageViewerViewport ActivateViewport');
         setActiveViewport(event.currentTarget);
     },
 

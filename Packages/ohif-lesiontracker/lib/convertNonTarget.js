@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 var responseTypes = {
     crTool: 'CR',
     exTool: 'EX',
@@ -16,7 +18,7 @@ convertNonTarget = function(measurementApi, measurementData, newTooltype) {
     });
 
     if (timepoint && timepoint.timepointType !== 'followup') {
-        log.warn('Not a followup');
+        OHIF.log.warn('Not a followup');
         return;
     }
 

@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * This function enables stack prefetching for a specified element (viewport)
  * It first disables any prefetching currently occurring on any other viewports.
@@ -5,7 +7,7 @@
  * @param element {node} DOM Node representing the viewport element
  */
 enablePrefetchOnElement = function(element) {
-    log.info("imageViewerViewport enablePrefetchOnElement");
+    OHIF.log.info("imageViewerViewport enablePrefetchOnElement");
 
     // Loop through all viewports and disable stackPrefetch
     $('.imageViewerViewport').each(function() {

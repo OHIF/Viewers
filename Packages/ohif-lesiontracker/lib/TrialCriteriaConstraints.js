@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Define the Trial Criteria Structure
 TrialCriteriaConstraints = {
     RECIST: RECIST,
@@ -148,7 +150,7 @@ function RECIST(image) {
 
 /**
  * irRC Trial Criteria Definition
- * 
+ *
  * Baseline Checks:
  * - Target lesions must be >/= 10 X 10 mm
  * - Up to a max of 5 target lesions per organ
@@ -376,7 +378,7 @@ getTrialCriteriaConstraints = function(criteriaTypes, imageId) {
 
         const timepoint = timepointApi.study(studyMetaData.studyInstanceUid)[0];
         if (!timepoint) {
-            log.warn('Timepoint related to study is missing.');
+            OHIF.log.warn('Timepoint related to study is missing.');
             return;
         }
 

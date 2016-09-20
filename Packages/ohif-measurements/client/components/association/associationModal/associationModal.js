@@ -1,6 +1,8 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Template.associationModal.events({
     'click #saveAssociations': function(e) {
-        log.info('Saving associations');
+        OHIF.log.info('Saving associations');
         const Timepoints = StudyList.timepointApi.timepoints;
 
         // Close the modal

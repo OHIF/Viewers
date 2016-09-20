@@ -33,10 +33,10 @@ Template.viewer.onCreated(() => {
     const contentId = instance.data.contentId;
 
     if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {
-        log.info('Reloading previous loadedSeriesData');
+        OHIF.log.info('Reloading previous loadedSeriesData');
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
     } else {
-        log.info('Setting default ViewerData');
+        OHIF.log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
         ViewerData[contentId] = {};
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;

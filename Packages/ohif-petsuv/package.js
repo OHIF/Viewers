@@ -15,9 +15,6 @@ Package.onUse(function(api) {
 
     api.use('validatejs');
 
-    // Control over logging
-    api.use('practicalmeteor:loglevel');
-
     // Template overriding
     api.use('aldeed:template-extension@4.0.0');
 
@@ -28,11 +25,9 @@ Package.onUse(function(api) {
     api.use('ohif:cornerstone');
     api.use('ohif:measurements');
 
-    api.addFiles('log.js', [ 'client', 'server' ]);
-
     api.addFiles('both/configuration/ellipse.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/measurementTools.js', [ 'client', 'server' ]);
-    
+
     api.addFiles('both/configuration/dataExchange.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/dataValidation.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/configuration.js', [ 'client', 'server' ]);

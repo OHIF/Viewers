@@ -1,4 +1,4 @@
-import { moment } from 'meteor/mrt:moment';
+import { OHIF } from 'meteor/ohif:core';
 
 /**
  * Parses resulting data from a QIDO call into a set of Study MetaData
@@ -33,7 +33,7 @@ function resultDataToStudies(resultData) {
 }
 
 Services.DIMSE.Studies = function(filter) {
-    log.info('Services.DIMSE.Studies');
+    OHIF.log.info('Services.DIMSE.Studies');
 
     let filterStudyDate = '';
     if (filter.studyDateFrom && filter.studyDateTo) {

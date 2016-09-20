@@ -3,6 +3,7 @@
  */
 
 const OHIF = {
+    log: {},
     viewer: {},
     measurements: {}
 };

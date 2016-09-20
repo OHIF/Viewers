@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 TrialCriteriaTypes = new Meteor.Collection(null);
 
 TrialCriteriaTypes.insert({
@@ -54,7 +56,7 @@ Template.optionsModal.events({
     'click a.clearAllStudyTimepointAssociations': function() {
         Meteor.call('clearAllTimepoints', function(error) {
             if (error) {
-                log.warn(error);
+                OHIF.log.warn(error);
             }
         });
     }

@@ -1,3 +1,5 @@
+// TODO: [LT-refactor] move this to ohif:hanging-protocols package
+
 getTimepointType = function(study) {
     const timepointApi = Template.instance().timepointApi;
     if (!timepointApi) {
@@ -12,8 +14,8 @@ getTimepointType = function(study) {
     return timepoint.timepointType;
 };
 
-const HP = HP || false;
+HP = HP || false;
 
 if (HP) {
-	HP.addCustomAttribute('timepointType', 'Timepoint Type', getTimepointType);	
+    HP.addCustomAttribute('timepointType', 'Timepoint Type', getTimepointType);
 }

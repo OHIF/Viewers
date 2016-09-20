@@ -12,7 +12,6 @@ Package.onUse(function(api) {
     api.use('http');
     api.use('jquery');
     api.use('stylus');
-    api.use('practicalmeteor:loglevel');
     api.use('momentjs:moment');
     api.use('validatejs');
 
@@ -20,8 +19,6 @@ Package.onUse(function(api) {
     api.use('design');
     api.use('ohif:core');
     api.use('ohif:cornerstone');
-
-    api.addFiles('log.js');
 
     api.addAssets('assets/icons.svg', 'client');
 

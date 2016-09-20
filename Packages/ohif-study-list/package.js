@@ -12,7 +12,6 @@ Package.onUse(function (api) {
     api.use('jquery');
     api.use('stylus');
     api.use('http');
-    api.use('practicalmeteor:loglevel');
     api.use('random');
     api.use('silentcicero:jszip');
     api.use('aldeed:simple-schema');

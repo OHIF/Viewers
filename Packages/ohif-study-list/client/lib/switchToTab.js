@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  *  Switches to a new tab in the tabbed studylist container
  *  This function renders either the StudyList or the Viewer template with new data.
@@ -9,7 +11,7 @@ switchToTab = function(contentId) {
         return;
     }
 
-    log.info('Switching to tab: ' + contentId);
+    OHIF.log.info('Switching to tab: ' + contentId);
 
     $('.tabTitle').removeClass('active');
     $('.tabTitle a[data-target="#' + contentId + '"]').addClass('active');
@@ -78,7 +80,7 @@ switchToTab = function(contentId) {
 function viewStudiesInTab(contentId, studies) {
     // Tab closed while study data was being retrieved, stop here
     if (!ViewerData[contentId]) {
-        log.warn('Tab closed while study data was being retrieved');
+        OHIF.log.warn('Tab closed while study data was being retrieved');
         return;
     }
 

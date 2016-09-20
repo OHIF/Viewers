@@ -1,8 +1,8 @@
 <template name="measurementTableView">
     <div class="measurementTableView scrollArea">
-        {{ #let config=measurementConfiguration}}
-            {{ #each measurementType in config.measurementTools}}
-                {{#if measurementType.options.showInMeasurementTable }}
+        {{#let config=measurementConfiguration}}
+            {{#each measurementType in config.measurementTools}}
+                {{#if measurementType.options.showInMeasurementTable}}
                     {{#let collection=(groupByMeasurementNumber measurementType.id)}}
                         {{>measurementTableHeaderRow
                             measurementType=measurementType
@@ -16,11 +16,11 @@
                         {{/each}}
                     {{/let}}
                 {{/if}}
-            {{ /each }}
+            {{/each}}
 
-            {{#if config.newMeasurementTool }}
-                {{ #let new=newMeasurements }}
-                    {{#if new }}
+            {{#if config.newMeasurementTool}}
+                {{#let new=newMeasurements}}
+                    {{#if new}}
                         {{#let collection=new tool=config.newMeasurementTool}}
                             {{>measurementTableHeaderRow
                                 measurementType=tool.measurementType
