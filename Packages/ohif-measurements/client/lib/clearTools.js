@@ -1,7 +1,7 @@
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
+import { OHIF } from 'meteor/ohif:core';
 
-export clearTools = () => {
-    const config = MeasurementsConfiguration.getConfiguration();
+export const clearTools = () => {
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
     const toolTypes = config.measurementTools.map(tool => {
         return tool.cornerstoneToolType;
     });
@@ -20,7 +20,7 @@ export clearTools = () => {
         if (!series) {
             return;
         }
-        
+
         seriesInstanceUids.push(series.seriesInstanceUid);
     });
 
@@ -38,7 +38,6 @@ export clearTools = () => {
             if (!series) {
                 return;
             }
-
 
             if (seriesInstanceUids.indexOf(series.seriesInstanceUid) === -1) {
                 return;

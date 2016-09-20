@@ -1,109 +1,107 @@
-let Configuration = {};
+import { Mongo } from 'meteor/mongo';
+import { _ } from 'meteor/underscore';
 
-function setConfiguration(config) {
-	Configuration = config;
-}
+import { OHIF } from 'meteor/ohif:core';
 
-function getConfiguration() {
-	return Configuration;
-}
+let configuration = {};
 
-function getMeasurementsApi() {
-	console.log('OHIF-Measurements: Defining MeasurementApi');
-	const config = Configuration;
+class MeasurementApi {
+    static setConfiguration(config) {
+        configuration = config;
+    }
 
-	class MeasurementApi {
-		constructor(currentTimepointId) {
-            if (currentTimepointId) {
-                this.currentTimepointId = currentTimepointId;
-            }
-		}
+    static getConfiguration() {
+        return configuration;
+    }
 
-	    retrieveMeasurements(timepointId) {
-	    	if (!timepointId) {
-	    		timepointId = this.currentTimepointId;
-	    	}
+    constructor(currentTimepointId, configuration) {
+        if (currentTimepointId) {
+            this.currentTimepointId = currentTimepointId;
+        }
 
-            const retrievalFn = config.dataExchange.retrieve;
-            if (!_.isFunction(retrievalFn)) {
-                return;
-            }
+        this.config = configuration || MeasurementApi.getConfiguration();
 
-            return new Promise((resolve, reject) => {
-            	retrievalFn().then(measurementData => {
-	                console.log('Measurement data retrieval');
-	                console.log(measurementData);
+        this.config.measurementTools.forEach(tool => {
+            const measurementTypeId = tool.id;
 
-	                Object.keys(measurementData).forEach(measurementTypeId => {
-	                	const measurements = measurementData[measurementTypeId];
+            this[measurementTypeId] = new Mongo.Collection(null);
+            this[measurementTypeId].attachSchema(tool.schema);
+        });
+    }
 
-	                	measurements.forEach(measurement => {
-	                		delete measurement._id;
-	                		this[measurementTypeId].insert(measurement);	
-	                	})
-                	});
+    retrieveMeasurements(timepointId) {
+        if (!timepointId) {
+            timepointId = this.currentTimepointId;
+        }
 
-                	resolve();
-            	});
+        const retrievalFn = this.config.dataExchange.retrieve;
+        if (!_.isFunction(retrievalFn)) {
+            return;
+        }
+
+        return new Promise((resolve, reject) => {
+            retrievalFn().then(measurementData => {
+                // TODO: implement converter here
+
+                console.log('Measurement data retrieval');
+                console.log(measurementData);
+
+                Object.keys(measurementData).forEach(measurementTypeId => {
+                    const measurements = measurementData[measurementTypeId];
+
+                    measurements.forEach(measurement => {
+                        delete measurement._id;
+                        this[measurementTypeId].insert(measurement);
+                    });
+                });
+
+                resolve();
             });
-	    }
+        });
+    }
 
-	    storeMeasurements(timepointId) {
-	        const storeFn = config.dataExchange.store;
-            if (!_.isFunction(storeFn)) {
-                return;
-            }
+    storeMeasurements(timepointId) {
+        const storeFn = this.config.dataExchange.store;
+        if (!_.isFunction(storeFn)) {
+            return;
+        }
 
-            let measurementData = {};
-	        config.measurementTools.forEach(tool => {
-	    		const measurementTypeId = tool.id;
-	    		measurementData[measurementTypeId] = this[measurementTypeId].find().fetch();
-	    	});
+        let measurementData = {};
+        this.config.measurementTools.forEach(tool => {
+            const measurementTypeId = tool.id;
+            measurementData[measurementTypeId] = this[measurementTypeId].find().fetch();
+        });
 
-	    	storeFn(measurementData).then(() => {
-	    		console.log('Measurement storage completed');
-	    	});
-	    }
+        storeFn(measurementData).then(() => {
+            console.log('Measurement storage completed');
+        });
+    }
 
-	    validateMeasurements() {
-	        const validateFn = config.dataValidation.validateMeasurements;
-	        if (validateFn && validateFn instanceof Function) {
-	            validateFn();
-	        }   
-	    }
+    validateMeasurements() {
+        const validateFn = this.config.dataValidation.validateMeasurements;
+        if (validateFn && validateFn instanceof Function) {
+            validateFn();
+        }
+    }
 
-	    syncMeasurementsAndToolData() {
-			config.measurementTools.forEach(tool => {
-				const measurements = this[tool.id].find().fetch();
-				measurements.forEach(measurement => {
-					syncMeasurementAndToolData(measurement);
-				})
-			});	    	
-	    }
-	}
+    syncMeasurementsAndToolData() {
+        this.config.measurementTools.forEach(tool => {
+            const measurements = this[tool.id].find().fetch();
+            measurements.forEach(measurement => {
+                syncMeasurementAndToolData(measurement);
+            });
+        });
+    }
 
-	config.measurementTools.forEach(tool => {
-	    const measurementTypeId = tool.id;
+    fetch(measurementTypeId, selector, options) {
+        if (!this[measurementTypeId]) {
+            throw 'MeasurementApi: No Collection with the id: ' + measurementTypeId;
+        }
 
-	    MeasurementApi.prototype[measurementTypeId] = new Mongo.Collection(null);
-	    MeasurementApi.prototype[measurementTypeId].attachSchema(tool.schema);
-
-	    MeasurementApi.prototype.fetch = (measurementTypeId, selector, options) => {
-	    	if (!this[measurementTypeId]) {
-	    		throw 'MeasurementApi: No Collection with the id: ' + measurementTypeId;
-	    	}
-
-	        selector = selector || {};
-	        options = options || {};
-	        return this[measurementTypeId].find(selector, options).fetch();
-	    };
-	});
-
-	return MeasurementApi;
+        selector = selector || {};
+        options = options || {};
+        return this[measurementTypeId].find(selector, options).fetch();
+    }
 }
 
-export const MeasurementsConfiguration = {
-	setConfiguration: setConfiguration,
-	getConfiguration: getConfiguration,
-	getMeasurementsApi: getMeasurementsApi
-};
+OHIF.measurements.MeasurementApi = MeasurementApi;

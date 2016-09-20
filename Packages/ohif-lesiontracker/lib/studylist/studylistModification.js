@@ -1,11 +1,10 @@
-import { TimepointsConfiguration } from 'meteor/ohif:measurements/both/configuration/timepoints';
-const TimepointApi = TimepointsConfiguration.getTimepointsApi();
+import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
     StudyList.callbacks['dblClickOnStudy'] = dblClickOnStudy;
     StudyList.callbacks['middleClickOnStudy'] = dblClickOnStudy;
 
-    StudyList.timepointApi = new TimepointApi();
+    StudyList.timepointApi = new OHIF.measurements.TimepointApi();
     StudyList.timepointApi.retrieveTimepoints();
 });
 
@@ -17,7 +16,7 @@ function dblClickOnStudy(data) {
     let title = formatPN(data.patientName);
 
     const instance = Template.instance();
-    
+
     // Find the relevant timepoint given the clicked-on study
     const timepointApi = StudyList.timepointApi;
     if (!timepointApi) {

@@ -5,8 +5,6 @@ import { MeasurementHandlers } from 'meteor/ohif:measurements/client/lib/Measure
 Session.set('MeasurementsReady', false);
 
 Template.viewer.onCreated(() => {
-    const MeasurementApi = MeasurementsConfiguration.getMeasurementsApi();
-
     OHIF.viewer = OHIF.viewer || {};
 
     const instance = Template.instance();
@@ -39,7 +37,7 @@ Template.viewer.onCreated(() => {
         ViewerStudies.insert(study);
     });
 
-    instance.data.measurementApi = new MeasurementApi();
+    instance.data.measurementApi = new OHIF.measurements.MeasurementApi();
     const measurementsPromise = instance.data.measurementApi.retrieveMeasurements();
     measurementsPromise.then(() => {
         Session.set('MeasurementsReady', true);

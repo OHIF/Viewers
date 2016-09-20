@@ -1,7 +1,3 @@
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
-
-const config = MeasurementsConfiguration.getConfiguration();
-
 Template.caseProgress.onCreated(() => {
     const instance = Template.instance();
 

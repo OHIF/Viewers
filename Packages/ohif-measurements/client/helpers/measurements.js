@@ -1,12 +1,12 @@
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.registerHelper('measurementConfiguration', () => {
 	//console.log('helper:measurementTools');
-    if (!MeasurementsConfiguration) {
+    if (!OHIF.measurements.MeasurementApi) {
         return;
     }
 
-    const config = MeasurementsConfiguration.getConfiguration();
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
     return config;
 });
 
