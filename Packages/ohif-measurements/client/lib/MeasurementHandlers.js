@@ -1,4 +1,4 @@
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
+import { OHIF } from 'meteor/ohif:core';
 import { MeasurementManager } from 'meteor/ohif:measurements/client/lib/MeasurementManager';
 
 let MeasurementHandlers = {};
@@ -6,7 +6,7 @@ let MeasurementHandlers = {};
 MeasurementHandlers.onAdded = (e, instance, eventData) => {
     const measurementData = eventData.measurementData;
 
-    const config = MeasurementsConfiguration.getConfiguration();
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
     const toolTypes = config.measurementTools.map(tool => {
         return tool.cornerstoneToolType;
     });
@@ -63,7 +63,7 @@ MeasurementHandlers.onAdded = (e, instance, eventData) => {
         const numCurrentMeasurementsInStudy = Collection.find({
             studyInstanceUid: study.studyInstanceUid
         }).count();
-        measurement.measurementNumber =  numCurrentMeasurementsInStudy + 1;
+        measurement.measurementNumber = numCurrentMeasurementsInStudy + 1;
     }
 
     // Clean the measurement according to the Schema
@@ -76,7 +76,7 @@ MeasurementHandlers.onAdded = (e, instance, eventData) => {
 MeasurementHandlers.onModified = (e, instance, eventData) => {
     const measurementData = eventData.measurementData;
 
-    const config = MeasurementsConfiguration.getConfiguration();
+    const config = MeasurementApi.getConfiguration();
     const toolTypes = config.measurementTools.map(tool => {
         return tool.cornerstoneToolType;
     });
@@ -131,7 +131,7 @@ MeasurementHandlers.onModified = (e, instance, eventData) => {
 MeasurementHandlers.onRemoved = (e, instance, eventData) => {
     const measurementData = eventData.measurementData;
 
-    const config = MeasurementsConfiguration.getConfiguration();
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
     const toolTypes = config.measurementTools.map(tool => {
         return tool.cornerstoneToolType;
     });

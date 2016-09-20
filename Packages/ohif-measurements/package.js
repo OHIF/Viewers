@@ -116,6 +116,4 @@ Package.onUse(function(api) {
     api.addFiles('client/lib/getTimepointObject.js', 'client');
 
     api.export('MeasurementSchemaTypes', ['client', 'server']);
-    api.export('MeasurementsConfiguration', ['client', 'server']);
-    api.export('TimepointsConfiguration', ['client', 'server']);
 });

@@ -1,4 +1,4 @@
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementTableView.helpers({
     isFollowup() {
@@ -11,7 +11,7 @@ Template.measurementTableView.helpers({
 	    const api = Template.instance().data.measurementApi;
 	    const Collection = api[measurementTypeId];
     	const data = Collection.find().fetch();
-    	
+
         const groupObject = _.groupBy(data, entry => { return entry.measurementNumber });
 
         return Object.keys(groupObject).map(key => {
@@ -33,7 +33,7 @@ Template.measurementTableView.helpers({
 
         const api = instance.data.measurementApi;
 
-        const config = MeasurementsConfiguration.getConfiguration();
+        const config = OHIF.measurements.MeasurementApi.getConfiguration();
         const measurementTools = config.measurementTools;
 
         // If this is a baseline, stop here since there are no new measurements to display
