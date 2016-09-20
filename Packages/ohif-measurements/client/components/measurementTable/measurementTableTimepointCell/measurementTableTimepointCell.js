@@ -1,4 +1,4 @@
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementTableTimepointCell.helpers({
     hasDataAtThisTimepoint() {
@@ -9,14 +9,14 @@ Template.measurementTableTimepointCell.helpers({
 
         if (this.timepointId) {
             const dataAtThisTimepoint = _.where(rowItem.entries, {timepointId: this.timepointId});
-            return dataAtThisTimepoint.length > 0;            
+            return dataAtThisTimepoint.length > 0;
         } else {
             return rowItem.entries.length > 0;
         }
     },
     displayData() {
         const instance = Template.instance();
-        
+
         const rowItem = instance.data.rowItem;
         let data;
         if (this.timepointId) {
@@ -29,7 +29,7 @@ Template.measurementTableTimepointCell.helpers({
             data = rowItem.entries[0];
         }
 
-        const config = MeasurementsConfiguration.getConfiguration();
+        const config = OHIF.measurements.MeasurementApi.getConfiguration();
         const measurementTools = config.measurementTools;
 
         const tool = _.where(measurementTools, {id: rowItem.measurementTypeId})[0];

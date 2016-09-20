@@ -1,16 +1,10 @@
 import { OHIF } from 'meteor/ohif:core';
-import { TimepointsConfiguration } from 'meteor/ohif:measurements/both/configuration/timepoints';
-import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
 import { MeasurementHandlers } from 'meteor/ohif:measurements/client/lib/MeasurementHandlers';
 
 Session.set('TimepointsReady', false);
 Session.set('MeasurementsReady', false);
 
 Template.viewer.onCreated(() => {
-    const TimepointApi = TimepointsConfiguration.getTimepointsApi();
-    const MeasurementApi = MeasurementsConfiguration.getMeasurementsApi();
-
-    OHIF.viewer = OHIF.viewer || {};
     ViewerData = window.ViewerData || ViewerData;
 
     const instance = Template.instance();
@@ -68,19 +62,19 @@ Template.viewer.onCreated(() => {
     });
 
     if (instance.data.currentTimepointId) {
-        instance.data.timepointApi = new TimepointApi(instance.data.currentTimepointId);
+        instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
         const timepointsPromise = instance.data.timepointApi.retrieveTimepoints();
         timepointsPromise.then(() => {
             Session.set('TimepointsReady', true);
-        })
+        });
 
-        instance.data.measurementApi = new MeasurementApi(instance.data.currentTimepointId);
+        instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.currentTimepointId);
         const measurementsPromise = instance.data.measurementApi.retrieveMeasurements();
         measurementsPromise.then(() => {
             Session.set('MeasurementsReady', true);
 
             instance.data.measurementApi.syncMeasurementsAndToolData();
-        })
+        });
 
         // Provide the necessary data to the Measurement API and Timepoint API
         const prior = instance.data.timepointApi.prior();
@@ -89,7 +83,7 @@ Template.viewer.onCreated(() => {
         }
     } else {
         console.warn('No current timepoint specified');
-        instance.data.measurementApi = new MeasurementApi();
+        instance.data.measurementApi = new OHIF.measurements.MeasurementApi();
     }
 });
 
@@ -98,7 +92,7 @@ Template.viewer.helpers({
         // TODO: Find a better way to do this
         return Session.get('TimepointsReady') && Session.get('MeasurementsReady');
     }
-})
+});
 
 Template.viewer.events({
     'CornerstoneToolsMeasurementAdded .imageViewerViewport'(event, instance, eventData) {
