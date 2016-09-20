@@ -1,6 +1,6 @@
 import './lib';
-import './components';
 import './helpers';
+import './components';
 import './ui';
 
 import './routes.js';

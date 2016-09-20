@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 var keys = {
     ESC: 27
 };
@@ -118,7 +120,7 @@ function getActiveViewportImageId() {
             return;
         }
     } catch(error) {
-        log.warn(error);
+        OHIF.log.warn(error);
         return;
     }
     // Return the enabled element's imageId
@@ -141,7 +143,7 @@ function getAbstractPriorValue(imageId) {
     if (!priorStudy) {
         return;
     }
-    
+
     var studies = StudyListStudies.find({
         patientId: currentStudy.patientId,
         studyDate: {
@@ -184,7 +186,7 @@ function getCurrentAttributeValue(attribute, level) {
     if (level === 'protocol') {
         level = 'study';
     }
-    
+
     if (attribute === 'abstractPriorValue') {
         return getAbstractPriorValue(imageId);
     }

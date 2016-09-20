@@ -41,7 +41,6 @@ class MeasurementApi {
 
         return new Promise((resolve, reject) => {
             retrievalFn().then(measurementData => {
-                // TODO: implement converter here
 
                 console.log('Measurement data retrieval');
                 console.log(measurementData);

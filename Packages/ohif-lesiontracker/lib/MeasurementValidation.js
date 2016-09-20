@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Create a client-only Collection to store our Validation Errors
 ValidationErrors = new Meteor.Collection(null);
 ValidationErrors._debugName = 'ValidationErrors';
@@ -55,7 +57,7 @@ function addValidationErrorsToCollection(validationErrors, prefix, type) {
  * @returns {Array} Array of error messages related to the input conformance checks
  */
 function assessGroupOfMeasurements(constraints) {
-    log.info('assessGroupOfMeasurements');
+    OHIF.log.info('assessGroupOfMeasurements');
 
     // Retrieve the group-level constraints
     var groupConstraints = constraints.group;
@@ -95,7 +97,7 @@ function assessGroupOfMeasurements(constraints) {
  * @returns {Array} Array of error messages related to the input conformance checks
  */
 function assessMeasurementPerOrgan(constraints) {
-    log.info('assessMeasurementPerOrgan');
+    OHIF.log.info('assessMeasurementPerOrgan');
 
     // Retrieve the per-organ constraints
     var perOrganConstraints = constraints.perOrgan;
@@ -154,7 +156,7 @@ function assessMeasurementPerOrgan(constraints) {
  * @returns {Array} Array of error messages related to the input conformance checks
  */
 function assessSingleMeasurement(constraints, measurementData) {
-    log.info('assessSingleMeasurement');
+    OHIF.log.info('assessSingleMeasurement');
 
     // Check whether this is a Target or Non-Target Measurement
     var targetType = measurementData.isTarget ? 'target' : 'nonTarget';
@@ -262,7 +264,7 @@ function validateSingleMeasurement(measurementData) {
 }
 
 function validateGroups() {
-    log.info('validateGroups');
+    OHIF.log.info('validateGroups');
 
     // Obtain the names of the current TrialResponseAssessmentCriteria that
     // we are using.
@@ -281,7 +283,7 @@ function validateGroups() {
     // TODO: Revisit this! We can't use the Timepoints collection inside ANY
     // of these functions, since it causes an infinite loop, since Measurement
     // validation is performed inside the observe:added hook for the Measurements
-    // Collection. 
+    // Collection.
 
     var timepointTypes = ['baseline', 'followup'];
     timepointTypes.forEach(function(timepointType) {

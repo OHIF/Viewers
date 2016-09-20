@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Use Aldeed's meteor-template-extension package to replace the
 // default StudyListStudy template.
 // See https://github.com/aldeed/meteor-template-extension
@@ -68,7 +70,7 @@ function removeTimepointAssociations() {
             // from the Timepoints Collection via a server call
             Meteor.call('removeTimepoint', timepoint._id, function(error) {
                 if (error) {
-                    log.warn(error);
+                    OHIF.log.warn(error);
                     return;
                 }
 

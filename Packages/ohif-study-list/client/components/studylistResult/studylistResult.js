@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Session.setDefault('showLoadingText', true);
 
 Template.studylistResult.helpers({
@@ -45,7 +47,7 @@ Template.studylistResult.helpers({
 
     sortingColumnsIcons() {
         const instance = Template.instance();
-        
+
         let sortingColumnsIcons = {};
         Object.keys(instance.sortingColumns.keys).forEach(key => {
             const value = instance.sortingColumns.get(key);
@@ -149,7 +151,7 @@ function search() {
     Meteor.call('StudyListSearch', filter, (error, studies) => {
         console.log('StudyListSearch');
         if (error) {
-            log.warn(error);
+            OHIF.log.warn(error);
             return;
         }
 
@@ -245,7 +247,7 @@ Template.studylistResult.events({
 
     'change #studyDate'(event) {
         let dateRange = $(event.currentTarget).val();
-        
+
         // Remove all space chars
         dateRange = dateRange.replace(/ /g, '');
 
@@ -281,4 +283,3 @@ Template.studylistResult.events({
         Session.set('sortOption', sortOption);
     }
 });
-

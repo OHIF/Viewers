@@ -95,6 +95,7 @@ ohif:cornerstone@0.0.1
 ohif:dicom-services@0.0.1
 ohif:hanging-protocols@0.0.1
 ohif:lesiontracker@0.0.1
+ohif:log@0.0.1
 ohif:measurements@0.0.1
 ohif:study-list@0.0.1
 ohif:user-management@0.0.1

@@ -1,10 +1,12 @@
+import { OHIF } from 'meteor/ohif:core';
+
 function toolDataExists(toolState, imageId, toolType) {
     const currentToolState = toolState[imageId][toolType];
     return (currentToolState && currentToolState.data && currentToolState.data.length);
 }
 
 syncMeasurementAndToolData = function(measurement) {
-    log.info('syncMeasurementAndToolData');
+    OHIF.log.info('syncMeasurementAndToolData');
 
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
     const imageId = measurement.imageId;

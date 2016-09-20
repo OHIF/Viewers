@@ -26,10 +26,10 @@ Template.toolbarSectionButton.events({
         const activeTool = toolManager.getActiveTool();
         if (tool === activeTool) {
             const defaultTool = toolManager.getDefaultTool();
-            log.info('Setting active tool to: ' + defaultTool);
+            OHIF.log.info('Setting active tool to: ' + defaultTool);
             toolManager.setActiveTool(defaultTool, elements);
         } else {
-            log.info('Setting active tool to: ' + tool);
+            OHIF.log.info('Setting active tool to: ' + tool);
             toolManager.setActiveTool(tool, elements);
         }
     },

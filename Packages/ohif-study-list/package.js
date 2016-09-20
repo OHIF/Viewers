@@ -12,7 +12,6 @@ Package.onUse(function (api) {
     api.use('jquery');
     api.use('stylus');
     api.use('http');
-    api.use('practicalmeteor:loglevel');
     api.use('random');
     api.use('silentcicero:jszip');
     api.use('aldeed:simple-schema');
@@ -21,7 +20,7 @@ Package.onUse(function (api) {
     // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
     api.use('momentjs:moment');
 
-    api.use('gilbertwat:bootstrap3-daterangepicker');    
+    api.use('gilbertwat:bootstrap3-daterangepicker');
 
     // Our custom packages
     api.use('design');
@@ -33,13 +32,8 @@ Package.onUse(function (api) {
     // TODO: Replace with NPM dependency
     api.use('ohif:cornerstone'); // Only for HammerJS
 
-    // This sets the default logging level of the package using the
-    // loglevel package. It can be overridden in the JavaScript
-    // console for debugging purposes
-    api.addFiles('log.js');
-
     api.addFiles('both/collections.js', [ 'client', 'server' ]);
-    
+
     // Components
     api.addFiles('client/components/studylist.html', 'client');
     api.addFiles('client/components/studylist.js', 'client');
@@ -78,7 +72,7 @@ Package.onUse(function (api) {
     api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.html', 'client');
     api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.styl', 'client');
     api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.js', 'client');
-    
+
     // Client-side library functions
     api.addFiles('client/lib/getStudyMetadata.js', 'client');
     api.addFiles('client/lib/getStudiesMetadata.js', 'client');

@@ -15,9 +15,6 @@ Package.onUse(function(api) {
 
     api.use('validatejs');
 
-    // Control over logging
-    api.use('practicalmeteor:loglevel');
-
     // Template overriding
     api.use('aldeed:template-extension@4.0.0');
 
@@ -28,14 +25,12 @@ Package.onUse(function(api) {
     api.use('ohif:cornerstone');
     api.use('ohif:measurements');
 
-    api.addFiles('log.js', [ 'client', 'server' ]);
-
     api.addFiles('both/configuration/bidirectional.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/nonTarget.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/ellipse.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/length.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/measurementTools.js', [ 'client', 'server' ]);
-    
+
     api.addFiles('both/configuration/dataExchange.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/dataValidation.js', [ 'client', 'server' ]);
     api.addFiles('both/configuration/configuration.js', [ 'client', 'server' ]);
@@ -72,7 +67,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/measurementLocationDialog/measurementLocationDialog.html', 'client');
     api.addFiles('client/components/measurementLocationDialog/measurementLocationDialog.js', 'client');
     api.addFiles('client/components/measurementLocationDialog/measurementLocationDialog.styl', 'client');
-    
+
     api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.html', 'client');
     api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.styl', 'client');
     api.addFiles('client/components/nonTargetLesionDialog/nonTargetLesionDialog.js', 'client');
@@ -92,7 +87,7 @@ Package.onUse(function(api) {
     // Library functions
     api.addFiles('lib/TrialCriteriaConstraints.js', 'client');
     api.addFiles('lib/MeasurementValidation.js', 'client');
-    
+
     api.addFiles('lib/pixelSpacingAutorunCheck.js', 'client');
     api.addFiles('lib/toggleLesionTrackerTools.js', 'client');
     api.addFiles('lib/clearMeasurementTimepointData.js', 'client');
@@ -106,9 +101,6 @@ Package.onUse(function(api) {
     api.export('syncMeasurementAndToolData', 'client');
     api.export('syncImageMeasurementAndToolData', 'client');
     api.export('openNewTabWithTimepoint', 'client');
-    api.export('activateLesion', 'client');
-    api.export('activateMeasurements', 'client');
-    api.export('deactivateAllToolData', 'client');
     api.export('toggleLesionTrackerTools', 'client');
     api.export('clearMeasurementTimepointData', 'client');
     api.export('getTrialCriteriaConstraints', 'client');

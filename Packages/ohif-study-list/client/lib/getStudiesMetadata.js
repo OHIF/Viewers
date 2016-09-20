@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Retrieves metaData for multiple studies at once.
  *
@@ -50,7 +52,7 @@ getStudiesMetadata = function(studyInstanceUids, doneCallback, failCallback) {
             doneCallback(studies);
         }
     }).fail(function(error) {
-        log.warn(error);
+        OHIF.log.warn(error);
         if (failCallback && typeof failCallback === 'function') {
             failCallback(error);
         }

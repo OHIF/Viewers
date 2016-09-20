@@ -43,7 +43,7 @@ function doneCallback(measurementData, deleteTool) {
     // opened by the Lesion Table, we should clear the data for
     // the specified Timepoint Cell
     if (deleteTool === true) {
-        log.info('Confirm clicked!');
+        OHIF.log.info('Confirm clicked!');
         clearMeasurementTimepointData(measurementData.id, measurementData.timepointId);
     }
 }
@@ -56,7 +56,7 @@ const keys = {
 
 Template.measurementTableTimepointCell.events({
     'dblclick .measurementTableTimepointCell': function() {
-        log.info('Double clicked on a timepoint cell');
+        OHIF.log.info('Double clicked on a timepoint cell');
         // Search Measurements by lesion and timepoint
         const currentMeasurement = Template.parentData(1).rowItem;
 

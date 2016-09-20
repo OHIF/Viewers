@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 function doneCallback(measurementData, deleteTool) {
     // If a Lesion or Non-Target is removed via a dialog
     // opened by the Lesion Table, we should clear the data for
@@ -5,7 +7,7 @@ function doneCallback(measurementData, deleteTool) {
     if (deleteTool === true) {
         Meteor.call('removeMeasurement', measurementData.id, function(error, response) {
             if (error) {
-                log.warn(error);
+                OHIF.log.warn(error);
             }
         });
     }
@@ -25,7 +27,7 @@ Template.measurementTableRow.events({
     },
 
     'dblclick .location': function() {
-        log.info('Double clicked on Lesion Location cell');
+        OHIF.log.info('Double clicked on Lesion Location cell');
 
         var measurementData = this;
 
@@ -50,7 +52,7 @@ Template.measurementTableRow.events({
             showConfirmDialog(() => {
                 Meteor.call('removeMeasurement', currentMeasurement._id, (error, response) => {
                     if (error) {
-                        log.warn(error);
+                        OHIF.log.warn(error);
                     }
                 });
             }, options);

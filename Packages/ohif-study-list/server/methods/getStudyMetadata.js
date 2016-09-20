@@ -1,10 +1,12 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Meteor.methods({
     /**
      * Retrieves Study metadata given a Study Instance UID
      * This Meteor method is available from both the client and the server
      */
     GetStudyMetadata: function(studyInstanceUid) {
-        log.info('GetStudyMetadata(%s)', studyInstanceUid);
+        OHIF.log.info('GetStudyMetadata(%s)', studyInstanceUid);
 
         if (!Meteor.settings.servers.dicomWeb) {
             throw 'No properly configured server was available over DICOMWeb';

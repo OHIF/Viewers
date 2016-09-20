@@ -214,7 +214,7 @@ Meteor.startup(function() {
 $.fn.reverse = [].reverse;
 
 function previousActivePanel() {
-    log.info('nextActivePanel');
+    OHIF.log.info('nextActivePanel');
     var currentIndex = Session.get('activeViewport');
     currentIndex--;
 
@@ -233,7 +233,7 @@ function previousActivePanel() {
 }
 
 function nextActivePanel() {
-    log.info('nextActivePanel');
+    OHIF.log.info('nextActivePanel');
     var currentIndex = Session.get('activeViewport');
     currentIndex++;
 

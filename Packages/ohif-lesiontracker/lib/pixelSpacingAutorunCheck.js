@@ -1,5 +1,7 @@
+import { OHIF } from 'meteor/ohif:core';
+
 pixelSpacingAutorunCheck = function() {
-    log.info('lesionTool button change autorun');
+    OHIF.log.info('lesionTool button change autorun');
 
     // Get oncology tools
     var oncologyTools = $('button#lesion, button#nonTarget');
