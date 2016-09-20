@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Obtain an imageId for Cornerstone based on the WADO-RS scheme
  *
@@ -55,6 +57,6 @@ getWADORSImageId = function(instance) {
 
     var imageId = cornerstoneWADOImageLoader.imageManager.add(image);
 
-    log.info('WADO-RS ImageID: ' + imageId);
+    OHIF.log.info('WADO-RS ImageID: ' + imageId);
     return imageId;
 };

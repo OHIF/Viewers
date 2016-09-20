@@ -38,7 +38,7 @@ MeasurementHandlers.onAdded = (e, instance, eventData) => {
     const sopInstanceUid = sopInstance.sopInstanceUid;
     const frameIndex = sopInstance.frame || 0;
 
-    log.info('CornerstoneToolsMeasurementAdded');
+    OHIF.log.info('CornerstoneToolsMeasurementAdded');
 
     let measurement = $.extend({
         userId: Meteor.userId(),
@@ -108,7 +108,7 @@ MeasurementHandlers.onModified = (e, instance, eventData) => {
     const sopInstanceUid = sopInstance.sopInstanceUid;
     const frameIndex = sopInstance.frame || 0;
 
-    log.info('CornerstoneToolsMeasurementModified');
+    OHIF.log.info('CornerstoneToolsMeasurementModified');
 
     let measurement = Collection.findOne(measurementData.id);
 
@@ -141,7 +141,7 @@ MeasurementHandlers.onRemoved = (e, instance, eventData) => {
         return;
     }
 
-    log.info('CornerstoneToolsMeasurementRemoved');
+    OHIF.log.info('CornerstoneToolsMeasurementRemoved');
 
     const measurementToolConfiguration = config.measurementTools[index];
     const measurementApi = instance.data.measurementApi;

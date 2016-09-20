@@ -12,7 +12,6 @@ Package.onUse(function (api) {
     api.use('jquery');
     api.use('stylus');
     api.use('http');
-    api.use('practicalmeteor:loglevel');
     api.use('random');
     api.use('silentcicero:jszip');
     api.use('aldeed:simple-schema');
@@ -34,11 +33,6 @@ Package.onUse(function (api) {
 
     // TODO: Replace with NPM dependency
     api.use('ohif:cornerstone'); // Only for HammerJS
-
-    // This sets the default logging level of the package using the
-    // loglevel package. It can be overridden in the JavaScript
-    // console for debugging purposes
-    api.addFiles('log.js');
 
     api.addFiles('both/collections.js', ['client', 'server']);
     api.addFiles('both/schema/servers.js', ['client', 'server']);

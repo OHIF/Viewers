@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Opens a new tab in the tabbed studylist environment using
  * a given timepoint and new tab title.
@@ -12,7 +14,7 @@ openNewTabWithTimepoint = function(timepointId, title) {
     const timepoint = Timepoints.findOne({
         timepointId: timepointId
     });
-    
+
     if (!timepoint) {
         throw 'No such timepoint exists';
     }
@@ -73,7 +75,7 @@ function getDataFromTimepoint(timepoint) {
         relatedStudies = relatedStudies.concat(baseline.studyInstanceUids[0]);
         timepointIds.push(baseline.timepointId);
     } else {
-        log.warn('No Baseline found while opening a Follow-up Timepoint');
+        OHIF.log.warn('No Baseline found while opening a Follow-up Timepoint');
     }
 
     timepointIds.push(timepoint.timepointId);

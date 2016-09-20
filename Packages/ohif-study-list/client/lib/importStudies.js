@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Imports selected studies from local into studylist
  * @param filesToImport Files located in the client machine to import
@@ -44,7 +46,7 @@ importStudies = function(filesToImport, importCallback) {
 
                 if (fileUploadStatus.numberOfFilesFailed > 0) {
                     //TODO: Some files failed to upload, so let user know
-                    log.info("Failed to upload " + fileUploadStatus.numberOfFilesFailed + " of " + numberOfFilesToUpload + " files");
+                    OHIF.log.info("Failed to upload " + fileUploadStatus.numberOfFilesFailed + " of " + numberOfFilesToUpload + " files");
                 }
             }
         };

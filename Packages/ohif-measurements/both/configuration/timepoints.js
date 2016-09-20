@@ -21,7 +21,7 @@ class TimepointApi {
             this.currentTimepointId = currentTimepointId;
         }
 
-        this.config = configuration || MeasurementApi.getConfiguration();
+        this.config = configuration || OHIF.measurements.MeasurementApi.getConfiguration();
     }
 
     retrieveTimepoints() {
@@ -38,7 +38,7 @@ class TimepointApi {
             retrievalFn().then(timepointData => {
                 console.log('Timepoint data retrieval');
                 console.log(timepointData);
-                timepointData.forEach(timepoint => {
+                _.each(timepointData, timepoint => {
                     delete timepoint._id;
                     this.timepoints.insert(timepoint);
                 });
@@ -191,7 +191,7 @@ class TimepointApi {
         // If index is 0, it means that the current timepoint was not in the list
         // Log a warning and return here
         if (!index) {
-            log.warn('Current follow-up was not in the list of relevant follow-ups?');
+            OHIF.log.warn('Current follow-up was not in the list of relevant follow-ups?');
             return;
         }
 

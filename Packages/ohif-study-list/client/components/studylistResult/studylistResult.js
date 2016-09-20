@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Session.setDefault('showLoadingText', true);
 
 Template.studylistResult.helpers({
@@ -149,7 +151,7 @@ function search() {
     Meteor.call('StudyListSearch', filter, (error, studies) => {
         console.log('StudyListSearch');
         if (error) {
-            log.warn(error);
+            OHIF.log.warn(error);
             return;
         }
 

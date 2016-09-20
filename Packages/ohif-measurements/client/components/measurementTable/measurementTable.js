@@ -57,7 +57,7 @@ Template.measurementTable.onRendered(() => {
 
     // Activate the first lesion
     if (firstLesion) {
-        activateLesion(firstLesion._id, templateData);
+        OHIF.measurements.activateLesion(firstLesion._id, templateData);
     }
 });
 
@@ -67,7 +67,7 @@ Template.measurementTable.events({
      */
     /*'click table#tblLesion tbody tr': function(e, template) {
           var measurementId = $(e.currentTarget).data('measurementid');
-          activateLesion(measurementId, template.data);
+          OHIF.measurements.activateLesion(measurementId, template.data);
     },*/
 });
 

@@ -1,4 +1,20 @@
-import { parseFloatArray } from '../../lib/parseFloatArray';
+import { OHIF } from 'meteor/ohif:core';
+import { parseFloatArray } from 'meteor/ohif:study-list/server/lib/parseFloatArray';
+
+/**
+ * Returns the value of the element (e.g. '00280009')
+ *
+ * @param element - The group/element of the element (e.g. '00280009')
+ * @param defaultValue - The default value to return if the element does not exist
+ * @returns {*}
+ */
+function getValue(element, defaultValue) {
+    if (!element || !element.value) {
+        return defaultValue;
+    }
+
+    return element.value;
+}
 
 /**
  * Parses the SourceImageSequence, if it exists, in order
@@ -19,21 +35,6 @@ function getSourceImageInstanceUid(instance) {
 }
 
 /**
- * Returns the value of the element (e.g. '00280009')
- *
- * @param element - The group/element of the element (e.g. '00280009')
- * @param defaultValue - The default value to return if the element does not exist
- * @returns {*}
- */
-function getValue(element, defaultValue) {
-    if (!element || !element.value) {
-        return defaultValue;
-    }
-
-    return element.value;
-}
-
-/**
  * Parses result data from a DIMSE search into Study MetaData
  * Returns an object populated with study metadata, including the
  * series list.
@@ -43,7 +44,7 @@ function getValue(element, defaultValue) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 function resultDataToStudyMetadata(studyInstanceUid, resultData) {
-    log.info('resultDataToStudyMetadata');
+    OHIF.log.info('resultDataToStudyMetadata');
     var seriesMap = {};
     var seriesList = [];
 

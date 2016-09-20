@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Calculates a Timepoint's name based on how many timepoints exist between it
  * and the latest Baseline. Names returned are in the form of 'Baseline', or
@@ -6,7 +8,7 @@
  * @param timepoint
  * @returns {*} The timepoint name
  */
-getTimepointName = function(timepoint) {
+OHIF.measurements.getTimepointName = (timepoint) => {
     // Check if this is a Baseline timepoint, if it is, return 'Baseline'
     if (timepoint.timepointType === 'baseline') {
         return 'Baseline';
@@ -35,7 +37,7 @@ getTimepointName = function(timepoint) {
     // If index is 0, it means that the current timepoint was not in the list
     // Log a warning and return here
     if (!index) {
-        log.warn('Current follow-up was not in the list of relevant follow-ups?');
+        OHIF.log.warn('Current follow-up was not in the list of relevant follow-ups?');
         return;
     }
 

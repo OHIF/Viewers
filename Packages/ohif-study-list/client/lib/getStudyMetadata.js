@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Define the StudyMetaData object. This is used as a cache
 // to store study meta data information to prevent unnecessary
 // calls to the server
@@ -20,7 +22,7 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
         doneCallback(study);
         return;
     }
-    
+
     console.time('getStudyMetadata');
 
     // If no study metadata is in the cache variable, we need to retrieve it from
@@ -42,7 +44,7 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
         }
 
         if (error) {
-            log.warn(error);
+            OHIF.log.warn(error);
             failCallback(error);
             return;
         }

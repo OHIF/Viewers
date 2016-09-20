@@ -8,7 +8,7 @@ import { OHIF } from 'meteor/ohif:core';
  * @param element {node} DOM Node representing the viewport element
  */
 displayReferenceLines = element => {
-    log.info("imageViewerViewport displayReferenceLines");
+    OHIF.log.info("imageViewerViewport displayReferenceLines");
 
     // Check if image plane (orientation / loction) data is present for the current image
     const enabledElement = cornerstone.getEnabledElement(element);

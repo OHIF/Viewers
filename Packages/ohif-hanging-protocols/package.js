@@ -12,7 +12,6 @@ Package.onUse(function(api) {
     api.use('jquery');
     api.use('stylus');
     api.use('random');
-    api.use('practicalmeteor:loglevel');
     api.use('templating');
     api.use('natestrauser:select2@4.0.1', 'client');
     api.use('clinical:router');
@@ -21,11 +20,6 @@ Package.onUse(function(api) {
 
     // Our custom packages
     api.use('ohif:viewerbase');
-
-    // This sets the default logging level of the package using the
-    // loglevel package. It can be overridden in the JavaScript
-    // console for debugging purposes
-    api.addFiles('log.js');
 
     api.addAssets('assets/dots.svg', 'client');
 

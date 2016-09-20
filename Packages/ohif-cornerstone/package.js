@@ -41,5 +41,5 @@ Package.onUse(function(api) {
     api.export('cornerstoneMath', 'client');
     api.export('cornerstoneTools', 'client');
     api.export('cornerstoneWADOImageLoader', 'client');
-    api.export('dicomParser', ['client', 'server']);
+    api.export('dicomParser', 'client');
 });

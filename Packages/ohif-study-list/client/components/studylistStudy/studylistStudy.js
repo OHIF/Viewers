@@ -1,9 +1,11 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Maybe we should use regular StudyList collection?
 StudyListSelectedStudies = new Meteor.Collection(null);
 StudyListSelectedStudies._debugName = 'StudyListSelectedStudies';
 
 function handleShiftClick(studyRow, data) {
-    //log.info('shiftKey');
+    //OHIF.log.info('shiftKey');
     var studyInstanceUid = studyRow.attr('studyInstanceUid');
 
     // Select all rows in between these two rows
@@ -60,7 +62,7 @@ function handleShiftClick(studyRow, data) {
 }
 
 function handleCtrlClick(studyRow, data) {
-    //log.info('ctrlKey');
+    //OHIF.log.info('ctrlKey');
     var studyInstanceUid = studyRow.attr('studyInstanceUid');
 
     if (studyRow.hasClass('active')) {
@@ -78,7 +80,7 @@ function handleCtrlClick(studyRow, data) {
         // Set this as the previously selected row, so the user can
         // use Shift to select from this point onwards
         StudyList.previouslySelected = studyRow;
-        log.info('StudyList PreviouslySelected set: ' + studyRow.index());
+        OHIF.log.info('StudyList PreviouslySelected set: ' + studyRow.index());
     }
 }
 
@@ -113,7 +115,7 @@ Template.studylistStudy.events({
             handleCtrlClick(studyRow, data);
         } else {
             // Select a single study
-            //log.info('Regular click');
+            //OHIF.log.info('Regular click');
 
             // Clear all selected studies
             StudyListSelectedStudies.remove({});
@@ -121,7 +123,7 @@ Template.studylistStudy.events({
 
             // Set the previous study to the currently clicked-on study
             StudyList.previouslySelected = studyRow;
-            //log.info('StudyList PreviouslySelected set: ' + studyRow.index());
+            //OHIF.log.info('StudyList PreviouslySelected set: ' + studyRow.index());
 
             // Set the current study as selected
             StudyListSelectedStudies.insert(data);

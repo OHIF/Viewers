@@ -19,19 +19,15 @@ Package.onUse(function(api) {
     api.use('aldeed:simple-schema');
     api.use('aldeed:collection2');
 
-    // Control over logging
-    api.use('practicalmeteor:loglevel');
-
     // Template overriding
     api.use('aldeed:template-extension@4.0.0');
 
     // Our custom packages
+    api.use('ohif:cornerstone');
     api.use('design');
     api.use('ohif:core');
+    api.use('ohif:log');
     api.use('ohif:study-list');
-    api.use('ohif:cornerstone');
-
-    api.addFiles('log.js', [ 'client', 'server' ]);
 
     api.addFiles('both/schema/measurements.js', ['client', 'server']);
     api.addFiles('both/schema/timepoints.js', ['client', 'server']);
@@ -39,11 +35,8 @@ Package.onUse(function(api) {
     api.addFiles('both/configuration/measurements.js', ['client', 'server']);
     api.addFiles('both/configuration/timepoints.js', ['client', 'server']);
 
-    api.addFiles('client/helpers/measurements.js', ['client']);
-    api.addFiles('client/helpers/timepoints.js', ['client']);
-
-    api.addFiles('client/lib/hangingProtocolCustomizations.js');
-    api.addFiles('client/lib/syncMeasurementAndToolData.js', 'client');
+    // Client imports and routes
+    api.addFiles('client/index.js', 'client');
 
     // Measurement Table Components
     api.addFiles('client/components/measurementTable/measurementTable.html', 'client');
@@ -105,15 +98,6 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/association/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.html', 'client');
     api.addFiles('client/components/association/confirmRemoveTimepointAssociation/confirmRemoveTimepointAssociation.js', 'client');
-
-    // Client Library functions
-    api.addFiles('client/lib/activateMeasurements.js', 'client');
-    api.addFiles('client/lib/activateLesion.js', 'client');
-    api.addFiles('client/lib/deactivateAllToolData.js', 'client');
-    api.addFiles('client/lib/MeasurementHandlers.js', 'client');
-    api.addFiles('client/lib/MeasurementManager.js', 'client');
-    api.addFiles('client/lib/getTimepointName.js', 'client');
-    api.addFiles('client/lib/getTimepointObject.js', 'client');
 
     api.export('MeasurementSchemaTypes', ['client', 'server']);
 });
