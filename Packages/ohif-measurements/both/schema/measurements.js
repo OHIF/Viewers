@@ -3,25 +3,25 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 const Measurement = new SimpleSchema({
     userId: {
         type: String,
-        label: "User ID"
+        label: 'User ID'
     },
     patientId: {
         type: String,
-        label: "Patient ID"
+        label: 'Patient ID'
     },
     measurementNumber: {
         type: Number,
-        label: "Measurement Number",
+        label: 'Measurement Number',
         optional: true
     },
     measurementNumberOverall: {
         type: Number,
-        label: "Measurement Number Overall",
+        label: 'Measurement Number Overall',
         optional: true
     },
     timepointId: {
         type: String,
-        label: "Timepoint ID",
+        label: 'Timepoint ID',
         optional: true
     },
     // Force value to be current date (on server) upon insert
@@ -51,70 +51,88 @@ const Measurement = new SimpleSchema({
         },
         // denyInsert: true, // Commenting this out for now since we are constantly re-adding entries to client-side collections
         optional: true
-    },
-})
-
-const StudyLevelMeasurement = new SimpleSchema([Measurement, {
-    studyInstanceUid: {
-        type: String,
-        label: 'Study Instance UID'
     }
-}]);
+});
 
-const SeriesLevelMeasurement = new SimpleSchema([StudyLevelMeasurement, {
-    seriesInstanceUid: {
-        type: String,
-        label: 'Series Instance UID'
+const StudyLevelMeasurement = new SimpleSchema([
+    Measurement,
+    {
+        studyInstanceUid: {
+            type: String,
+            label: 'Study Instance UID'
+        }
     }
-}]);
+]);
 
-const InstanceLevelMeasurement = new SimpleSchema([StudyLevelMeasurement, SeriesLevelMeasurement, {
-    sopInstanceUid: {
-        type: String,
-        label: 'SOP Instance UID'
+const SeriesLevelMeasurement = new SimpleSchema([
+    StudyLevelMeasurement,
+    {
+        seriesInstanceUid: {
+            type: String,
+            label: 'Series Instance UID'
+        }
     }
-}]);
+]);
 
-const FrameLevelMeasurement = new SimpleSchema([StudyLevelMeasurement, SeriesLevelMeasurement, InstanceLevelMeasurement, {
-    frameIndex: {
-        type: Number,
-        min: 0,
-        label: 'Frame index in Instance'
-    },
-    // TODO: In the future we should remove this in favour of searching ViewerStudies and display sets when
-    // re-displaying measurements. Otherwise if a study moves servers the measurements will not be displayed correctly
-    imageId: {
-        type: String,
-        label: 'Cornerstone Image Id'
+const InstanceLevelMeasurement = new SimpleSchema([
+    StudyLevelMeasurement,
+    SeriesLevelMeasurement,
+    {
+        sopInstanceUid: {
+            type: String,
+            label: 'SOP Instance UID'
+        }
     }
-}]);
+]);
 
-const CornerstoneToolMeasurement = new SimpleSchema([StudyLevelMeasurement,
-                                                            SeriesLevelMeasurement,
-                                                            InstanceLevelMeasurement,
-                                                            FrameLevelMeasurement, {
-    toolType: {
-        type: String,
-        label: 'Cornerstone Tool Type',
-        optional: true
-    },
-    visible: {
-        type: Boolean,
-        label: 'Visible',
-        defaultValue: true
-    },
-    active: {
-        type: Boolean,
-        label: 'Active',
-        defaultValue: false
-    },
-    invalidated: {
-        type: Boolean,
-        label: 'Invalidated',
-        defaultValue: false,
-        optional: true
+const FrameLevelMeasurement = new SimpleSchema([
+    StudyLevelMeasurement,
+    SeriesLevelMeasurement,
+    InstanceLevelMeasurement,
+    {
+        frameIndex: {
+            type: Number,
+            min: 0,
+            label: 'Frame index in Instance'
+        },
+        // TODO: In the future we should remove this in favour of searching ViewerStudies and display sets when
+        // re-displaying measurements. Otherwise if a study moves servers the measurements will not be displayed correctly
+        imageId: {
+            type: String,
+            label: 'Cornerstone Image Id'
+        }
     }
-}]);
+]);
+
+const CornerstoneToolMeasurement = new SimpleSchema([
+    StudyLevelMeasurement,
+    SeriesLevelMeasurement,
+    InstanceLevelMeasurement,
+    FrameLevelMeasurement,
+    {
+        toolType: {
+            type: String,
+            label: 'Cornerstone Tool Type',
+            optional: true
+        },
+        visible: {
+            type: Boolean,
+            label: 'Visible',
+            defaultValue: true
+        },
+        active: {
+            type: Boolean,
+            label: 'Active',
+            defaultValue: false
+        },
+        invalidated: {
+            type: Boolean,
+            label: 'Invalidated',
+            defaultValue: false,
+            optional: true
+        }
+    }
+]);
 
 const CornerstoneHandleSchema = new SimpleSchema({
     x: {
@@ -178,7 +196,7 @@ const CornerstoneHandleSchema = new SimpleSchema({
         label: 'Locked',
         optional: true,
         defaultValue: false
-    }, 
+    }
 });
 
 export const MeasurementSchemaTypes = {
