@@ -28,5 +28,5 @@ export const schema = new SimpleSchema({
     latestDate: {
         type: Date,
         label: 'Most recent Study Date from associated studies',
-    },
+    }
 });
