@@ -1,4 +1,4 @@
-import { MeasurementManager } from 'meteor/ohif:measurements/client/lib/MeasurementManager';
+import { OHIF } from 'meteor/ohif:core';
 
 function closeHandler(dialog) {
     // Hide the lesion dialog
@@ -31,12 +31,12 @@ function getSetLesionNumberCallbackFunction(measurementTypeId, measurementApi, t
         // exists at a different timepoint
         const timepointId = timepoint.timepointId;
         const collection = measurementApi[measurementTypeId];
-        const measurementNumber = MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
+        const measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
         measurementData.measurementNumber = measurementNumber;
 
         // Set lesion number
         doneCallback(measurementNumber);
-    }
+    };
 }
 
 function selectNonTargetResponse(responseCode) {
@@ -104,7 +104,7 @@ function getLesionLocationCallback(measurementData, eventData) {
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, disable selector location
-    var locationId = MeasurementManager.getLocationIdIfMeasurementExists(measurementData);
+    var locationId = OHIF.measurements.MeasurementManager.getLocationIdIfMeasurementExists(measurementData);
     if (locationId) {
         // Add an ID value to the tool data to link it to the Measurements collection
         measurementData.id = 'notready';
@@ -120,11 +120,11 @@ function getLesionLocationCallback(measurementData, eventData) {
         var locationObject = LesionLocations.findOne({
                 id: locationId
             });
-        
+
         if (!locationObject) {
             return;
         }
-        
+
         selectorLocation.find('option[value="' + locationObject._id + '"]').prop('selected', true);
         selectorLocation.prop('disabled', true);
     }
@@ -238,7 +238,6 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     selectNonTargetResponse(response);
 };
 
-
 Template.nonTargetLesionDialog.onCreated(() => {
     const instance = Template.instance();
     const measurementTypeId = 'nonTargets';
@@ -297,7 +296,9 @@ Template.nonTargetLesionDialog.events({
         measurementData.isTarget = false;
 
         // Response is set from location response list
-        measurementData.response = LocationResponses.findOne({selected: true}).code;
+        measurementData.response = LocationResponses.findOne({
+            selected: true
+        }).code;
 
         // Adds lesion data to timepoints array
         LesionManager.updateLesionData(measurementData);

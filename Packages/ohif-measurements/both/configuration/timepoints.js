@@ -36,8 +36,8 @@ class TimepointApi {
 
         return new Promise((resolve, reject) => {
             retrievalFn().then(timepointData => {
-                console.log('Timepoint data retrieval');
-                console.log(timepointData);
+                OHIF.log.info('Timepoint data retrieval');
+                OHIF.log.info(timepointData);
                 _.each(timepointData, timepoint => {
                     delete timepoint._id;
                     this.timepoints.insert(timepoint);
@@ -55,12 +55,10 @@ class TimepointApi {
         }
 
         const timepointData = this.timepoints.find().fetch();
-        console.log('Preparing to store timepoints');
-        console.log(JSON.stringify(timepointData, null, 2));
+        OHIF.log.info('Preparing to store timepoints');
+        OHIF.log.info(JSON.stringify(timepointData, null, 2));
 
-        storeFn(timepointData).then(() => {
-            console.log('Timepoint storage completed');
-        });
+        storeFn(timepointData).then(() => OHIF.log.info('Timepoint storage completed'));
     }
 
     // Return all timepoints
@@ -77,6 +75,11 @@ class TimepointApi {
 
     // Return the prior timepoint
     lock() {
+        const current = this.current();
+        if (!current) {
+            return;
+        }
+
         this.timepoints.update(current._id, {
             $set: {
                 locked: true
@@ -169,7 +172,7 @@ class TimepointApi {
         }
 
         // Retrieve all of the relevant follow-up timepoints for this patient
-        var followupTimepoints = this.timepoints.find({
+        const followupTimepoints = this.timepoints.find({
             patientId: timepoint.patientId,
             timepointType: timepoint.timepointType
         }, {
@@ -180,13 +183,11 @@ class TimepointApi {
 
         // Create an array of just timepointIds, so we can use indexOf
         // on it to find the current timepoint's relative position
-        var followupTimepointIds = followupTimepoints.map(function(timepoint) {
-            return timepoint.timepointId;
-        });
+        const followupTimepointIds = followupTimepoints.map(timepoint => timepoint.timepointId);
 
         // Calculate the index of the current timepoint in the array of all
         // relevant follow-up timepoints
-        var index = followupTimepointIds.indexOf(timepoint.timepointId) + 1;
+        const index = followupTimepointIds.indexOf(timepoint.timepointId) + 1;
 
         // If index is 0, it means that the current timepoint was not in the list
         // Log a warning and return here
