@@ -1,5 +1,7 @@
-import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
+import { Blaze } from 'meteor/blaze';
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 
 // Create a new custom template for the base component
 Template.baseComponent = new Template('baseComponent', () => {});
@@ -29,9 +31,6 @@ Template.baseComponent.constructView = function(contentFunc, elseFunc) {
 
     // Extract the render function from the base template
     template.renderFunction = baseTemplate.renderFunction;
-
-    // Check for the mixins. If it's not informed set the lowest level mixin
-    const mixins = data.mixins || 'component';
 
     // Init the data manipulation mixins
     OHIF.Mixin.initData(data);

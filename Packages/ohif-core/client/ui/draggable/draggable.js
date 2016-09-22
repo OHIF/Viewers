@@ -1,6 +1,8 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Allow attaching to jQuery selectors
-$.fn.draggable = function(options) {
-    makeDraggable(this, options);
+$.fn.draggable = function() {
+    OHIF.ui.makeDraggable(this);
     return this;
 };
 
@@ -11,7 +13,7 @@ $.fn.draggable = function(options) {
  *
  * @param element
  */
-makeDraggable = function(element, options) {
+OHIF.ui.makeDraggable = function(element) {
     var container = $(window);
     var diffX,
         diffY,

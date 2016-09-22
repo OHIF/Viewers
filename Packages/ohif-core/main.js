@@ -1,9 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+
 /*
  * Defines the base OHIF object
  */
 
 const OHIF = {
     log: {},
+    ui: {},
     viewer: {},
     measurements: {}
 };

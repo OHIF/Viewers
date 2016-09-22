@@ -158,4 +158,4 @@ class Bounded {
 
 }
 
-OHIF.Bounded = Bounded;
+OHIF.ui.Bounded = Bounded;

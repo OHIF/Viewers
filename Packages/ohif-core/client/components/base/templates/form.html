@@ -11,7 +11,7 @@
         target="{{this.target}}"
         {{this.tagAttributes}}
     >
-        {{#if validationErrors}}
+        {{#if (and validationErrors (not this.hideValidationBox))}}
             <div class="validation-error-container alert alert-danger" role="alert">
                 {{#each error in validationErrors}}
                     <p><a href="#" class="text-danger" data-target="{{error.key}}">{{error.message}}</a></p>
