@@ -8,14 +8,14 @@ import { OHIF } from 'meteor/ohif:core';
  * @param timepoint
  * @returns {*} The timepoint name
  */
-OHIF.measurements.getTimepointName = (timepoint) => {
+OHIF.measurements.getTimepointName = timepoint => {
     // Check if this is a Baseline timepoint, if it is, return 'Baseline'
     if (timepoint.timepointType === 'baseline') {
         return 'Baseline';
     }
 
     // Retrieve all of the relevant follow-up timepoints for this patient
-    var followupTimepoints = Timepoints.find({
+    const followupTimepoints = Timepoints.find({
         patientId: timepoint.patientId,
         timepointType: timepoint.timepointType
     }, {
@@ -26,13 +26,11 @@ OHIF.measurements.getTimepointName = (timepoint) => {
 
     // Create an array of just timepointIds, so we can use indexOf
     // on it to find the current timepoint's relative position
-    var followupTimepointIds = followupTimepoints.map(function(timepoint) {
-        return timepoint.timepointId;
-    });
+    const followupTimepointIds = followupTimepoints.map(timepoint => timepoint.timepointId);
 
     // Calculate the index of the current timepoint in the array of all
     // relevant follow-up timepoints
-    var index = followupTimepointIds.indexOf(timepoint.timepointId) + 1;
+    const index = followupTimepointIds.indexOf(timepoint.timepointId) + 1;
 
     // If index is 0, it means that the current timepoint was not in the list
     // Log a warning and return here

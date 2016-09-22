@@ -94,11 +94,8 @@ Package.onUse(function(api) {
     api.addFiles('lib/convertToNonTarget.js', 'client');
     api.addFiles('lib/convertNonTarget.js', 'client');
 
-    api.addFiles('lib/syncMeasurementAndToolData.js', 'client');
-
     // Export global functions
     api.export('pixelSpacingAutorunCheck', 'client');
-    api.export('syncMeasurementAndToolData', 'client');
     api.export('syncImageMeasurementAndToolData', 'client');
     api.export('openNewTabWithTimepoint', 'client');
     api.export('toggleLesionTrackerTools', 'client');

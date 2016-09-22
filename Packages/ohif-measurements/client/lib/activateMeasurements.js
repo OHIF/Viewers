@@ -11,7 +11,7 @@ OHIF.measurements.activateMeasurements = (element, measurementId, templateData, 
 
     const enabledElement = cornerstone.getEnabledElement(element);
     const imageId = enabledElement.image.imageId;
-    const timepointData = getTimepointObject(imageId);
+    const timepointData = OHIF.measurements.getTimepointObject(imageId);
     const measurementData = Measurements.findOne(measurementId);
 
     if (!timepointData) {
@@ -27,7 +27,7 @@ OHIF.measurements.activateMeasurements = (element, measurementId, templateData, 
     // If type is inactive, update lesions of enabledElement as inactive
     //TODO: !stackData.currentImageIdIndex returns incorrect value
     // Get loadedSeriesData currentImageIdIndex from ViewerData
-    const viewerData = ViewerData[templateData.contentId];
+    const viewerData = window.ViewerData[templateData.contentId];
     const loadedSeriesData = viewerData.loadedSeriesData[viewportIndex];
     const elementCurrentImageIdIndex = loadedSeriesData.currentImageIdIndex;
 

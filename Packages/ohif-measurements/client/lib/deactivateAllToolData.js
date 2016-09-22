@@ -8,13 +8,12 @@ import { OHIF } from 'meteor/ohif:core';
  * @param toolType The tooltype of the tools that will be deactivated
  */
 OHIF.measurements.deactivateAllToolData = (element, toolType) => {
-    var toolData = cornerstoneTools.getToolState(element, toolType);
+    const toolData = cornerstoneTools.getToolState(element, toolType);
     if (!toolData) {
         return;
     }
 
-    for (var i = 0; i < toolData.data.length; i++) {
-        var data = toolData.data[i];
-        data.active = false;
+    for (let i = 0; i < toolData.data.length; i++) {
+        toolData.data[i].active = false;
     }
 };

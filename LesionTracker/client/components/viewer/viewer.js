@@ -1,5 +1,4 @@
 import { OHIF } from 'meteor/ohif:core';
-import { MeasurementHandlers } from 'meteor/ohif:measurements/client/lib/MeasurementHandlers';
 
 Session.set('TimepointsReady', false);
 Session.set('MeasurementsReady', false);
@@ -96,12 +95,12 @@ Template.viewer.helpers({
 
 Template.viewer.events({
     'CornerstoneToolsMeasurementAdded .imageViewerViewport'(event, instance, eventData) {
-        MeasurementHandlers.onAdded(event, instance, eventData);
+        OHIF.measurements.MeasurementHandlers.onAdded(event, instance, eventData);
     },
     'CornerstoneToolsMeasurementModified .imageViewerViewport'(event, instance, eventData) {
-        MeasurementHandlers.onModified(event, instance, eventData);
+        OHIF.measurements.MeasurementHandlers.onModified(event, instance, eventData);
     },
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
-        MeasurementHandlers.onRemoved(event, instance, eventData);
+        OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
     }
 });

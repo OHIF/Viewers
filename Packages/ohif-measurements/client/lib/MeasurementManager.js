@@ -1,47 +1,53 @@
-/**
- * Returns new measurement number given a timepointId
- * @param timepointId
- * @param isTarget
- * @returns {*}
- */
-function getNewMeasurementNumber(timepointId, Collection, timepointApi) {
-    // Get all current lesion measurements
-    const numMeasurements = Collection.find().count();
+import { OHIF } from 'meteor/ohif:core';
 
-    // If no measurements exist yet, start at 1
-    if (!numMeasurements) {
-        return 1;
-    }
+class MeasurementManager {
 
-    const timepoint = timepointApi.timepoints.findOne({timepointId: timepointId});
-    const numMeasurementsAtTimepoint = Collection.find({
-        studyInstanceUid: {
-            $in: timepoint.studyInstanceUids
+    /**
+     * Returns new measurement number given a timepointId
+     * @param timepointId
+     * @param isTarget
+     * @returns {number} - Number of measurements in timepoint
+     */
+    static getNewMeasurementNumber(timepointId, Collection, timepointApi) {
+        // Get all current lesion measurements
+        const numMeasurements = Collection.find().count();
+
+        // If no measurements exist yet, start at 1
+        if (!numMeasurements) {
+            return 1;
         }
-    }).count();
 
-    return numMeasurementsAtTimepoint + 1;
-}
+        const timepoint = timepointApi.timepoints.findOne({
+            timepointId: timepointId
+        });
 
-/**
- * If the current Measurements Number already exists
- * for any other timepoint, returns lesion locationUID
- * @param measurementData
- * @returns {*}
- */
-function getLocationIdIfMeasurementExists(measurementData, Collection) {
-    const measurement = Collection.findOne({
-        measurementNumber: measurementData.measurementNumber
-    });
+        const numMeasurementsAtTimepoint = Collection.find({
+            studyInstanceUid: {
+                $in: timepoint.studyInstanceUids
+            }
+        }).count();
 
-    if (!measurement) {
-        return;
+        return numMeasurementsAtTimepoint + 1;
     }
 
-    return measurement.locationId;
+    /**
+     * If the current Measurements Number already exists
+     * for any other timepoint, returns lesion locationUID
+     * @param measurementData
+     * @returns {number} - Measurement location ID
+     */
+    static getLocationIdIfMeasurementExists(measurementData, Collection) {
+        const measurement = Collection.findOne({
+            measurementNumber: measurementData.measurementNumber
+        });
+
+        if (!measurement) {
+            return;
+        }
+
+        return measurement.locationId;
+    }
+
 }
 
-export const MeasurementManager = {
-    getNewMeasurementNumber: getNewMeasurementNumber,
-    getLocationIdIfMeasurementExists: getLocationIdIfMeasurementExists
-};
+OHIF.measurements.MeasurementManager = MeasurementManager;
