@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Allow attaching to jQuery selectors
 $.fn.resizable = function(options) {
     _.each(this, element => {
@@ -174,3 +176,5 @@ class Resizable {
     }
 
 }
+
+OHIF.ui.Resizable = Resizable;

@@ -1,0 +1,6 @@
+<template name="dialogLogin">
+    {{#dialogForm (extend this dialogClass='modal-sm' schema=(choose this.schema instance.schema))}}
+        {{>inputText labelClass='form-group' key='username'}}
+        {{>inputPassword labelClass='form-group' key='password'}}
+    {{/dialogForm}}
+</template>
