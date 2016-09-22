@@ -76,7 +76,7 @@ OHIF.measurements.activateLesion = (measurementId, templateData) => {
         const measurementAtTimepoint = orderedTimepointEntries[viewportIndex];
 
         // Find the image that is currently in this viewport
-        var enabledElement = cornerstone.getEnabledElement(element);
+        const enabledElement = cornerstone.getEnabledElement(element);
         if (!enabledElement || !enabledElement.image) {
             return;
         }
@@ -111,7 +111,7 @@ OHIF.measurements.activateLesion = (measurementId, templateData) => {
 
         // Otherwise, re-render the viewport with the required study/series, then
         // add an onRendered callback to activate the measurements
-        layoutManager.rerenderViewportWithNewDisplaySet(element, requiredSeriesData, element => {
+        window.layoutManager.rerenderViewportWithNewDisplaySet(element, requiredSeriesData, element => {
             activateMeasurements(element, measurementId, templateData, viewportIndex);
         });
     });

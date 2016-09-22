@@ -42,8 +42,8 @@ class MeasurementApi {
         return new Promise((resolve, reject) => {
             retrievalFn().then(measurementData => {
 
-                console.log('Measurement data retrieval');
-                console.log(measurementData);
+                OHIF.log.info('Measurement data retrieval');
+                OHIF.log.info(measurementData);
 
                 Object.keys(measurementData).forEach(measurementTypeId => {
                     const measurements = measurementData[measurementTypeId];
@@ -72,7 +72,7 @@ class MeasurementApi {
         });
 
         storeFn(measurementData).then(() => {
-            console.log('Measurement storage completed');
+            OHIF.log.info('Measurement storage completed');
         });
     }
 
@@ -87,7 +87,7 @@ class MeasurementApi {
         this.config.measurementTools.forEach(tool => {
             const measurements = this[tool.id].find().fetch();
             measurements.forEach(measurement => {
-                syncMeasurementAndToolData(measurement);
+                OHIF.measurements.syncMeasurementAndToolData(measurement);
             });
         });
     }

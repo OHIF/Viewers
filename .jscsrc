@@ -35,8 +35,10 @@
     "disallowSpaceAfterObjectKeys": true,
     "disallowQuotedKeysInObjects": true,
     "disallowMultipleSpaces": true,
+    "disallowVar": true,
     "validateLineBreaks": "LF",
     "validateIndentation": 4,
     "validateQuoteMarks": { "mark": "'", "escape": true },
-    "validateParameterSeparator": ", "
+    "validateParameterSeparator": ", ",
+    "requireDollarBeforejQueryAssignment": true
 }

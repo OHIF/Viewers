@@ -1,6 +1,8 @@
+import { Template } from 'meteor/templating';
+
 // TODO: [LT-refactor] move this to ohif:hanging-protocols package
 
-getTimepointType = function(study) {
+const getTimepointType = study => {
     const timepointApi = Template.instance().timepointApi;
     if (!timepointApi) {
         return;

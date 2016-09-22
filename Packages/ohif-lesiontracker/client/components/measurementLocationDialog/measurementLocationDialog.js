@@ -1,4 +1,4 @@
-import { MeasurementManager } from 'meteor/ohif:measurements/client/lib/MeasurementManager';
+import { OHIF } from 'meteor/ohif:core';
 
 function closeHandler(dialog) {
     // Hide the lesion dialog
@@ -12,7 +12,6 @@ function closeHandler(dialog) {
 }
 
 // This event sets lesion number for new lesion
-
 function getSetLesionNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi) {
     return (measurementData, eventData, doneCallback) => {
         // Get the current element's timepointId from the study date metadata
@@ -35,12 +34,12 @@ function getSetLesionNumberCallbackFunction(measurementTypeId, measurementApi, t
         // exists at a different timepoint
         const timepointId = timepoint.timepointId;
         const collection = measurementApi[measurementTypeId];
-        const measurementNumber = MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
+        const measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
         measurementData.measurementNumber = measurementNumber;
 
         // Set lesion number
         doneCallback(measurementNumber);
-    }
+    };
 }
 
 // This event determines whether or not to show the lesion dialog
@@ -71,7 +70,7 @@ function getLesionLocationCallback(measurementData, eventData) {
 
     // Find out if this lesion number is already added in the lesion manager for another timepoint
     // If it is, stop here because we don't need the dialog.
-    var locationUID = MeasurementManager.getLocationIdIfMeasurementExists(measurementData);
+    var locationUID = OHIF.measurements.MeasurementManager.getLocationIdIfMeasurementExists(measurementData);
     if (locationUID) {
         // Add an ID value to the tool data to link it to the Measurements collection
         measurementData.id = 'notready';
@@ -123,9 +122,9 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
 
     // Show/Hide Convert To NonTarget option in measurementLocationRelabelDialog
     if (measurementData.toolType === 'bidirectional') {
-        dialog.find("#convertToNonTarget").css("visibility", "visible");
+        dialog.find('#convertToNonTarget').css('visibility', 'visible');
     } else {
-        dialog.find("#convertToNonTarget").css("visibility", "hidden");
+        dialog.find('#convertToNonTarget').css('visibility', 'hidden');
     }
 
     Template.measurementLocationDialog.dialog = dialog;
@@ -188,7 +187,6 @@ changeLesionLocationCallback = function(measurementData, eventData, doneCallback
         }
     });
 };
-
 
 Template.measurementLocationDialog.onCreated(() => {
     const instance = Template.instance();
@@ -268,7 +266,7 @@ Template.measurementLocationDialog.events({
         var measurementData = Template.measurementLocationDialog.measurementData;
         var dialog = Template.measurementLocationDialog.dialog;
 
-        const instance = Template.instance()
+        const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
         convertToNonTarget(measurementApi, measurementData);
 
@@ -290,7 +288,7 @@ Template.measurementLocationDialog.events({
 });
 
 Template.measurementLocationDialog.helpers({
-    measurementLocations: function() {
+    measurementLocations() {
         return LesionLocations.find();
     }
 });

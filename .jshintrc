@@ -24,12 +24,12 @@
                                 //   true     : ensure whatever is used is consistent
                                 //   "single" : require single quotes
                                 //   "double" : require double quotes
-    "undef"         : false,     // true: Require all non-global variables to be declared (prevents global leaks)
-    "unused"        : true,     // Unused variables:
+    "undef"         : true,     // true: Require all non-global variables to be declared (prevents global leaks)
+    "unused"        : "vars",   // Unused variables:
                                 //   true     : all variables, last function parameter
                                 //   "vars"   : all variables only
                                 //   "strict" : all variables, all function parameters
-    "strict"        : false,     // true: Requires all functions run in ES5 Strict Mode
+    "strict"        : false,    // true: Requires all functions run in ES5 Strict Mode
     "maxparams"     : false,    // {int} Max number of formal params allowed per function
     "maxdepth"      : false,    // {int} Max depth of nested blocks (within functions)
     "maxstatements" : false,    // {int} Max number statements per function
@@ -43,7 +43,7 @@
     "debug"         : false,     // true: Allow debugger statements e.g. browser breakpoints.
     "eqnull"        : false,     // true: Tolerate use of `== null`
     "es5"           : true,      // true: Allow ES5 syntax (ex: getters and setters)
-    "esnext"        : true,     // true: Allow ES.next (ES6) syntax (ex: `const`)
+    "esnext"        : true,      // true: Allow ES.next (ES6) syntax (ex: `const`)
     "moz"           : false,     // true: Allow Mozilla specific syntax (extends and overrides esnext features)
                                  // (ex: `for each`, multiple try/catch, function expression…)
     "evil"          : false,     // true: Tolerate use of `eval` and `new Function()`
@@ -69,11 +69,11 @@
     "browser"       : true,     // Web Browser (window, document, etc)
     "browserify"    : false,    // Browserify (node.js code in the browser)
     "couch"         : false,    // CouchDB
-    "devel"         : true,     // Development/debugging (alert, confirm, etc)
+    "devel"         : false,    // Development/debugging (alert, confirm, etc)
     "dojo"          : false,    // Dojo Toolkit
     "jasmine"       : false,    // Jasmine
     "jquery"        : true,     // jQuery
-    "mocha"         : true,     // Mocha
+    "mocha"         : false,    // Mocha
     "mootools"      : false,    // MooTools
     "node"          : false,    // Node.js
     "nonstandard"   : false,    // Widely adopted globals (escape, unescape, etc)
@@ -85,5 +85,14 @@
     "typed"         : false,    // Globals for typed array constructions
     "worker"        : false,    // Web Workers
     "wsh"           : false,    // Windows Scripting Host
-    "yui"           : false     // Yahoo User Interface
+    "yui"           : false,    // Yahoo User Interface
+    "globals"       : {
+        "Package"   : true,     // Meteor Package definition
+
+        "cornerstone": true,    // This group: cornerstone globals
+        "cornerstoneMath": true,
+        "cornerstoneTools": true,
+        "cornerstoneWADOImageLoader": true,
+        "dicomParser": true
+    }
 }

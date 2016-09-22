@@ -1,6 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 import { MeasurementsConfiguration } from 'meteor/ohif:measurements/both/configuration/measurements';
-import { MeasurementHandlers } from 'meteor/ohif:measurements/client/lib/MeasurementHandlers';
 
 Session.set('MeasurementsReady', false);
 
@@ -43,7 +42,7 @@ Template.viewer.onCreated(() => {
         Session.set('MeasurementsReady', true);
 
         instance.data.measurementApi.syncMeasurementsAndToolData();
-    })
+    });
 });
 
 Template.viewer.helpers({
@@ -51,16 +50,16 @@ Template.viewer.helpers({
         // TODO: Find a better way to do this
         return Session.get('MeasurementsReady');
     }
-})
+});
 
 Template.viewer.events({
     'CornerstoneToolsMeasurementAdded .imageViewerViewport'(event, instance, eventData) {
-        MeasurementHandlers.onAdded(event, instance, eventData);
+        OHIF.measurements.MeasurementHandlers.onAdded(event, instance, eventData);
     },
     'CornerstoneToolsMeasurementModified .imageViewerViewport'(event, instance, eventData) {
-        MeasurementHandlers.onModified(event, instance, eventData);
+        OHIF.measurements.MeasurementHandlers.onModified(event, instance, eventData);
     },
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
-        MeasurementHandlers.onRemoved(event, instance, eventData);
+        OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
     }
 });
