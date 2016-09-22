@@ -17,20 +17,6 @@ Template.toolbarSection.helpers({
         };
     },
 
-    rightSidebarToggleButtonData() {
-        const instance = Template.instance();
-        return {
-            toggleable: true,
-            key: 'rightSidebar',
-            value: instance.data.state,
-            options: [{
-                value: 'hangingprotocols',
-                iconClasses: 'fa fa-cog',
-                bottomLabel: 'Hanging'
-            }]
-        };
-    },
-
     toolbarButtons() {
         var buttonData = [];
         buttonData.push({
