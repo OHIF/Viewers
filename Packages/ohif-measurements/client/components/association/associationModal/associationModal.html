@@ -1,19 +1,10 @@
-<template name="associationModal">
-    <div class="modal" id="associationModal" tabindex="-1" role="dialog" aria-labelledby="associationModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="associationModalLabel">Study Association</h4>
-                </div>
-                <div class="modal-body">
-                    {{>studyAssociationTable}}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="saveAssociations">Save</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id='cancelAssociation'>Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<template name="dialogStudyAssociation">
+    {{#dialogForm (extend this
+        schema=instance.schema
+        dialogClass='modal-lg'
+        title='Study Association'
+        confirmLabel='Save'
+    )}}
+        {{>studyAssociationTable}}
+    {{/dialogForm}}
 </template>

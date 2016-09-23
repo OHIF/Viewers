@@ -55,10 +55,12 @@ OHIF.mixins.form = new OHIF.Mixin({
 
             // Set the component main and style elements
             component.$style = component.$element = instance.$('form:first');
+
+            // Block page redirecting on submit
+            component.$element[0].onsubmit = () => false;
         },
 
         events: {
-            submit: event => event.preventDefault(),
             'click .validation-error-container a'(event, instance) {
                 // Get the target key
                 const targetKey = $(event.currentTarget).attr('data-target');

@@ -2,9 +2,9 @@ import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 
 /*
- * button: controls a button
+ * link: controls a link
  */
-OHIF.mixins.button = new OHIF.Mixin({
+OHIF.mixins.link = new OHIF.Mixin({
     dependencies: 'formItem',
     composition: {
         onRendered() {
@@ -12,7 +12,15 @@ OHIF.mixins.button = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$('button:first');
+            component.$element = instance.$('a:first');
+        },
+
+        events: {
+            'click a'(event, instance) {
+                if (instance.data.action) {
+                    event.preventDefault();
+                }
+            }
         }
     }
 });

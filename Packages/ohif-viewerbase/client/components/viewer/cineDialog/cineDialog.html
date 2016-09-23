@@ -3,33 +3,33 @@
         {{>inputHidden key='intervalId'}}
         <div class="cine-navigation">
             <div class="btn-group">
-                {{#button disabled=(displaySetDisabled false) action='displaySetPrevious' title='Previous display set'}}
+                {{#button class='btn' disabled=(displaySetDisabled false) action='displaySetPrevious' title='Previous display set'}}
                     <i class="fa fa-toggle-up"></i>
                 {{/button}}
-                {{#button disabled=(displaySetDisabled true) action='displaySetNext' title='Next display set'}}
+                {{#button class='btn' disabled=(displaySetDisabled true) action='displaySetNext' title='Next display set'}}
                     <i class="fa fa-toggle-down"></i>
                 {{/button}}
             </div>
         </div>
         <div class="cine-controls">
             <div class="btn-group">
-                {{#button action='cineFirst' title='Skip to first image'}}
+                {{#button class='btn' action='cineFirst' title='Skip to first image'}}
                     <i class="fa fa-fast-backward"></i>
                 {{/button}}
-                {{#button action='cinePrevious' title='Previous image'}}
+                {{#button class='btn' action='cinePrevious' title='Previous image'}}
                     <i class="fa fa-step-backward"></i>
                 {{/button}}
-                {{#button action='cineToggle' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
+                {{#button class='btn' action='cineToggle' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
                     {{#if isPlaying}}
                         <i class="fa fa-fw fa-stop"></i>
                     {{else}}
                         <i class="fa fa-fw fa-play"></i>
                     {{/if}}
                 {{/button}}
-                {{#button action='cineNext' title='Next image'}}
+                {{#button class='btn' action='cineNext' title='Next image'}}
                     <i class="fa fa-step-forward"></i>
                 {{/button}}
-                {{#button action='cineLast' title='Skip to last image'}}
+                {{#button class='btn' action='cineLast' title='Skip to last image'}}
                     <i class="fa fa-fast-forward"></i>
                 {{/button}}
             </div>
