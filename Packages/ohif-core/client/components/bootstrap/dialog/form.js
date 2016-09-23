@@ -36,7 +36,10 @@ Template.dialogForm.onRendered(() => {
 
     // Create the bootstrap modal
     const $modal = instance.$('.modal');
-    $modal.modal();
+    $modal.modal({
+        backdrop: 'static',
+        keyboard: false
+    });
 
     // Remove the created modal backdrop from DOM after promise is done
     const $backdrop = $modal.next('.modal-backdrop');

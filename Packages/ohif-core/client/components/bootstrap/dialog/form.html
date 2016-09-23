@@ -1,17 +1,19 @@
 <template name="dialogForm">
     <div id="{{this.id}}" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog {{this.dialogClass}}" role="document">
-            {{#form class='modal-content' schema=this.schema hideValidationBox=true api=instance.api}}
+            {{#form class='modal-content' api=instance.api schema=this.schema hideValidationBox=true}}
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    {{#button class='close' action='cancel' tagAttributes=(extend this.tagAttributes aria-label='Close')}}
+                        <span aria-hidden="true">&times;</span>
+                    {{/button}}
                     <h4 class="modal-title">{{this.title}}</h4>
                 </div>
                 <div class="modal-body">
                     {{>UI.contentBlock}}
                 </div>
                 <div class="modal-footer">
-                    {{#button class='btn-default' action='cancel'}}Cancel{{/button}}
-                    {{#button class='btn-primary' action='confirm'}}Confirm{{/button}}
+                    {{#button class='btn btn-default' action='cancel'}}{{choose this.cancelLabel 'Cancel'}}{{/button}}
+                    {{#button class='btn btn-primary' action='confirm'}}{{choose this.confirmLabel 'Confirm'}}{{/button}}
                 </div>
             {{/form}}
         </div>

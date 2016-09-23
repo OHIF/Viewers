@@ -1,40 +1,42 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { Blaze } from 'meteor/blaze';
+import { Random } from 'meteor/random';
+import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
-Template.associationModal.events({
-    'click #saveAssociations': function(e) {
+Template.dialogStudyAssociation.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.data.confirmCallback = (formData, resolve) => {
         OHIF.log.info('Saving associations');
         const Timepoints = StudyList.timepointApi.timepoints;
 
-        // Close the modal
-        const saveButton = $(e.currentTarget);
-        saveButton.attr('disabled', true);
-        saveButton.addClass('btn-success').removeClass('btn-primary');
-
         // Find the rows of the study association table
-        const tableRows = $('#studyAssociationTable table tbody tr');
+        const $tableRows = $('#studyAssociationTable table tbody tr');
 
         // Create an empty object to group studies into
-        var studies = {};
+        const studies = {};
 
         // Loop through each row to parse the data
-        tableRows.each(function() {
+        $tableRows.each(function() {
             // Get a selector for this row
-            var row = $(this);
+            const $row = $(this);
 
             // Check the includeStudy checkbox to see if we should parse this row
-            var includeStudy = row.find('input.includeStudy[type="checkbox"]').eq(0).prop('checked');
+            const includeStudy = $row.find('input.includeStudy[type="checkbox"]').eq(0).prop('checked');
             if (!includeStudy) {
                 return;
             }
 
             // Find the selected timepoint option for this study
-            var timepointInput = row.find('input.timepointOption[type="radio"]:checked');
+            const $timepointInput = $row.find('input.timepointOption[type="radio"]:checked');
 
             // Find the related label and trim it down to actual label (TODO: do this another way)
-            var timepointType = timepointInput.val();
+            const timepointType = $timepointInput.val();
 
             // Get the study metaData by checking the row with the template engine Blaze
-            var data = Blaze.getData(this);
+            const data = Blaze.getData(this);
 
             // Concatenate the study data to an array, depending on whether is was marked as baseline
             // or follow-up
@@ -47,27 +49,25 @@ Template.associationModal.events({
 
         Object.keys(studies).forEach(function(timepointType) {
             // Get the studies associated with this timepoint
-            var relatedStudies = studies[timepointType];
+            const relatedStudies = studies[timepointType];
 
             // Create an array of all the studyInstanceUids for storage in the Timepoint
-            var studyInstanceUids = relatedStudies.map(function(study) {
+            const studyInstanceUids = relatedStudies.map(function(study) {
                 return study.studyInstanceUid;
             });
 
             // Create an array of all the studyDates for storage in the Timepoint
-            var studyDates = relatedStudies.map(function(study) {
-                return moment(study.studyDate).toDate();
-            });
+            let studyDates = relatedStudies.map(study => moment(study.studyDate).toDate());
 
             // Sort the study dates, so we can get a range for these values
             studyDates = studyDates.sort();
 
             // HipaaEventType to log changes in collections
-            var hipaaEventType;
-            var hipaaEvent;
+            let hipaaEventType;
+            let hipaaEvent;
 
             // Check if these studies are already associated with an existing Timepoint
-            var existingTimepoint;
+            let existingTimepoint;
             if (timepointType === 'baseline') {
                 // If we're trying to associate them to the Baseline, we don't need to
                 // check if the studyInstanceUids are already associated with anything else
@@ -87,7 +87,7 @@ Template.associationModal.events({
                 });
             }
 
-            var timepointId;
+            let timepointId;
             if (existingTimepoint) {
                 // If these studies are already associated with an existing Timepoint,
                 // and the desired timepoint type is the same (e.g. Follow-up), update
@@ -121,7 +121,7 @@ Template.associationModal.events({
                 eventType: hipaaEventType,
                 userId: Meteor.userId(),
                 userName: Meteor.user().profile.fullName,
-                collectionName: "Timepoints",
+                collectionName: 'Timepoints',
                 recordId: timepointId,
                 patientId: relatedStudies[0].patientId,
                 patientName: relatedStudies[0].patientName
@@ -130,18 +130,6 @@ Template.associationModal.events({
 
         StudyList.timepointApi.storeTimepoints();
 
-        // Hide the modal
-        $('#associationModal').modal('hide');
-
-        // Reset the save button to its normal state
-        saveButton.removeClass('btn-success').addClass('btn-primary');
-        saveButton.attr('disabled', false);
-    },
-    'click #cancelAssociation': function() {
-        // When the modal is closed, we should reset
-        // the save button to its normal state
-        var saveButton = $('#saveAssociations');
-        saveButton.removeClass('btn-success').addClass('btn-primary');
-        saveButton.attr('disabled', false);
-    }
+        resolve();
+    };
 });

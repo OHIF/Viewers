@@ -13,6 +13,8 @@ Package.onUse(function(api) {
     api.use('stylus');
     api.use('random');
 
+    api.use('momentjs:moment');
+
     api.use('validatejs');
 
     // Schema for Data Models

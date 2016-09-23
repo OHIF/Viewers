@@ -4,8 +4,10 @@ import { OHIF } from 'meteor/ohif:core';
 // default StudyListStudy template.
 // See https://github.com/aldeed/meteor-template-extension
 const defaultTemplate = 'studyContextMenu';
+
 Template.longitudinalStudyListContextMenu.replaces(defaultTemplate);
 
+StudyList.functions['launchStudyAssociation'] = () => OHIF.ui.showFormDialog('dialogStudyAssociation');
 StudyList.functions['removeTimepointAssociations'] = removeTimepointAssociations;
 StudyList.functions['exportSelectedStudies'] = exportSelectedStudies;
 StudyList.functions['viewStudies'] = viewStudies;

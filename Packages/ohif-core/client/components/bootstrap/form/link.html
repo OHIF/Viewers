@@ -1,7 +1,7 @@
-<template name="button">
+<template name="link">
     {{#baseComponent (extend this
-        base='baseButton'
-        mixins=(concat 'button action ' this.mixins)
+        base='baseLink'
+        mixins=(concat 'link action ' this.mixins)
     )}}
         {{>UI.contentBlock}}
     {{/baseComponent}}
