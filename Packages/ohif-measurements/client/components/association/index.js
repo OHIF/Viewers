@@ -1,6 +1,5 @@
 // Study-Timepoint Association imports
 import './associationModal/associationModal.html';
-import './associationModal/associationModal.styl';
 import './associationModal/associationModal.js';
 
 import './associationModal/studyAssociationTable/studyAssociationTable.html';

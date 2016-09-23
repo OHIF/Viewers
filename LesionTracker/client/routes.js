@@ -12,7 +12,6 @@ Router.onBeforeAction('loading');
 
 var data = {
     additionalTemplates: [
-        'associationModal',
         'optionsModal',
         'serverInformationModal',
         'confirmRemoveTimepointAssociation',

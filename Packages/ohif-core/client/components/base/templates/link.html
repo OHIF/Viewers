@@ -1,0 +1,11 @@
+<template name="baseLink">
+    <a
+        id="{{this.id}}"
+        class="{{this.class}} {{#if this.disabled}}disabled{{/if}}"
+        href="{{choose this.href '#'}}"
+        title="{{this.title}}"
+        {{this.tagAttributes}}
+    >
+        {{>UI.contentBlock}}
+    </a>
+</template>

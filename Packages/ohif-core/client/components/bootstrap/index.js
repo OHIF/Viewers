@@ -6,6 +6,7 @@ import './dialog/login.js';
 import './form/button.html';
 import './form/form.html';
 import './form/group.html';
+import './form/link.html';
 
 import './input/checkbox.html';
 import './input/hidden.html';
