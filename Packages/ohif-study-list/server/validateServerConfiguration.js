@@ -1,16 +1,29 @@
 import { Meteor } from 'meteor/meteor';
-import { check } from 'meteor/check';
-import { ServerConfiguration } from '../both/schema/servers.js';
+// import { check } from 'meteor/check';
+import { OHIF } from 'meteor/ohif:core';
+import { ServerConfiguration } from 'meteor/ohif:study-list/both/schema/servers.js';
 
-/*
--- Taking this out for now to prevent confusion.
-
-TODO: Make the error messages more clear
 Meteor.startup(() => {
-    console.log('------ Testing Meteor Settings ------');
-    let config = ServerConfiguration.clean(Meteor.settings);
-    console.log(JSON.stringify(config, null, 2));
+    // Save custom properties (if any)...
+    // "Meteor.settings" and "Meteor.settings.public" are set by default...
+    let custom = {
+        private: Meteor.settings.custom,
+        public: Meteor.settings.public.custom
+    };
 
-    Meteor.settings = config;
-    check(config, ServerConfiguration);
-});*/
+    // ... and remove them to prevent clean up
+    delete Meteor.settings.custom;
+    delete Meteor.settings.public.custom;
+
+    ServerConfiguration.clean(Meteor.settings);
+
+    // TODO: Make the error messages more clear
+    // console.log('------ Testing Meteor Settings ------');
+    // Taking this out for now to prevent confusion.
+    // check(Meteor.settings, ServerConfiguration);
+
+    Meteor.settings.custom = custom.private;
+    Meteor.settings.public.custom = custom.public;
+
+    OHIF.log.info(JSON.stringify(Meteor.settings, null, 2));
+});

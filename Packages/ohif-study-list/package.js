@@ -27,6 +27,7 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('design');
     api.use('ohif:core');
+    api.use('ohif:log');
     api.use('ohif:dicom-services');
     api.use('ohif:viewerbase');
     api.use('ohif:wadoproxy');
