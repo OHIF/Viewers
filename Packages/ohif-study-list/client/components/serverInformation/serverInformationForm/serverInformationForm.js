@@ -1,8 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
-import { DICOMWebServer as dicomSchema } from 'meteor/worklist/both/schema.js';
-import { DIMSEServer as dimseSchema } from 'meteor/worklist/both/schema.js';
+import { DICOMWebServer as dicomSchema } from 'meteor/ohif:study-list/both/schema/servers.js';
+import { DIMSEServer as dimseSchema } from 'meteor/ohif:study-list/both/schema/servers.js';
 
 Template.serverInformationForm.onCreated(() => {
     const instance = Template.instance();
