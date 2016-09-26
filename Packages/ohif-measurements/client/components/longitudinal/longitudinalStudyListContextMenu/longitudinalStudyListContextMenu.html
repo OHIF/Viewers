@@ -1,30 +1,20 @@
 <template name="longitudinalStudyListContextMenu">
-    {{#if uiSettings.studyListFunctionsEnabled}}
-        <div id="studyContextMenu" class="studyContextMenu noselect"
-             oncontextmenu='return false;'
-             unselectable='on'
-             onselectstart='return false;'>
-            <ul>
-                <li>
-                    <a id="viewStudies" type="button" title="View Studies">View</a>
-                    <hr/>
-                    <!-- {{#link action='associate'}}Associate{{/link}} -->
-                    <a id="launchStudyAssociation" title="Launch Study Association">Associate</a>
-                    <a id="launchRemoveAssociation" type="button"
-                       data-toggle="modal"
-                       data-target="#confirmRemoveTimepointAssociation"
-                        title="Remove Timepoint Association">Remove Association</a>
-                    <hr/>
-                    <a id="viewSeriesDetails" type="button"
-                       title="View Series Details">View Series Details</a>
-                    <a class="disabled">Anonymize</a>
-                    <a class="disabled">Send</a>
-                    <hr/>
-                    <a id="exportSelectedStudies"
-                       title="Export Selected Studies">Export</a>
-                    <a class="disabled">Delete</a>
-                </li>
-            </ul>
-        </div>
-    {{/if}}
+    {{#dropdownForm}}
+        <li><a id="viewStudies" type="button" title="View Studies">View</a></li>
+        <li class="divider" role="separator"></li>
+        <!-- {{#link action='associate'}}Associate{{/link}} -->
+        <li><a id="launchStudyAssociation" title="Launch Study Association">Associate</a></li>
+        <li><a id="launchRemoveAssociation" type="button" data-toggle="modal"
+           data-target="#confirmRemoveTimepointAssociation" title="Remove Timepoint Association"
+        >Remove Association</a></li>
+        <li class="divider" role="separator"></li>
+        <li><a id="viewSeriesDetails" type="button"
+            title="View Series Details"
+        >View Series Details</a></li>
+        <li class="disabled"><a class="disabled">Anonymize</a></li>
+        <li class="disabled"><a class="disabled">Send</a></li>
+        <li class="divider" role="separator"></li>
+        <li><a id="exportSelectedStudies" title="Export Selected Studies">Export</a></li>
+        <li class="disabled"><a class="disabled">Delete</a></li>
+    {{/dropdownForm}}
 </template>

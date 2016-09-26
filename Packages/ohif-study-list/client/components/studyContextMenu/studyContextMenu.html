@@ -1,25 +1,12 @@
 <template name="studyContextMenu">
-    {{#if uiSettings.studyListFunctionsEnabled}}
-    <div id="studyContextMenu" class="studyContextMenu noselect"
-         oncontextmenu='return false;'
-         unselectable='on'
-         onselectstart='return false;'>
-        <ul>
-            <li>
-                <a id="viewSeriesDetails" type="button"
-                   title="View Series Details">
-                    View Series Details
-                </a>
-                <a class="disabled">Anonymize</a>
-                <a class="disabled">Send</a>
-                <hr/>
-                <a class="disabled">Delete</a>
-                <a id="exportSelectedStudies"
-                   title="Export Selected Studies">
-                    Export
-                </a>
-            </li>
-        </ul>
-    </div>
-    {{/if}}
+    {{#dropdownForm}}
+        <li><a id="viewSeriesDetails" type="button"
+            title="View Series Details"
+        >View Series Details</a></li>
+        <li class="disabled"><a class="disabled">Anonymize</a></li>
+        <li class="disabled"><a class="disabled">Send</a></li>
+        <li class="divider" role="separator"></li>
+        <li class="disabled"><a class="disabled">Delete</a></li>
+        <li><a id="exportSelectedStudies" title="Export Selected Studies">Export</a></li>
+    {{/dropdownForm}}
 </template>

@@ -1,0 +1,8 @@
+<template name="dropdownForm">
+    {{#form class='dropdown' api=this.api hideValidationBox=true}}
+        {{>dropdownBackdrop}}
+        <ul class="dropdown-menu">
+            {{>UI.contentBlock}}
+        </ul>
+    {{/form}}
+</template>

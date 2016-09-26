@@ -147,7 +147,7 @@ OHIF.mixins.group = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$('.component-group:first');
+            component.$element = instance.$('.component-group').first();
         }
     }
 });

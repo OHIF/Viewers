@@ -1,8 +1,10 @@
 import { Mongo } from 'meteor/mongo';
+import { OHIF } from 'meteor/ohif:core';
 import { Servers as ServerSchema } from 'meteor/ohif:study-list/both/schema/servers.js';
 
-StudyImportStatus = new Mongo.Collection('studyImportStatus');
+const StudyImportStatus = new Mongo.Collection('studyImportStatus');
 StudyImportStatus._debugName = 'StudyImportStatus';
+OHIF.studylist.collections.StudyImportStatus = StudyImportStatus;
 
 // Servers describe the DICOM servers configurations
 Servers = new Mongo.Collection('servers');

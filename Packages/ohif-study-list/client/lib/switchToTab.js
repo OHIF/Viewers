@@ -13,9 +13,6 @@ switchToTab = function(contentId) {
 
     OHIF.log.info('Switching to tab: ' + contentId);
 
-    $('.tabTitle').removeClass('active');
-    $('.tabTitle a[data-target="#' + contentId + '"]').addClass('active');
-
     $('.tab-content .tab-pane').removeClass('active');
     if (contentId !== 'studylistTab') {
         $('.tab-content .tab-pane#viewerTab').addClass('active');
@@ -71,7 +68,7 @@ switchToTab = function(contentId) {
         var studyInstanceUids = ViewerData[contentId].studyInstanceUids;
 
         // Attempt to retrieve the meta data (it might be cached)
-        getStudiesMetadata(studyInstanceUids, function(studies) {
+        OHIF.studylist.getStudiesMetadata(studyInstanceUids, function(studies) {
             viewStudiesInTab(contentId, studies);
         });
     }

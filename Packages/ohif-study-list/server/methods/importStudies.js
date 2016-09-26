@@ -1,4 +1,4 @@
-import { StudyImportStatus } from '../../both/collections';
+import { OHIF } from 'meteor/ohif:core';
 
 var fs = Npm.require('fs');
 var fiber = Npm.require('fibers');
@@ -73,14 +73,14 @@ Meteor.methods({
      */
     createStudyImportStatus: function() {
         var studyImportStatus = { numberOfStudiesImported: 0, numberOfStudiesFailed: 0 };
-        return StudyImportStatus.insert(studyImportStatus);
+        return OHIF.studylist.collections.StudyImportStatus.insert(studyImportStatus);
     },
     /**
      * Remove the study import status item from the collection
      * @param id Collection id of the study import status in the collection
      */
     removeStudyImportStatus: function(id) {
-        StudyImportStatus.remove(id);
+        OHIF.studylist.collections.StudyImportStatus.remove(id);
     }
 });
 
@@ -96,16 +96,16 @@ function importStudiesDIMSE(studiesToImport, studyImportStatusId) {
                 try {
                     //  Update the import status
                     if (err) {
-                        StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
+                        OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
                         console.log("Failed to import study via DIMSE: ", file, err);
                     } else {
-                        StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesImported': 1}});
+                        OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesImported': 1}});
                         console.log("Study successfully imported via DIMSE: ", file);
                     }
 
                 } catch(error) {
 
-                    StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
+                    OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
                     console.log("Failed to import study via DIMSE: ", file, error);
                 } finally {
                     //  The import operation of this file is completed, so delete it if still exists
@@ -116,7 +116,7 @@ function importStudiesDIMSE(studiesToImport, studyImportStatusId) {
 
             }).run();
         } catch(error) {
-            StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
+            OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
             console.log("Failed to import study via DIMSE: ", file, error);
         }
 

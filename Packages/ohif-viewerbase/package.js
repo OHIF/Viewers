@@ -183,7 +183,6 @@ Package.onUse(function(api) {
     api.export('updateAllViewports', 'client');
     api.export('queryStudies', 'client');
     api.export('getNumberOfFilesInStudy', 'client');
-    api.export('exportStudies', 'client');
     api.export('importStudies', 'client');
     api.export('getActiveViewportElement', 'client');
     api.export('getInstanceClassDefaultViewport', 'client');

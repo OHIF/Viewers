@@ -12,7 +12,7 @@ OHIF.mixins.button = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$('button:first');
+            component.$element = instance.$('button').first();
         }
     }
 });

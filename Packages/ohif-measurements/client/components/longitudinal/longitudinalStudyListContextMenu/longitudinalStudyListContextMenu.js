@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
+import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 
 // Use Aldeed's meteor-template-extension package to replace the
@@ -7,21 +10,17 @@ const defaultTemplate = 'studyContextMenu';
 
 Template.longitudinalStudyListContextMenu.replaces(defaultTemplate);
 
-StudyList.functions['launchStudyAssociation'] = () => OHIF.ui.showFormDialog('dialogStudyAssociation');
-StudyList.functions['removeTimepointAssociations'] = removeTimepointAssociations;
-StudyList.functions['exportSelectedStudies'] = exportSelectedStudies;
-StudyList.functions['viewStudies'] = viewStudies;
+StudyList.functions.launchStudyAssociation = () => OHIF.ui.showFormDialog('dialogStudyAssociation');
+StudyList.functions.removeTimepointAssociations = removeTimepointAssociations;
+StudyList.functions.exportSelectedStudies = exportSelectedStudies;
+StudyList.functions.viewStudies = viewStudies;
 
 /**
  * Removes all present study / timepoint associations from the Clinical Trial
  */
 function removeTimepointAssociations() {
     // Get a Cursor pointing to the selected Studies from the StudyList
-    const selectedStudies = StudyListSelectedStudies.find({}, {
-        sort: {
-            studyDate: 1
-        }
-    });
+    const selectedStudies = OHIF.studylist.getSelectedStudies();
 
     // Loop through the Cursor of Selected Studies
     selectedStudies.forEach(function(selectedStudy) {
@@ -31,14 +30,14 @@ function removeTimepointAssociations() {
             return;
         }
 
-        let timepoint = timepointApi.study(data.study.studyInstanceUid)[0];
+        let timepoint = timepointApi.study(selectedStudy.studyInstanceUid)[0];
         if (!timepoint) {
             return;
         }
 
         // Find the index of the current studyInstanceUid in the array
         // of reference studyInstanceUids
-        var index = timepoint.studyInstanceUids.indexOf(study.studyInstanceUid);
+        const index = timepoint.studyInstanceUids.indexOf(selectedStudy.studyInstanceUid);
         if (index < 0) {
             return;
         }
@@ -57,14 +56,14 @@ function removeTimepointAssociations() {
             });
 
             // Log
-            var hipaaEvent = {
+            const hipaaEvent = {
                 eventType: 'modify',
                 userId: Meteor.userId(),
                 userName: Meteor.user().profile.fullName,
-                collectionName: "Timepoints",
-                recordId: study.timepointId,
-                patientId: study.patientId,
-                patientName: study.patientName
+                collectionName: 'Timepoints',
+                recordId: selectedStudy.timepointId,
+                patientId: selectedStudy.patientId,
+                patientName: selectedStudy.patientName
             };
             HipaaLogger.logEvent(hipaaEvent);
         } else {
@@ -77,14 +76,14 @@ function removeTimepointAssociations() {
                 }
 
                 // Log
-                var hipaaEvent = {
+                const hipaaEvent = {
                     eventType: 'delete',
                     userId: Meteor.userId(),
                     userName: Meteor.user().profile.fullName,
-                    collectionName: "Timepoints",
-                    recordId: study.timepointId,
-                    patientId: study.patientId,
-                    patientName: study.patientName
+                    collectionName: 'Timepoints',
+                    recordId: selectedStudy.timepointId,
+                    patientId: selectedStudy.patientId,
+                    patientName: selectedStudy.patientName
                 };
                 HipaaLogger.logEvent(hipaaEvent);
             });
@@ -94,43 +93,32 @@ function removeTimepointAssociations() {
 
 // ---------- TODO: Remove these duplicated functions below -------------
 
-
 /**
  * Exports all selected studies on the studylist
  */
 function exportSelectedStudies() {
-    const selectedStudies = StudyListSelectedStudies.find({}, {
-        sort: {
-            studyDate: 1
-        }
-    }).fetch();
+    const selectedStudies = OHIF.studylist.getSelectedStudies();
 
     if (!selectedStudies || !selectedStudies.length) {
         return;
     }
 
-    exportStudies(selectedStudies);
+    OHIF.studylist.exportStudies(selectedStudies);
 }
 
 /**
  * Loads multiple unassociated studies in the Viewer
  */
 function viewStudies() {
-    console.log('viewStudies');
-    const selectedStudies = StudyListSelectedStudies.find({}, {
-        sort: {
-            studyDate: 1
-        }
-    }).fetch();
+    OHIF.log.info('viewStudies');
+    const selectedStudies = OHIF.studylist.getSelectedStudies();
 
     if (!selectedStudies || !selectedStudies.length) {
         return;
     }
 
-    var title = selectedStudies[0].patientName;
-    var studyInstanceUids = selectedStudies.map(function(study) {
-        return study.studyInstanceUid;
-    });
+    const title = selectedStudies[0].patientName;
+    const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid);
 
     // Generate a unique ID to represent this tab
     // We can't just use the Mongo entry ID because

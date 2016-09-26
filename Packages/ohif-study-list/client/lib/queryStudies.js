@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Queries requested studies to get their metadata from PACS
  * @param studiesToQuery Studies to query
@@ -11,7 +13,7 @@ queryStudies = function(studiesToQuery, doneCallback) {
     var studiesQueried = [];
     var numberOfStudiesToQuery = studiesToQuery.length;
 
-    progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
+    OHIF.studylist.progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
 
     studiesToQuery.forEach(function(studyToQuery) {
         getStudyMetadata(studyToQuery.studyInstanceUid, function(study) {
@@ -19,7 +21,7 @@ queryStudies = function(studiesToQuery, doneCallback) {
 
             var numberOfStudiesQueried = studiesQueried.length;
 
-            progressDialog.update(numberOfStudiesQueried);
+            OHIF.studylist.progressDialog.update(numberOfStudiesQueried);
 
             if (numberOfStudiesQueried === numberOfStudiesToQuery) {
                 doneCallback(studiesQueried);
