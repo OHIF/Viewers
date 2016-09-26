@@ -12,7 +12,7 @@ OHIF.mixins.select = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$('select:first');
+            component.$element = instance.$('select').first();
         }
     }
 });

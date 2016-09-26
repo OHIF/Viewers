@@ -14,7 +14,7 @@ importStudies = function(filesToImport, importCallback) {
     };
     var numberOfFilesToUpload = filesToImport.length;
     var studiesToImport = [];
-    progressDialog.show({
+    OHIF.studylist.progressDialog.show({
         title: "Uploading Files...",
         numberOfCompleted: 0,
         numberOfTotal: numberOfFilesToUpload
@@ -38,7 +38,7 @@ importStudies = function(filesToImport, importCallback) {
             updateFileUploadStatus(fileUploadStatus, true);
 
             var numberOfFilesProcessedToUpload = fileUploadStatus.numberOfFilesUploaded + fileUploadStatus.numberOfFilesFailed;
-            progressDialog.update(numberOfFilesProcessedToUpload);
+            OHIF.studylist.progressDialog.update(numberOfFilesProcessedToUpload);
 
             if (numberOfFilesToUpload === numberOfFilesProcessedToUpload) {
                 //  The upload is completed, so import files
@@ -74,7 +74,7 @@ function importStudiesInternal(studiesToImport, importCallback) {
 
     var numberOfStudiesToImport = studiesToImport.length;
 
-    progressDialog.show({
+    OHIF.studylist.progressDialog.show({
         title: "Importing Studies...",
         numberOfCompleted: 0,
         numberOfTotal: numberOfStudiesToImport
@@ -84,13 +84,13 @@ function importStudiesInternal(studiesToImport, importCallback) {
     Meteor.call("createStudyImportStatus", function(err, studyImportStatusId) {
         if (err) {
             // Hide dialog
-            progressDialog.close();
+            OHIF.studylist.progressDialog.close();
             console.log(err.message);
             return;
         }
 
         //  Handle when StudyImportStatus collection is updated
-        StudyImportStatus.find(studyImportStatusId).observe({
+        OHIF.studylist.collections.StudyImportStatus.find(studyImportStatusId).observe({
             changed: function(studyImportStatus) {
                 if (!studyImportStatus) {
                     return;
@@ -100,16 +100,16 @@ function importStudiesInternal(studiesToImport, importCallback) {
 
                 // Show number of imported files
                 var successMessage = 'Imported '+studyImportStatus.numberOfStudiesImported+' of '+numberOfStudiesToImport;
-                progressDialog.setMessage({
+                OHIF.studylist.progressDialog.setMessage({
                     message: successMessage,
                     messageType: 'success'
                 });
-                progressDialog.update(numberOfStudiesProcessedToImport);
+                OHIF.studylist.progressDialog.update(numberOfStudiesProcessedToImport);
 
                 // Show number of failed files if there is at least one failed file
                 if (studyImportStatus.numberOfStudiesFailed > 0) {
                     var successMessage = 'Failed '+studyImportStatus.numberOfStudiesFailed+' of '+numberOfStudiesToImport;
-                    progressDialog.setMessage({
+                    OHIF.studylist.progressDialog.setMessage({
                         message: successMessage,
                         messageType: 'warning'
                     });

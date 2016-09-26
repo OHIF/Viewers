@@ -12,7 +12,7 @@ OHIF.mixins.link = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$('a:first');
+            component.$element = instance.$('a').first();
         },
 
         events: {

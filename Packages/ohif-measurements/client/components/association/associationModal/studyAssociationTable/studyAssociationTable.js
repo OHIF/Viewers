@@ -1,3 +1,7 @@
+import { Template } from 'meteor/templating';
+import { moment } from 'meteor/momentjs:moment';
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Finds related studies within defined time window of =/- 14 days of selected studies
  * @param selectedStudies
@@ -14,13 +18,13 @@ function getDateRange(selectedStudies, range) {
         return;
     }
 
-    var earliestStudy = selectedStudies[0];
-    var latestStudy = selectedStudies[selectedStudies.length - 1];
+    const earliestStudy = selectedStudies[0];
+    const latestStudy = selectedStudies[selectedStudies.length - 1];
 
-    var earliestDate = moment(earliestStudy.studyDate, 'YYYYMMDD');
+    const earliestDate = moment(earliestStudy.studyDate, 'YYYYMMDD');
     earliestDate.subtract(range);
 
-    var latestDate = moment(latestStudy.studyDate, 'YYYYMMDD');
+    const latestDate = moment(latestStudy.studyDate, 'YYYYMMDD');
     latestDate.add(range);
 
     return {
@@ -43,12 +47,12 @@ function autoSelectStudies(selectedStudies) {
         return;
     }
 
-    var range = getDateRange(selectedStudies);
+    const range = getDateRange(selectedStudies);
 
     // Fetch autoselected studies based on the date range
     // Note that we used MongoDB's fetch here so we have a mutable array,
     // rather than a Cursor
-    var autoselected = StudyListStudies.find({
+    const autoselected = StudyListStudies.find({
         studyDate: {
             $gte: range.earliestDate.format('YYYYMMDD'),
             $lte: range.latestDate.format('YYYYMMDD')
@@ -60,12 +64,10 @@ function autoSelectStudies(selectedStudies) {
     }).fetch();
 
     // Make an array of studyInstanceUids in selectedStudies
-    var studyInstanceUids = selectedStudies.map(function(selectedStudy) {
-        return selectedStudy.studyInstanceUid;
-    });
+    const studyInstanceUids = selectedStudies.map(selectedStudy => selectedStudy.studyInstanceUid);
 
-    autoselected.forEach(function(study) {
-        var exists = studyInstanceUids.indexOf(study.studyInstanceUid);
+    autoselected.forEach(study => {
+        const exists = studyInstanceUids.indexOf(study.studyInstanceUid);
         if (exists > -1) {
             study.autoselected = false;
             return;
@@ -84,12 +86,8 @@ Template.studyAssociationTable.helpers({
      *
      * @returns {Array.<T>}
      */
-    relevantStudies: function() {
-        var selectedStudies = StudyListSelectedStudies.find({}, {
-                sort: {
-                    studyDate: 1
-                }
-            }).fetch() || [];
+    relevantStudies() {
+        const selectedStudies = OHIF.studylist.getSelectedStudies();
 
         return autoSelectStudies(selectedStudies);
     },
@@ -98,7 +96,7 @@ Template.studyAssociationTable.helpers({
      *
      * @returns {Array.<T>}
      */
-    timepointOptions: function() {
+    timepointOptions() {
         return [{
                 value: 'baseline',
                 name: 'Baseline',
@@ -109,26 +107,18 @@ Template.studyAssociationTable.helpers({
                 checked: false
             }];
     },
-    earliestDate: function() {
-        var selectedStudies = StudyListSelectedStudies.find({}, {
-            sort: {
-                studyDate: 1
-            }
-        }).fetch();
+    earliestDate() {
+        const selectedStudies = OHIF.studylist.getSelectedStudies();
 
-        var range = getDateRange(selectedStudies);
+        const range = getDateRange(selectedStudies);
         if (range) {
             return range.earliestDate;
         }
     },
-    latestDate: function() {
-        var selectedStudies = StudyListSelectedStudies.find({}, {
-            sort: {
-                studyDate: 1
-            }
-        }).fetch();
+    latestDate() {
+        const selectedStudies = OHIF.studylist.getSelectedStudies();
 
-        var range = getDateRange(selectedStudies);
+        const range = getDateRange(selectedStudies);
         if (range) {
             return range.latestDate;
         }
@@ -136,9 +126,9 @@ Template.studyAssociationTable.helpers({
 });
 
 Template.studyAssociationTable.events({
-    'change input.includeStudy': function(e) {
-        var checkbox = e.currentTarget;
-        var studyDataCells = $(checkbox).parents('tr').find('td.studyDataCell');
+    'change input.includeStudy'(event, instance) {
+        const checkbox = event.currentTarget;
+        const studyDataCells = $(checkbox).parents('tr').find('td.studyDataCell');
         if (checkbox.checked === true) {
             studyDataCells.removeClass('disabled');
             studyDataCells.find('input').attr('disabled', false);

@@ -1,5 +1,8 @@
+import { Meteor } from 'meteor/meteor';
+import { OHIF } from 'meteor/ohif:core';
+
 Meteor.publish('studyImportStatus', () => {
-    return StudyImportStatus.find();
+    return OHIF.studylist.collections.StudyImportStatus.find();
 });
 
 Meteor.publish('servers', () => {
