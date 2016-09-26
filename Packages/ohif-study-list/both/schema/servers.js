@@ -161,6 +161,11 @@ export const PublicServerConfig = new SimpleSchema({
     ui: {
         type: UISettings,
         label: 'UI Settings'
+    },
+    custom: {
+        type: Object,
+        label: 'Custom Settings',
+        optional: true
     }
 });
 
@@ -190,11 +195,6 @@ export const ServerConfiguration = new SimpleSchema({
     public: {
         type: PublicServerConfig,
         label: 'Public Server Configuration',
-    },
-    origin: {
-        type: String,
-        label: 'Origin',
-        optional: true
     },
     origin: {
         type: String,
