@@ -1,4 +1,7 @@
 import { Mongo } from 'meteor/mongo';
+import { OHIF } from 'meteor/ohif:core';
 
-StudyImportStatus = new Mongo.Collection('studyImportStatus');
+const StudyImportStatus = new Mongo.Collection('studyImportStatus');
 StudyImportStatus._debugName = 'StudyImportStatus';
+
+OHIF.studylist.collections.StudyImportStatus = StudyImportStatus;

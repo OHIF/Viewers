@@ -3,6 +3,10 @@ import './dialog/form.js';
 import './dialog/login.html';
 import './dialog/login.js';
 
+import './dropdown/backdrop.html';
+import './dropdown/form.html';
+import './dropdown/form.js';
+
 import './form/button.html';
 import './form/form.html';
 import './form/group.html';

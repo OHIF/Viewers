@@ -19,7 +19,7 @@ Session.setDefault('activeContentId', 'studylistTab');
 
 Template.studylist.onCreated(() => {
     const instance = Template.instance();
-    
+
     if (StudyList.subscriptions) {
         StudyList.subscriptions.forEach(subscriptionName => {
             instance.subscribe(subscriptionName);
@@ -43,19 +43,4 @@ Template.studylist.onRendered(() => {
     }
 
     Meteor.subscribe('hangingprotocols');
-});
-
-Template.studylist.events({
-    'click #tablist a[data-toggle="tab"]': function(e) {
-        // If this tab is already active, do nothing
-        const tabButton = $(e.currentTarget);
-        const tabTitle = tabButton.parents('.tabTitle');
-        if (tabTitle.hasClass('active')) {
-            return;
-        }
-
-        // Otherwise, switch to the tab
-        const contentId = tabButton.data('target').replace('#', '');
-        switchToTab(contentId);
-    }
 });

@@ -7,8 +7,7 @@ import { Meteor } from 'meteor/meteor';
 const OHIF = {
     log: {},
     ui: {},
-    viewer: {},
-    measurements: {}
+    viewer: {}
 };
 
 // Expose the OHIF object to the client if it is on development mode

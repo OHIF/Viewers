@@ -1,4 +1,28 @@
-progressDialog = {
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
+
+const updateProgress = numberOfCompleted => {
+    const progressDialogSettings = Session.get('progressDialogSettings');
+    progressDialogSettings.numberOfCompleted = numberOfCompleted;
+
+    Session.set('progressDialogSettings', progressDialogSettings);
+
+    if (progressDialogSettings.numberOfCompleted === progressDialogSettings.numberOfTotal) {
+        OHIF.studylist.progressDialog.close();
+    }
+};
+
+const setProgressMessage = message => {
+    let progressDialogSettings = Session.get('progressDialogSettings');
+    progressDialogSettings.message = message;
+    Session.set('progressDialogSettings', progressDialogSettings);
+};
+
+OHIF.studylist.progressDialog = {
+    update: _.debounce(updateProgress, 100),
+    setMessage: _.debounce(setProgressMessage, 100),
     show: function(title, numberOfTotal) {
         Session.set('progressDialogSettings', {
             title: title,
@@ -8,16 +32,6 @@ progressDialog = {
 
         $('#progressDialog').css('display', 'block');
     },
-    update: function(numberOfCompleted) {
-        var progressDialogSettings = Session.get('progressDialogSettings');
-        progressDialogSettings.numberOfCompleted = numberOfCompleted;
-
-        Session.set('progressDialogSettings', progressDialogSettings);
-
-        if (progressDialogSettings.numberOfCompleted === progressDialogSettings.numberOfTotal) {
-            progressDialog.close();
-        }
-    },
     close: function() {
         Session.set('progressDialogSettings', {
             title: '',
@@ -26,17 +40,12 @@ progressDialog = {
         });
 
         $('#progressDialog').css('display', 'none');
-    },
-    setMessage: function(message) {
-        let progressDialogSettings = Session.get('progressDialogSettings');
-        progressDialogSettings.message = message;
-        Session.set('progressDialogSettings', progressDialogSettings);
     }
 };
 
 Template.progressDialog.helpers({
     progressDialogTitle() {
-        var settings = Session.get('progressDialogSettings');
+        const settings = Session.get('progressDialogSettings');
         if (!settings) {
             return;
         }
@@ -55,11 +64,11 @@ Template.progressDialog.helpers({
             return;
         }
 
-        return settings.numberOfCompleted / settings.numberOfTotal;
+        return (settings.numberOfCompleted / settings.numberOfTotal) * 100;
     },
 
     progressMessage() {
-        var settings = Session.get('progressDialogSettings');
+        const settings = Session.get('progressDialogSettings');
         if (!settings) {
             return;
         }

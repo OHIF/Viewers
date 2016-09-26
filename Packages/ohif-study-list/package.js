@@ -1,10 +1,10 @@
 Package.describe({
-  name: "ohif:study-list",
-  summary: "Basic study list for web-based DICOM viewers",
-  version: '0.0.1'
+    name: 'ohif:study-list',
+    summary: 'Basic study list for web-based DICOM viewers',
+    version: '0.0.1'
 });
 
-Package.onUse(function (api) {
+Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
     api.use('ecmascript');
@@ -32,93 +32,21 @@ Package.onUse(function (api) {
     // TODO: Replace with NPM dependency
     api.use('ohif:cornerstone'); // Only for HammerJS
 
-    api.addFiles('both/collections.js', [ 'client', 'server' ]);
+    // Client and server imports
+    api.addFiles('both/index.js', [ 'client', 'server' ]);
 
-    // Components
-    api.addFiles('client/components/studylist.html', 'client');
-    api.addFiles('client/components/studylist.js', 'client');
-    api.addFiles('client/components/studylist.styl', 'client');
+    // Server imports
+    api.addFiles('server/index.js', 'server');
 
-    api.addFiles('client/components/tabTitle/tabTitle.html', 'client');
-    api.addFiles('client/components/tabTitle/tabTitle.js', 'client');
-    api.addFiles('client/components/tabTitle/tabTitle.styl', 'client');
-
-    api.addFiles('client/components/studylistStudy/studylistStudy.html', 'client');
-    api.addFiles('client/components/studylistStudy/studylistStudy.js', 'client');
-    api.addFiles('client/components/studylistStudy/studylistStudy.styl', 'client');
-
-    api.addFiles('client/components/studylistResult/studylistResult.html', 'client');
-    api.addFiles('client/components/studylistResult/studylistResult.js', 'client');
-    api.addFiles('client/components/studylistResult/studylistResult.styl', 'client');
-
-    api.addFiles('client/components/studyContextMenu/studyContextMenu.html', 'client');
-    api.addFiles('client/components/studyContextMenu/studyContextMenu.js', 'client');
-    api.addFiles('client/components/studyContextMenu/studyContextMenu.styl', 'client');
-
-    api.addFiles('client/components/studylistToolbar/studylistToolbar.html', 'client');
-    api.addFiles('client/components/studylistToolbar/studylistToolbar.js', 'client');
-    api.addFiles('client/components/studylistToolbar/studylistToolbar.styl', 'client');
-
-    api.addFiles('client/components/progressDialog/progressDialog.html', 'client');
-    api.addFiles('client/components/progressDialog/progressDialog.styl', 'client');
-    api.addFiles('client/components/progressDialog/progressDialog.js', 'client');
-
-    api.addFiles('client/components/studylistPagination/studylistPagination.html', 'client');
-    api.addFiles('client/components/studylistPagination/studylistPagination.styl', 'client');
-    api.addFiles('client/components/studylistPagination/studylistPagination.js', 'client');
-
-    api.addFiles('client/components/viewSeriesDetailsModal/viewSeriesDetailsModal.html', 'client');
-
-    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.html', 'client');
-    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.styl', 'client');
-    api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.js', 'client');
-
-    // Client-side library functions
-    api.addFiles('client/lib/getStudyMetadata.js', 'client');
-    api.addFiles('client/lib/getStudiesMetadata.js', 'client');
-    api.addFiles('client/lib/openNewTab.js', 'client');
-    api.addFiles('client/lib/switchToTab.js', 'client');
-    api.addFiles('client/lib/exportStudies.js', 'client');
-    api.addFiles('client/lib/studylist.js', 'client');
-    api.addFiles('client/lib/queryStudies.js', 'client');
-    api.addFiles('client/lib/importStudies.js', 'client');
-    api.addFiles('client/lib/jquery.twbsPagination/jquery.twbsPagination.min.js', 'client');
-
-    // Server-side functions
-    api.addFiles('server/publications.js', 'server');
-    api.addFiles('server/validateServerConfiguration.js', 'server');
-    api.addFiles('server/lib/remoteGetValue.js', 'server');
-    api.addFiles('server/lib/encodeQueryData.js', 'server');
-
-    api.addFiles('server/methods/getStudyMetadata.js', 'server');
-    api.addFiles('server/methods/importStudies.js', 'server');
-    api.addFiles('server/methods/studylistSearch.js', 'server');
-
-    api.addFiles('server/services/namespace.js', 'server');
-
-    // DICOMWeb instance, study, and metadata retrieval
-    api.addFiles('server/services/qido/instances.js', 'server');
-    api.addFiles('server/services/qido/studies.js', 'server');
-    api.addFiles('server/services/wado/retrieveMetadata.js', 'server');
-
-    // DIMSE instance, study, and metadata retrieval
-    api.addFiles('server/services/dimse/instances.js', 'server');
-    api.addFiles('server/services/dimse/studies.js', 'server');
-    api.addFiles('server/services/dimse/retrieveMetadata.js', 'server');
-
-    // Study, instance, and metadata retrieval from remote PACS via Orthanc as a proxy
-    api.addFiles('server/services/remote/instances.js', 'server');
-    api.addFiles('server/services/remote/studies.js', 'server');
-    api.addFiles('server/services/remote/retrieveMetadata.js', 'server');
+    // Client imports
+    api.addFiles('client/index.js', 'client');
 
     api.export('Services', 'server');
 
     // Export StudyList helper functions for usage in Routes
     api.export('getStudyMetadata', 'client');
-    api.export('getStudiesMetadata', 'client');
     api.export('openNewTab', 'client');
     api.export('switchToTab', 'client');
-    api.export('progressDialog', 'client');
     api.export('StudyList');
 
     // Export the global ViewerData object
@@ -126,5 +54,5 @@ Package.onUse(function (api) {
 
     // Export the Collections
     api.export('StudyListStudies', 'client');
-    api.export('StudyListSelectedStudies', 'client')
+    api.export('StudyListSelectedStudies', 'client');
 });
