@@ -8,6 +8,10 @@ getActiveViewportElement = () => {
 
 zoomIn = () => {
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     let viewport = cornerstone.getViewport(element);
     const scaleIncrement = 0.15;
     const maximumScale = 10;
@@ -17,6 +21,10 @@ zoomIn = () => {
 
 zoomOut = () => {
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     let viewport = cornerstone.getViewport(element);
     const scaleIncrement = 0.15;
     const minimumScale = 0.05;
@@ -26,11 +34,19 @@ zoomOut = () => {
 
 zoomToFit = () => {
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     cornerstone.fitToWindow(element);
 };
 
 rotateL = () => {
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     let viewport = cornerstone.getViewport(element);
     viewport.rotation -= 90;
     cornerstone.setViewport(element, viewport);
@@ -39,6 +55,10 @@ rotateL = () => {
 
 rotateR = () => {
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     let viewport = cornerstone.getViewport(element);
     viewport.rotation += 90;
     cornerstone.setViewport(element, viewport);
@@ -47,6 +67,10 @@ rotateR = () => {
 
 invert = () => {
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     let viewport = cornerstone.getViewport(element);
     viewport.invert = (viewport.invert === false);
     cornerstone.setViewport(element, viewport);
@@ -121,6 +145,10 @@ isPlaying = () => {
 
     // Get the viewport element and its current playClip tool state
     const element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     const toolState = cornerstoneTools.getToolState(element, 'playClip');
 
     // Stop here if the tool state is not defined yet
@@ -134,5 +162,6 @@ isPlaying = () => {
     // Return true if the clip is playing
     return !_.isUndefined(clipState.intervalId);
 };
+
 // Create an event listener to update playing state when a clip stops playing
 $(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Random.id()));

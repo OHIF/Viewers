@@ -3,7 +3,7 @@
         <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
             {{> studyBrowser (clone this)}}
         </div>
-        <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
+        <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}}">
             {{> standaloneViewerMain (clone this)}}
         </div>
     </div>

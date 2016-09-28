@@ -20,5 +20,9 @@ applyWLPreset = function(presetName, element) {
 
 applyWLPresetToActiveElement = function(presetName) {
     var element = getActiveViewportElement();
+    if (!element) {
+        return;
+    }
+
     applyWLPreset(presetName, element);
 };

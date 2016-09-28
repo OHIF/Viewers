@@ -497,6 +497,9 @@ Template.imageViewerViewport.onDestroyed(function() {
 
     // When a viewport element is being destroyed
     var element = this.find('.imageViewerViewport');
+    if (!element) {
+        return;
+    }
 
     // Try to stop any currently playing clips
     // Otherwise the interval will continuously throw errors

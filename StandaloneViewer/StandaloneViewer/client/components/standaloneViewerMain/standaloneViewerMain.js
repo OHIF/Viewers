@@ -2,7 +2,12 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.standaloneViewerMain.onCreated(() => {
     // Attach the Window resize listener
-    $(window).on('resize', handleResize);
+
+    // TODO: Check why this seems to need to be in a defer clause
+    // here, but not in the other viewers...
+    Meteor.defer(() => {
+        $(window).on('resize', handleResize);
+    });
 
     // Create the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);

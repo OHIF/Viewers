@@ -35,6 +35,10 @@ Template.cineDialog.onCreated(() => {
 
         // Update playClip toolData for this imageId
         const element = getActiveViewportElement();
+        if (!element) {
+            return;
+        }
+
         const playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
         playClipToolData.data[0].framesPerSecond = OHIF.viewer.cine.framesPerSecond;
 
@@ -77,6 +81,9 @@ Template.cineDialog.onCreated(() => {
         Tracker.afterFlush(() => {
             // Get the active viewportElement
             const element = getActiveViewportElement();
+            if (!element) {
+                return;
+            }
 
             // Get the cornerstone playClip tool data
             const toolData = cornerstoneTools.getToolState(element, 'playClip').data[0];

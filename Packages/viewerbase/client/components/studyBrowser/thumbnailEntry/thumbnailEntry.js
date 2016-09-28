@@ -205,6 +205,10 @@ Template.thumbnailEntry.onCreated(() => {
     instance.isDragAndDrop = _.isUndefined(instance.data.viewportIndex);
 });
 
+Template.thumbnailEntry.onRendered(() => {
+    console.warn('thumbnailEntry onRendered');
+});
+
 Template.thumbnailEntry.events({
     // Event handlers for drag and drop
     'touchstart .thumbnailEntry, mousedown .thumbnailEntry'(event, instance) {
@@ -250,6 +254,21 @@ Template.thumbnailEntry.helpers({
         return Template.instance().isDragAndDrop ? 'draggable' : '';
     },
     instanceNumber() {
-        return Template.instance().data.thumbnail.stack.images[0].instanceNumber;
+        const thumbnail = Template.instance().data.thumbnail;
+        if (!thumbnail) {
+            return;
+        }
+
+        const stack = thumbnail.stack;
+        if (!stack) {
+            return;
+        }
+
+        const firstImage = stack.images[0];
+        if (!firstImage) {
+            return;
+        }
+
+        return firstImage.instanceNumber;
     }
 });
