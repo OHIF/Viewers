@@ -31,7 +31,7 @@ OHIF.ui.showFormDialog = (templateName, dialogData) => {
 
     // Destroy the created dialog view when the promise is either resolved or rejected
     const dismissModal = () => Blaze.remove(view);
-    promise.then(dismissModal).catch(dismissModal);
+    promise.then(dismissModal, dismissModal);
 
     // Return the promise to allow callbacks stacking from outside
     return promise;
