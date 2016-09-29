@@ -18,9 +18,6 @@
     "requireSemicolons": true,
     "requireSpaceAfterBinaryOperators": true,
     "requireSpaceAfterComma": true,
-    "requireSpacesInFunctionExpression": {
-        "beforeOpeningCurlyBrace": true
-    },
     "requireSpaceBeforeObjectValues": true,
     "requireSpacesInsideObjectBrackets": "all",
     "requireLineBreakAfterVariableAssignment": true,
@@ -29,7 +26,6 @@
     "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
     "disallowKeywords": [ "with" ],
     "disallowMultipleLineBreaks": true,
-    "disallowKeywordsOnNewLine": [ "else" ],
     "requireLineFeedAtFileEnd": true,
     "disallowSpaceAfterObjectKeys": true,
     "disallowQuotedKeysInObjects": true,
@@ -37,7 +33,10 @@
     "disallowVar": true,
     "validateLineBreaks": "LF",
     "validateIndentation": 4,
-    "validateQuoteMarks": { "mark": "'", "escape": true },
+    "validateQuoteMarks": {
+        "mark": "'",
+        "escape": true
+    },
     "validateParameterSeparator": ", ",
     "requireDollarBeforejQueryAssignment": true
 }
