@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 
 Meteor.startup(function() {
+    Servers.remove({
+        origin: 'json'
+    });
+
     _.each(Meteor.settings.servers, function(endpoints, serverType) {
         _.each(endpoints, function(endpoint) {
             var server = _.clone(endpoint);
@@ -10,15 +13,11 @@ Meteor.startup(function() {
             Servers.insert(server);
         });
     });
+
+    ServersControl.resetCurrentServer();
 });
 
 class ServersControl {
-
-    static validateUser() {
-        if (!Meteor.userId()) {
-            throw new Meteor.Error('not-authorized');
-        }
-    }
 
     static writeCallback(error, affected) {
         if (error) {
@@ -26,12 +25,34 @@ class ServersControl {
         }
     }
 
+    static resetCurrentServer() {
+        const currentServer = CurrentServer.findOne();
+        if (currentServer && Servers.find({ _id: currentServer.serverId }).count()) {
+            return;
+        }
+
+        const newServer = Servers.findOne({
+            origin: 'json',
+            type: Meteor.settings.defaultServiceType || 'dicomWeb'
+        });
+
+        if (newServer) {
+            CurrentServer.remove({});
+            CurrentServer.insert({
+                serverId: newServer._id
+            });
+        }
+    }
+
+    static find(query) {
+        return Servers.find(query).fetch();
+    }
+
     static save(serverSettings) {
-        this.validateUser();
-        var query = {
+        const query = {
             _id: serverSettings._id
         };
-        var options = {
+        const options = {
             upsert: true
         };
 
@@ -43,29 +64,28 @@ class ServersControl {
     }
 
     static setActive(serverId) {
-        this.validateUser();
-        var query = {
-            _id: Meteor.userId()
-        };
-        var data = {
-            $set: {
-                'profile.activeServer': serverId
-            }
-        };
-        Accounts.users.update(query, data, this.writeCallback);
+        CurrentServer.remove({});
+        CurrentServer.insert({
+            serverId: serverId
+        });
     }
 
     static remove(serverId) {
-        this.validateUser();
         var query = {
             _id: serverId
         };
-        return Servers.remove(query, this.writeCallback);
+
+        const removeStatus = Servers.remove(query, this.writeCallback);
+
+        ServersControl.resetCurrentServer();
+
+        return removeStatus;
     }
 
 }
 
 Meteor.methods({
+    serverFind: query => ServersControl.find(query),
     serverSave: serverSettings => ServersControl.save(serverSettings),
     serverSetActive: serverId => ServersControl.setActive(serverId),
     serverRemove: serverId => ServersControl.remove(serverId)

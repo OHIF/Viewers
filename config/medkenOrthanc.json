@@ -17,6 +17,7 @@
     ],
     "dimse" : [{
       "name": "ORTHANC_DIMSE",
+      "wadoUriRoot": "http://dicom-orthanc.medken.com/wado",
       "peers": [
         {
           "host": "208.100.41.100",

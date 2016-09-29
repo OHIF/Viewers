@@ -221,6 +221,10 @@ Template.toolbarSection.onRendered(function() {
 
     instance.$('#layout').dropdown();
 
+    if (OHIF.uiSettings.showCineDialogOnRendered) {
+        toggleCineDialog();
+    }
+
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;

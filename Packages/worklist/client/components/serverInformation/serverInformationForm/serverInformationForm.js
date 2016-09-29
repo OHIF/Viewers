@@ -1,13 +1,13 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { DICOMWebServer as dicomSchema } from 'meteor/worklist/both/schema';
-import { DIMSEServer as dimseSchema } from 'meteor/worklist/both/schema';
+import { DICOMWebServer as dicomSchema } from 'meteor/worklist/both/schema.js';
+import { DIMSEServer as dimseSchema } from 'meteor/worklist/both/schema.js';
 
 Template.serverInformationForm.onCreated(() => {
     const instance = Template.instance();
 
-    instance.api = {
+    instance.data.api = {
         save() {
             // Stop here if the form validation fails
             if (!instance.data.form.validate()) {

@@ -203,7 +203,6 @@ Package.onUse(function(api) {
 
     // Server functions
     api.addFiles('server/publications.js', 'server');
-    api.addFiles('server/servers.js', 'server');
     api.addFiles('server/methods.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);
     api.addFiles('server/createDemoUser.js', [ 'server' ]);
@@ -241,23 +240,6 @@ Package.onUse(function(api) {
     api.addFiles('lib/handleMeasurementAdded.js', 'client');
     api.addFiles('lib/handleMeasurementModified.js', 'client');
     api.addFiles('lib/handleMeasurementRemoved.js', 'client');
-
-    api.addFiles('client/components/serverInformation/serverInformationDicomWeb/serverInformationDicomWeb.html', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationDicomWeb/serverInformationDicomWeb.js', 'client');
-
-    api.addFiles('client/components/serverInformation/serverInformationDimse/serverInformationDimse.html', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationDimse/serverInformationDimse.js', 'client');
-
-    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationForm.html', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationForm.js', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationFormField.html', 'client');
-
-    api.addFiles('client/components/serverInformation/serverInformationList/serverInformationList.html', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationList/serverInformationList.js', 'client');
-
-    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.html', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.styl', 'client');
-    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.js', 'client');
 
     // API classes
     api.addFiles('client/api/timepoint.js');
@@ -299,7 +281,6 @@ Package.onUse(function(api) {
     api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
-    api.export('Servers', [ 'client', 'server' ]);
     api.export('AdditionalFindings', [ 'client', 'server' ]);
     api.export('ImageMeasurements', [ 'client', 'server' ]);
     api.export('Measurements', [ 'client', 'server' ]);

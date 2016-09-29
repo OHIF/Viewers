@@ -14,6 +14,12 @@ const serverTypeDefinitions = {
     optional: true
 };
 
+const wadoUriRootDefinitions = {
+    type: String,
+    label: 'WADO URI root',
+    max: 1000
+};
+
 export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
@@ -40,11 +46,7 @@ export const DICOMWebRequestOptions = new SimpleSchema({
 export const DICOMWebServer = new SimpleSchema({
     name: serverNameDefinitions,
     type: serverTypeDefinitions,
-    wadoUriRoot: {
-        type: String,
-        label: 'WADO URI root',
-        max: 1000
-    },
+    wadoUriRoot: wadoUriRootDefinitions,
     wadoRoot: {
         type: String,
         label: 'WADO root',
@@ -106,7 +108,7 @@ export const DIMSEPeer = new SimpleSchema({
     },
     supportsInstanceRetrievalByStudyUid: {
         type: Boolean,
-        label: 'Supports instance retrieval by StudyUid?',
+        label: 'Supports instance retrieval by StudyUid',
         defaultValue: true
     }
 });
@@ -114,6 +116,7 @@ export const DIMSEPeer = new SimpleSchema({
 export const DIMSEServer = new SimpleSchema({
     name: serverNameDefinitions,
     type: serverTypeDefinitions,
+    wadoUriRoot: wadoUriRootDefinitions,
     peers: {
         type: [DIMSEPeer],
         label: 'Peer List',
@@ -140,6 +143,11 @@ export const UISettings = new SimpleSchema({
     displaySetNavigationMultipleViewports: {
         type: Boolean,
         label: 'The UP/DOWN display set navigation buttons will iterate over all the viewports at once?',
+        defaultValue: false
+    },
+    showCineDialogOnRendered: {
+        type: Boolean,
+        label: 'The Cine dialog will be displayed by default',
         defaultValue: false
     }
 });

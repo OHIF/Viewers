@@ -6,16 +6,17 @@ Meteor.methods({
     GetStudyMetadata: function(studyInstanceUid) {
         log.info('GetStudyMetadata(%s)', studyInstanceUid);
 
-        if (!Meteor.settings.servers.dicomWeb) {
-            throw 'No properly configured server was available over DICOMWeb';
+        // Get the server data. This is user-defined in the config.json files or through servers
+        // configuration modal
+        const server = getCurrentServer();
+
+        if (!server) {
+            throw 'No properly configured server was available over DICOMWeb or DIMSE.';
         }
 
-        if (Meteor.settings.servers.dicomWeb && Meteor.settings.defaultServiceType === 'dicomWeb') {
-            // Get the server data. This is user-defined in the
-            // config.json files used to run the Meteor server
-            var server = Meteor.settings.servers.dicomWeb[0];
+        if (server.type === 'dicomWeb') {
             return Services.WADO.RetrieveMetadata(server, studyInstanceUid);
-        } else if (Meteor.settings.servers.dimse && Meteor.settings.defaultServiceType === 'dimse') {
+        } else if (server.type === 'dimse') {
             return Services.DIMSE.RetrieveMetadata(studyInstanceUid);
         }
     }

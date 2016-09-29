@@ -34,6 +34,11 @@ switchToTab = function(contentId) {
     var container;
     if (contentId === 'worklistTab') {
         container = $('.tab-content').find('#worklistTab').get(0);
+
+        if (!container) {
+            return;
+        }
+
         var worklistContainer = document.createElement('div');
         worklistContainer.classList.add('worklistContainer');
         container.appendChild(worklistContainer);

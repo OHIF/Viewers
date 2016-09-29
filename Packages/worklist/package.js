@@ -16,11 +16,12 @@ Package.onUse(function (api) {
     api.use('rwatts:uuid');
     api.use('silentcicero:jszip');
     api.use('aldeed:simple-schema');
+    api.use('accounts-base');
 
     // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
     api.use('momentjs:moment');
 
-    api.use('gilbertwat:bootstrap3-daterangepicker');    
+    api.use('gilbertwat:bootstrap3-daterangepicker');
 
     // Our custom packages
     api.use('ohif:core');
@@ -39,9 +40,13 @@ Package.onUse(function (api) {
     // console for debugging purposes
     api.addFiles('log.js');
 
-    api.addFiles('both/collections.js', [ 'client', 'server' ]);
-    api.addFiles('both/schema.js', [ 'client', 'server' ]);
-    
+    api.addFiles('both/collections.js', ['client', 'server']);
+    api.addFiles('both/schema.js', ['client', 'server']);
+    api.addFiles('both/lib/getCurrentServer.js', ['client', 'server']);
+
+    // Client collections and subscriptions
+    api.addFiles('client/collections/subscriptions.js', 'client');
+
     // Components
     api.addFiles('client/components/worklist.html', 'client');
     api.addFiles('client/components/worklist.js', 'client');
@@ -80,7 +85,24 @@ Package.onUse(function (api) {
     api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.html', 'client');
     api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.styl', 'client');
     api.addFiles('client/components/seriesDetailsTable/seriesDetailsTable.js', 'client');
-    
+
+    api.addFiles('client/components/serverInformation/serverInformationDicomWeb/serverInformationDicomWeb.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationDicomWeb/serverInformationDicomWeb.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationDimse/serverInformationDimse.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationDimse/serverInformationDimse.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationForm.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationForm.js', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationForm/serverInformationFormField.html', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationList/serverInformationList.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationList/serverInformationList.js', 'client');
+
+    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.html', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.styl', 'client');
+    api.addFiles('client/components/serverInformation/serverInformationModal/serverInformationModal.js', 'client');
+
     // Client-side library functions
     api.addFiles('client/lib/getStudyMetadata.js', 'client');
     api.addFiles('client/lib/getStudiesMetadata.js', 'client');
@@ -95,6 +117,7 @@ Package.onUse(function (api) {
     // Server-side functions
     api.addFiles('server/publications.js', 'server');
     api.addFiles('server/validateServerConfiguration.js', 'server');
+    api.addFiles('server/servers.js', 'server');
     api.addFiles('server/lib/remoteGetValue.js', 'server');
     api.addFiles('server/lib/encodeQueryData.js', 'server');
 
@@ -113,11 +136,19 @@ Package.onUse(function (api) {
     api.addFiles('server/services/dimse/instances.js', 'server');
     api.addFiles('server/services/dimse/studies.js', 'server');
     api.addFiles('server/services/dimse/retrieveMetadata.js', 'server');
+    api.addFiles('server/services/dimse/setup.js', 'server');
 
     // Study, instance, and metadata retrieval from remote PACS via Orthanc as a proxy
     api.addFiles('server/services/remote/instances.js', 'server');
     api.addFiles('server/services/remote/studies.js', 'server');
     api.addFiles('server/services/remote/retrieveMetadata.js', 'server');
+
+    // Export Servers and CurrentServer Collections
+    api.export('Servers', ['client', 'server']);
+    api.export('CurrentServer', ['client', 'server']);
+
+    // Export shared lib functions
+    api.export('getCurrentServer', ['client', 'server']);
 
     api.export('Services', 'server');
 

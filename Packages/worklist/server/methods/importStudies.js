@@ -39,7 +39,8 @@ Meteor.methods({
      * @returns {boolean}
      */
     importSupported: function() {
-        if (Meteor.settings.servers.dimse && Meteor.settings.defaultServiceType === 'dimse') {
+        const server = getCurrentServer();
+        if (server && server.type === 'dimse') {
             return true;
         }
     },
@@ -53,13 +54,17 @@ Meteor.methods({
             return;
         }
 
-        if (Meteor.settings.servers.dicomWeb && Meteor.settings.defaultServiceType === 'dicomWeb') {
+        const server = getCurrentServer();
+
+        if (!server) {
+            throw 'No properly configured server was available over DICOMWeb or DIMSE.';
+        }
+
+        if (server.type === 'dicomWeb') {
             //TODO: Support importing studies into dicomWeb
             console.log('Importing studies into dicomWeb is currently not supported.');
-        } else if (Meteor.settings.servers.dimse && Meteor.settings.defaultServiceType === 'dimse') {
+        } else if (server.type === 'dimse') {
             importStudiesDIMSE(studiesToImport, studyImportStatusId);
-        } else {
-            throw 'No properly configured server was available over DICOMWeb or DIMSE.';
         }
     },
     /**

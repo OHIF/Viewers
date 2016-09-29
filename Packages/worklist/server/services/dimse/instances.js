@@ -31,12 +31,10 @@ function resultDataToStudyMetadata(resultData) {
             seriesList.push(series);
         }
 
-        // TODO: [custom-servers] Check which peer it should point to
-        var server = Meteor.settings.servers.dimse[0].peers[0];
-        var host = Meteor.settings.servers.dimse.host,
-            port = Meteor.settings.servers.dimse.port;
+        // TODO: Check which peer it should point to
+        var server = getCurrentServer().peers[0];
 
-        var serverRoot = host + ':' + port;
+        var serverRoot = server.host + ':' + server.port;
 
         var sopInstanceUid = instance[0x00080018];
         var uri = serverRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1';

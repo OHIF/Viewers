@@ -1,12 +1,14 @@
 var Future = Npm.require('fibers/future');
 
-DIMSE = {};
+DIMSE = {
+    connection: new Connection({
+        vr: {
+            split: false
+        }
+    })
+};
 
-var conn = new Connection({
-    vr: {
-        split: false
-    }
-});
+var conn = DIMSE.connection;
 
 var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
     return {
@@ -63,35 +65,6 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         //0x00082112: ''  // sourceImageSequence
     };
 };
-
-Meteor.startup(function() {
-    if (Meteor.settings.defaultServiceType !== 'dimse') {
-        return;
-    }
-
-    if (!Meteor.settings.servers.dimse ||
-        !Meteor.settings.servers.dimse.length) {
-        console.error('dimse-config: ' + 'No DIMSE Servers provided.');
-        throw new Meteor.Error('dimse-config', 'No DIMSE Servers provided.');
-    }
-
-    // TODO: [custom-servers] use active server and check if type is DIMSE
-    var peers = Meteor.settings.servers.dimse[0].peers;
-    if (!peers || !peers.length) {
-        console.error('dimse-config: ' + 'No DIMSE Peers provided.');
-        throw new Meteor.Error('dimse-config', 'No DIMSE Peers provided.');
-    }
-
-    console.log('Adding DIMSE peers');
-    try {
-        peers.forEach(function(peer) {
-            conn.addPeer(peer);
-        });
-    } catch(error) {
-        console.error('dimse-addPeers: ' + error);
-        throw new Meteor.Error('dimse-addPeers', error);
-    }
-});
 
 DIMSE.associate = function(contexts, callback, options) {
     var defaults = {
@@ -239,10 +212,10 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
             0x0020000E: '',
             0x00200011: ''
         };
-        var result = this.findSeries(Object.assign(defaultParams, params)),
-            series = [],
- conn = this,
- allInstances = [];
+        var result = this.findSeries(Object.assign(defaultParams, params));
+        var series = [];
+        var conn = this;
+        var allInstances = [];
 
         result.on('result', function(msg) {
             series.push(msg);

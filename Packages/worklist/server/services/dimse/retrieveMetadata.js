@@ -110,8 +110,8 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         };
 
         // Retrieve the actual data over WADO-URI
-        var server = Meteor.settings.servers.dicomWeb[0];
-        instanceSummary.wadouri = WADOProxy.convertURL(server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + "&contentType=application%2Fdicom", server.requestOptions);
+        var server = getCurrentServer();
+        instanceSummary.wadouri = WADOProxy.convertURL(server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom', server.requestOptions);
 
         series.instances.push(instanceSummary);
     });
@@ -127,8 +127,8 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
-    // TODO: Find active server
-    const activeServer = Meteor.settings.servers.dimse[0].peers[0];
+    // TODO: Check which peer it should point to
+    const activeServer = getCurrentServer().peers[0];
     const supportsInstanceRetrievalByStudyUid = activeServer.supportsInstanceRetrievalByStudyUid;
     let results;
 

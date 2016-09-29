@@ -7,6 +7,23 @@ Template.serverInformationDimse.onCreated(() => {
             instance.peers.set(currentItem.peers || []);
         }
     });
+    const api = instance.data.api;
+    _.extend(api, {
+        newPeer() {
+            const peers = instance.peers.get();
+            peers.push({});
+            instance.peers.set(peers);
+        },
+        removePeer(peerIndex) {
+            const peers = instance.peers.get();
+            peers.splice(peerIndex, 1);
+            instance.peers.set(peers);
+
+            const data = instance.data.currentItem.get();
+            data.peers = peers;
+            Tracker.afterFlush(() => instance.data.form.value(data));
+        }
+    });
 });
 
 Template.serverInformationDimse.onRendered(() => {
@@ -18,13 +35,4 @@ Template.serverInformationDimse.onRendered(() => {
             instance.data.form.value(data);
         }
     });
-});
-
-Template.serverInformationDimse.events({
-    'click .js-new-peer'(event, instance) {
-        event.preventDefault();
-        const peers = instance.peers.get();
-        peers.push({});
-        instance.peers.set(peers);
-    }
 });

@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+
 const worklistContentId = 'worklistTab';
 let lastContentId;
 
@@ -39,7 +42,7 @@ Template.ohifViewer.helpers({
             return 'Study list';
         }
     },
-    
+
     onStudyList() {
         return (Session.get('activeContentId') === 'worklistTab');
     }

@@ -46,10 +46,6 @@ Meteor.publish('reviewers', function() {
     return Reviewers.find();
 });
 
-Meteor.publish('servers', () => {
-    return Servers.find();
-});
-
 // Temporary fix to drop all Collections on server restart
 // http://stackoverflow.com/questions/23891631/meteor-how-can-i-drop-all-mongo-collections-and-clear-all-data-on-startup
 Meteor.startup(function() {

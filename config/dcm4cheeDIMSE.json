@@ -17,6 +17,7 @@
     }],
     "dimse": [{
       "name": "DCM4CHEE_DIMSE",
+      "wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
       "peers": [
         {
           "host": "localhost",

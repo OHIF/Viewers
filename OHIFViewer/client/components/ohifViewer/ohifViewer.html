@@ -11,19 +11,36 @@
                     Open Health Imaging Foundation
                 </div>
             </a>
-            {{ #if studyListToggleText }}
-            <a class="btn studyListLinkSection pull-left m-x-1 p-x-2 p-y-0 js-toggle-studyList">
-                {{studyListToggleText}}
-            </a>
-            {{ /if }}
-            <a class="btn pull-right p-y-0"
-               data-toggle="modal"
-               data-target="#aboutModal">
-                About
-            </a>
+            {{#if studyListToggleText}}
+                <a class="btn studyListLinkSection pull-left m-x-1 p-x-2 p-y-0 js-toggle-studyList">
+                    {{studyListToggleText}}
+                </a>
+            {{/if}}
+            <span class="pull-right">
+                <div class="dropdown">
+                    <div class="dropdown-toggle noselect clearfix" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="pull-left m-r-1">Options</span>
+                        <div class="menuButton pull-right"><span class="caret-down"></span></div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li>
+                            <a data-toggle="modal" data-target="#serverInformationModal">
+                                <i class="fa fa-server fa-lg"></i> Server Information
+                            </a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li>
+                            <a data-toggle="modal" data-target="#aboutModal">
+                                <i class="fa fa-info"></i> About
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </span>
         </div>
     </div>
-    {{> worklist }}
-    {{> aboutModal }}
-    {{> viewSeriesDetailsModal }}
+    {{>serverInformationModal}}
+    {{>worklist}}
+    {{>aboutModal}}
+    {{>viewSeriesDetailsModal}}
 </template>

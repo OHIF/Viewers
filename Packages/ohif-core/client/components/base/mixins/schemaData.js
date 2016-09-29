@@ -126,7 +126,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
 
                 // Stop here if there's no schema data for current key
                 if (!currentSchema) {
-                    return;
+                    return value;
                 }
 
                 // Check if the schema is a Number

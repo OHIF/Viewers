@@ -21,7 +21,7 @@ Template.cineDialog.onCreated(() => {
         },
         framesPerSecond: {
             type: Number,
-            label: 'Cine Speed',
+            label: '',
             defaultValue: 24,
             min: 1,
             max: 90,

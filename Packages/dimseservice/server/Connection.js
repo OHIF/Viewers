@@ -1,9 +1,9 @@
+import { _ } from 'meteor/underscore';
+
 // Uses NodeJS 'net'
 // https://nodejs.org/api/net.html
-var net = Npm.require('net'),
-    Socket = net.Socket;
-
-var DEFAULT_MAX_PACKAGE_SIZE = 32768;
+var net = Npm.require('net');
+var Socket = net.Socket;
 
 Connection = function(options) {
     EventEmitter.call(this);
@@ -16,10 +16,7 @@ Connection = function(options) {
         }
     }, options);
 
-    this.peers = {};
-    this.peerSockets = {};
-    this.defaultPeer = null;
-    this.defaultServer = null;
+    this.reset();
 };
 
 util.inherits(Connection, EventEmitter);
@@ -30,15 +27,29 @@ var StoreHandle = function() {
 
 util.inherits(StoreHandle, EventEmitter);
 
+Connection.prototype.reset = function() {
+    this.defaultPeer = null;
+    this.defaultServer = null;
+
+    _.each(this.peers, peerInfo => {
+        _.each(peerInfo.sockets, socket => socket.emit('close'));
+    });
+
+    this.peers = {};
+};
+
 Connection.prototype.addPeer = function(options) {
     if (!options.aeTitle || !options.host || !options.port) {
         return false;
     }
 
-    this.peers[options.aeTitle] = {
+    var peer = {
         host: options.host,
-        port: options.port
+        port: options.port,
+        sockets: {}
     };
+
+    this.peers[options.aeTitle] = peer;
     if (options.default) {
         if (options.server) {
             this.defaultServer = options.aeTitle;
@@ -49,22 +60,21 @@ Connection.prototype.addPeer = function(options) {
 
     if (options.server) {
         //start listening
-        var server = net.createServer();
-        server.listen(options.port, options.host, function() {
+        peer.server = net.createServer();
+        peer.server.listen(options.port, options.host, function() {
             console.log('listening on %j', this.address());
         });
-        server.on('error', function(err) {
+        peer.server.on('error', function(err) {
             console.log('server error %j', err);
         });
-        var o = this;
-        server.on('connection', function(nativeSocket) {
+        peer.server.on('connection', nativeSocket => {
             //incoming connections
-            var socket = new CSocket(nativeSocket, o.options);
-            o.addSocket(options.aeTitle, socket);
+            var socket = new CSocket(nativeSocket, this.options);
+            this.addSocket(options.aeTitle, socket);
 
             //close server on close socket
             socket.on('close', function() {
-                server.close();
+                peer.server.close();
             });
         });
     }
@@ -81,8 +91,8 @@ Connection.prototype.selectPeer = function(aeTitle) {
 Connection.prototype._sendFile = function(socket, sHandle, file, maxSend, metaLength, list) {
     var fileNameText = typeof file.file === 'string' ? file.file : 'buffer';
     console.log('Sending file ' + fileNameText);
-    var useContext = socket.getContextByUID(file.context),
- self = this;
+    var useContext = socket.getContextByUID(file.context);
+    var self = this;
 
     PDU.generatePDatas(useContext.id, file.file, maxSend, null, metaLength, function(err, handle) {
         if (err) {
@@ -122,13 +132,14 @@ Connection.prototype._sendFile = function(socket, sHandle, file, maxSend, metaLe
 };
 
 Connection.prototype.storeInstances = function(fileList) {
-    var contexts = {},
- read = 0,
- length = fileList.length,
- toSend = [],
- self = this,
- handle = new StoreHandle();
+    var contexts = {};
+    var read = 0;
+    var length = fileList.length;
+    var toSend = [];
+    var self = this;
+    var handle = new StoreHandle();
     var lastProcessedMetaLength;
+
     fileList.forEach(function(bufferOrFile) {
         var fileNameText = typeof bufferOrFile === 'string' ? bufferOrFile : 'buffer';
         DicomMessage.readMetaHeader(bufferOrFile, function(err, metaMessage, metaLength) {
@@ -144,9 +155,9 @@ Connection.prototype.storeInstances = function(fileList) {
 
             console.log('Dicom file ' + (typeof bufferOrFile === 'string' ? bufferOrFile : 'buffer') + ' found');
             lastProcessedMetaLength = metaLength;
-            var syntax = metaMessage.getValue(0x00020010),
-                sopClassUID = metaMessage.getValue(0x00020002),
-                instanceUID = metaMessage.getValue(0x00020003);
+            var syntax = metaMessage.getValue(0x00020010);
+            var sopClassUID = metaMessage.getValue(0x00020002);
+            var instanceUID = metaMessage.getValue(0x00020003);
 
             if (!contexts[sopClassUID]) {
                 contexts[sopClassUID] = [];
@@ -173,23 +184,22 @@ Connection.prototype.storeInstances = function(fileList) {
 // Starts to send dcm files
 sendProcessedFiles = function(self, contexts, toSend, handle, metaLength) {
     var useContexts = [];
-    for (var context in contexts) {
-        var useSyntaxes = contexts[context];
+    _.each(contexts, (useSyntaxes, context) => {
         if (useSyntaxes.length > 0) {
             useContexts.push({
                 context: context,
-                syntaxes: contexts[context]
+                syntaxes: useSyntaxes
             });
         } else {
             throw 'No syntax specified for context ' + context;
         }
-    }
+    });
 
     self.associate({
         contexts: useContexts
     }, function(ac) {
-        var maxSend = ac.getMaxSize(),
- next = toSend.shift();
+        var maxSend = ac.getMaxSize();
+        var next = toSend.shift();
         self._sendFile(this, handle, next, maxSend, metaLength, toSend);
 
     });
@@ -202,8 +212,8 @@ Connection.prototype.storeResponse = function(messageId, msg) {
         var status = rq.listener[2].call(this, msg);
         if (status !== undefined && status !== null && rq.command.store) {
             //store ok, ready to send c-store-rsp
-            var storeSr = rq.command.store,
-                replyMessage = storeSr.replyWith(status);
+            var storeSr = rq.command.store;
+            var replyMessage = storeSr.replyWith(status);
             replyMessage.setAffectedSOPInstanceUID(this.lastCommand.getSOPInstanceUID());
             replyMessage.setReplyMessageId(this.lastCommand.messageId);
             this.sendMessage(replyMessage, null, null, storeSr);
@@ -215,8 +225,8 @@ Connection.prototype.storeResponse = function(messageId, msg) {
 
 Connection.prototype.allClosed = function() {
     var allClosed = true;
-    for (var i in o.peerSockets) {
-        if (Object.keys(o.peerSockets[ae]).length > 0) {
+    for (var i in this.peers) {
+        if (Object.keys(peers[i].sockets).length > 0) {
             allClosed = false;
             break;
         }
@@ -225,34 +235,30 @@ Connection.prototype.allClosed = function() {
     return allClosed;
 };
 
-Connection.prototype.addSocket = function(ae, socket) {
-    if (!this.peerSockets[ae]) {
-        this.peerSockets[ae] = {};
-    }
+Connection.prototype.addSocket = function(hostAE, socket) {
+    var peerInfo = this.selectPeer(hostAE);
 
-    this.peerSockets[ae][socket.id] = socket;
+    peerInfo.sockets[socket.id] = socket;
 
-    var o = this;
     socket.on('close', function() {
-        if (o.peerSockets[ae][this.id]) {
-            delete o.peerSockets[ae][this.id];
+        if (peerInfo.sockets[this.id]) {
+            delete peerInfo.sockets[this.id];
         }
     });
 };
 
 Connection.prototype.associate = function(options, callback) {
-    var hostAE = options.hostAE ? options.hostAE : this.defaultPeer,
-        sourceAE = options.sourceAE ? options.sourceAE : this.defaultServer;
+    var hostAE = options.hostAE ? options.hostAE : this.defaultPeer;
+    var sourceAE = options.sourceAE ? options.sourceAE : this.defaultServer;
 
     if (!hostAE || !sourceAE) {
         throw 'Peers not provided or no defaults in settings';
     }
 
-    var peerInfo = this.selectPeer(hostAE),
-        nativeSocket = new Socket();
+    var peerInfo = this.selectPeer(hostAE);
+    var nativeSocket = new Socket();
 
-    var socket = new CSocket(nativeSocket, this.options),
-        o = this;
+    var socket = new CSocket(nativeSocket, this.options);
 
     if (callback) {
         socket.once('associated', callback);
@@ -268,9 +274,9 @@ Connection.prototype.associate = function(options, callback) {
     nativeSocket.connect({
         host: peerInfo.host,
         port: peerInfo.port
-    }, function() {
+    }, () => {
         //connected
-        o.addSocket(hostAE, socket);
+        this.addSocket(hostAE, socket);
 
         if (options.contexts) {
             socket.setPresentationContexts(options.contexts);

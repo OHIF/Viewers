@@ -1,19 +1,19 @@
 @import "{design}/app.styl"
 
 #cineDialog
-  theme('border', '1px solid $uiBorderColor', 0.95)
+  theme('border', '2px solid $uiBorderColor', 0.95)
   theme('background', '$uiGrayDarkest', 0.95)
   theme('color', '$textSecondaryColor')
   border-radius: 8px
   bottom: 3px
   box-sizing: border-box
-  height: 150px
+  height: 80px
   left: 50%
   overflow: hidden
   padding: 10px
   position: absolute
   right: 3px
-  top: 50%
+  top: 2%
   width: 300px
   z-index: 1000
   transform(translateX(-50%) translateY(-50%))
@@ -36,9 +36,10 @@
     &:active, &.active
       theme('color', '$activeColor')
 
+
   .cine-navigation
     position: absolute
-    right: 24px
+    right: 4px
     top: 4px
 
     .btn
@@ -49,12 +50,19 @@
         line-height: 36px
 
   .cine-controls
-    display: table
-    margin: 0 auto
+    left: 0px
 
   .cine-options
-    padding: 5px 0
-    overflow: auto
+    padding: 0px 0
+
+    .fps-section
+      width: 175px
+      float: left
+
+    #fps
+      float: right
+      padding: 5px 10px 0 0
 
     .loop-section
       padding-right: 12px
+
