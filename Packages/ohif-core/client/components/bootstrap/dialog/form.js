@@ -5,6 +5,7 @@ Template.dialogForm.onCreated(() => {
     const instance = Template.instance();
 
     instance.api = {
+
         confirm() {
             // Check if the form has valid data
             const form = instance.$('form').data('component');
@@ -20,6 +21,7 @@ Template.dialogForm.onCreated(() => {
                 instance.data.promiseResolve(formData);
             }
         },
+
         cancel() {
             // Call the cancel callback or resolve the promise
             if (_.isFunction(instance.data.cancelCallback)) {
@@ -28,6 +30,7 @@ Template.dialogForm.onCreated(() => {
                 instance.data.promiseReject();
             }
         }
+
     };
 });
 
@@ -44,5 +47,6 @@ Template.dialogForm.onRendered(() => {
     // Remove the created modal backdrop from DOM after promise is done
     const $backdrop = $modal.next('.modal-backdrop');
     const dismissDialogBackdrop = () => $backdrop.remove();
-    instance.data.promise.then(dismissDialogBackdrop).catch(dismissDialogBackdrop);
+    instance.data.promise.then(dismissDialogBackdrop, dismissDialogBackdrop);
+
 });
