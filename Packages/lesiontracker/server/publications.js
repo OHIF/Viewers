@@ -52,7 +52,9 @@ Meteor.startup(function() {
     for (var property in global) {
         var object = global[property];
         if (object instanceof Meteor.Collection) {
-            object.remove({});
+            if (!(/^server|currentServer$/).test(object._name)) {
+                object.remove({});
+            }
         }
     }
 });
