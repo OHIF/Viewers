@@ -1,3 +1,5 @@
+import { moment } from 'meteor/mrt:moment';
+
 /**
  * Parses resulting data from a QIDO call into a set of Study MetaData
  *
@@ -32,10 +34,20 @@ function resultDataToStudies(resultData) {
 
 Services.DIMSE.Studies = function(filter) {
     log.info('Services.DIMSE.Studies');
+
+    let filterStudyDate = '';
+    if (filter.studyDateFrom && filter.studyDateTo) {
+        const convertDate = date => moment(date, 'MM/DD/YYYY').format('YYYYMMDD');
+        const dateFrom = convertDate(filter.studyDateFrom);
+        const dateTo = convertDate(filter.studyDateTo);
+        filterStudyDate = `${dateFrom}-${dateTo}`;
+    }
+
     var parameters = {
         0x00100010: filter.patientName,
         0x00100020: filter.patientId,
         0x00080050: filter.accessionNumber,
+        0x00080020: filterStudyDate,
         0x00081030: filter.studyDescription,
         0x00100040: '',
         0x00201208: '',

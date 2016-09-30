@@ -45,7 +45,7 @@ Template.worklistResult.helpers({
 
     sortingColumnsIcons() {
         const instance = Template.instance();
-        
+
         let sortingColumnsIcons = {};
         Object.keys(instance.sortingColumns.keys).forEach(key => {
             const value = instance.sortingColumns.get(key);
@@ -218,13 +218,20 @@ Template.worklistResult.onRendered(() => {
     const instance = Template.instance();
 
     // Initialize daterangepicker
-    instance.$('#studyDate').daterangepicker({
+    const today = moment();
+    const lastWeek = moment().subtract(6, 'days');
+    const lastMonth = moment().subtract(29, 'days');
+    const datePicker = instance.$('#studyDate').daterangepicker({
+        maxDate: today,
+        autoUpdateInput: true,
         ranges: {
-            Today: [moment(), moment()],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()]
+            Today: [today, today],
+            'Last 7 Days': [lastWeek, today],
+            'Last 30 Days': [lastMonth, today]
         }
-    });
+    }).data('daterangepicker');
+    datePicker.setStartDate(lastWeek);
+    datePicker.setEndDate(today);
 
     // Retrieve all studies
     search();
@@ -251,7 +258,7 @@ Template.worklistResult.events({
 
     'change #studyDate'(event) {
         let dateRange = $(event.currentTarget).val();
-        
+
         // Remove all space chars
         dateRange = dateRange.replace(/ /g, '');
 
@@ -287,4 +294,3 @@ Template.worklistResult.events({
         Session.set('sortOption', sortOption);
     }
 });
-
