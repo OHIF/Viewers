@@ -79,7 +79,7 @@ class Bounded {
         const result = {};
 
         // Check if the element is the window
-        if (element === window) {
+        if (!element || element === window) {
             const $window = $(window);
             const width = $window.outerWidth();
             const height = $window.outerHeight();

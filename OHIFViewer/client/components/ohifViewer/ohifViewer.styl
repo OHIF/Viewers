@@ -9,6 +9,8 @@ $expandedHeight = 160px
 
 .topBar
   height: $topBarHeight
+  overflow: hidden
+  padding: 1rem $studyListPadding 0
   theme('color', '$textPrimaryColor')
   theme('background-color', '$primaryBackgroundColor')
   transition(all 0.5s ease)
@@ -19,7 +21,7 @@ $expandedHeight = 160px
     text-decoration: none
 
     .logoImage
-      margin: 0 8px
+      margin: 0 8px 0 0
       width: 30px
 
     .logoText
@@ -53,12 +55,11 @@ $expandedHeight = 160px
     .brandSection
       height: 100%
       width: 80%
-      padding-left: 50px
       line-height: $expandedHeight
 
       .logoImage
         width: 50px
-        margin: 0 20px
+        margin: 0 20px 0 0
 
       .logoText
         font-size: 30px
@@ -69,7 +70,7 @@ $expandedHeight = 160px
       top: 5px
       left: 5px
 
-#worklistTabs
+#studylistTabs
   height: "calc(100% - %s)" % $topBarHeight
 
   .tab-pane

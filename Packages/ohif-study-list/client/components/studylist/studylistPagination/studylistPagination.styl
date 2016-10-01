@@ -4,9 +4,6 @@
     font-size: 13px
     font-weight: normal !important
 
-  .rows-per-page
-    padding-top: 20px
-
     label
       font-weight: normal
 
@@ -15,18 +12,23 @@
       color: white
 
   .page-number
+    margin: 0
     text-align: right
 
     label
       font-weight: normal
 
       ul#pagination
+        margin: 0
 
         li
           a
             padding: 4px 8px
             theme('background-color', '$primaryBackgroundColor')
+            theme('border-color', '$uiGray')
+            theme('background-color', '$uiGrayDarkest')
             color: white
+            padding: 4px 8px
 
             &:hover
               theme('color', '$activeColor')
@@ -41,3 +43,13 @@
           a:hover
             color: inherit
 
+          &:not(.disabled):hover a
+            theme('background-color', '$uiGrayDark')
+            theme('color', '$activeColor')
+
+          &.active a
+            theme('background-color', '$uiGrayDark')
+            theme('color', '$activeColor')
+
+          &.disabled a
+            theme('color', '$uiGrayLight')

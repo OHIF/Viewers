@@ -19,7 +19,7 @@ const currentServerChangeHandler = () => {
         return;
     }
 
-    switchToTab('worklistTab');
+    switchToTab('studylistTab');
 };
 
 CurrentServer.find().observe({

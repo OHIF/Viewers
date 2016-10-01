@@ -8,23 +8,21 @@ $inputBackgroundColor = #2c363f
 $inputPlaceholderColor = lightgray
 
 $studyListToolbarHeight = 75px
-$tablePadding = 8%
 $bodyCellHeight = 40px
 
 .studyListToolbar
   theme('background', '$uiGrayDarker')
   height: $studyListToolbarHeight
-  border-bottom: 2px solid black
-  padding: 0 30px
+  margin-bottom: 2px
+  padding: 0 $studyListPadding
 
-  div
+  &>div
     display: inline-block
 
   .header
     font-size: 22px
     font-weight: 300
     color: $tableTextSecondaryColor
-    padding: 0 10px
     line-height: $studyListToolbarHeight
 
   .studylistToolbar
@@ -35,20 +33,35 @@ $bodyCellHeight = 40px
     theme('color', '$uiSkyBlue')
     font-size: 40px
     font-weight: 100
-    padding: 0 10px
     line-height: $studyListToolbarHeight
 
 .theadBackground
-  theme('background-color', '$uiGrayDarker')
-  width: 100%
-  height: 122px
+  height: 121px
   position: absolute
-  z-index: 1
+  width: 100%
+
+  &:before, &:after
+    content: ''
+    display: block
+    left: 0
+    position: absolute
+    width: 100%
+
+  &:before
+    theme('background-color', '$uiGrayDarker')
+    height: 100%
+    top: 0
+    z-index: 1
+
+  &:after
+    theme('background-color', '$uiSkyBlue')
+    bottom: -1px
+    height: 1px
+    z-index: 3
 
 #studyListContainer
-  background: black
   width: 100%
-  padding: 0 $tablePadding
+  padding: 0 $studyListPadding
   position: absolute
   z-index: 2
 
@@ -64,7 +77,6 @@ $bodyCellHeight = 40px
 
   table#tblStudyList
     thead
-      theme('background-color', '$uiGrayDarker')
       white-space: nowrap
 
       tr
@@ -144,14 +156,9 @@ $bodyCellHeight = 40px
           color: $tableTextPrimaryColor
           font-weight: 300
           border-top: 1px solid #436270
+          border-bottom: 1px solid #436270
           white-space: nowrap
           transition(all 0.1s ease)
-
-          &:first-child
-            padding-left: $tablePadding
-
-          &:last-child
-            padding-right: $tablePadding
 
         &:hover, &:active, &.active
           background-color: $tableHoverColor
@@ -162,7 +169,6 @@ $bodyCellHeight = 40px
             border-top: 1px solid #436270
             border-bottom: 1px solid #436270
             background-color: $tableHoverColor
-
 
 @media only screen and (max-width: 1362px)
   $tablePadding = 5%

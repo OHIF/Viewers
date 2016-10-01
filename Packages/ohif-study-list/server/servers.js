@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { _ } from 'meteor/underscore';
 
 Meteor.startup(function() {
     console.log('Adding Servers from JSON Configuration');
@@ -72,7 +73,7 @@ class ServersControl {
     }
 
     static remove(serverId) {
-        var query = {
+        const query = {
             _id: serverId
         };
 

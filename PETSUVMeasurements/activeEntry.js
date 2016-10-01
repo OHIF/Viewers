@@ -6,10 +6,10 @@ if (Meteor.isClient){
         },
         signIn: {
             displayFullName: true,
-            destination: '/worklist'
+            destination: '/studylist'
         },
         signUp: {
-            destination: '/worklist'
+            destination: '/studylist'
         },
         themeColors: {
             primary: ""
