@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 
-const worklistContentId = 'worklistTab';
+const studylistContentId = 'studylistTab';
 let lastContentId;
 
 // Define the ViewerData global object
@@ -15,8 +15,8 @@ Template.ohifViewer.events({
     'click .js-toggle-studyList'() {
         const contentId = Session.get('activeContentId');
 
-        if (contentId !== worklistContentId) {
-            switchToTab(worklistContentId);
+        if (contentId !== studylistContentId) {
+            switchToTab(studylistContentId);
         } else {
             switchToTab(lastContentId);
         }
@@ -35,7 +35,7 @@ Template.ohifViewer.helpers({
             return;
         }
 
-        if (contentId === worklistContentId) {
+        if (contentId === studylistContentId) {
             return 'Back to viewer';
         } else {
             lastContentId = contentId;
@@ -44,6 +44,6 @@ Template.ohifViewer.helpers({
     },
 
     onStudyList() {
-        return (Session.get('activeContentId') === 'worklistTab');
+        return (Session.get('activeContentId') === 'studylistTab');
     }
 });

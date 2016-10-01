@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { _ } from 'meteor/underscore';
 
 Meteor.startup(function() {
     Servers.remove({
@@ -7,7 +8,7 @@ Meteor.startup(function() {
 
     _.each(Meteor.settings.servers, function(endpoints, serverType) {
         _.each(endpoints, function(endpoint) {
-            var server = _.clone(endpoint);
+            const server = _.clone(endpoint);
             server.origin = 'json';
             server.type = serverType;
             Servers.insert(server);
@@ -71,7 +72,7 @@ class ServersControl {
     }
 
     static remove(serverId) {
-        var query = {
+        const query = {
             _id: serverId
         };
 

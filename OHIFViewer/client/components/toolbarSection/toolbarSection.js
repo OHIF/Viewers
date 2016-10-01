@@ -19,7 +19,7 @@ Template.toolbarSection.helpers({
             value: instance.data.state,
             options: [{
                 value: 'studies',
-                svgLink: '/packages/viewerbase/assets/icons.svg#icon-studies',
+                svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-studies',
                 svgWidth: 15,
                 svgHeight: 13,
                 bottomLabel: 'Series'
@@ -47,35 +47,35 @@ Template.toolbarSection.helpers({
             id: 'zoom',
             title: 'Zoom',
             classes: 'imageViewerTool',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-zoom'
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-zoom'
         });
 
         buttonData.push({
             id: 'wwwc',
             title: 'Levels',
             classes: 'imageViewerTool',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-levels'
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-levels'
         });
 
         buttonData.push({
             id: 'pan',
             title: 'Pan',
             classes: 'imageViewerTool',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-pan'
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
         });
 
         buttonData.push({
             id: 'length',
             title: 'Length',
             classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-temp'
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
 
         buttonData.push({
             id: 'annotate',
             title: 'Annotate',
             classes: 'imageViewerTool',
-            svgLink: '/packages/viewerbase/assets/icons.svg#icon-tools-measure-non-target'
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
         });
 
         buttonData.push({

@@ -205,10 +205,6 @@ Template.thumbnailEntry.onCreated(() => {
     instance.isDragAndDrop = _.isUndefined(instance.data.viewportIndex);
 });
 
-Template.thumbnailEntry.onRendered(() => {
-    console.warn('thumbnailEntry onRendered');
-});
-
 Template.thumbnailEntry.events({
     // Event handlers for drag and drop
     'touchstart .thumbnailEntry, mousedown .thumbnailEntry'(event, instance) {

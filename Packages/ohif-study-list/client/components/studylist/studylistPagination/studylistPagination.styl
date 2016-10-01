@@ -4,36 +4,37 @@
     font-size: 13px
     font-weight: normal !important
 
-  .rows-per-page
-    padding-top: 20px
-
     label
       font-weight: normal
 
     select
-      background-color: $primaryBackgroundColor
+      theme('background-color', '$primaryBackgroundColor')
       color: white
 
   .page-number
+    margin: 0
     text-align: right
 
     label
       font-weight: normal
 
       ul#pagination
+        margin: 0
 
         li
           a
+            theme('border-color', '$uiGray')
+            theme('background-color', '$uiGrayDarkest')
+            color: white
             padding: 4px 8px
-            background-color: $primaryBackgroundColor
-            color: white
 
-            &:hover
-              color: $activeColor
+          &:not(.disabled):hover a
+            theme('background-color', '$uiGrayDark')
+            theme('color', '$activeColor')
 
-        .active
+          &.active a
+            theme('background-color', '$uiGrayDark')
+            theme('color', '$activeColor')
 
-          a
-            background-color: $uiGrayDarker
-            color: white
-
+          &.disabled a
+            theme('color', '$uiGrayLight')

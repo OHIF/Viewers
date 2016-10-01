@@ -19,7 +19,7 @@
                 {{#button class='btn' action='cinePrevious' title='Previous image'}}
                     <i class="fa fa-step-backward"></i>
                 {{/button}}
-                {{#button class='btn' action='cineToggle' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
+                {{#button action='cineToggle' title='Play / Stop' class=(concat 'btn ' (valueIf isPlaying 'active' ''))}}
                     {{#if isPlaying}}
                         <i class="fa fa-fw fa-stop"></i>
                     {{else}}
