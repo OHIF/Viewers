@@ -9,11 +9,13 @@ $expandedHeight = 160px
 
 .topBar
   height: $topBarHeight
-  overflow: hidden
-  padding: 1rem $studyListPadding 0
+  padding: 10px 10px 0
   theme('color', '$textPrimaryColor')
   theme('background-color', '$primaryBackgroundColor')
   transition(all 0.5s ease)
+
+  &>.clearfix
+    position: relative
 
   .brandSection
     height: 30px
@@ -31,13 +33,17 @@ $expandedHeight = 160px
       theme('color', '$textPrimaryColor')
       line-height: 30px
 
+  .studyListLinkSection
+    theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+    margin: 3px 0 0 10px
+    padding: 0 0 0 10px
+
   .btn
     theme('color', '$textSecondaryColor')
     cursor: pointer
     font-size: 13px
     font-weight: 500
     line-height: 26px
-    margin-top: 3px
 
     &:hover
       theme('color', '$hoverColor')
@@ -48,11 +54,13 @@ $expandedHeight = 160px
   &.studyList
     background-color: rgba(21, 25, 30, 0.7)
     height: $expandedHeight
+    padding-left: $studyListPadding
+    padding-right: $studyListPadding
 
     .brandSection
       height: 100%
       width: 80%
-      line-height: $expandedHeight
+      line-height: $expandedHeight - 10px
 
       .logoImage
         width: 50px
@@ -60,6 +68,14 @@ $expandedHeight = 160px
 
       .logoText
         font-size: 30px
+
+    .studyListLinkSection
+      border: none
+      left: 0
+      margin: 0
+      padding: 0
+      position: absolute
+      top: 0
 
 #studylistTabs
   height: "calc(100% - %s)" % $topBarHeight
