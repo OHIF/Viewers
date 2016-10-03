@@ -107,7 +107,7 @@ $spacerY = 12px
     &
     &:before
     &:after
-      theme('border', '$borderThickness solid $primaryBackgroundColor')
+      theme('border', '%s solid $primaryBackgroundColor' % $borderThickness)
       theme('background-color', '$boxBackgroundColor')
       border-radius: $boxBorderRadius
       height: $boxWidth + ($borderThickness * 2)
