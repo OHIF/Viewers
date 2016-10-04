@@ -1,10 +1,8 @@
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
 
-Template.dialogForm.onRendered(() => {
+Template.dialogForm.onCreated(() => {
     const instance = Template.instance();
-
-    const $modal = instance.$('.modal');
 
     instance.api = {
 
@@ -16,7 +14,7 @@ Template.dialogForm.onRendered(() => {
             }
 
             // Hide the modal, removing the backdrop
-            $modal.modal('hide');
+            instance.$('.modal').modal('hide');
 
             // Get the form value and call the confirm callback or resolve the promise
             const formData = form.value();
@@ -29,7 +27,7 @@ Template.dialogForm.onRendered(() => {
 
         cancel() {
             // Hide the modal, removing the backdrop
-            $modal.modal('hide');
+            instance.$('.modal').modal('hide');
 
             // Call the cancel callback or resolve the promise
             if (_.isFunction(instance.data.cancelCallback)) {
@@ -51,4 +49,9 @@ Template.dialogForm.onRendered(() => {
         backdrop: 'static',
         keyboard: false
     });
+
+    // Remove the created modal backdrop from DOM after promise is done
+    const $backdrop = $modal.next('.modal-backdrop');
+    const dismissDialogBackdrop = () => $backdrop.remove();
+    instance.data.promise.then(dismissDialogBackdrop, dismissDialogBackdrop);
 });
