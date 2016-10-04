@@ -14,27 +14,27 @@ Template.dialogForm.onCreated(() => {
             }
 
             // Hide the modal, removing the backdrop
-            instance.$('.modal').modal('hide');
-
-            // Get the form value and call the confirm callback or resolve the promise
-            const formData = form.value();
-            if (_.isFunction(instance.data.confirmCallback)) {
-                instance.data.confirmCallback(formData, instance.data.promiseResolve);
-            } else {
-                instance.data.promiseResolve(formData);
-            }
+            instance.$('.modal').on('hidden.bs.modal', event => {
+                // Get the form value and call the confirm callback or resolve the promise
+                const formData = form.value();
+                if (_.isFunction(instance.data.confirmCallback)) {
+                    instance.data.confirmCallback(formData, instance.data.promiseResolve);
+                } else {
+                    instance.data.promiseResolve(formData);
+                }
+            }).modal('hide');
         },
 
         cancel() {
             // Hide the modal, removing the backdrop
-            instance.$('.modal').modal('hide');
-
-            // Call the cancel callback or resolve the promise
-            if (_.isFunction(instance.data.cancelCallback)) {
-                instance.data.cancelCallback(instance.data.promiseReject);
-            } else {
-                instance.data.promiseReject();
-            }
+            instance.$('.modal').on('hidden.bs.modal', event => {
+                // Call the cancel callback or resolve the promise
+                if (_.isFunction(instance.data.cancelCallback)) {
+                    instance.data.cancelCallback(instance.data.promiseReject);
+                } else {
+                    instance.data.promiseReject();
+                }
+            }).modal('hide');
         }
 
     };
@@ -49,9 +49,4 @@ Template.dialogForm.onRendered(() => {
         backdrop: 'static',
         keyboard: false
     });
-
-    // Remove the created modal backdrop from DOM after promise is done
-    const $backdrop = $modal.next('.modal-backdrop');
-    const dismissDialogBackdrop = () => $backdrop.remove();
-    instance.data.promise.then(dismissDialogBackdrop, dismissDialogBackdrop);
 });
