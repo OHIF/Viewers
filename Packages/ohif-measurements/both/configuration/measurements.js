@@ -7,7 +7,7 @@ let configuration = {};
 
 class MeasurementApi {
     static setConfiguration(config) {
-        configuration = config;
+        _.extend(configuration, config);
     }
 
     static getConfiguration() {

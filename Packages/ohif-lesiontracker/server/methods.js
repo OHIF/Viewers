@@ -8,7 +8,13 @@ measurementTools.forEach(tool => {
     MeasurementCollections[tool.id] = new Mongo.Collection(tool.id);
 });
 
-Timepoints = new Mongo.Collection('timepoints');
+const Timepoints = new Mongo.Collection('timepoints');
+
+Timepoints.find().observe({
+    remove() {
+        console.warn('REMOVED');
+    }
+});
 
 // Drop our collections for testing purposes
 Meteor.startup(() => {
