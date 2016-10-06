@@ -22,7 +22,7 @@ class TimepointApi {
         }
     }
 
-    retrieveTimepoints() {
+    retrieveTimepoints(filter) {
         this.timepoints = new Mongo.Collection(null);
         this.timepoints.attachSchema(TimepointSchema);
         this.timepoints._debugName = 'Timepoints';
@@ -33,7 +33,7 @@ class TimepointApi {
         }
 
         return new Promise((resolve, reject) => {
-            retrievalFn().then(timepointData => {
+            retrievalFn(filter).then(timepointData => {
                 OHIF.log.info('Timepoint data retrieval');
                 OHIF.log.info(timepointData);
                 _.each(timepointData, timepoint => {

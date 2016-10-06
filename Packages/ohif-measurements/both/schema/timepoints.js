@@ -7,8 +7,7 @@ export const schema = new SimpleSchema({
     },
     timepointId: {
         type: String,
-        label: 'Timepoint ID',
-        regEx: SimpleSchema.RegEx.Id
+        label: 'Timepoint ID'
     },
     timepointType: {
         type: String,
