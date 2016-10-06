@@ -63,7 +63,7 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
         });
 
         if (!studylistStudy) {
-            return;
+            // return;
         }
 
         $.extend(study, studylistStudy);
