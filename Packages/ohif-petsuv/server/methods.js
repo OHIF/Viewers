@@ -20,7 +20,7 @@ Meteor.startup(() => {
 })
 
 
-// TODO: Make storage use update instead of clearing the entire collection and 
+// TODO: Make storage use update instead of clearing the entire collection and
 // re-inserting everything.
 Meteor.methods({
 	storeTimepoints(timepoints) {

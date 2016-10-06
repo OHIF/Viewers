@@ -9,7 +9,7 @@ let configuration = {};
 
 class TimepointApi {
     static setConfiguration(config) {
-        configuration = config;
+        _.extend(configuration, config);
     }
 
     static getConfiguration() {
@@ -20,8 +20,6 @@ class TimepointApi {
         if (currentTimepointId) {
             this.currentTimepointId = currentTimepointId;
         }
-
-        this.config = configuration || OHIF.measurements.MeasurementApi.getConfiguration();
     }
 
     retrieveTimepoints() {
@@ -29,7 +27,7 @@ class TimepointApi {
         this.timepoints.attachSchema(TimepointSchema);
         this.timepoints._debugName = 'Timepoints';
 
-        const retrievalFn = this.config.dataExchange.retrieve;
+        const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
             return;
         }
@@ -49,7 +47,7 @@ class TimepointApi {
     }
 
     storeTimepoints() {
-        const storeFn = this.config.dataExchange.store;
+        const storeFn = configuration.dataExchange.store;
         if (!_.isFunction(storeFn)) {
             return;
         }
