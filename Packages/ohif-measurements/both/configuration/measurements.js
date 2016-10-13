@@ -14,14 +14,12 @@ class MeasurementApi {
         return configuration;
     }
 
-    constructor(currentTimepointId, configuration) {
+    constructor(currentTimepointId) {
         if (currentTimepointId) {
             this.currentTimepointId = currentTimepointId;
         }
 
-        this.config = configuration || MeasurementApi.getConfiguration();
-
-        this.config.measurementTools.forEach(tool => {
+        configuration.measurementTools.forEach(tool => {
             const measurementTypeId = tool.id;
 
             this[measurementTypeId] = new Mongo.Collection(null);
@@ -34,13 +32,13 @@ class MeasurementApi {
             timepointId = this.currentTimepointId;
         }
 
-        const retrievalFn = this.config.dataExchange.retrieve;
+        const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
             return;
         }
 
         return new Promise((resolve, reject) => {
-            retrievalFn().then(measurementData => {
+            retrievalFn(timepointId).then(measurementData => {
 
                 OHIF.log.info('Measurement data retrieval');
                 OHIF.log.info(measurementData);
@@ -60,13 +58,13 @@ class MeasurementApi {
     }
 
     storeMeasurements(timepointId) {
-        const storeFn = this.config.dataExchange.store;
+        const storeFn = configuration.dataExchange.store;
         if (!_.isFunction(storeFn)) {
             return;
         }
 
         let measurementData = {};
-        this.config.measurementTools.forEach(tool => {
+        configuration.measurementTools.forEach(tool => {
             const measurementTypeId = tool.id;
             measurementData[measurementTypeId] = this[measurementTypeId].find().fetch();
         });
@@ -77,14 +75,14 @@ class MeasurementApi {
     }
 
     validateMeasurements() {
-        const validateFn = this.config.dataValidation.validateMeasurements;
+        const validateFn = configuration.dataValidation.validateMeasurements;
         if (validateFn && validateFn instanceof Function) {
             validateFn();
         }
     }
 
     syncMeasurementsAndToolData() {
-        this.config.measurementTools.forEach(tool => {
+        configuration.measurementTools.forEach(tool => {
             const measurements = this[tool.id].find().fetch();
             measurements.forEach(measurement => {
                 OHIF.measurements.syncMeasurementAndToolData(measurement);
