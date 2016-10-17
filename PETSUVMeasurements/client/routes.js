@@ -40,7 +40,7 @@ Router.route('/viewer/timepoints/:_id', {
         var timepointId = this.params._id;
 
         this.render('app', routerOptions);
-        openNewTabWithTimepoint(timepointId);
+        OHIF.lesiontracker.openNewTabWithTimepoint(timepointId);
     }
 });
 

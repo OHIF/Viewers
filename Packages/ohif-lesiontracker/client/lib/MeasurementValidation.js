@@ -223,7 +223,7 @@ function validateSingleMeasurement(measurementData) {
     }).map(function(criteria) {
         return criteria.id;
     });
-    var currentConstraints = getTrialCriteriaConstraints(criteriaTypes, measurementData.imageId);
+    var currentConstraints = OHIF.lesiontracker.getTrialCriteriaConstraints(criteriaTypes, measurementData.imageId);
 
     // If we have no relevant constraints, stop here
     if (!currentConstraints) {
@@ -275,7 +275,7 @@ function validateGroups() {
     });
 
     // Criteria for the specific image are retrieved from the general set of criteria.
-    var currentConstraints = getTrialCriteriaConstraints(criteriaTypes);
+    var currentConstraints = OHIF.lesiontracker.getTrialCriteriaConstraints(criteriaTypes);
     if (!currentConstraints) {
         return;
     }
@@ -320,7 +320,7 @@ function validateAll() {
             currentMeasurement._id = measurement._id;
 
             // Criteria for the specific image are retrieved from the general set of criteria.
-            var currentConstraints = getTrialCriteriaConstraints(criteriaTypes, currentMeasurement.imageId);
+            var currentConstraints = OHIF.lesiontracker.getTrialCriteriaConstraints(criteriaTypes, currentMeasurement.imageId);
             if (!currentConstraints) {
                 return;
             }

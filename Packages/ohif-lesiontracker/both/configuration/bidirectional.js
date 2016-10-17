@@ -60,7 +60,7 @@ function displayFunction(data) {
         return criteria.id;
     });
 
-    const currentConstraints = getTrialCriteriaConstraints(criteriaTypes, data.imageId);
+    const currentConstraints = OHIF.lesiontracker.getTrialCriteriaConstraints(criteriaTypes, data.imageId);
 
     if (data.shortestDiameter) {
         // TODO: Make this check criteria again to see if we should display
@@ -81,6 +81,6 @@ export const bidirectional = {
         measurementTableOptions: {
             displayFunction: displayFunction
         },
-        includeInCaseProgress: true,        
+        includeInCaseProgress: true,
     },
 }

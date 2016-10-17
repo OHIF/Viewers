@@ -1,7 +1,8 @@
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 
 // Define the Trial Criteria Structure
-TrialCriteriaConstraints = {
+OHIF.lesiontracker.TrialCriteriaConstraints = {
     RECIST: RECIST,
     irRC: irRC
 };
@@ -331,41 +332,41 @@ function irRC(image) {
  * @param imageId A Cornerstone Image ID
  * @returns {*} An Object of Trial Criteria that can be used to validate measurements' conformance
  */
-getTrialCriteriaConstraints = function(criteriaTypes, imageId) {
+OHIF.lesiontracker.getTrialCriteriaConstraints = (criteriaTypes, imageId) => {
     // TODO: update this when we allow multiple criteria
-    var allCriteria = [];
+    const allCriteria = [];
     criteriaTypes.forEach(function(criteriaType) {
-        if (!TrialCriteriaConstraints[criteriaType]) {
+        if (!OHIF.lesiontracker.TrialCriteriaConstraints[criteriaType]) {
             throw 'No such Trial Criteria defined: ' + criteriaType;
         }
 
         // If no imageId was specified, skip customization of the criteria
         // and return the requested criteria right away
-        var criteria;
+        let criteria;
         if (!imageId) {
-            criteria = TrialCriteriaConstraints[criteriaType]();
+            criteria = OHIF.lesiontracker.TrialCriteriaConstraints[criteriaType]();
             allCriteria.push(criteria);
             return;
         }
 
         // Otherwise, retrieve the series metaData to identify the modality of the image
-        var seriesMetaData = cornerstoneTools.metaData.get('series', imageId);
+        const seriesMetaData = cornerstoneTools.metaData.get('series', imageId);
         if (!seriesMetaData) {
             return;
         }
 
         // TODO: Get the rest of the metaData that has already been loaded by Cornerstone
-        var image = {};
+        const image = {};
 
         // If we are looking at an MR or CT image, we should pass the slice thickness
         // to the Trial Criteria functions so that they can customize the validation rules
         if (seriesMetaData.modality === 'MR' || seriesMetaData.modality === 'CT') {
-            var instanceMetaData = cornerstoneTools.metaData.get('instance', imageId);
+            const instanceMetaData = cornerstoneTools.metaData.get('instance', imageId);
             image.acquisitionSliceThickness = instanceMetaData.sliceThickness;
         }
 
         // Retrieve the study metaData in order to find the timepoint type
-        var studyMetaData = cornerstoneTools.metaData.get('study', imageId);
+        const studyMetaData = cornerstoneTools.metaData.get('study', imageId);
         if (!studyMetaData) {
             return;
         }
@@ -383,10 +384,10 @@ getTrialCriteriaConstraints = function(criteriaTypes, imageId) {
         }
 
         // Retrieve the Timepoint's type (e.g. 'baseline' or 'followup')
-        var timepointType = timepoint.timepointType;
+        const timepointType = timepoint.timepointType;
 
         // Obtain the customized trial criteria given the image metaData
-        criteria = TrialCriteriaConstraints[criteriaType](image);
+        criteria = OHIF.lesiontracker.TrialCriteriaConstraints[criteriaType](image);
 
         // Return the relevant criteria given the current timepoint type
         allCriteria.push(criteria[timepointType]);

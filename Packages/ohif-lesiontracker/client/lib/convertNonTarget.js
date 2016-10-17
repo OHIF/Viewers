@@ -67,6 +67,6 @@ convertNonTarget = function(measurementApi, measurementData, newTooltype) {
     if (measurement) {
         // Remove the timepointData from this Measurement and update it
         // in the database, if it is already in the database
-        clearMeasurementTimepointData(measurement._id, measurementData.timepointId);
+        OHIF.lesiontracker.clearMeasurementTimepointData(measurement._id, measurementData.timepointId);
     }
 };
