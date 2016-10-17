@@ -1,17 +1,19 @@
-convertToNonTarget = function(measurementApi, measurementData) {
+import { OHIF } from 'meteor/ohif:core';
+
+OHIF.lesiontracker.convertToNonTarget = (measurementApi, measurementData) => {
     if (measurementData.isTarget === false) {
         return;
     }
 
-    var measurement = Measurements.findOne(measurementData.id);
+    const measurement = Measurements.findOne(measurementData.id);
 
-    var timepoint = Timepoints.findOne({
+    const timepoint = Timepoints.findOne({
         timepointId: measurementData.timepointId
     });
 
     // Next, update the measurementData and add it to the new tool type
-    var toolType = 'nonTarget';
-    var newMeasurement = {
+    const toolType = 'nonTarget';
+    const newMeasurement = {
         id: 'notready',
         lesionNumber: LesionManager.getNewLesionNumber(measurementData.timepointId, false),
         visible: true,
@@ -23,7 +25,7 @@ convertToNonTarget = function(measurementApi, measurementData) {
         isTarget: false,
         toolType: toolType
     };
-    
+
     if (timepoint && timepoint.timepointType === 'baseline') {
         newMeasurement.response = 'Present';
     } else {
@@ -79,6 +81,6 @@ convertToNonTarget = function(measurementApi, measurementData) {
     if (measurement) {
         // Remove the timepointData from this Measurement and update it
         // in the database, if it is already in the database
-        clearMeasurementTimepointData(measurement._id, measurementData.timepointId);
+        OHIF.lesiontracker.clearMeasurementTimepointData(measurement._id, measurementData.timepointId);
     }
 };

@@ -44,7 +44,7 @@ function doneCallback(measurementData, deleteTool) {
     // the specified Timepoint Cell
     if (deleteTool === true) {
         OHIF.log.info('Confirm clicked!');
-        clearMeasurementTimepointData(measurementData.id, measurementData.timepointId);
+        OHIF.lesiontracker.clearMeasurementTimepointData(measurementData.id, measurementData.timepointId);
     }
 }
 
@@ -80,7 +80,7 @@ Template.measurementTableTimepointCell.events({
 
         if (currentMeasurement.isTarget) {
             showConfirmDialog(function() {
-                clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
+                OHIF.lesiontracker.clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
             });
         } else {
             changeNonTargetResponse(measurementData, null, doneCallback);
@@ -94,7 +94,7 @@ Template.measurementTableTimepointCell.events({
             const currentTimepointID = this.timepointId;
 
             showConfirmDialog(function() {
-                clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
+                OHIF.lesiontracker.clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
             });
         }
     }

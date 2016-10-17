@@ -17,7 +17,7 @@ Template.viewer.onCreated(() => {
     const contentId = instance.data.contentId;
 
     OHIF.viewer.functionList = $.extend(OHIF.viewer.functionList, {
-        toggleLesionTrackerTools: toggleLesionTrackerTools,
+        toggleLesionTrackerTools: OHIF.lesiontracker.toggleLesionTrackerTools,
         clearTools: clearTools,
         bidirectional: () => {
             // Used for hotkeys
@@ -49,7 +49,7 @@ Template.viewer.onCreated(() => {
     Session.set('activeViewport', ViewerData[contentId].activeViewport || false);
 
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element
-    instance.autorun(pixelSpacingAutorunCheck);
+    instance.autorun(OHIF.lesiontracker.pixelSpacingAutorunCheck);
 
     // Update the ViewerStudies collection with the loaded studies
     ViewerStudies.remove({});

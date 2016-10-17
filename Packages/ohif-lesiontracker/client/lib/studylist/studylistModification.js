@@ -28,7 +28,7 @@ function dblClickOnStudy(data) {
     if (timepoint) {
         // Add the Timepoint name to the Patient name to create the tab title
         title += ' ' + timepointApi.name(timepoint);
-        openNewTabWithTimepoint(timepoint.timepointId, title);
+        OHIF.lesiontracker.openNewTabWithTimepoint(timepoint.timepointId, title);
     } else {
         open(data.studyInstanceUid, title);
     }

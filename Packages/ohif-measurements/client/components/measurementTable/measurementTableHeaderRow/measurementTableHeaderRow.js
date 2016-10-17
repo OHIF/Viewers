@@ -29,7 +29,7 @@ Template.measurementTableHeaderRow.onCreated(() => {
                 return criteria.id;
             });
 
-            const currentConstraints = getTrialCriteriaConstraints(criteriaTypes);
+            const currentConstraints = OHIF.lesiontracker.getTrialCriteriaConstraints(criteriaTypes);
             if (!currentConstraints) {
                 return;
             }

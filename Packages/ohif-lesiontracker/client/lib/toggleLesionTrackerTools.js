@@ -1,20 +1,22 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Show / hide lesion tracker tools
  */
 
-var previousStates;
-var previousActiveTool;
+let previousStates;
+let previousActiveTool;
 
-var toolsShown = true;
+let toolsShown = true;
 
-toggleLesionTrackerTools = function() {
+OHIF.lesiontracker.toggleLesionTrackerTools = () => {
     if (toolsShown === true) {
         // Save the current settings for later
         previousStates = toolManager.getToolDefaultStates();
         previousActiveTool = toolManager.getActiveTool();
 
         // Hide the tools (set them all to disabled)
-        var toolDefaultStates = {
+        const toolDefaultStates = {
             activate: [ 'deleteLesionKeyboardTool' ],
             deactivate: [],
             enable: [],

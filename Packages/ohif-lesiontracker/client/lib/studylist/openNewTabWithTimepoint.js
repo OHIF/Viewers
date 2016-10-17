@@ -7,7 +7,7 @@ import { OHIF } from 'meteor/ohif:core';
  * @param timepointId The UID of the Timepoint to be opened
  * @param title The title to be used for the tab heading
  */
-openNewTabWithTimepoint = function(timepointId, title) {
+OHIF.lesiontracker.openNewTabWithTimepoint = (timepointId, title) => {
     const contentId = 'viewerTab';
 
     const Timepoints = StudyList.timepointApi.timepoints;

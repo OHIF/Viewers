@@ -1,24 +1,26 @@
+import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 
-pixelSpacingAutorunCheck = function() {
+OHIF.lesiontracker.pixelSpacingAutorunCheck = () => {
     OHIF.log.info('lesionTool button change autorun');
 
     // Get oncology tools
-    var oncologyTools = $('button#lesion, button#nonTarget');
+    const $oncologyTools = $('button#lesion, button#nonTarget');
 
     // TODO: Set activeViewport for empty viewport element
-    var activeViewportIndex = Session.get('activeViewport');
+    const activeViewportIndex = Session.get('activeViewport');
     if (activeViewportIndex === undefined) {
         return;
     }
 
-    var element = $('.imageViewerViewport').get(activeViewportIndex);
+    const element = $('.imageViewerViewport').get(activeViewportIndex);
     if (!element) {
         return;
     }
 
+    let enabledElement;
     try {
-        var enabledElement = cornerstone.getEnabledElement(element);
+        enabledElement = cornerstone.getEnabledElement(element);
     } catch(error) {
         return;
     }
@@ -29,10 +31,10 @@ pixelSpacingAutorunCheck = function() {
         !enabledElement.image.rowPixelSpacing ||
         !enabledElement.image.columnPixelSpacing) {
         // Disable Lesion Buttons
-        oncologyTools.prop('disabled', true);
+        $oncologyTools.prop('disabled', true);
     } else {
         // Enable Lesion Buttons
-        oncologyTools.prop('disabled', false);
+        $oncologyTools.prop('disabled', false);
     }
 
 };

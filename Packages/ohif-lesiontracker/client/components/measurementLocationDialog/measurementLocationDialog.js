@@ -268,7 +268,7 @@ Template.measurementLocationDialog.events({
 
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
-        convertToNonTarget(measurementApi, measurementData);
+        OHIF.lesiontracker.convertToNonTarget(measurementApi, measurementData);
 
         closeHandler(dialog);
     },
