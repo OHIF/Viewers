@@ -122,7 +122,7 @@ Template.measureFlow.events({
         // Wait for DOM re-rendering, resize and focus the description textarea
         Tracker.afterFlush(() => {
             const $textarea = instance.$('textarea');
-            $textarea.trigger('input').focus();
+            $textarea.trigger('input').focus().select();
         });
     },
 
@@ -149,6 +149,7 @@ Template.measureFlow.events({
 
         // Keep the current description if ENTER was pressed
         if (event.which === 13) {
+            event.preventDefault();
             instance.description.set($(event.currentTarget).val());
         }
     },

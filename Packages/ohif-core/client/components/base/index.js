@@ -21,7 +21,6 @@ import './mixins/link.js';
 import './mixins/schemaData.js';
 import './mixins/select.js';
 import './mixins/select2.js';
-import './mixins/selectTree.js';
 
 // Templates
 import './templates/button.html';
