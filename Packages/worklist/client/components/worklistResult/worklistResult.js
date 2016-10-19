@@ -230,8 +230,6 @@ Template.worklistResult.onRendered(() => {
             'Last 30 Days': [lastMonth, today]
         }
     }).data('daterangepicker');
-    datePicker.setStartDate(lastWeek);
-    datePicker.setEndDate(today);
 
     // Retrieve all studies
     search();
