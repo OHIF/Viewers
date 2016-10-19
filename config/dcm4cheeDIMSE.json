@@ -13,11 +13,17 @@
           "logRequests": true,
           "logResponses": false,
           "logTiming": true
-      }
+        }
     }],
     "dimse": [{
       "name": "DCM4CHEE_DIMSE",
       "wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
+      "requestOptions": {
+        "auth": "admin:admin",
+        "logRequests": true,
+        "logResponses": false,
+        "logTiming": true
+      },
       "peers": [
         {
           "host": "localhost",

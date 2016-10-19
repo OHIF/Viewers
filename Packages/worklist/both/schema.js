@@ -117,6 +117,10 @@ export const DIMSEServer = new SimpleSchema({
     name: serverNameDefinitions,
     type: serverTypeDefinitions,
     wadoUriRoot: wadoUriRootDefinitions,
+    requestOptions: {
+        type: DICOMWebRequestOptions,
+        label: 'Request Options'
+    },
     peers: {
         type: [DIMSEPeer],
         label: 'Peer List',
