@@ -1,7 +1,7 @@
-import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -11,48 +11,6 @@ Template.measureFlow.onCreated(() => {
     instance.state = new ReactiveVar('closed');
     instance.description = new ReactiveVar('');
     instance.descriptionEdit = new ReactiveVar(false);
-
-    instance.items = [{
-        label: 'Category 1',
-        value: 'Category 1',
-        items: [{
-            label: 'Subcategory 1.1',
-            value: 'Subcategory 1.1'
-        }, {
-            label: 'Subcategory 1.2',
-            value: 'Subcategory 1.2',
-            items: [{
-                label: 'Subcategory 1.2.1',
-                value: 'Subcategory 1.2.1'
-            }, {
-                label: 'Subcategory 1.2.2',
-                value: 'Subcategory 1.2.2',
-                items: [{
-                    label: 'Subcategory 1.2.2.1',
-                    value: 'Subcategory 1.2.2.1'
-                }, {
-                    label: 'Subcategory 1.2.2.2',
-                    value: 'Subcategory 1.2.2.2'
-                }]
-            }]
-        }]
-    }, {
-        label: 'Category 2',
-        value: 'Category 2',
-        items: [{
-            label: 'Subcategory 2.1',
-            value: 'Subcategory 2.1'
-        }, {
-            label: 'Subcategory 2.2',
-            value: 'Subcategory 2.2'
-        }, {
-            label: 'Subcategory 2.3',
-            value: 'Subcategory 2.3'
-        }]
-    }, {
-        label: 'Category 3',
-        value: 'Category 3'
-    }];
 
     const items = [
         'Abdomen/Chest Wall',
@@ -193,6 +151,12 @@ Template.measureFlow.events({
         if (event.which === 13) {
             instance.description.set($(event.currentTarget).val());
         }
+    },
+
+    'blur textarea'(event, instance) {
+        instance.$('.measure-flow .actions').removeClass('fadeOut');
+        instance.descriptionEdit.set(false);
+        instance.description.set($(event.currentTarget).val());
     },
 
     'click .select-tree-common label'(event, instance) {
