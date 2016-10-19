@@ -16,7 +16,3 @@ import './nonTargetLesionDialog/nonTargetLesionDialog.js';
 import './nonTargetResponseDialog/nonTargetResponseDialog.html';
 import './nonTargetResponseDialog/nonTargetResponseDialog.styl';
 import './nonTargetResponseDialog/nonTargetResponseDialog.js';
-
-import './measureFlow/measureFlow.html';
-import './measureFlow/measureFlow.styl';
-import './measureFlow/measureFlow.js';
