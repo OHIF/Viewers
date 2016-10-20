@@ -1,7 +1,8 @@
 @import "{design}/app"
 
 .measure-flow
-  position: relative
+  position: fixed
+  z-index: 1
 
   &.open,
   &.selected
@@ -73,7 +74,7 @@
       button
         theme('border', '1px solid $uiBorderColor')
         theme('color', '$textPrimaryColor')
-        background-color: transparent
+        theme('background-color', '$primaryBackgroundColor')
         border-radius: 16px
         font-weight: normal
         height: 31px

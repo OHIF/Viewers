@@ -64,9 +64,9 @@ Template.selectTree.onRendered(() => {
     instance.component = component;
 
     // Set the margin to display the common section
-    const isTreeColumns = instance.data.treeColumns;
-    const marginProperty = isTreeColumns ? 'margin-left' : 'margin-right';
-    const marginWidth = isTreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
+    const isthreeColumns = instance.data.threeColumns;
+    const marginProperty = isthreeColumns ? 'margin-left' : 'margin-right';
+    const marginWidth = isthreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
     $treeRoot.children('.tree-content').css(marginProperty, marginWidth);
 
     // Make the component respect the window boundaries
@@ -318,7 +318,7 @@ Template.selectTree.helpers({
         }
 
         // Return the items sorted for tree columns
-        if (instance.data.treeColumns) {
+        if (instance.data.threeColumns) {
             const begin = items.splice(0, Math.ceil(items.length / 2));
             const sortedItems = [];
             _.each(begin, (item, index) => {

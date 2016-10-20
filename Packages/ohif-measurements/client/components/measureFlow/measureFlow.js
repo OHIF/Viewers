@@ -79,6 +79,10 @@ Template.measureFlow.onRendered(() => {
 });
 
 Template.measureFlow.events({
+    'click, mousedown, mouseup'(event, instance) {
+        event.stopPropagation();
+    },
+
     'click .measure-flow .btn-add, click .measure-flow .btn-rename'(event, instance) {
         // Set the open state for the component
         instance.state.set('open');
@@ -100,7 +104,7 @@ Template.measureFlow.events({
                 label: 'Assign label',
                 searchPlaceholder: 'Search labels',
                 storageKey: 'measureLabelCommon',
-                treeColumns: instance.data.treeColumns,
+                threeColumns: instance.data.threeColumns,
                 position
             };
 
