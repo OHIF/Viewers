@@ -4,6 +4,8 @@ import { _ } from 'meteor/underscore';
 
 Template.selectTreeCommon.events({
     'click .select-tree-common label'(event, instance) {
+        event.preventDefault();
+
         // Get the clicked label
         const $target = $(event.currentTarget);
 

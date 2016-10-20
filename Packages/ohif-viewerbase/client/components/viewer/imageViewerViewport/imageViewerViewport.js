@@ -452,6 +452,7 @@ Template.imageViewerViewport.onRendered(function() {
 
     // When the imageViewerViewport template is rendered
     var element = this.find('.imageViewerViewport');
+    this.element = element;
 
     // Display the loading indicator for this element
     $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
@@ -504,9 +505,9 @@ Template.imageViewerViewport.onDestroyed(function() {
     // Try to stop any currently playing clips
     // Otherwise the interval will continuously throw errors
     try {
-        var enabledElement = cornerstone.getEnabledElement(element);
+        var enabledElement = cornerstone.getEnabledElement(this.element);
         if (enabledElement) {
-            cornerstoneTools.stopClip(element);
+            cornerstoneTools.stopClip(this.element);
         }
     } catch (error) {
         OHIF.log.warn(error);
@@ -515,7 +516,7 @@ Template.imageViewerViewport.onDestroyed(function() {
     // Disable the viewport element with Cornerstone
     // This also triggers the removal of the element from all available
     // synchronizers, such as the one used for reference lines.
-    cornerstone.disable(element);
+    cornerstone.disable(this.element);
 });
 
 Template.imageViewerViewport.events({
