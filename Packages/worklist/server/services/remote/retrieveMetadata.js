@@ -95,6 +95,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             sourceImageInstanceUid: getSourceImageInstanceUid(instance),
             laterality: remoteGetValue(instance['0020,0062']),
             viewPosition: remoteGetValue(instance['0018,5101']),
+            acquisitionDatetime: remoteGetValue(instance['0008,002A']),
             numFrames: parseFloat(remoteGetValue(instance['0028,0008'])),
             frameTime: parseFloat(remoteGetValue(instance['0018,1063']))
         };

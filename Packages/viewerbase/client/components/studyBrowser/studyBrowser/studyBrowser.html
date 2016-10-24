@@ -2,7 +2,7 @@
     <div class="studyBrowser">
         <div class="scrollableStudyThumbnails">
             {{#each study in studies}}
-                {{#each thumbnail in (studyThumbnails study)}}
+                {{#each thumbnail in (sort (studyThumbnails study) thumbnailSortBy thumbnailSortType)}}
                     {{>thumbnailEntry thumbnail=thumbnail}}
                 {{/each}}
             {{/each}}

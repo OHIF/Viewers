@@ -206,6 +206,7 @@ Package.onUse(function(api) {
         'lib/helpers/objectEach.js',
         'lib/helpers/ifTypeIs.js',
         'lib/helpers/prettyPrintStringify.js',
+        'lib/helpers/sorting.js',
         'lib/helpers/studyThumbnails.js',
         'lib/helpers/formatPN.js'
     ], 'client');
