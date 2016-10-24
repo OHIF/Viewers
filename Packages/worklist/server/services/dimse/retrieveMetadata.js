@@ -100,6 +100,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             sourceImageInstanceUid: getSourceImageInstanceUid(instance),
             laterality: instance[0x00200062],
             viewPosition: instance[0x00185101],
+            acquisitionDatetime: instance[0x0008002A],
             numFrames: parseFloat(instance[0x00280008]),
             frameTime: parseFloat(instance[0x00181063]),
             lossyImageCompression: instance[0x00282110],

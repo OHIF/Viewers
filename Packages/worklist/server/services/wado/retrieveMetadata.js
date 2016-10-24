@@ -106,6 +106,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             sourceImageInstanceUid: getSourceImageInstanceUid(instance),
             laterality: DICOMWeb.getString(instance['00200062']),
             viewPosition: DICOMWeb.getString(instance['00185101']),
+            acquisitionDatetime: DICOMWeb.getString(instance['0008002A']),
             numFrames: DICOMWeb.getNumber(instance['00280008']),
             frameTime: DICOMWeb.getNumber(instance['00181063']),
             sliceThickness: DICOMWeb.getNumber(instance['00180050']),
