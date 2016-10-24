@@ -103,7 +103,7 @@ Template.measureFlow.events({
                 hideCommon: instance.data.hideCommon,
                 label: 'Assign label',
                 searchPlaceholder: 'Search labels',
-                storageKey: 'measureLabelCommon',
+                // storageKey: 'measureLabelCommon',
                 threeColumns: instance.data.threeColumns,
                 position
             };
