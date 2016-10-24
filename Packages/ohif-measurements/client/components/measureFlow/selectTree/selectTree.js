@@ -235,13 +235,13 @@ Template.selectTree.events({
                     storedData[itemKey] = 1;
                 }
 
-                // Set the selected leaf value in the root component
-                const itemData = $target.data('component').templateInstance.data.itemData;
-                rootComponent.value(itemData);
-
                 // Updata the stored data with the new count
                 OHIF.user.setData(storageKey, storedData);
             }
+
+            // Set the selected leaf value in the root component
+            const itemData = $target.data('component').templateInstance.data.itemData;
+            rootComponent.value(itemData);
 
             // Mark the component as selected
             instance.setSelected(true);
