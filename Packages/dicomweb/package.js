@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 
     // DICOMWeb API functions
     api.addFiles('server/namespace.js', 'server');
+    api.addFiles('server/getAttribute.js', 'server');
     api.addFiles('server/getJSON.js', 'server');
     api.addFiles('server/getName.js', 'server');
     api.addFiles('server/getNumber.js', 'server');

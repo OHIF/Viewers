@@ -39,7 +39,9 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00280004: '', // photometricInterpretation
         0x0008002A: '', // acquisitionDatetime
         0x00280008: '', // numFrames
+        0x00280009: '', // frameIncrementPointer
         0x00181063: '', // frameTime
+        0x00181065: '', // frameTimeVector
         0x00281052: '', // rescaleIntercept
         0x00281053: '', // rescaleSlope
         0x00280002: '', // samplesPerPixel

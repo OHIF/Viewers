@@ -121,6 +121,7 @@ Package.onUse(function (api) {
     api.addFiles('server/servers.js', 'server');
     api.addFiles('server/lib/remoteGetValue.js', 'server');
     api.addFiles('server/lib/encodeQueryData.js', 'server');
+    api.addFiles('server/lib/parseFloatArray.js', 'server');
 
     api.addFiles('server/methods/getStudyMetadata.js', 'server');
     api.addFiles('server/methods/importStudies.js', 'server');

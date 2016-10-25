@@ -1,3 +1,5 @@
+import { parseFloatArray } from '../../lib/parseFloatArray';
+
 /**
  * Parses the SourceImageSequence, if it exists, in order
  * to return a ReferenceSOPInstanceUID. The ReferenceSOPInstanceUID
@@ -14,6 +16,21 @@ function getSourceImageInstanceUid(instance) {
     if (SourceImageSequence && SourceImageSequence.length) {
         return SourceImageSequence[0][0x00081155];
     }
+}
+
+/**
+ * Returns the value of the element (e.g. '00280009')
+ *
+ * @param element - The group/element of the element (e.g. '00280009')
+ * @param defaultValue - The default value to return if the element does not exist
+ * @returns {*}
+ */
+function getValue(element, defaultValue) {
+    if (!element || !element.value) {
+        return defaultValue;
+    }
+
+    return element.value;
 }
 
 /**
@@ -102,7 +119,9 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             viewPosition: instance[0x00185101],
             acquisitionDatetime: instance[0x0008002A],
             numFrames: parseFloat(instance[0x00280008]),
+            frameIncrementPointer: getValue(instance[0x00280009]),
             frameTime: parseFloat(instance[0x00181063]),
+            frameTimeVector: parseFloatArray(instance[0x00181065]),
             lossyImageCompression: instance[0x00282110],
             derivationDescription: instance[0x00282111],
             lossyImageCompressionRatio: instance[0x00282112],

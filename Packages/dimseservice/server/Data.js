@@ -210,11 +210,14 @@ util.inherits(AttributeTag, ValueRepresentation);
 
 AttributeTag.prototype.readBytes = function(stream, length) {
     var group = stream.read(C.TYPE_UINT16),
-   element = stream.read(C.TYPE_UINT16);
+    element = stream.read(C.TYPE_UINT16);
     return tagFromNumbers(group, element);
 };
 
 AttributeTag.prototype.getFields = function(value) {
+    if (!value)
+        return AttributeTag.super_.prototype.getFields.call(this, [new StringField("")]);
+
     return AttributeTag.super_.prototype.getFields.call(this, [new UInt16Field(value.group()), new UInt16Field(value.element())]);
 };
 

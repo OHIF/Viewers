@@ -1,4 +1,5 @@
 import { remoteGetValue } from '../../lib/remoteGetValue';
+import { parseFloatArray } from '../../lib/parseFloatArray';
 
 /**
  * Parses the SourceImageSequence, if it exists, in order
@@ -97,7 +98,9 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             viewPosition: remoteGetValue(instance['0018,5101']),
             acquisitionDatetime: remoteGetValue(instance['0008,002A']),
             numFrames: parseFloat(remoteGetValue(instance['0028,0008'])),
-            frameTime: parseFloat(remoteGetValue(instance['0018,1063']))
+            frameIncrementPointer: remoteGetValue(instance['0028,0009']),
+            frameTime: parseFloat(remoteGetValue(instance['0018,1063'])),
+            frameTimeVector: parseFloatArray(remoteGetValue(instance['0018,1065']))
         };
 
         var iid = instance['xxxx,0001'].Value;
