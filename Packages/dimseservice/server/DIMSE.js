@@ -37,6 +37,7 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00280102: '', // highBit
         0x00280103: '', // pixelRepresentation
         0x00280004: '', // photometricInterpretation
+        0x0008002A: '', // acquisitionDatetime
         0x00280008: '', // numFrames
         0x00181063: '', // frameTime
         0x00281052: '', // rescaleIntercept

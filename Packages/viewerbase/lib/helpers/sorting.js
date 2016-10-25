@@ -11,8 +11,6 @@ Template.registerHelper('sort', (array, sortBy, sortType) => {
         return array;
     }
 
-    console.log(array);
-
     //  To keep the order for the same values of the field which is used to sort:
     //      1. Group the array by the field
     //      2. Sort the grouped array
