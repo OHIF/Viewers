@@ -92,35 +92,39 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-undo'
         });
 
-        buttonData.push({
-            id: 'previousDisplaySet',
-            title: 'Previous',
-            classes: 'imageViewerCommand',
-            buttonTemplateName: 'displaySetNavigation',
-            isNext: false
-        });
+        if (!OHIF.uiSettings.multiframeEnhancementsEnabled) {
 
-        buttonData.push({
-            id: 'nextDisplaySet',
-            title: 'Next',
-            classes: 'imageViewerCommand',
-            buttonTemplateName: 'displaySetNavigation',
-            isNext: true
-        });
+            buttonData.push({
+                id: 'previousDisplaySet',
+                title: 'Previous',
+                classes: 'imageViewerCommand',
+                buttonTemplateName: 'displaySetNavigation',
+                isNext: false
+            });
 
-        buttonData.push({
-            id: 'toggleCinePlay',
-            title: 'Toggle CINE Play',
-            classes: 'imageViewerCommand',
-            buttonTemplateName: 'playClipButton'
-        });
+            buttonData.push({
+                id: 'nextDisplaySet',
+                title: 'Next',
+                classes: 'imageViewerCommand',
+                buttonTemplateName: 'displaySetNavigation',
+                isNext: true
+            });
 
-        buttonData.push({
-            id: 'toggleCineDialog',
-            title: 'CINE',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-youtube-play'
-        });
+            buttonData.push({
+                id: 'toggleCinePlay',
+                title: 'Toggle CINE Play',
+                classes: 'imageViewerCommand',
+                buttonTemplateName: 'playClipButton'
+            });
+
+            buttonData.push({
+                id: 'toggleCineDialog',
+                title: 'CINE',
+                classes: 'imageViewerCommand',
+                iconClasses: 'fa fa-youtube-play'
+            });
+
+        }
 
         buttonData.push({
             id: 'layout',
@@ -221,7 +225,7 @@ Template.toolbarSection.onRendered(function() {
 
     instance.$('#layout').dropdown();
 
-    if (OHIF.uiSettings.showCineDialogOnRendered) {
+    if (OHIF.uiSettings.multiframeEnhancementsEnabled) {
         toggleCineDialog();
     }
 

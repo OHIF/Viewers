@@ -149,9 +149,9 @@ export const UISettings = new SimpleSchema({
         label: 'The UP/DOWN display set navigation buttons will iterate over all the viewports at once?',
         defaultValue: false
     },
-    showCineDialogOnRendered: {
+    multiframeEnhancementsEnabled: {
         type: Boolean,
-        label: 'The Cine dialog will be displayed by default',
+        label: 'Enable cine dialog enhancements for multiframe images.',
         defaultValue: false
     }
 });

@@ -142,5 +142,10 @@ Template.cineDialog.helpers({
     displaySetDisabled(isNext) {
         Session.get('LayoutManagerUpdated');
         return !OHIF.viewer.canMoveDisplaySets(isNext) ? 'disabled' : '';
+    },
+
+    getClassNames(baseCls) {
+        return baseCls + ' ' + (OHIF.uiSettings.multiframeEnhancementsEnabled ? 'single' : 'double') + '-row-style'
     }
+
 });

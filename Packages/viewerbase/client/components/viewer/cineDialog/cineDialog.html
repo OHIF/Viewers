@@ -1,5 +1,5 @@
 <template name="cineDialog">
-    {{#form id='cineDialog' class='dialog-animated noselect' schema=instance.schema api=instance.api}}
+    {{#form id='cineDialog' class=(getClassNames 'dialog-animated noselect') schema=instance.schema api=instance.api}}
         {{>inputHidden key='intervalId'}}
         <div class="cine-navigation">
             <div class="btn-group">

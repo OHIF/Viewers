@@ -4,19 +4,10 @@
   theme('border', '2px solid $uiBorderColor', 0.95)
   theme('background', '$uiGrayDarkest', 0.95)
   theme('color', '$textSecondaryColor')
-  border-radius: 8px
-  bottom: 3px
-  box-sizing: border-box
-  height: 80px
-  left: 50%
-  overflow: hidden
-  padding: 10px
   position: absolute
-  right: 3px
-  top: 2%
-  width: 300px
+  border-radius: 8px
   z-index: 1000
-  transform(translateX(-50%) translateY(-50%))
+  overflow: hidden
 
   h5
     font-size: 20px
@@ -36,6 +27,13 @@
     &:active, &.active
       theme('color', '$activeColor')
 
+#cineDialog.double-row-style
+  box-sizing: border-box
+  width: 300px
+  height: 80px
+  padding: 10px
+  top: 2%
+  left: 35%
 
   .cine-navigation
     position: absolute
@@ -63,6 +61,68 @@
       float: right
       padding: 5px 10px 0 0
 
-    .loop-section
-      padding-right: 12px
 
+#cineDialog.single-row-style
+  box-sizing: content-box
+  width: 425px
+  height: 45px
+  padding: 4px 8px
+  top: 2%
+  left: 35%
+
+  .cine-navigation
+    position: relative
+    float: right
+    overflow: hidden
+
+    .btn
+      padding: 0 2px
+      margin: 0 0 0 2px
+      border: 0 none
+      &:first-of-type
+        margin-left: 0
+
+      i
+        font-size: 38px
+        line-height: 45px
+
+  .cine-controls
+    position: relative
+    float: left
+    overflow: hidden
+    .btn
+      font-size: 22px
+      line-height: 45px
+      min-width: 28px
+      padding: 0 0px
+      margin: 0 4px
+      border: 0 none
+
+  .cine-options
+    display: block
+    position: relative
+    width: 150px
+    float: left
+    overflow: hidden
+    padding: 0
+    margin: 0 0 0 10px
+
+    .fps-section
+      display: block
+      float: left
+      width: 80px
+      input[type="range"]
+        line-height: 45px
+        height: 45px
+        background-color: transparent
+        border: 0 none
+        outline: 0 none
+
+    #fps
+      display: block
+      width: 68px
+      float: left
+      padding: 0
+      margin: 0 0 0 2px
+      text-align: center
+      line-height: 45px
