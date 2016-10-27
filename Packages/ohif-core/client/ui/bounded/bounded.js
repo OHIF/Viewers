@@ -29,6 +29,7 @@ class Bounded {
         this.element = element;
         this.$element = $(element);
         this.options(options);
+        this.setBoundedFlag(false);
     }
 
     // Set or change the instance options
@@ -114,20 +115,26 @@ class Bounded {
             if (this.allowResizing && elementInfo.width > boundingInfo.width) {
                 this.$element.width(boundingInfo.width);
                 this.$element.css('left', boundingInfo.x0);
+                this.setBoundedFlag(true);
             } else if (elementInfo.x0 < boundingInfo.x0) {
                 this.$element.css('left', boundingInfo.x0);
+                this.setBoundedFlag(true);
             } else if (elementInfo.x1 > boundingInfo.x1) {
                 this.$element.css('left', boundingInfo.x1 - elementInfo.width);
+                this.setBoundedFlag(true);
             }
 
             // Fix element's y positioning and height
             if (this.allowResizing && elementInfo.height > boundingInfo.height) {
                 this.$element.height(boundingInfo.height);
                 this.$element.css('top', boundingInfo.y0);
+                this.setBoundedFlag(true);
             } else if (elementInfo.y0 < boundingInfo.y0) {
                 this.$element.css('top', boundingInfo.y0);
+                this.setBoundedFlag(true);
             } else if (elementInfo.y1 > boundingInfo.y1) {
                 this.$element.css('top', boundingInfo.y1 - elementInfo.height);
+                this.setBoundedFlag(true);
             }
         };
     }
@@ -142,6 +149,11 @@ class Bounded {
     detachEventHandlers() {
         this.$element.off('spatialChanged', this.spatialChangedHandler);
         this.$boundingElement.off('resize', this.spatialChangedHandler);
+    }
+
+    // This is a means to let outside world know that the element in question has been moved
+    setBoundedFlag(value) {
+        this.$element.data('wasBounded', value);
     }
 
 }

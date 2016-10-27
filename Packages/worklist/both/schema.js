@@ -149,7 +149,7 @@ export const UISettings = new SimpleSchema({
         label: 'The UP/DOWN display set navigation buttons will iterate over all the viewports at once?',
         defaultValue: false
     },
-    multiframeEnhancementsEnabled: {
+    displayEchoUltrasoundWorkflow: {
         type: Boolean,
         label: 'Enable cine dialog enhancements for multiframe images.',
         defaultValue: false

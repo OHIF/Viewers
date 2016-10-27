@@ -8,6 +8,7 @@
   border-radius: 8px
   z-index: 1000
   overflow: hidden
+  cursor: move
 
   h5
     font-size: 20px
@@ -26,6 +27,9 @@
 
     &:active, &.active
       theme('color', '$activeColor')
+
+  .cine-navigation, .cine-controls, .cine-options
+    cursor: default
 
 #cineDialog.double-row-style
   box-sizing: border-box

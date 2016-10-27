@@ -92,7 +92,7 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-undo'
         });
 
-        if (!OHIF.uiSettings.multiframeEnhancementsEnabled) {
+        if (!OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
 
             buttonData.push({
                 id: 'previousDisplaySet',
@@ -225,7 +225,7 @@ Template.toolbarSection.onRendered(function() {
 
     instance.$('#layout').dropdown();
 
-    if (OHIF.uiSettings.multiframeEnhancementsEnabled) {
+    if (OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
         toggleCineDialog();
     }
 

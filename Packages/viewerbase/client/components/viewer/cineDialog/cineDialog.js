@@ -105,13 +105,115 @@ Template.cineDialog.onCreated(() => {
             Session.set('UpdateCINE', Random.id());
         });
     });
+
+    /**
+     * Set/Reset Window resize handler. This function is a replacement for
+     * ... jQuery's on('resize', func) version which, for some unkown reason
+     * ... is currently not working for this portion of code.
+     * ... Further investigation is necessary.
+     */
+
+    instance.setResizeHandler = (handler) => {
+        if (typeof handler === 'function') {
+            let origHandler = window.onresize;
+            instance.origWindowResizeHandler = typeof origHandler === 'function' ? origHandler : null;
+            window.onresize = function (event) {
+                if (typeof origHandler === 'function') {
+                    origHandler.call(window, event);
+                }
+                handler.call(window, event);
+            };
+        } else {
+            window.onresize = instance.origWindowResizeHandler || null;
+            window.origWindowResizeHandler = null;
+        }
+    };
+
+    /**
+     * Set optimal position for Cine dialog.
+     */
+
+    instance.setOptimalPosition = (event, options) => {
+
+        let toolbarElement = $('.toolbarSection .toolbarSectionTools:first'),
+            cineDialog = $('#cineDialog'),
+            cineDialogSize,
+            cineDialogCoords,
+            toolbarRect;
+
+        if (toolbarElement.length < 1 || cineDialog.length < 1) {
+            return;
+        }
+
+        if (cineDialog.data('wasDragged') || cineDialog.data('wasBounded')) {
+            // restore original handler...
+            instance.setResizeHandler(null);
+            return;
+        }
+
+        cineDialogSize = {
+            width: cineDialog.outerWidth() || 0,
+            height: cineDialog.outerHeight() || 0
+        };
+
+        toolbarRect = {
+            offset: toolbarElement.offset() || { top: 0, left: 0 },
+            width: toolbarElement.outerWidth() || 0,
+            height: toolbarElement.outerHeight() || 0
+        };
+
+        cineDialogCoords = {
+            left: toolbarRect.offset.left + toolbarRect.width + 20,
+            top: toolbarRect.offset.top + toolbarRect.height - cineDialogSize.height
+        };
+
+        if (options) {
+            if (options.left) {
+                cineDialogCoords.left = options.left;
+            }
+            if (options.top) {
+                cineDialogCoords.top = options.top;
+            }
+        }
+
+        cineDialog.css(cineDialogCoords);
+
+    };
+
 });
 
 Template.cineDialog.onRendered(() => {
+
     const instance = Template.instance();
 
+    let dialog = instance.$('#cineDialog'),
+        singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
+
+    // set dialog in optimal position and make sure it continues in a optimal position...
+    // ... when the window has been resized
+    instance.setOptimalPosition(null, {
+        top: singleRowLayout ? 47 : 26
+    });
+
+    // The jQuery method does not seem to be working...
+    // ... $(window).resize(instance.setOptimalPosition)
+    // This requires additional investigation.
+    instance.setResizeHandler(instance.setOptimalPosition);
+
     // Make the CINE dialog bounded and draggable
-    instance.$('#cineDialog').bounded().draggable();
+    dialog.bounded().draggable({ defaultElementCursor: 'move' });
+
+    // Prevent dialog from being dragged when user clicks any button
+    dialog.find('.cine-navigation, .cine-controls, .cine-options').on('mousedown touchstart', function (e) {
+        e.stopPropagation();
+    });
+
+});
+
+Template.cineDialog.onDestroyed(() => {
+    const instance = Template.instance();
+    // remove resize handler...
+    instance.setResizeHandler(null);
 });
 
 Template.cineDialog.events({
@@ -145,7 +247,7 @@ Template.cineDialog.helpers({
     },
 
     getClassNames(baseCls) {
-        return baseCls + ' ' + (OHIF.uiSettings.multiframeEnhancementsEnabled ? 'single' : 'double') + '-row-style'
+        return baseCls + ' ' + (OHIF.uiSettings.displayEchoUltrasoundWorkflow ? 'single' : 'double') + '-row-style'
     }
 
 });

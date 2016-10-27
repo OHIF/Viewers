@@ -1,6 +1,6 @@
 // Allow attaching to jQuery selectors
-$.fn.draggable = function() {
-    makeDraggable(this);
+$.fn.draggable = function(options) {
+    makeDraggable(this, options);
     return this;
 };
 
@@ -11,10 +11,17 @@ $.fn.draggable = function() {
  *
  * @param element
  */
-makeDraggable = function(element) {
+makeDraggable = function(element, options) {
     var container = $(window);
     var diffX,
-        diffY;
+        diffY,
+        wasNotDragged = true;
+
+    options = options || {};
+    options.defaultElementCursor = options.defaultElementCursor || 'default';
+
+    // initialize dragged flag
+    element.data('wasDragged', false);
 
     function getCursorCoords(e) {
         var cursor = {
@@ -62,11 +69,18 @@ makeDraggable = function(element) {
 
         $(document).on('touchmove', moveHandler);
         $(document).on('touchend', stopMoving);
+
+        // let outside world know that the element in question has been dragged
+        if (wasNotDragged) {
+            element.data('wasDragged', true);
+            wasNotDragged = false;
+        }
+
     }
 
     function stopMoving() {
         container.css('cursor', 'default');
-        element.css('cursor', 'default');
+        element.css('cursor', options.defaultElementCursor);
 
         $(document).off('mousemove', moveHandler);
         $(document).off('touchmove', moveHandler);
