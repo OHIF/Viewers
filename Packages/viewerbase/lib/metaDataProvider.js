@@ -1,3 +1,5 @@
+import {parsingUtils} from './parsingUtils'
+
 var metaDataLookup = {};
 
 /**
@@ -102,6 +104,7 @@ updateMetaData = function(image) {
     imageMetaData.instance.frameIncrementPointer = imageMetaData.instance.frameIncrementPointer || image.data.string('x00280009');
     imageMetaData.instance.frameTime = imageMetaData.instance.frameTime || image.data.string('x00181063');
     imageMetaData.instance.frameTimeVector = imageMetaData.instance.frameTimeVector || image.data.string('x00181065');
+    imageMetaData.instance.multiframeMetadata = getMultiframeModuleMetaData(image.data);
 
     imageMetaData.imagePlane = imageMetaData.imagePlane || getImagePlane(imageMetaData.instance);
 };
@@ -149,6 +152,69 @@ function getImagePlane(instance) {
             columnPixelSpacing,
     };
 }
+
+/**
+ * This function extracts miltiframe information from a dicomParser.DataSet object.
+ *
+ * @param dataSet {Object} An instance of dicomParser.DataSet object where multiframe information can be found.
+ * @return {Object} An object containing multiframe image metadata (frameIncrementPointer, frameTime, frameTimeVector, etc).
+ */
+getMultiframeModuleMetaData = function(dataSet) {
+
+    var numberOfFrames,
+        frameIncrementPointer,
+        frameTime,
+        frameTimeVector,
+        imageInfo = {
+            isMultiframeImage: false,
+            frameIncrementPointer: null,
+            numberOfFrames: 0,
+            frameTime: 0,
+            frameTimeVector: null,
+            averageFrameRate: 0 // backwards compatibility only... it might be useless in the future
+        };
+
+    if (parsingUtils.isValidDataSet(dataSet)) {
+
+        // (0028,0008) = Number of Frames
+        numberOfFrames = dataSet.intString('x00280008', -1);
+        if (numberOfFrames > 0) {
+
+            // set multi-frame image indicator
+            imageInfo.isMultiframeImage = true;
+            imageInfo.numberOfFrames = numberOfFrames;
+
+            // (0028,0009) = Frame Increment Pointer
+            frameIncrementPointer = parsingUtils.attributeTag(dataSet, 'x00280009') || '';
+
+            if (frameIncrementPointer === 'x00181065') {
+                // Frame Increment Pointer points to Frame Time Vector (0018,1065) field
+                frameTimeVector = parsingUtils.floatArray(dataSet, 'x00181065');
+                if (frameTimeVector instanceof Array && frameTimeVector.length > 0) {
+                    imageInfo.frameIncrementPointer = 'frameTimeVector';
+                    imageInfo.frameTimeVector = frameTimeVector;
+                    frameTime = frameTimeVector.reduce((a, b) => a + b) / frameTimeVector.length;
+                    imageInfo.averageFrameRate = 1000 / frameTime;
+                }
+            } else if (frameIncrementPointer === 'x00181063' || frameIncrementPointer === '') {
+                // Frame Increment Pointer points to Frame Time (0018,1063) field or is not defined (for addtional flexibility).
+                // Yet another value is possible for this field (5200,9230 for Multi-frame Functional Groups)
+                // but that case is currently not supported.
+                frameTime = dataSet.floatString('x00181063', -1);
+                if (frameTime > 0) {
+                    imageInfo.frameIncrementPointer = 'frameTime';
+                    imageInfo.frameTime = frameTime;
+                    imageInfo.averageFrameRate = 1000 / frameTime;
+                }
+            }
+
+        }
+
+    }
+
+    return imageInfo;
+
+};
 
 /**
  * Looks up metaData for Cornerstone Tools given a specified type and imageId

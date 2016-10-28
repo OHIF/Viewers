@@ -213,15 +213,15 @@ function loadDisplaySetIntoViewport(data, templateData) {
         cornerstoneTools.addToolState(element, 'stack', stack);
 
         // Set the default CINE settings
-        var frameRate = 1000 / displaySet.images[0].frameTime;
+        var multiframeMetadata = instance.multiframeMetadata;
         var cineToolData = {
             loop: OHIF.viewer.cine.loop,
-            framesPerSecond: frameRate || OHIF.viewer.cine.framesPerSecond
+            framesPerSecond: multiframeMetadata.averageFrameRate || OHIF.viewer.cine.framesPerSecond
         };
         cornerstoneTools.addToolState(element, 'playClip', cineToolData);
 
         // Autoplay datasets that have framerates set
-        if (frameRate) {
+        if (multiframeMetadata.isMultiframeImage && multiframeMetadata.averageFrameRate > 0) {
             cornerstoneTools.playClip(element);
         }
 
@@ -386,7 +386,6 @@ function setDisplaySet(data, displaySetInstanceUid, templateData) {
     var study = data.study;
     if (!study || !study.displaySets) {
         throw 'Study does not exist or has no display sets';
-        return;
     }
 
     study.displaySets.every(displaySet => {
@@ -401,7 +400,6 @@ function setDisplaySet(data, displaySetInstanceUid, templateData) {
     // If we didn't find anything, stop here
     if (!data.displaySet) {
         throw 'Display set not found in specified study!';
-        return;
     }
 
     // Otherwise, load pass the data object into loadSeriesIntoViewport
