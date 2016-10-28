@@ -3,7 +3,7 @@
 Run the application:
 
 ```bash
-PACKAGE_DIRS="../../Packages" meteor
+METEOR_PACKAGE_DIRS="../../Packages" meteor
 ```
 
 Open your web browser and navigate to one of the following URLs to test the standalone viewer application:
@@ -30,7 +30,7 @@ It is possible to build this standalone viewer to run as a client-only bundle of
 2. Next, build the client bundle into an output folder ("myOutputFolder") with a base URL ("localhost:3000"). In production, this would be the URL where the Viewer is available.
 
   ````
-  PACKAGE_DIRS="../../Packages" meteor-build-client myOutputFolder -u localhost:3000
+  METEOR_PACKAGE_DIRS="../../Packages" meteor-build-client myOutputFolder -u localhost:3000
   ```
 
 
