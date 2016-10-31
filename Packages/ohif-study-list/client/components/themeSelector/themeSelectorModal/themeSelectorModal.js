@@ -9,11 +9,11 @@ const addThemeToBody = theme => document.body.classList.add('theme-' + theme);
 const removeThemesFromBody = () => {
     const classList = document.body.classList;
 
-    classList.forEach((className, index) => {
-        if(className.search('theme-') !== -1) {
-            document.body.classList.remove(className);
+    for (let i = classList.length - 1; i >= 0; i--) {
+        if(classList[i].search('theme-') !== -1) {
+            document.body.classList.remove(classList[i]);
         }
-    });
+    }
 };
 
 Template.themeSelectorModal.onCreated(() => {
