@@ -12,6 +12,8 @@ Package.onUse(function(api) {
     api.use('jquery');
     api.use('stylus');
 
+    api.addAssets('assets/theme-icons.png', 'client');
+
     // Importable colors / typography settings
     api.addFiles([
         'app.styl',
@@ -19,8 +21,14 @@ Package.onUse(function(api) {
         'styles/imports/spacings.styl',
         'styles/imports/variables.styl',
         'styles/imports/theming.styl',
-        'styles/imports/theme-tide.styl',
-        'styles/imports/theme-tigerlilly.styl'
+        'styles/imports/theme-icons.styl',
+        'styles/imports/themes/theme-tide.styl',
+        'styles/imports/themes/theme-tigerlily.styl',
+        'styles/imports/themes/theme-crickets.styl',
+        'styles/imports/themes/theme-honeycomb.styl',
+        'styles/imports/themes/theme-mint.styl',
+        'styles/imports/themes/theme-overcast.styl',
+        'styles/imports/themes/theme-quartz.styl'
     ], 'client', {
         isImport: true
     });
