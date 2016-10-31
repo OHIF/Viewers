@@ -36,7 +36,7 @@ Template.themeSelectorModal.onCreated(() => {
             removeThemesFromBody();
             addThemeToBody(theme);
         },
-        apllyTheme(state) {
+        applyTheme(state) {
             setActualTheme(state.get('selectedTheme'));
         },
         resetState(state) {
@@ -64,6 +64,6 @@ Template.themeSelectorModal.helpers({
 
 Template.themeSelectorModal.events({
     'click .js-cancel, click .close': (event, instance) => instance.container.resetState(instance.state),
-    'click .js-apply': (event, instance) => instance.container.apllyTheme(instance.state),
+    'click .js-apply': (event, instance) => instance.container.applyTheme(instance.state),
     'click .preview-theme': (event, instance) => instance.container.previewTheme(event.currentTarget.dataset.theme, instance.state)
 });
