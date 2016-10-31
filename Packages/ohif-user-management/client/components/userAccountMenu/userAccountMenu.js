@@ -35,6 +35,9 @@ Template.userAccountMenu.events({
     'click #serverInformation': function() {
         $('#serverInformationModal').modal('show');
     },
+    'click #themeSelector': function() {
+        $('#themeSelectorModal').modal('show');
+    },
     'click #logoutButton': function() {
         Meteor.logout(function() {
             Router.go('/entrySignIn');
