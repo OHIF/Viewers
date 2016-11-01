@@ -11,7 +11,7 @@
       font-weight: normal
 
     select
-      background-color: $primaryBackgroundColor
+      theme('background-color', '$primaryBackgroundColor')
       color: white
 
   .page-number
@@ -25,15 +25,16 @@
         li
           a
             padding: 4px 8px
-            background-color: $primaryBackgroundColor
+            theme('background-color', '$primaryBackgroundColor')
             color: white
 
             &:hover
-              color: $activeColor
+              theme('color', '$activeColor')
 
         .active
 
           a
-            background-color: $uiGrayDarker
+            theme('background-color', '$uiGray')
+            border-color: #ddd
             color: white
 
