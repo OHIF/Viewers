@@ -146,6 +146,9 @@ function loadDisplaySetIntoViewport(data, templateData) {
         enabledElement.image = image;
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, image);
 
+        // Update the metaData for missing fields
+        updateMetaData(image);
+
         // Check if there are default viewport settings for this sopClassUid
         if (!displaySet.images || !displaySet.images.length) {
             return;
@@ -265,6 +268,9 @@ function loadDisplaySetIntoViewport(data, templateData) {
         // (e.g. during scrolling)
         function onNewImage(e, eventData) {
             log.info('imageViewerViewport onNewImage');
+
+            // Update the metaData for missing fields
+            updateMetaData(eventData.enabledElement.image);
 
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively

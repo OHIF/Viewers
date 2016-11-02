@@ -49,32 +49,7 @@ addMetaData = function(imageId, data) {
 
     // If there is sufficient information, populate
     // the imagePlane object for easier use in the Viewer
-    if (instanceMetaData.frameOfReferenceUID &&
-        instanceMetaData.imageOrientationPatient &&
-        instanceMetaData.imagePositionPatient) {
-
-        var imageOrientation = instanceMetaData.imageOrientationPatient.split('\\');
-        var imagePosition = instanceMetaData.imagePositionPatient.split('\\');
-
-        var columnPixelSpacing = 1.0;
-        var rowPixelSpacing = 1.0;
-        if (instanceMetaData.pixelSpacing) {
-            var split = instanceMetaData.pixelSpacing.split('\\');
-            rowPixelSpacing = parseFloat(split[0]);
-            columnPixelSpacing = parseFloat(split[1]);
-        }
-        
-        metaData.imagePlane = {
-            frameOfReferenceUID: instanceMetaData.frameOfReferenceUID,
-            rows: instanceMetaData.rows,
-            columns: instanceMetaData.columns,
-            rowCosines: new cornerstoneMath.Vector3(parseFloat(imageOrientation[0]), parseFloat(imageOrientation[1]), parseFloat(imageOrientation[2])),
-            columnCosines: new cornerstoneMath.Vector3(parseFloat(imageOrientation[3]), parseFloat(imageOrientation[4]), parseFloat(imageOrientation[5])),
-            imagePositionPatient: new cornerstoneMath.Vector3(parseFloat(imagePosition[0]), parseFloat(imagePosition[1]), parseFloat(imagePosition[2])),
-            rowPixelSpacing: rowPixelSpacing,
-            columnPixelSpacing: columnPixelSpacing,
-        };
-    }
+    metaData.imagePlane = getImagePlane(instanceMetaData);
 
     // Add the metaData to the imageId lookup object
     metaDataLookup[imageId] = metaData;
@@ -94,6 +69,86 @@ addSpecificMetadata = function(imageId, type, data) {
 
     metaDataLookup[imageId] = $.extend(metaDataLookup[imageId], metaData);
 };
+
+/**
+ * Updates the related metaData for missing fields given a specified image
+ *
+ * @param image
+ */
+updateMetaData = function(image) {
+    var imageMetaData = metaDataLookup[image.imageId];
+    if (!imageMetaData) {
+        return;
+    }
+
+    imageMetaData.instance.sopClassUid = imageMetaData.instance.sopClassUid || image.data.string('x00080016');
+    imageMetaData.instance.sopInstanceUid = imageMetaData.instance.sopInstanceUid || image.data.string('x00080018');
+
+    imageMetaData.instance.rows = imageMetaData.instance.rows || image.rows;
+    imageMetaData.instance.columns = imageMetaData.instance.columns || image.columns;
+    imageMetaData.instance.pixelSpacing = imageMetaData.instance.pixelSpacing || image.data.string('x00280030');
+    imageMetaData.instance.frameOfReferenceUID = imageMetaData.instance.frameOfReferenceUID || image.data.string('x00200052');
+    imageMetaData.instance.imageOrientationPatient = imageMetaData.instance.imageOrientationPatient || image.data.string('x00200037');
+    imageMetaData.instance.imagePositionPatient = imageMetaData.instance.imagePositionPatient || image.data.string('x00200032');
+
+    imageMetaData.instance.sliceThickness = imageMetaData.instance.sliceThickness || image.data.string('x00180050');
+    imageMetaData.instance.sliceLocation = imageMetaData.instance.sliceLocation || image.data.string('x00201041');
+    imageMetaData.instance.tablePosition = imageMetaData.instance.tablePosition || image.data.string('x00189327');
+    imageMetaData.instance.spacingBetweenSlices = imageMetaData.instance.spacingBetweenSlices || image.data.string('x00180088');
+
+    imageMetaData.instance.lossyImageCompression = imageMetaData.instance.lossyImageCompression || image.data.string('x00282110');
+    imageMetaData.instance.lossyImageCompressionRatio = imageMetaData.instance.lossyImageCompressionRatio || image.data.string('x00282112');
+
+    imageMetaData.instance.frameIncrementPointer = imageMetaData.instance.frameIncrementPointer || image.data.string('x00280009');
+    imageMetaData.instance.frameTime = imageMetaData.instance.frameTime || image.data.string('x00181063');
+    imageMetaData.instance.frameTimeVector = imageMetaData.instance.frameTimeVector || image.data.string('x00181065');
+
+    imageMetaData.imagePlane = imageMetaData.imagePlane || getImagePlane(imageMetaData.instance);
+};
+
+/**
+ * Constructs and returns the imagePlane given the instance
+ *
+ * @param instance The instance containing information to construct imagePlane
+ * @returns imagePlane The constructed imagePlane to be used in viewer easily
+ */
+function getImagePlane(instance) {
+    if (!instance.rows || !instance.columns || !instance.pixelSpacing ||
+        !instance.frameOfReferenceUID || !instance.imageOrientationPatient ||
+        !instance.imagePositionPatient) {
+        return;
+    }
+
+    var imageOrientation = instance.imageOrientationPatient.split('\\');
+    var imagePosition = instance.imagePositionPatient.split('\\');
+
+    var columnPixelSpacing = 1.0;
+    var rowPixelSpacing = 1.0;
+    if (instance.pixelSpacing) {
+        var split = instance.pixelSpacing.split('\\');
+        rowPixelSpacing = parseFloat(split[0]);
+        columnPixelSpacing = parseFloat(split[1]);
+    }
+
+    return {
+        frameOfReferenceUID:
+            instance.frameOfReferenceUID,
+        rows:
+            instance.rows,
+        columns:
+            instance.columns,
+        rowCosines:
+            new cornerstoneMath.Vector3(parseFloat(imageOrientation[0]), parseFloat(imageOrientation[1]), parseFloat(imageOrientation[2])),
+        columnCosines:
+            new cornerstoneMath.Vector3(parseFloat(imageOrientation[3]), parseFloat(imageOrientation[4]), parseFloat(imageOrientation[5])),
+        imagePositionPatient:
+            new cornerstoneMath.Vector3(parseFloat(imagePosition[0]), parseFloat(imagePosition[1]), parseFloat(imagePosition[2])),
+        rowPixelSpacing:
+            rowPixelSpacing,
+        columnPixelSpacing:
+            columnPixelSpacing,
+    };
+}
 
 /**
  * Looks up metaData for Cornerstone Tools given a specified type and imageId
