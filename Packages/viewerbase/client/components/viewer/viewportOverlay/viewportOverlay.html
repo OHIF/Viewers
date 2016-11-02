@@ -12,7 +12,7 @@
             </div>
             <div class="bottomright dicomTag">
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
-                <div>{{compression}}</div>
+                <div class="compressionIndicator">{{compression}}</div>
                 <div>{{wwwc}}</div>
             </div>
             <div class="bottomleft dicomTag">
@@ -44,7 +44,7 @@
                 <div>{{imageDimensions}}</div>
                 <div>{{seriesDescription}}</div>
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
-                <div>{{compression}}</div>
+                <div class="compressionIndicator">{{compression}}</div>
                 <div>{{wwwc}}</div>
             </div>
         {{/if}}
@@ -64,7 +64,7 @@
                 <div>{{imageDimensions}}</div>
                 <div>{{seriesDescription}}</div>
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
-                <div>{{compression}}</div>
+                <div class="compressionIndicator">{{compression}}</div>
                 <div>{{wwwc}}</div>
             </div>
         {{/if}}
