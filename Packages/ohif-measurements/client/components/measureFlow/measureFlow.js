@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -8,8 +9,10 @@ import { $ } from 'meteor/jquery';
 Template.measureFlow.onCreated(() => {
     const instance = Template.instance();
 
+    instance.value = instance.data.currentValue || '';
+
     instance.state = new ReactiveVar('closed');
-    instance.description = new ReactiveVar('');
+    instance.description = new ReactiveVar(instance.data.currentDescription || '');
     instance.descriptionEdit = new ReactiveVar(false);
 
     const items = [
@@ -76,6 +79,8 @@ Template.measureFlow.onRendered(() => {
 
     // Make the measure flow bounded by the window borders
     instance.$('.measure-flow').bounded();
+
+    instance.$('.btn-add').focus();
 });
 
 Template.measureFlow.events({
@@ -84,6 +89,8 @@ Template.measureFlow.events({
     },
 
     'click .measure-flow .btn-add, click .measure-flow .btn-rename'(event, instance) {
+        const $measureFlow = instance.$('.measure-flow');
+
         // Set the open state for the component
         instance.state.set('open');
 
@@ -109,10 +116,13 @@ Template.measureFlow.events({
             };
 
             // Define in which element the selectTree will be rendered in
-            const parentElement = instance.$('.measure-flow')[0];
+            const parentElement = $measureFlow[0];
 
             // Render the selectTree element
             instance.selectTreeView = Blaze.renderWithData(Template.selectTree, data, parentElement);
+
+            // Focus the measure flow to handle closing
+            $measureFlow.focus();
         });
     },
 
@@ -149,6 +159,7 @@ Template.measureFlow.events({
         if (event.which === 13 || event.which === 27) {
             instance.$('.measure-flow .actions').removeClass('fadeOut');
             instance.descriptionEdit.set(false);
+            instance.$('.measure-flow').focus();
         }
 
         // Keep the current description if ENTER was pressed
@@ -219,5 +230,31 @@ Template.measureFlow.events({
 
         // Wait the fade-out transition and remove the selectTree component
         $container.one('transitionend', event => Blaze.remove(instance.selectTreeView));
+    },
+
+    'blur .measure-flow'(event, instance) {
+        const $measureFlow = $(event.currentTarget);
+        const element = $measureFlow[0];
+        Meteor.defer(() => {
+            const focused = $(':focus')[0];
+            if (element !== focused && !$.contains(element, focused)) {
+                $measureFlow.trigger('close');
+            }
+        });
+    },
+
+    'mouseout .measure-flow'(event, instance) {
+        const $measureFlow = $(event.currentTarget);
+        const canClose = instance.state.get() === 'selected' && !instance.descriptionEdit.get();
+        if (canClose && !$.contains($measureFlow[0], event.toElement)) {
+            $measureFlow.trigger('close');
+        }
+    },
+
+    'close .measure-flow'(event, instance) {
+        const $measureFlow = $(event.currentTarget);
+        $measureFlow.one('animationend', () => {
+            instance.data.doneCallback(instance.value.value, instance.description.get());
+        }).addClass('fadeOut');
     }
 });

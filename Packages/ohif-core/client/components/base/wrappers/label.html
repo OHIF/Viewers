@@ -1,12 +1,12 @@
 <template name="wrapperLabel">
     {{#unless this.labelAsDiv}}
-        <label class="wrapperLabel {{this.labelClass}}">
+        <label class="wrapperLabel {{this.labelClass}}" {{clone this.labelTagAttributes}}>
             {{#wrapperLabelContent}}
                 {{>UI.contentBlock}}
             {{/wrapperLabelContent}}
         </label>
     {{else}}
-        <div class="wrapperLabel {{this.labelClass}}">
+        <div class="wrapperLabel {{this.labelClass}}" {{clone this.labelTagAttributes}}>
             {{#wrapperLabelContent}}
                 {{>UI.contentBlock}}
             {{/wrapperLabelContent}}

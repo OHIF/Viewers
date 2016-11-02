@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 
 Session.set('TimepointsReady', false);
@@ -102,5 +104,36 @@ Template.viewer.events({
     },
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
         OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
+    },
+    CornerstoneToolsMouseClick(event, instance, data) {
+        const element = instance.$('.imageViewerViewport')[0];
+
+        const toolState = cornerstoneTools.getToolState(element, 'bidirectional');
+
+        // Stop here if no tool state was found
+        if (!toolState) {
+            return;
+        }
+
+        const selectLabelCallback = (options, value, description) => {
+            console.warn('>>>>options, value, description', options, value, description);
+        };
+
+        setTimeout(() => {
+            for (let i = 0; i < toolState.data.length; i++) {
+                const toolData = toolState.data[i];
+                if (toolData.active) {
+                    OHIF.measurements.toggleLabelButton({
+                        instance,
+                        toolData,
+                        element,
+                        measurementApi: instance.data.measurementApi,
+                        position: data.currentPoints.page,
+                        callback: selectLabelCallback
+                    });
+                    break;
+                }
+            }
+        });
     }
 });

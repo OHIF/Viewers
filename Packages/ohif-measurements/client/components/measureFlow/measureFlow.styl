@@ -1,8 +1,12 @@
 @import "{design}/app"
 
 .measure-flow
+  outline: none
   position: fixed
   z-index: 1
+
+  &.fadeOut
+    animateFadeOut()
 
   &.open,
   &.selected
@@ -61,7 +65,7 @@
       display: none
 
     .actions
-      margin-top: 16px
+      padding-top: 16px
       opacity: 0
 
       &:not(.fadeOut)
@@ -84,7 +88,7 @@
 
     .description
       margin-top: -10px
-      margin-bottom: 26px
+      margin-bottom: 10px
 
       textarea
         background-color: white
@@ -102,7 +106,7 @@
       background-color: white
       box-shadow: 0 10px white
       line-height: 20px
-      margin-bottom: 26px
+      margin-bottom: 10px
       margin-top: -10px
       padding: 0 12px
 
