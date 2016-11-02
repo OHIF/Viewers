@@ -32,9 +32,12 @@
               theme('color', '$activeColor')
 
         .active
-
           a
             theme('background-color', '$uiGray')
             border-color: #ddd
             color: white
+            
+        .disabled
+          a:hover
+            color: inherit
 

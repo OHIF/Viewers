@@ -49,7 +49,6 @@ $bodyCellHeight = 40px
   width: 100%
   padding: 0 $tablePadding
   position: absolute
-  overflow: hidden
   z-index: 2
 
   .loadingTextDiv
@@ -163,18 +162,70 @@ $bodyCellHeight = 40px
             border-bottom: 1px solid #436270
             background-color: $tableHoverColor
 
-@media only screen and (max-width: 1000px)
-  $tablePaddingMediumScreen = 10px
+
+@media only screen and (max-width: 1362px)
+  $tablePadding = 5%
+  
+  #studyListContainer
+    padding: 0 $tablePadding
+    
+    table#tblStudyList
+      thead,
+      tbody
+        tr
+          th,
+          td
+            &:first-child
+              padding-left: $tablePadding
+
+            &:last-child
+              padding-right: $tablePadding
+
+@media only screen and (max-width: 1161px)
+  $tablePadding = 3%
+  
+  #studyListContainer
+    padding: 0 $tablePadding
+    
+    table#tblStudyList
+      thead,
+      tbody
+        tr
+          th,
+          td
+            &:first-child
+              padding-left: $tablePadding
+
+            &:last-child
+              padding-right: $tablePadding
+
+@media only screen and (max-width: 1069px)
+  $tablePaddingMediumScreen = 5px
+  
+  .studyListToolbar
+    padding: 0 $tablePaddingMediumScreen
+    
   #studyListContainer
     padding: 0
 
     table#tblStudyList
       thead > tr > th
+        
         &:first-child
           padding-left: $tablePaddingMediumScreen
 
         &:last-child
           padding-right: $tablePaddingMediumScreen
+          
+        input.worklist-search
+          padding: 10px
+          
+        div.sortingCell
+          padding: 10px 5px
+          min-width: auto
+          
+          i
+            width: auto
 
       tbody > tr > td
         &:first-child
@@ -182,8 +233,8 @@ $bodyCellHeight = 40px
 
         &:last-child
           padding-right: $tablePaddingMediumScreen
-
-      th.accessionNumber, td.accessionNumber,
-      th.modalities, td.modalities,
-      th.numberOfStudyRelatedInstances, td.numberOfStudyRelatedInstances
-        display: none
+    
+    .worklistPagination
+      .row
+        margin-left: 0
+        margin-right: 0
