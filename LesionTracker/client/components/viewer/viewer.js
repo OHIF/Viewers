@@ -65,6 +65,22 @@ Template.viewer.onCreated(() => {
     instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
     const timepointsPromise = instance.data.timepointApi.retrieveTimepoints();
     timepointsPromise.then(() => {
+        const timepoints = instance.data.timepointApi.all();
+
+        //  Set timepointType in studies to be used in hanging protocol engine
+        timepoints.forEach(function(timepoint) {
+            timepoint.studyInstanceUids.forEach(function(studyInstanceUid) {
+                const study = _.find(instance.data.studies, function (element) {
+                    return element.studyInstanceUid === studyInstanceUid;
+                });
+                if (!study) {
+                    return;
+                }
+
+                study.timepointType = timepoint.timepointType;
+            });
+        });
+
         Session.set('TimepointsReady', true);
     });
 

@@ -1,18 +1,11 @@
+//------------------------------------------------------------------------------
 // Define Baseline protocol
 var proto = new HP.Protocol('LT_Baseline');
 proto.locked = true;
 
-var studyDescription = new HP.ProtocolMatchingRule();
-studyDescription.required = true;
-studyDescription.attribute = 'studyDescription';
-studyDescription.constraint = {
-    contains: {
-        value: 'CT'
-    }
-};
-
 var isBaseline = new HP.ProtocolMatchingRule();
 isBaseline.required = true;
+isBaseline.weight = 1;
 isBaseline.attribute = 'timepointType';
 isBaseline.constraint = {
     equals: {
@@ -20,7 +13,6 @@ isBaseline.constraint = {
     }
 };
 
-proto.addProtocolMatchingRule(studyDescription);
 proto.addProtocolMatchingRule(isBaseline);
 
 var oneByOne = new HP.ViewportStructure('grid', {
@@ -40,26 +32,7 @@ baseline.constraint = {
     }
 };
 
-var body = new HP.SeriesMatchingRule();
-body.attribute = 'seriesDescription';
-body.weight = 5;
-body.constraint = {
-    contains: {
-        value: 'Body'
-    }
-};
-
-var chest = new HP.SeriesMatchingRule();
-chest.attribute = 'seriesDescription';
-chest.constraint = {
-    contains: {
-        value: 'CHEST'
-    }
-};
-
 single.studyMatchingRules.push(baseline);
-single.seriesMatchingRules.push(body);
-single.seriesMatchingRules.push(chest);
 
 var first = new HP.Stage(oneByOne, 'oneByOne');
 first.viewports.push(single);
@@ -69,22 +42,14 @@ proto.addStage(first);
 HP.lesionTrackerBaselineProtocol = proto;
 HP.lesionTrackerBaselineProtocol.id = 'lesionTrackerBaselineProtocol';
 
-
+//------------------------------------------------------------------------------
 // Define Followup Protocol
 var proto = new HP.Protocol('LT_BaselineFollowup');
 proto.locked = true;
 
-var studyDescription = new HP.ProtocolMatchingRule();
-studyDescription.required = true;
-studyDescription.attribute = 'studyDescription';
-studyDescription.constraint = {
-    contains: {
-        value: 'CT'
-    }
-};
-
 var isFollowup = new HP.ProtocolMatchingRule();
 isFollowup.required = true;
+isFollowup.weight = 2;
 isFollowup.attribute = 'timepointType';
 isFollowup.constraint = {
     equals: {
@@ -92,7 +57,6 @@ isFollowup.constraint = {
     }
 };
 
-proto.addProtocolMatchingRule(studyDescription);
 proto.addProtocolMatchingRule(isFollowup);
 
 var oneByTwo = new HP.ViewportStructure('grid', {
@@ -122,30 +86,8 @@ followup.constraint = {
     }
 };
 
-var body = new HP.SeriesMatchingRule();
-body.attribute = 'seriesDescription';
-body.weight = 5;
-body.constraint = {
-    contains: {
-        value: 'Body'
-    }
-};
-
-var chest = new HP.SeriesMatchingRule();
-chest.attribute = 'seriesDescription';
-chest.constraint = {
-    contains: {
-        value: 'CHEST'
-    }
-};
-
-left.studyMatchingRules.push(baseline);
-//left.seriesMatchingRules.push(body);
-//left.seriesMatchingRules.push(chest);
-
-right.studyMatchingRules.push(followup);
-//right.seriesMatchingRules.push(body);
-//right.seriesMatchingRules.push(chest);
+left.studyMatchingRules.push(followup);
+right.studyMatchingRules.push(baseline);
 
 var first = new HP.Stage(oneByTwo, 'oneByTwo');
 first.viewports.push(left);
