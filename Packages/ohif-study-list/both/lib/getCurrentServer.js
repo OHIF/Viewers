@@ -1,4 +1,3 @@
-import { CurrentServer, Servers } from 'meteor/ohif:study-list/both/collections.js';
 /**
  * Retrieves the current server configuration used to retrieve studies
  */

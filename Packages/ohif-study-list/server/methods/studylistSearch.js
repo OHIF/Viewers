@@ -13,9 +13,6 @@ Meteor.methods({
             throw 'No properly configured server was available over DICOMWeb or DIMSE.';
         }
 
-        console.log(server);
-        console.log(Services);
-
         if (server.type === 'dicomWeb') {
             return Services.QIDO.Studies(server, filter);
         } else if (server.type === 'dimse') {

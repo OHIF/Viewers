@@ -18,7 +18,6 @@ Meteor.startup(() => {
     ServerConfiguration.clean(Meteor.settings);
 
     // TODO: Make the error messages more clear
-    // console.log('------ Testing Meteor Settings ------');
     // Taking this out for now to prevent confusion.
     // check(Meteor.settings, ServerConfiguration);
 

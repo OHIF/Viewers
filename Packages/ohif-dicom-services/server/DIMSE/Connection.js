@@ -269,8 +269,6 @@ Connection.prototype.associate = function(options, callback) {
     socket.setCalledAe(hostAE);
     socket.setCallingAE(sourceAE);
 
-    console.log(peerInfo);
-
     nativeSocket.connect({
         host: peerInfo.host,
         port: peerInfo.port
