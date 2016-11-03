@@ -41,3 +41,21 @@ OHIF.lesiontracker.toggleLesionTrackerTools = () => {
         toolsShown = true;
     }
 };
+
+OHIF.lesiontracker.toggleLesionTrackerToolsButtons = (isEnabled) => {
+    const toolStates = previousStates || toolManager.getToolDefaultStates();
+
+    if (isEnabled) {
+        toolStates.disabledToolButtons = [];
+    } else {
+        toolStates.disabledToolButtons = [ 'bidirectional', 'nonTarget', 'crTool', 'unTool', 'exTool', 'toggleHUD', 'toggleTrial', 'toolbarSectionEntry' ];
+    }
+
+    // Reload the updated previous or default states
+    toolManager.setToolDefaultStates(toolStates);
+
+    // Reset the active tool if disabled
+    if (!isEnabled) {
+        toolManager.setActiveTool();
+    }
+};

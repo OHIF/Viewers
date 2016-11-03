@@ -145,8 +145,25 @@ Template.toolbarSection.helpers({
 
 Template.toolbarSection.events({
     'click #toggleHUD'() {
+        const $this = $(event.currentTarget).find('#toggleHUD');
+
+        // Stop here if the tool is disabled
+        if ($this.hasClass('disabled')) {
+            return;
+        }
+
         const state = Session.get('measurementTableHudOpen');
         Session.set('measurementTableHudOpen', !state);
+    },
+    'click #toggleTrial'() {
+        const $this = $(event.currentTarget).find('#toggleHUD');
+
+        // Stop here if the tool is disabled
+        if ($this.hasClass('disabled')) {
+            return;
+        }
+
+        $('#optionsModal').modal();
     }
 });
 
@@ -154,15 +171,15 @@ Template.toolbarSection.onRendered(function() {
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
-    const allToolbarButtons = $('#toolbar').find('button');
+    const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton');
     if (disabledToolButtons && disabledToolButtons.length > 0) {
         for (var i = 0; i < allToolbarButtons.length; i++) {
             const toolbarButton = allToolbarButtons[i];
-            $(toolbarButton).prop('disabled', false);
+            $(toolbarButton).removeClass('disabled');
 
             const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
             if (index !== -1) {
-                $(toolbarButton).prop('disabled', true);
+                $(toolbarButton).addClass('disabled');
             }
         }
     }

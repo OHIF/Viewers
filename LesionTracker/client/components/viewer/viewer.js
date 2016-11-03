@@ -81,6 +81,14 @@ Template.viewer.onCreated(() => {
     if (prior) {
         instance.data.measurementApi.priorTimepointId = prior.timepointId;
     }
+
+    if (instance.data.currentTimepointId) {
+        //  Enable Lesion Tracker Tools if the opened study is associated
+        OHIF.lesiontracker.toggleLesionTrackerToolsButtons(true);
+    } else {
+        //  Disable Lesion Tracker Tools if the opened study is not associated
+        OHIF.lesiontracker.toggleLesionTrackerToolsButtons(false);
+    }
 });
 
 Template.viewer.helpers({

@@ -53,12 +53,14 @@ class MeasurementHandlers {
         const timepointApi = instance.data.timepointApi;
         if (timepointApi) {
             const timepoint = timepointApi.study(studyInstanceUid)[0];
-            const timepointId = timepoint.timepointId;
-            measurement.timepointId = timepointId;
-            measurement.measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, Collection, timepointApi);
+            if (timepoint) {
+                const timepointId = timepoint.timepointId;
+                measurement.timepointId = timepointId;
+                measurement.measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, Collection, timepointApi);
 
-            // TODO: Fix this
-            measurement.measurementNumberAbsolute = measurement.measurementNumber;
+                // TODO: Fix this
+                measurement.measurementNumberAbsolute = measurement.measurementNumber;
+            }
         } else {
             const numCurrentMeasurementsInStudy = Collection.find({
                 studyInstanceUid: study.studyInstanceUid
