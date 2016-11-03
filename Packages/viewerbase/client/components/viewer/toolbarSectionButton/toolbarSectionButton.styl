@@ -12,6 +12,11 @@
   &.disabled
     opacity: 0.5
     cursor: not-allowed
+    
+    &:hover 
+      i,
+      .buttonLabel
+        theme('color', '$textSecondaryColor')
 
   .buttonLabel
     theme('color', '$textSecondaryColor')
@@ -23,6 +28,7 @@
     text-align: center
     
     i
+      theme('color', '$textSecondaryColor')
       font-size: 18px
       line-height: 30px
 

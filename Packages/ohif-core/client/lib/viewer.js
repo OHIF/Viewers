@@ -86,7 +86,7 @@ OHIF.viewer.isDisplaySetsSequenced = definedSequenceMap => {
 OHIF.viewer.canMoveDisplaySets = isNext => {
     // Get the setting that defines if the display set navigation is multiple
     const isMultiple = OHIF.uiSettings.displaySetNavigationMultipleViewports;
-
+    
     // Get the setting that allow display set navigation looping over series
     const allowLooping = OHIF.uiSettings.displaySetNavigationLoopOverSeries;
 
@@ -101,17 +101,24 @@ OHIF.viewer.canMoveDisplaySets = isNext => {
     // Check if the display sets are sequenced
     const isSequenced = OHIF.viewer.isDisplaySetsSequenced(sequenceMap);
 
+    // Get Active Viewport Index if isMultiple is false
+    const activeViewportIndex = !isMultiple ? Session.get('activeViewport') : null;
+
     // Check if is next and looping is blocked
     if (isNext && !allowLooping) {
         // Check if the end was reached
         let endReached = true;
+
         sequenceMap.forEach((studyViewports, study) => {
-            const firstIndex = studyViewports[0].displaySetIndex;
-            const steps = studyViewports.length;
+            // Get active viewport index if isMultiple is false ortherwise get last
+            const viewportIndex = studyViewports[activeViewportIndex !== null ? activeViewportIndex : studyViewports.length - 1].displaySetIndex;
+            const layoutViewports = studyViewports.length;
             const amount = study.displaySets.length;
-            const move = (amount % steps) || steps;
+            const move = !isMultiple ? 1 : ((amount % layoutViewports) || layoutViewports);
             const lastStepIndex = amount - move;
-            if (firstIndex + steps !== lastStepIndex + steps) {
+            
+            // 9999 for index means empty viewport, see getDisplaySetSequenceMap function
+            if (viewportIndex !== 9999 && viewportIndex !== lastStepIndex) {
                 endReached = false;
             }
         });
@@ -126,13 +133,19 @@ OHIF.viewer.canMoveDisplaySets = isNext => {
     if (!isNext && !allowLooping) {
         // Check if the begin was reached
         let beginReached = true;
-        sequenceMap.forEach((studyViewports, study) => {
-            const firstIndex = studyViewports[0].displaySetIndex;
-            const steps = studyViewports.length;
-            if (firstIndex - steps !== -steps) {
-                beginReached = false;
-            }
-        });
+
+        if(activeViewportIndex >= 0) {
+            sequenceMap.forEach((studyViewports, study) => {
+                // Get active viewport index if isMultiple is false ortherwise get first
+                const viewportIndex = studyViewports[activeViewportIndex !== null ? activeViewportIndex : 0].displaySetIndex;
+                const layoutViewports = studyViewports.length;
+
+                // 9999 for index means empty viewport, see getDisplaySetSequenceMap function
+                if (viewportIndex !== 9999 && viewportIndex - layoutViewports !== -layoutViewports) {
+                    beginReached = false;
+                }
+            });
+        }
 
         // Return false if begin is not reached yet
         if ((!isMultiple || isSequenced) && beginReached) {

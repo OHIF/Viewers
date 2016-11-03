@@ -9,20 +9,20 @@ Template.layoutChooser.onRendered(() => {
      * @param currentCell
      */
     instance.highlightCells = currentCell => {
-        const cells = $('.layoutChooser table td');
+        const cells = this.$('.layoutChooser table td');
         cells.removeClass('hover');
 
-        currentCell = $(currentCell);
+        currentCell = this.$(currentCell);
         const table = currentCell.parents('.layoutChooser table').get(0);
         const rowIndex = currentCell.closest('tr').index();
         const columnIndex = currentCell.index();
 
         // Loop through the table row by row
         // and cell by cell to apply the highlighting
-        for (var i = 0; i < table.rows.length; i++) {
+        for (let i = table.rows.length - 1; i >= 0; i--) {
             const row = table.rows[i];
             if (i <= rowIndex) {
-                for (var j = 0; j < row.cells.length; j++) {
+                for (let j = row.cells.length - 1; j >= 0; j--) {
                     if (j <= columnIndex) {
                         const cell = row.cells[j];
                         cell.classList.add('hover');
@@ -67,7 +67,7 @@ Template.layoutChooser.events({
     },
 
     'click .layoutChooser table td'(event, instance) {
-        const $currentCell = $(event.currentTarget);
+        const $currentCell = instance.$(event.currentTarget);
         const rowIndex = $currentCell.closest('tr').index();
         const columnIndex = $currentCell.index();
 
@@ -81,7 +81,7 @@ Template.layoutChooser.events({
         window.layoutManager.layoutProps = layoutProps;
         window.layoutManager.updateViewports();
 
-        const $dropdown = $('.layoutChooser');
+        const $dropdown = instance.$('.layoutChooser');
         toggleDialog($dropdown);
     }
 });

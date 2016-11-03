@@ -9,6 +9,9 @@ setActiveViewport = function(element) {
     // with the viewport index that it was fired from.
     Session.set('activeViewport', viewportIndex);
 
+    // Update the Session variable to the UI re-renders
+    Session.set('LayoutManagerUpdated', Random.id());
+
     // Add the 'active' class to the parent container to highlight the active viewport
     $('#imageViewerViewports .viewportContainer').removeClass('active');
     $(element).parents('.viewportContainer').addClass('active');

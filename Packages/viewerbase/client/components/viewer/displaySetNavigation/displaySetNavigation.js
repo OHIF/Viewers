@@ -21,6 +21,7 @@ Template.displaySetNavigation.events({
 
 Template.displaySetNavigation.helpers({
     disableButton(isNext) {
+        OHIF.uiSettings.displaySetNavigationMultipleViewports = false;
         Session.get('LayoutManagerUpdated');
         return !OHIF.viewer.canMoveDisplaySets(isNext);
     }
