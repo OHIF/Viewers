@@ -62,29 +62,24 @@ Template.viewer.onCreated(() => {
         ViewerStudies.insert(study);
     });
 
-    if (instance.data.currentTimepointId) {
-        instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
-        const timepointsPromise = instance.data.timepointApi.retrieveTimepoints();
-        timepointsPromise.then(() => {
-            Session.set('TimepointsReady', true);
-        });
+    instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
+    const timepointsPromise = instance.data.timepointApi.retrieveTimepoints();
+    timepointsPromise.then(() => {
+        Session.set('TimepointsReady', true);
+    });
 
-        instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.currentTimepointId);
-        const measurementsPromise = instance.data.measurementApi.retrieveMeasurements();
-        measurementsPromise.then(() => {
-            Session.set('MeasurementsReady', true);
+    instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.currentTimepointId);
+    const measurementsPromise = instance.data.measurementApi.retrieveMeasurements();
+    measurementsPromise.then(() => {
+        Session.set('MeasurementsReady', true);
 
-            instance.data.measurementApi.syncMeasurementsAndToolData();
-        });
+        instance.data.measurementApi.syncMeasurementsAndToolData();
+    });
 
-        // Provide the necessary data to the Measurement API and Timepoint API
-        const prior = instance.data.timepointApi.prior();
-        if (prior) {
-            instance.data.measurementApi.priorTimepointId = prior.timepointId;
-        }
-    } else {
-        console.warn('No current timepoint specified');
-        instance.data.measurementApi = new OHIF.measurements.MeasurementApi();
+    // Provide the necessary data to the Measurement API and Timepoint API
+    const prior = instance.data.timepointApi.prior();
+    if (prior) {
+        instance.data.measurementApi.priorTimepointId = prior.timepointId;
     }
 });
 
