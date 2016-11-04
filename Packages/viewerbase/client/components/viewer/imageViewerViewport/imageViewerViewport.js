@@ -501,7 +501,7 @@ Template.imageViewerViewport.onDestroyed(function() {
 
     // When a viewport element is being destroyed
     var element = this.find('.imageViewerViewport');
-    if (!element) {
+    if (!element || !$(element).find('canvas').length) {
         return;
     }
 

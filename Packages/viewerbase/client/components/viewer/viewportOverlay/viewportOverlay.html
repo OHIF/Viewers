@@ -18,12 +18,12 @@
             <div class="bottomleft dicomTag">
                 <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
                 <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
-                <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+                <div>{{#if frameRate}}{{formatNumberPrecision frameRate 2}} FPS{{/if}}</div>
                 <div>{{imageDimensions}}</div>
                 <div>
-                    <span>{{#if location}}Loc: {{location}} mm{{/if}}</span>
-                    <span>{{#if thickness}}Thick: {{thickness}} mm{{/if}}</span>
-                    <span>{{#if spacingBetweenSlices}}Spacing: {{spacingBetweenSlices}} mm{{/if}}</span>
+                    <span>{{#if location}}Loc: {{formatNumberPrecision location 2}} mm{{/if}}</span>
+                    <span>{{#if thickness}}Thick: {{formatNumberPrecision thickness 2}} mm{{/if}}</span>
+                    <span>{{#if spacingBetweenSlices}}Spacing: {{formatNumberPrecision spacingBetweenSlices 2}} mm{{/if}}</span>
                 </div>
                 <div>{{seriesDescription}}</div>
             </div>
@@ -40,7 +40,7 @@
             <div class="bottomright dicomTag">
                 <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
                 <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
-                <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+                <div>{{#if frameRate}}{{formatNumberPrecision frameRate 2}} FPS{{/if}}</div>
                 <div>{{imageDimensions}}</div>
                 <div>{{seriesDescription}}</div>
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
@@ -60,7 +60,7 @@
             <div class="bottomleft dicomTag">
                 <div>{{#if seriesNumber}}Ser: {{seriesNumber}}{{/if}}</div>
                 <div>{{#if gt numImages 1}}Img: {{instanceNumber}} ({{imageIndex}}/{{numImages}}){{/if}}</div>
-                <div>{{#if frameRate}}{{frameRate}} FPS{{/if}}</div>
+                <div>{{#if frameRate}}{{formatNumberPrecision frameRate 2}} FPS{{/if}}</div>
                 <div>{{imageDimensions}}</div>
                 <div>{{seriesDescription}}</div>
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
