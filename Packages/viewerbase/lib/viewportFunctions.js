@@ -145,7 +145,8 @@ isPlaying = () => {
 
     // Get the viewport element and its current playClip tool state
     const element = getActiveViewportElement();
-    if (!element) {
+    // Empty Elements throws cornerstore exception
+    if (!element || !$(element).find('canvas').length) {
         return;
     }
 

@@ -7,13 +7,13 @@ import { OHIF } from 'meteor/ohif:core';
  *
  * @param element {node} DOM Node representing the viewport element
  */
-displayReferenceLines = function(element) {
+displayReferenceLines = element => {
     log.info("imageViewerViewport displayReferenceLines");
 
     // Check if image plane (orientation / loction) data is present for the current image
-    var enabledElement = cornerstone.getEnabledElement(element);
-    var imageId = enabledElement.image.imageId;
-    var imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+    const enabledElement = cornerstone.getEnabledElement(element);
+    const imageId = enabledElement.image.imageId;
+    const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
 
     if (!OHIF.viewer.refLinesEnabled || !imagePlane || !imagePlane.frameOfReferenceUID) {
         return;
@@ -23,19 +23,21 @@ displayReferenceLines = function(element) {
     cornerstoneTools.referenceLines.tool.disable(element);
 
     // Loop through all other viewport elements and enable reference lines
-    $('.imageViewerViewport').not(element).each(function(index, element) {
-        var imageId;
-        try {
-            var enabledElement = cornerstone.getEnabledElement(element);
-            imageId = enabledElement.image.imageId;
-        } catch(error) {
-            return;
-        }
+    $('.imageViewerViewport').not(element).each((index, viewportElement) => {
+        let imageId;
+        if($(viewportElement).find('canvas').length) {
+            try {
+                const enabledElement = cornerstone.getEnabledElement(viewportElement);
+                imageId = enabledElement.image.imageId;
+            } catch(error) {
+                return;
+            }
 
-        if (!imageId || !$(this).find('canvas').length) {
-            return;
-        }
+            if (!imageId) {
+                return;
+            }
 
-        cornerstoneTools.referenceLines.tool.enable(element, OHIF.viewer.updateImageSynchronizer);
+            cornerstoneTools.referenceLines.tool.enable(viewportElement, OHIF.viewer.updateImageSynchronizer);
+        }
     });
 };

@@ -16,7 +16,7 @@ enablePrefetchOnElement = function(element) {
     });
 
     // Make sure there is a stack to fetch
-    var stack = cornerstoneTools.getToolState(element, 'stack');
+    const stack = cornerstoneTools.getToolState(element, 'stack');
     if (stack && stack.data.length && stack.data[0].imageIds.length > 1) {
         cornerstoneTools.stackPrefetch.enable(element);
     }
