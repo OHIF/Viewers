@@ -1,5 +1,4 @@
-
-import {dicomParser} from 'meteor/cornerstone';
+import {dicomParser} from 'meteor/ohif:cornerstone';
 
 /**
  * A small set of utilities to help parsing DICOM element values.
