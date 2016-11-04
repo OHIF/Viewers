@@ -111,11 +111,16 @@ Template.cineDialog.onCreated(() => {
      * ... jQuery's on('resize', func) version which, for some unkown reason
      * ... is currently not working for this portion of code.
      * ... Further investigation is necessary.
+     *
+     * This happens because when an event is attached using jQuery's
+     * you can't get it using vanilla JavaScript, it returns null. 
+     * You need to use jQuery for that. So, either you use vanilla JS or jQuery
+     * to get an element's event handler. See viewerMain for more details.
      */
 
-    instance.setResizeHandler = (handler) => {
+    instance.setResizeHandler = handler => {
         if (typeof handler === 'function') {
-            let origHandler = window.onresize;
+            const origHandler = window.onresize;
             instance.origWindowResizeHandler = typeof origHandler === 'function' ? origHandler : null;
             window.onresize = function (event) {
                 if (typeof origHandler === 'function') {

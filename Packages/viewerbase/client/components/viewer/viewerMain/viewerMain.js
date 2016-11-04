@@ -1,6 +1,11 @@
 Template.viewerMain.onCreated(() => {
     // Attach the Window resize listener
-    $(window).on('resize', handleResize);
+    // Don't use jQuery here. "window.onresize" will always be null
+    // If its necessary, check all the code for window.onresize getter
+    // and change it to jQuery._data(window, 'events')['resize']. 
+    // Otherwise this function will be probably overrided.
+    // See cineDialog instance.setResizeHandler function
+    window.addEventListener('resize', handleResize);
 
     // Create the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
@@ -24,7 +29,7 @@ Template.viewerMain.onDestroyed(() => {
     log.info('viewerMain onDestroyed');
     
     // Remove the Window resize listener
-    $(window).off('resize', handleResize);
+    window.removeEventListener('resize', handleResize);
 
     // Destroy the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer.destroy();
