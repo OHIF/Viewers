@@ -264,6 +264,11 @@ Template.thumbnailEntry.helpers({
             return;
         }
 
+        //  No need to show instance number for single-frame images
+        if (!stack.isMultiFrame) {
+            return;
+        }
+
         const firstImage = stack.images[0];
         if (!firstImage) {
             return;
