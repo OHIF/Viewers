@@ -22,7 +22,7 @@ OHIF.measurements.toggleLabelButton = options => {
 
     const tool = toolMap[options.toolData.toolType];
     const toolCollection = options.measurementApi[tool];
-    const measurement = toolCollection.findOne(options.toolData.id);
+    const measurement = toolCollection.findOne(options.toolData._id);
 
     const data = {
         measurement,
