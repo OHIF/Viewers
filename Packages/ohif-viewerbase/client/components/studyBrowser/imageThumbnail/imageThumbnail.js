@@ -33,7 +33,7 @@ Template.imageThumbnail.onRendered(() => {
         // Define a handler for success on image load
         const loadSuccess = image => {
             // Enable cornerstone for thumbnail element again creating a new canvas
-            cornerstone.enable(element););
+            cornerstone.enable(element);
 
             cornerstone.displayImage(element, image);
             $loading.css('display', 'none');
