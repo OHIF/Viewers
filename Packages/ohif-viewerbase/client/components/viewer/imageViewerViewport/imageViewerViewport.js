@@ -421,16 +421,13 @@ function setDisplaySet(data, displaySetInstanceUid, templateData) {
  */
 function getKeysByValue(object, value) {
     // http://stackoverflow.com/questions/9907419/javascript-object-get-key-by-value
-    return Object.keys(object).filter(function(key) {
-        return object[key] === value;
-    });
+    return Object.keys(object).filter(key => object[key] === value);
 }
 
 Meteor.startup(function() {
     // On Meteor startup, define the global objects used to store loading imageIds
     // by viewport / thumbnail element
     ViewportLoading = {};
-    ThumbnailLoading = {};
 
     // Whenever the CornerstoneImageLoadProgress is fired, identify which viewports
     // the "in-progress" image is to be displayed in. Then pass the percent complete
@@ -441,13 +438,11 @@ Meteor.startup(function() {
             Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
         });
 
-        thumbnailIndices = getKeysByValue(ThumbnailLoading, eventData.imageId);
-        thumbnailIndices.forEach(function(thumbnailIndex) {
-            Session.set('CornerstoneThumbnailLoadProgress' + thumbnailIndex, eventData.percentComplete);
-        });
+        const encodedId = OHIF.string.encodeId(eventData.imageId);
+        Session.set('CornerstoneThumbnailLoadProgress' + encodedId, eventData.percentComplete);
     });
 
-    var config = {
+    const config = {
         magnifySize: 300,
         magnificationLevel: 3
     };

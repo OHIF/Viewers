@@ -1,3 +1,18 @@
+import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
+
+Template.imageThumbnail.onCreated(() => {
+    const instance = Template.instance();
+
+    // Get the image ID for current thumbnail
+    instance.getThumbnailImageId = () => {
+        const stack = instance.data.thumbnail.stack;
+        const imageInstance = stack.images[0];
+        return getImageId(imageInstance);
+    };
+});
+
 Template.imageThumbnail.onRendered(() => {
     const instance = Template.instance();
 
@@ -12,25 +27,15 @@ Template.imageThumbnail.onRendered(() => {
         // Disable cornerstone for thumbnail element and remove its canvas
         cornerstone.disable(element);
 
-        // Get the image ID
-        const stack = instance.data.thumbnail.stack;
-        const thumbnailIndex = instance.data.thumbnail.thumbnailIndex;
-        const imageInstance = stack.images[0];
-        const imageId = getImageId(imageInstance);
-
         // Activate the loading state
         $loading.css('display', 'block');
-
-        // Add the current index on the global thumbnail loading controller
-        ThumbnailLoading[thumbnailIndex] = imageId;
 
         // Define a handler for success on image load
         const loadSuccess = image => {
             // Enable cornerstone for thumbnail element again creating a new canvas
-            cornerstone.enable(element);
-            
+            cornerstone.enable(element););
+
             cornerstone.displayImage(element, image);
-            delete ThumbnailLoading[thumbnailIndex];
             $loading.css('display', 'none');
         };
 
@@ -39,6 +44,9 @@ Template.imageThumbnail.onRendered(() => {
             $loading.css('display', 'none');
             $loadingError.css('display', 'block');
         };
+
+        // Get the image ID
+        const imageId = instance.getThumbnailImageId();
 
         // Call cornerstone image loader with the defined handlers
         cornerstone.loadAndCacheImage(imageId).then(loadSuccess, loadError);
@@ -53,9 +61,7 @@ Template.imageThumbnail.onRendered(() => {
         }
 
         // Wait for the new data and refresh the image thumbnail
-        Tracker.afterFlush(() => {
-            instance.refreshImage();
-        });
+        Tracker.afterFlush(() => instance.refreshImage());
     });
 });
 
@@ -74,10 +80,12 @@ Template.imageThumbnail.helpers({
     // Executed every time the image loading progress is changed
     percentComplete() {
         const instance = Template.instance();
-        const thumbnailIndex = instance.data.thumbnail.thumbnailIndex;
+
+        // Get the encoded image ID for thumbnail
+        const encodedImageId = OHIF.string.encodeId(instance.getThumbnailImageId());
 
         // Register a dependency from this computation on Session key
-        const percentComplete = Session.get('CornerstoneThumbnailLoadProgress' + thumbnailIndex);
+        const percentComplete = Session.get('CornerstoneThumbnailLoadProgress' + encodedImageId);
 
         // Return the complete percent amount of the image loading
         if (percentComplete && percentComplete !== 100) {
