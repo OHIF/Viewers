@@ -85,6 +85,7 @@ class MeasurementApi {
         configuration.measurementTools.forEach(tool => {
             const measurements = this[tool.id].find().fetch();
             measurements.forEach(measurement => {
+                console.warn('>>>>MEASUREMENT', measurement);
                 OHIF.measurements.syncMeasurementAndToolData(measurement);
             });
         });

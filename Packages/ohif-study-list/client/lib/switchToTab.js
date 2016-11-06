@@ -13,6 +13,9 @@ switchToTab = function(contentId) {
 
     OHIF.log.info('Switching to tab: ' + contentId);
 
+    // Clear the cornerstone tool data to sync the measurements with the measurements API
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
+
     $('.tab-content .tab-pane').removeClass('active');
     if (contentId !== 'studylistTab') {
         $('.tab-content .tab-pane#viewerTab').addClass('active');
