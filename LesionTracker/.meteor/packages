@@ -52,7 +52,7 @@ random@1.0.10
 reactive-var@1.0.11
 reactive-dict@1.1.8
 practicalmeteor:loglevel
-momentjs:moment
+momentjs:moment@2.15.1
 
 anti:gagarin@=0.4.11
 check@1.2.4
