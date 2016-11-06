@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.studyTimepointBrowser.onCreated(() => {
     const instance = Template.instance();
 

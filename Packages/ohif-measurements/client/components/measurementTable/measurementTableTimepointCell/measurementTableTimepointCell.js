@@ -33,6 +33,10 @@ Template.measurementTableTimepointCell.helpers({
         const measurementTools = config.measurementTools;
 
         const tool = _.where(measurementTools, {id: rowItem.measurementTypeId})[0];
+        if (!tool) {
+            // TODO: Figure out what is going on here?
+            console.warn('Something went wrong?');
+        }
         const displayFunction = tool.options.measurementTableOptions.displayFunction;
         return displayFunction(data);
     }

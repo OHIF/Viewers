@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.studyTimepoint.onCreated(() => {
     const instance = Template.instance();
 

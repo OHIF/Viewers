@@ -12,9 +12,6 @@ Template.imageThumbnail.onRendered(() => {
         // Disable cornerstone for thumbnail element and remove its canvas
         cornerstone.disable(element);
 
-        // Enable cornerstone for thumbnail element again creating a new canvas
-        cornerstone.enable(element);
-
         // Get the image ID
         const stack = instance.data.thumbnail.stack;
         const thumbnailIndex = instance.data.thumbnail.thumbnailIndex;
@@ -29,6 +26,9 @@ Template.imageThumbnail.onRendered(() => {
 
         // Define a handler for success on image load
         const loadSuccess = image => {
+            // Enable cornerstone for thumbnail element again creating a new canvas
+            cornerstone.enable(element);
+            
             cornerstone.displayImage(element, image);
             delete ThumbnailLoading[thumbnailIndex];
             $loading.css('display', 'none');
@@ -52,7 +52,7 @@ Template.imageThumbnail.onRendered(() => {
             instance.data.currentStudy.dep.depend();
         }
 
-        // Wait for the new data and reresh the image thumbnail
+        // Wait for the new data and refresh the image thumbnail
         Tracker.afterFlush(() => {
             instance.refreshImage();
         });

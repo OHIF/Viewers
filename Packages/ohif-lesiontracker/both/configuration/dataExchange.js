@@ -1,10 +1,10 @@
 import { measurementTools } from './measurementTools';
 
-export const retrieveMeasurements = () => {
+export const retrieveMeasurements = (filter) => {
     console.log('retrieveMeasurements');
 
     return new Promise((resolve, reject) => {
-        Meteor.call('retrieveMeasurements', (error, response) => {
+        Meteor.call('retrieveMeasurements', filter, (error, response) => {
             if (error) {
                 reject(error);
             } else {
@@ -36,11 +36,11 @@ export const storeMeasurements = (measurementData) => {
     });
 };
 
-export const retrieveTimepoints = () => {
+export const retrieveTimepoints = (filter) => {
     console.log('retrieveTimepoints');
 
     return new Promise((resolve, reject) => {
-        Meteor.call('retrieveTimepoints', (error, response) => {
+        Meteor.call('retrieveTimepoints', filter, (error, response) => {
             if (error) {
                 reject(error);
             } else {

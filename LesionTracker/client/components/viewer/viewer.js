@@ -63,7 +63,13 @@ Template.viewer.onCreated(() => {
     });
 
     instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
-    const timepointsPromise = instance.data.timepointApi.retrieveTimepoints();
+
+    const patientId = instance.data.studies[0].patientId;
+    const filter = {
+        'patientId': patientId
+    };
+
+    const timepointsPromise = instance.data.timepointApi.retrieveTimepoints(filter);
     timepointsPromise.then(() => {
         const timepoints = instance.data.timepointApi.all();
 
@@ -85,7 +91,7 @@ Template.viewer.onCreated(() => {
     });
 
     instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.currentTimepointId);
-    const measurementsPromise = instance.data.measurementApi.retrieveMeasurements();
+    const measurementsPromise = instance.data.measurementApi.retrieveMeasurements(filter);
     measurementsPromise.then(() => {
         Session.set('MeasurementsReady', true);
 

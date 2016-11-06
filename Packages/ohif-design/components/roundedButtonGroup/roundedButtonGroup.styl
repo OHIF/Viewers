@@ -1,7 +1,6 @@
 @import "{design}/app"
 
 $height = 25px
-$textColorButtonActive = #2D2D2D
 
 .roundedButtonGroup
 
@@ -64,7 +63,7 @@ $textColorButtonActive = #2D2D2D
     &.active .roundedButton
       theme('background-color', '$activeColor')
       theme('border-color', '$uiBorderColorActive')
-      color: $textColorButtonActive
+      theme('color', '$uiGrayDark')
 
     &:hover .roundedButton
     &.active .roundedButton

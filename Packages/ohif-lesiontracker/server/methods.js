@@ -37,9 +37,9 @@ Meteor.methods({
         });
     },
 
-    retrieveTimepoints() {
+    retrieveTimepoints(filter = {}) {
         OHIF.log.info('Retrieving Timepoints from the Server');
-        return Timepoints.find().fetch();
+        return Timepoints.find(filter).fetch();
     },
 
     storeMeasurements(measurementData) {
@@ -60,12 +60,13 @@ Meteor.methods({
         });
     },
 
-    retrieveMeasurements() {
+    retrieveMeasurements(filter = {}) {
         OHIF.log.info('Retrieving Measurements from the Server');
         let measurementData = {};
 
+
         measurementTools.forEach(tool => {
-            measurementData[tool.id] = MeasurementCollections[tool.id].find().fetch();
+            measurementData[tool.id] = MeasurementCollections[tool.id].find(filter).fetch();
         });
 
         return measurementData;

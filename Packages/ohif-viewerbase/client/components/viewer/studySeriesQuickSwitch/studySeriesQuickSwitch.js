@@ -13,14 +13,20 @@ Template.studySeriesQuickSwitch.onCreated(() => {
     // Gets the current viewport data
     const viewportIndex = instance.data.viewportIndex;
     const viewportData = instance.getViewportData(viewportIndex);
-    if (!viewportData) {
-        return;
+
+    let study;
+    if (viewportData) {
+        // Finds the current study and return it
+        study = ViewerStudies.findOne({
+            studyInstanceUid: viewportData.studyInstanceUid
+        });
+    } else {
+        study = ViewerStudies.findOne();
     }
 
-    // Finds the current study and return it
-    const study = ViewerStudies.findOne({
-        studyInstanceUid: viewportData.studyInstanceUid
-    });
+    if (!study) {
+        return;
+    }
 
     // Change the current study to update the thumbnails
     instance.data.currentStudy.set(study);
