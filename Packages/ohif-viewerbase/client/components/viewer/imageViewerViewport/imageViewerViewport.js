@@ -214,10 +214,19 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         // Set the default CINE settings
         var multiframeMetadata = instance.multiframeMetadata;
+
+        let fps;
+        if (multiframeMetadata) {
+            fps = multiframeMetadata.averageFrameRate
+        } else {
+            fps = OHIF.viewer.cine.framesPerSecond
+        }
+
         var cineToolData = {
             loop: OHIF.viewer.cine.loop,
-            framesPerSecond: multiframeMetadata ? multiframeMetadata.averageFrameRate : OHIF.viewer.cine.framesPerSecond
+            framesPerSecond: fps
         };
+
         cornerstoneTools.addToolState(element, 'playClip', cineToolData);
 
         // Autoplay datasets that have framerates set
