@@ -20,7 +20,7 @@ var keys = {
 };
 
 Template.measurementTableRow.events({
-    'click .lesionRowSidebar'(event, instance) {
+    'click .measurementRowSidebar'(event, instance) {
         const $row = instance.$('.measurementTableRow');
         $row.closest('.measurementTableView').find('.measurementTableRow').not($row).removeClass('active');
         $row.toggleClass('active');

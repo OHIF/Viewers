@@ -1,7 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 
 function closeHandler(dialog) {
-    // Hide the lesion dialog
+    // Hide the measurement dialog
     $(dialog).css('display', 'none');
 
     // Remove the backdrop
@@ -11,8 +11,8 @@ function closeHandler(dialog) {
     setFocusToActiveViewport();
 }
 
-// This event sets lesion number for new lesion
-function getSetLesionNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi) {
+// This event sets measurement number for new measurement
+function getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi) {
     return (measurementData, eventData, doneCallback) => {
         // Get the current element's timepointId from the study date metadata
         var element = eventData.element;
@@ -27,14 +27,14 @@ function getSetLesionNumberCallbackFunction(measurementTypeId, measurementApi, t
             return;
         }
 
-        // Get a lesion number for this lesion, depending on whether or not the same lesion previously
+        // Get a measurement number for this measurement, depending on whether or not the same measurement previously
         // exists at a different timepoint
         const timepointId = timepoint.timepointId;
         const collection = measurementApi[measurementTypeId];
         const measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
         measurementData.measurementNumber = measurementNumber;
 
-        // Set lesion number
+        // Set measurement number
         doneCallback(measurementNumber);
     };
 }
@@ -64,16 +64,16 @@ function selectNonTargetResponse(responseCode) {
     });
 }
 
-// This event determines whether or not to show the Non-Target lesion dialog
-// If there already exists a lesion with this specific lesion number,
+// This event determines whether or not to show the Non-Target measurement dialog
+// If there already exists a measurement with this specific measurement number,
 // related to the chosen location.
-function getLesionLocationCallback(measurementData, eventData) {
+function getMeasurementLocationCallback(measurementData, eventData) {
     return 'Test Location';
-    Template.nonTargetLesionDialog.measurementData = measurementData;
+    Template.nonTargetMeasurementDialog.measurementData = measurementData;
 
-    // Get the non-target lesion location dialog
-    var dialog = $('#nonTargetLesionLocationDialog');
-    Template.nonTargetLesionDialog.dialog = dialog;
+    // Get the non-target measurement location dialog
+    var dialog = $('#nonTargetMeasurementLocationDialog');
+    Template.nonTargetMeasurementDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
@@ -84,7 +84,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     });
 
     // Find the select option box
-    var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
+    var selectorLocation = dialog.find('select#selectNonTargetMeasurementLocation');
 
     selectorLocation.find('option:first').prop('selected', 'selected');
 
@@ -102,7 +102,7 @@ function getLesionLocationCallback(measurementData, eventData) {
     // Allow location selection
     selectorLocation.removeAttr('disabled');
 
-    // Find out if this lesion number is already added in the lesion manager for another timepoint
+    // Find out if this measurement number is already added in the measurement manager for another timepoint
     // If it is, disable selector location
     var locationId = OHIF.measurements.MeasurementManager.getLocationIdIfMeasurementExists(measurementData);
     if (locationId) {
@@ -117,7 +117,7 @@ function getLesionLocationCallback(measurementData, eventData) {
 
     // Disable selector location to prevent selecting a new location
     function disableLocationSelection(locationId) {
-        var locationObject = LesionLocations.findOne({
+        var locationObject = MeasurementLocations.findOne({
                 id: locationId
             });
 
@@ -129,7 +129,7 @@ function getLesionLocationCallback(measurementData, eventData) {
         selectorLocation.prop('disabled', true);
     }
 
-    // Show the nonTargetLesion dialog above
+    // Show the nonTargetMeasurement dialog above
     var dialogProperty = {
         top: eventData.currentPoints.page.y - dialog.outerHeight() - 40,
         left: eventData.currentPoints.page.x - dialog.outerWidth() / 2,
@@ -160,12 +160,12 @@ function getLesionLocationCallback(measurementData, eventData) {
 }
 
 changeNonTargetLocationCallback = function(measurementData, eventData, doneCallback) {
-    Template.nonTargetLesionDialog.measurementData = measurementData;
-    Template.nonTargetLesionDialog.doneCallback = doneCallback;
+    Template.nonTargetMeasurementDialog.measurementData = measurementData;
+    Template.nonTargetMeasurementDialog.doneCallback = doneCallback;
 
-    // Get the non-target lesion location dialog
-    var dialog = $('#nonTargetLesionRelabelDialog');
-    Template.nonTargetLesionDialog.dialog = dialog;
+    // Get the non-target measurement location dialog
+    var dialog = $('#nonTargetMeasurementRelabelDialog');
+    Template.nonTargetMeasurementDialog.dialog = dialog;
 
     // Show the backdrop
     UI.render(Template.removableBackdrop, document.body);
@@ -176,8 +176,8 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     });
 
     // Find the select option box
-    var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
-    var selectorResponse = dialog.find('select#selectNonTargetLesionLocationResponse');
+    var selectorLocation = dialog.find('select#selectNonTargetMeasurementLocation');
+    var selectorResponse = dialog.find('select#selectNonTargetMeasurementLocationResponse');
 
     selectorLocation.find('option:first').prop('selected', 'selected');
     selectorResponse.find('option:first').prop('selected', 'selected');
@@ -185,7 +185,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     // Allow location selection
     selectorLocation.removeAttr('disabled');
 
-    // Show the nonTargetLesion dialog above
+    // Show the nonTargetMeasurement dialog above
     var dialogProperty = {
         display: 'block'
     };
@@ -212,7 +212,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
         return;
     }
 
-    LesionLocations.update({}, {
+    MeasurementLocations.update({}, {
         $set: {
             selected: false
         }
@@ -220,7 +220,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
         multi: true
     });
 
-    var currentLocation = LesionLocations.findOne({
+    var currentLocation = MeasurementLocations.findOne({
         id: measurement.locationId
     });
 
@@ -228,7 +228,7 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
         return;
     }
 
-    LesionLocations.update(currentLocation._id, {
+    MeasurementLocations.update(currentLocation._id, {
         $set: {
             selected: true
         }
@@ -238,32 +238,32 @@ changeNonTargetLocationCallback = function(measurementData, eventData, doneCallb
     selectNonTargetResponse(response);
 };
 
-Template.nonTargetLesionDialog.onCreated(() => {
+Template.nonTargetMeasurementDialog.onCreated(() => {
     const instance = Template.instance();
     const measurementTypeId = 'nonTargets';
     const measurementApi = instance.data.measurementApi;
     const timepointApi = instance.data.timepointApi;
 
     const config = {
-        setLesionNumberCallback: getSetLesionNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi),
-        getLesionLocationCallback: getLesionLocationCallback,
-        changeLesionLocationCallback: changeLesionLocationCallback
+        setMeasurementNumberCallback: getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi),
+        getMeasurementLocationCallback: getMeasurementLocationCallback,
+        changeMeasurementLocationCallback: changeMeasurementLocationCallback
     };
 
-    cornerstoneTools.nonTarget.setConfiguration(config);
+    //cornerstoneTools.nonTarget.setConfiguration(config);
 });
 
-Template.nonTargetLesionDialog.events({
-    'change #selectNonTargetLesionLocationResponse': function(e) {
+Template.nonTargetMeasurementDialog.events({
+    'change #selectNonTargetMeasurementLocationResponse': function(e) {
         var responseCode = $(e.currentTarget).val();
         selectNonTargetResponse(responseCode);
     },
-    'click #nonTargetLesionOK': function() {
-        var dialog = Template.nonTargetLesionDialog.dialog;
-        var measurementData = Template.nonTargetLesionDialog.measurementData;
+    'click #nonTargetMeasurementOK': function() {
+        var dialog = Template.nonTargetMeasurementDialog.dialog;
+        var measurementData = Template.nonTargetMeasurementDialog.measurementData;
 
         // Find the select option box
-        var selectorLocation = dialog.find('select#selectNonTargetLesionLocation');
+        var selectorLocation = dialog.find('select#selectNonTargetMeasurementLocation');
 
         // Get the current value of the selector
         var selectedOptionId = selectorLocation.find('option:selected').val();
@@ -275,7 +275,7 @@ Template.nonTargetLesionDialog.events({
         }
 
         // Get selected location data
-        var locationObj = LesionLocations.findOne({
+        var locationObj = MeasurementLocations.findOne({
             _id: selectedOptionId
         });
 
@@ -292,7 +292,7 @@ Template.nonTargetLesionDialog.events({
             measurementData.id = 'notready';
         }
 
-        /// Set the isTarget value to true, since this is the target-lesion dialog callback
+        /// Set the isTarget value to true, since this is the target-measurement dialog callback
         measurementData.isTarget = false;
 
         // Response is set from location response list
@@ -300,16 +300,16 @@ Template.nonTargetLesionDialog.events({
             selected: true
         }).code;
 
-        // Adds lesion data to timepoints array
-        LesionManager.updateLesionData(measurementData);
+        // Adds measurement data to timepoints array
+        MeasurementManager.updateMeasurementData(measurementData);
 
         // Close the dialog
         closeHandler(dialog);
     },
-    'click #removeLesion': function() {
-        var measurementData = Template.nonTargetLesionDialog.measurementData;
-        var doneCallback = Template.nonTargetLesionDialog.doneCallback;
-        var dialog = Template.nonTargetLesionDialog.dialog;
+    'click #removeMeasurement': function() {
+        var measurementData = Template.nonTargetMeasurementDialog.measurementData;
+        var doneCallback = Template.nonTargetMeasurementDialog.doneCallback;
+        var dialog = Template.nonTargetMeasurementDialog.dialog;
 
         showConfirmDialog(function() {
             if (doneCallback && typeof doneCallback === 'function') {
@@ -320,13 +320,13 @@ Template.nonTargetLesionDialog.events({
 
         closeHandler(dialog);
     },
-    'click #btnCloseLesionPopup': function() {
-        var dialog = Template.nonTargetLesionDialog.dialog;
+    'click #btnCloseMeasurementPopup': function() {
+        var dialog = Template.nonTargetMeasurementDialog.dialog;
         closeHandler(dialog);
     },
     'click a.convertNonTarget': function(evt) {
-        var measurementData = Template.nonTargetLesionDialog.measurementData;
-        var dialog = Template.nonTargetLesionDialog.dialog;
+        var measurementData = Template.nonTargetMeasurementDialog.measurementData;
+        var dialog = Template.nonTargetMeasurementDialog.dialog;
 
         var button = $(evt.currentTarget);
         var toolType = button.data('type');
@@ -335,8 +335,8 @@ Template.nonTargetLesionDialog.events({
 
         closeHandler(dialog);
     },
-    'keydown #lesionLocationDialog, keydown #lesionLocationRelabelDialog': function(e) {
-        var dialog = Template.nonTargetLesionDialog.dialog;
+    'keydown #measurementLocationDialog, keydown #measurementLocationRelabelDialog': function(e) {
+        var dialog = Template.nonTargetMeasurementDialog.dialog;
 
         // If Esc or Enter are pressed, close the dialog
         if (e.which === keys.ESC || e.which === keys.ENTER) {
@@ -360,9 +360,9 @@ var conversionOptions = [{
     name: 'Excluded (EX)'
 }];
 
-Template.nonTargetLesionDialog.helpers({
-    lesionLocations: function() {
-        return LesionLocations.find();
+Template.nonTargetMeasurementDialog.helpers({
+    measurementLocations: function() {
+        return MeasurementLocations.find();
     },
     locationResponses: function() {
         return LocationResponses.find();

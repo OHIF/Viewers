@@ -13,7 +13,7 @@
     }];
 
     var configuration = {
-        setLesionNumberCallback: setLesionNumberCallback,
+        setmeasurementNumberCallback: setmeasurementNumberCallback,
         getLesionLocationCallback: getLesionLocationCallback,
         changeLesionLocationCallback: changeLesionLocationCallback,
         drawHandles: false,
@@ -28,9 +28,9 @@
 
     // Set lesion number
     // Get Non-Target lesions on image
-    function setLesionNumberCallback(measurementData, eventData, doneCallback) {
-        var lesionNumber = 1;
-        doneCallback(lesionNumber);
+    function setmeasurementNumberCallback(measurementData, eventData, doneCallback) {
+        var measurementNumber = 1;
+        doneCallback(measurementNumber);
     }
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
@@ -61,8 +61,8 @@
         function addNewMeasurement(mouseEventData) {
             var element = mouseEventData.element;
 
-            function doneCallback(lesionNumber) {
-                measurementData.lesionNumber = lesionNumber;
+            function doneCallback(measurementNumber) {
+                measurementData.measurementNumber = measurementNumber;
                 measurementData.active = true;
                 cornerstone.updateImage(element);
             }
@@ -76,8 +76,8 @@
             var config = cornerstoneTools[toolType].getConfiguration();
 
             // Set lesion number and lesion name
-            if (measurementData.lesionNumber === undefined) {
-                config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+            if (measurementData.measurementNumber === undefined) {
+                config.setmeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
             }
 
             // associate this data with this imageId so we can render it and manipulate it
@@ -287,7 +287,7 @@
                 }
 
                 // Draw the text
-                if (data.lesionNumber) {
+                if (data.measurementNumber) {
                     // Draw linked line as dashed
                     var mid = {
                         x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
@@ -303,7 +303,7 @@
                     context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                     context.stroke();
 
-                    var boundingBox = cornerstoneTools.drawTextBox(context, "Target " + +data.lesionNumber, canvasTextLocation.x, canvasTextLocation.y, color);
+                    var boundingBox = cornerstoneTools.drawTextBox(context, "Target " + +data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
                     data.handles.textBox.boundingBox = boundingBox;
                 }
 
@@ -317,8 +317,8 @@
         function addNewMeasurementTouch(touchEventData) {
             var element = touchEventData.element;
 
-            function doneCallback(lesionNumber) {
-                measurementData.lesionNumber = lesionNumber;
+            function doneCallback(measurementNumber) {
+                measurementData.measurementNumber = measurementNumber;
                 measurementData.active = true;
                 cornerstone.updateImage(element);
             }
@@ -332,7 +332,7 @@
 
             // Set lesion number and lesion name
             if (measurementData.lesionName === undefined) {
-                config.setLesionNumberCallback(measurementData, touchEventData, doneCallback);
+                config.setmeasurementNumberCallback(measurementData, touchEventData, doneCallback);
             }
 
             cornerstone.updateImage(element);

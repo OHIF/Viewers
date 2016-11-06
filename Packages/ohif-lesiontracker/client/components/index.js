@@ -9,9 +9,9 @@ import './measurementLocationDialog/measurementLocationDialog.html';
 import './measurementLocationDialog/measurementLocationDialog.js';
 import './measurementLocationDialog/measurementLocationDialog.styl';
 
-import './nonTargetLesionDialog/nonTargetLesionDialog.html';
-import './nonTargetLesionDialog/nonTargetLesionDialog.styl';
-import './nonTargetLesionDialog/nonTargetLesionDialog.js';
+import './nonTargetMeasurementDialog/nonTargetMeasurementDialog.html';
+import './nonTargetMeasurementDialog/nonTargetMeasurementDialog.styl';
+import './nonTargetMeasurementDialog/nonTargetMeasurementDialog.js';
 
 import './nonTargetResponseDialog/nonTargetResponseDialog.html';
 import './nonTargetResponseDialog/nonTargetResponseDialog.styl';

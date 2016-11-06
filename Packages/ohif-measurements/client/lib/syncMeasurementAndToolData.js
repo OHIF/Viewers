@@ -1,5 +1,4 @@
 import { $ } from 'meteor/jquery';
-
 import { OHIF } from 'meteor/ohif:core';
 
 OHIF.measurements.syncMeasurementAndToolData = measurement => {

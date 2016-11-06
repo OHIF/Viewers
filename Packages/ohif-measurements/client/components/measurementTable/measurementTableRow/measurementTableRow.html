@@ -1,7 +1,7 @@
 <template name="measurementTableRow">
     <div class="measurementTableRow {{#unless rowItem.location}}warning{{/unless}}{{#if responseStatus}}response-status{{/if}}" data-measurementid="{{_id}}">
-        <div class='lesionRowSidebar'>
-            <div class="lesionNumber">
+        <div class='measurementRowSidebar'>
+            <div class="measurementNumber">
                 {{rowItem.measurementNumber}}
             </div>
             {{#unless rowItem.location}}
@@ -17,7 +17,7 @@
                 </div>
             {{/if}}
         </div>
-        <div class="lesionDetails">
+        <div class="measurementDetails">
             <div class='location'>
                 {{#if rowItem.location}}
                     {{rowItem.location}}

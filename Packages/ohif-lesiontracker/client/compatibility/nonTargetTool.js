@@ -5,9 +5,9 @@
     var toolType = 'nonTarget';
 
     var configuration = {
-        setLesionNumberCallback: setLesionNumberCallback,
-        getLesionLocationCallback: getLesionLocationCallback,
-        changeLesionLocationCallback: changeLesionLocationCallback,
+        setMeasurementNumberCallback: setMeasurementNumberCallback,
+        getmeasurementLocationCallback: getmeasurementLocationCallback,
+        changemeasurementLocationCallback: changemeasurementLocationCallback,
         drawHandles: false,
         drawHandlesOnHover: true,
         arrowFirst: true
@@ -18,20 +18,20 @@
         ESC: 27
     };
 
-    // Set lesion number
-    // Get Non-Target lesions on image
-    function setLesionNumberCallback(measurementData, eventData, doneCallback) {
-        var lesionNumber = 1;
-        doneCallback(lesionNumber);
+    // Set measurement number
+    // Get Non-Target measurements on image
+    function setMeasurementNumberCallback(measurementData, eventData, doneCallback) {
+        var measurementNumber = 1;
+        doneCallback(measurementNumber);
     }
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
-    function getLesionLocationCallback(measurementData, eventData, doneCallback) {
-        doneCallback(prompt('Enter your lesion location:'));
+    function getmeasurementLocationCallback(measurementData, eventData, doneCallback) {
+        doneCallback(prompt('Enter your measurement location:'));
     }
 
-    function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
-        doneCallback(prompt('Change your lesion location:'));
+    function changemeasurementLocationCallback(measurementData, eventData, doneCallback) {
+        doneCallback(prompt('Change your measurement location:'));
     }
 
     /// --- Mouse Tool --- ///
@@ -39,8 +39,8 @@
     function addNewMeasurement(mouseEventData) {
         var element = mouseEventData.element;
 
-        function doneCallback(lesionNumber) {
-            measurementData.lesionNumber = lesionNumber;
+        function doneCallback(measurementNumber) {
+            measurementData.measurementNumber = measurementNumber;
             measurementData.active = true;
             cornerstone.updateImage(element);
         }
@@ -53,9 +53,9 @@
 
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
-        // Set lesion number and lesion name
-        if (measurementData.lesionNumber === undefined) {
-            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        // Set measurement number and measurement name
+        if (measurementData.measurementNumber === undefined) {
+            config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
         }
 
         // associate this data with this imageId so we can render it and manipulate it
@@ -92,7 +92,7 @@
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
             } else {
-                config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+                config.getmeasurementLocationCallback(measurementData, mouseEventData, doneCallback);
             }
 
             // Unbind the Esc keydown hook
@@ -223,13 +223,13 @@
             if (config.drawHandles) {
                 cornerstoneTools.drawHandles(context, eventData, data.handles, color);
             } else if (config.drawHandlesOnHover && data.handles.start.active) {
-                cornerstoneTools.drawHandles(context, eventData, [ lesion.handles.start ], color);
+                cornerstoneTools.drawHandles(context, eventData, [ measurement.handles.start ], color);
             } else if (config.drawHandlesOnHover && data.handles.end.active) {
-                cornerstoneTools.drawHandles(context, eventData, [ lesion.handles.end ], color);
+                cornerstoneTools.drawHandles(context, eventData, [ measurement.handles.end ], color);
             }
 
             // Draw the text
-            if (data.lesionNumber) {
+            if (data.measurementNumber) {
                 // Draw linked line as dashed
                 var mid = {
                     x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
@@ -245,7 +245,7 @@
                 context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                 context.stroke();
 
-                var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.lesionNumber, canvasTextLocation.x, canvasTextLocation.y, color);
+                var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
                 data.handles.textBox.boundingBox = boundingBox;
             }
 
@@ -259,8 +259,8 @@
     function addNewMeasurementTouch(touchEventData) {
         var element = touchEventData.element;
 
-        function doneCallback(lesionNumber) {
-            measurementData.lesionNumber = lesionNumber;
+        function doneCallback(measurementNumber) {
+            measurementData.measurementNumber = measurementNumber;
             measurementData.active = true;
             cornerstone.updateImage(element);
         }
@@ -272,9 +272,9 @@
         $(element).off('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
-        // Set lesion number and lesion name
-        if (measurementData.lesionName === undefined) {
-            config.setLesionNumberCallback(measurementData, touchEventData, doneCallback);
+        // Set measurement number and measurement name
+        if (measurementData.measurementName === undefined) {
+            config.setMeasurementNumberCallback(measurementData, touchEventData, doneCallback);
         }
 
         cornerstone.updateImage(element);
@@ -287,7 +287,7 @@
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             }
 
-            config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
+            config.getmeasurementLocationCallback(measurementData, touchEventData, doneCallback);
 
             $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
             $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
@@ -330,7 +330,7 @@
                 data.active = true;
                 cornerstone.updateImage(element);
                 // Allow relabelling via a callback
-                config.changeLesionLocationCallback(data, eventData, doneCallback);
+                config.changemeasurementLocationCallback(data, eventData, doneCallback);
 
                 e.stopImmediatePropagation();
                 return false;

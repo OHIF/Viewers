@@ -37,9 +37,9 @@ Meteor.methods({
         });
     },
 
-    retrieveTimepoints(filter = {}) {
+    retrieveTimepoints(filter) {
         OHIF.log.info('Retrieving Timepoints from the Server');
-        return Timepoints.find(filter).fetch();
+        return Timepoints.find(filter || {}).fetch();
     },
 
     storeMeasurements(measurementData) {
@@ -66,7 +66,7 @@ Meteor.methods({
 
 
         measurementTools.forEach(tool => {
-            measurementData[tool.id] = MeasurementCollections[tool.id].find(filter).fetch();
+            measurementData[tool.id] = MeasurementCollections[tool.id].find(filter || {}).fetch();
         });
 
         return measurementData;

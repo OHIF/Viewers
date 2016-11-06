@@ -29,14 +29,14 @@
     &:before
       opacity: 1
 
-    .lesionRowSidebar
+    .measurementRowSidebar
       theme('color', '$activeColor')
 
     .rowOptions
       height: 35px
       visibility: visible
 
-  &.response-status .lesionRowSidebar .response-status-icon
+  &.response-status .measurementRowSidebar .response-status-icon
     theme('background-color', '$defaultColor')
     theme('color', '$uiGray')
     border-radius: 11px
@@ -48,7 +48,7 @@
     text-align: center
     width: 21px
 
-  &.warning .lesionRowSidebar
+  &.warning .measurementRowSidebar
     theme('background-color', '$uiYellow')
     theme('color', '$textPrimaryColor')
 
@@ -95,7 +95,7 @@
         width: 11px
         height: 11px
 
-  .lesionRowSidebar
+  .measurementRowSidebar
     theme('background', '$uiGray')
     theme('color', '$textSecondaryColor')
     cursor: pointer
@@ -103,14 +103,14 @@
     max-width: 30px
     transition(all 0.3s ease)
 
-    .lesionNumber
+    .measurementNumber
       font-size: 14px
       font-weight: 400
       margin-right: 5px
       padding-top: 10px
       text-align: center
 
-  .lesionDetails
+  .measurementDetails
     flex: 1
     padding: 5px 2px 0 0
 

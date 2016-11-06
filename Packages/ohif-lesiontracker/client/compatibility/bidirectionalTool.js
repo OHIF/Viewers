@@ -5,9 +5,9 @@
     var toolType = 'bidirectional';
 
     var configuration = {
-        setLesionNumberCallback: setLesionNumberCallback,
-        getLesionLocationCallback: getLesionLocationCallback,
-        changeLesionLocationCallback: changeLesionLocationCallback
+        setMeasurementNumberCallback: setMeasurementNumberCallback,
+        getMeasurementLocationCallback: getMeasurementLocationCallback,
+        changeMeasurementLocationCallback: changeMeasurementLocationCallback
     };
 
     // Used to cancel tool placement
@@ -17,18 +17,18 @@
 
     // Set lesion number
     // Get Target lesions on image
-    function setLesionNumberCallback(measurementData, eventData, doneCallback) {
-        var lesionNumber = 1;
-        doneCallback(lesionNumber);
+    function setMeasurementNumberCallback(measurementData, eventData, doneCallback) {
+        var measurementNumber = 1;
+        doneCallback(measurementNumber);
     }
 
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
-    function getLesionLocationCallback(measurementData, eventData, doneCallback) {
+    function getMeasurementLocationCallback(measurementData, eventData, doneCallback) {
         //doneCallback(prompt('Enter your lesion location:'));
     }
 
-    function changeLesionLocationCallback(measurementData, eventData, doneCallback) {
+    function changeMeasurementLocationCallback(measurementData, eventData, doneCallback) {
         //doneCallback(prompt('Change your lesion location:'));
     }
 
@@ -97,8 +97,8 @@
             return;
         }
 
-        function doneCallback(lesionNumber) {
-            measurementData.lesionNumber = lesionNumber;
+        function doneCallback(measurementNumber) {
+            measurementData.measurementNumber = measurementNumber;
             measurementData.active = false;
             cornerstone.updateImage(element);
         }
@@ -111,8 +111,8 @@
 
         // Set lesion number and lesion name
         var config = cornerstoneTools.bidirectional.getConfiguration();
-        if (measurementData.lesionNumber === undefined) {
-            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        if (measurementData.measurementNumber === undefined) {
+            config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
         }
 
         // associate this data with this imageId so we can render it and manipulate it
@@ -150,7 +150,7 @@
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             } else {
                 // Set lesionMeasurementData Session
-                config.getLesionLocationCallback(measurementData, mouseEventData, doneCallback);
+                config.getMeasurementLocationCallback(measurementData, mouseEventData, doneCallback);
             }
 
             // Unbind the Esc keydown hook
@@ -175,8 +175,8 @@
             return;
         }
 
-        function doneCallback(lesionNumber) {
-            measurementData.lesionNumber = lesionNumber;
+        function doneCallback(measurementNumber) {
+            measurementData.measurementNumber = measurementNumber;
             measurementData.active = false;
             cornerstone.updateImage(element);
         }
@@ -185,8 +185,8 @@
 
         // Set lesion number and lesion name
         var config = cornerstoneTools.bidirectional.getConfiguration();
-        if (measurementData.lesionNumber === undefined) {
-            config.setLesionNumberCallback(measurementData, mouseEventData, doneCallback);
+        if (measurementData.measurementNumber === undefined) {
+            config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
         }
 
         // associate this data with this imageId so we can render it and manipulate it
@@ -205,7 +205,7 @@
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             } else {
                 // Set lesionMeasurementData Session
-                config.getLesionLocationCallback(measurementData, touchEventData, doneCallback);
+                config.getMeasurementLocationCallback(measurementData, touchEventData, doneCallback);
             }
 
             // perpendicular line is not connected to long-line
@@ -1025,7 +1025,7 @@
 
             var lengthText = ' L ' + length.toFixed(1) + suffix;
             var widthText = ' W ' + width.toFixed(1) + suffix;
-            var textLines = [ 'Target ' + data.lesionNumber, lengthText, widthText ];
+            var textLines = [ 'Target ' + data.measurementNumber, lengthText, widthText ];
 
             var boundingBox = cornerstoneTools.drawTextBox(context,
                 textLines,
@@ -1075,7 +1075,7 @@
                 data.active = true;
                 cornerstone.updateImage(element);
                 // Allow relabelling via a callback
-                config.changeLesionLocationCallback(data, eventData, doneCallback);
+                config.changeMeasurementLocationCallback(data, eventData, doneCallback);
 
                 e.stopImmediatePropagation();
                 return false;
