@@ -20,16 +20,21 @@ OHIF.measurements.toggleLabelButton = options => {
         removeButtonView();
     }
 
+    const tool = toolMap[options.toolData.toolType];
+    const toolCollection = options.measurementApi[tool];
+    const measurement = toolCollection.findOne(options.toolData.id);
+
     const data = {
+        measurement,
+        tool,
         position: options.position,
         threeColumns: true,
         hideCommon: true,
+        toolType: options.toolData.toolType,
         doneCallback(location, description) {
             options.callback(options, location, description);
 
-            const tool = toolMap[options.toolData.toolType];
-
-            options.measurementApi[tool].update(options.toolData.id, {
+            toolCollection.update(measurement._id, {
                 $set: {
                     location,
                     description
