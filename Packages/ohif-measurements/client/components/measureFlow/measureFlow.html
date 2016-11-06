@@ -1,6 +1,10 @@
 <template name="measureFlow">
-    <div class="measure-flow {{#if this.threeColumns}}tree-columns{{/if}} {{instance.state.get}}" style="top:{{choose position.y 0}}px;left:{{choose position.x 0}}px" tabindex="-1">
-        <button class="btn-add">{{#if this.measurement.location}}Edit{{else}}Add{{/if}} label</button>
+    <div class="measure-flow {{#if this.threeColumns}}tree-columns{{/if}} {{instance.state.get}}"
+         style="top:{{choose position.y 0}}px;left:{{choose position.x 0}}px"
+         tabindex="-1">
+        <button class="btn-add">
+            {{#if this.measurement.location}}Edit{{else}}Add{{/if}} label
+        </button>
         {{#if eq instance.state.get 'selected'}}
             <div class="tree-leaf">
                 <i class="icon-check"></i>
