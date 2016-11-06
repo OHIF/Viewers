@@ -72,7 +72,7 @@ class MeasurementHandlers {
         measurementToolConfiguration.schema.clean(measurement);
 
         // Insert the new measurement into the collection
-        measurementData.id = Collection.insert(measurement);
+        measurementData._id = Collection.insert(measurement);
     }
 
     static onModified(e, instance, eventData) {
@@ -92,7 +92,7 @@ class MeasurementHandlers {
 
         OHIF.log.info('CornerstoneToolsMeasurementModified');
 
-        let measurement = Collection.findOne(measurementData.id);
+        let measurement = Collection.findOne(measurementData._id);
 
         Object.keys(measurementData).forEach(key => {
             measurement[key] = measurementData[key];
@@ -127,7 +127,7 @@ class MeasurementHandlers {
         const measurementApi = instance.data.measurementApi;
         const Collection = measurementApi[measurementToolConfiguration.id];
 
-        Collection.remove(measurementData.id);
+        Collection.remove(measurementData._id);
     }
 
 }
