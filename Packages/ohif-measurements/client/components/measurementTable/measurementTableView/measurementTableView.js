@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementTableView.helpers({
@@ -15,9 +16,13 @@ Template.measurementTableView.helpers({
         const groupObject = _.groupBy(data, entry => { return entry.measurementNumber });
 
         return Object.keys(groupObject).map(key => {
+            const anEntry = groupObject[key][0];
+
             return {
                 measurementTypeId: measurementTypeId,
                 measurementNumber: key,
+                location: anEntry.location,
+                responseStatus: false, // TODO: Get the latest timepoint and determine the response status
                 entries: groupObject[key]
             };
         });
@@ -30,8 +35,6 @@ Template.measurementTableView.helpers({
         if (!instance.data.timepointApi) {
             return;
         }
-
-        const api = instance.data.measurementApi;
 
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
         const measurementTools = config.measurementTools;
@@ -53,14 +56,14 @@ Template.measurementTableView.helpers({
             // Find only those measurements made at this timepoint
             const selector = {
                 timepointId: current.timepointId
-            }
+            };
 
             // Sort ascending by measurement number
             const options = {
                 sort: {
                     measurementNumber: 1
                 }
-            }
+            };
 
             // Retrieve measurements made at this timepoint
             const api = Template.instance().data.measurementApi;
@@ -83,11 +86,11 @@ Template.measurementTableView.helpers({
                 if (previousMeasurements.length === 0) {
                     newMeasurements.push(measurement);
                 }
-            })
+            });
 
             // Concatenate new measurements of all measurement types
             data = data.concat(newMeasurements);
-        })
+        });
 
         const groupObject = _.groupBy(data, entry => { return entry.measurementNumber });
 
