@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.caseProgress.onCreated(() => {
     const instance = Template.instance();
 
@@ -17,12 +20,8 @@ Template.caseProgress.onRendered(() => {
 
     // Get the current timepoint
     const current = instance.data.timepointApi.current();
-    if (!current) {
-        instance.progressPercent.set(100);
-        return;
-    }
-
-    if (!current.timepointId) {
+    const prior = instance.data.timepointApi.prior();
+    if (!current || !prior || !current.timepointId) {
         instance.progressPercent.set(100);
         return;
     }
@@ -32,8 +31,47 @@ Template.caseProgress.onRendered(() => {
     // Retrieve the initial number of targets left to measure at this
     // follow-up. Note that this is done outside of the reactive function
     // below so that new lesions don't change the initial target count.
-    const withPriors = true;
-    const totalTargets = 10; //instance.data.measurementApi.targets(withPriors).length;
+
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
+    const tools = config.measurementTools;
+    const toolsToInclude = tools.filter(tool => tool.options && tool.options.includeInCaseProgress);
+    const toolIds = toolsToInclude.map(tool => tool.id);
+    const api = instance.data.measurementApi;
+
+    const getNumMeasurementsAtTimepoint = timepointId => {
+        const filter = {
+            timepointId: timepointId
+        };
+
+        let count = 0;
+        toolIds.forEach(measurementTypeId => {
+            count += api.fetch(measurementTypeId, filter).length;
+        });
+
+        return count;
+    };
+
+    const getNumRemainingBetweenTimepoints = (currentTimepointId, priorTimepointId) => {
+        const currentFilter = {
+            timepointId: currentTimepointId
+        };
+
+        const priorFilter = {
+            timepointId: priorTimepointId
+        };
+
+        let totalRemaining = 0;
+        toolIds.forEach(measurementTypeId => {
+            const numCurrent = api.fetch(measurementTypeId, currentFilter).length;
+            const numPrior = api.fetch(measurementTypeId, priorFilter).length;
+            const remaining = Math.max(numPrior - numCurrent, 0);
+            totalRemaining += remaining;
+        });
+
+        return totalRemaining;
+    };
+
+    const totalMeasurements = getNumMeasurementsAtTimepoint(prior.timepointId);
 
     // If we're currently reviewing a Baseline timepoint, don't do any
     // progress measurement.
@@ -45,15 +83,15 @@ Template.caseProgress.onRendered(() => {
         instance.autorun(() => {
             // Obtain the number of Measurements for which the current Timepoint has
             // no Measurement data
-            const numRemainingMeasurements = 5; //instance.data.measurementApi.unmarked().length;
+            const numRemainingMeasurements = getNumRemainingBetweenTimepoints(current.timepointId, prior.timepointId);
+            const numMeasurementsMade = totalMeasurements - numRemainingMeasurements;
 
             // Update the Case Progress text with the remaining measurement count
             instance.progressText.set(numRemainingMeasurements);
 
             // Calculate the Case Progress as a percentage in order to update the
             // radial progress bar
-            const numMeasurementsMade = Math.max(totalTargets - numRemainingMeasurements, 0);
-            const progressPercent = Math.round(100 * numMeasurementsMade / totalTargets);
+            const progressPercent = Math.min(100, Math.round(100 * numMeasurementsMade / totalMeasurements));
             instance.progressPercent.set(progressPercent);
         });
     }
@@ -86,7 +124,6 @@ Template.caseProgress.helpers({
 Template.caseProgress.events({
     'click .js-finish-case'() {
         const instance = Template.instance();
-        console.log('Case Finished!');
         switchToTab('studylistTab');
         instance.data.measurementApi.storeMeasurements();
     }

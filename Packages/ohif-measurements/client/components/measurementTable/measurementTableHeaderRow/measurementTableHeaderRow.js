@@ -57,10 +57,22 @@ Template.measurementTableHeaderRow.helpers({
         const instance = Template.instance();
         const measurementType = instance.data.measurementType;
         const measurementApi = instance.data.measurementApi;
+        const timepointApi = instance.data.timepointApi;
 
-        // TODO: Add selector to check if there are unmarked lesions
-        //return measurementApi.fetch(measurementType.id).length;
-        return;
+        const current = instance.data.timepointApi.current();
+        const prior = instance.data.timepointApi.prior();
+        if (!prior) {
+            return true;
+        }
+
+        const currentFilter = { timepointId: current.timepointId };
+        const priorFilter = { timepointId: prior.timepointId };
+        const measurementTypeId = measurementType.id;
+
+        const numCurrent = measurementApi.fetch(measurementTypeId, currentFilter).length;
+        const numPrior = measurementApi.fetch(measurementTypeId, priorFilter).length;
+        const remaining = Math.max(numPrior - numCurrent, 0);
+        return remaining > 0;
     }
 });
 

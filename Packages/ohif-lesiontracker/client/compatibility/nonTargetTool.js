@@ -223,9 +223,9 @@
             if (config.drawHandles) {
                 cornerstoneTools.drawHandles(context, eventData, data.handles, color);
             } else if (config.drawHandlesOnHover && data.handles.start.active) {
-                cornerstoneTools.drawHandles(context, eventData, [ measurement.handles.start ], color);
+                cornerstoneTools.drawHandles(context, eventData, [ data.handles.start ], color);
             } else if (config.drawHandlesOnHover && data.handles.end.active) {
-                cornerstoneTools.drawHandles(context, eventData, [ measurement.handles.end ], color);
+                cornerstoneTools.drawHandles(context, eventData, [ data.handles.end ], color);
             }
 
             // Draw the text

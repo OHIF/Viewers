@@ -13,7 +13,7 @@ Template.measurementTableView.helpers({
 	    const Collection = api[measurementTypeId];
     	const data = Collection.find().fetch();
 
-        const groupObject = _.groupBy(data, entry => { return entry.measurementNumber });
+        const groupObject = _.groupBy(data, entry => entry.measurementNumber);
 
         return Object.keys(groupObject).map(key => {
             const anEntry = groupObject[key][0];
