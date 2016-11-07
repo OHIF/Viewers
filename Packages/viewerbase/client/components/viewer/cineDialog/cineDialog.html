@@ -13,23 +13,23 @@
         </div>
         <div class="cine-controls">
             <div class="btn-group">
-                {{#button action='cineFirst' title='Skip to first image'}}
+                {{#button action='cineFirst' title='Skip to first image' disabled=(buttonDisabled)}}
                     <i class="fa fa-fast-backward"></i>
                 {{/button}}
-                {{#button action='cinePrevious' title='Previous image'}}
+                {{#button action='cinePrevious' title='Previous image' disabled=(buttonDisabled)}}
                     <i class="fa fa-step-backward"></i>
                 {{/button}}
-                {{#button action='cineToggle' title='Play / Stop' class=(valueIf isPlaying 'active' '')}}
+                {{#button action='cineToggle' title='Play / Stop' class=(valueIf isPlaying 'active' '') disabled=(buttonDisabled)}}
                     {{#if isPlaying}}
                         <i class="fa fa-fw fa-stop"></i>
                     {{else}}
                         <i class="fa fa-fw fa-play"></i>
                     {{/if}}
                 {{/button}}
-                {{#button action='cineNext' title='Next image'}}
+                {{#button action='cineNext' title='Next image' disabled=(buttonDisabled)}}
                     <i class="fa fa-step-forward"></i>
                 {{/button}}
-                {{#button action='cineLast' title='Skip to last image'}}
+                {{#button action='cineLast' title='Skip to last image' disabled=(buttonDisabled)}}
                     <i class="fa fa-fast-forward"></i>
                 {{/button}}
             </div>

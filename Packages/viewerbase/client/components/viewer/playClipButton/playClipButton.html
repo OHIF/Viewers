@@ -1,6 +1,6 @@
 <template name="playClipButton">
     <div id="{{this.id}}"
-         class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if isPlaying}}active{{/if}}"
+         class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if isPlaying}}active{{/if}} {{#if (disableButton)}}disabled{{/if}}"
          title="{{this.title}}">
         <div class="svgContainer">
             {{#if isPlaying}}

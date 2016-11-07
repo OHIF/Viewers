@@ -27,6 +27,10 @@
 
     &:active, &.active
       theme('color', '$activeColor')
+      
+    &[disabled]
+      &:hover
+        color: inherit
 
   .cine-navigation, .cine-controls, .cine-options
     cursor: default

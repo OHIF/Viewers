@@ -251,6 +251,10 @@ Template.cineDialog.helpers({
         return !OHIF.viewer.canMoveDisplaySets(isNext) ? 'disabled' : '';
     },
 
+    buttonDisabled() {
+        return hasMultipleFrames();
+    },
+
     getClassNames(baseCls) {
         return baseCls + ' ' + (OHIF.uiSettings.displayEchoUltrasoundWorkflow ? 'single' : 'double') + '-row-style'
     }

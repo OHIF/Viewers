@@ -159,9 +159,46 @@ isPlaying = () => {
 
     // Get the clip state
     const clipState = toolState.data[0];
+    
+    if(clipState) {
+        // Return true if the clip is playing
+        return !_.isUndefined(clipState.intervalId);
+    }
 
-    // Return true if the clip is playing
-    return !_.isUndefined(clipState.intervalId);
+    return false;
+};
+
+// Check if a study has multiple frames
+hasMultipleFrames = () => {
+    // Its called everytime active viewport and/or layout change
+    Session.get('activeViewport');
+    Session.get('LayoutManagerUpdated');
+
+    const activeViewport = getActiveViewportElement();
+
+    // No active viewport yet: disable button
+    if(!activeViewport) {
+      return true;
+    }
+
+    // Get images in the stack
+    const stackToolData = cornerstoneTools.getToolState(activeViewport, 'stack');
+
+    // No images in the stack, so disable button
+    if (!stackToolData || !stackToolData.data || !stackToolData.data.length) {
+        return true;
+    }
+
+    // Get number of images in the stack
+    const stackData = stackToolData.data[0];
+    const nImages = stackData.imageIds && stackData.imageIds.length ? stackData.imageIds.length : 1;
+
+    // Stack has just one image, so disable button
+    if(nImages === 1) {
+      return true;
+    }
+
+    return false;
 };
 
 // Create an event listener to update playing state when a clip stops playing

@@ -10,6 +10,9 @@ Template.toolbarSectionButton.helpers({
             // Return the active class
             return 'active';
         }
+    },
+    disableButton() {
+        return this.disableFunction();
     }
 });
 

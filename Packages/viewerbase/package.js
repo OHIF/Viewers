@@ -179,6 +179,7 @@ Package.onUse(function(api) {
     api.export('isImage', 'client');
     api.export('sopClassDictionary', 'client');
     api.export('addMetaData', 'client');
+    api.export('hasMultipleFrames', 'client');
 
     // Viewer management objects
     api.export('toolManager', 'client');

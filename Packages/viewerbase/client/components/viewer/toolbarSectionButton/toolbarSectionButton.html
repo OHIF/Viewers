@@ -3,7 +3,7 @@
         {{>UI.dynamic template=this.buttonTemplateName data=this}}
     {{else}}
         <div id="{{this.id}}"
-            class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if this.disabled}}disabled{{/if}}"
+            class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if this.disabled}}disabled{{/if}} {{#if this.disableFunction}}{{#if (disableButton)}}disabled{{/if}}{{/if}}"
             title="{{this.title}}">
             <div class="svgContainer">
                 {{#if this.svgLink}}
