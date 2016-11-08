@@ -22,17 +22,17 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
     // Get the current element and it's index in the list of all viewports
     // The viewport index is often used to store information about a viewport element
-    var element = data.element;
-    var viewportIndex = $('.imageViewerViewport').index(element);
+    const element = data.element;
+    const viewportIndex = $('.imageViewerViewport').index(element);
 
-    let layoutManager = window.layoutManager;
+    const layoutManager = window.layoutManager;
     layoutManager.viewportData = layoutManager.viewportData || {};
     layoutManager.viewportData[viewportIndex] = layoutManager.viewportData[viewportIndex] || {};
     layoutManager.viewportData[viewportIndex].viewportIndex = viewportIndex;
 
     // Get the contentID of the current study list tab, if the viewport is running
     // alongside the study list package
-    var contentId = Session.get('activeContentId');
+    const contentId = Session.get('activeContentId');
 
     // If the viewer is inside a tab, create an object related to the specified viewport
     // This data will be saved so that the tab can be reloaded to the same state after tabs
@@ -46,17 +46,17 @@ function loadDisplaySetIntoViewport(data, templateData) {
     }
 
     // Create an empty array to populate with image IDs
-    var imageIds = [];
+    const imageIds = [];
 
     // Loop through the current series and add metadata to the
     // Cornerstone meta data provider. This will be used to fill information
     // into the viewport overlays, and to calculate reference lines and orientation markers
-    var displaySet = data.displaySet;
-    var numImages = displaySet.images.length;
-    var imageId;
+    const displaySet = data.displaySet;
+    const numImages = displaySet.images.length;
+    let imageId;
 
-    displaySet.images.forEach(function(image, imageIndex) {
-        var metaData = {
+    displaySet.images.forEach((image, imageIndex) => {
+        const metaData = {
             instance: image,
             series: displaySet, // TODO: Check this
             study: data.study,
@@ -64,7 +64,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
             imageIndex: imageIndex + 1
         };
 
-        var numFrames = image.numFrames;
+        const numFrames = image.numFrames;
         if (numFrames > 1) {
             OHIF.log.info('Multiframe image detected');
             for (var i = 0; i < numFrames; i++) {
@@ -73,7 +73,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
                 imageIds.push(imageId);
                 addMetaData(imageId, metaData);
             }
-        } else {
+        } 
+        else {
             imageId = getImageId(image);
             imageIds.push(imageId);
             addMetaData(imageId, metaData);
@@ -81,7 +82,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
     });
 
     // Define the current image stack using the newly created image IDs
-    var stack = {
+    const stack = {
         currentImageIdIndex: data.currentImageIdIndex || 0,
         imageIds: imageIds
     };
@@ -101,8 +102,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
     ViewportLoading[viewportIndex] = imageId;
 
     // Enable Cornerstone for the viewport element
-    //
-    var options = {
+    const options = {
         renderer: 'webgl'
     };
 
@@ -113,32 +113,38 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
     // Get the handler functions that will run when loading has finished or thrown
     // an error. These are used to show/hide loading / error text boxes on each viewport.
-    var endLoadingHandler = cornerstoneTools.loadHandlerManager.getEndLoadHandler();
-    var errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
+    const endLoadingHandler = cornerstoneTools.loadHandlerManager.getEndLoadHandler();
+    const errorLoadingHandler = cornerstoneTools.loadHandlerManager.getErrorLoadingHandler();
 
     // Get the current viewport settings
-    var viewport = cornerstone.getViewport(element);
+    const viewport = cornerstone.getViewport(element);
+
+    const { studyInstanceUid, seriesInstanceUid, displaySetInstanceUid, currentImageIdIndex } = data;
 
     // Store the current series data inside the Layout Manager
     layoutManager.viewportData[viewportIndex] = {
-        imageId: imageId,
-        studyInstanceUid: data.studyInstanceUid,
-        seriesInstanceUid: data.seriesInstanceUid,
-        displaySetInstanceUid: data.displaySetInstanceUid,
-        currentImageIdIndex: data.currentImageIdIndex,
-        viewport: viewport,
-        viewportIndex: viewportIndex
+        imageId,
+        studyInstanceUid,
+        seriesInstanceUid,
+        displaySetInstanceUid,
+        currentImageIdIndex,
+        viewport,
+        viewportIndex
     };
 
     // Start loading the image.
-    cornerstone.loadAndCacheImage(imageId).then(function(image) {
-        var enabledElement;
+    cornerstone.loadAndCacheImage(imageId).then(image => {
+        let enabledElement;
         try {
             enabledElement = cornerstone.getEnabledElement(element);
-        } catch (error) {
+        } 
+        catch (error) {
             OHIF.log.warn('Viewport destroyed before loaded image could be displayed');
             return;
         }
+
+        // Caches element's jQuery object
+        const jQueryEl = $(element);
 
         // Update the enabled element with the image and viewport data
         // This is not usually necessary, but we need them stored in case
@@ -154,8 +160,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
             return;
         }
 
-        var instance = displaySet.images[0];
-        var instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, image.imageId);
+        const instance = displaySet.images[0];
+        const instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, image.imageId);
 
         // If there are sopClassUid-specific viewport settings, apply them
         if (instanceClassViewport) {
@@ -167,7 +173,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
             // Resize the canvas to fit the current viewport element size.
             cornerstone.resize(element, false);
-        } else if (data.viewport) {
+        } 
+        else if (data.viewport) {
             // If there is a saved object containing Cornerstone viewport data
             // (e.g. scale, invert, window settings) in the input data, apply it now.
             cornerstone.displayImage(element, image, data.viewport);
@@ -175,7 +182,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
             // Resize the canvas to fit the current viewport element size. Fit the displayed
             // image to the canvas dimensions.
             cornerstone.resize(element, true);
-        } else {
+        } 
+        else {
             // If no saved viewport settings or modality-specific settings exists,
             // display the loaded image in the viewport element with no loaded viewport
             // settings.
@@ -199,8 +207,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         // Hide the viewport instructions (i.e. 'Drag a stack here') and show
         // the viewport overlay data.
-        $(element).siblings('.viewportInstructions').hide();
-        $(element).siblings('.imageViewerViewportOverlay').show();
+        jQueryEl.siblings('.viewportInstructions').hide();
+        jQueryEl.siblings('.imageViewerViewportOverlay').show();
 
         // Add stack state managers for the stack tool, CINE tool, and reference lines
         cornerstoneTools.addStackStateManager(element, ['stack', 'playClip', 'referenceLines']);
@@ -213,16 +221,16 @@ function loadDisplaySetIntoViewport(data, templateData) {
         cornerstoneTools.addToolState(element, 'stack', stack);
 
         // Set the default CINE settings
-        var multiframeMetadata = instance.multiframeMetadata;
+        const multiframeMetadata = instance.multiframeMetadata;
 
         let fps;
-        if (multiframeMetadata) {
-            fps = multiframeMetadata.averageFrameRate
+        if (multiframeMetadata && multiframeMetadata.averageFrameRate > 0) {
+            fps = multiframeMetadata.averageFrameRate;
         } else {
-            fps = OHIF.viewer.cine.framesPerSecond
+            fps = OHIF.viewer.cine.framesPerSecond;
         }
 
-        var cineToolData = {
+        const cineToolData = {
             loop: OHIF.viewer.cine.loop,
             framesPerSecond: fps
         };
@@ -242,12 +250,12 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
-        var activeTool = toolManager.getActiveTool();
+        const activeTool = toolManager.getActiveTool();
         toolManager.setActiveTool(activeTool, [element]);
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
-        function onImageRendered(e, eventData) {
+        const onImageRendered = () => {
             OHIF.log.info('imageViewerViewport onImageRendered');
 
             if (!layoutManager.viewportData[viewportIndex]) {
@@ -260,22 +268,22 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
             // Save the current viewport into the ViewerData global variable, as well as the
             // Meteor Session. This lets the viewport be saved/reloaded on a hot-code reload
-            var viewport = cornerstone.getViewport(element);
+            const viewport = cornerstone.getViewport(element);
             layoutManager.viewportData[viewportIndex].viewport = viewport;
             ViewerData[contentId].loadedSeriesData[viewportIndex].viewport = viewport;
             Session.set('ViewerData', ViewerData);
-        }
+        };
 
         // Attach the onImageRendered callback to the CornerstoneImageRendered event
-        $(element).off('CornerstoneImageRendered', onImageRendered);
-        $(element).on('CornerstoneImageRendered', onImageRendered);
+        jQueryEl.off('CornerstoneImageRendered', onImageRendered);
+        jQueryEl.on('CornerstoneImageRendered', onImageRendered);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
 
         // Define a function to run whenever the Cornerstone viewport changes images
         // (e.g. during scrolling)
-        function onNewImage(e, eventData) {
+        const onNewImage = (e, eventData) => {
             OHIF.log.info('imageViewerViewport onNewImage');
 
             // Update the metaData for missing fields
@@ -288,28 +296,26 @@ function loadDisplaySetIntoViewport(data, templateData) {
             layoutManager.viewportData[viewportIndex].imageId = eventData.enabledElement.image.imageId;
 
             // Get the element and stack data
-            var element = e.target;
-            var toolData = cornerstoneTools.getToolState(element, 'stack');
+            const element = e.target;
+            const toolData = cornerstoneTools.getToolState(element, 'stack');
             if (!toolData || !toolData.data || !toolData.data.length) {
                 return;
             }
 
-            var stack = toolData.data[0];
-
             // If this viewport is displaying a stack of images, save the current image
             // index in the stack to the global ViewerData object, as well as the Meteor Session.
-            var stack = cornerstoneTools.getToolState(element, 'stack');
+            const stack = cornerstoneTools.getToolState(element, 'stack');
             if (stack && stack.data.length && stack.data[0].imageIds.length > 1) {
-                var imageIdIndex = stack.data[0].imageIds.indexOf(templateData.imageId);
+                const imageIdIndex = stack.data[0].imageIds.indexOf(templateData.imageId);
                 layoutManager.viewportData[viewportIndex].currentImageIdIndex = imageIdIndex;
                 ViewerData[contentId].loadedSeriesData[viewportIndex].currentImageIdIndex = imageIdIndex;
                 Session.set('ViewerData', ViewerData);
             }
-        }
+        };
 
         // Attach the onNewImage callback to the CornerstoneNewImage event
-        $(element).off('CornerstoneNewImage', onNewImage);
-        $(element).on('CornerstoneNewImage', onNewImage);
+        jQueryEl.off('CornerstoneNewImage', onNewImage);
+        jQueryEl.on('CornerstoneNewImage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
@@ -317,13 +323,13 @@ function loadDisplaySetIntoViewport(data, templateData) {
         // Define a function to trigger an event whenever a new viewport is being used
         // This is used to update the value of the "active viewport", when the user interacts
         // with a new viewport element
-        function sendActivationTrigger(e, eventData) {
+        const sendActivationTrigger = (e, eventData) => {
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
-            var element = eventData.element;
-            var activeViewportIndex = Session.get('activeViewport');
-            var viewportIndex = $('.imageViewerViewport').index(element);
+            const element = eventData.element;
+            const activeViewportIndex = Session.get('activeViewport');
+            const viewportIndex = $('.imageViewerViewport').index(element);
 
             // Reset the focus, even if we don't need to re-enable reference lines or prefetching
             $(element).focus();
@@ -337,21 +343,21 @@ function loadDisplaySetIntoViewport(data, templateData) {
             // Otherwise, trigger an 'ActivateViewport' event to be handled by the Template event
             // handler
             eventData.viewportIndex = viewportIndex;
-            var customEvent = $.Event('ActivateViewport', eventData);
+            const customEvent = $.Event('ActivateViewport', eventData);
 
             // Need to overwrite the type set in the original event
             customEvent.type = 'ActivateViewport';
             $(e.target).trigger(customEvent, eventData);
-        }
+        };
 
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
-        $(element).off(allCornerstoneEvents, sendActivationTrigger);
-        $(element).on(allCornerstoneEvents, sendActivationTrigger);
+        jQueryEl.off(allCornerstoneEvents, sendActivationTrigger);
+        jQueryEl.on(allCornerstoneEvents, sendActivationTrigger);
 
         ViewerData[contentId].loadedSeriesData = layoutManager.viewportData;
 
         // Check if image plane (orientation / loction) data is present for the current image
-        var imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
+        const imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
 
         // If it is, and reference lines are enabled, add this element to the global synchronizer
         // that is used for updating reference lines, and enable reference lines for this viewport.
