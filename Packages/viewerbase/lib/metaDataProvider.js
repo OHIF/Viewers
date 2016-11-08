@@ -104,7 +104,10 @@ updateMetaData = function(image) {
     imageMetaData.instance.frameIncrementPointer = imageMetaData.instance.frameIncrementPointer || image.data.string('x00280009');
     imageMetaData.instance.frameTime = imageMetaData.instance.frameTime || image.data.string('x00181063');
     imageMetaData.instance.frameTimeVector = imageMetaData.instance.frameTimeVector || image.data.string('x00181065');
-    imageMetaData.instance.multiframeMetadata = getMultiframeModuleMetaData(image.data);
+
+    if (!imageMetaData.instance.multiframeMetadata) {
+        imageMetaData.instance.multiframeMetadata = getMultiframeModuleMetaData(image.data);
+    }
 
     imageMetaData.imagePlane = imageMetaData.imagePlane || getImagePlane(imageMetaData.instance);
 };
