@@ -21,6 +21,17 @@ Template.viewerMain.onRendered(() => {
         const parentElement = instance.$('#layoutManagerTarget').get(0);
         window.layoutManager = new LayoutManager(parentElement, studies);
 
+        // Toggle Measurement Table 
+        // Show as default for Associated Studies
+        if(studies.length > 1) {
+            // Session.set('rightSidebar', 'measurements');
+            instance.data.state.set('rightSidebar', 'measurements');
+        }
+        // Hide as default for single study
+        else {
+            instance.data.state.set('rightSidebar', null);
+        }
+
         ProtocolEngine = new HP.ProtocolEngine(window.layoutManager, studies);
         HP.setEngine(ProtocolEngine);
 
