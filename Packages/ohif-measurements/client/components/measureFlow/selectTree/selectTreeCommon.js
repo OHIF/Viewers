@@ -9,6 +9,9 @@ Template.selectTreeCommon.events({
         // Get the clicked label
         const $target = $(event.currentTarget);
 
+        // Store the offset position for further use
+        $target.data('offset', $target.offset());
+
         // Build the input selector based on the label target
         const inputSelector = '#' + $target.attr('for');
 
@@ -23,6 +26,9 @@ Template.selectTreeCommon.events({
             // Wait for options rerendering
 
             Tracker.afterFlush(() => {
+                const $treeRoot = treeInstance.$('.select-tree-root:first').first();
+                $treeRoot.addClass('common-clicked');
+
                 // Wait for components initialization
                 Meteor.defer(() => $(inputSelector).click());
             });

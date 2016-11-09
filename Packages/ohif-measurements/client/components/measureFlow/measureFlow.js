@@ -177,7 +177,7 @@ Template.measureFlow.events({
 
     'click .select-tree-common label'(event, instance) {
         // Set the common section clicked flag
-        instance.commonClicked = true;
+        instance.commonClicked = event.currentTarget;
     },
 
     'change .select-tree-root'(event, instance) {
@@ -193,39 +193,44 @@ Template.measureFlow.events({
 
     'click .tree-leaf input'(event, instance) {
         const $target = $(event.currentTarget);
-        const $label = $target.closest('label');
+        let $label = $target.closest('label');
         const $treeRoot = $label.closest('.select-tree-root');
         const $container = $treeRoot.find('.tree-options:first');
+        let labelOffset;
 
-        // Check if the targe click was a label inside common section
+        // Check if the clicked target was a label inside common section
         if (instance.commonClicked) {
-            const labelTop = $label.position().top;
-            const containerCenter = Math.round($container.height() / 2);
-            const labelCenter = Math.round($label.height() / 2);
-
-            // Scroll the options container to make the target input visible
-            $container.scrollTop(labelTop - containerCenter + labelCenter);
+            $label = $(instance.commonClicked);
+            labelOffset = $label.data('offset');
+        } else {
+            labelOffset = $label.offset();
         }
 
         // Change the measure flow state to selected
         instance.state.set('selected');
-
-        // Get the clicked label window offset
-        const labelOffset = $label.offset();
 
         // Wait for the DOM re-rendering
         Tracker.afterFlush(() => {
             // Get the measure flow div
             const $measureFlow = instance.$('.measure-flow');
 
-            // Subtract the label box shadow height from the label's position
-            labelOffset.top -= 10;
+            // Adjust the label position
+            if (instance.commonClicked) {
+                labelOffset.top -= 10;
+                labelOffset.left -= 12;
+            } else {
+                labelOffset.top -= 10;
+            }
 
             // Reposition the measure flow based on the clicked label position
             $measureFlow.css(labelOffset);
 
             // Resize the copied label with same width of the clicked one
-            $measureFlow.children('.tree-leaf').width($label.outerWidth());
+            // $measureFlow.children('.tree-leaf').width($label.outerWidth());
+            $measureFlow.children('.tree-leaf').width(212);
+
+            // Reset the flag to avoid wrong positioning when clicking normal labels again
+            instance.commonClicked = false;
         });
 
         // Wait the fade-out transition and remove the selectTree component

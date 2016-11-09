@@ -57,6 +57,11 @@ $gray6 = #303030
         &>.tree-inputs>label.tree-node:not(.active)
           border-color: transparent
 
+    &.common-clicked .tree-leaf.active
+      background-color: transparent
+      box-shadow: none
+      color: transparent
+
 .select-tree-root
   display: inline-block
   position: relative
@@ -193,6 +198,9 @@ $gray6 = #303030
         font-weight: normal
         line-height: 20px
         margin: 12px 0 16px
+
+      div.labels
+        position: relative
 
       label
         cursor: pointer
