@@ -40,6 +40,10 @@ Template.app.helpers({
 
     onStudyList() {
         return (Session.get('activeContentId') === 'studylistTab');
+    },
+
+    dasherize(text) {
+        return text.replace(/ /g, '-').toLowerCase();
     }
 });
 
