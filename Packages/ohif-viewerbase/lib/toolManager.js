@@ -16,25 +16,54 @@ var toolDefaultStates = {
 var initialized = false;
 
 function configureTools() {
+
+    // Get Cornerstone Tools
+    const { panMultiTouch, textStyle, toolStyle, toolColors, 
+            length, bidirectional, arrowAnnotate, zoom } = cornerstoneTools;
+
     // Set the configuration for the multitouch pan tool
-    var multiTouchPanConfig = {
+    const multiTouchPanConfig = {
         testPointers: function(eventData) {
             return (eventData.numPointers >= 3);
         }
     };
-    cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
+    panMultiTouch.setConfiguration(multiTouchPanConfig);
 
-    // Set the text box background color
-    cornerstoneTools.textStyle.setBackgroundColor('rgba(0, 0, 0, 0.95)');
+    // Set text box background color
+    textStyle.setBackgroundColor('transparent');
 
     // Set the tool width
-    cornerstoneTools.toolStyle.setToolWidth(2);
+    toolStyle.setToolWidth(2);
 
     // Set color for inactive tools
-    cornerstoneTools.toolColors.setToolColor('#ff00ff'); //rgb(255, 255, 0)');
+    toolColors.setToolColor('#91b9cd'); //rgb(255, 255, 0)');
 
     // Set color for active tools
-    cornerstoneTools.toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
+    toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
+
+    // Set shadow configuration for length and bidirectional text boxes
+    const shadowConfig = {
+        shadow: true,
+        shadowColor: '#000',
+        shadowOffsetX: 1,
+        shadowOffsetY: 1
+    };
+
+    // Get some tools config to not override them
+    const lengthConfig = length.getConfiguration();
+    const bidirectionalConfig = bidirectional.getConfiguration();
+
+    // Add shadow to length tool 
+    length.setConfiguration({
+        ...lengthConfig,
+        ...shadowConfig
+    });
+
+    // Add shadow to length tool
+    bidirectional.setConfiguration({
+        ...bidirectionalConfig,
+        ...shadowConfig
+    });
 
     // Set the configuration values for the text annotation (Arrow) tool
     const annotateConfig = {
@@ -43,13 +72,13 @@ function configureTools() {
         drawHandles: false,
         arrowFirst: true
     };
-    cornerstoneTools.arrowAnnotate.setConfiguration(annotateConfig);
+    arrowAnnotate.setConfiguration(annotateConfig);
 
     const zoomConfig = {
         minScale: 0.05,
         maxScale: 10
     };
-    cornerstoneTools.zoom.setConfiguration(zoomConfig);
+    zoom.setConfiguration(zoomConfig);
 }
 
 toolManager = {
