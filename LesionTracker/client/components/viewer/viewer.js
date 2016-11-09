@@ -66,7 +66,7 @@ Template.viewer.onCreated(() => {
 
     const patientId = instance.data.studies[0].patientId;
     const filter = {
-        'patientId': patientId
+        patientId
     };
 
     const timepointsPromise = instance.data.timepointApi.retrieveTimepoints(filter);
@@ -132,7 +132,7 @@ Template.viewer.events({
         OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
     },
     CornerstoneToolsMouseClick(event, instance, data) {
-        const element = instance.$('.imageViewerViewport')[0];
+        const element = event.target;
 
         const toolState = cornerstoneTools.getToolState(element, 'bidirectional');
 
@@ -140,10 +140,6 @@ Template.viewer.events({
         if (!toolState) {
             return;
         }
-
-        const selectLabelCallback = (options, value, description) => {
-            console.warn('>>>>options, value, description', options, value, description);
-        };
 
         setTimeout(() => {
             for (let i = 0; i < toolState.data.length; i++) {
@@ -154,8 +150,7 @@ Template.viewer.events({
                         toolData,
                         element,
                         measurementApi: instance.data.measurementApi,
-                        position: data.currentPoints.page,
-                        callback: selectLabelCallback
+                        position: data.currentPoints.page
                     });
                     break;
                 }

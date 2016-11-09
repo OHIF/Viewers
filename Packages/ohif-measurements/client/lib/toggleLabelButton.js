@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 const toolMap = {
@@ -32,7 +33,9 @@ OHIF.measurements.toggleLabelButton = options => {
         hideCommon: true,
         toolType: options.toolData.toolType,
         doneCallback(location, description) {
-            options.callback(options, location, description);
+            if (_.isFunction(options.callback)) {
+                options.callback(options, location, description);
+            }
 
             toolCollection.update(measurement._id, {
                 $set: {
