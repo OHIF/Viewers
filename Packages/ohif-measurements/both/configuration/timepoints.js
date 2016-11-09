@@ -202,7 +202,7 @@ class TimepointApi {
     title(timepoint) {
         const timepointName = this.name(timepoint);
 
-        const all = this.all();
+        const all = _.clone(this.all()).reverse();
         let index = -1;
         _.each(all, (currentTimepoint, currentIndex) => {
             if (currentTimepoint.timepointId === timepoint.timepointId) {
