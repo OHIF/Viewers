@@ -11,37 +11,49 @@
                 {{#if showStudyListMenu}}
                     <li>
                         <a href="studylist" id="studylist">
-                            <i class="fa fa-list-ul"></i> Study List
+                            <svg class="study-list">
+                                <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#study-list></use>
+                            </svg> Study List
                         </a>
                     </li>
                 {{else}}
                     <li>
                         <a href="/audit" id="audit">
-                            <i class="fa fa-list-ul"></i> View Audit Log
+                            <svg class="log">
+                                <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#log></use>
+                            </svg> View Audit Log
                         </a>
                     </li>
                 {{/if}}
                 <li role="separator" class="divider"></li>
                 <li>
                     <a id="themeSelector">
-                        <i class="fa fa-sliders fa-lg"></i> Themes
+                        <svg class="theme">
+                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#theme></use>
+                        </svg> Themes
                     </a>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
                     <a id="serverInformation">
-                        <i class="fa fa-server fa-lg"></i> Server Information
+                        <svg class="server">
+                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#server></use>
+                        </svg> Server Information
                     </a>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
                     <a href="changePassword" id="changePassword">
-                        <i class="fa fa-lock"></i> Change Password
+                        <svg class="password">
+                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#password></use>
+                        </svg> Change Password
                     </a>
                 </li>
                 <li>
                     <a id="logoutButton">
-                        <i class="fa fa-power-off"></i> Logout
+                        <svg class="logout">
+                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#logout></use>
+                        </svg> Logout
                     </a>
                 </li>
             </ul>

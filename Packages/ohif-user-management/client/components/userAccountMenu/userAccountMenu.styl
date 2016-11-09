@@ -1,5 +1,9 @@
 @import "{design}/app"
 
+$iconMargin = 5px
+$iconWidth = 16px
+$iconHeight = 16px
+
 #userAccountMenu
   padding: 4px 0
   height: 100%
@@ -30,3 +34,29 @@
   ul.dropdown-menu
     li
       cursor: pointer
+      
+      svg
+        margin-right: $iconMargin
+        width: $iconWidth
+        height: $iconHeight
+        text-align: center
+        
+      svg
+        display: inline-block
+        vertical-align: middle
+        
+        &.server
+          width: $iconWidth - 3
+          height: $iconWidth - 3
+          margin-right: $iconMargin + 2
+          margin-left: 1px
+          
+        &.theme
+          width: $iconWidth + 2
+          height: $iconWidth + 2
+          margin-right: $iconMargin - 2
+          
+        &.study-list
+          width: $iconWidth + 2
+          height: $iconWidth + 2
+          margin-right: $iconMargin - 2
