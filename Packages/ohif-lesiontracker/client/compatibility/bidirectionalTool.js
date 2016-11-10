@@ -15,6 +15,9 @@
         ESC: 27
     };
 
+    // The distance between the mouse and the tool to make it active
+    var distanceThreshold = 7;
+
     // Set lesion number
     // Get Target lesions on image
     function setMeasurementNumberCallback(measurementData, eventData, doneCallback) {
@@ -233,7 +236,7 @@
             return true;
         }
 
-        return (distanceToPoint < 5);
+        return (distanceToPoint < distanceThreshold);
     }
 
     function pointNearPerpendicular(element, handles, coords) {
@@ -242,7 +245,7 @@
             end: cornerstone.pixelToCanvas(element, handles.perpendicularEnd)
         };
         var distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
-        return (distanceToPoint < 5);
+        return (distanceToPoint < distanceThreshold);
     }
 
     // Move long-axis start point
@@ -950,6 +953,7 @@
 
         for (var i = 0; i < toolData.data.length; i++) {
             var data = toolData.data[i];
+            var strokeWidth = lineWidth;
 
             context.save();
 
@@ -962,6 +966,8 @@
 
             if (data.active) {
                 color = cornerstoneTools.toolColors.getActiveColor();
+                // increase line width of active tool...
+                strokeWidth *= 1.5;
             } else {
                 color = cornerstoneTools.toolColors.getToolColor();
             }
@@ -973,13 +979,13 @@
 
             context.beginPath();
             context.strokeStyle = color;
-            context.lineWidth = lineWidth;
+            context.lineWidth = strokeWidth;
             context.moveTo(handleStartCanvas.x, handleStartCanvas.y);
             context.lineTo(handleEndCanvas.x, handleEndCanvas.y);
             context.stroke();
 
             // Draw perpendicular line
-            drawPerpendicularLine(context, eventData, element, data, color, lineWidth);
+            drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
 
             // draw the handles
             cornerstoneTools.drawHandles(context, eventData, data.handles, color);
@@ -987,7 +993,7 @@
             //Draw linked line as dashed
             context.beginPath();
             context.strokeStyle = color;
-            context.lineWidth = lineWidth;
+            context.lineWidth = strokeWidth;
             context.setLineDash([ 2, 3 ]);
 
             // Set position of text
