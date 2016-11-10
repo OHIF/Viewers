@@ -19,11 +19,12 @@
             {{/each}}
 
             {{#if config.newMeasurementTool}}
-                {{#let new=newMeasurements}}
-                    {{#if new}}
-                        {{#let collection=new tool=config.newMeasurementTool}}
+                {{#let measurementType=(getNewMeasurementType config.newMeasurementTool)}}
+                {{#let newMeasure=(newMeasurements measurementType)}}
+                    {{#if newMeasure}}
+                        {{#let collection=newMeasure}}
                             {{>measurementTableHeaderRow
-                                measurementType=tool.measurementType
+                                measurementType=measurementType
                                 measurements=collection
                                 currentTimepointId=currentTimepointId
                                 timepointApi=timepointApi
@@ -34,6 +35,7 @@
                             {{/each}}
                         {{/let}}
                     {{/if}}
+                {{/let}}
                 {{/let}}
             {{/if}}
         {{/let}}

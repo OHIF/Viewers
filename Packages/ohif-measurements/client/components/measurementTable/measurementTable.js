@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.measurementTable.onCreated(() => {
     const instance = Template.instance();
 
@@ -45,10 +48,8 @@ Template.measurementTable.onRendered(() => {
 });
 
 Template.measurementTable.onRendered(() => {
-    const instance = Template.instance();
-
     // Find the first measurement by Lesion Number
-    let firstLesion = undefined; // = instance.data.measurementApi.firstLesion();
+    let firstLesion; // = instance.data.measurementApi.firstLesion();
 
     // Create an object to store the ContentId inside
     const templateData = {

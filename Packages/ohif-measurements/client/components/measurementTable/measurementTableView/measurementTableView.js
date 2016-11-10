@@ -1,23 +1,54 @@
 import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
-import { OHIF } from 'meteor/ohif:core';
+import { _ } from 'meteor/underscore';
+
+const getLocation = collection => {
+    for (let i = 0; i < collection.length; i++) {
+        if (collection[i].location) {
+            return collection[i].location;
+        }
+    }
+};
 
 Template.measurementTableView.helpers({
-    groupByMeasurementNumber(measurementTypeId) {
-        const api = Template.instance().data.measurementApi;
-        const Collection = api[measurementTypeId];
-        const data = Collection.find().fetch();
+    getNewMeasurementType(tool) {
+        // TODO: Check Conformance criteria here.
+        // RECIST should be targets, irRC should be nonTargets
+        return {
+            id: tool.id,
+            name: tool.name,
+            cornerstoneToolType: 'bidirectional',
+            measurementTypeId: 'targets'
+        };
+    },
 
+    groupByMeasurementNumber(measurementTypeId) {
+        const instance = Template.instance();
+        const measurementApi = instance.data.measurementApi;
+        const timepointApi = instance.data.timepointApi;
+
+        // Retrieve all the data for this Measurement type (e.g. 'targets')
+        // which was recorded at baseline.
+        const baseline = timepointApi.baseline();
+        const atBaseline = measurementApi.fetch(measurementTypeId, {
+            timepointId: baseline.timepointId
+        });
+
+        // Obtain a list of the Measurement Numbers from the
+        // measurements which have baseline data
+        const numbers = atBaseline.map(m => m.measurementNumber);
+
+        // Retrieve all the data for this Measurement type which
+        // match the Measurement Numbers obtained above
+        const data = measurementApi.fetch(measurementTypeId, {
+            measurementNumber: {
+                $in: numbers
+            }
+        });
+
+        // Group the Measurements by Measurement Number
         const groupObject = _.groupBy(data, entry => entry.measurementNumber);
 
-        const getLocation = collection => {
-            for (let i = 0; i < collection.length; i++) {
-                if (collection[i].location) {
-                    return collection[i].location;
-                }
-            }
-        };
-
+        // Reformat the data for display in the table
         return Object.keys(groupObject).map(key => ({
             measurementTypeId: measurementTypeId,
             measurementNumber: key,
@@ -27,16 +58,15 @@ Template.measurementTableView.helpers({
         }));
     },
 
-    newMeasurements() {
-        // Find all measurements from this timepoint which do not have a corresponding measurement
-        // at the prior timepoint.
+    newMeasurements(measurementType) {
         const instance = Template.instance();
-        if (!instance.data.timepointApi) {
+        const measurementApi = instance.data.measurementApi;
+        const timepointApi = instance.data.timepointApi;
+        const measurementTypeId = measurementType.measurementTypeId;
+
+        if (!timepointApi) {
             return;
         }
-
-        const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        const measurementTools = config.measurementTools;
 
         // If this is a baseline, stop here since there are no new measurements to display
         const current = instance.data.timepointApi.current();
@@ -45,57 +75,35 @@ Template.measurementTableView.helpers({
             return;
         }
 
-        let data = [];
-        measurementTools.forEach(tool => {
-            // Handle only tools which are meant to be displayed in the measurement table
-            if (!tool || !tool.options || !tool.options.showInMeasurementTable) {
-                return;
-            }
-
-            // Find only those measurements made at this timepoint
-            const selector = {
-                timepointId: current.timepointId
-            };
-
-            // Sort ascending by measurement number
-            const options = {
-                sort: {
-                    measurementNumber: 1
-                }
-            };
-
-            // Retrieve measurements made at this timepoint
-            const api = Template.instance().data.measurementApi;
-            const measurementTypeId = tool.id;
-            const Collection = api[measurementTypeId];
-            const measurements = Collection.find(selector, options);
-
-            // For each measurement, check if a previous measurement exists with an identical measurement number
-            let newMeasurements = [];
-            measurements.forEach(measurement => {
-                // If no previous measurements exist, add it to the array of new measurements
-                const selector = {
-                    measurementNumber: measurement.measurementNumber,
-                    timepointId: {
-                        $ne: current.timepointId
-                    }
-                };
-
-                const previousMeasurements = Collection.find(selector).fetch();
-                if (previousMeasurements.length === 0) {
-                    newMeasurements.push(measurement);
-                }
-            });
-
-            // Concatenate new measurements of all measurement types
-            data = data.concat(newMeasurements);
+        // Retrieve all the data for this Measurement type (e.g. 'targets')
+        // which was recorded at baseline.
+        const baseline = timepointApi.baseline();
+        const atBaseline = measurementApi.fetch(measurementTypeId, {
+            timepointId: baseline.timepointId
         });
 
-        const groupObject = _.groupBy(data, entry => { return entry.measurementNumber });
+        // Obtain a list of the Measurement Numbers from the
+        // measurements which have baseline data
+        const numbers = atBaseline.map(m => m.measurementNumber);
 
+        // Retrieve all the data for this Measurement type which
+        // do NOT match the Measurement Numbers obtained above
+        const data = measurementApi.fetch(measurementTypeId, {
+            measurementNumber: {
+                $nin: numbers
+            }
+        });
+
+        // Group the Measurements by Measurement Number
+        const groupObject = _.groupBy(data, entry => entry.measurementNumber);
+
+        // Reformat the data for display in the table
         return Object.keys(groupObject).map(key => {
             return {
+                measurementTypeId: measurementTypeId,
                 measurementNumber: key,
+                location: getLocation(groupObject[key]),
+                responseStatus: false, // TODO: Get the latest timepoint and determine the response status
                 entries: groupObject[key]
             };
         });
