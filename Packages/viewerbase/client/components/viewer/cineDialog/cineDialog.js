@@ -139,6 +139,7 @@ Template.cineDialog.onCreated(() => {
      */
 
     instance.setOptimalPosition = (event, options) => {
+        const viewer = $('#viewer');
 
         let toolbarElement = $('.toolbarSection .toolbarSectionTools:first'),
             cineDialog = $('#cineDialog'),
@@ -179,6 +180,21 @@ Template.cineDialog.onCreated(() => {
             if (options.top) {
                 cineDialogCoords.top = options.top;
             }
+        }
+
+        // Check if it is out of screen
+        if (cineDialogCoords.top < 0) {
+            cineDialogCoords.top = 0;
+        }
+        else if (cineDialogCoords.top + cineDialogSize.height > viewer.height()) {
+            cineDialogCoords.top -= (cineDialogCoords.top + cineDialogSize.height) - viewer.height();
+        }
+
+        if (cineDialogCoords.left < 0) {
+            cineDialogCoords.left = 0;
+        }
+        else if (cineDialogCoords.left + cineDialogSize.width > viewer.width()) {
+            cineDialogCoords.left -= (cineDialogCoords.left + cineDialogSize.width) - viewer.width();
         }
 
         cineDialog.css(cineDialogCoords);
