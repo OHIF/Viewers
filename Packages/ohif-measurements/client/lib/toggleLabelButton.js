@@ -31,11 +31,8 @@ OHIF.measurements.toggleLabelButton = options => {
         threeColumns: true,
         hideCommon: true,
         autoClick: options.autoClick,
-        doneCallback(location, description) {
-            if (_.isFunction(options.callback)) {
-                options.callback(options, location, description);
-            }
-
+        doneCallback: removeButtonView,
+        updateCallback(location, description) {
             toolCollection.update({
                 measurementNumber: measurement.measurementNumber,
                 toolType: measurement.toolType,
@@ -48,8 +45,6 @@ OHIF.measurements.toggleLabelButton = options => {
             }, {
                 multi: true
             });
-
-            removeButtonView();
         }
     };
     const view = Blaze.renderWithData(Template.measureFlow, data, options.element);

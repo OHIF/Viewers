@@ -83,7 +83,10 @@ Template.measureFlow.onRendered(() => {
     instance.$('.btn-add').focus();
 
     if (instance.data.autoClick) {
-        instance.$('.btn-add').hide().trigger('click');
+        instance.$('.btn-add').hide().trigger('click', {
+            clientX: instance.data.position.x,
+            clientY: instance.data.position.Y
+        });
     }
 });
 
@@ -100,11 +103,19 @@ Template.measureFlow.events({
 
         // Wait template rerender before rendering the selectTree
         Tracker.afterFlush(() => {
-            // Get the click position
-            const position = {
-                left: event.clientX,
-                top: event.clientY,
-            };
+            // Get the click  or rendering position
+            let position;
+            if (_.isUndefined(event.clientX)) {
+                position = {
+                    left: instance.data.position.x,
+                    top: instance.data.position.y,
+                };
+            } else {
+                position = {
+                    left: event.clientX,
+                    top: event.clientY,
+                };
+            }
 
             // Define the data for selectTreeComponent
             const data = {
@@ -235,6 +246,8 @@ Template.measureFlow.events({
 
             // Reset the flag to avoid wrong positioning when clicking normal labels again
             instance.commonClicked = false;
+
+            instance.data.updateCallback(instance.value.value, instance.description.get());
         });
 
         // Wait the fade-out transition and remove the selectTree component
@@ -262,8 +275,6 @@ Template.measureFlow.events({
 
     'close .measure-flow'(event, instance) {
         const $measureFlow = $(event.currentTarget);
-        $measureFlow.one('animationend', () => {
-            instance.data.doneCallback(instance.value.value, instance.description.get());
-        }).addClass('fadeOut');
+        $measureFlow.one('animationend', instance.data.doneCallback).addClass('fadeOut');
     }
 });
