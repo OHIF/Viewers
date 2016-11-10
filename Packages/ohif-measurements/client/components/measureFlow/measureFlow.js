@@ -81,6 +81,10 @@ Template.measureFlow.onRendered(() => {
     instance.$('.measure-flow').bounded();
 
     instance.$('.btn-add').focus();
+
+    if (instance.data.autoClick) {
+        instance.$('.btn-add').hide().trigger('click');
+    }
 });
 
 Template.measureFlow.events({

@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.caseProgress.onCreated(() => {
     const instance = Template.instance();

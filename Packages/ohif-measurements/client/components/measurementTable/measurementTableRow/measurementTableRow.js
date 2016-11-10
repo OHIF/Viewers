@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 
 function doneCallback(measurementData, deleteTool) {
@@ -14,7 +16,7 @@ function doneCallback(measurementData, deleteTool) {
 }
 
 // Delete a lesion if Ctrl+D or DELETE is pressed while a lesion is selected
-var keys = {
+const keys = {
     D: 68,
     DELETE: 46
 };
@@ -26,10 +28,25 @@ Template.measurementTableRow.events({
         $row.toggleClass('active');
     },
 
-    'dblclick .location': function() {
+    'click .js-rename'(event, instance) {
+        OHIF.measurements.toggleLabelButton({
+            instance,
+            measurementId: instance.data.rowItem.entries[0],
+            measurementTypeId: instance.data.rowItem.measurementTypeId,
+            element: document.body,
+            measurementApi: instance.data.measurementApi,
+            position: {
+                x: event.clientX,
+                y: event.clientY
+            },
+            autoClick: true
+        });
+    },
+
+    'dblclick .location'() {
         OHIF.log.info('Double clicked on Lesion Location cell');
 
-        var measurementData = this;
+        const measurementData = this;
 
         // TODO = Fix this weird issue? Need to set toolData's ID properly..
         measurementData.id = this._id;
@@ -37,13 +54,13 @@ Template.measurementTableRow.events({
         changeLesionLocationCallback(measurementData, null, doneCallback);
     },
 
-    'keydown .location': function(e) {
-        var keyCode = e.which;
+    'keydown .location'(event) {
+        const keyCode = event.which;
 
         if (keyCode === keys.DELETE ||
-            (keyCode === keys.D && e.ctrlKey === true)) {
-            var currentMeasurement = this;
-            var options = {
+            (keyCode === keys.D && event.ctrlKey === true)) {
+            const currentMeasurement = this;
+            const options = {
                 keyPressAllowed: false,
                 title: 'Remove measurement?',
                 text: 'Are you sure you would like to remove the entire measurement?'

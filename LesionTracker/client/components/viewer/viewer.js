@@ -141,7 +141,8 @@ Template.viewer.events({
                 if (toolData.active) {
                     OHIF.measurements.toggleLabelButton({
                         instance,
-                        toolData,
+                        measurementId: toolData._id,
+                        toolType: toolData.toolType,
                         element,
                         measurementApi: instance.data.measurementApi,
                         position: data.currentPoints.page

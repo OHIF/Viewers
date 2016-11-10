@@ -21,15 +21,16 @@ OHIF.measurements.toggleLabelButton = options => {
         removeButtonView();
     }
 
-    const tool = toolMap[options.toolData.toolType];
+    const tool = options.measurementTypeId || toolMap[options.toolType];
     const toolCollection = options.measurementApi[tool];
-    const measurement = toolCollection.findOne(options.toolData._id);
+    const measurement = toolCollection.findOne(options.measurementId);
 
     const data = {
         measurement,
         position: options.position,
         threeColumns: true,
         hideCommon: true,
+        autoClick: options.autoClick,
         doneCallback(location, description) {
             if (_.isFunction(options.callback)) {
                 options.callback(options, location, description);
@@ -44,6 +45,8 @@ OHIF.measurements.toggleLabelButton = options => {
                     location,
                     description
                 }
+            }, {
+                multi: true
             });
 
             removeButtonView();
