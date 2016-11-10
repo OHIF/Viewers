@@ -27,17 +27,19 @@ OHIF.measurements.toggleLabelButton = options => {
 
     const data = {
         measurement,
-        tool,
         position: options.position,
         threeColumns: true,
         hideCommon: true,
-        toolType: options.toolData.toolType,
         doneCallback(location, description) {
             if (_.isFunction(options.callback)) {
                 options.callback(options, location, description);
             }
 
-            toolCollection.update(measurement._id, {
+            toolCollection.update({
+                measurementNumber: measurement.measurementNumber,
+                toolType: measurement.toolType,
+                patientId: measurement.patientId
+            }, {
                 $set: {
                     location,
                     description

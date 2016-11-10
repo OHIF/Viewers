@@ -68,6 +68,18 @@ class MeasurementHandlers {
             measurement.measurementNumber = numCurrentMeasurementsInStudy + 1;
         }
 
+        // Get the related timepoint by the measurement number and use its location if defined
+        const relatedTimepoint = Collection.findOne({
+            measurementNumber: measurement.measurementNumber,
+            toolType: measurementData.toolType,
+            patientId,
+        });
+
+        // Use the related timepoint location if found and defined
+        if (relatedTimepoint && relatedTimepoint.location) {
+            measurement.location = relatedTimepoint.location;
+        }
+
         // Clean the measurement according to the Schema
         measurementToolConfiguration.schema.clean(measurement);
 

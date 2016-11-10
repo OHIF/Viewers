@@ -1,31 +1,30 @@
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementTableView.helpers({
-    isFollowup() {
-        const instance = Template.instance();
-        const current = instance.data.timepointApi.current();
-        return (current && current.timepointType === 'followup');
-    },
-
     groupByMeasurementNumber(measurementTypeId) {
-	    const api = Template.instance().data.measurementApi;
-	    const Collection = api[measurementTypeId];
-    	const data = Collection.find().fetch();
+        const api = Template.instance().data.measurementApi;
+        const Collection = api[measurementTypeId];
+        const data = Collection.find().fetch();
 
         const groupObject = _.groupBy(data, entry => entry.measurementNumber);
 
-        return Object.keys(groupObject).map(key => {
-            const anEntry = groupObject[key][0];
+        const getLocation = collection => {
+            for (let i = 0; i < collection.length; i++) {
+                if (collection[i].location) {
+                    return collection[i].location;
+                }
+            }
+        };
 
-            return {
-                measurementTypeId: measurementTypeId,
-                measurementNumber: key,
-                location: anEntry.location,
-                responseStatus: false, // TODO: Get the latest timepoint and determine the response status
-                entries: groupObject[key]
-            };
-        });
+        return Object.keys(groupObject).map(key => ({
+            measurementTypeId: measurementTypeId,
+            measurementNumber: key,
+            location: getLocation(groupObject[key]),
+            responseStatus: false, // TODO: Get the latest timepoint and determine the response status
+            entries: groupObject[key]
+        }));
     },
 
     newMeasurements() {
