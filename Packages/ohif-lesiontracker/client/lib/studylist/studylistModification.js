@@ -49,6 +49,7 @@ function open(studyInstanceUid, title) {
     ViewerData[contentid] = {
         title: title,
         contentid: contentid,
+        isUnassociatedStudy: true,
         studyInstanceUids: [studyInstanceUid]
     };
 

@@ -2,8 +2,12 @@ import { Template } from 'meteor/templating';
 
 Template.studyTimepoint.onCreated(() => {
     const instance = Template.instance();
+    const data = instance.data;
 
     instance.isActive = {};
+    if (data.isUnassociatedStudy === true && data.studyInstanceUids.length === 1) {
+        instance.isActive[data.studyInstanceUids[0]] = true;
+    }
 });
 
 // Initialize the timepoint wrapper max-height to enable CSS transition
