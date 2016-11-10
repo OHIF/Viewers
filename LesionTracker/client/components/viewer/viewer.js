@@ -31,12 +31,6 @@ Template.viewer.onCreated(() => {
         }
     });
 
-    // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
-    OHIF.viewer.defaultHotkeys = OHIF.viewer.defaultHotkeys || {};
-    OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = 'O';
-    OHIF.viewer.defaultHotkeys.bidirectional = 'T'; // Target
-    OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
-
     if (ViewerData[contentId].loadedSeriesData) {
         OHIF.log.info('Reloading previous loadedSeriesData');
         OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;

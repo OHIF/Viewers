@@ -47,9 +47,11 @@ OHIF.lesiontracker.toggleLesionTrackerToolsButtons = (isEnabled) => {
 
     if (isEnabled) {
         toolStates.disabledToolButtons = [];
+        OHIF.lesiontracker.toggleLesionTrackerToolsHotKeys(true);
     } else {
         toolStates.disabledToolButtons = [ 'bidirectional', 'nonTarget', 'crTool', 'unTool', 'exTool',
             'toggleHUD', 'toggleTrial', 'toolbarSectionEntry', 'toggleMeasurements' ];
+        OHIF.lesiontracker.toggleLesionTrackerToolsHotKeys(false);
     }
 
     // Reload the updated previous or default states
@@ -58,5 +60,20 @@ OHIF.lesiontracker.toggleLesionTrackerToolsButtons = (isEnabled) => {
     // Reset the active tool if disabled
     if (!isEnabled) {
         toolManager.setActiveTool();
+    }
+};
+
+OHIF.lesiontracker.toggleLesionTrackerToolsHotKeys = (isEnabled) => {
+    // The hotkey can also be an array (e.g. ["NUMPAD0", "0"])
+    OHIF.viewer.defaultHotkeys = OHIF.viewer.defaultHotkeys || {};
+
+    if (isEnabled) {
+        OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = 'O';
+        OHIF.viewer.defaultHotkeys.bidirectional = 'T'; // Target
+        OHIF.viewer.defaultHotkeys.nonTarget = 'N'; // Non-target
+    } else {
+        OHIF.viewer.defaultHotkeys.toggleLesionTrackerTools = null;
+        OHIF.viewer.defaultHotkeys.bidirectional = null; // Target
+        OHIF.viewer.defaultHotkeys.nonTarget = null; // Non-target
     }
 };
