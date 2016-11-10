@@ -1,0 +1,47 @@
+{
+	"parser": "babel-eslint",
+	"parserOptions": {
+		"allowImportExportEverywhere": true
+	},
+	"plugins": [
+		"meteor"
+	],
+	"env": {
+		/* Allows global vars from the Meteor environment to pass and enables certain rules */
+		"meteor": true,
+		"node": true,
+		"browser": true
+	},
+	"extends": [
+		"airbnb",
+		"plugin:meteor/recommended"
+	],
+	"settings": {
+		"import/resolver": "meteor"
+	},
+	"rules": {
+		"meteor/no-session": 0, // We are actually using Session for now...
+		"meteor/eventmap-params": [2, {"eventParamName": "event"}],
+		"meteor/eventmap-params": [2, {"templateInstanceParamName": "instance"}],
+		"import/no-extraneous-dependencies": 0,
+		"import/no-unresolved": 0, // There are a bunch of ESLint problems with Meteor's resolver
+		"import/no-duplicates": 0, // So we are disabling these for now
+		"import/extensions": 0,
+		"import/no-absolute-path": 0,
+		"no-console": 0, // For development
+		"no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+		"indent": ["error", 4],
+		"new-cap": 0, // Until Match has an exception
+		"func-names": 0, // This is a bit of an annoying rule
+		"no-underscore-dangle": 0, // Doesn't seem to mesh with _id for MongoDB Ids (or SimpleSchema)
+		"max-len": 0, // TODO: re-enable the rules below and fix all of the errors
+		"consistent-return": 0,
+		"no-param-reassign": 0,
+		"no-mixed-operators": 0,
+		"arrow-body-style": 0,
+		"valid-typeof": 0,
+		"import/prefer-default-export": 0
+		"no-undef": 0 
+	},
+	"globals": {}
+}
