@@ -59,6 +59,45 @@ class TimepointApi {
         storeFn(timepointData).then(() => OHIF.log.info('Timepoint storage completed'));
     }
 
+    removeTimepoint(timepointId) {
+        const removeFn = configuration.dataExchange.remove;
+        if (!_.isFunction(removeFn)) {
+            return;
+        }
+
+        const timepointData = {
+            timepointId
+        };
+
+        OHIF.log.info('Preparing to remove timepoint');
+        OHIF.log.info(JSON.stringify(timepointData, null, 2));
+
+        removeFn(timepointData).then(() => {
+            OHIF.log.info('Timepoint removal completed');
+            this.timepoints.remove(timepointData);
+        });
+    }
+
+    updateTimepoint(timepointId, query) {
+        const updateFn = configuration.dataExchange.update;
+        if (!_.isFunction(updateFn)) {
+            return;
+        }
+
+        const timepointData = {
+            timepointId
+        };
+
+        OHIF.log.info('Preparing to update timepoint');
+        OHIF.log.info(JSON.stringify(timepointData, null, 2));
+        OHIF.log.info(JSON.stringify(query, null, 2));
+
+        updateFn(timepointData, query).then(() => {
+            OHIF.log.info('Timepoint updated completed');
+            this.timepoints.update(timepointData, query);
+        });
+    }
+
     // Return all timepoints
     all() {
         return this.timepoints.find().fetch();

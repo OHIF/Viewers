@@ -64,3 +64,34 @@ export const storeTimepoints = (timepointData) => {
         });
     });
 };
+
+export const updateTimepoint = (timepointData, query) => {
+    console.log('updateTimepoint');
+    console.log(timepointData);
+    console.log(query);
+
+    return new Promise((resolve, reject) => {
+        Meteor.call('updateTimepoint', timepointData, query, (error, response) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+};
+
+export const removeTimepoint = timepointData => {
+    console.log('removeTimepoint');
+    console.log(timepointData);
+
+    return new Promise((resolve, reject) => {
+        Meteor.call('removeTimepoint', timepointData, (error, response) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+};

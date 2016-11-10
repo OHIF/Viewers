@@ -37,6 +37,19 @@ Meteor.methods({
         });
     },
 
+    removeTimepoint(timepointData) {
+        OHIF.log.info('Removing Timepoint off the Server');
+        OHIF.log.info(JSON.stringify(timepointData, null, 2));
+        Timepoints.remove(timepointData);
+    },
+
+    updateTimepoint(timepointData, query) {
+        OHIF.log.info('Updating Timepoint on the Server');
+        OHIF.log.info(JSON.stringify(timepointData, null, 2));
+        OHIF.log.info(JSON.stringify(query, null, 2));
+        Timepoints.update(timepointData, query);
+    },
+
     retrieveTimepoints(filter) {
         OHIF.log.info('Retrieving Timepoints from the Server');
         return Timepoints.find(filter || {}).fetch();

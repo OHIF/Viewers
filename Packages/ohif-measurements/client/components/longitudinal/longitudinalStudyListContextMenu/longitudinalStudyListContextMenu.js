@@ -25,7 +25,7 @@ function removeTimepointAssociations() {
     // Loop through the Cursor of Selected Studies
     selectedStudies.forEach(function(selectedStudy) {
         // Find the Timepoint that was previously referenced
-        const timepointApi = Template.instance().timepointApi;
+        const timepointApi = StudyList.timepointApi;
         if (!timepointApi) {
             return;
         }
@@ -49,7 +49,7 @@ function removeTimepointAssociations() {
         if (timepoint.studyInstanceUids.length) {
             // Update the Timepoints Collection with this modified array for the
             // studyInstanceUids attribute
-            Timepoints.update(timepoint._id, {
+            timepointApi.updateTimepoint(timepoint.timepointId, {
                 $set: {
                     studyInstanceUids: timepoint.studyInstanceUids
                 }
@@ -68,25 +68,7 @@ function removeTimepointAssociations() {
             HipaaLogger.logEvent(hipaaEvent);
         } else {
             // If no more Studies are associated with this Timepoint, we should remove it
-            // from the Timepoints Collection via a server call
-            Meteor.call('removeTimepoint', timepoint._id, function(error) {
-                if (error) {
-                    OHIF.log.warn(error);
-                    return;
-                }
-
-                // Log
-                const hipaaEvent = {
-                    eventType: 'delete',
-                    userId: Meteor.userId(),
-                    userName: Meteor.user().profile.fullName,
-                    collectionName: 'Timepoints',
-                    recordId: selectedStudy.timepointId,
-                    patientId: selectedStudy.patientId,
-                    patientName: selectedStudy.patientName
-                };
-                HipaaLogger.logEvent(hipaaEvent);
-            });
+            timepointApi.removeTimepoint(timepoint.timepointId);
         }
     });
 }

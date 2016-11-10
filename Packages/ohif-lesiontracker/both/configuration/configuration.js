@@ -1,7 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 
 import { measurementTools } from './measurementTools';
-import { retrieveMeasurements, storeMeasurements, retrieveTimepoints, storeTimepoints } from './dataExchange';
+import { retrieveMeasurements, storeMeasurements, retrieveTimepoints, storeTimepoints, removeTimepoint, updateTimepoint } from './dataExchange';
 import { validateMeasurements } from './dataValidation';
 
 console.log('OHIF-LesionTracker: Defining Configuration for Measurements');
@@ -26,6 +26,8 @@ OHIF.measurements.MeasurementApi.setConfiguration({
 OHIF.measurements.TimepointApi.setConfiguration({
     dataExchange: {
         retrieve: retrieveTimepoints,
-        store: storeTimepoints
+        store: storeTimepoints,
+        remove: removeTimepoint,
+        update: updateTimepoint
     }
 });
