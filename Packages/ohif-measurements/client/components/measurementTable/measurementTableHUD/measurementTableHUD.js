@@ -1,9 +1,17 @@
 Template.measurementTableHUD.onCreated(() => {
     const instance = Template.instance();
 
+    instance.isRemoved = true;
     if (instance.data.timepointApi) {
         instance.data.timepoints = new ReactiveVar(instance.data.timepointApi.currentAndPrior());    
     }
+});
+
+Template.measurementTableHUD.onDestroyed(() => {
+    const instance = Template.instance();
+
+    instance.isRemoved = true;
+    Session.set('measurementTableHudOpen', false);
 });
 
 Template.measurementTableHUD.onRendered(() => {
@@ -19,7 +27,15 @@ Template.measurementTableHUD.events({
 
 Template.measurementTableHUD.helpers({
     hudHidden() {
-        return Session.get('measurementTableHudOpen') ? 'dialog-open' : 'dialog-closed';
+        let instance = Template.instance(),
+            isOpen = Session.get('measurementTableHudOpen');
+
+        if (isOpen) {
+            instance.isRemoved = false;
+            return 'dialog-animated dialog-open';
+        }
+
+        return instance.isRemoved !== true ? 'dialog-animated dialog-closed' : 'hidden';
     },
     toolbarButtons() {
         let buttonData = [];

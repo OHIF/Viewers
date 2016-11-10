@@ -144,7 +144,7 @@ Template.toolbarSection.helpers({
 });
 
 Template.toolbarSection.events({
-    'click #toggleHUD'() {
+    'click #toggleHUD'(event) {
         const $this = $(event.currentTarget).find('#toggleHUD');
 
         // Stop here if the tool is disabled
@@ -155,7 +155,7 @@ Template.toolbarSection.events({
         const state = Session.get('measurementTableHudOpen');
         Session.set('measurementTableHudOpen', !state);
     },
-    'click #toggleTrial'() {
+    'click #toggleTrial'(event) {
         const $this = $(event.currentTarget).find('#toggleHUD');
 
         // Stop here if the tool is disabled
