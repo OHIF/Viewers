@@ -14,10 +14,10 @@
                 {{>studySeriesQuickSwitch (clone this side="middle" viewportIndex=0)}}
             {{/if}}
 
-            <div class="toolbarSectionEntry pull-right rm-l-1 p-x-1">
+            <div id="toolbarSectionEntry" class="toolbarSectionEntry pull-right rm-l-1 p-x-1">
                 {{>caseProgress}}
             </div>
-            <div class="pull-right m-t-1 rm-x-1">
+            <div id="toggleMeasurements" class="pull-right m-t-1 rm-x-1">
                 {{>roundedButtonGroup rightSidebarToggleButtonData}}
             </div>
             <div id="toggleHUD" class="toolbarSectionButton pull-right rp-x-1 m-t-1 rm-r-3 {{#if session 'measurementTableHudOpen'}}active{{/if}}">

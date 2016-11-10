@@ -27,6 +27,12 @@ Template.roundedButtonGroup.events({
     'click [data-value]'(event, instance) {
         event.preventDefault();
         const $target = $(event.currentTarget);
+
+        // Stop here if the tool is disabled
+        if ($target.hasClass('disabled')) {
+            return;
+        }
+
         const nullValue = $target.hasClass('active') && instance.data.toggleable;
         const value = nullValue ? null : $target.attr('data-value');
         instance.setValue(value);

@@ -145,7 +145,7 @@ Template.toolbarSection.helpers({
 
 Template.toolbarSection.events({
     'click #toggleHUD'(event) {
-        const $this = $(event.currentTarget).find('#toggleHUD');
+        const $this = $(event.currentTarget);
 
         // Stop here if the tool is disabled
         if ($this.hasClass('disabled')) {
@@ -156,7 +156,7 @@ Template.toolbarSection.events({
         Session.set('measurementTableHudOpen', !state);
     },
     'click #toggleTrial'(event) {
-        const $this = $(event.currentTarget).find('#toggleHUD');
+        const $this = $(event.currentTarget);
 
         // Stop here if the tool is disabled
         if ($this.hasClass('disabled')) {
@@ -172,14 +172,21 @@ Template.toolbarSection.onRendered(function() {
     const states = toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
     const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton');
+
+    // Additional toolbar buttons whose classes are not toolbarSectionButton
+    allToolbarButtons.push($('#toolbarSectionEntry')[0]);
+    allToolbarButtons.push($('#toggleMeasurements')[0]);
+
     if (disabledToolButtons && disabledToolButtons.length > 0) {
         for (var i = 0; i < allToolbarButtons.length; i++) {
             const toolbarButton = allToolbarButtons[i];
-            $(toolbarButton).removeClass('disabled');
-
             const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
             if (index !== -1) {
                 $(toolbarButton).addClass('disabled');
+                $(toolbarButton).find('*').addClass('disabled');
+            } else {
+                $(toolbarButton).removeClass('disabled');
+                $(toolbarButton).find('*').removeClass('disabled');
             }
         }
     }

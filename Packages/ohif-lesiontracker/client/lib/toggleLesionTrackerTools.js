@@ -48,7 +48,8 @@ OHIF.lesiontracker.toggleLesionTrackerToolsButtons = (isEnabled) => {
     if (isEnabled) {
         toolStates.disabledToolButtons = [];
     } else {
-        toolStates.disabledToolButtons = [ 'bidirectional', 'nonTarget', 'crTool', 'unTool', 'exTool', 'toggleHUD', 'toggleTrial', 'toolbarSectionEntry' ];
+        toolStates.disabledToolButtons = [ 'bidirectional', 'nonTarget', 'crTool', 'unTool', 'exTool',
+            'toggleHUD', 'toggleTrial', 'toolbarSectionEntry', 'toggleMeasurements' ];
     }
 
     // Reload the updated previous or default states
