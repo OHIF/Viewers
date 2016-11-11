@@ -670,6 +670,25 @@
         });
     }
 
+    // Get appropriate cursor for element.
+    // @param {Object} toolDataItem Data item returned by getToolState method of cornerstoneTools
+    function getAppropriateCursor(toolDataItem) {
+
+        var handle,
+            handles = toolDataItem.handles,
+            cursor = '';
+
+        for (handle in handles) {
+            handle = handles[handle];
+            if (handle.active === true && handle.hasBoundingBox === false) {
+                cursor = 'cell';
+                break;
+            }
+        }
+
+        return cursor;
+    }
+
     //****************************************/
     // Cornerstone Methods
     //****************************************/
@@ -946,7 +965,7 @@
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
 
-        var color;
+        var color, cursor = '';
         var element = eventData.element;
         var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
         var config = cornerstoneTools.bidirectional.getConfiguration();
@@ -968,6 +987,8 @@
                 color = cornerstoneTools.toolColors.getActiveColor();
                 // increase line width of active tool...
                 strokeWidth *= 1.5;
+                // get appropriate cursor for current context
+                cursor = getAppropriateCursor(data) || 'move';
             } else {
                 color = cornerstoneTools.toolColors.getToolColor();
             }
@@ -1045,6 +1066,12 @@
 
             context.restore();
         }
+
+        // update element cursor
+        if (element.style.cursor !== cursor) {
+            element.style.cursor = cursor;
+        }
+
     }
 
     function doubleClickCallback(e, eventData) {
