@@ -45,47 +45,23 @@ Template.measurementTableRow.events({
     },
 
     'click .js-delete'(event, instance) {
-        const measurementTypeId = instance.data.rowItem.measurementTypeId;
-        const measurement = instance.data.rowItem.entries[0];
-
         const dialogSettings = {
             title: 'Delete measurements',
             message: 'Are you sure you want to delete the measurement among all timepoints?'
         };
 
         OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(formData => {
-            const collection = instance.data.measurementApi[measurementTypeId];
+            const measurementTypeId = instance.data.rowItem.measurementTypeId;
+            const measurement = instance.data.rowItem.entries[0];
+            const toolType = measurement.toolType;
+            const measurementNumber = measurement.measurementNumber;
+            const api = instance.data.measurementApi;
 
-            const filter = {
-                toolType: measurement.toolType,
-                measurementNumber: measurement.measurementNumber,
-                patientId: measurement.patientId
-            };
+            // Remove all the measurements with the given type and number
+            api.deleteMeasurements(measurementTypeId, toolType, measurementNumber);
 
-            const entries = collection.find(filter).fetch();
-
-            collection.remove(filter);
-
-            // Synchronize the new data with cornerstone tools
-            const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
-            _.each(entries, entry => {
-                if (toolState[entry.imageId]) {
-                    const toolData = toolState[entry.imageId][entry.toolType];
-                    const measurementsData = toolData && toolData.data;
-                    const measurementEntry = _.findWhere(measurementsData, {
-                        _id: entry._id
-                    });
-
-                    if (measurementEntry) {
-                        console.warn('>>>>REMOVING FROM CORNERSTONE', measurementEntry);
-                        const index = measurementsData.indexOf(measurementEntry);
-                        measurementsData.splice(index, 1);
-
-                        // Repaint the images on all viewports without the removed measurements
-                        _.each($('.imageViewerViewport'), elm => cornerstone.updateImage(elm));
-                    }
-                }
-            });
+            // Repaint the images on all viewports without the removed measurements
+            _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
         });
     },
 

@@ -90,6 +90,49 @@ class MeasurementApi {
         });
     }
 
+    deleteMeasurements(measurementTypeId, toolType, measurementNumber) {
+        const collection = this[measurementTypeId];
+
+        const filter = {
+            toolType,
+            measurementNumber
+        };
+
+        // Get the entries information before removing them
+        const entries = collection.find(filter).fetch();
+        collection.remove(filter);
+
+        // Synchronize the new data with cornerstone tools
+        const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+        _.each(entries, entry => {
+            if (toolState[entry.imageId]) {
+                const toolData = toolState[entry.imageId][entry.toolType];
+                const measurementsData = toolData && toolData.data;
+                const measurementEntry = _.findWhere(measurementsData, {
+                    _id: entry._id
+                });
+
+                if (measurementEntry) {
+                    const index = measurementsData.indexOf(measurementEntry);
+                    measurementsData.splice(index, 1);
+                }
+            }
+        });
+
+        // Update the measurement numbers for the remaning measurements
+        const updateFilter = _.clone(filter);
+        updateFilter.measurementNumber = {
+            $gt: measurementNumber
+        };
+        collection.update(updateFilter, {
+            $inc: {
+                measurementNumber: -1
+            }
+        }, {
+            multi: true
+        });
+    }
+
     fetch(measurementTypeId, selector, options) {
         if (!this[measurementTypeId]) {
             throw 'MeasurementApi: No Collection with the id: ' + measurementTypeId;
