@@ -8,6 +8,13 @@ Template.app.onCreated(() => {
     ViewerData = Session.get('ViewerData') || {};
 });
 
+Template.app.onRendered(() => {
+    const contentId = Session.get('activeContentId');
+    if(contentId === viewerContentId) {
+        switchToTab(contentId);
+    }
+});
+
 Template.app.events({
     'click .js-toggle-studyList'() {
         const contentId = Session.get('activeContentId');

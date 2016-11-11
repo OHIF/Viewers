@@ -14,6 +14,7 @@ if (Meteor.isClient) {
       select: "",
       ribbon: ""
     },
-    highlightColor: ""
+    highlightColor: "",
+    closeButton: false
   });
 }

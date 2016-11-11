@@ -37,6 +37,10 @@ Package.on_use(function (api) {
   api.addFiles('components/hipaaLogPage/hipaaLogPage.js', "client");
   api.addFiles('components/hipaaLogPage/hipaaLogPage.less', "client");
 
+  api.addFiles('components/hipaaCloseButton/hipaaCloseButton.html', "client");
+  api.addFiles('components/hipaaCloseButton/hipaaCloseButton.js', "client");
+  api.addFiles('components/hipaaCloseButton/hipaaCloseButton.less', "client");
+
   api.export('HipaaAuditLog');
 });
 

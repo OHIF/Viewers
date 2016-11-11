@@ -29,12 +29,17 @@ Router.route('/', function() {
     if (Meteor.user() && Meteor.userId()) {
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
-        } else {
-            Session.set('activeContentId', 'studylistTab');
+        } 
+        else {
+            const contentId = Session.get('activeContentId');
+            if(!contentId) {
+                Session.set('activeContentId', 'studylistTab');
+            }
             this.render('app', routerOptions);
         }
 
-    } else {
+    } 
+    else {
         this.render('entrySignIn', routerOptions);
     }
 });
