@@ -129,10 +129,17 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'rotate',
-            title: 'Rotate',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate'
+            id: 'rotateL',
+            title: 'Rotate Left',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-left'
+        });
+
+        buttonData.push({
+            id: 'rotateR',
+            title: 'Rotate Right',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
         });
 
         buttonData.push({

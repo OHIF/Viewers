@@ -234,4 +234,6 @@ Package.onUse(function(api) {
     api.export('invert', 'client');
     api.export('flipV', 'client');
     api.export('flipH', 'client');
+    api.export('rotateR', 'client');
+    api.export('rotateL', 'client');
 });

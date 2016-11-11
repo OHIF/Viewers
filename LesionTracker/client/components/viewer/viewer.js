@@ -34,7 +34,9 @@ Template.viewer.onCreated(() => {
         resetViewport,
         invert,
         flipV,
-        flipH
+        flipH,
+        rotateL,
+        rotateR
     });
 
     if (ViewerData[contentId].loadedSeriesData) {
