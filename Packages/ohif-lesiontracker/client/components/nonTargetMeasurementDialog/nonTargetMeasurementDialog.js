@@ -247,10 +247,10 @@ Template.nonTargetMeasurementDialog.onCreated(() => {
     const config = {
         setMeasurementNumberCallback: getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi),
         getMeasurementLocationCallback: getMeasurementLocationCallback,
-        changeMeasurementLocationCallback: changeMeasurementLocationCallback
+        changeMeasurementLocationCallback: () => {}
     };
 
-    //cornerstoneTools.nonTarget.setConfiguration(config);
+    cornerstoneTools.nonTarget.setConfiguration(config);
 });
 
 Template.nonTargetMeasurementDialog.events({

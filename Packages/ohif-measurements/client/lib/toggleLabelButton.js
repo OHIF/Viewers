@@ -4,7 +4,10 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 const toolMap = {
-    bidirectional: 'targets'
+    bidirectional: 'targets',
+    crTool: 'targets',
+    unTool: 'targets',
+    exTool: 'targets'
 };
 
 OHIF.measurements.toggleLabelButton = options => {

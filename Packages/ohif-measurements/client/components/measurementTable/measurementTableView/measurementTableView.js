@@ -25,6 +25,9 @@ Template.measurementTableView.helpers({
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
+        if (!measurementApi || !timepointApi) {
+            return;
+        }
 
         // Retrieve all the data for this Measurement type (e.g. 'targets')
         // which was recorded at baseline.

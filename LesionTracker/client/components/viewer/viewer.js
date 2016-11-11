@@ -124,32 +124,5 @@ Template.viewer.events({
     },
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
         OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
-    },
-    CornerstoneToolsMouseClick(event, instance, data) {
-        const element = event.target;
-
-        const toolState = cornerstoneTools.getToolState(element, 'bidirectional');
-
-        // Stop here if no tool state was found
-        if (!toolState) {
-            return;
-        }
-
-        setTimeout(() => {
-            for (let i = 0; i < toolState.data.length; i++) {
-                const toolData = toolState.data[i];
-                if (toolData.active) {
-                    OHIF.measurements.toggleLabelButton({
-                        instance,
-                        measurementId: toolData._id,
-                        toolType: toolData.toolType,
-                        element,
-                        measurementApi: instance.data.measurementApi,
-                        position: data.currentPoints.page
-                    });
-                    break;
-                }
-            }
-        });
     }
 });

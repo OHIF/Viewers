@@ -235,7 +235,7 @@ Template.selectTree.events({
                     storedData[itemKey] = 1;
                 }
 
-                // Updata the stored data with the new count
+                // Update the stored data with the new count
                 OHIF.user.setData(storageKey, storedData);
             }
 

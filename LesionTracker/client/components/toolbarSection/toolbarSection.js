@@ -111,10 +111,11 @@ Template.toolbarSection.helpers({
 
     extraToolbarButtons() {
         // Check if the measure tools shall be disabled
-        const isToolDisabled = false; //!Template.instance().data.timepointApi.currentTimepointId;
+        const isToolDisabled = !Template.instance().data.timepointApi.currentTimepointId;
         const buttonData = [];
 
         // TODO: Get real icons for CR / UN / EX
+        /* Disabling these for now, since they aren't hooked up in the Lesion Tracker yet
         buttonData.push({
             id: 'crTool',
             title: 'CR Tool',
@@ -137,7 +138,7 @@ Template.toolbarSection.helpers({
             classes: 'imageViewerTool toolbarSectionButton',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
             disabled: isToolDisabled
-        });
+        });*/
 
         return buttonData;
     }
