@@ -114,6 +114,77 @@ Template.toolbarSection.helpers({
         const isToolDisabled = !Template.instance().data.timepointApi.currentTimepointId;
         const buttonData = [];
 
+        buttonData.push({
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-stack-scroll'
+        });
+
+        buttonData.push({
+            id: 'resetViewport',
+            title: 'Reset',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-reset'
+        });
+
+        buttonData.push({
+            id: 'rotate',
+            title: 'Rotate',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate'
+        });
+
+        buttonData.push({
+            id: 'flipH',
+            title: 'Flip H',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
+        });
+
+        buttonData.push({
+            id: 'flipV',
+            title: 'Flip V',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
+        });
+
+        buttonData.push({
+            id: 'invert',
+            title: 'Invert',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-invert'
+        });
+
+        buttonData.push({
+            id: 'magnify',
+            title: 'Magnify',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-magnify'
+        });
+
+        buttonData.push({
+            id: 'ellipticalRoi',
+            title: 'Ellipse',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-elliptical-roi'
+        });
+
+        buttonData.push({
+            id: 'toggleCineDialog',
+            title: 'CINE',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-cineplay-toggle',
+            disableFunction: hasMultipleFrames
+        });
+
+        buttonData.push({
+            id: 'clearTools',
+            title: 'Clear',
+            classes: 'imageViewerCommand toolbarSectionButton',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-clear'
+        });
+
         // TODO: Get real icons for CR / UN / EX
         /* Disabling these for now, since they aren't hooked up in the Lesion Tracker yet
         buttonData.push({

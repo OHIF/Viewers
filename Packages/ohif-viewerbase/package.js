@@ -232,4 +232,6 @@ Package.onUse(function(api) {
     api.export('clearTools', 'client');
     api.export('resetViewport', 'client');
     api.export('invert', 'client');
+    api.export('flipV', 'client');
+    api.export('flipH', 'client');
 });

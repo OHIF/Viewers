@@ -20,7 +20,6 @@ Template.viewer.onCreated(() => {
 
     OHIF.viewer.functionList = $.extend(OHIF.viewer.functionList, {
         toggleLesionTrackerTools: OHIF.lesiontracker.toggleLesionTrackerTools,
-        clearTools: clearTools,
         bidirectional: () => {
             // Used for hotkeys
             toolManager.setActiveTool('bidirectional');
@@ -28,7 +27,14 @@ Template.viewer.onCreated(() => {
         nonTarget: () => {
             // Used for hotkeys
             toolManager.setActiveTool('nonTarget');
-        }
+        },
+        // Viewport functions
+        toggleCineDialog,
+        clearTools,
+        resetViewport,
+        invert,
+        flipV,
+        flipH
     });
 
     if (ViewerData[contentId].loadedSeriesData) {

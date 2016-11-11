@@ -18,8 +18,8 @@ var initialized = false;
 function configureTools() {
 
     // Get Cornerstone Tools
-    const { panMultiTouch, textStyle, toolStyle, toolColors, 
-            length, bidirectional, arrowAnnotate, zoom } = cornerstoneTools;
+    const { panMultiTouch, textStyle, toolStyle, toolColors, length, 
+            bidirectional, arrowAnnotate, zoom, ellipticalRoi } = cornerstoneTools;
 
     // Set the configuration for the multitouch pan tool
     const multiTouchPanConfig = {
@@ -52,6 +52,7 @@ function configureTools() {
     // Get some tools config to not override them
     const lengthConfig = length.getConfiguration();
     const bidirectionalConfig = bidirectional.getConfiguration();
+    const ellipticalRoiConfig = ellipticalRoi.getConfiguration();
 
     // Add shadow to length tool 
     length.setConfiguration({
@@ -62,6 +63,12 @@ function configureTools() {
     // Add shadow to length tool
     bidirectional.setConfiguration({
         ...bidirectionalConfig,
+        ...shadowConfig
+    });
+
+    // Add shadow to length tool
+    ellipticalRoi.setConfiguration({
+        ...ellipticalRoiConfig,
         ...shadowConfig
     });
 
@@ -130,6 +137,11 @@ toolManager = {
         toolManager.addTool('annotate', {
             mouse: cornerstoneTools.arrowAnnotate,
             touch: cornerstoneTools.arrowAnnotateTouch
+        });
+
+        toolManager.addTool('rotate', {
+            mouse: cornerstoneTools.rotate,
+            touch: cornerstoneTools.rotateTouchDrag
         });
 
         if (OHIF.viewer.defaultTool) {

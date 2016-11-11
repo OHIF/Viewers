@@ -226,7 +226,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
         let fps;
         if (multiframeMetadata && multiframeMetadata.averageFrameRate > 0) {
             fps = multiframeMetadata.averageFrameRate;
-        } else {
+        }
+        else {
             fps = OHIF.viewer.cine.framesPerSecond;
         }
 
