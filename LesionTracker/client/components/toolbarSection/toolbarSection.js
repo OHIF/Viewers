@@ -129,13 +129,6 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'rotateL',
-            title: 'Rotate Left',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-left'
-        });
-
-        buttonData.push({
             id: 'rotateR',
             title: 'Rotate Right',
             classes: 'imageViewerCommand toolbarSectionButton',
@@ -183,13 +176,6 @@ Template.toolbarSection.helpers({
             classes: 'imageViewerCommand toolbarSectionButton',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-cineplay-toggle',
             disableFunction: hasMultipleFrames
-        });
-
-        buttonData.push({
-            id: 'clearTools',
-            title: 'Clear',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-clear'
         });
 
         // TODO: Get real icons for CR / UN / EX
