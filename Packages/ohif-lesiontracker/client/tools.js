@@ -34,14 +34,23 @@ Meteor.startup(function() {
         touch: cornerstoneTools.exToolTouch
     });
 
-    let states = toolManager.getToolDefaultStates();
-    states.deactivate.push('bidirectional');
-    states.deactivate.push('nonTarget');
-    states.deactivate.push('length');
-    states.deactivate.push('crTool');
-    states.deactivate.push('unTool');
-    states.deactivate.push('exTool');
+    // Update default state for tools making sure each tool is only inserted once
+    let currentDefaultStates = toolManager.getToolDefaultStates();
+    let newDefaultStates = {
+        deactivate: ['bidirectional', 'nonTarget', 'length', 'crTool', 'unTool', 'exTool'],
+        activate: ['deleteLesionKeyboardTool']
+    };
 
-    states.activate.push('deleteLesionKeyboardTool');
-    toolManager.setToolDefaultStates(states);
+    for (let state in newDefaultStates) {
+        newDefaultStates[state].forEach(function(tool) {
+            let tools = currentDefaultStates[state];
+            // make sure each tool is only inserted once
+            if (tools && tools.indexOf(tool) < 0) {
+                tools.push(tool);
+            }
+        });
+    }
+
+    toolManager.setToolDefaultStates(currentDefaultStates);
+
 });

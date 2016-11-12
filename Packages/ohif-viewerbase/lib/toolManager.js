@@ -171,7 +171,7 @@ toolManager = {
 
         // First, deactivate the current active tool
         tools[activeTool].mouse.deactivate(element, 1);
-
+ 
         if (tools[activeTool].touch) {
             tools[activeTool].touch.deactivate(element);
         }
@@ -182,15 +182,15 @@ toolManager = {
             if (!relevantTools || !relevantTools.length || action === 'disabledToolButtons') {
                 return;
             }
-
             relevantTools.forEach(function(toolType) {
-                if ((action === 'activate') ||
-                    (action === 'deactivate')) {
-                    tools[toolType].mouse[action](element, 1);
-                } else {
-                    tools[toolType].mouse[action](element);
+                // the currently active tool has already been deactivated and can be skipped
+                if (action === 'deactivate' && toolType === activeTool) {
+                    return;
                 }
-
+                tools[toolType].mouse[action](
+                    element,
+                    (action === 'activate' || action === 'deactivate' ? 1 : void 0)
+                );
                 tools[toolType].touch[action](element);
             });
         });
