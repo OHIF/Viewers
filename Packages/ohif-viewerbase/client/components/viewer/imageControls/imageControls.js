@@ -4,15 +4,13 @@ let slideTimeout;
 Template.imageControls.onRendered(() => {
     const instance = Template.instance();
 
-    Meteor.defer(() => {
-        // Set the current imageSlider width to its parent's height
-        // (because webkit is stupid and can't style vertical sliders)
-        const $slider = instance.$('#imageSlider');
-        const $element = $slider.parents().eq(2).siblings('.imageViewerViewport');
-        const viewportHeight = $element.height();
+    // Set the current imageSlider width to its parent's height
+    // (because webkit is stupid and can't style vertical sliders)
+    const $slider = instance.$('#imageSlider');
+    const $element = $slider.parents().eq(2).siblings('.imageViewerViewport');
+    const viewportHeight = $element.height();
 
-        $slider.width(viewportHeight - 20);
-    });
+    $slider.width(viewportHeight - 20);
 })
 
 Template.imageControls.events({
