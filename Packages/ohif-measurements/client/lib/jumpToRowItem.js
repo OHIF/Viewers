@@ -38,7 +38,7 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
     } else {
         // If not, retrieve the study metadata and then find the relevant display set and
         // render it.
-        getStudyMetadata(study.studyInstanceUid, loadedStudy => {
+        getStudyMetadata(studyInstanceUid, loadedStudy => {
             loadedStudy.displaySets = createStacks(loadedStudy);
             ViewerStudies.insert(loadedStudy);
 
@@ -74,7 +74,7 @@ function getDisplaySetData(instance, series, study) {
  */
 OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     OHIF.measurements.deactivateAllToolData();
-    
+
     const activateMeasurements = OHIF.measurements.activateMeasurements;
     console.log('jumpToRowItem');
 
