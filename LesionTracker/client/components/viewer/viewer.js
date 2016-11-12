@@ -119,7 +119,9 @@ Template.viewer.onCreated(() => {
 Template.viewer.helpers({
     dataSourcesReady() {
         // TODO: Find a better way to do this
-        return Session.get('TimepointsReady') && Session.get('MeasurementsReady');
+        const ready = Session.get('TimepointsReady') && Session.get('MeasurementsReady');
+        console.log('dataSourcesReady? : ' + ready);
+        return ready;
     }
 });
 

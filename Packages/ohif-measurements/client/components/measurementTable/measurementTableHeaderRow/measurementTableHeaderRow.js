@@ -46,19 +46,35 @@ Template.measurementTableHeaderRow.onCreated(() => {
 
 Template.measurementTableHeaderRow.helpers({
     numberOfMeasurements() {
-        return Template.instance().data.measurements.length;
+        const instance = Template.instance();
+        if (!instance.data.measurements) {
+            return;
+        }
+        return instance.data.measurements.length;
     },
 
     maxNumMeasurements() {
-        return Template.instance().maxNumMeasurements.get();
+        const instance = Template.instance();
+        if (!instance.data.measurements) {
+            return;
+        }
+        return instance.maxNumMeasurements.get();
     },
 
     anyUnmarkedLesionsLeft() {
+        // Skip New Lesions section
         const instance = Template.instance();
-        const measurementType = instance.data.measurementType;
-        const measurementApi = instance.data.measurementApi;
-        const timepointApi = instance.data.timepointApi;
+        if (!instance.data.measurements) {
+            return;
+        }
 
+        const measurementType = instance.data.measurementType;
+        const config = OHIF.measurements.MeasurementApi.getConfiguration();
+        if (measurementType.id === config.newMeasurementTool.id) {
+            return;
+        }
+
+        const timepointApi = instance.data.timepointApi;
         const current = instance.data.timepointApi.current();
         const prior = instance.data.timepointApi.prior();
         if (!prior) {
@@ -69,6 +85,7 @@ Template.measurementTableHeaderRow.helpers({
         const priorFilter = { timepointId: prior.timepointId };
         const measurementTypeId = measurementType.id;
 
+        const measurementApi = instance.data.measurementApi;
         const numCurrent = measurementApi.fetch(measurementTypeId, currentFilter).length;
         const numPrior = measurementApi.fetch(measurementTypeId, priorFilter).length;
         const remaining = Math.max(numPrior - numCurrent, 0);

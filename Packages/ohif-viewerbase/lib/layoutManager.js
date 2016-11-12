@@ -151,7 +151,7 @@ LayoutManager = class LayoutManager {
             seriesInstanceUid: data.seriesInstanceUid,
             studyInstanceUid: data.studyInstanceUid,
             renderedCallback: data.renderedCallback,
-            currentImageIdIndex: 0
+            currentImageIdIndex: data.currentImageIdIndex || 0
         };
 
         // Remove the hover styling

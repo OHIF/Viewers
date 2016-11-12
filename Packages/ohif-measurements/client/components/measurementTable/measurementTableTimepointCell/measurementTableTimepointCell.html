@@ -1,10 +1,10 @@
 <template name="measurementTableTimepointCell">
     {{#if hasDataAtThisTimepoint}}
-        <div class="measurementTableTimepointCell" tabindex="1">
+        <div class="measurementTableTimepointCell noselect" tabindex="1">
             {{displayData}}
         </div>
     {{else}}
-        <div class="measurementTableTimepointCell empty">
+        <div class="measurementTableTimepointCell noselect empty">
             ...
         </div>
     {{/if}}

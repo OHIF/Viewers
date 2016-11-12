@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
-
 import { OHIF } from 'meteor/ohif:core';
 
 class MeasurementHandlers {

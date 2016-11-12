@@ -40,6 +40,7 @@ Template.caseProgress.onRendered(() => {
     const api = instance.data.measurementApi;
 
     const getNumMeasurementsAtTimepoint = timepointId => {
+        OHIF.log.info('getNumMeasurementsAtTimepoint');
         const filter = {
             timepointId: timepointId
         };

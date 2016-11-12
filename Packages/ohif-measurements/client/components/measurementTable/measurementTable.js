@@ -1,3 +1,4 @@
+import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -48,28 +49,42 @@ Template.measurementTable.onRendered(() => {
 });
 
 Template.measurementTable.onRendered(() => {
-    // Find the first measurement by Lesion Number
-    let firstLesion; // = instance.data.measurementApi.firstLesion();
+    // Find and activate the first measurement by Lesion Number
+    // NOTE: This is inefficient, we should be using a hanging protocol
+    // to hang the first measurement's imageId immediately, rather
+    // than changing images after initial loading...
+    const instance = Template.instance();
 
-    // Create an object to store the ContentId inside
-    const templateData = {
-        contentId: Session.get('activeContentId')
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
+    const measurementTypeId = config.measurementTools[0].id;
+    const measurementApi = instance.data.measurementApi;
+    const collection = measurementApi[measurementTypeId];
+    const sorting = {
+        sort: {
+            measurementNumber: -1
+        }
     };
 
-    // Activate the first lesion
-    if (firstLesion) {
-        OHIF.measurements.activateLesion(firstLesion._id, templateData);
-    }
-});
+    const data = collection.find({}, sorting).fetch();
 
-Template.measurementTable.events({
-    /**
-     * Retrieve the lesion id from the DOM data for this row
-     */
-    /*'click table#tblLesion tbody tr': function(e, template) {
-          var measurementId = $(e.currentTarget).data('measurementid');
-          OHIF.measurements.activateLesion(measurementId, template.data);
-    },*/
+    const timepoints = instance.data.timepoints.get();
+
+    // TODO: Clean this up, it's probably an inefficient way to get what we need
+    const groupObject = _.groupBy(data, entry => entry.measurementNumber);
+
+    // Reformat the data
+    const rows = Object.keys(groupObject).map(key => ({
+        measurementTypeId: measurementTypeId,
+        measurementNumber: key,
+        entries: groupObject[key]
+    }));
+
+    const rowItem = rows[0];
+
+    // Activate the first lesion
+    if (rowItem) {
+        OHIF.measurements.jumpToRowItem(rowItem, timepoints);
+    }
 });
 
 Template.measurementTable.helpers({

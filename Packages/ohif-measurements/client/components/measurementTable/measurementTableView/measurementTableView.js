@@ -1,13 +1,15 @@
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
 
-const getLocation = collection => {
+OHIF.measurements.getLocation = collection => {
     for (let i = 0; i < collection.length; i++) {
         if (collection[i].location) {
             return collection[i].location;
         }
     }
 };
+
+const getLocation = OHIF.measurements.getLocation;
 
 Template.measurementTableView.helpers({
     getNewMeasurementType(tool) {
@@ -25,13 +27,13 @@ Template.measurementTableView.helpers({
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
-        if (!measurementApi || !timepointApi) {
+        const baseline = timepointApi.baseline();
+        if (!measurementApi || !timepointApi || !baseline) {
             return;
         }
 
         // Retrieve all the data for this Measurement type (e.g. 'targets')
         // which was recorded at baseline.
-        const baseline = timepointApi.baseline();
         const atBaseline = measurementApi.fetch(measurementTypeId, {
             timepointId: baseline.timepointId
         });
@@ -65,14 +67,15 @@ Template.measurementTableView.helpers({
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
-        const measurementTypeId = measurementType.measurementTypeId;
+        const current = instance.data.timepointApi.current();
+        const baseline = timepointApi.baseline();
 
-        if (!timepointApi) {
+        if (!measurementApi || !timepointApi || !current) {
             return;
         }
 
         // If this is a baseline, stop here since there are no new measurements to display
-        const current = instance.data.timepointApi.current();
+        
         if (!current || current.timepointType === 'baseline') {
             console.log('Skipping New Measurements section');
             return;
@@ -80,7 +83,7 @@ Template.measurementTableView.helpers({
 
         // Retrieve all the data for this Measurement type (e.g. 'targets')
         // which was recorded at baseline.
-        const baseline = timepointApi.baseline();
+        const measurementTypeId = measurementType.measurementTypeId;
         const atBaseline = measurementApi.fetch(measurementTypeId, {
             timepointId: baseline.timepointId
         });

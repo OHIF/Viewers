@@ -21,7 +21,7 @@
             {{#if config.newMeasurementTool}}
                 {{#let measurementType=(getNewMeasurementType config.newMeasurementTool)}}
                 {{#let newMeasure=(newMeasurements measurementType)}}
-                    {{#if newMeasure}}
+                    {{#if newMeasure.length}}
                         {{#let collection=newMeasure}}
                             {{>measurementTableHeaderRow
                                 measurementType=measurementType

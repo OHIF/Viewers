@@ -59,39 +59,17 @@ const keys = {
 };
 
 Template.measurementTableTimepointCell.events({
-    'dblclick .measurementTableTimepointCell': function() {
-        OHIF.log.info('Double clicked on a timepoint cell');
-        // Search Measurements by lesion and timepoint
-        const currentMeasurement = Template.parentData(1).rowItem;
-
-        // Create some fake measurement data
-        const currentTimepointID = this.timepointId;
-
-        const timepointData = currentMeasurement.timepoints[currentTimepointID];
-        if (!timepointData) {
+    'click .measurementTableTimepointCell'(event, instance) {
+        if (!instance.data.timepointId) {
             return;
         }
 
-        let measurementData = {
-            id: currentMeasurement._id,
-            timepointId: currentTimepointID,
-            response: timepointData.response,
-            imageId: timepointData.imageId,
-            handles: timepointData.handles,
-            seriesInstanceUid: timepointData.seriesInstanceUid,
-            studyInstanceUid: timepointData.studyInstanceUid
-        };
-
-        if (currentMeasurement.isTarget) {
-            showConfirmDialog(function() {
-                OHIF.lesiontracker.clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
-            });
-        } else {
-            changeNonTargetResponse(measurementData, null, doneCallback);
-        }
-    },
-    'keydown .measurementTableTimepointCell': function(e) {
-        const keyCode = e.which;
+        const rowItem = instance.data.rowItem;
+        const timepoints = instance.data.timepoints.get();
+        OHIF.measurements.jumpToRowItem(rowItem, timepoints);
+    }/*,
+    'keydown .measurementTableTimepointCell'(event, instance) {
+        const keyCode = event.which;
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && e.ctrlKey === true)) {
             const currentMeasurement = Template.parentData(1).rowItem;
@@ -101,5 +79,5 @@ Template.measurementTableTimepointCell.events({
                 OHIF.lesiontracker.clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
             });
         }
-    }
+    }*/
 });
