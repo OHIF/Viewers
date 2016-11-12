@@ -11,6 +11,7 @@ var loadHandlerTimeout;
 startLoadingHandler = function(element) {
     clearTimeout(loadHandlerTimeout);
     loadHandlerTimeout = setTimeout(function() {
+        console.log('startLoading');
         var elem = $(element);
         elem.siblings('.imageViewerErrorLoadingIndicator').css('display', 'none');
         elem.find('canvas').not('.magnifyTool').addClass("faded");

@@ -144,7 +144,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
         }
 
         // Caches element's jQuery object
-        const jQueryEl = $(element);
+        const $element = $(element);
 
         // Update the enabled element with the image and viewport data
         // This is not usually necessary, but we need them stored in case
@@ -207,8 +207,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
 
         // Hide the viewport instructions (i.e. 'Drag a stack here') and show
         // the viewport overlay data.
-        jQueryEl.siblings('.viewportInstructions').hide();
-        jQueryEl.siblings('.imageViewerViewportOverlay').show();
+        $element.siblings('.viewportInstructions').hide();
+        $element.siblings('.imageViewerViewportOverlay').show();
 
         // Add stack state managers for the stack tool, CINE tool, and reference lines
         cornerstoneTools.addStackStateManager(element, ['stack', 'playClip', 'referenceLines']);
@@ -276,8 +276,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
         };
 
         // Attach the onImageRendered callback to the CornerstoneImageRendered event
-        jQueryEl.off('CornerstoneImageRendered', onImageRendered);
-        jQueryEl.on('CornerstoneImageRendered', onImageRendered);
+        $element.off('CornerstoneImageRendered', onImageRendered);
+        $element.on('CornerstoneImageRendered', onImageRendered);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
@@ -288,7 +288,7 @@ function loadDisplaySetIntoViewport(data, templateData) {
             OHIF.log.info('imageViewerViewport onNewImage');
 
             // Update the metaData for missing fields
-            updateMetaData(eventData.enabledElement.image);
+            //updateMetaData(eventData.enabledElement.image);
 
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
@@ -315,11 +315,21 @@ function loadDisplaySetIntoViewport(data, templateData) {
         };
 
         // Attach the onNewImage callback to the CornerstoneNewImage event
-        jQueryEl.off('CornerstoneNewImage', onNewImage);
-        jQueryEl.on('CornerstoneNewImage', onNewImage);
+        $element.off('CornerstoneNewImage', onNewImage);
+        $element.on('CornerstoneNewImage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+
+        function onStackScroll(e, eventData) {
+            // Update the imageSlider value
+            Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+        }
+
+        $element.off('CornerstoneStackScroll', onStackScroll);
+        if (stack.imageIds.length > 1) {
+            $element.on('CornerstoneStackScroll', onStackScroll);
+        }
 
         // Define a function to trigger an event whenever a new viewport is being used
         // This is used to update the value of the "active viewport", when the user interacts
@@ -352,8 +362,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
         };
 
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
-        jQueryEl.off(allCornerstoneEvents, sendActivationTrigger);
-        jQueryEl.on(allCornerstoneEvents, sendActivationTrigger);
+        $element.off(allCornerstoneEvents, sendActivationTrigger);
+        $element.on(allCornerstoneEvents, sendActivationTrigger);
 
         ViewerData[contentId].loadedSeriesData = layoutManager.viewportData;
 

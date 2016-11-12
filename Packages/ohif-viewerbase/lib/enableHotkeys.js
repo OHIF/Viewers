@@ -6,7 +6,7 @@ Meteor.startup(function() {
         OHIF.viewer = {};
     }
 
-    OHIF.viewer.loadIndicatorDelay = 3000;
+    OHIF.viewer.loadIndicatorDelay = 200;
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.isPlaying = {};

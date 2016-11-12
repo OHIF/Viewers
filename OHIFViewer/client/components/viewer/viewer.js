@@ -1,7 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 
 OHIF.viewer = OHIF.viewer || {};
-OHIF.viewer.loadIndicatorDelay = 500;
 OHIF.viewer.defaultTool = 'wwwc';
 OHIF.viewer.refLinesEnabled = true;
 OHIF.viewer.cine = {
