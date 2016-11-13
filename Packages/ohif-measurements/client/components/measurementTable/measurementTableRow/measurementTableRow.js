@@ -65,17 +65,6 @@ Template.measurementTableRow.events({
         });
     },
 
-    'dblclick .location'() {
-        OHIF.log.info('Double clicked on Lesion Location cell');
-
-        const measurementData = this;
-
-        // TODO = Fix this weird issue? Need to set toolData's ID properly..
-        measurementData.id = this._id;
-
-        changeLesionLocationCallback(measurementData, null, doneCallback);
-    },
-
     'keydown .location'(event) {
         const keyCode = event.which;
 

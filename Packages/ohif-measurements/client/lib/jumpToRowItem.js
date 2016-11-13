@@ -4,7 +4,7 @@ import { OHIF } from 'meteor/ohif:core';
 function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
         // Find the proper stack to display
     const stacksFromSeries = displaySets.filter(stack => stack.seriesInstanceUid === seriesInstanceUid);
-    stack = stacksFromSeries.find(stack => {
+    const stack = stacksFromSeries.find(stack => {
         const imageIndex = stack.images.findIndex(image => image.sopInstanceUid === sopInstanceUid);
         return imageIndex > -1;    
     });
@@ -38,33 +38,24 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
     } else {
         // If not, retrieve the study metadata and then find the relevant display set and
         // render it.
+        const $viewports = $('.imageViewerViewport');
+        const element = $viewports.get(viewportIndex);
+        const startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
+        startLoadingHandler(element)
         getStudyMetadata(studyInstanceUid, loadedStudy => {
             loadedStudy.displaySets = createStacks(loadedStudy);
-            ViewerStudies.insert(loadedStudy);
+            OHIF.log.warn('renderIntoViewport');
+
+            // Double check to make sure this study wasn't already inserted
+            // into ViewerStudies, so we don't cause duplicate entry errors
+            const loaded = ViewerStudies.findOne(loadedStudy._id);
+            if (!loaded) {
+                ViewerStudies.insert(loadedStudy);    
+            }
 
             findAndRenderDisplaySet(loadedStudy.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback)
         });
     }
-}
-
-function getDisplaySetData(instance, series, study) {
-    // First, check if we already have this study loaded
-    var alreadyLoaded = ViewerStudies.findOne({
-        studyInstanceUid: study.studyInstanceUid
-    });
-
-    // If not, retrieve it.
-    if (!alreadyLoaded) {
-        getStudyMetadata(priorStudy.studyInstanceUid, study => {
-            study.abstractPriorValue = abstractPriorValue;
-            study.displaySets = createStacks(study);
-            ViewerStudies.insert(study);
-            this.studies.push(study);
-            this.matchImages(viewport);
-            this.updateViewports();
-        });
-    }
-    return {};
 }
 
 /**
@@ -109,29 +100,41 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
         // Check if the study / series we need is already the one in the viewport
         const element = $viewports.get(i);
-        const enabledElement = cornerstone.getEnabledElement(element)
-        const imageId = enabledElement.image.imageId;
-        const instance = cornerstoneTools.metaData.get('instance', imageId);
-        const series = cornerstoneTools.metaData.get('series', imageId);
-        const study = cornerstoneTools.metaData.get('study', imageId);
 
-        if (series.seriesInstanceUid === measurementData.seriesInstanceUid &&
-            study.studyInstanceUid === measurementData.studyInstanceUid) {
-            // If it is, activate the measurements in this viewport and stop here
-            activateMeasurements(element, measurementData);
-        } else {
-            // Otherwise, re-render the viewport with the required study/series, then
-            // add an onRendered callback to activate the measurements
-            const renderedCallback = element => {
-                activateMeasurements(element, measurementData);
-            };
-
-            // TODO: Support frames? e.g. for measurements on multi-frame instances
-            renderIntoViewport(i,
-                               measurementData.studyInstanceUid,
-                               measurementData.seriesInstanceUid,
-                               measurementData.sopInstanceUid,
-                               renderedCallback);
+        // TODO: Implement isEnabledElement in Cornerstone
+        // or maybe just remove the 'error' this throws?
+        let enabledElement;
+        try {
+            enabledElement = cornerstone.getEnabledElement(element)    
+        } catch(error) {
+            OHIF.log.warn(error);
         }
+
+        if (enabledElement && enabledElement.image) {
+            const imageId = enabledElement.image.imageId;
+            const series = cornerstoneTools.metaData.get('series', imageId);
+            const study = cornerstoneTools.metaData.get('study', imageId);
+
+            if (series.seriesInstanceUid === measurementData.seriesInstanceUid &&
+                study.studyInstanceUid === measurementData.studyInstanceUid) {
+                
+                // If it is, activate the measurements in this viewport and stop here
+                activateMeasurements(element, measurementData);
+                continue;
+            }
+        }
+
+        // Otherwise, re-render the viewport with the required study/series, then
+        // add an onRendered callback to activate the measurements
+        const renderedCallback = element => {
+            activateMeasurements(element, measurementData);
+        };
+
+        // TODO: Support frames? e.g. for measurements on multi-frame instances
+        renderIntoViewport(i,
+                           measurementData.studyInstanceUid,
+                           measurementData.seriesInstanceUid,
+                           measurementData.sopInstanceUid,
+                           renderedCallback);
     }
 };

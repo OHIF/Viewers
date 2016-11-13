@@ -50,6 +50,24 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
     // updated and the highlight is removed from inactive tools in all visible viewports
     const $viewports = $('.imageViewerViewport');
     $viewports.each((index, element) => {
+        if (!$(element).find('canvas')) {
+            return;
+        }
+
+        // TODO: Implement isEnabledElement in Cornerstone
+        // or maybe just remove the 'error' this throws?
+        let ee;
+        try {
+            ee = cornerstone.getEnabledElement(element)    
+        } catch(error) {
+            OHIF.log.warn(error);
+            return;
+        }
+
+        if (!ee.image) {
+            return;
+        }
+
         cornerstone.updateImage(element)
     });
 };
