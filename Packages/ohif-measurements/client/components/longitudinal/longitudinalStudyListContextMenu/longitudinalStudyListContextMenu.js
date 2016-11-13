@@ -22,54 +22,19 @@ function removeTimepointAssociations() {
     // Get a Cursor pointing to the selected Studies from the StudyList
     const selectedStudies = OHIF.studylist.getSelectedStudies();
 
+    // Find the Timepoint that was previously referenced
+    const timepointApi = StudyList.timepointApi;
+    if (!timepointApi) {
+        OHIF.log.error('Remove Study/Timepoint Association: No Timepoint API found.')
+        return;
+    }
+
     // Loop through the Cursor of Selected Studies
-    selectedStudies.forEach(function(selectedStudy) {
-        // Find the Timepoint that was previously referenced
-        const timepointApi = StudyList.timepointApi;
-        if (!timepointApi) {
-            return;
-        }
-
-        let timepoint = timepointApi.study(selectedStudy.studyInstanceUid)[0];
-        if (!timepoint) {
-            return;
-        }
-
-        // Find the index of the current studyInstanceUid in the array
-        // of reference studyInstanceUids
-        const index = timepoint.studyInstanceUids.indexOf(selectedStudy.studyInstanceUid);
-        if (index < 0) {
-            return;
-        }
-
-        // Remove the specified studyInstanceUid from the array of associated studyInstanceUids
-        timepoint.studyInstanceUids.splice(index, 1);
-
-        // Check if there are still one or more Studies associated with this Timepoint
-        if (timepoint.studyInstanceUids.length) {
-            // Update the Timepoints Collection with this modified array for the
-            // studyInstanceUids attribute
-            timepointApi.updateTimepoint(timepoint.timepointId, {
-                $set: {
-                    studyInstanceUids: timepoint.studyInstanceUids
-                }
-            });
-
-            // Log
-            const hipaaEvent = {
-                eventType: 'modify',
-                userId: Meteor.userId(),
-                userName: Meteor.user().profile.fullName,
-                collectionName: 'Timepoints',
-                recordId: selectedStudy.timepointId,
-                patientId: selectedStudy.patientId,
-                patientName: selectedStudy.patientName
-            };
-            HipaaLogger.logEvent(hipaaEvent);
-        } else {
-            // If no more Studies are associated with this Timepoint, we should remove it
-            timepointApi.removeTimepoint(timepoint.timepointId);
-        }
+    selectedStudies.forEach(study => {
+        const studyInstanceUid = study.studyInstanceUid;
+        const timepoints = timepointApi.study(studyInstanceUid);
+        const timepointIds = timepoints.map(t => t.timepointId);
+        timepointApi.disassociateStudy(timepointIds, studyInstanceUid);
     });
 }
 

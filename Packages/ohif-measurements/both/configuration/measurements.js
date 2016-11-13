@@ -119,7 +119,7 @@ class MeasurementApi {
             }
         });
 
-        // Update the measurement numbers for the remaning measurements
+        // Update the measurement numbers for the remaining measurements
         const updateFilter = _.clone(filter);
         updateFilter.measurementNumber = {
             $gt: measurementNumber

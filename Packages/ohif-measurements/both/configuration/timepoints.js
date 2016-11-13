@@ -20,13 +20,13 @@ class TimepointApi {
         if (currentTimepointId) {
             this.currentTimepointId = currentTimepointId;
         }
-    }
 
-    retrieveTimepoints(filter) {
         this.timepoints = new Mongo.Collection(null);
         this.timepoints.attachSchema(TimepointSchema);
         this.timepoints._debugName = 'Timepoints';
+    }
 
+    retrieveTimepoints(filter) {
         const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
             return;
@@ -57,6 +57,16 @@ class TimepointApi {
         OHIF.log.info(JSON.stringify(timepointData, null, 2));
 
         storeFn(timepointData).then(() => OHIF.log.info('Timepoint storage completed'));
+    }
+
+    disassociateStudy(timepointIds, studyInstanceUid) {
+        const disassociateFn = configuration.dataExchange.disassociate;
+        disassociateFn(timepointIds, studyInstanceUid).then(() => {
+            OHIF.log.info('Disassociation completed')
+
+            this.timepoints.remove({});
+            this.retrieveTimepoints();
+        });
     }
 
     removeTimepoint(timepointId) {

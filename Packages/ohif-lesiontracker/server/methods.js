@@ -37,8 +37,50 @@ Meteor.methods({
         });
     },
 
+    disassociateStudy(timepointIds, studyInstanceUid) {
+        OHIF.log.info('Disassociating Study from Timepoints');
+        timepointIds.forEach(timepointId => {
+            const timepoint = Timepoints.findOne({timepointId});
+            if (!timepoint) {
+                return;
+            }
+            
+            // Find the index of the current studyInstanceUid in the array
+            // of reference studyInstanceUids
+            const index = timepoint.studyInstanceUids.indexOf(studyInstanceUid);
+            if (index < 0) {
+                return;
+            }
+
+            // Remove the specified studyInstanceUid from the array of associated studyInstanceUids
+            timepoint.studyInstanceUids.splice(index, 1);
+
+            let updated = [];
+            let removed = [];
+            if (timepoint.studyInstanceUids.length) {
+                Timepoints.update(timepoint._id, {
+                    $set: {
+                        studyInstanceUids: timepoint.studyInstanceUids
+                    }
+                });
+            } else {
+                Timepoints.remove(timepoint._id);
+            }
+
+            // Remove all Measurement Data for this timepoint and study
+            measurementTools.forEach(tool => {
+                const filter = {
+                    studyInstanceUid: studyInstanceUid,
+                    timepointId: timepointId
+                };
+
+                MeasurementCollections[tool.id].remove(filter)
+            });
+        });
+    },
+
     removeTimepoint(timepointData) {
-        OHIF.log.info('Removing Timepoint off the Server');
+        OHIF.log.info('Removing Timepoint from the Server');
         OHIF.log.info(JSON.stringify(timepointData, null, 2));
         Timepoints.remove(timepointData);
     },

@@ -95,3 +95,19 @@ export const removeTimepoint = timepointData => {
         });
     });
 };
+
+export const disassociateStudy = (timepointIds, studyInstanceUid) => {
+    console.log('disassociateStudy');
+    console.log(timepointIds);
+    console.log(studyInstanceUid);
+
+    return new Promise((resolve, reject) => {
+        Meteor.call('disassociateStudy', timepointIds, studyInstanceUid, (error, response) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+};

@@ -12,7 +12,7 @@ Template[defaultTemplate].helpers({
         const studyInstanceUid = instance.data.studyInstanceUid;
 
         // TODO: Find a better way to obtain the timepointApi from the viewer.js template
-        const timepointApi = OHIF.viewer.timepointApi;
+        const timepointApi = StudyList.timepointApi;
         if (!timepointApi) {
         	return;
         }
