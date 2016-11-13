@@ -66,6 +66,9 @@ Template.viewer.onCreated(() => {
 
     instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
 
+    // TODO: Find a better way to pass this to the ViewportOverlay
+    OHIF.viewer.timepointApi = instance.data.timepointApi;
+
     const patientId = instance.data.studies[0].patientId;
     const filter = {
         patientId
