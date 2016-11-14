@@ -58,7 +58,10 @@ Template.measurementTableRow.events({
             const api = instance.data.measurementApi;
 
             // Remove all the measurements with the given type and number
-            api.deleteMeasurements(measurementTypeId, toolType, measurementNumber);
+            api.deleteMeasurements(measurementTypeId, {
+                toolType,
+                measurementNumber
+            });
 
             // Repaint the images on all viewports without the removed measurements
             _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));

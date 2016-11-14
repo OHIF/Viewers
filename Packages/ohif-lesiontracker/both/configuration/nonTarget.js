@@ -4,18 +4,18 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
 const NonTargetHandlesSchema = new SimpleSchema({
-	start: {
-		type: CornerstoneHandleSchema,
-		label: 'Start'
-	},
-	end: {
-		type: CornerstoneHandleSchema,
-		label: 'End'
-	},
-	textBox: {
-		type: CornerstoneHandleSchema,
-		label: 'Text Box'
-	}
+    start: {
+        type: CornerstoneHandleSchema,
+        label: 'Start'
+    },
+    end: {
+        type: CornerstoneHandleSchema,
+        label: 'End'
+    },
+    textBox: {
+        type: CornerstoneHandleSchema,
+        label: 'Text Box'
+    }
 });
 
 const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
@@ -24,9 +24,14 @@ const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneTool
         label: 'Handles'
     },
     response: {
-    	type: String,
-    	label: 'Response',
+        type: String,
+        label: 'Response',
         optional: true // Optional because it is added after initial drawing, via a callback
+    },
+    location: {
+        type: String,
+        label: 'Location',
+        optional: true
     },
     locationUid: {
         type: String,
@@ -50,6 +55,6 @@ export const nonTarget = {
         measurementTableOptions: {
             displayFunction: displayFunction
         },
-        includeInCaseProgress: true,        
+        includeInCaseProgress: true,
     },
-}
+};

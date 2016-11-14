@@ -68,11 +68,10 @@ function selectNonTargetResponse(responseCode) {
 // If there already exists a measurement with this specific measurement number,
 // related to the chosen location.
 function getMeasurementLocationCallback(measurementData, eventData) {
-    return 'Test Location';
     Template.nonTargetMeasurementDialog.measurementData = measurementData;
 
     // Get the non-target measurement location dialog
-    var dialog = $('#nonTargetMeasurementLocationDialog');
+    var dialog = $('#nonTargetMeasurementDialog');
     Template.nonTargetMeasurementDialog.dialog = dialog;
 
     // Show the backdrop
@@ -89,7 +88,7 @@ function getMeasurementLocationCallback(measurementData, eventData) {
     selectorLocation.find('option:first').prop('selected', 'selected');
 
     // LT-112 "Non-target response shall default to non-measurable on baseline, present on follow-up"
-    var timepoint = Timepoints.findOne({
+    var timepoint = StudyList.timepointApi.timepoints.findOne({
         timepointId: measurementData.timepointId
     });
 
@@ -104,7 +103,7 @@ function getMeasurementLocationCallback(measurementData, eventData) {
 
     // Find out if this measurement number is already added in the measurement manager for another timepoint
     // If it is, disable selector location
-    var locationId = OHIF.measurements.MeasurementManager.getLocationIdIfMeasurementExists(measurementData);
+    var locationId = OHIF.measurements.MeasurementManager.getLocationIdIfMeasurementExists(measurementData, StudyList.timepointApi.timepoints);
     if (locationId) {
         // Add an ID value to the tool data to link it to the Measurements collection
         measurementData.id = 'notready';
@@ -156,6 +155,7 @@ function getMeasurementLocationCallback(measurementData, eventData) {
         dialogProperty.margin = 'auto';
     }
 
+    console.warn('>>>>SHOW DIALOG', dialog);
     dialog.css(dialogProperty);
 }
 

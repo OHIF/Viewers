@@ -90,17 +90,15 @@ class MeasurementApi {
         });
     }
 
-    deleteMeasurements(measurementTypeId, toolType, measurementNumber) {
+    deleteMeasurements(measurementTypeId, filter) {
         const collection = this[measurementTypeId];
-
-        const filter = {
-            toolType,
-            measurementNumber
-        };
 
         // Get the entries information before removing them
         const entries = collection.find(filter).fetch();
         collection.remove(filter);
+
+        // If the filter doesn't have the measurement number, get it from the first entry
+        const measurementNumber = filter.measurementNumber || entries[0].measurementNumber;
 
         // Synchronize the new data with cornerstone tools
         const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;

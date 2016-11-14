@@ -5,9 +5,8 @@
     var toolType = 'nonTarget';
 
     var configuration = {
-        setMeasurementNumberCallback: setMeasurementNumberCallback,
-        getmeasurementLocationCallback: getmeasurementLocationCallback,
-        changemeasurementLocationCallback: changemeasurementLocationCallback,
+        getMeasurementLocationCallback: getMeasurementLocationCallback,
+        changeMeasurementLocationCallback: changeMeasurementLocationCallback,
         drawHandles: false,
         drawHandlesOnHover: true,
         arrowFirst: true
@@ -17,20 +16,20 @@
     var keys = {
         ESC: 27
     };
-
-    // Set measurement number
-    // Get Non-Target measurements on image
-    function setMeasurementNumberCallback(measurementData, eventData, doneCallback) {
-        var measurementNumber = 1;
-        doneCallback(measurementNumber);
-    }
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
-    function getmeasurementLocationCallback(measurementData, eventData, doneCallback) {
-        doneCallback(prompt('Enter your measurement location:'));
+    function getMeasurementLocationCallback(measurementData, eventData, doneCallback) {
+        const dialogSettings = {
+            title: 'Select Lesion Location',
+            measurementData,
+            eventData
+        };
+        OHIF.ui.showFormDialog('dialogNonTargetMeasurement', dialogSettings).then(formData => {
+            doneCallback(formData.measurementNumber);
+        });
     }
 
-    function changemeasurementLocationCallback(measurementData, eventData, doneCallback) {
+    function changeMeasurementLocationCallback(measurementData, eventData, doneCallback) {
         doneCallback(prompt('Change your measurement location:'));
     }
 
@@ -52,11 +51,6 @@
         };
 
         var config = cornerstoneTools.nonTarget.getConfiguration();
-
-        // Set measurement number and measurement name
-        if (measurementData.measurementNumber === undefined) {
-            config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
-        }
 
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(mouseEventData.element, toolType, measurementData);
@@ -92,7 +86,7 @@
                 // delete the measurement
                 cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
             } else {
-                config.getmeasurementLocationCallback(measurementData, mouseEventData, doneCallback);
+                config.getMeasurementLocationCallback(measurementData, mouseEventData, doneCallback);
             }
 
             // Unbind the Esc keydown hook
@@ -102,8 +96,6 @@
             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
             $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
-
-            $(element).off('keydown', cancelCallback);
 
             cornerstone.updateImage(mouseEventData.element);
         });
@@ -272,11 +264,6 @@
         $(element).off('CornerstoneToolsTap', cornerstoneTools.nonTargetTouch.tapCallback);
         var config = cornerstoneTools.nonTarget.getConfiguration();
 
-        // Set measurement number and measurement name
-        if (measurementData.measurementName === undefined) {
-            config.setMeasurementNumberCallback(measurementData, touchEventData, doneCallback);
-        }
-
         cornerstone.updateImage(element);
 
         cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -287,7 +274,7 @@
                 cornerstoneTools.removeToolState(element, toolType, measurementData);
             }
 
-            config.getmeasurementLocationCallback(measurementData, touchEventData, doneCallback);
+            config.getMeasurementLocationCallback(measurementData, touchEventData, doneCallback);
 
             $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
             $(element).on('CornerstoneToolsDragStartActive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
@@ -330,7 +317,7 @@
                 data.active = true;
                 cornerstone.updateImage(element);
                 // Allow relabelling via a callback
-                config.changemeasurementLocationCallback(data, eventData, doneCallback);
+                config.changeMeasurementLocationCallback(data, eventData, doneCallback);
 
                 e.stopImmediatePropagation();
                 return false;
