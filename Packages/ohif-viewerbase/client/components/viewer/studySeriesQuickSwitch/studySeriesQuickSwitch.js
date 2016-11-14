@@ -37,7 +37,7 @@ Template.studySeriesQuickSwitch.events({
         instance.$('.quickSwitchWrapper').addClass('overlay');
         $(event.currentTarget).addClass('hover');
     },
-    'mouseleave .js-quick-switch'(event, instance) {
+    'mouseleave .switchHover'(event, instance) {
         instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
         instance.$('.quickSwitchWrapper').removeClass('overlay');
     },
