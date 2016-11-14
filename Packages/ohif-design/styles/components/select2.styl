@@ -3,12 +3,18 @@
 // TODO: [design] can't we use colors that are already in common pallete?
 $gray1 = #C3C3C3
 $gray2 = #B6B6B6
-$gray3 = #676767
-$gray4 = #3E3E3E
+$gray3 = #A6A6A6
+$gray4 = #676767
+$gray5 = #3E3E3E
 $borderRadius = 2px
 
 span.select2.select2-container
   font-weight: normal
+
+  span.select2-selection
+    &:hover, &:focus
+      span.select2-selection__arrow
+        background-color: $gray3
 
   span.select2-selection
     border: 0
@@ -28,6 +34,7 @@ span.select2.select2-container
     border-bottom-right-radius: $borderRadius
     right: 0
     top: 0
+    transition(background-color 0.3s ease)
     width: 20px
 
     b
@@ -38,20 +45,20 @@ span.select2.select2-container
     min-height: 30px
 
     input.select2-search__field
-      color: $gray4
-      placeholder-color($gray4)
+      color: $gray5
+      placeholder-color($gray5)
 
     li.select2-selection__choice
       theme('border-color', '$uiGray')
       background-color: #FFF
       border-radius: $borderRadius
-      color: $gray4
+      color: $gray5
       font-size: 12px
       line-height: 22px
       margin-top: 3px
 
     span.select2-selection__choice__remove
-      color: $gray3
+      color: $gray4
       float: right
       font-size: 20px
       font-weight: 300

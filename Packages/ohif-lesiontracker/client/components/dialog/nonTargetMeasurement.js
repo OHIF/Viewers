@@ -9,19 +9,18 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
 
     instance.schema = new SimpleSchema({
         location: FieldLesionLocation,
-        response: FieldLesionLocationResponse,
-        measurementNumber: {
-            type: Number
-        }
+        response: FieldLesionLocationResponse
     });
 });
 
 Template.dialogNonTargetMeasurement.onRendered(() => {
     const instance = Template.instance();
 
+    const element = instance.data.eventData.element;
+
     const form = instance.$('form').data('component');
 
-    const viewerMain = $(instance.data.eventData.element).closest('.viewerMain')[0];
+    const viewerMain = $(element).closest('.viewerMain')[0];
     const viewerData = Blaze.getData(viewerMain);
     console.warn('>>>>dialogData/viewerData', instance.data, viewerData);
 
@@ -36,17 +35,27 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
         _id: measurementData._id
     });
 
+    // Set the data that is already defined
+    form.value(currentMeasurement);
+
     // Synchronize the measurement number with the one inserted in the collection
     measurementData.measurementNumber = currentMeasurement.measurementNumber;
 
-    // Delete the measurement if dialog is closed
+    // Refresh the image with the measurement number
+    cornerstone.updateImage(element);
+
+    // Delete the measurement from collection when dialog is closed and not on edit mode
     instance.data.promise.catch(() => {
+        if (instance.data.edit) {
+            return;
+        }
+
         viewerData.measurementApi.deleteMeasurements('nonTargets', {
             _id: measurementData._id
         });
 
-        // Repaint the images on all viewports without the removed measurements
-        _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
+        // Refresh the image with the measurement removed
+        cornerstone.updateImage(element);
     });
 
     // Update the location and response after confirming the dialog data
@@ -59,11 +68,6 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
                 response: formData.response
             }
         });
-    });
-
-    // Inject the measurement number in form data to enable the tool from getting the value
-    form.value({
-        measurementNumber: currentMeasurement.measurementNumber
     });
 
 });

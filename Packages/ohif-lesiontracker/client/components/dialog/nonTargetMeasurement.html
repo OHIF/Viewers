@@ -1,6 +1,5 @@
 <template name="dialogNonTargetMeasurement">
     {{#dialogForm (extend this dialogClass='modal-sm' schema=(choose this.schema instance.schema))}}
-        {{>inputHidden key='measurementNumber'}}
         {{>inputSelect labelClass='form-group' key='location' hideSearch=true
             options=(clone placeholder='Choose a lesion location')}}
         {{>inputSelect labelClass='form-group' key='response' hideSearch=true

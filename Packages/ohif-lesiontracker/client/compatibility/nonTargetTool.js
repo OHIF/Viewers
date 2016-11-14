@@ -1,10 +1,13 @@
+import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
+
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     'use strict';
 
-    var toolType = 'nonTarget';
+    const toolType = 'nonTarget';
 
-    var configuration = {
+    const configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,
         changeMeasurementLocationCallback: changeMeasurementLocationCallback,
         drawHandles: false,
@@ -13,44 +16,60 @@
     };
 
     // Used to cancel tool placement
-    var keys = {
+    const keys = {
         ESC: 27
     };
+
+    const toolMethods = {
+        removeMeasurement() {
+
+        }
+    };
+
+    const showLocationDialog = settings => {
+        const dialogSettings = _.extend({
+            title: 'Lesion Location',
+            toolMethods
+        }, settings);
+        OHIF.ui.showFormDialog('dialogNonTargetMeasurement', dialogSettings);
+    };
+
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
-    function getMeasurementLocationCallback(measurementData, eventData, doneCallback) {
-        const dialogSettings = {
+    function getMeasurementLocationCallback(measurementData, eventData) {
+        showLocationDialog({
             title: 'Select Lesion Location',
             measurementData,
             eventData
-        };
-        OHIF.ui.showFormDialog('dialogNonTargetMeasurement', dialogSettings).then(formData => {
-            doneCallback(formData.measurementNumber);
         });
     }
 
-    function changeMeasurementLocationCallback(measurementData, eventData, doneCallback) {
-        doneCallback(prompt('Change your measurement location:'));
+    function changeMeasurementLocationCallback(measurementData, eventData) {
+        showLocationDialog({
+            title: 'Select Lesion Location',
+            measurementData,
+            eventData,
+            edit: true
+        });
     }
 
     /// --- Mouse Tool --- ///
     ///////// BEGIN ACTIVE TOOL ///////
     function addNewMeasurement(mouseEventData) {
-        var element = mouseEventData.element;
+        const element = mouseEventData.element;
 
-        function doneCallback(measurementNumber) {
-            measurementData.measurementNumber = measurementNumber;
+        function doneCallback() {
             measurementData.active = true;
             cornerstone.updateImage(element);
         }
 
-        var measurementData = createNewMeasurement(mouseEventData);
+        const measurementData = createNewMeasurement(mouseEventData);
 
-        var eventData = {
+        const eventData = {
             mouseButtonMask: mouseEventData.which
         };
 
-        var config = cornerstoneTools.nonTarget.getConfiguration();
+        const config = cornerstoneTools.nonTarget.getConfiguration();
 
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(mouseEventData.element, toolType, measurementData);
@@ -63,7 +82,7 @@
         $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
 
         // Add a flag for using Esc to cancel tool placement
-        var cancelled = false;
+        let cancelled = false;
         function cancelCallback(e) {
             // If the Esc key was pressed, set the flag to true
             if (e.which === keys.ESC) {
@@ -284,8 +303,7 @@
     function addNewMeasurementTouch(touchEventData) {
         var element = touchEventData.element;
 
-        function doneCallback(measurementNumber) {
-            measurementData.measurementNumber = measurementNumber;
+        function doneCallback() {
             measurementData.active = true;
             cornerstone.updateImage(element);
         }

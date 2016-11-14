@@ -51,6 +51,9 @@ label.form-group
   -ms-user-select: none
   user-select: none
 
+.btn
+  transition(background-color 0.3s ease)
+
 .modal-dialog
   .modal-content
     theme('background', '$primaryBackgroundColor')
@@ -63,3 +66,15 @@ label.form-group
   button.close
     theme('color', '$textSecondaryColor')
     opacity: 1
+    overflow: hidden
+    text-align: center
+    text-shadow: none
+    width: 20px
+
+    span
+      display: block
+      line-height: 20px
+      transition(transform 0.3s ease)
+
+    &:hover span
+      transform(rotate(180deg))
