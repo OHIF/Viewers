@@ -97,6 +97,11 @@ class MeasurementApi {
         const entries = collection.find(filter).fetch();
         collection.remove(filter);
 
+        // Stop here if no entries were found
+        if (!entries.length) {
+            return;
+        }
+
         // If the filter doesn't have the measurement number, get it from the first entry
         const measurementNumber = filter.measurementNumber || entries[0].measurementNumber;
 

@@ -46,7 +46,7 @@ import { OHIF } from 'meteor/ohif:core';
 
     function changeMeasurementLocationCallback(measurementData, eventData) {
         showLocationDialog({
-            title: 'Select Lesion Location',
+            title: 'Change Lesion Location',
             measurementData,
             eventData,
             edit: true
@@ -241,7 +241,7 @@ import { OHIF } from 'meteor/ohif:core';
 
             // Draw the text
             if (data.measurementNumber) {
-                
+
                 var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
                 data.handles.textBox.boundingBox = boundingBox;
 
