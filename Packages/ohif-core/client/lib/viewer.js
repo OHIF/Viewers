@@ -111,7 +111,12 @@ OHIF.viewer.canMoveDisplaySets = isNext => {
 
         sequenceMap.forEach((studyViewports, study) => {
             // Get active viewport index if isMultiple is false ortherwise get last
-            const viewportIndex = studyViewports[activeViewportIndex !== null ? activeViewportIndex : studyViewports.length - 1].displaySetIndex;
+            const studyViewport = studyViewports[activeViewportIndex !== null ? activeViewportIndex : studyViewports.length - 1];
+            if (!studyViewport) {
+                return;
+            }
+
+            const viewportIndex = studyViewport.displaySetIndex;
             const layoutViewports = studyViewports.length;
             const amount = study.displaySets.length;
             const move = !isMultiple ? 1 : ((amount % layoutViewports) || layoutViewports);
@@ -137,7 +142,12 @@ OHIF.viewer.canMoveDisplaySets = isNext => {
         if(activeViewportIndex >= 0) {
             sequenceMap.forEach((studyViewports, study) => {
                 // Get active viewport index if isMultiple is false ortherwise get first
-                const viewportIndex = studyViewports[activeViewportIndex !== null ? activeViewportIndex : 0].displaySetIndex;
+                const studyViewport = studyViewports[activeViewportIndex !== null ? activeViewportIndex : 0];
+                if (!studyViewport) {
+                    return;
+                }
+
+                const viewportIndex = studyViewport.displaySetIndex;
                 const layoutViewports = studyViewports.length;
 
                 // 9999 for index means empty viewport, see getDisplaySetSequenceMap function
@@ -286,9 +296,9 @@ OHIF.viewer.moveMultipleViewportDisplaySets = isNext => {
     const sortingFunction = OHIF.utils.sortBy({
         name: 'studyInstanceUid'
     }, {
-        name: 'seriesNumber'
-    }, {
         name: 'instanceNumber'
+    }, {
+        name: 'seriesNumber'
     });
     displaySetsToRender.sort((a, b) => sortingFunction(a, b));
 

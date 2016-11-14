@@ -177,7 +177,7 @@ hasMultipleFrames = () => {
     const activeViewport = getActiveViewportElement();
 
     // No active viewport yet: disable button
-    if(!activeViewport) {
+    if(!activeViewport || !$(activeViewport).find('canvas').length) {
       return true;
     }
 

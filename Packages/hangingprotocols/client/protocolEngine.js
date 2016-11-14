@@ -466,8 +466,8 @@ HP.ProtocolEngine = class ProtocolEngine {
                         sortingInfo: {
                             score: totalMatchScore,
                             study: study.studyDate + study.studyTime,
-                            series: series.seriesNumber, // TODO: change for seriesDateTime
-                            instance: instance.instanceNumber // TODO: change for acquisitionTime
+                            series: parseInt(series.seriesNumber), // TODO: change for seriesDateTime
+                            instance: parseInt(instance.instanceNumber) // TODO: change for acquisitionTime
                         }
                     };
 
@@ -501,9 +501,9 @@ HP.ProtocolEngine = class ProtocolEngine {
             name: 'study',
             reverse: true
         }, {
-            name: 'series'
-        }, {
             name: 'instance'
+        }, {
+            name: 'series'
         });
         matchingScores.sort((a, b) => sortingFunction(a.sortingInfo, b.sortingInfo));
 
