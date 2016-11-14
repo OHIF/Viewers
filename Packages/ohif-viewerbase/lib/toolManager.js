@@ -19,7 +19,7 @@ function configureTools() {
 
     // Get Cornerstone Tools
     const { panMultiTouch, textStyle, toolStyle, toolColors, length, 
-            bidirectional, arrowAnnotate, zoom, ellipticalRoi } = cornerstoneTools;
+            bidirectional, arrowAnnotate, zoom, ellipticalRoi, nonTarget } = cornerstoneTools;
 
     // Set the configuration for the multitouch pan tool
     const multiTouchPanConfig = {
@@ -53,6 +53,7 @@ function configureTools() {
     const lengthConfig = length.getConfiguration();
     const bidirectionalConfig = bidirectional.getConfiguration();
     const ellipticalRoiConfig = ellipticalRoi.getConfiguration();
+    const nonTargetConfig = nonTarget.getConfiguration();
 
     // Add shadow to length tool 
     length.setConfiguration({
@@ -69,6 +70,12 @@ function configureTools() {
     // Add shadow to length tool
     ellipticalRoi.setConfiguration({
         ...ellipticalRoiConfig,
+        ...shadowConfig
+    });
+
+     // Add shadow to non target tool
+    nonTarget.setConfiguration({
+        ...nonTargetConfig,
         ...shadowConfig
     });
 

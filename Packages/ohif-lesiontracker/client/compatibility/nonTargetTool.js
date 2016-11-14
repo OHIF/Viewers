@@ -222,23 +222,56 @@
 
             // Draw the text
             if (data.measurementNumber) {
+                
+                var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
+                data.handles.textBox.boundingBox = boundingBox;
+
                 // Draw linked line as dashed
-                var mid = {
-                    x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                    y: (handleStartCanvas.y + handleEndCanvas.y) / 2
+                var link = {
+                    start: {},
+                    end: {}
                 };
 
+                var midpointCanvas = {
+                    x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
+                    y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
+                };
+
+                var points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
+
+                link.end.x = canvasTextLocation.x;
+                link.end.y = canvasTextLocation.y;
+
+                link.start = cornerstoneMath.point.findClosestPoint(points, link.end);
+
+                var boundingBoxPoints = [ {
+                        // Top middle point of bounding box
+                        x: boundingBox.left + boundingBox.width / 2,
+                        y: boundingBox.top
+                    }, {
+                        // Left middle point of bounding box
+                        x: boundingBox.left,
+                        y: boundingBox.top + boundingBox.height / 2
+                    }, {
+                        // Bottom middle point of bounding box
+                        x: boundingBox.left + boundingBox.width / 2,
+                        y: boundingBox.top + boundingBox.height
+                    }, {
+                        // Right middle point of bounding box
+                        x: boundingBox.left + boundingBox.width,
+                        y: boundingBox.top + boundingBox.height / 2
+                    },
+                ];
+
+                link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
                 context.beginPath();
                 context.strokeStyle = color;
                 context.lineWidth = lineWidth;
                 context.setLineDash([ 2, 3 ]);
 
-                context.moveTo(mid.x, mid.y);
-                context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
+                context.moveTo(link.start.x, link.start.y);
+                context.lineTo(link.end.x, link.end.y);
                 context.stroke();
-
-                var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
-                data.handles.textBox.boundingBox = boundingBox;
             }
 
             context.restore();

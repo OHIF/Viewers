@@ -1011,18 +1011,6 @@
             // draw the handles
             cornerstoneTools.drawHandles(context, eventData, data.handles, color);
 
-            //Draw linked line as dashed
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = strokeWidth;
-            context.setLineDash([ 2, 3 ]);
-
-            // Set position of text
-            var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, findDottedLinePosition(data));
-            context.moveTo(perpendicularStartCanvas.x, perpendicularStartCanvas.y);
-            context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 40);
-            context.stroke();
-
             // Calculate the long axis length
             var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
             var dy = (data.handles.start.y - data.handles.end.y) * (eventData.image.rowPixelSpacing || 1);
@@ -1059,6 +1047,53 @@
                 canvasTextLocation.x, canvasTextLocation.y, color);
 
             data.handles.textBox.boundingBox = boundingBox;
+
+            // Draw linked line as dashed
+            var link = {
+                start: {},
+                end: {}
+            };
+
+            var midpointCanvas = {
+                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
+                y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
+            };
+
+            var points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
+
+            link.end.x = canvasTextLocation.x;
+            link.end.y = canvasTextLocation.y;
+
+            link.start = cornerstoneMath.point.findClosestPoint(points, link.end);
+
+            var boundingBoxPoints = [ {
+                    // Top middle point of bounding box
+                    x: boundingBox.left + boundingBox.width / 2,
+                    y: boundingBox.top
+                }, {
+                    // Left middle point of bounding box
+                    x: boundingBox.left,
+                    y: boundingBox.top + boundingBox.height / 2
+                }, {
+                    // Bottom middle point of bounding box
+                    x: boundingBox.left + boundingBox.width / 2,
+                    y: boundingBox.top + boundingBox.height
+                }, {
+                    // Right middle point of bounding box
+                    x: boundingBox.left + boundingBox.width,
+                    y: boundingBox.top + boundingBox.height / 2
+                },
+            ];
+
+            link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
+            context.beginPath();
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            context.setLineDash([ 2, 3 ]);
+
+            context.moveTo(link.start.x, link.start.y);
+            context.lineTo(link.end.x, link.end.y);
+            context.stroke();
 
             // Set measurement text to show lesion table
             data.longestDiameter = length.toFixed(1);
