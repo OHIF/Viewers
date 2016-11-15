@@ -5,8 +5,6 @@ import { OHIF } from 'meteor/ohif:core';
 class MeasurementHandlers {
 
     static onAdded(e, instance, eventData) {
-        const measurementData = eventData.measurementData;
-
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
         const toolTypes = config.measurementTools.map(tool => tool.cornerstoneToolType);
 
@@ -15,6 +13,7 @@ class MeasurementHandlers {
             return;
         }
 
+        const measurementData = eventData.measurementData;
         const measurementToolConfiguration = config.measurementTools[index];
         const measurementApi = instance.data.measurementApi;
         const Collection = measurementApi[measurementToolConfiguration.id];
@@ -56,9 +55,6 @@ class MeasurementHandlers {
                 const timepointId = timepoint.timepointId;
                 measurement.timepointId = timepointId;
                 measurement.measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, Collection, timepointApi);
-
-                // TODO: Fix this
-                measurement.measurementNumberAbsolute = measurement.measurementNumber;
             }
         } else {
             const numCurrentMeasurementsInStudy = Collection.find({
@@ -84,6 +80,10 @@ class MeasurementHandlers {
 
         // Insert the new measurement into the collection
         measurementData._id = Collection.insert(measurement);
+
+        // Update the Overall Measurement Numbers for all Measurements
+        const baseline = timepointApi.baseline();
+        measurementApi.sortMeasurements(baseline.timepointId);
     }
 
     static onModified(e, instance, eventData) {
@@ -139,6 +139,10 @@ class MeasurementHandlers {
         const Collection = measurementApi[measurementToolConfiguration.id];
 
         Collection.remove(measurementData._id);
+
+        // Update the Overall Measurement Numbers for all Measurements
+        const baseline = timepointApi.baseline();
+        measurementApi.sortMeasurements(baseline.timepointId);
     }
 
 }

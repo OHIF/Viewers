@@ -53,13 +53,18 @@ Template.measurementTableView.helpers({
         const groupObject = _.groupBy(data, entry => entry.measurementNumber);
 
         // Reformat the data for display in the table
-        return Object.keys(groupObject).map(key => ({
-            measurementTypeId: measurementTypeId,
-            measurementNumber: key,
-            location: OHIF.measurements.getLocation(groupObject[key]),
-            responseStatus: false, // TODO: Get the latest timepoint and determine the response status
-            entries: groupObject[key]
-        }));
+        return Object.keys(groupObject).map(key => {
+            const anEntry = groupObject[key][0];
+
+            return {
+                measurementTypeId: measurementTypeId,
+                measurementNumber: key,
+                measurementNumberOverall: anEntry.measurementNumberOverall,
+                location: OHIF.measurements.getLocation(groupObject[key]),
+                responseStatus: false, // TODO: Get the latest timepoint and determine the response status
+                entries: groupObject[key]
+            };
+        });
     },
 
     newMeasurements(measurementType) {
@@ -104,9 +109,12 @@ Template.measurementTableView.helpers({
 
         // Reformat the data for display in the table
         return Object.keys(groupObject).map(key => {
+            const anEntry = groupObject[key][0];
+            
             return {
                 measurementTypeId: measurementTypeId,
                 measurementNumber: key,
+                measurementNumberOverall: anEntry.measurementNumberOverall,
                 location: OHIF.measurements.getLocation(groupObject[key]),
                 responseStatus: false, // TODO: Get the latest timepoint and determine the response status
                 entries: groupObject[key]

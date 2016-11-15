@@ -58,13 +58,18 @@ Template.measurementTableRow.events({
             const measurement = instance.data.rowItem.entries[0];
             const toolType = measurement.toolType;
             const measurementNumber = measurement.measurementNumber;
-            const api = instance.data.measurementApi;
+            const measurementApi = instance.data.measurementApi;
+            const timepointApi = instance.data.timepointApi;
 
             // Remove all the measurements with the given type and number
-            api.deleteMeasurements(measurementTypeId, {
+            measurementApi.deleteMeasurements(measurementTypeId, {
                 toolType,
                 measurementNumber
             });
+
+            // Update the Overall Measurement Numbers for all Measurements
+            const baseline = timepointApi.baseline();
+            measurementApi.sortMeasurements(baseline.timepointId);
 
             // Repaint the images on all viewports without the removed measurements
             _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));

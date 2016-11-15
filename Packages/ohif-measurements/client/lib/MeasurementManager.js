@@ -4,13 +4,10 @@ class MeasurementManager {
 
     /**
      * Returns new measurement number given a timepointId
-     * @param timepointId
-     * @param isTarget
-     * @returns {number} - Number of measurements in timepoint
      */
-    static getNewMeasurementNumber(timepointId, Collection, timepointApi) {
+    static getNewMeasurementNumber(timepointId, collection, timepointApi) {
         // Get all current lesion measurements
-        const numMeasurements = Collection.find().count();
+        const numMeasurements = collection.find().count();
 
         // If no measurements exist yet, start at 1
         if (!numMeasurements) {
@@ -21,7 +18,7 @@ class MeasurementManager {
             timepointId: timepointId
         });
 
-        const numMeasurementsAtTimepoint = Collection.find({
+        const numMeasurementsAtTimepoint = collection.find({
             studyInstanceUid: {
                 $in: timepoint.studyInstanceUids
             }
@@ -36,8 +33,8 @@ class MeasurementManager {
      * @param measurementData
      * @returns {number} - Measurement location ID
      */
-    static getLocationIdIfMeasurementExists(measurementData, Collection) {
-        const measurement = Collection.findOne({
+    static getLocationIdIfMeasurementExists(measurementData, collection) {
+        const measurement = collection.findOne({
             measurementNumber: measurementData.measurementNumber
         });
 

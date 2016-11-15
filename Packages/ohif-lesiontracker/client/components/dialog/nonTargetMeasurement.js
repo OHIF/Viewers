@@ -8,6 +8,7 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
     const instance = Template.instance();
 
     instance.measurementTypeId = 'nonTargets';
+    const timepointApi = instance.data.timepointApi;
 
     instance.schema = new SimpleSchema({
         location: FieldLesionLocation,
@@ -16,9 +17,14 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
 
     // Remove the measurement from the collection
     instance.removeMeasurement = () => {
-        instance.viewerData.measurementApi.deleteMeasurements(instance.measurementTypeId, {
+        const measurementApi = instance.viewerData.measurementApi;
+        measurementApi.deleteMeasurements(instance.measurementTypeId, {
             _id: instance.data.measurementData._id
         });
+
+        // Update the Overall Measurement Numbers for all Measurements
+        const baseline = timepointApi.baseline();
+        measurementApi.sortMeasurements(baseline.timepointId);
 
         // Refresh the image with the measurement removed
         cornerstone.updateImage(instance.data.element);

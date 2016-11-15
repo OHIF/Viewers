@@ -23,6 +23,7 @@ class MeasurementApi {
             const measurementTypeId = tool.id;
 
             this[measurementTypeId] = new Mongo.Collection(null);
+            this[measurementTypeId]._debugName = tool.name;
             this[measurementTypeId].attachSchema(tool.schema);
         });
     }
@@ -87,6 +88,110 @@ class MeasurementApi {
             measurements.forEach(measurement => {
                 OHIF.measurements.syncMeasurementAndToolData(measurement);
             });
+        });
+    }
+
+    // TODO: Create a better function to combine hasDataAtTimepoint and hasNoDataAtTimepoint
+    // because this doesn't seem very elegant...
+    hasDataAtTimepoint(collection, timepointId) {
+        // Retrieve all the data for this Measurement type (e.g. 'targets')
+        // which was recorded at baseline.
+        const dataAtTimepoint = collection.find({timepointId});
+
+        // Obtain a list of the Measurement Numbers from the
+        // measurements which have data at this timepoint
+        const numbers = dataAtTimepoint.map(m => m.measurementNumber);
+
+        // Retrieve all the data for this Measurement type which
+        // match the Measurement Numbers obtained above
+        const filter = {
+            measurementNumber: {
+                $in: numbers
+            }
+        };
+
+        return collection.find(filter).fetch();
+    }
+
+    hasNoDataAtTimepoint(collection, timepointId) {
+        // Retrieve all the data for this Measurement type (e.g. 'targets')
+        // which was recorded at baseline.
+        const dataAtTimepoint = collection.find({timepointId});
+
+        // Obtain a list of the Measurement Numbers from the
+        // measurements which have data at this timepoint
+        const numbers = dataAtTimepoint.map(m => m.measurementNumber);
+
+        // Retrieve all the data for this Measurement type which
+        // match the Measurement Numbers obtained above
+        const filter = {
+            measurementNumber: {
+                $nin: numbers
+            }
+        };
+        
+        return collection.find(filter).fetch();
+    }
+
+    sortMeasurements(baselineTimepointId) {
+        const tools = configuration.measurementTools;
+        const hasDataAtTimepoint = this.hasDataAtTimepoint;
+        const hasNoDataAtTimepoint = this.hasNoDataAtTimepoint;
+
+        const includedTools = tools.filter(tool => {
+            return (tool.options && tool.options.includeInCaseProgress === true);
+        });
+
+        let overallMeasurementNumber = 1;
+
+        // Given a Collection and a 
+        const updateMeasurementNumberOverall = (collection, toolType) => {
+            return data => {
+                const filter = {
+                    measurementNumber: data.measurementNumber,
+                    toolType
+                }
+
+                collection.update(filter, {
+                    $set: {
+                        measurementNumberOverall: overallMeasurementNumber
+                    }
+                });
+
+                // Increment the overall measurement number
+                overallMeasurementNumber += 1;
+            };
+        };
+
+        const summarizeMeasurement = (groupObject, toolType) => {
+            return key => {
+                return {
+                    measurementNumber: parseInt(key, 10),
+                    entries: groupObject[key],
+                    toolType
+                };
+            };
+        };
+
+        // First, handle data that has a measurement at baseline
+        includedTools.forEach(tool => {
+            const collection = this[tool.id];
+            const toolType = tool.cornerstoneToolType;
+            const measurements = hasDataAtTimepoint(collection, baselineTimepointId);
+            const groupObject = _.groupBy(measurements, m => m.measurementNumber);
+            const sortedByMeasurementNumber = Object.keys(groupObject).map(summarizeMeasurement(groupObject, toolType));
+            sortedByMeasurementNumber.forEach(updateMeasurementNumberOverall(collection, toolType))
+        });
+
+        // Next, handle New Measurements (i.e. no baseline data)
+        // Note that this cannot be combined with the loop above due to the incrementing of the overallMeasurementNumber
+        includedTools.forEach(tool => { 
+            const collection = this[tool.id];
+            const toolType = tool.cornerstoneToolType;
+            const measurements = hasNoDataAtTimepoint(collection, baselineTimepointId);
+            const groupObject = _.groupBy(measurements, m => m.measurementNumber);
+            const sortedByMeasurementNumber = Object.keys(groupObject).map(summarizeMeasurement(groupObject, toolType));
+            sortedByMeasurementNumber.forEach(updateMeasurementNumberOverall(collection, toolType));
         });
     }
 
