@@ -118,12 +118,16 @@ Template.viewer.onCreated(() => {
         OHIF.lesiontracker.toggleLesionTrackerToolsButtons(false);
     }
 
+    let firstMeasurementActivated = false;
     instance.autorun(() => {
         if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||
-            !Session.get('ViewerMainReady')) {
+            !Session.get('ViewerMainReady') ||
+            firstMeasurementActivated) {
             return;
         }
+
+
 
         // Find and activate the first measurement by Lesion Number
         // NOTE: This is inefficient, we should be using a hanging protocol
@@ -165,6 +169,8 @@ Template.viewer.onCreated(() => {
         if (rowItem) {
             OHIF.measurements.jumpToRowItem(rowItem, timepoints);
         }
+
+        firstMeasurementActivated = true;
     })
 });
 
