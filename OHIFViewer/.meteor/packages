@@ -20,7 +20,7 @@ arsnebula:reactive-promise
 promise@0.8.8
 stylus@2.513.6
 fortawesome:fontawesome
-mrt:moment
+mrt:moment@2.15.1
 meteor-base@1.0.4
 mobile-experience@1.0.4
 mongo@1.1.14
