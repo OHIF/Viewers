@@ -248,6 +248,16 @@ class MeasurementApi {
         }, {
             multi: true
         });
+
+        // Synchronize the updated measurements with Cornerstone Tools
+        // toolData to make sure the displayed measurements show 'Target X' correctly
+        const syncFilter = _.clone(updateFilter);
+        syncFilter.measurementNumber = {
+            $gt: measurementNumber - 1
+        };
+        collection.find(syncFilter).forEach(measurement => {
+            OHIF.measurements.syncMeasurementAndToolData(measurement);
+        })
     }
 
     fetch(measurementTypeId, selector, options) {
