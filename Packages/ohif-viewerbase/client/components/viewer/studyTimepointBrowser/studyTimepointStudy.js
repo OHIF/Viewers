@@ -25,13 +25,6 @@ const initializeStudyWrapper = instance => {
     $thumbnails.css('max-height', '');
     $thumbnails.css('max-height', $thumbnails.height());
     $study.removeClass('active');
-};
-
-// Initialize the study wrapper max-height to enable CSS transition
-Template.studyTimepointStudy.onRendered(() => {
-    const instance = Template.instance();
-
-    initializeStudyWrapper(instance);
 
     // Here we add, remove, and add the active class again because this way
     // the max-height animation appears smooth to the user.
@@ -40,6 +33,14 @@ Template.studyTimepointStudy.onRendered(() => {
             $study.addClass('active');
         }, 1);
     }
+
+};
+
+// Initialize the study wrapper max-height to enable CSS transition
+Template.studyTimepointStudy.onRendered(() => {
+    const instance = Template.instance();
+
+    initializeStudyWrapper(instance);
 });
 
 Template.studyTimepointStudy.helpers({
