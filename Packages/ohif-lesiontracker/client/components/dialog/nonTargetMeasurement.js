@@ -56,17 +56,38 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
     instance.viewerData = Blaze.getData(viewerMain);
 
     const measurementApi = instance.viewerData.measurementApi;
+    const timepointApi = instance.viewerData.timepointApi;
 
     const measurementData = instance.data.measurementData;
     const collection = measurementApi[instance.measurementTypeId];
 
     // Get the current inserted measurement from the collection
-    const currentMeasurement = collection.findOne({
-        _id: measurementData._id
-    });
+    const currentMeasurement = collection.findOne({ _id: measurementData._id });
 
-    // Set the data that is already defined
-    form.value(currentMeasurement);
+    // Check if it's a edition or creation
+    if (instance.data.edit) {
+        // Set the data that is already defined for current measurement
+        form.value(currentMeasurement);
+    } else {
+        // LT-112 Non-target response shall default to non-measurable on baseline, present on follow-up
+        const timepoint = timepointApi.study(measurementData.studyInstanceUid)[0];
+        const response = timepoint && timepoint.timepointType === 'baseline' ? 'NE' : 'Present';
+
+        // Get a previously inserted Non-target
+        const previousMeasurement = collection.findOne({
+            _id: { $not: measurementData._id },
+            measurementNumber: currentMeasurement.measurementNumber
+        });
+
+        // Change the location for current measurement if it's not the first one
+        const location = previousMeasurement && previousMeasurement.location;
+
+        // Set the default location and response
+        form.value({
+            location,
+            response
+        });
+    }
 
     // Synchronize the measurement number with the one inserted in the collection
     measurementData.measurementNumber = currentMeasurement.measurementNumber;
@@ -85,13 +106,18 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
 
     // Update the location and response after confirming the dialog data
     instance.data.promise.then(formData => {
+        // Update the response for current measurement
         collection.update({
             _id: measurementData._id,
         }, {
-            $set: {
-                location: formData.location,
-                response: formData.response
-            }
+            $set: { response: formData.response }
+        });
+
+        // Change the location for all Non-Target measurements with the same measurementNumber
+        collection.update({
+            measurementNumber: currentMeasurement.measurementNumber
+        }, {
+            $set: { location: formData.location }
         });
     });
 
