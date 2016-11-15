@@ -322,6 +322,10 @@ Template.viewportOverlay.helpers({
 
         // Get study data
         var study = cornerstoneTools.metaData.get('study', this.imageId);
+        if (!study) {
+            return;
+        }
+
         if (study.studyDate === viewportStudies.fetch()[0].studyDate) {
             return 'Prior';
         }
