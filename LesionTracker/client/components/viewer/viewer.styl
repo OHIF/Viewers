@@ -16,7 +16,20 @@
       border: none !important
       outline: 0 !important // Prevent blue outline in Chrome
 
+    .removable
+      .imageViewerViewport
+        canvas
+          border-color: transparent
+          border-style: solid
+          border-width: 1px
+
     &:not(:last-child)
     .removable
       .imageViewerViewport
         theme('border-right', '%s solid $uiBorderColor' % $uiBorderThickness)
+
+    &.active
+      .removable
+        .imageViewerViewport
+          canvas
+            theme('border-color', '$uiBorderColorActive')
