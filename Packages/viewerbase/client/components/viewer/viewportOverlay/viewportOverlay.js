@@ -326,7 +326,8 @@ Template.viewportOverlay.helpers({
             return;
         }
 
-        if (study.studyDate === viewportStudies.fetch()[0].studyDate) {
+        var oldestStudy = viewportStudies.fetch()[0];
+        if ((study.studyDate + " " + study.studyTime) <= (oldestStudy.studyDate + " " + oldestStudy.studyTime)) {
             return 'Prior';
         }
     }
