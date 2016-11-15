@@ -9,8 +9,6 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
 
     instance.measurementTypeId = 'nonTargets';
 
-    const measurementData = instance.data.measurementData;
-
     instance.schema = new SimpleSchema({
         location: FieldLesionLocation,
         response: FieldLesionLocationResponse
@@ -19,11 +17,11 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
     // Remove the measurement from the collection
     instance.removeMeasurement = () => {
         instance.viewerData.measurementApi.deleteMeasurements(instance.measurementTypeId, {
-            _id: measurementData._id
+            _id: instance.data.measurementData._id
         });
 
         // Refresh the image with the measurement removed
-        cornerstone.updateImage(instance.cornerstoneElement);
+        cornerstone.updateImage(instance.data.element);
     };
 
     // Close the current dialog
@@ -48,18 +46,19 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
 Template.dialogNonTargetMeasurement.onRendered(() => {
     const instance = Template.instance();
 
-    instance.cornerstoneElement = instance.data.eventData.element;
-
     const form = instance.$('form').data('component');
 
-    const viewerMain = $(instance.cornerstoneElement).closest('.viewerMain')[0];
+    console.warn('>>>>instance.data', instance.data);
+
+    const viewerMain = $(instance.data.element).closest('.viewerMain')[0];
     instance.viewerData = Blaze.getData(viewerMain);
 
     const measurementApi = instance.viewerData.measurementApi;
     const timepointApi = instance.viewerData.timepointApi;
 
-    const measurementData = instance.data.measurementData;
     const collection = measurementApi[instance.measurementTypeId];
+
+    const measurementData = instance.data.measurementData;
 
     // Get the current inserted measurement from the collection
     const currentMeasurement = collection.findOne({ _id: measurementData._id });
@@ -87,13 +86,13 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
             location,
             response
         });
+
+        // Synchronize the measurement number with the one inserted in the collection
+        measurementData.measurementNumber = currentMeasurement.measurementNumber;
+
+        // Refresh the image with the measurement number
+        cornerstone.updateImage(instance.data.element);
     }
-
-    // Synchronize the measurement number with the one inserted in the collection
-    measurementData.measurementNumber = currentMeasurement.measurementNumber;
-
-    // Refresh the image with the measurement number
-    cornerstone.updateImage(instance.cornerstoneElement);
 
     // Delete the measurement from collection when dialog is closed and not on edit mode
     instance.data.promise.catch(() => {

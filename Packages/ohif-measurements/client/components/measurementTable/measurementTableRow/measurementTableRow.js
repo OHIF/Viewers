@@ -30,10 +30,13 @@ Template.measurementTableRow.events({
     },
 
     'click .js-rename'(event, instance) {
+        const rowItem = instance.data.rowItem;
+
+        // Show the measure flow for targets
         OHIF.measurements.toggleLabelButton({
             instance,
-            measurementId: instance.data.rowItem.entries[0],
-            measurementTypeId: instance.data.rowItem.measurementTypeId,
+            measurementId: rowItem.entries[0]._id,
+            measurementTypeId: rowItem.measurementTypeId,
             element: document.body,
             measurementApi: instance.data.measurementApi,
             position: {

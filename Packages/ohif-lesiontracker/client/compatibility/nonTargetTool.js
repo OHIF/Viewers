@@ -1,4 +1,3 @@
-import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
@@ -20,35 +19,21 @@ import { OHIF } from 'meteor/ohif:core';
         ESC: 27
     };
 
-    const toolMethods = {
-        removeMeasurement() {
-
-        }
-    };
-
-    const showLocationDialog = settings => {
-        const dialogSettings = _.extend({
-            title: 'Lesion Location',
-            toolMethods
-        }, settings);
-        OHIF.ui.showFormDialog('dialogNonTargetMeasurement', dialogSettings);
-    };
-
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getMeasurementLocationCallback(measurementData, eventData) {
-        showLocationDialog({
+        OHIF.ui.showFormDialog('dialogNonTargetMeasurement', {
             title: 'Select Lesion Location',
-            measurementData,
-            eventData
+            element: eventData.element,
+            measurementData
         });
     }
 
     function changeMeasurementLocationCallback(measurementData, eventData) {
-        showLocationDialog({
+        OHIF.ui.showFormDialog('dialogNonTargetMeasurement', {
             title: 'Change Lesion Location',
+            element: eventData.element,
             measurementData,
-            eventData,
             edit: true
         });
     }
