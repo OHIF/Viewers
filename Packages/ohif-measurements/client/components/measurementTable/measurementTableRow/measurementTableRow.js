@@ -50,7 +50,7 @@ Template.measurementTableRow.events({
     'click .js-delete'(event, instance) {
         const dialogSettings = {
             title: 'Delete measurements',
-            message: 'Are you sure you want to delete the measurement among all timepoints?'
+            message: 'Are you sure you want to delete the measurement across all timepoints?'
         };
 
         OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(formData => {

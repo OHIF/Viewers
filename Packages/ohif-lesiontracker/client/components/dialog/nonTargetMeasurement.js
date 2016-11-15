@@ -23,8 +23,10 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
         });
 
         // Update the Overall Measurement Numbers for all Measurements
-        const baseline = timepointApi.baseline();
-        measurementApi.sortMeasurements(baseline.timepointId);
+
+        // Commenting this out for now, we need the timepointApi
+        //const baseline = timepointApi.baseline();
+        //measurementApi.sortMeasurements(baseline.timepointId);
 
         // Refresh the image with the measurement removed
         cornerstone.updateImage(instance.data.element);
