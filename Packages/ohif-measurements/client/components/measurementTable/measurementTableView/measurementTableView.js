@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 
 OHIF.measurements.getLocation = collection => {
     for (let i = 0; i < collection.length; i++) {
@@ -8,8 +9,6 @@ OHIF.measurements.getLocation = collection => {
         }
     }
 };
-
-const getLocation = OHIF.measurements.getLocation;
 
 Template.measurementTableView.helpers({
     getNewMeasurementType(tool) {
@@ -57,7 +56,7 @@ Template.measurementTableView.helpers({
         return Object.keys(groupObject).map(key => ({
             measurementTypeId: measurementTypeId,
             measurementNumber: key,
-            location: getLocation(groupObject[key]),
+            location: OHIF.measurements.getLocation(groupObject[key]),
             responseStatus: false, // TODO: Get the latest timepoint and determine the response status
             entries: groupObject[key]
         }));
@@ -75,9 +74,9 @@ Template.measurementTableView.helpers({
         }
 
         // If this is a baseline, stop here since there are no new measurements to display
-        
+
         if (!current || current.timepointType === 'baseline') {
-            console.log('Skipping New Measurements section');
+            OHIF.log.info('Skipping New Measurements section');
             return;
         }
 
@@ -108,7 +107,7 @@ Template.measurementTableView.helpers({
             return {
                 measurementTypeId: measurementTypeId,
                 measurementNumber: key,
-                location: getLocation(groupObject[key]),
+                location: OHIF.measurements.getLocation(groupObject[key]),
                 responseStatus: false, // TODO: Get the latest timepoint and determine the response status
                 entries: groupObject[key]
             };
