@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 
+Session.set('ViewerMainReady', false);
 Session.set('TimepointsReady', false);
 Session.set('MeasurementsReady', false);
 
@@ -116,6 +117,55 @@ Template.viewer.onCreated(() => {
         //  Disable Lesion Tracker Tools if the opened study is not associated
         OHIF.lesiontracker.toggleLesionTrackerToolsButtons(false);
     }
+
+    instance.autorun(() => {
+        if (!Session.get('TimepointsReady') ||
+            !Session.get('MeasurementsReady') ||
+            !Session.get('ViewerMainReady')) {
+            return;
+        }
+
+        // Find and activate the first measurement by Lesion Number
+        // NOTE: This is inefficient, we should be using a hanging protocol
+        // to hang the first measurement's imageId immediately, rather
+        // than changing images after initial loading...
+        const config = OHIF.measurements.MeasurementApi.getConfiguration();
+        const measurementTypeId = config.measurementTools[0].id;
+        const measurementApi = instance.data.measurementApi;
+        const timepointApi = instance.data.timepointApi;
+
+        const collection = measurementApi[measurementTypeId];
+        const sorting = {
+            sort: {
+                measurementNumber: -1
+            }
+        };
+
+        const data = collection.find({}, sorting).fetch();
+
+        let timepoints = [timepointApi.current()];
+        const prior = timepointApi.prior();
+        if (prior) {
+            timepoints.push(prior);
+        }
+
+        // TODO: Clean this up, it's probably an inefficient way to get what we need
+        const groupObject = _.groupBy(data, m => m.measurementNumber);
+
+        // Reformat the data
+        const rows = Object.keys(groupObject).map(key => ({
+            measurementTypeId: measurementTypeId,
+            measurementNumber: key,
+            entries: groupObject[key]
+        }));
+
+        const rowItem = rows[0];
+
+        // Activate the first lesion
+        if (rowItem) {
+            OHIF.measurements.jumpToRowItem(rowItem, timepoints);
+        }
+    })
 });
 
 Template.viewer.helpers({
@@ -137,4 +187,10 @@ Template.viewer.events({
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
         OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
     }
+});
+
+Template.viewer.onDestroyed(() => {
+    Session.set('ViewerMainReady', false);
+    Session.set('TimepointsReady', false);
+    Session.set('MeasurementsReady', false);
 });

@@ -48,45 +48,6 @@ Template.measurementTable.onRendered(() => {
     });
 });
 
-Template.measurementTable.onRendered(() => {
-    // Find and activate the first measurement by Lesion Number
-    // NOTE: This is inefficient, we should be using a hanging protocol
-    // to hang the first measurement's imageId immediately, rather
-    // than changing images after initial loading...
-    const instance = Template.instance();
-
-    const config = OHIF.measurements.MeasurementApi.getConfiguration();
-    const measurementTypeId = config.measurementTools[0].id;
-    const measurementApi = instance.data.measurementApi;
-    const collection = measurementApi[measurementTypeId];
-    const sorting = {
-        sort: {
-            measurementNumber: -1
-        }
-    };
-
-    const data = collection.find({}, sorting).fetch();
-
-    const timepoints = instance.data.timepoints.get();
-
-    // TODO: Clean this up, it's probably an inefficient way to get what we need
-    const groupObject = _.groupBy(data, entry => entry.measurementNumber);
-
-    // Reformat the data
-    const rows = Object.keys(groupObject).map(key => ({
-        measurementTypeId: measurementTypeId,
-        measurementNumber: key,
-        entries: groupObject[key]
-    }));
-
-    const rowItem = rows[0];
-
-    // Activate the first lesion
-    if (rowItem) {
-        OHIF.measurements.jumpToRowItem(rowItem, timepoints);
-    }
-});
-
 Template.measurementTable.helpers({
     buttonGroupData() {
         const instance = Template.instance();

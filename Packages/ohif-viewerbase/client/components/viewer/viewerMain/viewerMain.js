@@ -37,6 +37,8 @@ Template.viewerMain.onRendered(() => {
 
         // Enable hotkeys
         enableHotkeys();
+
+        Session.set('ViewerMainReady', Random.id());
     });
 });
 

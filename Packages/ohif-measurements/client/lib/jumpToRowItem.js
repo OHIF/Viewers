@@ -71,11 +71,11 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
     // Retrieve the timepoints that are currently being displayed in the
     // Measurement Table
-    const numTimepoints = timepoints.length;
+    const numTimepoints = Math.max(timepoints.length, 1);
 
     // Retrieve the list of available viewports
     const $viewports = $('.imageViewerViewport');
-    const numViewports = $viewports.length;
+    const numViewports = Math.max($viewports.length, 1);
 
     /* 
     Two Timepoints, Two measurements, load Followup (FU and BA), display FU in left and BA in right
