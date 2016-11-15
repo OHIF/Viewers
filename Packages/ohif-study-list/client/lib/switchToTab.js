@@ -61,6 +61,13 @@ switchToTab = function(contentId) {
         return;
     }
 
+    var container = $('.tab-content').find('#viewerTab').get(0);
+    container.innerHTML = '';
+
+    // Use Blaze to render the Loading Template into the container
+    // viewStudiesInTab will clear this container
+    Blaze.renderWithData(Template.loadingText, {}, container);
+
     var studies = ViewerData[contentId].studies;
 
     if (studies) {
@@ -74,6 +81,7 @@ switchToTab = function(contentId) {
         // Attempt to retrieve the meta data (it might be cached)
         OHIF.studylist.getStudiesMetadata(studyInstanceUids, function(studies) {
             viewStudiesInTab(contentId, studies);
+            Session.set('GettingStudyMetadata', false);
         });
     }
 };
