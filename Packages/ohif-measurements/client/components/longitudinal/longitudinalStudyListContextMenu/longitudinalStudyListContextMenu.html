@@ -2,17 +2,26 @@
     {{#dropdownForm}}
         <li><a id="viewStudies" type="button" title="View Studies">View</a></li>
         <li class="divider" role="separator"></li>
-        <li>
-            <a id="launchStudyAssociation" title="Launch Study Association">Associate</a>
+
+        {{#let classes=getAssociationClasses}}
+        <li class="{{classes}}">
+            <a id="launchStudyAssociation" class="{{classes}}" title="Launch Study Association">Associate</a>
         </li>
-        <li><a id="launchRemoveAssociation"
+        {{/let}}
+
+        {{#let classes=getRemoveAssociationClasses}}
+        <li class="{{classes}}">
+            <a id="launchRemoveAssociation"
                type="button"
+               class="{{classes}}"
                data-toggle="modal"
                data-target="#confirmRemoveTimepointAssociation"
                title="Remove Timepoint Association">
                Remove Association
            </a>
         </li>
+        {{/let}}
+
         <li class="divider" role="separator"></li>
         <li>
             <a id="viewSeriesDetails" type="button"

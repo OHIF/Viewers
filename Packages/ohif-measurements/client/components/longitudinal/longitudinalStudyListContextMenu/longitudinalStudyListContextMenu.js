@@ -8,7 +8,61 @@ import { OHIF } from 'meteor/ohif:core';
 // See https://github.com/aldeed/meteor-template-extension
 const defaultTemplate = 'studyContextMenu';
 
+function getAssociationAssessment() {
+    // default result value
+    const assessment = {
+        selected: 0,
+        associated: 0
+    };
+    // check if timepointApi is available
+    const timepointApi = StudyList.timepointApi;
+    if (timepointApi) {
+        // Get a Cursor pointing to the selected Studies from the StudyList
+        const selectedStudies = OHIF.studylist.getSelectedStudies();
+        if (selectedStudies.length > 0) {
+            assessment.selected = selectedStudies.length;
+            // Loop through the selected Studies and return true if at least one study has no association.
+            for (let i = selectedStudies.length - 1; i >= 0; --i) {
+                let study = selectedStudies[i],
+                    timepoints = timepointApi.study(study.studyInstanceUid);
+                if (timepoints && timepoints.length > 0) {
+                    assessment.associated++;
+                }
+            }
+        }
+    }
+    return assessment;
+}
+
+Template.longitudinalStudyListContextMenu.helpers({
+
+    getAssociationClasses() {
+        const disabledClass = 'disabled';
+        let classList = '';
+
+        const assessment = getAssociationAssessment();
+        if (assessment.selected < 1 || assessment.associated > 0) {
+            classList += disabledClass;
+        }
+
+        return classList;
+    },
+
+    getRemoveAssociationClasses() {
+        const disabledClass = 'disabled';
+        let classList = '';
+
+        const assessment = getAssociationAssessment();
+        if (assessment.selected < 1 || assessment.selected !== assessment.associated) {
+            classList += disabledClass;
+        }
+
+        return classList;
+    }
+});
+
 Template.longitudinalStudyListContextMenu.replaces(defaultTemplate);
+Template[defaultTemplate].inheritsHelpersFrom('longitudinalStudyListContextMenu');
 
 StudyList.functions.launchStudyAssociation = () => OHIF.ui.showFormDialog('dialogStudyAssociation');
 StudyList.functions.removeTimepointAssociations = removeTimepointAssociations;

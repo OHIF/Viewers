@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { $ } from 'meteor/jquery';
 
 /**
  * This function is used inside the StudyList package to define a right click callback
@@ -55,12 +56,18 @@ function viewSeriesDetails() {
 
 Template.studyContextMenu.events({
     'click a': function(e) {
-        var study = Template.studyContextMenu.$study;
-        var id = $(e.currentTarget).attr('id');
+        var id, fn, target = $(e.currentTarget);
 
-        var fn = StudyList.functions[id];
-        if (fn && typeof(fn) === 'function') {
-            fn(study);
+        if (target.hasClass('disabled')) {
+            return;
+        }
+
+        id = target.attr('id');
+        if (id in StudyList.functions) {
+            fn = StudyList.functions[id];
+            if (typeof fn === 'function') {
+                fn(Template.studyContextMenu.$study);
+            }
         }
 
         var dialog = $('#studyContextMenu');
