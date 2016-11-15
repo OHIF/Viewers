@@ -37,7 +37,7 @@ Template.studySeriesQuickSwitch.events({
         instance.$('.quickSwitchWrapper').addClass('overlay');
         $(event.currentTarget).addClass('hover');
     },
-    'mouseleave .switchHover'(event, instance) {
+    'mouseleave .js-quick-switch'(event, instance) {
         instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
         instance.$('.quickSwitchWrapper').removeClass('overlay');
     },
@@ -50,5 +50,17 @@ Template.studySeriesQuickSwitch.helpers({
     // Get the current study
     currentStudy() {
         return Template.instance().data.currentStudy.get();
+    },
+    // Check if is Mac OS
+    // This is necessary due to fix scrollbar space only in browsers in Mac OS:
+    // Since Lion version, the scrollbar is visible only when user scrolls a div
+    // As scrollbar is hidden, the space added to hide it in Windows browsers
+    // is not enough in Mac OS. For WebKit (Safari and Chrome in Mac OS) there is a CSS
+    // solution using ::-webkit-scrollbar, but unfortunately doesn't work for Firefox
+    // JS seems to be the only solution for now:
+    // - http://stackoverflow.com/questions/6165472/custom-css-scrollbar-for-firefox/6165489#6165489
+    // - http://stackoverflow.com/questions/18317634/force-visible-scrollbar-in-firefox-on-mac-os-x/18318273
+    addMacOSClass() {
+        return window.navigator.appVersion.indexOf("Mac") !== -1 ? 'is-mac' : '';
     }
 });

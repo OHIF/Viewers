@@ -151,12 +151,14 @@ $seriesSpacing = 2px
   z-index: 10000
 
   .scrollArea
-    margin-right: -20px
+    margin-right: -22px;
     min-height: 200px
     max-height: 500px
     overflow-x: hidden
     overflow-y: scroll
-    width: 100%
+    width: calc(100% + 22px)
+    &.is-mac
+      width: 100%
 
 .studyHover
   height: 0
