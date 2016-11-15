@@ -23,7 +23,7 @@
                 {{#each relevantStudies}}
                     <tr>
                         <td class="center">
-                            <input type="checkbox" class="includeStudy" {{valueIf autoselected '' 'checked'}}/>
+                            <input type="checkbox" class="includeStudy" {{valueIf autoselected '' 'checked'}}/> <span></span>
                         </td>
                         <td class="center studyDataCell {{#if autoselected}}disabled{{/if}}">
                             {{#if autoselected}}
@@ -51,7 +51,7 @@
                                           class="timepointOption"
                                           {{valueIf checked 'checked' ''}}
                                           {{valueIf autoselected 'disabled' ''}}>
-                                        {{name}}
+                                        <span></span>{{name}}
                                 </label>
                             {{/each}}
                         </td>

@@ -11,6 +11,32 @@
         td.timepointOptions
           input
             margin: 0 3px
+            
+            &[type="radio"]
+              border: 0
+              clip: rect(0 0 0 0)
+              height: 1px
+              margin: -1px
+              overflow: hidden
+              padding: 0
+              position: absolute
+              width: 1px
+              
+            & + span:before
+              content: ''
+              display: inline-block
+              width: 13px
+              height: 13px
+              border-radius: 1em
+              border: 0.125em solid #fff
+              box-shadow: 0 0 0 0.15em #000
+              margin: 0 6px
+              transition: 0.5s ease all
+              vertical-align: middle
+
+            &:checked + span:before
+              background: #3b99fc
+              box-shadow: 0 0 0 0.25em #000
 
           label
             padding: 0 5px
