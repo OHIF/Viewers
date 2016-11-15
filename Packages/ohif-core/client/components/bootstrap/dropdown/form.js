@@ -1,12 +1,15 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
+import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 
 Template.dropdownForm.onRendered(() => {
     const instance = Template.instance();
+    const dropdown = instance.$('.dropdown');
 
     // Show the dropdown
-    instance.$('.dropdown').addClass('open');
+    dropdown.addClass('open');
+    dropdown.find('ul.dropdown-menu li a').addClass('noselect');
 
     // Destroy the Blaze created view (either created with template calls or with renderWithData)
     instance.destroyView = () => {
@@ -20,6 +23,12 @@ Template.dropdownForm.onRendered(() => {
 
 Template.dropdownForm.events({
     'click .dropdown'(event, instance) {
-        instance.destroyView();
+        let target = $(event.target);
+        if (target.hasClass('disabled')) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            instance.destroyView();
+        }
     }
 });
