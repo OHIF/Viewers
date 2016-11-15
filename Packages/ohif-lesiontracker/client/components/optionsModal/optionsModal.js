@@ -48,16 +48,5 @@ Template.optionsModal.events({
                 selected: isChecked
             }
         });
-    },
-    /**
-     * When the Clear Study/Timepoint Associations button is clicked, we
-     * send a call to the server to erase all entries in the Timepoints Collection.
-     */
-    'click a.clearAllStudyTimepointAssociations': function() {
-        Meteor.call('clearAllTimepoints', function(error) {
-            if (error) {
-                OHIF.log.warn(error);
-            }
-        });
     }
 });
