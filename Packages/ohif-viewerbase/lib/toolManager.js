@@ -36,7 +36,7 @@ function configureTools() {
     toolStyle.setToolWidth(2);
 
     // Set color for inactive tools
-    toolColors.setToolColor('#91b9cd'); //rgb(255, 255, 0)');
+    toolColors.setToolColor('#ff00ff'); //rgb(255, 255, 0)');
 
     // Set color for active tools
     toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
@@ -50,12 +50,12 @@ function configureTools() {
     };
 
     // Get some tools config to not override them
-    const lengthConfig = length.getConfiguration();
+    /*const lengthConfig = length.getConfiguration();
     const bidirectionalConfig = bidirectional.getConfiguration();
     const ellipticalRoiConfig = ellipticalRoi.getConfiguration();
     const nonTargetConfig = nonTarget.getConfiguration();
 
-    // Add shadow to length tool 
+    // Add shadow to length tool
     length.setConfiguration({
         ...lengthConfig,
         ...shadowConfig
@@ -77,7 +77,7 @@ function configureTools() {
     nonTarget.setConfiguration({
         ...nonTargetConfig,
         ...shadowConfig
-    });
+    });*/
 
     // Set the configuration values for the text annotation (Arrow) tool
     const annotateConfig = {
