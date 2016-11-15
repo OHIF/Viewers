@@ -16,14 +16,22 @@ Template.studyTimepointStudy.onCreated(() => {
     };
 });
 
-// Initialize the study wrapper max-height to enable CSS transition
-Template.studyTimepointStudy.onRendered(() => {
-    const instance = Template.instance();
+const initializeStudyWrapper = instance => {
     const $study = instance.$('.studyTimepointStudy');
     const $thumbnails = instance.$('.studyTimepointThumbnails');
     $study.addClass('active');
+    // If element already has max-height property set, .height() 
+    // will return that value, so remove it to recalculate
+    $thumbnails.css('max-height', '');
     $thumbnails.css('max-height', $thumbnails.height());
     $study.removeClass('active');
+};
+
+// Initialize the study wrapper max-height to enable CSS transition
+Template.studyTimepointStudy.onRendered(() => {
+    const instance = Template.instance();
+
+    initializeStudyWrapper(instance);
 
     // Here we add, remove, and add the active class again because this way
     // the max-height animation appears smooth to the user.
@@ -85,7 +93,7 @@ Template.studyTimepointStudy.events({
         const $study = $(event.currentTarget).closest('.studyTimepointStudy');
 
         const studyData = instance.data.study;
-        const studyInstanceUid = studyData.studyInstanceUid;
+        const { studyInstanceUid, _id } = studyData;
 
         const isQuickSwitch = !_.isUndefined(instance.data.viewportIndex);
 
@@ -93,15 +101,20 @@ Template.studyTimepointStudy.events({
         // and if not, retrieve it.
         if (!studyData.seriesList) {
             const alreadyLoaded = ViewerStudies.findOne({
-                studyInstanceUid
+                _id
             });
 
             if (!alreadyLoaded) {
                 $study.addClass('loading');
                 getStudyMetadata(studyInstanceUid, study => {
                     study.displaySets = createStacks(study);
-                    ViewerStudies.insert(study);
-                    instance.select(isQuickSwitch);
+                    instance.data.study = study;
+                    ViewerStudies.insert(study, () => {
+                        // To make sure studies are rendered in the DOM
+                        // use minimongo insert callback
+                        initializeStudyWrapper(instance);
+                        instance.select(isQuickSwitch);
+                    });
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;
