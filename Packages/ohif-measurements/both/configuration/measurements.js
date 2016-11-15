@@ -58,7 +58,7 @@ class MeasurementApi {
         });
     }
 
-    storeMeasurements(timepointId) {
+    storeMeasurements(timepoints) {
         const storeFn = configuration.dataExchange.store;
         if (!_.isFunction(storeFn)) {
             return;
@@ -70,7 +70,16 @@ class MeasurementApi {
             measurementData[measurementTypeId] = this[measurementTypeId].find().fetch();
         });
 
-        storeFn(measurementData).then(() => {
+        const timepointIds = timepoints.map(t => t.timepointId);
+        const patientId = timepoints[0].patientId;
+        const filter = {
+            patientId,
+            timepointId: {
+                $in: timepointIds
+            }
+        };
+
+        storeFn(measurementData, filter).then(() => {
             OHIF.log.info('Measurement storage completed');
         });
     }

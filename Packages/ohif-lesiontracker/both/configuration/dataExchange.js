@@ -20,13 +20,13 @@ export const retrieveMeasurements = (filter) => {
     });
 };
 
-export const storeMeasurements = (measurementData) => {
+export const storeMeasurements = (measurementData, timepointIds) => {
     console.log('storeMeasurements');
 
     // Here is where we should do any required data transformation and API calls
 
     return new Promise((resolve, reject) => {
-        Meteor.call('storeMeasurements', measurementData, (error, response) => {
+        Meteor.call('storeMeasurements', measurementData, timepointIds, (error, response) => {
             if (error) {
                 reject(error);
             } else {

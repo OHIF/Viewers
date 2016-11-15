@@ -124,7 +124,7 @@ Template.caseProgress.helpers({
 });
 
 Template.caseProgress.events({
-    'click .js-finish-case'(event) {
+    'click .js-finish-case'(event, instance) {
         const $this = $(event.currentTarget);
 
         // Stop here if the tool is disabled
@@ -132,8 +132,12 @@ Template.caseProgress.events({
             return;
         }
 
-        const instance = Template.instance();
         switchToTab('studylistTab');
-        instance.data.measurementApi.storeMeasurements();
+
+        const timepointApi = instance.data.timepointApi;
+        const timepoints = timepointApi.all();
+        OHIF.log.info('Saving Measurements for timepoints:')
+        OHIF.log.info(timepoints);
+        instance.data.measurementApi.storeMeasurements(timepoints);
     }
 });

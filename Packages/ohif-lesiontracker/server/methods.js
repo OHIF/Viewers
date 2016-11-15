@@ -97,7 +97,7 @@ Meteor.methods({
         return Timepoints.find(filter || {}).fetch();
     },
 
-    storeMeasurements(measurementData) {
+    storeMeasurements(measurementData, filter = {}) {
         OHIF.log.info('Storing Measurements on the Server');
         OHIF.log.info(JSON.stringify(measurementData, null, 2));
 
@@ -106,7 +106,7 @@ Meteor.methods({
                 return;
             }
 
-            MeasurementCollections[toolId].remove({});
+            MeasurementCollections[toolId].remove(filter);
 
             const measurements = measurementData[toolId];
             measurements.forEach(measurement => {
