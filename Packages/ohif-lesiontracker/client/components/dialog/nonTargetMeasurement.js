@@ -48,8 +48,6 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
 
     const form = instance.$('form').data('component');
 
-    console.warn('>>>>instance.data', instance.data);
-
     const viewerMain = $(instance.data.element).closest('.viewerMain')[0];
     instance.viewerData = Blaze.getData(viewerMain);
 

@@ -100,7 +100,6 @@ Template.viewer.onCreated(() => {
     measurementsPromise.then(() => {
         Session.set('MeasurementsReady', true);
 
-        console.warn('>>>>SYNC CALLED');
         instance.data.measurementApi.syncMeasurementsAndToolData();
     });
 
