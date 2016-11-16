@@ -19,10 +19,19 @@ import { OHIF } from 'meteor/ohif:core';
         ESC: 27
     };
 
+    const getPosition = eventData => {
+        const event = eventData.event;
+        return {
+            x: event.clientX,
+            y: event.clientY
+        };
+    };
+
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getMeasurementLocationCallback(measurementData, eventData) {
         OHIF.ui.showFormDialog('dialogNonTargetMeasurement', {
+            position: getPosition(eventData),
             title: 'Select Lesion Location',
             element: eventData.element,
             measurementData
@@ -31,6 +40,7 @@ import { OHIF } from 'meteor/ohif:core';
 
     function changeMeasurementLocationCallback(measurementData, eventData) {
         OHIF.ui.showFormDialog('dialogNonTargetMeasurement', {
+            position: getPosition(eventData),
             title: 'Change Lesion Location',
             element: eventData.element,
             measurementData,

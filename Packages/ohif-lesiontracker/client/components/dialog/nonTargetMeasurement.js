@@ -39,6 +39,7 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
         // Confirm the deletion of the current non-target measurement
         remove() {
             const dialogSettings = {
+                position: instance.data.position,
                 title: 'Remove Measurement',
                 message: 'Are you sure you want to remove this Non-Target measurement?'
             };
@@ -125,5 +126,4 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
             $set: { location: formData.location }
         });
     });
-
 });

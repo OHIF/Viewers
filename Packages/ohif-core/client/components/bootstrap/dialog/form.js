@@ -43,10 +43,19 @@ Template.dialogForm.onCreated(() => {
 Template.dialogForm.onRendered(() => {
     const instance = Template.instance();
 
-    // Create the bootstrap modal
-    const $modal = instance.$('.modal');
-    $modal.modal({
+    // Allow options ovewrite
+    const modalOptions = _.extend({
         backdrop: 'static',
         keyboard: false
-    });
+    }, instance.data.modalOptions);
+
+    const $modal = instance.$('.modal');
+
+    // Create the bootstrap modal
+    $modal.modal(modalOptions);
+
+    const position = instance.data.position;
+    if (position) {
+        OHIF.ui.repositionDialog($modal, position.x, position.y);
+    }
 });
