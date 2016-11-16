@@ -40,13 +40,17 @@ Template.measurementLocationDialog.onCreated(() => {
     const timepointApi = instance.data.timepointApi;
 
     const toggleLabel = (measurementData, eventdata, doneCallback) => {
+        const position = _.clone(eventdata.currentPoints.page);
+        position.x += 20;
+        position.y += 20;
+        
         OHIF.measurements.toggleLabelButton({
             instance,
             measurementId: measurementData._id,
             toolType: measurementData.toolType,
             element: eventdata.element,
             measurementApi: instance.data.measurementApi,
-            position: eventdata.currentPoints.page
+            position: position
         });
     };
 
