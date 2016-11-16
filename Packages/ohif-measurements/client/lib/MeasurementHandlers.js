@@ -82,6 +82,8 @@ class MeasurementHandlers {
         measurementData._id = Collection.insert(measurement);
 
         // Update the Overall Measurement Numbers for all Measurements
+
+        // TODO: Get timepointApi here so this works!
         //const baseline = timepointApi.baseline();
         //measurementApi.sortMeasurements(baseline.timepointId);
     }
@@ -141,10 +143,10 @@ class MeasurementHandlers {
         Collection.remove(measurementData._id);
 
         // Update the Overall Measurement Numbers for all Measurements
-        const baseline = timepointApi.baseline();
-        measurementApi.sortMeasurements(baseline.timepointId);
+        // TODO: Get timepointApi here so this works!
+        //const baseline = timepointApi.baseline();
+        //measurementApi.sortMeasurements(baseline.timepointId);
     }
-
 }
 
 OHIF.measurements.MeasurementHandlers = MeasurementHandlers;
