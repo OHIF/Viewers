@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { _ } from 'meteor/underscore';
+
 Template.studyTimepointStudy.onCreated(() => {
     const instance = Template.instance();
 
@@ -17,10 +21,15 @@ Template.studyTimepointStudy.onCreated(() => {
 });
 
 const initializeStudyWrapper = instance => {
+    // Stop here if it's a quick switch
+    if (instance.data.currentStudy) {
+        return;
+    }
+
     const $study = instance.$('.studyTimepointStudy');
     const $thumbnails = instance.$('.studyTimepointThumbnails');
     $study.addClass('active');
-    // If element already has max-height property set, .height() 
+    // If element already has max-height property set, .height()
     // will return that value, so remove it to recalculate
     $thumbnails.css('max-height', '');
     $thumbnails.css('max-height', $thumbnails.height());
@@ -33,7 +42,6 @@ const initializeStudyWrapper = instance => {
             $study.addClass('active');
         }, 1);
     }
-
 };
 
 // Initialize the study wrapper max-height to enable CSS transition

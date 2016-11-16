@@ -1,6 +1,6 @@
 <template name="studyTimepointStudy">
     {{#let isSidebar=(isUndefined viewportIndex)}}
-        <div class="studyTimepointStudy {{#if isSidebar}}studySidebarTimepoint{{else}}studyQuickSwitchTimepoint{{/if}} {{#if this.active}}active{{/if}}">
+        <div class="studyTimepointStudy {{#if isSidebar}}studySidebarTimepoint{{else}}studyQuickSwitchTimepoint{{/if}} {{#if this.active}}active{{/if}}" data-uid="{{this.study.studyInstanceUid}}">
             <div class="studyItem">
                 {{>loadingText}}
                 <div class="studyModality">

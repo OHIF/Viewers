@@ -47,6 +47,7 @@ Template.studyTimepointBrowser.onCreated(() => {
 Template.studyTimepointBrowser.onRendered(() => {
     const instance = Template.instance();
 
+    // Collapse all timepoints but first when timepoint view type changes
     instance.autorun(() => {
         // Runs this computation every time the timepointViewType is changed
         const type = instance.timepointViewType.get();
@@ -59,22 +60,36 @@ Template.studyTimepointBrowser.onRendered(() => {
         }
     });
 
+    // Expand only the timepoints with loaded studies in viewports
     let lastStudy;
+    let activeStudiesUids = [];
+
+    // Wait for rerendering and set the timepoint as active
+    instance.refreshActiveStudies = () => Tracker.afterFlush(() => {
+        _.each(activeStudiesUids, studyInstanceUid => {
+            instance.$(`.studyTimepointStudy[data-uid='${studyInstanceUid}']`).addClass('active');
+        });
+        // Show only first timepoint expanded for key timepoints
+        instance.$('.timepointEntry:first').addClass('active');
+    });
+
     instance.autorun(() => {
         // Runs this computation every time the curenty study is changed
         const currentStudy = instance.data.currentStudy && instance.data.currentStudy.get();
+
+        // Stop here if there's no current study set
+        if (!currentStudy) {
+            return;
+        }
 
         // Check if the study really changed and update the last study
         if (currentStudy !== lastStudy) {
             instance.showAdditionalTimepoints.set(false);
             lastStudy = currentStudy;
+            activeStudiesUids = [currentStudy.studyInstanceUid];
         }
 
-        // Wait for rerendering and set the timepoint as active
-        Tracker.afterFlush(() => {
-            // Show only first timepoint expanded for key timepoints
-            instance.$('.timepointEntry:first').addClass('active');
-        });
+        instance.refreshActiveStudies();
     });
 });
 
