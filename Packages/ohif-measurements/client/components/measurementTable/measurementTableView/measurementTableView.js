@@ -13,12 +13,12 @@ OHIF.measurements.getLocation = collection => {
 Template.measurementTableView.helpers({
     getNewMeasurementType(tool) {
         // TODO: Check Conformance criteria here.
-        // RECIST should be targets, irRC should be nonTargets
+        // RECIST should be nonTargets, irRC should be targets
         return {
             id: tool.id,
             name: tool.name,
-            cornerstoneToolType: 'bidirectional',
-            measurementTypeId: 'targets'
+            cornerstoneToolType: 'nonTarget',
+            measurementTypeId: 'nonTargets'
         };
     },
 
