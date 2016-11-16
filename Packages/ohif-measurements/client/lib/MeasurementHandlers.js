@@ -82,10 +82,10 @@ class MeasurementHandlers {
         measurementData._id = Collection.insert(measurement);
 
         // Update the Overall Measurement Numbers for all Measurements
-
-        // TODO: Get timepointApi here so this works!
-        //const baseline = timepointApi.baseline();
-        //measurementApi.sortMeasurements(baseline.timepointId);
+        if (timepointApi) {
+            const baseline = timepointApi.baseline();
+            measurementApi.sortMeasurements(baseline.timepointId);
+        }
     }
 
     static onModified(e, instance, eventData) {
@@ -143,9 +143,11 @@ class MeasurementHandlers {
         Collection.remove(measurementData._id);
 
         // Update the Overall Measurement Numbers for all Measurements
-        // TODO: Get timepointApi here so this works!
-        //const baseline = timepointApi.baseline();
-        //measurementApi.sortMeasurements(baseline.timepointId);
+        const timepointApi = instance.data.timepointApi;
+        if (timepointApi) {
+            const baseline = timepointApi.baseline();
+            measurementApi.sortMeasurements(baseline.timepointId);
+        }
     }
 }
 
