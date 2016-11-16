@@ -4,14 +4,62 @@ import { OHIF } from 'meteor/ohif:core';
 StudyListSelectedStudies = new Meteor.Collection(null);
 StudyListSelectedStudies._debugName = 'StudyListSelectedStudies';
 
+function isStudySelected(study) {
+    // Search StudyListSelectedStudies for given study and return true if found
+    let count = StudyListSelectedStudies.find({
+        studyInstanceUid: study.studyInstanceUid
+    }).count();
+    return count > 0;
+}
+
+function doClearStudySelections() {
+    // Clear all selected studies
+    StudyListSelectedStudies.remove({});
+    $('tr.studylistStudy').removeClass('active');
+}
+
+function doSelectRow(studyRow, data) {
+    // Insert current study into selection list if it's not there already...
+    if (!isStudySelected(data)) {
+        StudyListSelectedStudies.insert(data);
+    }
+    // Make sure the study row has "active" class
+    studyRow.addClass('active');
+    // Set this as the previously selected row, so the user can
+    // use Shift to select from this point onwards
+    StudyList.previouslySelected = studyRow;
+}
+
+function doSelectSingleRow(studyRow, data) {
+    // Clear all selected studies
+    doClearStudySelections();
+    // ... And add selected row to selection list
+    doSelectRow(studyRow, data);
+}
+
+function doUnselectRow(studyRow, data) {
+    // Find the current studyInstanceUid in the stored list and remove it
+    StudyListSelectedStudies.remove({
+        studyInstanceUid: data.studyInstanceUid
+    });
+    studyRow.removeClass('active');
+}
+
 function handleShiftClick(studyRow, data) {
     //OHIF.log.info('shiftKey');
-    var studyInstanceUid = studyRow.attr('studyInstanceUid');
+
+    let study, previous = StudyList.previouslySelected ? $(StudyList.previouslySelected) : null;
+    if (previous && previous.length > 0) {
+        study = Blaze.getData(previous.get(0));
+        if (!isStudySelected(study)) {
+            previous = void 0; // undefined
+            StudyList.previouslySelected = previous;
+        }
+    }
 
     // Select all rows in between these two rows
-    if (StudyList.previouslySelected) {
-        var previous = $(StudyList.previouslySelected);
-        var rowsInBetween;
+    if (previous) {
+        let rowsInBetween;
         if (previous.index() < studyRow.index()) {
             // The previously selected row is above (lower index) the
             // currently selected row.
@@ -25,16 +73,14 @@ function handleShiftClick(studyRow, data) {
             // Fill in the rows upwards from the previously selected row
             rowsInBetween = previous.prevAll('tr');
         } else {
-            // The rows are the same, deselect the current row.
-            // TODO: CHECK THIS, pretty sure this is the wrong behaviour
-            StudyListSelectedStudies.remove({});
-            StudyList.previouslySelected = undefined;
+            // nothing to do since previous.index() === studyRow.index()
+            // the user is shift-clicking the same row...
             return;
         }
 
         // Loop through the rows in between current and previous selected studies
         rowsInBetween.each(function() {
-            var row = $(this);
+            let row = $(this);
 
             if (row.hasClass('active')) {
                 // If we find one that is already selected, do nothing
@@ -42,63 +88,54 @@ function handleShiftClick(studyRow, data) {
             }
 
             // Get the relevant studyInstanceUid
-            var studyInstanceUid = row.attr('studyInstanceUid');
+            let studyInstanceUid = row.attr('studyInstanceUid');
 
             // Retrieve the data context through Blaze
-            var data = Blaze.getData(this);
+            let data = Blaze.getData(this);
 
             // Set the current study as selected
-            StudyListSelectedStudies.insert(data);
-            row.addClass('active');
+            doSelectRow(row, data);
 
             // When we reach the currently clicked-on row, stop the loop
             return !row.is(studyRow);
         });
     } else {
         // Set the current study as selected
-        StudyListSelectedStudies.insert(data);
-        studyRow.addClass('active');
+        doSelectSingleRow(studyRow, data);
     }
 }
 
 function handleCtrlClick(studyRow, data) {
     //OHIF.log.info('ctrlKey');
-    var studyInstanceUid = studyRow.attr('studyInstanceUid');
-
-    if (studyRow.hasClass('active')) {
-        studyRow.removeClass('active');
-
-        // Find the current studyInstanceUid in the stored list and remove it
-        StudyListSelectedStudies.remove({
-            studyInstanceUid: data.studyInstanceUid
-        });
+    if (isStudySelected(data)) {
+        doUnselectRow(studyRow, data);
     } else {
-        // Set the current study as selected
-        StudyListSelectedStudies.insert(data);
-        studyRow.addClass('active');
-
-        // Set this as the previously selected row, so the user can
-        // use Shift to select from this point onwards
-        StudyList.previouslySelected = studyRow;
+        doSelectRow(studyRow, data);
         OHIF.log.info('StudyList PreviouslySelected set: ' + studyRow.index());
     }
 }
 
 Template.studylistStudy.onRendered(function() {
-    var instance = this;
-    var elem = instance.$('tr.studylistStudy').get(0);
+    let instance = this,
+        data = instance.data,
+        row = instance.$('tr.studylistStudy').first();
 
     // Enable HammerJS to allow touch support
-    var mc = new Hammer.Manager(elem);
-    var doubleTapRecognizer = new Hammer.Tap({
-        event: 'doubletap',
-        taps: 2,
-        interval: 500,
-        threshold: 30,
-        posThreshold: 30
-    });
-
+    let mc = new Hammer.Manager(row.get(0)),
+        doubleTapRecognizer = new Hammer.Tap({
+            event: 'doubletap',
+            taps: 2,
+            interval: 500,
+            threshold: 30,
+            posThreshold: 30
+        });
     mc.add(doubleTapRecognizer);
+
+    // Check if current row has been previously selected
+    if (isStudySelected(data)) {
+        doSelectRow(row, data);
+    }
+
 });
 
 Template.studylistStudy.events({
@@ -114,20 +151,7 @@ Template.studylistStudy.events({
         } else if (e.ctrlKey || e.metaKey) {
             handleCtrlClick(studyRow, data);
         } else {
-            // Select a single study
-            //OHIF.log.info('Regular click');
-
-            // Clear all selected studies
-            StudyListSelectedStudies.remove({});
-            $('tr.studylistStudy').removeClass('active');
-
-            // Set the previous study to the currently clicked-on study
-            StudyList.previouslySelected = studyRow;
-            //OHIF.log.info('StudyList PreviouslySelected set: ' + studyRow.index());
-
-            // Set the current study as selected
-            StudyListSelectedStudies.insert(data);
-            studyRow.addClass('active');
+            doSelectSingleRow(studyRow, data);
         }
     },
     'mousedown tr.studylistStudy': function(e) {
@@ -155,11 +179,16 @@ Template.studylistStudy.events({
         }
     },
     'contextmenu tr.studylistStudy, press tr.studylistStudy': function(e, template) {
-        $(e.currentTarget).addClass('active');
 
-        if (openStudyContextMenu && typeof openStudyContextMenu === 'function') {
+        var studyRow = $(e.currentTarget),
+            data = this;
+
+        if (!isStudySelected(data)) {
+            doSelectSingleRow(studyRow, data);
+        }
+
+        if (typeof openStudyContextMenu === 'function') {
             e.preventDefault();
-
             openStudyContextMenu(e, template);
             return false;
         }
