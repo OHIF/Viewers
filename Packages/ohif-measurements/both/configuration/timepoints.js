@@ -62,7 +62,7 @@ class TimepointApi {
     disassociateStudy(timepointIds, studyInstanceUid) {
         const disassociateFn = configuration.dataExchange.disassociate;
         disassociateFn(timepointIds, studyInstanceUid).then(() => {
-            OHIF.log.info('Disassociation completed')
+            OHIF.log.info('Disassociation completed');
 
             this.timepoints.remove({});
             this.retrieveTimepoints();
@@ -253,11 +253,24 @@ class TimepointApi {
 
         const all = _.clone(this.all()).reverse();
         let index = -1;
-        _.each(all, (currentTimepoint, currentIndex) => {
-            if (currentTimepoint.timepointId === timepoint.timepointId) {
-                index = currentIndex;
+        let currentIndex = null;
+        for (let i = 0; i < all.length; i++) {
+            const currentTimepoint = all[i];
+
+            // Skip the iterations until we can't find the selected timepoint on study list
+            if (this.currentTimepointId === currentTimepoint.timepointId) {
+                currentIndex = 0;
             }
-        });
+
+            if (_.isNumber(currentIndex)) {
+                index = currentIndex++;
+            }
+
+            // Break the loop if reached the timepoint to get the title
+            if (currentTimepoint.timepointId === timepoint.timepointId) {
+                break;
+            }
+        }
 
         const states = {
             0: '(Current)',
