@@ -152,12 +152,14 @@
                     start: {
                         x: mouseEventData.currentPoints.image.x,
                         y: mouseEventData.currentPoints.image.y,
+                        allowedOutsideImage: true,
                         highlight: true,
                         active: false
                     },
                     end: {
                         x: mouseEventData.currentPoints.image.x,
                         y: mouseEventData.currentPoints.image.y,
+                        allowedOutsideImage: true,
                         highlight: true,
                         active: false
                     },

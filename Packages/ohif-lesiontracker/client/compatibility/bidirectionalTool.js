@@ -47,6 +47,7 @@
                     highlight: true,
                     active: false,
                     drawnIndependently: true,
+                    allowedOutsideImage: true,
                     index: 0
                 },
                 end: {
@@ -55,6 +56,7 @@
                     highlight: true,
                     active: true,
                     drawnIndependently: true,
+                    allowedOutsideImage: true,
                     index: 1
                 },
                 textBox: {
@@ -73,6 +75,7 @@
                     active: false,
                     locked: true, // If perpendicular line is connected to long-line
                     drawnIndependently: true,
+                    allowedOutsideImage: true,
                     index: 2
                 },
                 perpendicularEnd: {
@@ -81,6 +84,7 @@
                     highlight: true,
                     active: false,
                     drawnIndependently: true,
+                    allowedOutsideImage: true,
                     index: 3
                 }
             },
