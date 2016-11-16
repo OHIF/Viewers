@@ -82,8 +82,8 @@ class MeasurementHandlers {
         measurementData._id = Collection.insert(measurement);
 
         // Update the Overall Measurement Numbers for all Measurements
-        const baseline = timepointApi.baseline();
-        measurementApi.sortMeasurements(baseline.timepointId);
+        //const baseline = timepointApi.baseline();
+        //measurementApi.sortMeasurements(baseline.timepointId);
     }
 
     static onModified(e, instance, eventData) {
