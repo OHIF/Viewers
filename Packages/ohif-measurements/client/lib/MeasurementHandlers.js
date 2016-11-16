@@ -84,7 +84,11 @@ class MeasurementHandlers {
         // Update the Overall Measurement Numbers for all Measurements
         if (timepointApi) {
             const baseline = timepointApi.baseline();
-            measurementApi.sortMeasurements(baseline.timepointId);
+
+            // TODO: Fix this it is a terrible workaround but we have a demo to do
+            if (baseline) {
+                measurementApi.sortMeasurements(baseline.timepointId);    
+            }
         }
     }
 
@@ -146,7 +150,11 @@ class MeasurementHandlers {
         const timepointApi = instance.data.timepointApi;
         if (timepointApi) {
             const baseline = timepointApi.baseline();
-            measurementApi.sortMeasurements(baseline.timepointId);
+
+            // TODO: Fix this it is a terrible workaround but we have a demo to do
+            if (baseline) {
+                measurementApi.sortMeasurements(baseline.timepointId);
+            }
         }
     }
 }
