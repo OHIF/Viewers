@@ -48,10 +48,10 @@ function configureTools() {
 
     // Set shadow configuration for length and bidirectional text boxes
     const shadowConfig = {
-        shadow: true,
+        shadow: false,
         shadowColor: '#000000',
-        shadowOffsetX: 1,
-        shadowOffsetY: 1
+        shadowOffsetX: 0,
+        shadowOffsetY: 0
     };
 
     // Get some tools config to not override them
