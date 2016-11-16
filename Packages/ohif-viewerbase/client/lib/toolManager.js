@@ -32,25 +32,30 @@ function configureTools() {
     // Set text box background color
     textStyle.setBackgroundColor('transparent');
 
+    // Set the tool font and font size
+    // context.font = "[style] [variant] [weight] [size]/[line height] [font family]";
+    const fontFamily = 'Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
+    textStyle.setFont('15px ' + fontFamily);
+
     // Set the tool width
     toolStyle.setToolWidth(2);
 
     // Set color for inactive tools
-    toolColors.setToolColor('#ff00ff'); //rgb(255, 255, 0)');
+    toolColors.setToolColor('rgb(255, 255, 0)');
 
     // Set color for active tools
-    toolColors.setActiveColor('#00ffff'); //rgb(0, 255, 0)'
+    toolColors.setActiveColor('rgb(0, 255, 0)');
 
     // Set shadow configuration for length and bidirectional text boxes
     const shadowConfig = {
         shadow: true,
-        shadowColor: '#000',
+        shadowColor: '#000000',
         shadowOffsetX: 1,
         shadowOffsetY: 1
     };
 
     // Get some tools config to not override them
-    /*const lengthConfig = length.getConfiguration();
+    const lengthConfig = length.getConfiguration();
     const bidirectionalConfig = bidirectional.getConfiguration();
     const ellipticalRoiConfig = ellipticalRoi.getConfiguration();
     const nonTargetConfig = nonTarget.getConfiguration();
@@ -77,7 +82,7 @@ function configureTools() {
     nonTarget.setConfiguration({
         ...nonTargetConfig,
         ...shadowConfig
-    });*/
+    });
 
     // Set the configuration values for the text annotation (Arrow) tool
     const annotateConfig = {

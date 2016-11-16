@@ -249,10 +249,8 @@
 
             var color;
             var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-            var font = cornerstoneTools.textStyle.getFont();
             var config = cornerstoneTools[toolType].getConfiguration();
 
-            context.font = font;
             for (var i = 0; i < toolData.data.length; i++) {
                 var data = toolData.data[i];
 
@@ -260,9 +258,9 @@
 
                 // configurable shadow from CornerstoneTools
                 if (config && config.shadow) {
-                    context.shadowColor = '#000000';
-                    context.shadowOffsetX = 1;
-                    context.shadowOffsetY = 1;
+                    context.shadowColor = config.shadowColor || '#000000';
+                    context.shadowOffsetX = config.shadowOffsetX || 1;
+                    context.shadowOffsetY = config.shadowOffsetY || 1;
                 }
 
                 if (data.active) {

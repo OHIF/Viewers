@@ -50,11 +50,20 @@ Template.measurementLocationDialog.onCreated(() => {
         });
     };
 
-    const config = {
+    const callbackConfig = {
         setMeasurementNumberCallback: getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi),
         // TODO: Check the position for these, the Add Label button position seems very awkward
         getMeasurementLocationCallback: toggleLabel,
         changeMeasurementLocationCallback: toggleLabel,
+    };
+
+
+    // TODO: Reconcile this with the configuration in toolManager
+    // it would be better to have this all in one place.
+    const bidirectionalConfig = cornerstoneTools.bidirectional.getConfiguration();
+    const config = {
+        ...bidirectionalConfig,
+        ...callbackConfig
     };
 
     cornerstoneTools.bidirectional.setConfiguration(config);
