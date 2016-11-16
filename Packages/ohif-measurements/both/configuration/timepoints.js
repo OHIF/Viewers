@@ -110,7 +110,11 @@ class TimepointApi {
 
     // Return all timepoints
     all() {
-        return this.timepoints.find().fetch();
+        return this.timepoints.find({}, {
+            sort: {
+                latestDate: -1
+            },
+        }).fetch();
     }
 
     // Return only the current timepoint
@@ -251,7 +255,7 @@ class TimepointApi {
     title(timepoint) {
         const timepointName = this.name(timepoint);
 
-        const all = _.clone(this.all()).reverse();
+        const all = _.clone(this.all());
         let index = -1;
         let currentIndex = null;
         for (let i = 0; i < all.length; i++) {
