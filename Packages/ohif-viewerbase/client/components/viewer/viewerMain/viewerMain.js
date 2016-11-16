@@ -23,8 +23,7 @@ Template.viewerMain.onRendered(() => {
 
         // Toggle Measurement Table 
         // Show as default for Associated Studies
-        if(studies.length > 1) {
-            // Session.set('rightSidebar', 'measurements');
+        if(instance.data.currentTimepointId) {
             instance.data.state.set('rightSidebar', 'measurements');
         }
         // Hide as default for single study

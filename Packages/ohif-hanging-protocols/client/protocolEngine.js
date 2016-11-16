@@ -569,6 +569,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         // Loop through each viewport
         stageModel.viewports.forEach((viewport, viewportIndex) => {
             var details = this.matchImages(viewport);
+
             this.matchDetails[viewportIndex] = details;
 
             // Convert any YES/NO values into true/false for Cornerstone
@@ -625,7 +626,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 currentPosition++;
             }
 
-            if (currentMatch.imageId) {
+            if (currentMatch && currentMatch.imageId) {
                 currentViewportData.studyInstanceUid = currentMatch.studyInstanceUid;
                 currentViewportData.seriesInstanceUid = currentMatch.seriesInstanceUid;
                 currentViewportData.sopInstanceUid = currentMatch.sopInstanceUid;
