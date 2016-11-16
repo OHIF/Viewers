@@ -1,3 +1,7 @@
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+
 Template.studySeriesQuickSwitch.onCreated(() => {
     const instance = Template.instance();
 
@@ -12,24 +16,35 @@ Template.studySeriesQuickSwitch.onCreated(() => {
 
     // Gets the current viewport data
     const viewportIndex = instance.data.viewportIndex;
-    const viewportData = instance.getViewportData(viewportIndex);
 
-    let study;
-    if (viewportData) {
-        // Finds the current study and return it
-        study = ViewerStudies.findOne({
-            studyInstanceUid: viewportData.studyInstanceUid
-        });
-    } else {
-        study = ViewerStudies.findOne();
-    }
+    instance.study = {};
+    instance.lastStudy = {};
 
-    if (!study) {
-        return;
-    }
+    instance.autorun(() => {
+        Session.get('LayoutManagerUpdated');
 
-    // Change the current study to update the thumbnails
-    instance.data.currentStudy.set(study);
+        const viewportData = instance.getViewportData(viewportIndex);
+
+        if (viewportData) {
+            // Finds the current study and return it
+            instance.study = ViewerStudies.findOne({
+                studyInstanceUid: viewportData.studyInstanceUid
+            });
+        } else {
+            instance.study = ViewerStudies.findOne();
+        }
+
+        if (!instance.study) {
+            return;
+        }
+
+        if (instance.study.studyInstanceUid !== instance.lastStudy.studyInstanceUid) {
+            // Change the current study to update the thumbnails
+            instance.data.currentStudy.set(instance.study);
+
+            instance.lastStudy = instance.study;
+        }
+    });
 });
 
 Template.studySeriesQuickSwitch.events({
@@ -61,6 +76,6 @@ Template.studySeriesQuickSwitch.helpers({
     // - http://stackoverflow.com/questions/6165472/custom-css-scrollbar-for-firefox/6165489#6165489
     // - http://stackoverflow.com/questions/18317634/force-visible-scrollbar-in-firefox-on-mac-os-x/18318273
     addMacOSClass() {
-        return window.navigator.appVersion.indexOf("Mac") !== -1 ? 'is-mac' : '';
+        return window.navigator.appVersion.indexOf('Mac') !== -1 ? 'is-mac' : '';
     }
 });

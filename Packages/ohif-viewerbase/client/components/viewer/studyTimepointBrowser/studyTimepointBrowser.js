@@ -1,4 +1,7 @@
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { _ } from 'meteor/underscore';
 
 Template.studyTimepointBrowser.onCreated(() => {
     const instance = Template.instance();
@@ -26,12 +29,12 @@ Template.studyTimepointBrowser.onCreated(() => {
                 studyInstanceUid: studyInstanceUid
             };
 
-            var loadedStudy = ViewerStudies.findOne(query);
+            const loadedStudy = ViewerStudies.findOne(query);
             if (loadedStudy) {
                 return loadedStudy;
             }
 
-            var notYetLoaded = StudyListStudies.findOne(query);
+            const notYetLoaded = StudyListStudies.findOne(query);
             if (!notYetLoaded) {
                 throw 'No study data available for Study: ' + studyInstanceUid;
             }
@@ -50,7 +53,7 @@ Template.studyTimepointBrowser.onRendered(() => {
 
         // Removes all active classes to collapse the timepoints and studies
         instance.$('.timepointEntry, .studyTimepointStudy').removeClass('active');
-        if (type === 'key') {
+        if (type === 'key' && !instance.data.currentStudy) {
             // Show only first timepoint expanded for key timepoints
             instance.$('.timepointEntry:first').addClass('active');
         }
@@ -66,6 +69,12 @@ Template.studyTimepointBrowser.onRendered(() => {
             instance.showAdditionalTimepoints.set(false);
             lastStudy = currentStudy;
         }
+
+        // Wait for rerendering and set the timepoint as active
+        Tracker.afterFlush(() => {
+            // Show only first timepoint expanded for key timepoints
+            instance.$('.timepointEntry:first').addClass('active');
+        });
     });
 });
 
