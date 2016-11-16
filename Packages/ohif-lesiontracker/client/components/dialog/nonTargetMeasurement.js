@@ -76,7 +76,7 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
     } else {
         // LT-112 Non-target response shall default to non-measurable on baseline, present on follow-up
         const timepoint = timepointApi.study(measurementData.studyInstanceUid)[0];
-        const response = timepoint && timepoint.timepointType === 'baseline' ? 'NE' : 'Present';
+        const response = timepoint && timepoint.timepointType === 'baseline' ? 'Present' : '';
 
         // Get a previously inserted Non-target
         const previousMeasurement = collection.findOne({
