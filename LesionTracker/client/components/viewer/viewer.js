@@ -10,6 +10,7 @@ Template.viewer.onCreated(() => {
     ViewerData = window.ViewerData || ViewerData;
 
     const instance = Template.instance();
+    instance.subscribe('hangingprotocols');
 
     ValidationErrors.remove({});
 
