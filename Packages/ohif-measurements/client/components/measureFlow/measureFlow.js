@@ -248,6 +248,8 @@ Template.measureFlow.events({
             instance.commonClicked = false;
 
             instance.data.updateCallback(instance.value.value, instance.description.get());
+
+            Meteor.defer(() => !$measureFlow.is(':hover') && $measureFlow.trigger('close'));
         });
 
         // Wait the fade-out transition and remove the selectTree component
@@ -265,7 +267,7 @@ Template.measureFlow.events({
         });
     },
 
-    'mouseout .measure-flow'(event, instance) {
+    'mouseleave .measure-flow'(event, instance) {
         const $measureFlow = $(event.currentTarget);
         const canClose = instance.state.get() === 'selected' && !instance.descriptionEdit.get();
         if (canClose && !$.contains($measureFlow[0], event.toElement)) {
@@ -273,8 +275,30 @@ Template.measureFlow.events({
         }
     },
 
+    'mouseenter .measure-flow'(event, instance) {
+        // Prevent from closing if user go out and in too fast
+        clearTimeout(instance.closingTimeout);
+        $(event.currentTarget).off('animationend').removeClass('fadeOut');
+    },
+
     'close .measure-flow'(event, instance) {
         const $measureFlow = $(event.currentTarget);
-        $measureFlow.one('animationend', instance.data.doneCallback).addClass('fadeOut');
+
+        // Clear the timeout to prevent executing the close process twice
+        clearTimeout(instance.closingTimeout);
+
+        instance.closingTimeout = setTimeout(() => {
+            const animationEndHandler = event => {
+                // Prevent closing if the animation is coming from actions panel
+                if (event.target !== $measureFlow[0]) {
+                    $measureFlow.one('animationend', animationEndHandler);
+                    return;
+                }
+
+                instance.data.doneCallback();
+            };
+
+            $measureFlow.one('animationend', animationEndHandler).addClass('fadeOut');
+        }, 300);
     }
 });
