@@ -22,8 +22,10 @@
             <tbody>
                 {{#each relevantStudies}}
                     <tr>
-                        <td class="center">
-                            <input type="checkbox" class="includeStudy" {{valueIf autoselected '' 'checked'}}/> <span></span>
+                        <td class="checkboxWrapper center">
+                            <label>
+                                <input type="checkbox" class="includeStudy" {{valueIf autoselected '' 'checked'}}/> <span></span>
+                            </label>
                         </td>
                         <td class="center studyDataCell {{#if autoselected}}disabled{{/if}}">
                             {{#if autoselected}}
