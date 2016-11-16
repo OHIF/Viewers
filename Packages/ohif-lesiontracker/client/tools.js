@@ -38,7 +38,7 @@ Meteor.startup(function() {
     let currentDefaultStates = toolManager.getToolDefaultStates();
     let newDefaultStates = {
         deactivate: ['bidirectional', 'nonTarget', 'length', 'crTool', 'unTool', 'exTool'],
-        activate: ['deleteLesionKeyboardTool']
+        activate: [] // 'deleteLesionKeyboardTool'
     };
 
     for (let state in newDefaultStates) {
