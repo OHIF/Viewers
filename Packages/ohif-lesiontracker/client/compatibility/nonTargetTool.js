@@ -59,6 +59,7 @@ import { OHIF } from 'meteor/ohif:core';
         }
 
         const measurementData = createNewMeasurement(mouseEventData);
+        measurementData.viewport = cornerstone.getViewport(element);
 
         const eventData = {
             mouseButtonMask: mouseEventData.which

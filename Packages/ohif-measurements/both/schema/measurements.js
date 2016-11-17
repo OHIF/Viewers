@@ -74,6 +74,81 @@ const SeriesLevelMeasurement = new SimpleSchema([
     }
 ]);
 
+const CornerstoneVOI = new SimpleSchema({
+    windowWidth: {
+        type: Number,
+        label: 'Window Width',
+        decimal: true,
+        optional: true
+    },
+    windowCenter: {
+        type: Number,
+        label: 'Window Center',
+        decimal: true,
+        optional: true
+    },
+});
+
+const CornerstoneViewportTranslation = new SimpleSchema({
+    x: {
+        type: Number,
+        label: 'X',
+        decimal: true,
+        optional: true
+    },
+    y: {
+        type: Number,
+        label: 'Y',
+        decimal: true,
+        optional: true
+    },
+});
+
+const CornerstoneViewport = new SimpleSchema({
+    scale: {
+        type: Number,
+        label: 'Scale',
+        decimal: true,
+        optional: true
+    },
+    translation: {
+        type: CornerstoneViewportTranslation,
+        label: 'Translation',
+        optional: true
+    },
+    voi: {
+        type: CornerstoneVOI,
+        label: 'VOI',
+        optional: true
+    },
+    invert: {
+        type: Boolean,
+        label: 'Invert',
+        optional: true
+    },
+    pixelReplication: {
+        type: Boolean,
+        label: 'Pixel Replication',
+        optional: true
+    },
+    hFlip: {
+        type: Boolean,
+        label: 'Horizontal Flip',
+        optional: true
+    },
+    vFlip: {
+        type: Boolean,
+        label: 'Vertical Flip',
+        optional: true
+    },
+    rotation: {
+        type: Number,
+        label: 'Rotation (degrees)',
+        decimal: true,
+        optional: true
+    }
+})
+
 const InstanceLevelMeasurement = new SimpleSchema([
     StudyLevelMeasurement,
     SeriesLevelMeasurement,
@@ -81,6 +156,11 @@ const InstanceLevelMeasurement = new SimpleSchema([
         sopInstanceUid: {
             type: String,
             label: 'SOP Instance UID'
+        },
+        viewport: {
+            type: CornerstoneViewport,
+            label: 'Viewport Parameters',
+            optional: true
         }
     }
 ]);

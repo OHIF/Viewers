@@ -111,6 +111,7 @@
         }
 
         var measurementData = createNewMeasurement(mouseEventData);
+        measurementData.viewport = cornerstone.getViewport(element);
 
         var eventData = {
             mouseButtonMask: mouseEventData.which

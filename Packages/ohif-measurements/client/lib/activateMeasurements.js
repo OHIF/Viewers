@@ -31,6 +31,32 @@ function activateTool(measurementData) {
 OHIF.measurements.activateMeasurements = (element, measurementData) => {
     console.log('activateMeasurements');
 
+    // If Cornerstone Viewport information was stored while the measurement was created,
+    // we should re-apply this data when activating the measurement.
+    const viewport = cornerstone.getViewport(element);
+
+    // TODO: Make this an option somewhere? For now we only want to apply windowWidth and
+    // windowCenter
+    const viewportPropertiesToUpdate = ['voi'];
+
+    // Check to make sure we actually stored viewport data before trying to apply it
+    if (measurementData.viewport) {
+
+        // For each property which is not undefined, update it's value from the stored
+        // measurement data
+        viewportPropertiesToUpdate.forEach(prop => {
+            const storedPropertyValue = measurementData.viewport[prop];
+            if (storedPropertyValue === undefined) {
+                return;
+            }
+
+            viewport[prop] = storedPropertyValue;
+        });
+
+        // Apply the updated viewport parameters to the element
+        cornerstone.setViewport(element, viewport);
+    }
+
     // Activate the tool in the tool data
     activateTool(measurementData);
 
