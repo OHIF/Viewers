@@ -4,3 +4,4 @@ import './dialog/spatial.js';
 import './draggable/draggable.js';
 import './dropdown/form.js';
 import './resizable/resizable.js';
+import './unsavedChanges/unsavedChanges.js';
