@@ -63,7 +63,8 @@ function configureTools() {
     // Add shadow to length tool
     length.setConfiguration({
         ...lengthConfig,
-        ...shadowConfig
+        ...shadowConfig,
+        drawHandlesOnHover: true
     });
 
     // Add shadow to length tool
