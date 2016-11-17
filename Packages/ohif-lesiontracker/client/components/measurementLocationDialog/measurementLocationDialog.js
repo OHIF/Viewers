@@ -39,18 +39,24 @@ Template.measurementLocationDialog.onCreated(() => {
     const measurementApi = instance.data.measurementApi;
     const timepointApi = instance.data.timepointApi;
 
-    const toggleLabel = (measurementData, eventdata, doneCallback) => {
-        const position = _.clone(eventdata.currentPoints.page);
-        position.x += 20;
-        position.y += 20;
-        
+    const toggleLabel = (measurementData, eventData, doneCallback) => {
+        const getHandlePosition = key => _.pick(measurementData.handles[key], ['x', 'y']);
+        const start = getHandlePosition('start');
+        const end = getHandlePosition('end');
+        const getDirection = axis => start[axis] < end[axis] ? 1 : -1;
+        const position = OHIF.cornerstone.pixelToPage(eventData.element, end);
+
         OHIF.measurements.toggleLabelButton({
             instance,
             measurementId: measurementData._id,
             toolType: measurementData.toolType,
-            element: eventdata.element,
+            element: eventData.element,
             measurementApi: instance.data.measurementApi,
-            position: position
+            position: position,
+            direction: {
+                x: getDirection('x'),
+                y: getDirection('y')
+            }
         });
     };
 

@@ -31,6 +31,7 @@ OHIF.measurements.toggleLabelButton = options => {
     const data = {
         measurement,
         position: options.position,
+        direction: options.direction,
         threeColumns: true,
         hideCommon: true,
         autoClick: options.autoClick,

@@ -76,17 +76,39 @@ Template.measureFlow.onCreated(() => {
 
 Template.measureFlow.onRendered(() => {
     const instance = Template.instance();
+    const $measureFlow = instance.$('.measure-flow');
+    const $btnAdd = instance.$('.btn-add');
 
     // Make the measure flow bounded by the window borders
-    instance.$('.measure-flow').bounded();
+    $measureFlow.bounded();
 
-    instance.$('.btn-add').focus();
+    $btnAdd.focus();
 
     if (instance.data.autoClick) {
-        instance.$('.btn-add').hide().trigger('click', {
+        $btnAdd.trigger('click', {
             clientX: instance.data.position.x,
             clientY: instance.data.position.Y
         });
+    } else {
+        if (instance.data.direction) {
+            const direction = instance.data.direction;
+            let { left, top } = $measureFlow.offset();
+
+            left = direction.x === -1 ? left -= $btnAdd.outerWidth() : left;
+            top = direction.y === -1 ? top -= $btnAdd.outerHeight() : top;
+
+            const distance = 5;
+            left += direction.x * distance;
+            top += direction.y * distance;
+
+            $measureFlow.css({
+                left,
+                top
+            });
+        }
+
+        // Display the button after reposition it
+        $btnAdd.css('visibility', '');
     }
 });
 

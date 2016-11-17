@@ -183,7 +183,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
 
                 // Create the data document for validation
-                const document = OHIF.blaze.getNestedObject({
+                const document = OHIF.object.getNestedObject({
                     [key]: component.value()
                 });
 

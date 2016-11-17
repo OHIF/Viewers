@@ -3,7 +3,7 @@ import { OHIF } from 'meteor/ohif:core';
 OHIF.object = {};
 
 // Transforms a shallow object with keys separated by "." into a nested object
-OHIF.blaze.getNestedObject = shallowObject => {
+OHIF.object.getNestedObject = shallowObject => {
     var nestedObject = {};
     for (var key in shallowObject) {
         var value = shallowObject[key];
@@ -27,7 +27,7 @@ OHIF.blaze.getNestedObject = shallowObject => {
 };
 
 // Transforms a nested object into a shallowObject merging its keys with "." character
-OHIF.blaze.getShallowObject = nestedObject => {
+OHIF.object.getShallowObject = nestedObject => {
     var shallowObject = {};
     var putValues = function(baseKey, nestedObject, resultObject) {
         for (var key in nestedObject) {
