@@ -303,6 +303,10 @@ function loadDisplaySetIntoViewport(data, templateData) {
                 return;
             }
 
+            // Update orientation markers in case new slices don't have the same orientation
+            // as the first slice
+            updateOrientationMarkers(element);
+
             // If this viewport is displaying a stack of images, save the current image
             // index in the stack to the global ViewerData object, as well as the Meteor Session.
             const stack = cornerstoneTools.getToolState(element, 'stack');
