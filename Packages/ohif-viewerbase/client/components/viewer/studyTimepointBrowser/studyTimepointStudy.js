@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 
 Template.studyTimepointStudy.onCreated(() => {
@@ -7,38 +8,36 @@ Template.studyTimepointStudy.onCreated(() => {
 
     instance.loading = new ReactiveVar(false);
 
+    // Get the current study element
+    instance.getStudyElement = () => {
+        const studyInstanceUid = instance.data.study.studyInstanceUid;
+        return instance.$browser.find(`.studyTimepointStudy[data-uid='${studyInstanceUid}']`);
+    };
+
     // Set the current study as selected in the studies list
     instance.select = (isQuickSwitch=false) => {
-        // Stop here if the view was already destroyed
-        if (instance.view.isDestroyed) {
-            return;
-        }
+        const studyInstanceUid = instance.data.study.studyInstanceUid;
 
-        const $study = instance.$('.studyTimepointStudy');
+        const $study = instance.getStudyElement();
         const $timepoint = $study.closest('.studyTimepoint');
 
         const selectionChanged = {
             selection: [$study[0]],
-            studyInstanceUid: instance.data.study.studyInstanceUid,
+            studyInstanceUid,
             isQuickSwitch
         };
 
         $timepoint.trigger('selectionChanged', selectionChanged);
     };
 
-    instance.initializeStudyWrapper = instance => {
-        // Stop here if the view was already destroyed
-        if (instance.view.isDestroyed) {
-            return;
-        }
-
+    instance.initializeStudyWrapper = () => {
         // Stop here if it's a quick switch
-        if (instance.data.currentStudy) {
+        if (instance.data.viewportIndex) {
             return;
         }
 
-        const $study = instance.$('.studyTimepointStudy');
-        const $thumbnails = instance.$('.studyTimepointThumbnails');
+        const $study = instance.getStudyElement();
+        const $thumbnails = $study.find('.studyTimepointThumbnails');
         $study.addClass('active');
         // If element already has max-height property set, .height()
         // will return that value, so remove it to recalculate
@@ -49,9 +48,7 @@ Template.studyTimepointStudy.onCreated(() => {
         // Here we add, remove, and add the active class again because this way
         // the max-height animation appears smooth to the user.
         if (instance.data.active) {
-            Meteor.setTimeout(() => {
-                $study.addClass('active');
-            }, 1);
+            Meteor.setTimeout(() => $study.addClass('active'), 1);
         }
     };
 });
@@ -60,7 +57,10 @@ Template.studyTimepointStudy.onCreated(() => {
 Template.studyTimepointStudy.onRendered(() => {
     const instance = Template.instance();
 
-    instance.initializeStudyWrapper(instance);
+    // Keep the study timepoint browser element to manipulate elements even after DOM is removed
+    instance.$browser = instance.$('.studyTimepointStudy').closest('.studyTimepointBrowser');
+
+    instance.initializeStudyWrapper();
 });
 
 Template.studyTimepointStudy.events({
@@ -78,8 +78,6 @@ Template.studyTimepointStudy.events({
 
     // Changes the current study selection for the clicked study
     'click .studyModality'(event, instance) {
-        const $study = $(event.currentTarget).closest('.studyTimepointStudy');
-
         const studyData = instance.data.study;
         const { studyInstanceUid, _id } = studyData;
 
@@ -98,7 +96,7 @@ Template.studyTimepointStudy.events({
                     ViewerStudies.insert(study, () => {
                         // To make sure studies are rendered in the DOM
                         // use minimongo insert callback
-                        instance.initializeStudyWrapper(instance);
+                        instance.initializeStudyWrapper();
                         instance.select(isQuickSwitch);
                     });
                 });
