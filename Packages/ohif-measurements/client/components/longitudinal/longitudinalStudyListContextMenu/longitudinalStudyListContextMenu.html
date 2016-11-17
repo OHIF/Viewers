@@ -4,28 +4,23 @@
         <li class="divider" role="separator"></li>
 
         {{#let classes=getAssociationClasses}}
-        <li class="{{classes}}">
-            <a id="launchStudyAssociation" class="{{classes}}" title="Launch Study Association">Associate</a>
-        </li>
+            <li class="{{classes}}">
+                <a id="launchStudyAssociation" class="{{classes}}"
+                    title="Launch Study Association">Associate</a>
+            </li>
         {{/let}}
 
         {{#let classes=getRemoveAssociationClasses}}
-        <li class="{{classes}}">
-            <a id="launchRemoveAssociation"
-               type="button"
-               class="{{classes}}"
-               data-toggle="modal"
-               data-target="#confirmRemoveTimepointAssociation"
-               title="Remove Timepoint Association">
-               Remove Association
-           </a>
-        </li>
+            <li class="{{classes}}">
+                <a  id="removeTimepointAssociations" type="button" class="{{classes}}"
+                    title="Remove Timepoint Association">Remove Association</a>
+            </li>
         {{/let}}
 
         <li class="divider" role="separator"></li>
         <li>
             <a id="viewSeriesDetails" type="button"
-            title="View Series Details">View Series Details</a>
+                title="View Series Details">View Series Details</a>
         </li>
         <li class="disabled"><a class="disabled">Anonymize</a></li>
         <li class="disabled"><a class="disabled">Send</a></li>

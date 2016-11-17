@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -31,6 +30,7 @@ function getAssociationAssessment() {
             }
         }
     }
+
     return assessment;
 }
 
@@ -73,22 +73,30 @@ StudyList.functions.viewStudies = viewStudies;
  * Removes all present study / timepoint associations from the Clinical Trial
  */
 function removeTimepointAssociations() {
-    // Get a Cursor pointing to the selected Studies from the StudyList
-    const selectedStudies = OHIF.studylist.getSelectedStudies();
+    const dialogSettings = {
+        title: 'Remove Association',
+        message: 'Measurements related to this Study and Timepoint will be erased. Do you really want to delete this association?',
+        confirmClass: 'btn-danger'
+    };
 
-    // Find the Timepoint that was previously referenced
-    const timepointApi = StudyList.timepointApi;
-    if (!timepointApi) {
-        OHIF.log.error('Remove Study/Timepoint Association: No Timepoint API found.')
-        return;
-    }
+    OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {
+        // Get a Cursor pointing to the selected Studies from the StudyList
+        const selectedStudies = OHIF.studylist.getSelectedStudies();
 
-    // Loop through the Cursor of Selected Studies
-    selectedStudies.forEach(study => {
-        const studyInstanceUid = study.studyInstanceUid;
-        const timepoints = timepointApi.study(studyInstanceUid);
-        const timepointIds = timepoints.map(t => t.timepointId);
-        timepointApi.disassociateStudy(timepointIds, studyInstanceUid);
+        // Find the Timepoint that was previously referenced
+        const timepointApi = StudyList.timepointApi;
+        if (!timepointApi) {
+            OHIF.log.error('Remove Study/Timepoint Association: No Timepoint API found.');
+            return;
+        }
+
+        // Loop through the Cursor of Selected Studies
+        selectedStudies.forEach(study => {
+            const studyInstanceUid = study.studyInstanceUid;
+            const timepoints = timepointApi.study(studyInstanceUid);
+            const timepointIds = timepoints.map(t => t.timepointId);
+            timepointApi.disassociateStudy(timepointIds, studyInstanceUid);
+        });
     });
 }
 

@@ -16,12 +16,12 @@
                     {{>UI.contentBlock}}
                 </div>
                 <div class="modal-footer">
-                    {{#button class='btn btn-default'
-                        action='cancel'
+                    {{#button action='cancel'
+                        class=(concat 'btn ' (choose this.cancelClass 'btn-default'))
                         tagAttributes=(extend this.tagAttributes data-dismiss='modal')
                     }}{{choose this.cancelLabel 'Cancel'}}{{/button}}
-                    {{#button class='btn btn-primary'
-                        action='confirm'
+                    {{#button action='confirm'
+                        class=(concat 'btn ' (choose this.confirmClass 'btn-primary'))
                     }}{{choose this.confirmLabel 'Confirm'}}{{/button}}
                 </div>
             {{/form}}

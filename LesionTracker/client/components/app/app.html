@@ -7,35 +7,32 @@
                 <svg class="logoImage">
                     <use xlink:href="/packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"></use>
                 </svg>
-                <div class="logoText">
-                    Open Health Imaging Foundation
-                </div>
+                <div class="logoText">Open Health Imaging Foundation</div>
             </a>
-            {{ #if studyListToggleText }}
-            <a class="btn studyListLinkSection pull-left js-toggle-studyList" id="{{dasherize studyListToggleText}}-btn">
-                {{studyListToggleText}}
-            </a>
-            {{ /if }}
+            {{#if studyListToggleText}}
+                <a class="btn studyListLinkSection pull-left js-toggle-studyList" id="{{dasherize studyListToggleText}}-btn">
+                    {{studyListToggleText}}
+                </a>
+            {{/if}}
             <div class="userAccountSection pull-right">
                 {{>userAccountMenu}}
             </div>
         </div>
     </div>
-    {{ >timeoutCountdownDialog }}
+    {{>timeoutCountdownDialog}}
     <div id="studylistTabs" class="tab-content">
         <div class="tab-pane active" id="studylistTab">
             <div class="studylistContainer">
-                {{> studylistResult }}
+                {{>studylistResult}}
             </div>
         </div>
         <div class="tab-pane" id="viewerTab">
         </div>
     </div>
-    {{ >optionsModal }}
-    {{ >serverInformationModal }}
-    {{ >confirmRemoveTimepointAssociation }}
-    {{ >lastLoginModal }}
-    {{ >progressDialog }}
-    {{ >viewSeriesDetailsModal }}
-    {{ >themeSelectorModal }}
+    {{>optionsModal}}
+    {{>serverInformationModal}}
+    {{>lastLoginModal}}
+    {{>progressDialog}}
+    {{>viewSeriesDetailsModal}}
+    {{>themeSelectorModal}}
 </template>

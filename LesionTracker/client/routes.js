@@ -14,7 +14,6 @@ var data = {
     additionalTemplates: [
         'optionsModal',
         'serverInformationModal',
-        'confirmRemoveTimepointAssociation',
         'lastLoginModal',
         'viewSeriesDetailsModal'
     ]
@@ -29,7 +28,7 @@ Router.route('/', function() {
     if (Meteor.user() && Meteor.userId()) {
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
-        } 
+        }
         else {
             const contentId = Session.get('activeContentId');
             if(!contentId) {
@@ -38,7 +37,7 @@ Router.route('/', function() {
             this.render('app', routerOptions);
         }
 
-    } 
+    }
     else {
         this.render('entrySignIn', routerOptions);
     }
