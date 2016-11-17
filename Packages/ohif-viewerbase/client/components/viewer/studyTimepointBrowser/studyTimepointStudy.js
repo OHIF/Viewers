@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
+import { $ } from 'meteor/jquery';
 
 Template.studyTimepointStudy.onCreated(() => {
     const instance = Template.instance();
@@ -9,9 +10,15 @@ Template.studyTimepointStudy.onCreated(() => {
     instance.loading = new ReactiveVar(false);
 
     // Get the current study element
-    instance.getStudyElement = () => {
+    instance.getStudyElement = (isGlobal=false) => {
         const studyInstanceUid = instance.data.study.studyInstanceUid;
-        return instance.$browser.find(`.studyTimepointStudy[data-uid='${studyInstanceUid}']`);
+        const selector = `.studyTimepointStudy[data-uid='${studyInstanceUid}']`;
+        return isGlobal ? $(selector) : instance.$browser.find(selector);
+    };
+
+    // Set all the studies with the same uid to loading state
+    instance.setLoading = () => {
+
     };
 
     // Set the current study as selected in the studies list
@@ -76,6 +83,17 @@ Template.studyTimepointStudy.events({
         instance.select(true);
     },
 
+    // Set loading state
+    'loadStarted .studyTimepointStudy'(event, instance) {
+        instance.loading.set(true);
+    },
+
+    // Remove loading state and fix the thumbnails wrappers height
+    'loadEnded .studyTimepointStudy'(event, instance) {
+        instance.loading.set(false);
+        instance.initializeStudyWrapper();
+    },
+
     // Changes the current study selection for the clicked study
     'click .studyModality'(event, instance) {
         const studyData = instance.data.study;
@@ -89,14 +107,15 @@ Template.studyTimepointStudy.events({
             const alreadyLoaded = ViewerStudies.findOne({ _id });
 
             if (!alreadyLoaded) {
-                instance.loading.set(true);
+                const $studies = instance.getStudyElement(true);
+                $studies.trigger('loadStarted');
                 getStudyMetadata(studyInstanceUid, study => {
                     study.displaySets = createStacks(study);
                     instance.data.study = study;
                     ViewerStudies.insert(study, () => {
                         // To make sure studies are rendered in the DOM
                         // use minimongo insert callback
-                        instance.initializeStudyWrapper();
+                        $studies.trigger('loadEnded');
                         instance.select(isQuickSwitch);
                     });
                 });
