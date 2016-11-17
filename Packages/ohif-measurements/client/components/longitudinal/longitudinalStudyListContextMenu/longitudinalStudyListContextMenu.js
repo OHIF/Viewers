@@ -72,11 +72,15 @@ StudyList.functions.viewStudies = viewStudies;
 /**
  * Removes all present study / timepoint associations from the Clinical Trial
  */
-function removeTimepointAssociations() {
+function removeTimepointAssociations($study, event) {
     const dialogSettings = {
         title: 'Remove Association',
         message: 'Measurements related to this Study and Timepoint will be erased. Do you really want to delete this association?',
-        confirmClass: 'btn-danger'
+        confirmClass: 'btn-danger',
+        position: {
+            x: event.clientX,
+            y: event.clientY
+        }
     };
 
     OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {

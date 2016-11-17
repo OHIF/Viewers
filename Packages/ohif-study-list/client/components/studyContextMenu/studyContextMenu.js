@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 import { $ } from 'meteor/jquery';
 
@@ -55,21 +56,19 @@ function viewSeriesDetails() {
 }
 
 Template.studyContextMenu.events({
-    'click a': function(e) {
-        var id, fn, target = $(e.currentTarget);
+    'click a'(event, instance) {
+        const $target = $(event.currentTarget);
 
-        if (target.hasClass('disabled')) {
+        if ($target.hasClass('disabled')) {
             return;
         }
 
-        id = target.attr('id');
+        const id = $target.attr('id');
         if (id in StudyList.functions) {
-            fn = StudyList.functions[id];
+            const fn = StudyList.functions[id];
             if (typeof fn === 'function') {
-                fn(Template.studyContextMenu.$study);
+                fn(Template.studyContextMenu.$study, event);
             }
         }
-
-        var dialog = $('#studyContextMenu');
     }
 });
