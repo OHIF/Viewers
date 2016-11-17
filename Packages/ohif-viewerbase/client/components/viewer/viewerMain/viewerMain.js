@@ -17,13 +17,58 @@ Template.viewerMain.onRendered(() => {
     const instance = Template.instance();
 
     instance.subscribe('hangingprotocols', () => {
-        const studies = instance.data.studies;
+        const { studies, currentTimepointId, measurementApi, timepointIds } = instance.data;
         const parentElement = instance.$('#layoutManagerTarget').get(0);
         window.layoutManager = new LayoutManager(parentElement, studies);
 
-        // Toggle Measurement Table 
-        // Show as default for Associated Studies
-        if(instance.data.currentTimepointId) {
+        // Default actions for Associated Studies
+        if(currentTimepointId) {
+            // Follow-up studies: same as the first measurement in the table
+            // Baseline studies: target-tool
+            if(studies[0]) {
+                let activeTool;
+                // In follow-ups, get the baseline timepointId
+                const timepointId = timepointIds.find(id => id !== currentTimepointId);
+
+                // Follow-up studies
+                if(studies[0].timepointType === 'followup' && timepointId) {
+                    const measurementTools = OHIF.measurements.MeasurementApi.getConfiguration().measurementTools;
+
+                    // Create list of measurement tools
+                    const measurementTypes = measurementTools.map( 
+                        tool => {
+                            const { id, cornerstoneToolType } = tool;
+                            return {
+                                id,
+                                cornerstoneToolType
+                            }
+                        }
+                    );
+
+                    // Iterate over each measurment tool to find the first baseline
+                    // measurment. If so, stops the loop and prevent fetching from all
+                    // collections
+                    measurementTypes.every(({id, cornerstoneToolType}) => {
+                        // Get measurement
+                        if(measurementApi[id]) {
+                            const measurement = measurementApi[id].findOne({ timepointId });
+
+                            // Found a measurement, save tool and stop loop
+                            if(measurement) {
+                                activeTool = cornerstoneToolType;
+
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
+                }
+
+                // If not set, for associated studies default is target-tool
+                toolManager.setActiveTool(activeTool || 'bidirectional');
+            }
+
+            // Toggle Measurement Table 
             instance.data.state.set('rightSidebar', 'measurements');
         }
         // Hide as default for single study
