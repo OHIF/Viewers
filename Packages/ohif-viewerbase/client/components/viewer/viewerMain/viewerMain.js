@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { unloadHandlers } from '../../../lib/unloadHandlers.js';
 
 Template.viewerMain.onCreated(() => {
     // Attach the Window resize listener
@@ -8,6 +9,9 @@ Template.viewerMain.onCreated(() => {
     // Otherwise this function will be probably overrided.
     // See cineDialog instance.setResizeHandler function
     window.addEventListener('resize', handleResize);
+
+    // Add beforeUnload event handler to check for unsaved changes
+    window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
     // Create the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
@@ -91,6 +95,9 @@ Template.viewerMain.onDestroyed(() => {
 
     // Remove the Window resize listener
     window.removeEventListener('resize', handleResize);
+
+    // Remove beforeUnload event handler...
+    window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
 
     // Destroy the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer.destroy();

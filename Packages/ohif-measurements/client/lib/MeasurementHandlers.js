@@ -81,6 +81,9 @@ class MeasurementHandlers {
         // Insert the new measurement into the collection
         measurementData._id = Collection.insert(measurement);
 
+        // Signal unsaved changes
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + measurementToolConfiguration.id);
+
         // Update the Overall Measurement Numbers for all Measurements
         if (timepointApi) {
             const baseline = timepointApi.baseline();
@@ -125,6 +128,9 @@ class MeasurementHandlers {
         Collection.update(measurementId, {
             $set: measurement
         });
+
+        // Signal unsaved changes
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + measurementToolConfiguration.id);
     }
 
     static onRemoved(e, instance, eventData) {
@@ -145,6 +151,9 @@ class MeasurementHandlers {
         const Collection = measurementApi[measurementToolConfiguration.id];
 
         Collection.remove(measurementData._id);
+
+        // Signal unsaved changes
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + measurementToolConfiguration.id);
 
         // Update the Overall Measurement Numbers for all Measurements
         const timepointApi = instance.data.timepointApi;

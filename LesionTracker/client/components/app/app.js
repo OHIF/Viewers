@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 const studylistContentId = 'studylistTab';
 const viewerContentId = 'viewerTab';
 
@@ -19,11 +21,21 @@ Template.app.events({
     'click .js-toggle-studyList'() {
         const contentId = Session.get('activeContentId');
 
-        if (contentId !== studylistContentId) {
-            switchToTab(studylistContentId);
-        } else {
-            switchToTab(viewerContentId);
-        }
+        OHIF.ui.unsavedChanges.checkBeforeAction('viewer.*', function(shouldProceed, hasChanges) {
+            if (shouldProceed) {
+                // Drop signaled unsaved changes if any...
+                if (hasChanges) {
+                    OHIF.ui.unsavedChanges.clear('viewer.*');
+                }
+
+                if (contentId !== studylistContentId) {
+                    switchToTab(studylistContentId);
+                } else {
+                    switchToTab(viewerContentId);
+                }
+            }
+        });
+
     }
 });
 

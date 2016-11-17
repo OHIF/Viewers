@@ -132,12 +132,15 @@ Template.caseProgress.events({
             return;
         }
 
-        switchToTab('studylistTab');
-
         const timepointApi = instance.data.timepointApi;
         const timepoints = timepointApi.all();
         OHIF.log.info('Saving Measurements for timepoints:')
         OHIF.log.info(timepoints);
         instance.data.measurementApi.storeMeasurements(timepoints);
+
+        // Clear signaled unsaved changes...
+        OHIF.ui.unsavedChanges.clear('viewer.studyViewer.measurements.*');
+
+        switchToTab('studylistTab');
     }
 });

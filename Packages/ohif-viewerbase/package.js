@@ -166,6 +166,7 @@ Package.onUse(function(api) {
     api.addFiles('client/lib/isImage.js', 'client');
     api.addFiles('client/lib/sopClassDictionary.js', 'client');
     api.addFiles('client/lib/debugReactivity.js', 'client');
+    api.addFiles('client/lib/unloadHandlers.js', 'client');
 
     api.export('resizeViewportElements', 'client');
     api.export('handleResize', 'client');
