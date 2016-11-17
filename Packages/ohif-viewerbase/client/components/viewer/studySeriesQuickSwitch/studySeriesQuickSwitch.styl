@@ -101,7 +101,7 @@ $seriesSpacing = 2px
         theme('box-shadow', 'inset 0 0 0 3px $activeColor')
       .studyBox
         theme('background-color', '$uiGrayDark')
-        theme('border', 'solid 1px $activeColor')
+        theme('border', 'solid 2px $uiBorderColorDark')
         border-radius: 11px
         display: block
         height: $switchSize
@@ -134,11 +134,11 @@ $seriesSpacing = 2px
       theme('color', '$textSecondaryColor')
       display: block
       font-size: 12px
-      font-weight: 300
-      line-height: 34px
+      font-weight: 500
+      line-height: 12px
       padding: 0
+      padding-bottom: 3px
       text-align: center
-      text-transform: uppercase
 
 .switchHover
   border: 10px solid transparent
@@ -228,11 +228,6 @@ $seriesSmallSpacing = 1px
 @media screen and (max-width: 1599px)
   .quickSwitch
     .switchSection
-      .label
-        font-size: 8px
-        font-weight: 400
-        line-height: 12px
-        padding: 0
       .studySwitch .studyBox
         border-radius: 7px
         height: $switchSmallSize
