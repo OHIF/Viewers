@@ -79,10 +79,9 @@ Meteor.methods({
         });
     },
 
-    removeTimepoint(timepointData) {
+    removeTimepoint(timepointId) {
         OHIF.log.info('Removing Timepoint from the Server');
-        OHIF.log.info(JSON.stringify(timepointData, null, 2));
-        Timepoints.remove(timepointData);
+        Timepoints.remove({timepointId});
     },
 
     updateTimepoint(timepointData, query) {
@@ -92,9 +91,15 @@ Meteor.methods({
         Timepoints.update(timepointData, query);
     },
 
-    retrieveTimepoints(filter) {
+    retrieveTimepoints(patientId) {
         OHIF.log.info('Retrieving Timepoints from the Server');
-        return Timepoints.find(filter || {}).fetch();
+
+        const filter = {}
+        if (patientId) {
+            filter.patientId = patientId;
+        };
+
+        return Timepoints.find(filter).fetch();
     },
 
     storeMeasurements(measurementData, filter = {}) {
@@ -115,13 +120,23 @@ Meteor.methods({
         });
     },
 
-    retrieveMeasurements(filter = {}) {
+    retrieveMeasurements(patientId, timepointIds) {
         OHIF.log.info('Retrieving Measurements from the Server');
         let measurementData = {};
 
+        const filter = {}
+        if (patientId) {
+            filter.patientId = patientId;
+        }
+
+        if (timepointIds) {
+            filter.timepointId = {
+                $in: timepointIds
+            };
+        }
 
         measurementTools.forEach(tool => {
-            measurementData[tool.id] = MeasurementCollections[tool.id].find(filter || {}).fetch();
+            measurementData[tool.id] = MeasurementCollections[tool.id].find(filter).fetch();
         });
 
         return measurementData;

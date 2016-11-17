@@ -28,18 +28,14 @@ class MeasurementApi {
         });
     }
 
-    retrieveMeasurements(timepointId) {
-        if (!timepointId) {
-            timepointId = this.currentTimepointId;
-        }
-
+    retrieveMeasurements(patientId, timepointIds) {
         const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
             return;
         }
 
         return new Promise((resolve, reject) => {
-            retrievalFn(timepointId).then(measurementData => {
+            retrievalFn(patientId, timepointIds).then(measurementData => {
 
                 OHIF.log.info('Measurement data retrieval');
                 OHIF.log.info(measurementData);
@@ -152,8 +148,27 @@ class MeasurementApi {
         });
 
         let overallMeasurementNumber = 1;
+        let specificToolMeasurementNumber = 1;
 
-        // Given a Collection and a 
+
+        const updateMeasurementNumber = (collection, toolType) => {
+            return data => {
+                const filter = {
+                    measurementNumber: data.measurementNumber,
+                    toolType
+                }
+
+                collection.update(filter, {
+                    $set: {
+                        measurementNumber: specificToolMeasurementNumber
+                    }
+                });
+
+                // Increment the overall measurement number
+                specificToolMeasurementNumber += 1;
+            };
+        };
+
         const updateMeasurementNumberOverall = (collection, toolType) => {
             return data => {
                 const filter = {
@@ -182,6 +197,24 @@ class MeasurementApi {
             };
         };
 
+        // First, update Measurement Number and the displayed Measurements
+        includedTools.forEach(tool => {
+            const collection = this[tool.id];
+            const toolType = tool.cornerstoneToolType;
+            const measurements = collection.find({toolType}).fetch();
+            const groupObject = _.groupBy(measurements, m => m.measurementNumber);
+            const sortedByMeasurementNumber = Object.keys(groupObject).map(summarizeMeasurement(groupObject, toolType));
+            sortedByMeasurementNumber.forEach(updateMeasurementNumber(collection, toolType))
+
+            measurements.forEach(measurement => {
+                OHIF.measurements.syncMeasurementAndToolData(measurement);
+            });
+
+            // Reset specificToolMeasurementNumber
+            specificToolMeasurementNumber = 1;
+        });
+
+        // Next, handle the overall measurement number.
         // First, handle data that has a measurement at baseline
         includedTools.forEach(tool => {
             const collection = this[tool.id];
@@ -255,9 +288,10 @@ class MeasurementApi {
         syncFilter.measurementNumber = {
             $gt: measurementNumber - 1
         };
+
         collection.find(syncFilter).forEach(measurement => {
             OHIF.measurements.syncMeasurementAndToolData(measurement);
-        })
+        });
     }
 
     fetch(measurementTypeId, selector, options) {

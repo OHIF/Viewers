@@ -72,11 +72,9 @@ Template.viewer.onCreated(() => {
     OHIF.viewer.timepointApi = instance.data.timepointApi;
 
     const patientId = instance.data.studies[0].patientId;
-    const filter = {
-        patientId
-    };
 
-    const timepointsPromise = instance.data.timepointApi.retrieveTimepoints(filter);
+    // TODO: Consider combining the retrieval calls into one?
+    const timepointsPromise = instance.data.timepointApi.retrieveTimepoints(patientId);
     timepointsPromise.then(() => {
         const timepoints = instance.data.timepointApi.all();
 
@@ -95,14 +93,15 @@ Template.viewer.onCreated(() => {
         });
 
         Session.set('TimepointsReady', true);
-    });
 
-    instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.currentTimepointId);
-    const measurementsPromise = instance.data.measurementApi.retrieveMeasurements(filter);
-    measurementsPromise.then(() => {
-        Session.set('MeasurementsReady', true);
+        const timepointIds = timepoints.map(t => t.timepointId);
+        instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.currentTimepointId);
+        const measurementsPromise = instance.data.measurementApi.retrieveMeasurements(patientId, timepointIds);
+        measurementsPromise.then(() => {
+            Session.set('MeasurementsReady', true);
 
-        instance.data.measurementApi.syncMeasurementsAndToolData();
+            instance.data.measurementApi.syncMeasurementsAndToolData();
+        });
     });
 
     // Provide the necessary data to the Measurement API and Timepoint API
@@ -148,7 +147,12 @@ Template.viewer.onCreated(() => {
 
         const data = collection.find({}, sorting).fetch();
 
-        let timepoints = [timepointApi.current()];
+        const current = timepointApi.current();
+        if (!current) {
+            return;
+        };
+
+        let timepoints = [current];
         const prior = timepointApi.prior();
         if (prior) {
             timepoints.push(prior);

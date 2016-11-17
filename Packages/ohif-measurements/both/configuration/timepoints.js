@@ -26,14 +26,14 @@ class TimepointApi {
         this.timepoints._debugName = 'Timepoints';
     }
 
-    retrieveTimepoints(filter) {
+    retrieveTimepoints(patientId) {
         const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
             return;
         }
 
         return new Promise((resolve, reject) => {
-            retrievalFn(filter).then(timepointData => {
+            retrievalFn(patientId).then(timepointData => {
                 OHIF.log.info('Timepoint data retrieval');
                 OHIF.log.info(timepointData);
                 _.each(timepointData, timepoint => {
