@@ -5,8 +5,15 @@ import { _ } from 'meteor/underscore';
 Template.studyTimepointStudy.onCreated(() => {
     const instance = Template.instance();
 
+    instance.loading = new ReactiveVar(false);
+
     // Set the current study as selected in the studies list
     instance.select = (isQuickSwitch=false) => {
+        // Stop here if the view was already destroyed
+        if (instance.view.isDestroyed) {
+            return;
+        }
+
         const $study = instance.$('.studyTimepointStudy');
         const $timepoint = $study.closest('.studyTimepoint');
 
@@ -18,40 +25,99 @@ Template.studyTimepointStudy.onCreated(() => {
 
         $timepoint.trigger('selectionChanged', selectionChanged);
     };
+
+    instance.initializeStudyWrapper = instance => {
+        // Stop here if the view was already destroyed
+        if (instance.view.isDestroyed) {
+            return;
+        }
+
+        // Stop here if it's a quick switch
+        if (instance.data.currentStudy) {
+            return;
+        }
+
+        const $study = instance.$('.studyTimepointStudy');
+        const $thumbnails = instance.$('.studyTimepointThumbnails');
+        $study.addClass('active');
+        // If element already has max-height property set, .height()
+        // will return that value, so remove it to recalculate
+        $thumbnails.css('max-height', '');
+        $thumbnails.css('max-height', $thumbnails.height());
+        $study.removeClass('active');
+
+        // Here we add, remove, and add the active class again because this way
+        // the max-height animation appears smooth to the user.
+        if (instance.data.active) {
+            Meteor.setTimeout(() => {
+                $study.addClass('active');
+            }, 1);
+        }
+    };
 });
-
-const initializeStudyWrapper = instance => {
-    // Stop here if it's a quick switch
-    if (instance.data.currentStudy) {
-        return;
-    }
-
-    const $study = instance.$('.studyTimepointStudy');
-    const $thumbnails = instance.$('.studyTimepointThumbnails');
-    $study.addClass('active');
-    // If element already has max-height property set, .height()
-    // will return that value, so remove it to recalculate
-    $thumbnails.css('max-height', '');
-    $thumbnails.css('max-height', $thumbnails.height());
-    $study.removeClass('active');
-
-    // Here we add, remove, and add the active class again because this way
-    // the max-height animation appears smooth to the user.
-    if (instance.data.active) {
-        Meteor.setTimeout(() => {
-            $study.addClass('active');
-        }, 1);
-    }
-};
 
 // Initialize the study wrapper max-height to enable CSS transition
 Template.studyTimepointStudy.onRendered(() => {
     const instance = Template.instance();
 
-    initializeStudyWrapper(instance);
+    instance.initializeStudyWrapper(instance);
+});
+
+Template.studyTimepointStudy.events({
+    // Recalculates the timepoint height to make CSS transition smoother
+    'transitionend .studyTimepointThumbnails'(event, instance) {
+        if (event.target === event.currentTarget) {
+            $(event.currentTarget).closest('.studyTimepoint').trigger('displayStateChanged');
+        }
+    },
+
+    // Transfers the active state to the current study
+    'click .studyQuickSwitchTimepoint .studyModality'(event, instance) {
+        instance.select(true);
+    },
+
+    // Changes the current study selection for the clicked study
+    'click .studyModality'(event, instance) {
+        const $study = $(event.currentTarget).closest('.studyTimepointStudy');
+
+        const studyData = instance.data.study;
+        const { studyInstanceUid, _id } = studyData;
+
+        const isQuickSwitch = !_.isUndefined(instance.data.viewportIndex);
+
+        // Check if the study already has series data,
+        // and if not, retrieve it.
+        if (!studyData.seriesList) {
+            const alreadyLoaded = ViewerStudies.findOne({ _id });
+
+            if (!alreadyLoaded) {
+                instance.loading.set(true);
+                getStudyMetadata(studyInstanceUid, study => {
+                    study.displaySets = createStacks(study);
+                    instance.data.study = study;
+                    ViewerStudies.insert(study, () => {
+                        // To make sure studies are rendered in the DOM
+                        // use minimongo insert callback
+                        instance.initializeStudyWrapper(instance);
+                        instance.select(isQuickSwitch);
+                    });
+                });
+            } else {
+                studyData.seriesList = alreadyLoaded.seriesList;
+            }
+        } else {
+            instance.select(isQuickSwitch);
+        }
+    }
 });
 
 Template.studyTimepointStudy.helpers({
+    isLoading() {
+        const instance = Template.instance();
+        const studyData = instance.data.study;
+        const alreadyLoaded = ViewerStudies.findOne({ _id: studyData._id });
+        return instance.loading.get() && !alreadyLoaded;
+    },
     modalities() {
         const instance = Template.instance();
         let modalities = instance.data.study.modalities;
@@ -80,56 +146,6 @@ Template.studyTimepointStudy.helpers({
             // of modalities we need to display.
             const lineHeight = Math.ceil(numModalities / 2) * 1.2;
             return 'line-height: ' + lineHeight + 'vh';
-        }
-    }
-});
-
-Template.studyTimepointStudy.events({
-    // Recalculates the timepoint height to make CSS transition smoother
-    'transitionend .studyTimepointThumbnails'(event, instance) {
-        if (event.target === event.currentTarget) {
-            $(event.currentTarget).closest('.studyTimepoint').trigger('displayStateChanged');
-        }
-    },
-
-    // Transfers the active state to the current study
-    'click .studyQuickSwitchTimepoint .studyModality'(event, instance) {
-        instance.select(true);
-    },
-
-    // Changes the current study selection for the clicked study
-    'click .studyModality'(event, instance) {
-        const $study = $(event.currentTarget).closest('.studyTimepointStudy');
-
-        const studyData = instance.data.study;
-        const { studyInstanceUid, _id } = studyData;
-
-        const isQuickSwitch = !_.isUndefined(instance.data.viewportIndex);
-
-        // Check if the study already has series data,
-        // and if not, retrieve it.
-        if (!studyData.seriesList) {
-            const alreadyLoaded = ViewerStudies.findOne({
-                _id
-            });
-
-            if (!alreadyLoaded) {
-                $study.addClass('loading');
-                getStudyMetadata(studyInstanceUid, study => {
-                    study.displaySets = createStacks(study);
-                    instance.data.study = study;
-                    ViewerStudies.insert(study, () => {
-                        // To make sure studies are rendered in the DOM
-                        // use minimongo insert callback
-                        initializeStudyWrapper(instance);
-                        instance.select(isQuickSwitch);
-                    });
-                });
-            } else {
-                studyData.seriesList = alreadyLoaded.seriesList;
-            }
-        } else {
-            instance.select(isQuickSwitch);
         }
     }
 });
