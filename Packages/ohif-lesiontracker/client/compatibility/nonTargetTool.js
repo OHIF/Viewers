@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { toolManager } from 'meteor/ohif:viewerbase';
 
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
@@ -6,12 +7,15 @@ import { OHIF } from 'meteor/ohif:core';
 
     const toolType = 'nonTarget';
 
+    const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
+
     const configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,
         changeMeasurementLocationCallback: changeMeasurementLocationCallback,
         drawHandles: false,
         drawHandlesOnHover: true,
-        arrowFirst: true
+        arrowFirst: true,
+        ...shadowConfig
     };
 
     // Used to cancel tool placement

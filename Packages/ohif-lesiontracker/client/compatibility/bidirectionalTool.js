@@ -1,13 +1,18 @@
+import { toolManager } from 'meteor/ohif:viewerbase';
+
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     'use strict';
 
     var toolType = 'bidirectional';
 
+    const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
+
     var configuration = {
         setMeasurementNumberCallback: setMeasurementNumberCallback,
         getMeasurementLocationCallback: getMeasurementLocationCallback,
-        changeMeasurementLocationCallback: changeMeasurementLocationCallback
+        changeMeasurementLocationCallback: changeMeasurementLocationCallback,
+        ...shadowConfig
     };
 
     // Used to cancel tool placement

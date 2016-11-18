@@ -92,5 +92,5 @@ export const bidirectional = {
             displayFunction: displayFunction
         },
         includeInCaseProgress: true,
-    },
+    }
 };

@@ -56,5 +56,5 @@ export const nonTarget = {
             displayFunction: displayFunction
         },
         includeInCaseProgress: true,
-    },
+    }
 };

@@ -1,29 +1,35 @@
 import { OHIF } from 'meteor/ohif:core';
 
-var activeTool = 'wwwc';
-var defaultTool = 'wwwc';
+let activeTool = 'wwwc';
+let defaultTool = 'wwwc';
 
-var tools = {};
+let tools = {};
 
-var toolDefaultStates = {
+let toolDefaultStates = {
     activate: [],
     deactivate: ['length', 'angle', 'annotate', 'ellipticalRoi', 'rectangleRoi'],
     enable: [],
     disable: [],
-    disabledToolButtons: []
+    disabledToolButtons: [],
+    shadowConfig: {
+        shadow: false,
+        shadowColor: '#000000',
+        shadowOffsetX: 0,
+        shadowOffsetY: 0
+    }
 };
 
-var initialized = false;
+let initialized = false;
 
-function configureTools() {
+const configureTools = () => {
 
     // Get Cornerstone Tools
-    const { panMultiTouch, textStyle, toolStyle, toolColors, length, 
-            bidirectional, arrowAnnotate, zoom, ellipticalRoi, nonTarget } = cornerstoneTools;
+    const { panMultiTouch, textStyle, toolStyle, toolColors,
+            length, arrowAnnotate, zoom, ellipticalRoi } = cornerstoneTools;
 
     // Set the configuration for the multitouch pan tool
     const multiTouchPanConfig = {
-        testPointers: function(eventData) {
+        testPointers: eventData => {
             return (eventData.numPointers >= 3);
         }
     };
@@ -46,19 +52,12 @@ function configureTools() {
     // Set color for active tools
     toolColors.setActiveColor('rgb(0, 255, 0)');
 
-    // Set shadow configuration for length and bidirectional text boxes
-    const shadowConfig = {
-        shadow: false,
-        shadowColor: '#000000',
-        shadowOffsetX: 0,
-        shadowOffsetY: 0
-    };
+    // Set shadow configuration
+    const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
 
     // Get some tools config to not override them
     const lengthConfig = length.getConfiguration();
-    const bidirectionalConfig = bidirectional.getConfiguration();
     const ellipticalRoiConfig = ellipticalRoi.getConfiguration();
-    const nonTargetConfig = nonTarget.getConfiguration();
 
     // Add shadow to length tool
     length.setConfiguration({
@@ -68,20 +67,8 @@ function configureTools() {
     });
 
     // Add shadow to length tool
-    bidirectional.setConfiguration({
-        ...bidirectionalConfig,
-        ...shadowConfig
-    });
-
-    // Add shadow to length tool
     ellipticalRoi.setConfiguration({
         ...ellipticalRoiConfig,
-        ...shadowConfig
-    });
-
-     // Add shadow to non target tool
-    nonTarget.setConfiguration({
-        ...nonTargetConfig,
         ...shadowConfig
     });
 
@@ -102,7 +89,7 @@ function configureTools() {
 }
 
 toolManager = {
-    init: function() {
+    init() {
         toolManager.addTool('wwwc', {
             mouse: cornerstoneTools.wwwc,
             touch: cornerstoneTools.wwwcTouchDrag
@@ -164,19 +151,19 @@ toolManager = {
         configureTools();
         initialized = true;
     },
-    addTool: function(name, base) {
+    addTool(name, base) {
         tools[name] = base;
     },
-    getTools: function() {
+    getTools() {
         return tools;
     },
-    setToolDefaultStates: function(states) {
+    setToolDefaultStates(states) {
         toolDefaultStates = states;
     },
-    getToolDefaultStates: function() {
+    getToolDefaultStates() {
         return toolDefaultStates;
     },
-    setActiveToolForElement: function(tool, element) {
+    setActiveToolForElement(tool, element) {
         var canvases = $(element).find('canvas');
         if (element.classList.contains('empty') || !canvases.length) {
             return;
@@ -255,7 +242,7 @@ toolManager = {
         cornerstoneTools.zoomTouchPinch.activate(element);
         cornerstoneTools.panMultiTouch.activate(element);
     },
-    setActiveTool: function(tool, elements) {
+    setActiveTool(tool, elements) {
         if (!initialized) {
             toolManager.init();
         }
@@ -269,7 +256,7 @@ toolManager = {
         }
 
         // Otherwise, set the active tool for all viewport elements
-        $(elements).each(function(index, element) {
+        $(elements).each((index, element) => {
             toolManager.setActiveToolForElement(tool, element);
         });
         activeTool = tool;
@@ -277,17 +264,17 @@ toolManager = {
         // Store the active tool in the session in order to enable reactivity
         Session.set('ToolManagerActiveTool', tool);
     },
-    getActiveTool: function() {
+    getActiveTool() {
         if (!activeTool) {
             activeTool = defaultTool;
         }
 
         return activeTool;
     },
-    setDefaultTool: function(tool) {
+    setDefaultTool(tool) {
         defaultTool = tool;
     },
-    getDefaultTool: function() {
+    getDefaultTool() {
         return defaultTool;
     }
 
