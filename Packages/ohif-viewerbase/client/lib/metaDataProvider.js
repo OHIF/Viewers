@@ -72,6 +72,20 @@ addSpecificMetadata = function(imageId, type, data) {
     metaDataLookup[imageId] = $.extend(metaDataLookup[imageId], metaData);
 };
 
+
+function getFromDataSet(dataSet, type, tag) {
+    if (!dataSet) {
+        return;
+    }
+
+    const fn = dataSet[type];
+    if (!fn) {
+        return;
+    }
+
+    return fn(tag);
+}
+
 /**
  * Updates the related metaData for missing fields given a specified image
  *
@@ -83,29 +97,30 @@ updateMetaData = function(image) {
         return;
     }
 
-    imageMetaData.instance.sopClassUid = imageMetaData.instance.sopClassUid || image.data.string('x00080016');
-    imageMetaData.instance.sopInstanceUid = imageMetaData.instance.sopInstanceUid || image.data.string('x00080018');
-
     imageMetaData.instance.rows = imageMetaData.instance.rows || image.rows;
     imageMetaData.instance.columns = imageMetaData.instance.columns || image.columns;
-    imageMetaData.instance.pixelSpacing = imageMetaData.instance.pixelSpacing || image.data.string('x00280030');
-    imageMetaData.instance.frameOfReferenceUID = imageMetaData.instance.frameOfReferenceUID || image.data.string('x00200052');
-    imageMetaData.instance.imageOrientationPatient = imageMetaData.instance.imageOrientationPatient || image.data.string('x00200037');
-    imageMetaData.instance.imagePositionPatient = imageMetaData.instance.imagePositionPatient || image.data.string('x00200032');
 
-    imageMetaData.instance.sliceThickness = imageMetaData.instance.sliceThickness || image.data.string('x00180050');
-    imageMetaData.instance.sliceLocation = imageMetaData.instance.sliceLocation || image.data.string('x00201041');
-    imageMetaData.instance.tablePosition = imageMetaData.instance.tablePosition || image.data.string('x00189327');
-    imageMetaData.instance.spacingBetweenSlices = imageMetaData.instance.spacingBetweenSlices || image.data.string('x00180088');
+    imageMetaData.instance.sopClassUid = imageMetaData.instance.sopClassUid || getFromDataSet(image.data, 'string', 'x00080016');
+    imageMetaData.instance.sopInstanceUid = imageMetaData.instance.sopInstanceUid || getFromDataSet(image.data, 'string', 'x00080018');
 
-    imageMetaData.instance.lossyImageCompression = imageMetaData.instance.lossyImageCompression || image.data.string('x00282110');
-    imageMetaData.instance.lossyImageCompressionRatio = imageMetaData.instance.lossyImageCompressionRatio || image.data.string('x00282112');
+    imageMetaData.instance.pixelSpacing = imageMetaData.instance.pixelSpacing || getFromDataSet(image.data, 'string', 'x00280030');
+    imageMetaData.instance.frameOfReferenceUID = imageMetaData.instance.frameOfReferenceUID || getFromDataSet(image.data, 'string', 'x00200052');
+    imageMetaData.instance.imageOrientationPatient = imageMetaData.instance.imageOrientationPatient || getFromDataSet(image.data, 'string', 'x00200037');
+    imageMetaData.instance.imagePositionPatient = imageMetaData.instance.imagePositionPatient || getFromDataSet(image.data, 'string', 'x00200032');
 
-    imageMetaData.instance.frameIncrementPointer = imageMetaData.instance.frameIncrementPointer || image.data.string('x00280009');
-    imageMetaData.instance.frameTime = imageMetaData.instance.frameTime || image.data.string('x00181063');
-    imageMetaData.instance.frameTimeVector = imageMetaData.instance.frameTimeVector || image.data.string('x00181065');
+    imageMetaData.instance.sliceThickness = imageMetaData.instance.sliceThickness || getFromDataSet(image.data, 'string', 'x00180050');
+    imageMetaData.instance.sliceLocation = imageMetaData.instance.sliceLocation || getFromDataSet(image.data, 'string', 'x00201041');
+    imageMetaData.instance.tablePosition = imageMetaData.instance.tablePosition || getFromDataSet(image.data, 'string', 'x00189327');
+    imageMetaData.instance.spacingBetweenSlices = imageMetaData.instance.spacingBetweenSlices || getFromDataSet(image.data, 'string', 'x00180088');
 
-    if (!imageMetaData.instance.multiframeMetadata) {
+    imageMetaData.instance.lossyImageCompression = imageMetaData.instance.lossyImageCompression || getFromDataSet(image.data, 'string', 'x00282110');
+    imageMetaData.instance.lossyImageCompressionRatio = imageMetaData.instance.lossyImageCompressionRatio || getFromDataSet(image.data, 'string', 'x00282112');
+
+    imageMetaData.instance.frameIncrementPointer = imageMetaData.instance.frameIncrementPointer || getFromDataSet(image.data, 'string', 'x00280009');
+    imageMetaData.instance.frameTime = imageMetaData.instance.frameTime || getFromDataSet(image.data, 'string', 'x00181063');
+    imageMetaData.instance.frameTimeVector = imageMetaData.instance.frameTimeVector || getFromDataSet(image.data, 'string', 'x00181065');
+
+    if (image.data && !imageMetaData.instance.multiframeMetadata) {
         imageMetaData.instance.multiframeMetadata = getMultiframeModuleMetaData(image.data);
     }
 
@@ -216,7 +231,6 @@ getMultiframeModuleMetaData = function(dataSet) {
     }
 
     return imageInfo;
-
 };
 
 /**

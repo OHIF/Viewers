@@ -18,9 +18,8 @@ twbs:bootstrap
 http@1.2.10
 arsnebula:reactive-promise
 promise@0.8.8
-stylus@2.513.6
+stylus@2.513.8
 fortawesome:fontawesome
-mrt:moment@2.15.1
 meteor-base@1.0.4
 mobile-experience@1.0.4
 mongo@1.1.14
@@ -35,7 +34,7 @@ ejson@1.0.13
 spacebars@1.0.12
 check@1.2.4
 aldeed:simple-schema          # Third party package to deal with schemas
-ecmascript@0.5.9
+ecmascript@0.6.1
 reactive-var@1.0.11
 
 practicalmeteor:loglevel
