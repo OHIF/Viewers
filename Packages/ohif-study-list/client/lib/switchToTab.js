@@ -81,7 +81,6 @@ switchToTab = function(contentId) {
         // Attempt to retrieve the meta data (it might be cached)
         OHIF.studylist.getStudiesMetadata(studyInstanceUids, function(studies) {
             viewStudiesInTab(contentId, studies);
-            Session.set('GettingStudyMetadata', false);
         });
     }
 };
