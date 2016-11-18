@@ -18,6 +18,8 @@
 
     .removable
       .imageViewerViewport
+        theme('border-bottom', '%s solid $uiBorderColor' % $uiBorderThickness)
+        
         canvas
           border-color: transparent
           border-style: solid
@@ -27,9 +29,26 @@
     .removable
       .imageViewerViewport
         theme('border-right', '%s solid $uiBorderColor' % $uiBorderThickness)
-
+    
+    &:first-child
+      .removable
+        .imageViewerViewport
+          theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+        
     &.active
       .removable
         .imageViewerViewport
+          border-right: none !important
+          
           canvas
             theme('border-color', '$uiBorderColorActive')
+
+
+.sidebar-left-open
+  #layoutManagerTarget
+    #imageViewerViewports
+      .viewportContainer
+        &:first-child
+          .removable
+            .imageViewerViewport
+              border-left: none

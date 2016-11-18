@@ -3,5 +3,18 @@
 #imageViewerViewports
   height: 100%
   padding-bottom: 1px
-  padding-right: 6px
   width: 100%
+  padding-right: 0
+
+.mainContent
+  &.sidebar-right-open
+    #imageViewerViewports
+      padding-right: 7px
+    
+  &.sidebar-left-open:not(.sidebar-right-open)
+    #imageViewerViewports
+      padding-right: 1px
+  
+  &.sidebar-left-open.sidebar-right-open
+    #imageViewerViewports
+      padding-right: 8px

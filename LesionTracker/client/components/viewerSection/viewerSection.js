@@ -1,19 +1,14 @@
-Template.viewerSection.events({
-    'transitionend .sidebarMenu'(event) {
-        if (!event.target.classList.contains('sidebarMenu')) {
-            return;
-        }
-
-        handleResize();
-    }
-});
+const isSidebarOpen = sidebarName => {
+    handleResize();
+    return Template.instance().data.state.get(sidebarName);
+};
 
 Template.viewerSection.helpers({
     leftSidebarOpen() {
-        return Template.instance().data.state.get('leftSidebar');
+        return isSidebarOpen('leftSidebar');
     },
 
     rightSidebarOpen() {
-        return Template.instance().data.state.get('rightSidebar');
+        return isSidebarOpen('rightSidebar');
     }
 });
