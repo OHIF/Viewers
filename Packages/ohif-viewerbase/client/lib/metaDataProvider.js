@@ -83,7 +83,7 @@ function getFromDataSet(dataSet, type, tag) {
         return;
     }
 
-    return fn(tag);
+    return fn.call(dataSet, tag);
 }
 
 /**
