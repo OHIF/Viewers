@@ -41,7 +41,9 @@ Template.longitudinalStudyListContextMenu.helpers({
         let classList = '';
 
         const assessment = getAssociationAssessment();
-        if (assessment.selected < 1 || assessment.associated > 0) {
+        // if (assessment.selected < 1 || assessment.associated > 0) {
+        // TODO: REMOVE - Temporary for RSNA
+        if (assessment.selected < 2) {
             classList += disabledClass;
         }
 

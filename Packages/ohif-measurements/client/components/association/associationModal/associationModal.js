@@ -47,7 +47,13 @@ Template.dialogStudyAssociation.onCreated(() => {
             studies[timepointType].push(data);
         });
 
-        Object.keys(studies).forEach(function(timepointType) {
+        const studiesKeys = Object.keys(studies);
+
+        // TODO: REMOVE - Temporary for RSNA
+        const patientId = studies[studiesKeys[0]][0].patientId;
+        Timepoints.remove({ patientId });
+
+        studiesKeys.forEach(timepointType => {
             // Get the studies associated with this timepoint
             const relatedStudies = studies[timepointType];
 
