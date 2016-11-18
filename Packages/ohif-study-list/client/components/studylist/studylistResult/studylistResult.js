@@ -204,8 +204,7 @@ Template.studylistResult.onCreated(() => {
             patientId: 0,
             accessionNumber: 0,
             studyDescription: 0,
-            modality: 0,
-            numberOfStudyRelatedInstances: 0
+            modality: 0
         });
     }
 });
