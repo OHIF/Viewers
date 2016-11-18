@@ -6,6 +6,7 @@ import './studylist/studylistModification.js';
 import './TrialCriteriaConstraints.js';
 import './MeasurementValidation.js';
 import './pixelSpacingAutorunCheck.js';
+import './removeMeasurementIfInvalid.js';
 import './toggleLesionTrackerTools.js';
 import './clearMeasurementTimepointData.js';
 import './convertToNonTarget.js';

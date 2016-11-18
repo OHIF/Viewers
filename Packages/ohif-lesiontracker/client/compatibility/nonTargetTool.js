@@ -1,6 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 import { toolManager } from 'meteor/ohif:viewerbase';
-import { _ } from 'meteor/underscore';
 
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
@@ -32,26 +31,10 @@ import { _ } from 'meteor/underscore';
         };
     };
 
-    const validateMeasurement = (measurementData, eventData) => {
-        if (!measurementData) {
-            return false;
-        }
-
-        const handles = measurementData.handles;
-        const start = _.pick(handles.start, ['x', 'y']);
-        const end = _.pick(handles.end, ['x', 'y']);
-        if (_.isEqual(start, end)) {
-            cornerstoneTools.removeToolState(eventData.element, toolType, measurementData);
-            return false;
-        }
-
-        return true;
-    };
-
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getMeasurementLocationCallback(measurementData, eventData) {
-        if (!validateMeasurement(measurementData, eventData)) {
+        if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
             return;
         }
 
@@ -64,7 +47,7 @@ import { _ } from 'meteor/underscore';
     }
 
     function changeMeasurementLocationCallback(measurementData, eventData) {
-        if (!validateMeasurement(measurementData, eventData)) {
+        if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
             return;
         }
 
@@ -139,7 +122,7 @@ import { _ } from 'meteor/underscore';
             $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
             $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
             $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
-             $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
+            $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
 
             cornerstone.updateImage(mouseEventData.element);
         });

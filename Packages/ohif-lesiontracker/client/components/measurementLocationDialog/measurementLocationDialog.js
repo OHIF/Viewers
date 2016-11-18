@@ -40,6 +40,10 @@ Template.measurementLocationDialog.onCreated(() => {
     const timepointApi = instance.data.timepointApi;
 
     const toggleLabel = (measurementData, eventData, doneCallback) => {
+        if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
+            return;
+        }
+
         const getHandlePosition = key => _.pick(measurementData.handles[key], ['x', 'y']);
         const start = getHandlePosition('start');
         const end = getHandlePosition('end');
