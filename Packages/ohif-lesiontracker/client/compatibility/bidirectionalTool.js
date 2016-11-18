@@ -1,4 +1,5 @@
 import { toolManager } from 'meteor/ohif:viewerbase';
+import { OHIF } from 'meteor/ohif:core';
 
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
@@ -42,7 +43,7 @@ import { toolManager } from 'meteor/ohif:viewerbase';
 
     function createNewMeasurement(mouseEventData) {
         // Create the measurement data for this tool with the end handle activated
-        var measurementData = {
+        const measurementData = {
             visible: true,
             active: true,
             handles: {
@@ -98,6 +99,9 @@ import { toolManager } from 'meteor/ohif:viewerbase';
             isDeleted: false,
             toolType: 'bidirectional'
         };
+
+        OHIF.cornerstone.repositionTextBoxWhileDragging(mouseEventData, measurementData);
+
         return measurementData;
     }
 

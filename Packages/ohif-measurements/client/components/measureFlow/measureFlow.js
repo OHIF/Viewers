@@ -108,7 +108,7 @@ Template.measureFlow.onRendered(() => {
         }
 
         // Display the button after reposition it
-        $btnAdd.css('visibility', '');
+        $btnAdd.css('opacity', 1);
     }
 });
 
