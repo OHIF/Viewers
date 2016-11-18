@@ -170,6 +170,8 @@ import { toolManager } from 'meteor/ohif:viewerbase';
             toolType: 'nonTarget'
         };
 
+        OHIF.cornerstone.repositionTextBoxWhileDragging(mouseEventData, measurementData);
+
         return measurementData;
     }
     ///////// END ACTIVE TOOL ///////
