@@ -13,6 +13,7 @@ function getAssociationAssessment() {
         selected: 0,
         associated: 0
     };
+
     // check if timepointApi is available
     const timepointApi = StudyList.timepointApi;
     if (timepointApi) {
@@ -43,7 +44,7 @@ Template.longitudinalStudyListContextMenu.helpers({
         const assessment = getAssociationAssessment();
         // if (assessment.selected < 1 || assessment.associated > 0) {
         // TODO: REMOVE - Temporary for RSNA
-        if (assessment.selected < 2) {
+        if (assessment.selected < 1) {
             classList += disabledClass;
         }
 

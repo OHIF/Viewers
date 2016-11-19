@@ -6,7 +6,7 @@ $tableHeaderHeight = 50px
 $bodyCellHeight = 30px
 
 #studyAssociationTable
-  color: #fff;
+  color: #fff
   
   .header
     text-align: center
@@ -26,7 +26,7 @@ $bodyCellHeight = 30px
     left: 0
     width: 100%
     z-index: 1
-    border-bottom: solid 1px;
+    border-bottom: solid 1px
     theme('border-bottom-color', '$largeNumbersColor')
   
   table
@@ -36,9 +36,11 @@ $bodyCellHeight = 30px
     thead
       tr
         th
-          padding: 0
+          padding-bottom: 5px
           border-bottom: solid 1px #6fbde2
           height: $tableHeaderHeight
+          font-weight: normal
+          
     tbody
       tr
         padding: 5px
@@ -54,13 +56,16 @@ $bodyCellHeight = 30px
           color: $tableTextPrimaryColor
           border-top: 1px solid #436270
           border-bottom: 1px solid #436270
-          vertical-align: middle;
+          vertical-align: middle
           transition(all 0.1s ease)
           
           p
-            margin: 0;
+            margin: 0
 
           &.timepointOptions
+            label
+              font-weight: 200
+              
             input
               margin: 0 3px
               
@@ -108,7 +113,7 @@ $bodyCellHeight = 30px
               padding-left: 20px
               display: inline-block
               position: relative
-              line-height: initial;
+              line-height: initial
 
           &.disabled
             opacity: 0.2
