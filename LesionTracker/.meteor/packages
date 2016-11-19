@@ -15,7 +15,7 @@ jquery@1.11.10                 # Helpful client-side library
 tracker@1.1.1                 # Meteor's client-side reactive programming library
 
 es5-shim@4.6.15               # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.5.9              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
 
 clinical:router
 clinical:extended-api
@@ -40,13 +40,13 @@ ohif:user-management
 ohif:lesiontracker
 
 accounts-base@1.2.14
-accounts-password@1.3.2
+accounts-password@1.3.3
 ian:accounts-ui-bootstrap-3
 twbs:bootstrap
 http@1.2.10
 arsnebula:reactive-promise
 promise@0.8.8
-stylus@2.513.7
+stylus@2.513.8
 fortawesome:fontawesome
 random@1.0.10
 reactive-var@1.0.11
