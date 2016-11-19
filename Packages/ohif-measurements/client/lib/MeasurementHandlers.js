@@ -121,6 +121,12 @@ class MeasurementHandlers {
         const measurementId = measurement._id;
         delete measurement._id;
 
+        // If the measurement configuration includes a value for Viewport,
+        // we will populate this with the Cornerstone Viewport
+        if (measurementToolConfiguration.schema.schema('viewport')) {
+            measurement.viewport = cornerstone.getViewport(eventData.element);    
+        }
+
         // Clean the measurement according to the Schema
         measurementToolConfiguration.schema.clean(measurement);
 

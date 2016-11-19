@@ -96,7 +96,6 @@ import { OHIF } from 'meteor/ohif:core';
             },
             longestDiameter: 0,
             shortestDiameter: 0,
-            isDeleted: false,
             toolType: 'bidirectional'
         };
 
