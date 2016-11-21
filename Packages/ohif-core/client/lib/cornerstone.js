@@ -66,6 +66,9 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         directions.x = tool.x < mid.x ? -1 : 1;
         directions.y = tool.y < mid.y ? -1 : 1;
 
+        // TODO: REMOVE - Temporary for RSNA (placing always above patient)
+        directions.y = -1;
+
         const points = {};
         points.x = directions.x < 0 ? 0 : image.width;
         points.y = directions.y < 0 ? 0 : image.height;
@@ -73,8 +76,12 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         const diffX = directions.x < 0 ? tool.x : image.width - tool.x;
         const diffY = directions.y < 0 ? tool.y : image.height - tool.y;
 
-        const cornerAxis = diffY < diffX ? 'y' : 'x';
-        const toolAxis = diffY < diffX ? 'x' : 'y';
+        let cornerAxis = diffY < diffX ? 'y' : 'x';
+        let toolAxis = diffY < diffX ? 'x' : 'y';
+
+        // TODO: REMOVE - Temporary for RSNA (placing always above patient)
+        cornerAxis = 'y';
+        toolAxis = 'x';
 
         textBox[cornerAxis] = points[cornerAxis];
         textBox[toolAxis] = tool[toolAxis];
