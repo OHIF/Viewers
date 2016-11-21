@@ -4,6 +4,7 @@ import { Blaze } from 'meteor/blaze';
 import { Random } from 'meteor/random';
 import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
+import { _ } from 'meteor/underscore';
 
 Template.dialogStudyAssociation.onCreated(() => {
     const instance = Template.instance();
@@ -50,8 +51,11 @@ Template.dialogStudyAssociation.onCreated(() => {
         const studiesKeys = Object.keys(studies);
 
         // TODO: REMOVE - Temporary for RSNA
-        const patientId = studies[studiesKeys[0]][0].patientId;
-        Timepoints.remove({ patientId });
+        const hasBaseline = _.contains(studiesKeys, 'baseline');
+        if (hasBaseline) {
+            const patientId = studies[studiesKeys[0]][0].patientId;
+            Timepoints.remove({ patientId });
+        }
 
         studiesKeys.forEach(timepointType => {
             // Get the studies associated with this timepoint
