@@ -48,6 +48,11 @@ OHIF.ui.makeDraggable = function(element) {
             return;
         }
 
+        // Stop the dragging if the element is being resized
+        if ($(element).hasClass('resizing')) {
+            return;
+        }
+
         var elementTop = parseFloat(element.offset().top),
             elementLeft = parseFloat(element.offset().left);
 

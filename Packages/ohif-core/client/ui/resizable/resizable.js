@@ -70,8 +70,6 @@ class Resizable {
         this.initResizeHandler = event => {
             const $window = $(window);
 
-            event.stopPropagation();
-
             this.width = this.initialWidth = this.$element.width();
             this.height = this.initialHeight = this.$element.height();
             this.startWidth = this.width;
