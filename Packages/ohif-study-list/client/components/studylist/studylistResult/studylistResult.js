@@ -179,15 +179,32 @@ function search() {
     });
 }
 
+const getRowsPerPage = () => sessionStorage.getItem('rowsPerPage');
+
+// Wraps ReactiveVar equalsFunc function. Whenever ReactiveVar is 
+// set to a new value, it will save it in the Session Storage.
+// The return is the default ReactiveVar equalsFunc if available
+// or values are === compared
+const setRowsPerPage = (oldValue, newValue) => {
+    sessionStorage.setItem('rowsPerPage', newValue);
+    return typeof ReactiveVar._isEqual === 'function' ? ReactiveVar._isEqual(oldValue, newValue) : oldValue === newValue;
+};
+
 Template.studylistResult.onCreated(() => {
-    let instance = Template.instance();
+    const instance = Template.instance();
     instance.sortOption = new ReactiveVar();
     instance.sortingColumns = new ReactiveDict();
 
     // Pagination parameters
 
-    // Rows per page is 25 as default
-    instance.rowsPerPage = new ReactiveVar(25);
+    // Rows per page
+    // Check session storage or set 25 as default
+    const cachedRowsPerPage = getRowsPerPage();
+    if(!cachedRowsPerPage) {
+        setRowsPerPage(0, 25);
+    }
+    const rowsPerPage = getRowsPerPage();
+    instance.rowsPerPage = new ReactiveVar(parseInt(rowsPerPage, 10), setRowsPerPage);
 
     // Set currentPage indexed 0
     instance.currentPage = new ReactiveVar(0);
@@ -197,7 +214,8 @@ Template.studylistResult.onCreated(() => {
     const sortOptionSession = Session.get('sortOption');
     if (sortOptionSession) {
         instance.sortingColumns.set(sortOptionSession);
-    } else {
+    } 
+    else {
         instance.sortingColumns.set({
             patientName: 1,
             studyDate: 1,

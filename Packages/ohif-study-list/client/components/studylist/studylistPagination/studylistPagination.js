@@ -3,18 +3,19 @@ import { Template } from 'meteor/templating';
 import './studylistPagination.html';
 
 const visiblePages = 10;
+
 Template.studylistPagination.onCreated(function() {
-    let instance = Template.instance();
+    const instance = Template.instance();
     // replace parentVariable with the name of the instance variable
     instance.parent = this.parent(1);
 });
 
-Template.studylistPagination.onRendered(function() {
+Template.studylistPagination.onRendered(() => {
     const instance = Template.instance();
     const $paginationControl = instance.$('#pagination');
 
     // Track changes on recordCount and rowsPerPage
-    instance.autorun(function() {
+    instance.autorun(() => {
         const recordCount = instance.parent.recordCount.get();
         const rowsPerPage = instance.parent.rowsPerPage.get();
 
@@ -24,13 +25,13 @@ Template.studylistPagination.onRendered(function() {
         }
 
         if (recordCount && rowsPerPage) {
-            const totalPageNumber = Math.ceil(recordCount / rowsPerPage);
+            const totalPages = Math.ceil(recordCount / rowsPerPage);
 
             // Initialize plugin
             $paginationControl.twbsPagination({
-                totalPages: totalPageNumber,
-                visiblePages: visiblePages,
-                onPageClick: function (event, page) {
+                totalPages,
+                visiblePages,
+                onPageClick: (event, page) => {
                     // Update currentPage
                     // Decrease page by 1 to set currentPage
                     // Since reactive table current page index starts by 0
@@ -42,9 +43,16 @@ Template.studylistPagination.onRendered(function() {
 });
 
 Template.studylistPagination.helpers({
+    pageSizes() {
+        return [ 25, 50, 100 ];
+    },
     recordCount() {
         const instance = Template.instance();
         return instance.parent.recordCount.get();
+    },
+    isRowsPerPageSelected(rowsPerPage) {
+        const instance = Template.instance();
+        return rowsPerPage === instance.parent.rowsPerPage.get();
     }
 });
 
