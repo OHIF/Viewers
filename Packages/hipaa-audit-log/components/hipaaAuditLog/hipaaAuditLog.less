@@ -1,78 +1,48 @@
 #hipaaAuditLog{
-  padding-left: 0px !important;
+  color: #fff;
+  width: 100%;
 
-  li{
+  .hipaaAuditItem {
+    // There's a CSS rule on ohif-user-management that's changing the .hipaaAuditItem border style
+    border: none !important;
+
+    background-color: black;
     list-style: none;
     padding-top: 5px;
-    padding-left: 20px;
+    padding-left: 10px;
+    line-height: 25px;
+    border-top: 1px solid #436270;
+    border-bottom: 1px solid #436270;
+
+    &:nth-child(even) {
+      background-color: #151a1f;
+    }
+
+    &:hover, &:active, &.active {
+      background-color: #2c363f;
+      color: white;
+    }
+
+    .item-icon {
+      top: 12px;
+      position: relative;
+    }
+
+    .media-icon {
+      float: left;
+      top: 12px;
+      width: 40px;
+      text-align: center;
+      position: relative;
+      margin-right: 10px;
+    }
   }
+
   .gray{
     color: gray;
-  }
-  .lightgray{
-    color: #aaaaaa;
-  }
-  .iconColumn{
-    width: 10%;
-  }
-  .messageClumn{
-    width: 80%;
-  }
-  .fa{
-    padding-right: 12px;
-    padding-left: 4px;
-    padding-top: 6px;
-    width: 40px;
-    //border: 1px solid orange;
-  }
-  .fa-recycle{
-    padding-top: 8px;
-  }
-  .fa-plus-circle{
-    padding-left: 6px !important;
-  }
-  .fa-circle-o{
-    padding-left: 6px !important;
-  }
-  .fa-minus-circle{
-    padding-left: 6px !important;
-  }
-  .fa-database{
-    padding-left: 7px !important;
-  }
-  .fa-pencil{
-    padding-left: 6px !important;
-  }
-  .fa-code-fork{
-    padding-left: 12px !important;
-  }
-  .fa-warning{
-    padding-left: 5px !important
-  }
-  .fa-rss{
-    padding-left: 7px !important;
-  }
-
-  .hipaaAuditItem{
-    border-top: 1px solid lightgray;
-    padding-bottom: 10px;
-  }
-  .hipaaAuditItem:nth-child(1){
-    border-top: 0px;
-  }
-
-  .media-body{
-    padding-bottom: 5px;
-  }
-
-
-  #hipaaAuditLog{
-    width: 100%;
   }
 
   .userName, .patientName, .mongoRecordId, .collectionName{
     cursor: pointer;
   }
-
-
 }

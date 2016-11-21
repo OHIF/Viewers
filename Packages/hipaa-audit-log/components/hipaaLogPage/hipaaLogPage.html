@@ -1,9 +1,15 @@
 <template name="hipaaLogPage">
   <div id="hipaaLogPage" class="page">
-    {{#if hasCloseButtons}}
-      {{> hipaaCloseButton header="true" }}
-    {{/if}}
-    
+
+    <div class="hipaaHeader clearfix">
+        <div class="header pull-left">
+            Audit Log
+        </div>
+        <div class="pull-right">
+            {{> hipaaCloseButton header="true" }}
+        </div>
+    </div>
+
     {{> hipaaRibbon }}
 
     <div class="container">
