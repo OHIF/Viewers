@@ -38,6 +38,10 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         const handles = measurementData.handles;
         const textBox = handles.textBox;
 
+        const bounds = {};
+        bounds.x = textBox.boundingBox.width;
+        bounds.y = textBox.boundingBox.height;
+
         const getHandlePosition = key => _.pick(handles[key], ['x', 'y']);
         const start = getHandlePosition('start');
         const end = getHandlePosition('end');
@@ -74,6 +78,13 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
 
         textBox[cornerAxis] = points[cornerAxis];
         textBox[toolAxis] = tool[toolAxis];
+
+        if (directions[cornerAxis] < 0) {
+            const topLeft = cornerstone.pageToPixel(element, 0, 0);
+            const bottomRight = cornerstone.pageToPixel(element, bounds.x, bounds.y);
+            const boxSize = bottomRight[cornerAxis] - topLeft[cornerAxis];
+            textBox[cornerAxis] -= boxSize;
+        }
     };
 
     const mouseUpCallback = () => {
