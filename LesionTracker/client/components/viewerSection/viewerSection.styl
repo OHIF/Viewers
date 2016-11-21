@@ -30,11 +30,11 @@
     margin-left: - $studiesSidebarMenuWidth
     max-width: $studiesSidebarMenuWidth
     order: 1
-    display: none
+    visibility: hidden
 
     &.sidebar-open
       margin-left: 0
-      display: block
+      visibility: visible
 
   .mainContent
     flex: 1
@@ -52,7 +52,7 @@
     order: 3
     padding-left: 6px
     position: relative
-    display: none
+    visibility: hidden
 
     &[data-timepoints="3"]
       margin-right: - ($lesionsSidebarMenuWidth + 135.5px)
@@ -64,7 +64,7 @@
 
     &.sidebar-open
       margin-right: 0
-      display: block
+      visibility: visible
 
   .studiesListedChanger
     theme('border-bottom', '%s solid $uiBorderColor' % $uiBorderThickness)
