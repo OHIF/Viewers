@@ -3,6 +3,8 @@ import './dialog/form.html';
 import './dialog/form.js';
 import './dialog/login.html';
 import './dialog/login.js';
+import './dialog/unsavedChangesDialog.html';
+import './dialog/unsavedChangesDialog.js';
 
 import './dropdown/backdrop.html';
 import './dropdown/form.html';

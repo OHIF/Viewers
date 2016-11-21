@@ -8,6 +8,36 @@ Template.caseProgress.onCreated(() => {
     instance.progressPercent = new ReactiveVar();
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar();
+
+    instance.saveData = () => {
+
+        const timepointApi = instance.data.timepointApi;
+        const timepoints = timepointApi.all();
+        OHIF.log.info('Saving Measurements for timepoints:');
+        OHIF.log.info(timepoints);
+        instance.data.measurementApi.storeMeasurements(timepoints);
+
+        // Clear signaled unsaved changes...
+        OHIF.ui.unsavedChanges.clear('viewer.studyViewer.measurements.*');
+
+    };
+
+    instance.unsavedChangesHandler = () => {
+        const isNotDisabled = !instance.$('.js-finish-case').hasClass('disabled');
+        if (isNotDisabled && instance.progressPercent.get() === 100) {
+            instance.saveData();
+        }
+    };
+
+    // Attach handler for unsaved changes dialog...
+    OHIF.ui.unsavedChanges.attachHandler('viewer.studyViewer.measurements', 'save', instance.unsavedChangesHandler);
+
+});
+
+Template.caseProgress.onDestroyed(() => {
+    const instance = Template.instance();
+    // Remove unsaved changes handler after this view has been destroyed...
+    OHIF.ui.unsavedChanges.removeHandler('viewer.studyViewer.measurements', 'save', instance.unsavedChangesHandler);
 });
 
 Template.caseProgress.onRendered(() => {
@@ -132,15 +162,8 @@ Template.caseProgress.events({
             return;
         }
 
-        const timepointApi = instance.data.timepointApi;
-        const timepoints = timepointApi.all();
-        OHIF.log.info('Saving Measurements for timepoints:')
-        OHIF.log.info(timepoints);
-        instance.data.measurementApi.storeMeasurements(timepoints);
-
-        // Clear signaled unsaved changes...
-        OHIF.ui.unsavedChanges.clear('viewer.studyViewer.measurements.*');
-
+        instance.saveData();
         switchToTab('studylistTab');
+
     }
 });

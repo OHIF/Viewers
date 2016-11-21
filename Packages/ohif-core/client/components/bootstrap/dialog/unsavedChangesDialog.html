@@ -1,0 +1,35 @@
+<template name="unsavedChangesDialog">
+    <div class="modal unsavedChangesDialog fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" aria-label="Close" data-choice="abort-action" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">You have unsaved changes!</h4>
+                </div>
+                <div class="modal-footer">
+
+                    {{#let label='Stay'}}
+                    <button class="btn btn-default" aria-label="{{label}}" data-choice="abort-action" data-dismiss="modal">
+                        {{label}}
+                    </button>
+                    {{/let}}
+
+                    {{#let label='Leave without saving...'}}
+                    <button class="btn btn-danger" aria-label="{{label}}" data-choice="abandon-changes" data-dismiss="modal">
+                        {{label}}
+                    </button>
+                    {{/let}}
+
+                    {{#let label='Save and Exit!'}}
+                    <button class="btn btn-primary" aria-label="{{label}}" data-choice="save-changes" data-dismiss="modal">
+                        {{label}}
+                    </button>
+                    {{/let}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

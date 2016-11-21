@@ -25,6 +25,7 @@ Package.onUse(function(api) {
     // UI Styles
     api.addFiles([
         'client/ui/resizable/resizable.styl',
+        'client/components/bootstrap/dialog/unsavedChangesDialog.styl',
         'client/components/bootstrap/dropdown/dropdown.styl'
     ], 'client');
 

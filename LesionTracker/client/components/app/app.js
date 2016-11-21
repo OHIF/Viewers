@@ -18,21 +18,37 @@ Template.app.onRendered(() => {
 });
 
 Template.app.events({
-    'click .js-toggle-studyList'() {
+    'click .js-toggle-studyList'(event) {
         const contentId = Session.get('activeContentId');
 
-        OHIF.ui.unsavedChanges.checkBeforeAction('viewer.*', function(shouldProceed, hasChanges) {
-            if (shouldProceed) {
-                // Drop signaled unsaved changes if any...
-                if (hasChanges) {
-                    OHIF.ui.unsavedChanges.clear('viewer.*');
+        OHIF.ui.unsavedChanges.presentProactiveDialog('viewer.*', (hasChanges, userChoice) => {
+
+            if (hasChanges) {
+
+                switch (userChoice) {
+                    case 'abort-action':
+                        return;
+                    case 'save-changes':
+                        OHIF.ui.unsavedChanges.trigger('viewer', 'save', false);
+                        OHIF.ui.unsavedChanges.clear('viewer.*');
+                        break;
+                    case 'abandon-changes':
+                        OHIF.ui.unsavedChanges.clear('viewer.*');
+                        break;
                 }
 
-                if (contentId !== studylistContentId) {
-                    switchToTab(studylistContentId);
-                } else {
-                    switchToTab(viewerContentId);
-                }
+            }
+
+            if (contentId !== studylistContentId) {
+                switchToTab(studylistContentId);
+            } else {
+                switchToTab(viewerContentId);
+            }
+
+        }, {
+            position: {
+                x: event.clientX + 15,
+                y: event.clientY + 15
             }
         });
 
