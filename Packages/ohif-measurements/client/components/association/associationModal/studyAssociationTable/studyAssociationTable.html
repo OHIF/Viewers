@@ -23,13 +23,13 @@
 
             <tbody>
                 {{#each relevantStudies}}
-                    <tr>
+                    <tr class="{{#if autoselected}}disabled{{/if}}">
                         <td class="checkboxWrapper center">
                             <label>
                                 <input type="checkbox" class="includeStudy" {{valueIf autoselected '' 'checked'}}/> <span></span>
                             </label>
                         </td>
-                        <td class="center studyDataCell {{#if autoselected}}disabled{{/if}}">
+                        <td class="center studyDataCell">
                             {{#if autoselected}}
                                 <p class="studyDate autoselected"
                                    data-toggle="tooltip"
@@ -40,13 +40,13 @@
                                 <p class="studyDate">{{formatDA studyDate}}</p>
                             {{/if}}
                         </td>
-                        <td class="center studyDataCell {{#if autoselected}}disabled{{/if}}">
+                        <td class="center studyDataCell">
                             <p>{{formatPN patientName}}</p>
                         </td>
-                        <td class="studyDataCell {{#if autoselected}}disabled{{/if}}">
+                        <td class="studyDataCell">
                             <p>{{studyDescription}}</p>
                         </td>
-                        <td class="timepointOptions center studyDataCell noselect {{#if autoselected}}disabled{{/if}}">
+                        <td class="timepointOptions center studyDataCell noselect">
                             {{#each timepointOptions}}
                                 <label class="noselect">
                                     <input type="radio"
@@ -54,7 +54,7 @@
                                           value="{{value}}"
                                           class="timepointOption"
                                           {{valueIf checked 'checked' ''}}
-                                          {{valueIf autoselected 'disabled' ''}}>
+                                          {{valueIf ../autoselected 'disabled' ''}}>
                                         <span></span>{{name}}
                                 </label>
                             {{/each}}

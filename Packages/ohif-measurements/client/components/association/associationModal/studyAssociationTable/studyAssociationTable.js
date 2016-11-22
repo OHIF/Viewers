@@ -128,12 +128,14 @@ Template.studyAssociationTable.helpers({
 Template.studyAssociationTable.events({
     'change input.includeStudy'(event, instance) {
         const checkbox = event.currentTarget;
-        const studyDataCells = $(checkbox).parents('tr').find('td.studyDataCell');
+        const studyRow = $(checkbox).closest('tr');
+        const studyDataCells = studyRow.find('td.studyDataCell');
+
         if (checkbox.checked === true) {
-            studyDataCells.removeClass('disabled');
+            studyRow.removeClass('disabled');
             studyDataCells.find('input').attr('disabled', false);
         } else {
-            studyDataCells.addClass('disabled');
+            studyRow.addClass('disabled');
             studyDataCells.find('input').attr('disabled', true);
         }
     }

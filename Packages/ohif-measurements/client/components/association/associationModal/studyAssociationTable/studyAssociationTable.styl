@@ -108,6 +108,16 @@ $bodyCellHeight = 30px
                 &:before
                   theme('background-color', '$activeColor')
 
+              &:disabled
+                & + span
+                  border-color: #535960 !important
+
+                &:checked + span
+                  border-color: #0D4256 !important
+
+                  &:before
+                    background-color: #0D4256 !important
+
             label
               padding: 0 5px
               padding-left: 20px
@@ -115,9 +125,6 @@ $bodyCellHeight = 30px
               position: relative
               line-height: initial
 
-          &.disabled
-            opacity: 0.2
-            
           &.checkboxWrapper
             label
               display: block
@@ -165,6 +172,10 @@ $bodyCellHeight = 30px
                 &:before
                   content: '\2713'
 
+        &.disabled
+          td
+            color: #535960
+            
         &:hover, &:active, &.active
           background-color: $tableHoverColor
           color: white
