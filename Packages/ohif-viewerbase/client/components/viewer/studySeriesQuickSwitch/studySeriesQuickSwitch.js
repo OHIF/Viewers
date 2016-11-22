@@ -47,10 +47,29 @@ Template.studySeriesQuickSwitch.onCreated(() => {
     });
 });
 
+const checkScrollArea = element => {
+    const { scrollHeight, clientHeight, offsetHeight, scrollTop } = element;
+
+    if(scrollHeight > offsetHeight + scrollTop) {
+        element.classList.add('show-scroll-indicator-down');
+    }
+    else {
+        element.classList.remove('show-scroll-indicator-down');
+    }
+
+    if(scrollTop > 0) {
+        element.classList.add('show-scroll-indicator-up');
+    }
+    else {
+        element.classList.remove('show-scroll-indicator-up');
+    }
+};
+
 Template.studySeriesQuickSwitch.events({
     'mouseenter .js-quick-switch, mouseenter .js-quick-switch .switchSectionSeries'(event, instance) {
         instance.$('.quickSwitchWrapper').addClass('overlay');
         $(event.currentTarget).addClass('hover');
+        instance.$('.scrollArea').each((index, scrollAreaElement) => checkScrollArea(scrollAreaElement));
     },
     'mouseleave .js-quick-switch'(event, instance) {
         instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
@@ -58,6 +77,9 @@ Template.studySeriesQuickSwitch.events({
     },
     'click .studyTimepointStudy'(event, instance) {
         instance.$('.switchSectionSeries').addClass('hover');
+    },
+    'scroll .scrollArea'(event) {
+        checkScrollArea(event.currentTarget);
     }
 });
 
@@ -75,7 +97,7 @@ Template.studySeriesQuickSwitch.helpers({
     // JS seems to be the only solution for now:
     // - http://stackoverflow.com/questions/6165472/custom-css-scrollbar-for-firefox/6165489#6165489
     // - http://stackoverflow.com/questions/18317634/force-visible-scrollbar-in-firefox-on-mac-os-x/18318273
-    addMacOSClass() {
-        return window.navigator.appVersion.indexOf('Mac') !== -1 ? 'is-mac' : '';
+    isMac() {
+        return window.navigator.appVersion.indexOf('Mac');
     }
 });

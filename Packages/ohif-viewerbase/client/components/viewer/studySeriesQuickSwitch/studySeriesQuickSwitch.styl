@@ -152,13 +152,35 @@ $seriesSpacing = 2px
 
   .scrollArea
     margin-right: -22px;
-    min-height: 200px
-    max-height: 500px
+    min-height: 230px
+    max-height: 610px
     overflow-x: hidden
     overflow-y: scroll
     width: calc(100% + 22px)
+    
     &.is-mac
       padding-right: 22px
+      
+    &.show-scroll-indicator-up:before
+    &.show-scroll-indicator-down:after
+      font-family: FontAwesome
+      display: block
+      theme('color', '$activeColor')
+      font-size: 2em
+      width: 100%
+      height: 10px
+      position: absolute
+      z-index: 1
+      text-align: center
+      left: 0
+        
+    &.show-scroll-indicator-up:before
+      top: -10px
+      content: '\f102'
+        
+    &.show-scroll-indicator-down:after
+      bottom: 18px
+      content: '\f103'
 
 .studyHover
   height: 0

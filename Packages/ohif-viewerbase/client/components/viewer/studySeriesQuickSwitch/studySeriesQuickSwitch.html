@@ -6,7 +6,7 @@
                 <div class="studySwitch">
                     <div class="studyBox"></div>
                     <div class="switchHover studyHover clearfix">
-                        <div class="scrollArea {{addMacOSClass}}">
+                        <div class="scrollArea {{#if (isMac)}}is-mac{{/if}}">
                             {{>studyTimepointBrowser (clone this timepointViewType='key')}}
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                             {{/if}}
                         {{/each}}
                         <div class="switchHover seriesHover clearfix">
-                            <div class="scrollArea {{addMacOSClass}}">
+                            <div class="scrollArea {{#if (isMac)}}is-mac{{/if}}">
                                 <div class="thumbnailsWrapper">
                                     {{#each thumbnail in thumbnailsList}}
                                         {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
