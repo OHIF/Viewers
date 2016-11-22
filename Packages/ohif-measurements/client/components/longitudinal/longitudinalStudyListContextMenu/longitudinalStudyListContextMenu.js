@@ -135,11 +135,9 @@ function viewStudies() {
 
     const title = selectedStudies[0].patientName;
     const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid);
+    const contentid = 'viewerTab';
 
-    // Generate a unique ID to represent this tab
-    // We can't just use the Mongo entry ID because
-    // then it will change after hot-reloading.
-    const contentid = Random.id();
+    ViewerData = window.ViewerData || ViewerData;
 
     // Update the ViewerData global object
     ViewerData[contentid] = {
