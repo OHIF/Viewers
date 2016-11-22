@@ -8,7 +8,9 @@ Template.imageThumbnail.onCreated(() => {
     // Get the image ID for current thumbnail
     instance.getThumbnailImageId = () => {
         const stack = instance.data.thumbnail.stack;
-        const imageInstance = stack.images[0];
+        const lastIndex = (stack.images.length || 1) - 1;
+        const imageIndex = Math.floor(lastIndex / 2);
+        const imageInstance = stack.images[imageIndex];
         return getImageId(imageInstance);
     };
 });
