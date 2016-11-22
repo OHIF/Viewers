@@ -490,6 +490,8 @@ import { OHIF } from 'meteor/ohif:core';
         data.handles.perpendicularStart.y = movedPoint.y - total * dx;
         data.handles.perpendicularEnd.x = movedPoint.x;
         data.handles.perpendicularEnd.y = movedPoint.y;
+        data.handles.perpendicularEnd.locked = false;
+        data.handles.perpendicularStart.locked = false;
 
         var longLine = {
             start: {
@@ -540,14 +542,14 @@ import { OHIF } from 'meteor/ohif:core';
     // Sets position of handles(start, end, perpendicularStart, perpendicularEnd)
     function setHandlesPosition(handle, eventData, data) {
 
-        var movedPoint,
+        let movedPoint,
             outOfBounds,
             result,
             intersection,
             d1,
             d2;
 
-        var longLine = {},
+        let longLine = {},
             perpendicularLine = {};
 
         if (handle.index === 0) {
