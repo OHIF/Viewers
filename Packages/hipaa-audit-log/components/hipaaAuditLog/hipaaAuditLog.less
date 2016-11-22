@@ -3,15 +3,21 @@
   width: 100%;
 
   .hipaaAuditItem {
-    // There's a CSS rule on ohif-user-management that's changing the .hipaaAuditItem border style
-    border: none !important;
-
+    border: none;
     background-color: black;
     list-style: none;
-    padding-top: 5px;
-    padding-left: 10px;
+    padding: 10px;
     line-height: 25px;
-    border-top: 1px solid #436270;
+
+    // There's a CSS rule on ohif-user-management that's changing the .hipaaAuditItem border style (w/ !important)
+    &:first-child {
+      border-top: none !important;
+    }
+
+    &:not(:first-child) {
+      border-top: 1px solid #436270;
+    }
+
     border-bottom: 1px solid #436270;
 
     &:nth-child(even) {
