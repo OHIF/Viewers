@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
+import { _ } from 'meteor/underscore';
 
 Session.set('ViewerMainReady', false);
 Session.set('TimepointsReady', false);
@@ -73,15 +74,18 @@ Template.viewer.onCreated(() => {
 
     const patientId = instance.data.studies[0].patientId;
 
+    // LT-382: Preventing HP to keep identifying studies in timepoints that might be removed
+    instance.data.studies.forEach(study => (delete study.timepointType));
+
     // TODO: Consider combining the retrieval calls into one?
     const timepointsPromise = instance.data.timepointApi.retrieveTimepoints(patientId);
     timepointsPromise.then(() => {
         const timepoints = instance.data.timepointApi.all();
 
         //  Set timepointType in studies to be used in hanging protocol engine
-        timepoints.forEach(function(timepoint) {
-            timepoint.studyInstanceUids.forEach(function(studyInstanceUid) {
-                const study = _.find(instance.data.studies, function (element) {
+        timepoints.forEach(timepoint => {
+            timepoint.studyInstanceUids.forEach(studyInstanceUid => {
+                const study = _.find(instance.data.studies, element => {
                     return element.studyInstanceUid === studyInstanceUid;
                 });
                 if (!study) {

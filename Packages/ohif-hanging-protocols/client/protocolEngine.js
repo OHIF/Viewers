@@ -636,9 +636,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             }
 
             if (!currentViewportData.displaySetInstanceUid) {
-                // TODO: REMOVE - Temporary for RSNA - LT-382
-                OHIF.log.warn('No matching display set found?');
-                // throw 'No matching display set found?';
+                throw 'No matching display set found?';
             }
 
             viewportData.push(currentViewportData);
