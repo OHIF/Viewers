@@ -10,7 +10,7 @@
         {{/if}}
         {{#if progressComplete}}
             <div class="caseProgressStatus">
-                <button class="btn js-finish-case">Save</button>
+                <button class="btn js-finish-case {{valueIf isFinishDisabled 'disabled' ''}}">Save</button>
             </div>
         {{/if}}
     </div>

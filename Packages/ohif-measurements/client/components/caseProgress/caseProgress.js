@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.caseProgress.onCreated(() => {
@@ -150,6 +151,13 @@ Template.caseProgress.helpers({
 
         const progressPercent = instance.progressPercent.get();
         return progressPercent === 100;
+    },
+
+    isFinishDisabled() {
+        // Run this computation every time any measurement / timepoint suffer changes
+        Session.get('LayoutManagerUpdated');
+
+        return OHIF.ui.unsavedChanges.probe('viewer.*') === 0;
     }
 });
 
