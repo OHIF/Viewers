@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 import { $ } from 'meteor/jquery';
 
@@ -24,11 +25,19 @@ openStudyContextMenu = event => {
     dropdown.oncontextmenu = () => false;
 
     $dropdownMenu.css({
+        visibility: 'hidden',
         position: 'fixed',
-        left: `${event.clientX}px`,
-        top: `${event.clientY}px`,
-        'z-index': 10000
+        'z-index': 10000,
     }).bounded().focus();
+
+    // Postpone position change to allow boundaries restriction
+    Meteor.defer(() => {
+        $dropdownMenu.css({
+            visibility: 'visible',
+            left: `${event.clientX}px`,
+            top: `${event.clientY}px`
+        }).trigger('spatialChanged');
+    });
 };
 
 /**
