@@ -43,10 +43,18 @@ openStudyContextMenu = event => {
 /**
  * Exports all selected studies on the studylist
  */
-function exportSelectedStudies() {
+function exportSelectedStudies($study, event) {
     const selectedStudies = OHIF.studylist.getSelectedStudies();
+    const studiesCount = selectedStudies.length;
+    const studyText = studiesCount > 1 ? 'Studies' : 'Study';
 
-    OHIF.studylist.exportStudies(selectedStudies);
+    OHIF.ui.showFormDialog('dialogConfirm', {
+        element: event.element,
+        title: `Export ${studyText}`,
+        message: `Would you like to export ${studiesCount} ${studyText.toLowerCase()}?`
+    }).then(() => {
+        OHIF.studylist.exportStudies(selectedStudies);
+    });
 }
 
 /**
