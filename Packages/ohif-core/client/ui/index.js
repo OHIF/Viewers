@@ -1,4 +1,5 @@
 import './bounded/bounded.js';
+import './dimensional/dimensional.js';
 import './dialog/form.js';
 import './dialog/spatial.js';
 import './dialog/unsavedChangesDialog.js';
