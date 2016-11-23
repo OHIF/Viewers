@@ -4,7 +4,7 @@
     {{else}}
         <div id="{{this.id}}"
             class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if this.disabled}}disabled{{/if}} {{#if this.disableFunction}}{{#if (disableButton)}}disabled{{/if}}{{/if}}"
-            title="{{this.title}}">
+            title="{{#if this.tooltipTitle}}{{this.tooltipTitle}}{{else}}{{this.title}}{{/if}}">
             <div class="svgContainer">
                 {{#if this.svgLink}}
                 <svg>
