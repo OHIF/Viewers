@@ -17,11 +17,11 @@
                 </div>
                 <div class="modal-footer">
                     {{#button action='cancel'
-                        class=(concat 'btn ' (choose this.cancelClass 'btn-default'))
+                        class=(concat 'btn btn-cancel ' (choose this.cancelClass 'btn-default'))
                         tagAttributes=(extend this.tagAttributes data-dismiss='modal')
                     }}{{choose this.cancelLabel 'Cancel'}}{{/button}}
                     {{#button action='confirm'
-                        class=(concat 'btn ' (choose this.confirmClass 'btn-primary'))
+                        class=(concat 'btn btn-confirm ' (choose this.confirmClass 'btn-primary'))
                     }}{{choose this.confirmLabel 'Confirm'}}{{/button}}
                 </div>
             {{/form}}

@@ -1,4 +1,6 @@
 import './dialog/confirm.html';
+import './dialog/progress.html';
+import './dialog/progress.js';
 import './dialog/form.html';
 import './dialog/form.js';
 import './dialog/login.html';

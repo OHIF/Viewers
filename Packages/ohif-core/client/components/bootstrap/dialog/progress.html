@@ -1,0 +1,13 @@
+<template name="dialogProgress">
+    {{#dialogForm (extend this
+        dialogClass='modal-sm modal-progress'
+        title=(choose this.title 'Processing...')
+    )}}
+      <div class="status">
+          <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: {{progress}}%">{{formatNumberPrecision progress 0}}%</div>
+      </div>
+      <div class="message">
+          {{{message}}}
+      </div>
+    {{/dialogForm}}
+</template>
