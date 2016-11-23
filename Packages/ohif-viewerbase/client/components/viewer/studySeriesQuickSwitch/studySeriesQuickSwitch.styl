@@ -17,9 +17,17 @@ $seriesSpacing = 2px
   &.left
     theme('border-right', '1px solid $uiBorderColor')
     right: 50%
+    &.right-sidebar-only
+      .seriesHover
+        .scrollArea
+          padding-left: 200px;
 
   &.right
     left: 50%
+    &.left-sidebar-only
+      .seriesHover
+        .scrollArea
+          padding-right: 200px;
 
   &.overlay .quickSwitch
     transition(z-index 0s linear 0s)
@@ -152,7 +160,6 @@ $seriesSpacing = 2px
 
   .scrollArea
     margin-right: -22px;
-    min-height: 230px
     max-height: 610px
     overflow-x: hidden
     overflow-y: scroll

@@ -48,9 +48,17 @@ Template.studySeriesQuickSwitch.onCreated(() => {
 });
 
 const checkScrollArea = element => {
-    const { scrollHeight, clientHeight, offsetHeight, scrollTop } = element;
+    const { scrollHeight, offsetHeight, scrollTop } = element;
+    
+    const matrix = $(element).find('.thumbnailsWrapper').css('transform');
 
-    if(scrollHeight > offsetHeight + scrollTop) {
+    let translateY = 0;
+
+    if(matrix && matrix !== 'none') {
+        translateY = parseInt(matrix.match(/-?[\d\.]+/g)[5]);
+    }
+
+    if(scrollHeight > offsetHeight + scrollTop + translateY) {
         element.classList.add('show-scroll-indicator-down');
     }
     else {
