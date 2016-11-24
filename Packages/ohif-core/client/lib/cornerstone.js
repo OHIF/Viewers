@@ -34,6 +34,32 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
     const $element = $(element);
     const image = enabledElement.image;
 
+    const getAvailableBlankAreas = (enabledElement, labelWidth, labelHeight) => {
+        const { element, canvas, image } = enabledElement;
+
+        const topLeft = cornerstone.pixelToCanvas(element, {
+            x: 0,
+            y: 0
+        });
+
+        const bottomRight = cornerstone.pixelToCanvas(element, {
+            x: image.width,
+            y: image.height
+        });
+
+        const $canvas = $(canvas);
+        const canvasWidth = $canvas.outerWidth();
+        const canvasHeight = $canvas.outerHeight();
+
+        const result = {};
+        result['x-1'] = topLeft.x > labelWidth;
+        result['y-1'] = topLeft.y > labelHeight;
+        result.x1 = canvasWidth - bottomRight.x > labelWidth;
+        result.y1 = canvasHeight - bottomRight.y > labelHeight;
+
+        return result;
+    };
+
     const modifiedCallback = () => {
         const handles = measurementData.handles;
         const textBox = handles.textBox;
@@ -66,9 +92,6 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         directions.x = tool.x < mid.x ? -1 : 1;
         directions.y = tool.y < mid.y ? -1 : 1;
 
-        // TODO: REMOVE - Temporary for RSNA (placing always above patient)
-        directions.y = -1;
-
         const points = {};
         points.x = directions.x < 0 ? 0 : image.width;
         points.y = directions.y < 0 ? 0 : image.height;
@@ -78,10 +101,6 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
 
         let cornerAxis = diffY < diffX ? 'y' : 'x';
         let toolAxis = diffY < diffX ? 'x' : 'y';
-
-        // TODO: REMOVE - Temporary for RSNA (placing always above patient)
-        cornerAxis = 'y';
-        toolAxis = 'x';
 
         textBox[cornerAxis] = points[cornerAxis];
         textBox[toolAxis] = tool[toolAxis];
