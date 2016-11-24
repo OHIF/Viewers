@@ -92,11 +92,13 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         return lowest + ((highest - lowest) / 2);
     };
 
-    const getTextBoxSizeInPixels = (element, axis, bounds) => {
+    const getTextBoxSizeInPixels = (element, bounds) => {
         const topLeft = cornerstone.pageToPixel(element, 0, 0);
         const bottomRight = cornerstone.pageToPixel(element, bounds.x, bounds.y);
-        const boxSize = bottomRight[axis] - topLeft[axis];
-        return boxSize;
+        return {
+            x: bottomRight.x - topLeft.x,
+            y: bottomRight.y - topLeft.y
+        };
     };
 
     const modifiedCallback = () => {
@@ -162,15 +164,15 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         }
 
         const toolAxis = cornerAxis === 'x' ? 'y' : 'x';
+        const boxSize = getTextBoxSizeInPixels(element, bounds);
 
         textBox[cornerAxis] = points[cornerAxis];
-        textBox[toolAxis] = tool[toolAxis];
+        textBox[toolAxis] = tool[toolAxis] - (boxSize[toolAxis] / 2);
 
         // Adjust the text box position reducing its size from the corner axis
         const isDirectionPositive = directions[cornerAxis] > 0;
         if ((foundPlace && !isDirectionPositive) || (!foundPlace && isDirectionPositive)) {
-            const boxSize = getTextBoxSizeInPixels(element, cornerAxis, bounds);
-            textBox[cornerAxis] -= boxSize;
+            textBox[cornerAxis] -= boxSize[cornerAxis];
         }
     };
 
