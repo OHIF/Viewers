@@ -69,17 +69,12 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         directions.x = tool.x < mid.x ? -1 : 1;
         directions.y = tool.y < mid.y ? -1 : 1;
 
-        const points = {};
-        points.x = directions.x < 0 ? 0 : limits.width;
-        points.y = directions.y < 0 ? 0 : limits.height;
-
         const diffX = directions.x < 0 ? tool.x : limits.width - tool.x;
         const diffY = directions.y < 0 ? tool.y : limits.height - tool.y;
         const cornerAxis = diffY < diffX ? 'y' : 'x';
 
         return {
             directions,
-            points,
             cornerAxis
         };
     };
@@ -118,7 +113,7 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         tool.y = calculateAxisCenter('y', start, end);
 
         let limits = _.pick(image, ['width', 'height']);
-        let { directions, points, cornerAxis } = getRenderingInformation(limits, tool);
+        let { directions, cornerAxis } = getRenderingInformation(limits, tool);
 
         const availableAreas = getAvailableBlankAreas(enabledElement, bounds.x, bounds.y);
         const tempDirections = _.clone(directions);
@@ -140,9 +135,12 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
             current++;
         }
 
+        let cornerAxisPosition;
         if (foundPlace) {
             _.extend(directions, tempDirections);
             cornerAxis = tempCornerAxis;
+            const sizeProperty = cornerAxis === 'x' ? 'width' : 'height';
+            cornerAxisPosition = directions[cornerAxis] < 0 ? 0 : limits[sizeProperty];
         } else {
             const $canvas = $(enabledElement.canvas);
             limits.width = $canvas.outerWidth();
@@ -160,13 +158,13 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
             };
 
             const pixelPosition = cornerstone.pageToPixel(element, position.x, position.y);
-            points[cornerAxis] = pixelPosition[cornerAxis];
+            cornerAxisPosition = pixelPosition[cornerAxis];
         }
 
         const toolAxis = cornerAxis === 'x' ? 'y' : 'x';
         const boxSize = getTextBoxSizeInPixels(element, bounds);
 
-        textBox[cornerAxis] = points[cornerAxis];
+        textBox[cornerAxis] = cornerAxisPosition;
         textBox[toolAxis] = tool[toolAxis] - (boxSize[toolAxis] / 2);
 
         // Adjust the text box position reducing its size from the corner axis
