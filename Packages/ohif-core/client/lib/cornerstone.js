@@ -60,6 +60,30 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         return result;
     };
 
+    const getRenderingInformation = (limits, tool) => {
+        const mid = {};
+        mid.x = limits.width / 2;
+        mid.y = limits.height / 2;
+
+        const directions = {};
+        directions.x = tool.x < mid.x ? -1 : 1;
+        directions.y = tool.y < mid.y ? -1 : 1;
+
+        const points = {};
+        points.x = directions.x < 0 ? 0 : limits.width;
+        points.y = directions.y < 0 ? 0 : limits.height;
+
+        const diffX = directions.x < 0 ? tool.x : limits.width - tool.x;
+        const diffY = directions.y < 0 ? tool.y : limits.height - tool.y;
+        const cornerAxis = diffY < diffX ? 'y' : 'x';
+
+        return {
+            directions,
+            points,
+            cornerAxis
+        };
+    };
+
     const calculateAxisCenter = (axis, start, end) => {
         const a = start[axis];
         const b = end[axis];
@@ -91,22 +115,8 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         tool.x = calculateAxisCenter('x', start, end);
         tool.y = calculateAxisCenter('y', start, end);
 
-        const mid = {};
-        mid.x = image.width / 2;
-        mid.y = image.height / 2;
-
-        const directions = {};
-        directions.x = tool.x < mid.x ? -1 : 1;
-        directions.y = tool.y < mid.y ? -1 : 1;
-
-        const points = {};
-        points.x = directions.x < 0 ? 0 : image.width;
-        points.y = directions.y < 0 ? 0 : image.height;
-
-        const diffX = directions.x < 0 ? tool.x : image.width - tool.x;
-        const diffY = directions.y < 0 ? tool.y : image.height - tool.y;
-
-        let cornerAxis = diffY < diffX ? 'y' : 'x';
+        let limits = _.pick(image, ['width', 'height']);
+        let { directions, points, cornerAxis } = getRenderingInformation(limits, tool);
 
         const availableAreas = getAvailableBlankAreas(enabledElement, bounds.x, bounds.y);
         const tempDirections = _.clone(directions);
@@ -133,11 +143,20 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
             cornerAxis = tempCornerAxis;
         } else {
             const $canvas = $(enabledElement.canvas);
+            limits.width = $canvas.outerWidth();
+            limits.height = $canvas.outerHeight();
+
+            const toolPositionOnCanvas = cornerstone.pixelToCanvas(element, tool);
+            const renderingInformation = getRenderingInformation(limits, toolPositionOnCanvas);
+            directions = renderingInformation.directions;
+            cornerAxis = renderingInformation.cornerAxis;
+
             const offset = $canvas.offset();
             const position = {
                 x: directions.x < 0 ? offset.left : offset.left + $canvas.outerWidth(),
                 y: directions.y < 0 ? offset.top : offset.top + $canvas.outerHeight()
             };
+
             const pixelPosition = cornerstone.pageToPixel(element, position.x, position.y);
             points[cornerAxis] = pixelPosition[cornerAxis];
         }
