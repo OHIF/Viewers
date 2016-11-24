@@ -100,7 +100,33 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         const diffY = directions.y < 0 ? tool.y : image.height - tool.y;
 
         let cornerAxis = diffY < diffX ? 'y' : 'x';
-        let toolAxis = diffY < diffX ? 'x' : 'y';
+
+        const availableAreas = getAvailableBlankAreas(enabledElement, bounds.x, bounds.y);
+        const tempDirections = _.clone(directions);
+        let tempCornerAxis = cornerAxis;
+        let foundPlace = false;
+        let current = 0;
+        while (current < 4) {
+            if (availableAreas[tempCornerAxis + tempDirections[tempCornerAxis]]) {
+                foundPlace = true;
+                break;
+            }
+
+            // Invert the direction for the next iteration
+            tempDirections[tempCornerAxis] *= -1;
+
+            // Invert the tempCornerAxis
+            tempCornerAxis = tempCornerAxis === 'x' ? 'y' : 'x';
+
+            current++;
+        }
+
+        if (foundPlace) {
+            _.extend(directions, tempDirections);
+            cornerAxis = tempCornerAxis;
+        }
+
+        const toolAxis = cornerAxis === 'x' ? 'y' : 'x';
 
         textBox[cornerAxis] = points[cornerAxis];
         textBox[toolAxis] = tool[toolAxis];
