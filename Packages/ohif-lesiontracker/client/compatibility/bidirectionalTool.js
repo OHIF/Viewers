@@ -44,6 +44,7 @@ import { OHIF } from 'meteor/ohif:core';
     function createNewMeasurement(mouseEventData) {
         // Create the measurement data for this tool with the end handle activated
         const measurementData = {
+            isCreating: true,
             visible: true,
             active: true,
             handles: {
@@ -98,8 +99,6 @@ import { OHIF } from 'meteor/ohif:core';
             shortestDiameter: 0,
             toolType: 'bidirectional'
         };
-
-        OHIF.cornerstone.repositionTextBoxWhileDragging(mouseEventData, measurementData);
 
         return measurementData;
     }
@@ -1039,6 +1038,8 @@ import { OHIF } from 'meteor/ohif:core';
                 canvasTextLocation.x, canvasTextLocation.y, color);
 
             data.handles.textBox.boundingBox = boundingBox;
+
+            OHIF.cornerstone.repositionTextBox(eventData, data);
 
             // Draw linked line as dashed
             var link = {

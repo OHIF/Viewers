@@ -38,6 +38,8 @@ import { toolManager } from 'meteor/ohif:viewerbase';
             return;
         }
 
+        delete measurementData.isCreating;
+
         OHIF.ui.showFormDialog('dialogNonTargetMeasurement', {
             position: getPosition(eventData),
             title: 'Select Lesion Location',
@@ -142,6 +144,7 @@ import { toolManager } from 'meteor/ohif:viewerbase';
 
         // create the measurement data for this tool with the end handle activated
         var measurementData = {
+            isCreating: true,
             visible: true,
             active: true,
             handles: {
@@ -177,8 +180,6 @@ import { toolManager } from 'meteor/ohif:viewerbase';
             isTarget: false,
             toolType: 'nonTarget'
         };
-
-        OHIF.cornerstone.repositionTextBoxWhileDragging(mouseEventData, measurementData);
 
         return measurementData;
     }
@@ -254,6 +255,8 @@ import { toolManager } from 'meteor/ohif:viewerbase';
 
                 var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
                 data.handles.textBox.boundingBox = boundingBox;
+
+                OHIF.cornerstone.repositionTextBox(eventData, data);
 
                 // Draw linked line as dashed
                 var link = {

@@ -40,6 +40,8 @@ Template.measurementLocationDialog.onCreated(() => {
     const timepointApi = instance.data.timepointApi;
 
     const toggleLabel = (measurementData, eventData, doneCallback) => {
+        delete measurementData.isCreating;
+
         if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
             return;
         }

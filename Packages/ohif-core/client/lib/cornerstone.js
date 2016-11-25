@@ -28,7 +28,12 @@ OHIF.cornerstone.pixelToPage = (element, position) => {
     return result;
 };
 
-OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) => {
+OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
+    // Stop here if it's not a measurement creating
+    if (!measurementData.isCreating) {
+        return;
+    }
+
     const element = eventData.element;
     const enabledElement = cornerstone.getEnabledElement(element);
     const $element = $(element);
@@ -96,124 +101,111 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         };
     };
 
-    const modifiedCallback = () => {
-        const handles = measurementData.handles;
-        const textBox = handles.textBox;
+    const handles = measurementData.handles;
+    const textBox = handles.textBox;
 
-        const $canvas = $(enabledElement.canvas);
-        const canvasWidth = $canvas.outerWidth();
-        const canvasHeight = $canvas.outerHeight();
-        const offset = $canvas.offset();
-        const canvasDimensions = {
-            x: canvasWidth,
-            y: canvasHeight
-        };
-
-        const bounds = {};
-        bounds.x = textBox.boundingBox.width;
-        bounds.y = textBox.boundingBox.height;
-
-        const getHandlePosition = key => _.pick(handles[key], ['x', 'y']);
-        const start = getHandlePosition('start');
-        const end = getHandlePosition('end');
-
-        const tool = {};
-        tool.x = calculateAxisCenter('x', start, end);
-        tool.y = calculateAxisCenter('y', start, end);
-
-        let limits = {};
-        limits.x = image.width;
-        limits.y = image.height;
-
-        let { directions, cornerAxis } = getRenderingInformation(limits, tool);
-
-        const availableAreas = getAvailableBlankAreas(enabledElement, bounds.x, bounds.y);
-        const tempDirections = _.clone(directions);
-        let tempCornerAxis = cornerAxis;
-        let foundPlace = false;
-        let current = 0;
-        while (current < 4) {
-            if (availableAreas[tempCornerAxis + tempDirections[tempCornerAxis]]) {
-                foundPlace = true;
-                break;
-            }
-
-            // Invert the direction for the next iteration
-            tempDirections[tempCornerAxis] *= -1;
-
-            // Invert the tempCornerAxis
-            tempCornerAxis = tempCornerAxis === 'x' ? 'y' : 'x';
-
-            current++;
-        }
-
-        let cornerAxisPosition;
-        if (foundPlace) {
-            _.extend(directions, tempDirections);
-            cornerAxis = tempCornerAxis;
-            cornerAxisPosition = directions[cornerAxis] < 0 ? 0 : limits[cornerAxis];
-        } else {
-            _.extend(limits, canvasDimensions);
-
-            const toolPositionOnCanvas = cornerstone.pixelToCanvas(element, tool);
-            const renderingInformation = getRenderingInformation(limits, toolPositionOnCanvas);
-            directions = renderingInformation.directions;
-            cornerAxis = renderingInformation.cornerAxis;
-
-            const position = {
-                x: directions.x < 0 ? offset.left : offset.left + canvasWidth,
-                y: directions.y < 0 ? offset.top : offset.top + canvasHeight
-            };
-
-            const pixelPosition = cornerstone.pageToPixel(element, position.x, position.y);
-            cornerAxisPosition = pixelPosition[cornerAxis];
-        }
-
-        const toolAxis = cornerAxis === 'x' ? 'y' : 'x';
-        const boxSize = getTextBoxSizeInPixels(element, bounds);
-
-        textBox[cornerAxis] = cornerAxisPosition;
-        textBox[toolAxis] = tool[toolAxis] - (boxSize[toolAxis] / 2);
-
-        // Adjust the text box position reducing its size from the corner axis
-        const isDirectionPositive = directions[cornerAxis] > 0;
-        if ((foundPlace && !isDirectionPositive) || (!foundPlace && isDirectionPositive)) {
-            textBox[cornerAxis] -= boxSize[cornerAxis];
-        }
-
-        // Preventing the text box from partially going outside the canvas area
-        const topLeft = cornerstone.pixelToCanvas(element, textBox);
-        const bottomRight = {
-            x: topLeft.x + bounds.x,
-            y: topLeft.y + bounds.y
-        };
-        const canvasBorders = {
-            x0: offset.left,
-            y0: offset.top,
-            x1: offset.left + canvasWidth,
-            y1: offset.top + canvasHeight
-        };
-        if (topLeft[toolAxis] < 0) {
-            const x = canvasBorders.x0;
-            const y = canvasBorders.y0;
-            const pixelPosition = cornerstone.pageToPixel(element, x, y);
-            textBox[toolAxis] = pixelPosition[toolAxis];
-        } else if (bottomRight[toolAxis] > canvasDimensions[toolAxis]) {
-            const x = canvasBorders.x1 - bounds.x;
-            const y = canvasBorders.y1 - bounds.y;
-            const pixelPosition = cornerstone.pageToPixel(element, x, y);
-            textBox[toolAxis] = pixelPosition[toolAxis];
-        }
+    const $canvas = $(enabledElement.canvas);
+    const canvasWidth = $canvas.outerWidth();
+    const canvasHeight = $canvas.outerHeight();
+    const offset = $canvas.offset();
+    const canvasDimensions = {
+        x: canvasWidth,
+        y: canvasHeight
     };
 
-    const mouseUpCallback = () => {
-        $element.off('CornerstoneToolsMeasurementModified', modifiedCallback);
+    const bounds = {};
+    bounds.x = textBox.boundingBox.width;
+    bounds.y = textBox.boundingBox.height;
+
+    const getHandlePosition = key => _.pick(handles[key], ['x', 'y']);
+    const start = getHandlePosition('start');
+    const end = getHandlePosition('end');
+
+    const tool = {};
+    tool.x = calculateAxisCenter('x', start, end);
+    tool.y = calculateAxisCenter('y', start, end);
+
+    let limits = {};
+    limits.x = image.width;
+    limits.y = image.height;
+
+    let { directions, cornerAxis } = getRenderingInformation(limits, tool);
+
+    const availableAreas = getAvailableBlankAreas(enabledElement, bounds.x, bounds.y);
+    const tempDirections = _.clone(directions);
+    let tempCornerAxis = cornerAxis;
+    let foundPlace = false;
+    let current = 0;
+    while (current < 4) {
+        if (availableAreas[tempCornerAxis + tempDirections[tempCornerAxis]]) {
+            foundPlace = true;
+            break;
+        }
+
+        // Invert the direction for the next iteration
+        tempDirections[tempCornerAxis] *= -1;
+
+        // Invert the tempCornerAxis
+        tempCornerAxis = tempCornerAxis === 'x' ? 'y' : 'x';
+
+        current++;
+    }
+
+    let cornerAxisPosition;
+    if (foundPlace) {
+        _.extend(directions, tempDirections);
+        cornerAxis = tempCornerAxis;
+        cornerAxisPosition = directions[cornerAxis] < 0 ? 0 : limits[cornerAxis];
+    } else {
+        _.extend(limits, canvasDimensions);
+
+        const toolPositionOnCanvas = cornerstone.pixelToCanvas(element, tool);
+        const renderingInformation = getRenderingInformation(limits, toolPositionOnCanvas);
+        directions = renderingInformation.directions;
+        cornerAxis = renderingInformation.cornerAxis;
+
+        const position = {
+            x: directions.x < 0 ? offset.left : offset.left + canvasWidth,
+            y: directions.y < 0 ? offset.top : offset.top + canvasHeight
+        };
+
+        const pixelPosition = cornerstone.pageToPixel(element, position.x, position.y);
+        cornerAxisPosition = pixelPosition[cornerAxis];
+    }
+
+    const toolAxis = cornerAxis === 'x' ? 'y' : 'x';
+    const boxSize = getTextBoxSizeInPixels(element, bounds);
+
+    textBox[cornerAxis] = cornerAxisPosition;
+    textBox[toolAxis] = tool[toolAxis] - (boxSize[toolAxis] / 2);
+
+    // Adjust the text box position reducing its size from the corner axis
+    const isDirectionPositive = directions[cornerAxis] > 0;
+    if ((foundPlace && !isDirectionPositive) || (!foundPlace && isDirectionPositive)) {
+        textBox[cornerAxis] -= boxSize[cornerAxis];
+    }
+
+    // Preventing the text box from partially going outside the canvas area
+    const topLeft = cornerstone.pixelToCanvas(element, textBox);
+    const bottomRight = {
+        x: topLeft.x + bounds.x,
+        y: topLeft.y + bounds.y
     };
-
-    $element.one('CornerstoneToolsMouseDrag', () => {
-        $element.on('CornerstoneToolsMeasurementModified', modifiedCallback);
-    });
-
-    // Using mouseup because sometimes the CornerstoneToolsMouseUp event is not triggered
-    $element.one('mouseup', mouseUpCallback);
+    const canvasBorders = {
+        x0: offset.left,
+        y0: offset.top,
+        x1: offset.left + canvasWidth,
+        y1: offset.top + canvasHeight
+    };
+    if (topLeft[toolAxis] < 0) {
+        const x = canvasBorders.x0;
+        const y = canvasBorders.y0;
+        const pixelPosition = cornerstone.pageToPixel(element, x, y);
+        textBox[toolAxis] = pixelPosition[toolAxis];
+    } else if (bottomRight[toolAxis] > canvasDimensions[toolAxis]) {
+        const x = canvasBorders.x1 - bounds.x;
+        const y = canvasBorders.y1 - bounds.y;
+        const pixelPosition = cornerstone.pageToPixel(element, x, y);
+        textBox[toolAxis] = pixelPosition[toolAxis];
+    }
 };
