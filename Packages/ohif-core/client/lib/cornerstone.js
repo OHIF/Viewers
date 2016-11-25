@@ -62,15 +62,15 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
 
     const getRenderingInformation = (limits, tool) => {
         const mid = {};
-        mid.x = limits.width / 2;
-        mid.y = limits.height / 2;
+        mid.x = limits.x / 2;
+        mid.y = limits.y / 2;
 
         const directions = {};
         directions.x = tool.x < mid.x ? -1 : 1;
         directions.y = tool.y < mid.y ? -1 : 1;
 
-        const diffX = directions.x < 0 ? tool.x : limits.width - tool.x;
-        const diffY = directions.y < 0 ? tool.y : limits.height - tool.y;
+        const diffX = directions.x < 0 ? tool.x : limits.x - tool.x;
+        const diffY = directions.y < 0 ? tool.y : limits.y - tool.y;
         const cornerAxis = diffY < diffX ? 'y' : 'x';
 
         return {
@@ -100,6 +100,15 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         const handles = measurementData.handles;
         const textBox = handles.textBox;
 
+        const $canvas = $(enabledElement.canvas);
+        const canvasWidth = $canvas.outerWidth();
+        const canvasHeight = $canvas.outerHeight();
+        const offset = $canvas.offset();
+        const canvasDimensions = {
+            x: canvasWidth,
+            y: canvasHeight
+        };
+
         const bounds = {};
         bounds.x = textBox.boundingBox.width;
         bounds.y = textBox.boundingBox.height;
@@ -112,7 +121,10 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         tool.x = calculateAxisCenter('x', start, end);
         tool.y = calculateAxisCenter('y', start, end);
 
-        let limits = _.pick(image, ['width', 'height']);
+        let limits = {};
+        limits.x = image.width;
+        limits.y = image.height;
+
         let { directions, cornerAxis } = getRenderingInformation(limits, tool);
 
         const availableAreas = getAvailableBlankAreas(enabledElement, bounds.x, bounds.y);
@@ -139,22 +151,18 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         if (foundPlace) {
             _.extend(directions, tempDirections);
             cornerAxis = tempCornerAxis;
-            const sizeProperty = cornerAxis === 'x' ? 'width' : 'height';
-            cornerAxisPosition = directions[cornerAxis] < 0 ? 0 : limits[sizeProperty];
+            cornerAxisPosition = directions[cornerAxis] < 0 ? 0 : limits[cornerAxis];
         } else {
-            const $canvas = $(enabledElement.canvas);
-            limits.width = $canvas.outerWidth();
-            limits.height = $canvas.outerHeight();
+            _.extend(limits, canvasDimensions);
 
             const toolPositionOnCanvas = cornerstone.pixelToCanvas(element, tool);
             const renderingInformation = getRenderingInformation(limits, toolPositionOnCanvas);
             directions = renderingInformation.directions;
             cornerAxis = renderingInformation.cornerAxis;
 
-            const offset = $canvas.offset();
             const position = {
-                x: directions.x < 0 ? offset.left : offset.left + $canvas.outerWidth(),
-                y: directions.y < 0 ? offset.top : offset.top + $canvas.outerHeight()
+                x: directions.x < 0 ? offset.left : offset.left + canvasWidth,
+                y: directions.y < 0 ? offset.top : offset.top + canvasHeight
             };
 
             const pixelPosition = cornerstone.pageToPixel(element, position.x, position.y);
@@ -171,6 +179,30 @@ OHIF.cornerstone.repositionTextBoxWhileDragging = (eventData, measurementData) =
         const isDirectionPositive = directions[cornerAxis] > 0;
         if ((foundPlace && !isDirectionPositive) || (!foundPlace && isDirectionPositive)) {
             textBox[cornerAxis] -= boxSize[cornerAxis];
+        }
+
+        // Preventing the text box from partially going outside the canvas area
+        const topLeft = cornerstone.pixelToCanvas(element, textBox);
+        const bottomRight = {
+            x: topLeft.x + bounds.x,
+            y: topLeft.y + bounds.y
+        };
+        const canvasBorders = {
+            x0: offset.left,
+            y0: offset.top,
+            x1: offset.left + canvasWidth,
+            y1: offset.top + canvasHeight
+        };
+        if (topLeft[toolAxis] < 0) {
+            const x = canvasBorders.x0;
+            const y = canvasBorders.y0;
+            const pixelPosition = cornerstone.pageToPixel(element, x, y);
+            textBox[toolAxis] = pixelPosition[toolAxis];
+        } else if (bottomRight[toolAxis] > canvasDimensions[toolAxis]) {
+            const x = canvasBorders.x1 - bounds.x;
+            const y = canvasBorders.y1 - bounds.y;
+            const pixelPosition = cornerstone.pageToPixel(element, x, y);
+            textBox[toolAxis] = pixelPosition[toolAxis];
         }
     };
 
