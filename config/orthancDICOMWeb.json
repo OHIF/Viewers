@@ -24,7 +24,8 @@
         "studyListFunctionsEnabled": true,
         "leftSidebarOpen": false,
         "displaySetNavigationLoopOverSeries": false,
-        "displaySetNavigationMultipleViewports": true
+        "displaySetNavigationMultipleViewports": true,
+        "autoPositionMeasurementsTextCallOuts": "TRLB"
     }
   }
 }

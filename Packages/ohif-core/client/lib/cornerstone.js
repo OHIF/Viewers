@@ -36,8 +36,15 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
 
     const element = eventData.element;
     const enabledElement = cornerstone.getEnabledElement(element);
-    const $element = $(element);
     const image = enabledElement.image;
+
+    const allowedBorders = OHIF.uiSettings.autoPositionMeasurementsTextCallOuts;
+    const allow = {
+        T: !allowedBorders || _.contains(allowedBorders, 'T'),
+        R: !allowedBorders || _.contains(allowedBorders, 'R'),
+        B: !allowedBorders || _.contains(allowedBorders, 'B'),
+        L: !allowedBorders || _.contains(allowedBorders, 'L')
+    };
 
     const getAvailableBlankAreas = (enabledElement, labelWidth, labelHeight) => {
         const { element, canvas, image } = enabledElement;
@@ -57,10 +64,10 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
         const canvasHeight = $canvas.outerHeight();
 
         const result = {};
-        result['x-1'] = topLeft.x > labelWidth;
-        result['y-1'] = topLeft.y > labelHeight;
-        result.x1 = canvasWidth - bottomRight.x > labelWidth;
-        result.y1 = canvasHeight - bottomRight.y > labelHeight;
+        result['x-1'] = allow.L && (topLeft.x > labelWidth);
+        result['y-1'] = allow.T && (topLeft.y > labelHeight);
+        result.x1 = allow.R && (canvasWidth - bottomRight.x > labelWidth);
+        result.y1 = allow.B && (canvasHeight - bottomRight.y > labelHeight);
 
         return result;
     };
@@ -76,7 +83,25 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
 
         const diffX = directions.x < 0 ? tool.x : limits.x - tool.x;
         const diffY = directions.y < 0 ? tool.y : limits.y - tool.y;
-        const cornerAxis = diffY < diffX ? 'y' : 'x';
+        let cornerAxis = diffY < diffX ? 'y' : 'x';
+
+        const map = {
+            'x-1': 'L',
+            'y-1': 'T',
+            x1: 'R',
+            y1: 'B'
+        };
+
+        let current = 0;
+        while (current < 4 && !allow[map[cornerAxis + directions[cornerAxis]]]) {
+            // Invert the direction for the next iteration
+            directions[cornerAxis] *= -1;
+
+            // Invert the tempCornerAxis
+            cornerAxis = cornerAxis === 'x' ? 'y' : 'x';
+
+            current++;
+        }
 
         return {
             directions,

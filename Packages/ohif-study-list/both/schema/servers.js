@@ -153,6 +153,11 @@ export const UISettings = new SimpleSchema({
         type: Boolean,
         label: 'Enable cine dialog enhancements for multiframe images.',
         defaultValue: false
+    },
+    autoPositionMeasurementsTextCallOuts: {
+        type: String,
+        label: 'Auto position text call-outs for measurements when creating them.',
+        defaultValue: 'TRBL'
     }
 });
 
