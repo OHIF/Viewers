@@ -3,30 +3,54 @@ import { OHIF } from 'meteor/ohif:core';
 /**
  * Queries requested studies to get their metadata from PACS
  * @param studiesToQuery Studies to query
- * @param doneCallback Callback to call when the query is done
  */
-queryStudies = function(studiesToQuery, doneCallback) {
-    if (studiesToQuery.length < 1) {
-        return;
-    }
+queryStudies = function(studiesToQuery, options) {
+    const studiesQueried = [],
+          numberOfStudiesToQuery = studiesToQuery.length,
+          notify = (options || {}).notify || function() { /* noop */ }
 
-    var studiesQueried = [];
-    var numberOfStudiesToQuery = studiesToQuery.length;
+    return new Promise((resolve, reject) => {
+        if (studiesToQuery.length < 1) {
+            return reject();
+        }
 
-    OHIF.studylist.progressDialog.show("Querying Studies...", numberOfStudiesToQuery);
+        studiesToQuery.forEach(function(studyToQuery) {
+            getStudyMetadata(studyToQuery.studyInstanceUid, function(study) {
+                studiesQueried.push(study);
 
-    studiesToQuery.forEach(function(studyToQuery) {
-        getStudyMetadata(studyToQuery.studyInstanceUid, function(study) {
-            studiesQueried.push(study);
+                notify({
+                    total: numberOfStudiesToQuery,
+                    processed: studiesQueried.length
+                });
 
-            var numberOfStudiesQueried = studiesQueried.length;
-
-            OHIF.studylist.progressDialog.update(numberOfStudiesQueried);
-
-            if (numberOfStudiesQueried === numberOfStudiesToQuery) {
-                doneCallback(studiesQueried);
-            }
+                if (studiesQueried.length === numberOfStudiesToQuery) {
+                    resolve(studiesQueried);
+                }
+            });
         });
+    });
+}
+
+queryStudiesWithProgress = function(studiesToQuery) {
+    return OHIF.ui.showFormDialog('dialogProgress', {
+        title: 'Querying Studies...',
+        message: `Queried: 0 / ${studiesToQuery.length}`,
+        total: studiesToQuery.length,
+        task: {
+            run: (dialog) => {
+                queryStudies(studiesToQuery, {
+                    notify: stats => {
+                        dialog.update(stats.processed);
+                        dialog.setMessage(`Queried: ${stats.processed} / ${stats.total}`);
+                    }
+                })
+                .then(studiesQueried => {
+                    dialog.done(studiesQueried);
+                }, () => {
+                    dialog.cancel();
+                });
+            }
+        }
     });
 };
 

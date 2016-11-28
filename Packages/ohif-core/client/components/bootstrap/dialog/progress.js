@@ -3,18 +3,13 @@ import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
 
 Template.dialogProgress.onCreated(() => {
-  console.log('dialogProgress :: onCreated');
-});
+  const instance = Template.instance();
 
-Template.dialogProgress.onCreated(() => {
   Session.set('progressDialogState', {
-    progress: 0,
-    message: 'Test Message'
+    processed: 0,
+    total: instance.data.total,
+    message: instance.data.message
   });
-})
-
-Template.dialogProgress.onDestroyed(() => {
-  Session.set('progressDialogState', undefined);
 })
 
 Template.dialogProgress.onRendered(() => {
@@ -25,10 +20,10 @@ Template.dialogProgress.onRendered(() => {
   const progressDialog = {
     promise: instance.data.promise,
 
-    done: () => {
+    done: value => {
       // Hide the modal, removing the backdrop
       instance.$('.modal').on('hidden.bs.modal', event => {
-        instance.data.promiseResolve();
+        instance.data.promiseResolve(value);
       }).modal('hide');
     },
 
@@ -39,9 +34,16 @@ Template.dialogProgress.onRendered(() => {
       }).modal('hide');
     },
 
-    setProgress: _.throttle(progress => {
+    update: _.throttle(processed => {
       const state = Session.get('progressDialogState');
-      state.progress = Math.min(1, progress);
+      state.processed = Math.max(0, processed);
+
+      Session.set('progressDialogState', state);
+    }, 100),
+
+    setTotal: _.throttle(total => {
+      const state = Session.get('progressDialogState');
+      state.total = total;
 
       Session.set('progressDialogState', state);
     }, 100),
@@ -54,21 +56,23 @@ Template.dialogProgress.onRendered(() => {
     }, 100)
   }
 
-  task.start(progressDialog);
+  task.run(progressDialog);
 });
 
 Template.dialogProgress.helpers({
   progress() {
     const state = Session.get('progressDialogState');
-    if (!state) {
-      return;
+
+    if (!state || !state.total) {
+      return 0;
     }
 
-    return state.progress * 100;
+    return Math.min(1, state.processed / state.total) * 100;
   },
 
   message() {
     const state = Session.get('progressDialogState');
+  
     if (!state) {
       return;
     }

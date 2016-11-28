@@ -1,7 +1,28 @@
 import { JSZip } from 'meteor/silentcicero:jszip';
 import { OHIF } from 'meteor/ohif:core';
 
-let exportFailed;
+const getNumberOfFilesToExport = function(studiesToExport) {
+    let numberOfFilesToExport = 0;
+
+    studiesToExport.forEach(study => {
+        numberOfFilesToExport += getNumberOfFilesInStudy(study);
+    });
+
+    return numberOfFilesToExport;
+}
+
+const convertSizeToString = size => {
+    const measuments = ['B', 'KB', 'MB', 'GB'];
+    let totalBytes = size,
+        measumentIndex = 0;
+
+    while(totalBytes > 1024) {
+        totalBytes /= 1024;
+        measumentIndex++;
+    }
+
+    return `${totalBytes.toFixed(2)} ${measuments[measumentIndex]}`;
+}
 
 /**
  * Exports requested studies
@@ -12,105 +33,170 @@ OHIF.studylist.exportStudies = studiesToExport => {
         return;
     }
 
-    queryStudies(studiesToExport, exportQueriedStudies);
+    queryStudiesWithProgress(studiesToExport)
+    .then(exportQueriedStudiesWithProgress);
 };
 
-const exportQueriedStudies = studiesToExport => {
-    let numberOfFilesToExport = 0;
-    studiesToExport.forEach(study => {
-        numberOfFilesToExport += getNumberOfFilesInStudy(study);
+const exportQueriedStudiesWithProgress = studiesToExport => {
+    const exportFilesCount = getNumberOfFilesToExport(studiesToExport);
+    let exportHandler;
+
+    return OHIF.ui.showFormDialog('dialogProgress', {
+        title: 'Exporting Studies...',
+        message: `Exported files: 0 / exportFilesCount`,
+        total: getNumberOfFilesToExport(studiesToExport),
+        task: {
+            run: (dialog) => {
+                exportHandler = exportQueriedStudies(studiesToExport, {
+                    notify: stats => {
+                        const fileSize = convertSizeToString(stats.totalBytes);
+
+                        dialog.update(stats.processed);
+                        dialog.setMessage(`Exported files: ${stats.processed} / ${stats.total} (${fileSize})`);
+                    }
+                });
+
+                exportHandler.promise.then(() => {
+                    dialog.done();
+                }, () => {
+                    dialog.setMessage('Failed to export studies');
+                });
+            }
+        }
+    }).then(null, err => {
+        exportHandler.cancel();
     });
-
-    OHIF.studylist.progressDialog.show('Exporting Studies...', numberOfFilesToExport);
-
-    try {
-        exportQueriedStudiesInternal(studiesToExport, numberOfFilesToExport);
-    } catch (err) {
-        OHIF.studylist.progressDialog.close();
-        OHIF.log.error(`Failed to export studies: ${err.message}`);
-    }
 };
 
-const exportQueriedStudiesInternal = (studiesToExport, numberOfFilesToExport) => {
-    const zip = new JSZip();
+const exportQueriedStudies = (studiesToExport, options) => {
+    const zip = new JSZip(),
+          promises = [],
+          pendingDownloads = [],
+          exportFilesCount = getNumberOfFilesToExport(studiesToExport),
+          notify = (options || {}).notify || function() { /* noop */ };
 
-    exportFailed = false;
-    let numberOfFilesExported = 0;
-
-    const onExportFailed = err => {
-        exportFailed = true;
-        OHIF.studylist.progressDialog.close();
-
-        //TODO: Export failed and dialog closed, so let user know
-        OHIF.log.error('Failed to export studies!', err);
+    const cancelDownloads = () => {
+        while(pendingDownloads.length) {
+            const download = pendingDownloads.pop();
+            download.cancel();
+        }
     };
 
+    let totalBytes = 0;
+
     studiesToExport.forEach(study => {
-        sortStudy(study);
-
-        const studyFolder = zip.folder(study.studyInstanceUid);
-
         study.seriesList.forEach(series => {
-            const seriesFolder = studyFolder.folder(series.seriesInstanceUid);
-
             series.instances.forEach(instance => {
                 if (!instance.wadouri) {
                     return;
                 }
 
-                //  If failed to download a dicom file, skip others
-                if (exportFailed) {
-                    return;
-                }
+                const download = downloadDicomFile(instance);
+                pendingDownloads.push(download);
 
-                //  Download and Zip the dicom file
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', instance.wadouri, true);
-                xhr.responseType = 'blob';
+                const promise = download.promise
+                .then(data => {
+                    const downloadIndex = pendingDownloads.indexOf(download);
 
-                //  Downloaded the dicom file completely
-                xhr.onload = () => {
-                    //  If failed to download a dicom file, skip others
-                    if (exportFailed) {
-                        return;
+                    totalBytes += data && data.size ? data.size : 0;
+
+                    if(downloadIndex > -1) {
+                        pendingDownloads.splice(downloadIndex, 1);
                     }
 
-                    //  Failed to export a file
-                    if (xhr.readyState === 4 && xhr.status !== 200) {
-                        onExportFailed(`File not downloaded: ${instance.wadouri}`);
-                        return;
+                    notify({
+                        total: exportFilesCount,
+                        processed: exportFilesCount - pendingDownloads.length,
+                        totalBytes: totalBytes
+                    })
+                    
+                    return zipInstance(study, series, instance, zip, data)
+                })
+                .catch(err => {
+                    if(!(err instanceof ExportStudyDownloadCanceledError)) {
+                        OHIF.log.error('Failed to export studies', err);
                     }
 
-                    const blobFile = new Blob([xhr.response], { type: 'application/dicom' });
+                    cancelDownloads();
+                    throw err;
+                });
 
-                    const fileReader = new FileReader();
-
-                    fileReader.onload = () => {
-                        try {
-                            seriesFolder.file(`${instance.sopInstanceUid}.dcm`, fileReader.result, { binary: true });
-                        } catch(err) {
-                            onExportFailed(err.message);
-                            return;
-                        }
-
-                        numberOfFilesExported++;
-
-                        if (numberOfFilesExported === numberOfFilesToExport) {
-                            const zipContent = zip.generate({ type: 'blob' });
-                            saveAs(zipContent, 'studies.zip');
-                        }
-
-                        OHIF.studylist.progressDialog.update(numberOfFilesExported);
-                    };
-
-                    fileReader.readAsArrayBuffer(blobFile);
-                };
-
-                //  Failed to download the dicom file
-                xhr.onerror = () => onExportFailed(`File not downloaded: ${instance.wadouri}`);
-
-                xhr.send();
+                promises.push(promise);
             });
         });
     });
+
+    return {
+        cancel: cancelDownloads,
+        promise: Promise.all(promises).then(() => {
+            const zipContent = zip.generate({ type: 'blob' });
+            saveAs(zipContent, 'studies.zip');
+        })
+    }
 };
+
+const downloadDicomFile = instance => {
+    let xhr,
+        promiseReject;
+
+    const promise = new Promise((resolve, reject) => {
+        promiseReject = reject;
+
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', instance.wadouri, true);
+        xhr.responseType = 'blob';
+
+        xhr.onload = () => {
+            if (xhr.readyState === 4 && xhr.status !== 200) {
+                return reject(new Error(`File not downloaded: ${instance.wadouri}`));
+            }
+
+            resolve(xhr.response)
+        };
+
+        xhr.onerror = () => {
+            reject(new Error(`File not downloaded: ${instance.wadouri}`));
+        };
+
+        xhr.send();
+    });
+
+    return {
+        promise: promise,
+        cancel: () => {
+            xhr.abort();
+            promiseReject(new ExportStudyDownloadCanceledError('Download canceled'));
+        }
+    }
+};
+
+
+const zipInstance = (study, series, instance, zip, data) => {
+    const fileReader = new FileReader(),
+          blobFile = new Blob([data], { type: 'application/dicom' }),
+          zipFolder = zip.folder(study.studyInstanceUid).folder(series.seriesInstanceUid);
+
+    const promise = new Promise((resolve, reject) => {
+        fileReader.onload = () => {
+            try {
+                zipFolder.file(`${instance.sopInstanceUid}.dcm`, fileReader.result, { binary: true });
+                resolve()
+            } catch(err) {
+                reject(err);
+            }
+        };
+    });
+
+    fileReader.readAsArrayBuffer(blobFile);
+
+    return promise;
+};
+
+
+const ExportStudyDownloadCanceledError = (message) => {
+  this.name = 'ExportStudyDownloadCanceledError';
+  this.message = message || 'Download canceled';
+  this.stack = (new Error()).stack;
+}
+ExportStudyDownloadCanceledError.prototype = Object.create(Error.prototype);
+ExportStudyDownloadCanceledError.prototype.constructor = ExportStudyDownloadCanceledError;
