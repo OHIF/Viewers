@@ -14,6 +14,7 @@ Community
 Have questions?  Try posting in the [OHIF forum](http://forum.ohif.org/).
 
 ### Docker usage
+Following the instructions below, the docker image will listen for DICOM connections on port 4242, and for web traffic on port 8042. The default username for the web interface is `orthanc`, and the password is `orthanc`.
 #### Temporary data storage
 ````
 docker run --rm -p 4242:4242 -p 8042:8042 jodogne/orthanc-plugins
