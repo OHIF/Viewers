@@ -1,5 +1,11 @@
 ## Quick Start
 
+Install dependencies:
+
+```bash
+meteor npm install
+```
+
 Run the application:
 
 ```bash
