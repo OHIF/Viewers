@@ -119,13 +119,26 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             lossyImageCompressionRatio: DICOMWeb.getString(instance['00282112']),
             lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
             echoNumber: DICOMWeb.getString(instance['00180086']),
-            contrastBolusAgent: DICOMWeb.getString(instance['00180010'])
+            contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
+            baseWadoRsUri: server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid
         };
+
+        // Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
+        if (instanceSummary.photometricInterpretation === 'PALETTE COLOR') {
+            instanceSummary.paletteColorLookupTableUID = DICOMWeb.getString(instance['00281199']);
+            instanceSummary.redPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281101']);
+            instanceSummary.greenPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281102']);
+            instanceSummary.bluePaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281103']);
+            instanceSummary.redPaletteColorLookupTableData = instance['00281201'];
+            instanceSummary.greenPaletteColorLookupTableData = instance['00281202'];
+            instanceSummary.bluePaletteColorLookupTableData = instance['00281203'];
+        }
 
         if (server.imageRendering === 'wadouri') {
             instanceSummary.wadouri = WADOProxy.convertURL(server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom', server.requestOptions);
         } else {
             instanceSummary.wadorsuri = server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1';
+            // instanceSummary.wadorsuri = WADOProxy.convertURL(server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1');
         }
 
         series.instances.push(instanceSummary);

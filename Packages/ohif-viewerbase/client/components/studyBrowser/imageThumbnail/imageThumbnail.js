@@ -13,8 +13,9 @@ Template.imageThumbnail.onCreated(() => {
     instance.getThumbnailImageId = () => {
         const stack = instance.data.thumbnail.stack;
         const lastIndex = (stack.images.length || 1) - 1;
-        const imageIndex = Math.floor(lastIndex / 2);
+        const imageIndex = Math.floor(lastIndex / 2) !== 0 ? 0 : 0;
         const imageInstance = stack.images[imageIndex];
+
         return imageInstance.getImageId();
     };
 });
