@@ -1,6 +1,43 @@
 import { parseFloatArray } from '../../lib/parseFloatArray';
 
 /**
+ * Simple cache schema for retrieved color palettes.
+ */
+const paletteColorCache = {
+    count: 0,
+    maxAge: 24 * 60 * 60 * 1000, // 24h cache?
+    entries: {},
+    isValidUID: function (paletteUID) {
+        return typeof paletteUID === 'string' && paletteUID.length > 0;
+    },
+    get: function (paletteUID) {
+        let entry = null;
+        if (this.entries.hasOwnProperty(paletteUID)) {
+            entry = this.entries[paletteUID];
+            // check how the entry is...
+            if ((Date.now() - entry.time) > this.maxAge) {
+                // entry is too old... remove entry.
+                delete this.entries[paletteUID];
+                this.count--;
+                entry = null;
+            }
+        }
+        return entry;
+    },
+    add: function (entry) {
+        if (this.isValidUID(entry.uid)) {
+            let paletteUID = entry.uid;
+            if (this.entries.hasOwnProperty(paletteUID) !== true) {
+                this.count++; // increment cache entry count...
+            }
+            entry.time = Date.now();
+            this.entries[paletteUID] = entry;
+            // @TODO: Add logic to get rid of old entries and reduce memory usage...
+        }
+    }
+};
+
+/**
  * Creates a URL for a WADO search
  *
  * @param server
@@ -28,6 +65,51 @@ function getSourceImageInstanceUid(instance) {
         return SourceImageSequence.Value[0]['00081155'].Value[0];
     }
 }
+
+
+/**
+ * Fetch palette colors for instances with "PALETTE COLOR" photometricInterpretation.
+ *
+ * @param server {Object} Current server;
+ * @param instance {Object} The retrieved instance metadata;
+ * @returns {String} The ReferenceSOPInstanceUID
+ */
+function getPaletteColors(server, instance) {
+
+    let entry = null,
+        paletteUID = DICOMWeb.getString(instance['00281199']);
+
+    if (paletteColorCache.isValidUID(paletteUID)) {
+        entry = paletteColorCache.get(paletteUID);
+    } else {
+        paletteUID = null;
+    }
+
+    if (!entry) {
+        // no entry on cache... Fetch remote data.
+        try {
+            let r, g, b;
+            // Palettes are quite small (standard defines a limit of 64KiB but it's usually much less... like 512 ~ 1024 bytes)
+            // ... so no problem if we store them using base64 encoding.
+            r = DICOMWeb.getBulkData(instance['00281201'].BulkDataURI, server.requestOptions).toString('base64');
+            g = DICOMWeb.getBulkData(instance['00281202'].BulkDataURI, server.requestOptions).toString('base64');
+            b = DICOMWeb.getBulkData(instance['00281203'].BulkDataURI, server.requestOptions).toString('base64');
+            entry = { red: r, green: g, blue: b };
+            if (paletteUID !== null) {
+                // when paletteUID is present, the entry can be cached...
+                entry.uid = paletteUID;
+                paletteColorCache.add(entry);
+            }
+        } catch (error) {
+            console.log(`(${error.name}) ${error.message}`);
+        }
+    }
+
+    return entry;
+
+}
+
+
 
 /**
  * Parses result data from a WADO search into Study MetaData
@@ -125,13 +207,18 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         // Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
         if (instanceSummary.photometricInterpretation === 'PALETTE COLOR') {
-            instanceSummary.paletteColorLookupTableUID = DICOMWeb.getString(instance['00281199']);
-            instanceSummary.redPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281101']);
-            instanceSummary.greenPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281102']);
-            instanceSummary.bluePaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281103']);
-            instanceSummary.redPaletteColorLookupTableData = instance['00281201'];
-            instanceSummary.greenPaletteColorLookupTableData = instance['00281202'];
-            instanceSummary.bluePaletteColorLookupTableData = instance['00281203'];
+            let palettes = getPaletteColors(server, instance);
+            if (palettes) {
+                if (palettes.uid) {
+                    instanceSummary.paletteColorLookupTableUID = palettes.uid;
+                }
+                instanceSummary.redPaletteColorLookupTable = palettes.red;
+                instanceSummary.greenPaletteColorLookupTable = palettes.green;
+                instanceSummary.bluePaletteColorLookupTable = palettes.blue;
+                instanceSummary.redPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281101']);
+                instanceSummary.greenPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281102']);
+                instanceSummary.bluePaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281103']);
+            }
         }
 
         if (server.imageRendering === 'wadouri') {
@@ -142,6 +229,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         }
 
         series.instances.push(instanceSummary);
+
     });
 
     return studyData;

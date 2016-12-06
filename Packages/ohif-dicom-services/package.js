@@ -18,6 +18,7 @@ Package.onUse(function(api) {
     api.addFiles('server/DICOMWeb/getString.js', 'server');
     api.addFiles('server/DICOMWeb/getModalities.js', 'server');
     api.addFiles('server/DICOMWeb/getAttribute.js', 'server');
+    api.addFiles('server/DICOMWeb/getBulkData.js', 'server');
 
     api.export('DICOMWeb', 'server');
 
