@@ -188,6 +188,10 @@ DICOMWeb.getBulkData = function(geturl, options) {
         console.log(result);
     }
 
+    if (!Buffer.isBuffer(result)) {
+        throw result;
+    }
+
     return result;
 
 };
