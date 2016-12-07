@@ -89,11 +89,9 @@ function getPaletteColors(server, instance) {
         // no entry on cache... Fetch remote data.
         try {
             let r, g, b;
-            // Palettes are quite small (standard defines a limit of 64KiB but it's usually much less... like 512 ~ 1024 bytes)
-            // ... so no problem if we store them using base64 encoding.
-            r = DICOMWeb.getBulkData(instance['00281201'].BulkDataURI, server.requestOptions).toString('base64');
-            g = DICOMWeb.getBulkData(instance['00281202'].BulkDataURI, server.requestOptions).toString('base64');
-            b = DICOMWeb.getBulkData(instance['00281203'].BulkDataURI, server.requestOptions).toString('base64');
+            r = DICOMWeb.getBulkData(instance['00281201'].BulkDataURI, server.requestOptions);
+            g = DICOMWeb.getBulkData(instance['00281202'].BulkDataURI, server.requestOptions);
+            b = DICOMWeb.getBulkData(instance['00281203'].BulkDataURI, server.requestOptions);
             entry = { red: r, green: g, blue: b };
             if (paletteUID !== null) {
                 // when paletteUID is present, the entry can be cached...
@@ -215,9 +213,9 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                 instanceSummary.redPaletteColorLookupTable = palettes.red;
                 instanceSummary.greenPaletteColorLookupTable = palettes.green;
                 instanceSummary.bluePaletteColorLookupTable = palettes.blue;
-                instanceSummary.redPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281101']);
-                instanceSummary.greenPaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281102']);
-                instanceSummary.bluePaletteColorLookupTableDescriptor = DICOMWeb.getString(instance['00281103']);
+                instanceSummary.redPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281101']));
+                instanceSummary.greenPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281102']));
+                instanceSummary.bluePaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281103']));
             }
         }
 
@@ -225,8 +223,9 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             instanceSummary.wadouri = WADOProxy.convertURL(server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom', server.requestOptions);
         } else {
             instanceSummary.wadorsuri = server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1';
-            // instanceSummary.wadorsuri = WADOProxy.convertURL(server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1');
         }
+
+        instanceSummary.wadorsuri = WADOProxy.convertURL(server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1');
 
         series.instances.push(instanceSummary);
 
