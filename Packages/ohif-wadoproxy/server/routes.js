@@ -34,7 +34,10 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
     }
     if (request.headers['user-agent']) {
         options.headers['user-agent'] = request.headers['user-agent'];
-    }    
+    }
+    if (request.headers['accept']) {
+        options.headers['accept'] = request.headers['accept'];
+    }
 
     // Retrieve the authorization user:password string for the PACS,
     // if one is required, and include it in the request to the PACS.
