@@ -287,8 +287,8 @@ function loadDisplaySetIntoViewport(data, templateData) {
         const onNewImage = (e, eventData) => {
             OHIF.log.info('imageViewerViewport onNewImage');
 
-            // Update the metaData for missing fields
-            //updateMetaData(eventData.enabledElement.image);
+            // Update the metaData for missing fields of the images in stack
+            updateMetaData(eventData.enabledElement.image);
 
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
