@@ -104,6 +104,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             tablePosition: parseFloat(instance[0x00189327]),
             samplesPerPixel: parseFloat(instance[0x00280002]),
             photometricInterpretation: instance[0x00280004],
+            planarConfiguration: parseFloat(instance[0x00280006]),
             rows: parseFloat(instance[0x00280010]),
             columns: parseFloat(instance[0x00280011]),
             pixelSpacing: instance[0x00280030],
