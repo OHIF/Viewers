@@ -2,13 +2,13 @@
 
     'use strict';
     var responseByToolType = [{
-        "toolType": "crTool",
+        "toolType": "targetCR",
         "toolResponse": "CR"
     }, {
-        "toolType": "unTool",
+        "toolType": "targetUN",
         "toolResponse": "UN"
     }, {
-        "toolType": "exTool",
+        "toolType": "targetEX",
         "toolResponse": "EX"
     }];
 
@@ -418,19 +418,19 @@
         return toolInterface;
     }
 
-    var crToolInterface = createQualitativeTargetTool('crTool');
-    cornerstoneTools.crTool = crToolInterface.mouse;
-    cornerstoneTools.crTool.setConfiguration(configuration);
-    cornerstoneTools.crToolTouch = crToolInterface.touch;
+    var targetCRInterface = createQualitativeTargetTool('targetCR');
+    cornerstoneTools.targetCR = targetCRInterface.mouse;
+    cornerstoneTools.targetCR.setConfiguration(configuration);
+    cornerstoneTools.targetCRTouch = targetCRInterface.touch;
 
-    var unToolInterface = createQualitativeTargetTool('unTool');
-    cornerstoneTools.unTool = unToolInterface.mouse;
-    cornerstoneTools.unTool.setConfiguration(configuration);
-    cornerstoneTools.unToolTouch = unToolInterface.touch;
+    var targetUNInterface = createQualitativeTargetTool('targetUN');
+    cornerstoneTools.targetUN = targetUNInterface.mouse;
+    cornerstoneTools.targetUN.setConfiguration(configuration);
+    cornerstoneTools.targetUNTouch = targetUNInterface.touch;
 
-    var exToolInterface = createQualitativeTargetTool('exTool');
-    cornerstoneTools.exTool = exToolInterface.mouse;
-    cornerstoneTools.exTool.setConfiguration(configuration);
-    cornerstoneTools.exToolTouch = exToolInterface.touch;
+    var targetEXInterface = createQualitativeTargetTool('targetEX');
+    cornerstoneTools.targetEX = targetEXInterface.mouse;
+    cornerstoneTools.targetEX.setConfiguration(configuration);
+    cornerstoneTools.targetEXTouch = targetEXInterface.touch;
 
 })($, cornerstone, cornerstoneMath, cornerstoneTools);

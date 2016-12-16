@@ -1,8 +1,8 @@
-import { bidirectional } from './bidirectional';
+import { target } from './target';
 import { nonTarget } from './nonTarget';
 import { length } from './length';
 import { ellipse } from './ellipse';
 
 export const validateMeasurements = () => {
-	console.log('validateMeasurements');
+    console.log('validateMeasurements');
 };

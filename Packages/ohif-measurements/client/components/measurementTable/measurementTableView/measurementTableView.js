@@ -110,7 +110,7 @@ Template.measurementTableView.helpers({
         // Reformat the data for display in the table
         return Object.keys(groupObject).map(key => {
             const anEntry = groupObject[key][0];
-            
+
             return {
                 measurementTypeId: measurementTypeId,
                 measurementNumber: key,

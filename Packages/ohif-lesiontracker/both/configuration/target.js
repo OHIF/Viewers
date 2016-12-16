@@ -3,7 +3,7 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
-const BidirectionalHandlesSchema = new SimpleSchema({
+const TargetHandlesSchema = new SimpleSchema({
     start: {
         type: CornerstoneHandleSchema,
         label: 'Start'
@@ -26,9 +26,9 @@ const BidirectionalHandlesSchema = new SimpleSchema({
     },
 });
 
-const BidirectionalSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
+const TargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
     handles: {
-        type: BidirectionalHandlesSchema,
+        type: TargetHandlesSchema,
         label: 'Handles'
     },
     location: {
@@ -81,14 +81,15 @@ function displayFunction(data) {
     return data.longestDiameter;
 }
 
-export const bidirectional = {
+export const target = {
     id: 'targets',
     name: 'Targets',
     cornerstoneToolType: 'bidirectional',
-    schema: BidirectionalSchema,
+    schema: TargetSchema,
     options: {
         showInMeasurementTable: true,
         measurementTableOptions: {
+            key: 'targets',
             displayFunction: displayFunction
         },
         includeInCaseProgress: true,

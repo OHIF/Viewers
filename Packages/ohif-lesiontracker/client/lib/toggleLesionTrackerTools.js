@@ -20,7 +20,7 @@ OHIF.lesiontracker.toggleLesionTrackerTools = () => {
             activate: [], //'deleteLesionKeyboardTool'
             deactivate: [],
             enable: [],
-            disable: [ 'bidirectional', 'nonTarget', 'length', 'crTool', 'unTool', 'exTool' ]
+            disable: [ 'bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX' ]
         };
 
         toolManager.setToolDefaultStates(toolDefaultStates);
@@ -49,7 +49,7 @@ OHIF.lesiontracker.toggleLesionTrackerToolsButtons = (isEnabled) => {
         toolStates.disabledToolButtons = [];
         OHIF.lesiontracker.toggleLesionTrackerToolsHotKeys(true);
     } else {
-        toolStates.disabledToolButtons = [ 'bidirectional', 'nonTarget', 'crTool', 'unTool', 'exTool',
+        toolStates.disabledToolButtons = [ 'bidirectional', 'nonTarget', 'targetCR', 'targetUN', 'targetEX',
             'toggleHUD', 'toggleTrial', 'toolbarSectionEntry', 'toggleMeasurements' ];
         OHIF.lesiontracker.toggleLesionTrackerToolsHotKeys(false);
     }

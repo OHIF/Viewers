@@ -1,9 +1,9 @@
 import { OHIF } from 'meteor/ohif:core';
 
 var responseTypes = {
-    crTool: 'CR',
-    exTool: 'EX',
-    unTool: 'UN'
+    targetCR: 'CR',
+    targetUN: 'UN',
+    targetEX: 'EX'
 };
 
 convertNonTarget = function(measurementApi, measurementData, newTooltype) {

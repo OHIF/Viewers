@@ -5,9 +5,9 @@ import { OHIF } from 'meteor/ohif:core';
 
 const toolMap = {
     bidirectional: 'targets',
-    crTool: 'targets',
-    unTool: 'targets',
-    exTool: 'targets'
+    targetCR: 'targets',
+    targetUN: 'targets',
+    targetEX: 'targets'
 };
 
 OHIF.measurements.toggleLabelButton = options => {

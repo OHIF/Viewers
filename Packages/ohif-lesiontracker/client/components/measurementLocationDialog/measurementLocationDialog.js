@@ -85,9 +85,9 @@ Template.measurementLocationDialog.onCreated(() => {
     cornerstoneTools.bidirectional.setConfiguration(config);
 
     // Set CR-Tool, UN-Tool, EX-Tool configurations
-    cornerstoneTools.crTool.setConfiguration(config);
-    cornerstoneTools.exTool.setConfiguration(config);
-    cornerstoneTools.unTool.setConfiguration(config);
+    cornerstoneTools.targetCR.setConfiguration(config);
+    cornerstoneTools.targetUN.setConfiguration(config);
+    cornerstoneTools.targetEX.setConfiguration(config);
 
 });
 

@@ -19,25 +19,25 @@ Meteor.startup(function() {
         touch: cornerstoneTools.deleteLesionKeyboardTool
     });
 
-    toolManager.addTool('crTool', {
-        mouse: cornerstoneTools.crTool,
-        touch: cornerstoneTools.crToolTouch
+    toolManager.addTool('targetCR', {
+        mouse: cornerstoneTools.targetCR,
+        touch: cornerstoneTools.targetCRTouch
     });
 
-    toolManager.addTool('unTool', {
-        mouse: cornerstoneTools.unTool,
-        touch: cornerstoneTools.unToolTouch
+    toolManager.addTool('targetUN', {
+        mouse: cornerstoneTools.targetUN,
+        touch: cornerstoneTools.targetUNTouch
     });
 
-    toolManager.addTool('exTool', {
-        mouse: cornerstoneTools.exTool,
-        touch: cornerstoneTools.exToolTouch
+    toolManager.addTool('targetEX', {
+        mouse: cornerstoneTools.targetEX,
+        touch: cornerstoneTools.targetEXTouch
     });
 
     // Update default state for tools making sure each tool is only inserted once
     let currentDefaultStates = toolManager.getToolDefaultStates();
     let newDefaultStates = {
-        deactivate: ['bidirectional', 'nonTarget', 'length', 'crTool', 'unTool', 'exTool'],
+        deactivate: ['bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX'],
         activate: [] // 'deleteLesionKeyboardTool'
     };
 
