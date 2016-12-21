@@ -29,7 +29,8 @@ addMetaData = function(imageId, data) {
         studyDate: studyMetaData.studyDate,
         studyTime: studyMetaData.studyTime,
         studyDescription: studyMetaData.studyDescription,
-        institutionName: studyMetaData.institutionName
+        institutionName: studyMetaData.institutionName,
+        patientHistory: studyMetaData.patientHistory
     };
 
     metaData.series = {
