@@ -46,7 +46,7 @@ LayoutManager = class LayoutManager {
         if (viewportsAmount > oldViewportData.length && oldViewportData.length && isSequenced) {
             // Keep the displayed display sets
             self.viewportData = oldViewportData;
-            currentViewportIndex = oldViewportData.length - 1;
+            currentViewportIndex = oldViewportData.length;
         } else if (viewportsAmount <= oldViewportData.length) {
             // Reduce the original displayed display sets
             self.viewportData = oldViewportData.slice(0, viewportsAmount);
