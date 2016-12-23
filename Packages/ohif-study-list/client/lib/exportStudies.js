@@ -43,7 +43,7 @@ const exportQueriedStudiesWithProgress = studiesToExport => {
 
     return OHIF.ui.showFormDialog('dialogProgress', {
         title: 'Exporting Studies...',
-        message: `Exported files: 0 / exportFilesCount`,
+        message: `Exported files: 0 / ${exportFilesCount}`,
         total: getNumberOfFilesToExport(studiesToExport),
         task: {
             run: (dialog) => {
