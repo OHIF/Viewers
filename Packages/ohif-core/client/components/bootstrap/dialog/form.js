@@ -59,3 +59,24 @@ Template.dialogForm.onRendered(() => {
         OHIF.ui.repositionDialog($modal, position.x, position.y);
     }
 });
+
+Template.dialogForm.events({
+    'keydown'(event) {
+        const instance = Template.instance(),
+              keyCode = event.keyCode || event.which;
+
+        let handled = false;
+
+        if(keyCode === 27) {
+            instance.$('.btn.btn-cancel').click();
+            handled = true;
+        } else if(keyCode === 13) {
+            instance.$('.btn.btn-confirm').click();
+            handled = true;
+        }
+
+        if(handled) {
+            event.stopPropagation();
+        }
+    }
+});
