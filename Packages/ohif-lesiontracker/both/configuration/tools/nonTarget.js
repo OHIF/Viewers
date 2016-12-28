@@ -45,6 +45,8 @@ const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneTool
 }]);
 
 export const nonTarget = {
+    id: 'nonTarget',
+    name: 'Non-Target',
     toolGroup: 'nonTargets',
     cornerstoneToolType: 'nonTarget',
     schema: NonTargetSchema,

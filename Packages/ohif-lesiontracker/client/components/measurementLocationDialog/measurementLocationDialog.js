@@ -24,7 +24,7 @@ function getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementA
         // Get a measurement number for this measurement, depending on whether or not the same measurement previously
         // exists at a different timepoint
         const timepointId = timepoint.timepointId;
-        const collection = measurementApi[measurementTypeId];
+        const collection = measurementApi.tools[measurementTypeId];
         const measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
         measurementData.measurementNumber = measurementNumber;
 
@@ -35,7 +35,7 @@ function getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementA
 
 Template.measurementLocationDialog.onCreated(() => {
     const instance = Template.instance();
-    const measurementTypeId = 'targets';
+    const measurementTypeId = 'bidirectional';
     const measurementApi = instance.data.measurementApi;
     const timepointApi = instance.data.timepointApi;
 

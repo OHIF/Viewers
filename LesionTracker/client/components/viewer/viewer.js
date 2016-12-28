@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
 
@@ -132,8 +133,6 @@ Template.viewer.onCreated(() => {
             return;
         }
 
-
-
         // Find and activate the first measurement by Lesion Number
         // NOTE: This is inefficient, we should be using a hanging protocol
         // to hang the first measurement's imageId immediately, rather
@@ -143,7 +142,7 @@ Template.viewer.onCreated(() => {
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
 
-        const collection = measurementApi[measurementTypeId];
+        const collection = measurementApi.tools[measurementTypeId];
         const sorting = {
             sort: {
                 measurementNumber: -1
@@ -155,7 +154,7 @@ Template.viewer.onCreated(() => {
         const current = timepointApi.current();
         if (!current) {
             return;
-        };
+        }
 
         let timepoints = [current];
         const prior = timepointApi.prior();
@@ -181,14 +180,14 @@ Template.viewer.onCreated(() => {
         }
 
         firstMeasurementActivated = true;
-    })
+    });
 });
 
 Template.viewer.helpers({
     dataSourcesReady() {
         // TODO: Find a better way to do this
         const ready = Session.get('TimepointsReady') && Session.get('MeasurementsReady');
-        console.log('dataSourcesReady? : ' + ready);
+        OHIF.log.info('dataSourcesReady? : ' + ready);
         return ready;
     }
 });
@@ -197,9 +196,11 @@ Template.viewer.events({
     'CornerstoneToolsMeasurementAdded .imageViewerViewport'(event, instance, eventData) {
         OHIF.measurements.MeasurementHandlers.onAdded(event, instance, eventData);
     },
+
     'CornerstoneToolsMeasurementModified .imageViewerViewport'(event, instance, eventData) {
         OHIF.measurements.MeasurementHandlers.onModified(event, instance, eventData);
     },
+
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
         OHIF.measurements.MeasurementHandlers.onRemoved(event, instance, eventData);
     }

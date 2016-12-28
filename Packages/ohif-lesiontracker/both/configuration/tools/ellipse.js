@@ -4,18 +4,18 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
 const EllipseHandlesSchema = new SimpleSchema({
-	start: {
-		type: CornerstoneHandleSchema,
-		label: 'Start'
-	},
-	end: {
-		type: CornerstoneHandleSchema,
-		label: 'End'
-	},
-	textBox: {
-		type: CornerstoneHandleSchema,
-		label: 'Text Box'
-	},
+    start: {
+        type: CornerstoneHandleSchema,
+        label: 'Start'
+    },
+    end: {
+        type: CornerstoneHandleSchema,
+        label: 'End'
+    },
+    textBox: {
+        type: CornerstoneHandleSchema,
+        label: 'Text Box'
+    },
 });
 
 const EllipseSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
@@ -28,6 +28,7 @@ const EllipseSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMe
 export const ellipse = {
     id: 'ellipse',
     name: 'Ellipse',
+    toolGroup: 'temp',
     cornerstoneToolType: 'ellipticalRoi',
     schema: EllipseSchema
-}
+};

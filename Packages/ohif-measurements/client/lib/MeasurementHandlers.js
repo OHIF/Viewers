@@ -16,7 +16,7 @@ class MeasurementHandlers {
         const measurementData = eventData.measurementData;
         const measurementToolConfiguration = config.measurementTools[index];
         const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi[measurementToolConfiguration.id];
+        const Collection = measurementApi.tools[measurementToolConfiguration.id];
 
         // Get the Cornerstone imageId
         const enabledElement = cornerstone.getEnabledElement(eventData.element);
@@ -90,7 +90,7 @@ class MeasurementHandlers {
 
             // TODO: Fix this it is a terrible workaround but we have a demo to do
             if (baseline) {
-                measurementApi.sortMeasurements(baseline.timepointId);    
+                measurementApi.sortMeasurements(baseline.timepointId);
             }
         }
     }
@@ -108,7 +108,7 @@ class MeasurementHandlers {
 
         const measurementToolConfiguration = config.measurementTools[index];
         const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi[measurementToolConfiguration.id];
+        const Collection = measurementApi.tools[measurementToolConfiguration.id];
 
         OHIF.log.info('CornerstoneToolsMeasurementModified');
 
@@ -124,7 +124,7 @@ class MeasurementHandlers {
         // If the measurement configuration includes a value for Viewport,
         // we will populate this with the Cornerstone Viewport
         if (measurementToolConfiguration.schema.schema('viewport')) {
-            measurement.viewport = cornerstone.getViewport(eventData.element);    
+            measurement.viewport = cornerstone.getViewport(eventData.element);
         }
 
         // Clean the measurement according to the Schema
@@ -154,7 +154,7 @@ class MeasurementHandlers {
 
         const measurementToolConfiguration = config.measurementTools[index];
         const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi[measurementToolConfiguration.id];
+        const Collection = measurementApi.tools[measurementToolConfiguration.id];
 
         Collection.remove(measurementData._id);
 

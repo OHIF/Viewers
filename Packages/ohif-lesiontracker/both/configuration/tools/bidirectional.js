@@ -86,6 +86,8 @@ const displayFunction = data => {
 };
 
 export const bidirectional = {
+    id: 'bidirectional',
+    name: 'Target',
     toolGroup: 'targets',
     cornerstoneToolType: 'bidirectional',
     schema: BidirectionalSchema,

@@ -19,12 +19,21 @@ class MeasurementApi {
             this.currentTimepointId = currentTimepointId;
         }
 
-        configuration.measurementTools.forEach(tool => {
-            const measurementTypeId = tool.id;
+        this.toolGroups = {};
+        this.tools = {};
 
-            this[measurementTypeId] = new Mongo.Collection(null);
-            this[measurementTypeId]._debugName = tool.name;
-            this[measurementTypeId].attachSchema(tool.schema);
+        configuration.measurementTools.forEach(toolGroup => {
+            const collection = new Mongo.Collection(null);
+            collection._debugName = toolGroup.name;
+            collection.attachSchema(toolGroup.schema);
+            this.toolGroups[toolGroup.id] = collection;
+
+            toolGroup.childTools.forEach(tool => {
+                const collection = new Mongo.Collection(null);
+                collection._debugName = tool.name;
+                collection.attachSchema(tool.schema);
+                this.tools[tool.id] = collection;
+            });
         });
     }
 
@@ -45,7 +54,7 @@ class MeasurementApi {
 
                     measurements.forEach(measurement => {
                         delete measurement._id;
-                        this[measurementTypeId].insert(measurement);
+                        this.tools[measurementTypeId].insert(measurement);
                     });
                 });
 
@@ -63,7 +72,7 @@ class MeasurementApi {
         let measurementData = {};
         configuration.measurementTools.forEach(tool => {
             const measurementTypeId = tool.id;
-            measurementData[measurementTypeId] = this[measurementTypeId].find().fetch();
+            measurementData[measurementTypeId] = this.tools[measurementTypeId].find().fetch();
         });
 
         const timepointIds = timepoints.map(t => t.timepointId);
@@ -89,7 +98,7 @@ class MeasurementApi {
 
     syncMeasurementsAndToolData() {
         configuration.measurementTools.forEach(tool => {
-            const measurements = this[tool.id].find().fetch();
+            const measurements = this.tools[tool.id].find().fetch();
             measurements.forEach(measurement => {
                 OHIF.measurements.syncMeasurementAndToolData(measurement);
             });
@@ -199,7 +208,7 @@ class MeasurementApi {
 
         // First, update Measurement Number and the displayed Measurements
         includedTools.forEach(tool => {
-            const collection = this[tool.id];
+            const collection = this.tools[tool.id];
             const toolType = tool.cornerstoneToolType;
             const measurements = collection.find({toolType}).fetch();
             const groupObject = _.groupBy(measurements, m => m.measurementNumber);
@@ -217,7 +226,7 @@ class MeasurementApi {
         // Next, handle the overall measurement number.
         // First, handle data that has a measurement at baseline
         includedTools.forEach(tool => {
-            const collection = this[tool.id];
+            const collection = this.tools[tool.id];
             const toolType = tool.cornerstoneToolType;
             const measurements = hasDataAtTimepoint(collection, baselineTimepointId);
             const groupObject = _.groupBy(measurements, m => m.measurementNumber);
@@ -228,7 +237,7 @@ class MeasurementApi {
         // Next, handle New Measurements (i.e. no baseline data)
         // Note that this cannot be combined with the loop above due to the incrementing of the overallMeasurementNumber
         includedTools.forEach(tool => {
-            const collection = this[tool.id];
+            const collection = this.tools[tool.id];
             const toolType = tool.cornerstoneToolType;
             const measurements = hasNoDataAtTimepoint(collection, baselineTimepointId);
             const groupObject = _.groupBy(measurements, m => m.measurementNumber);
@@ -238,7 +247,7 @@ class MeasurementApi {
     }
 
     deleteMeasurements(measurementTypeId, filter) {
-        const collection = this[measurementTypeId];
+        const collection = this.tools[measurementTypeId];
 
         // Get the entries information before removing them
         const entries = collection.find(filter).fetch();
@@ -295,13 +304,13 @@ class MeasurementApi {
     }
 
     fetch(measurementTypeId, selector, options) {
-        if (!this[measurementTypeId]) {
+        if (!this.tools[measurementTypeId]) {
             throw 'MeasurementApi: No Collection with the id: ' + measurementTypeId;
         }
 
         selector = selector || {};
         options = options || {};
-        return this[measurementTypeId].find(selector, options).fetch();
+        return this.tools[measurementTypeId].find(selector, options).fetch();
     }
 }
 

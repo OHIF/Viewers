@@ -50,6 +50,8 @@ const TargetCRSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolM
 }]);
 
 export const targetCR = {
+    id: 'targetCR',
+    name: 'CR Target',
     toolGroup: 'targets',
     cornerstoneToolType: 'targetCR',
     schema: TargetCRSchema,

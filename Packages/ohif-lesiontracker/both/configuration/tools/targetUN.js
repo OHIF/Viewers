@@ -50,6 +50,8 @@ const TargetUNSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolM
 }]);
 
 export const targetUN = {
+    id: 'targetUN',
+    name: 'UN Target',
     toolGroup: 'targets',
     cornerstoneToolType: 'targetUN',
     schema: TargetUNSchema,
