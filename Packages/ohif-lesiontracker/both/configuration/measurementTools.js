@@ -1,15 +1,9 @@
-import { target } from './target';
-import { targetCR } from './targetCR';
-import { targetUN } from './targetUN';
-import { nonTarget } from './nonTarget';
-import { length } from './length';
-import { ellipse } from './ellipse';
+import { targets } from './toolGroups/targets';
+import { nonTargets } from './toolGroups/nonTargets';
+import { temp } from './toolGroups/temp';
 
 export const measurementTools = [
-    target,
-    targetCR,
-    targetUN,
-    nonTarget,
-    length,
-    ellipse
+    targets,
+    nonTargets,
+    temp
 ];

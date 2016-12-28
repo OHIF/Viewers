@@ -3,7 +3,7 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
-const TargetUNHandlesSchema = new SimpleSchema({
+const NonTargetHandlesSchema = new SimpleSchema({
     start: {
         type: CornerstoneHandleSchema,
         label: 'Start'
@@ -18,19 +18,23 @@ const TargetUNHandlesSchema = new SimpleSchema({
     }
 });
 
-const TargetUNSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
+const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
     handles: {
-        type: TargetUNHandlesSchema,
+        type: NonTargetHandlesSchema,
         label: 'Handles'
+    },
+    measurementNumber: {
+        type: Number,
+        label: 'Measurement Number'
+    },
+    response: {
+        type: String,
+        label: 'Response',
+        optional: true // Optional because it is added after initial drawing, via a callback
     },
     location: {
         type: String,
         label: 'Location',
-        optional: true
-    },
-    description: {
-        type: String,
-        label: 'Description',
         optional: true
     },
     locationUid: {
@@ -40,17 +44,16 @@ const TargetUNSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolM
     }
 }]);
 
-function displayFunction(data) {
-    return data.location;
-}
-
-export const targetUN = {
-    id: 'targetsUN',
-    memberOf: 'targets',
-    name: 'UN Targets',
-    cornerstoneToolType: 'targetUN',
-    schema: TargetUNSchema,
+export const nonTarget = {
+    toolGroup: 'nonTargets',
+    cornerstoneToolType: 'nonTarget',
+    schema: NonTargetSchema,
     options: {
-        includeInCaseProgress: true,
+        measurementTable: {
+            displayFunction: data => data.response
+        },
+        caseProgress: {
+            include: true
+        }
     }
 };

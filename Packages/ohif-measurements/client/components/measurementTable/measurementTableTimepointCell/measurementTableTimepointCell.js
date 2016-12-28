@@ -37,7 +37,7 @@ Template.measurementTableTimepointCell.helpers({
             // TODO: Figure out what is going on here?
             console.warn('Something went wrong?');
         }
-        const displayFunction = tool.options.measurementTableOptions.displayFunction;
+        const displayFunction = tool.options.measurementTable.displayFunction;
         return displayFunction(data);
     }
 });

@@ -23,10 +23,19 @@ const TargetCRSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolM
         type: TargetCRHandlesSchema,
         label: 'Handles'
     },
+    measurementNumber: {
+        type: Number,
+        label: 'Measurement Number'
+    },
     location: {
         type: String,
         label: 'Location',
         optional: true
+    },
+    response: {
+        type: String,
+        label: 'Response',
+        optional: true // Optional because it is added after initial drawing, via a callback
     },
     description: {
         type: String,
@@ -40,17 +49,16 @@ const TargetCRSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolM
     }
 }]);
 
-function displayFunction(data) {
-    return data.location;
-}
-
 export const targetCR = {
-    id: 'targetsCR',
-    memberOf: 'targets',
-    name: 'CR Targets',
+    toolGroup: 'targets',
     cornerstoneToolType: 'targetCR',
     schema: TargetCRSchema,
     options: {
-        includeInCaseProgress: true,
+        measurementTable: {
+            displayFunction: data => data.response
+        },
+        caseProgress: {
+            include: true
+        }
     }
 };

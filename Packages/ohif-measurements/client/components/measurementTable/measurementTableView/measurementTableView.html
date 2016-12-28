@@ -2,7 +2,7 @@
     <div class="measurementTableView scrollArea">
         {{#let config=measurementConfiguration}}
             {{#each measurementType in config.measurementTools}}
-                {{#if measurementType.options.showInMeasurementTable}}
+                {{#if measurementType.options.measurementTable.displayFunction}}
                     {{#let collection=(groupByMeasurementNumber measurementType.id)}}
                         {{>measurementTableHeaderRow
                             measurementType=measurementType

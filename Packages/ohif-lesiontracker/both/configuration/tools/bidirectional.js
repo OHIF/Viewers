@@ -3,7 +3,7 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
-const TargetHandlesSchema = new SimpleSchema({
+const BidirectionalHandlesSchema = new SimpleSchema({
     start: {
         type: CornerstoneHandleSchema,
         label: 'Start'
@@ -26,10 +26,14 @@ const TargetHandlesSchema = new SimpleSchema({
     },
 });
 
-const TargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
+const BidirectionalSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
     handles: {
-        type: TargetHandlesSchema,
+        type: BidirectionalHandlesSchema,
         label: 'Handles'
+    },
+    measurementNumber: {
+        type: Number,
+        label: 'Measurement Number'
     },
     location: {
         type: String,
@@ -58,7 +62,7 @@ const TargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMea
     }
 }]);
 
-function displayFunction(data) {
+const displayFunction = data => {
     // Check whether this is a Nodal or Extranodal Measurement
     // const targetType = 'target';
     // const nodalType = data.isNodal ? 'nodal' : 'extraNodal';
@@ -79,19 +83,18 @@ function displayFunction(data) {
     }
 
     return data.longestDiameter;
-}
+};
 
-export const target = {
-    id: 'targets',
-    name: 'Targets',
+export const bidirectional = {
+    toolGroup: 'targets',
     cornerstoneToolType: 'bidirectional',
-    schema: TargetSchema,
+    schema: BidirectionalSchema,
     options: {
-        showInMeasurementTable: true,
-        measurementTableOptions: {
-            key: 'targets',
-            displayFunction: displayFunction
+        measurementTable: {
+            displayFunction
         },
-        includeInCaseProgress: true,
+        caseProgress: {
+            include: true
+        }
     }
 };

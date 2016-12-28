@@ -134,7 +134,7 @@ class MeasurementApi {
                 $nin: numbers
             }
         };
-        
+
         return collection.find(filter).fetch();
     }
 
@@ -144,7 +144,7 @@ class MeasurementApi {
         const hasNoDataAtTimepoint = this.hasNoDataAtTimepoint;
 
         const includedTools = tools.filter(tool => {
-            return (tool.options && tool.options.includeInCaseProgress === true);
+            return (tool.options && tool.options.caseProgress && tool.options.caseProgress.include);
         });
 
         let overallMeasurementNumber = 1;
@@ -227,7 +227,7 @@ class MeasurementApi {
 
         // Next, handle New Measurements (i.e. no baseline data)
         // Note that this cannot be combined with the loop above due to the incrementing of the overallMeasurementNumber
-        includedTools.forEach(tool => { 
+        includedTools.forEach(tool => {
             const collection = this[tool.id];
             const toolType = tool.cornerstoneToolType;
             const measurements = hasNoDataAtTimepoint(collection, baselineTimepointId);

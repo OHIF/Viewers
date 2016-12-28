@@ -66,7 +66,7 @@ Template.caseProgress.onRendered(() => {
 
     const config = OHIF.measurements.MeasurementApi.getConfiguration();
     const tools = config.measurementTools;
-    const toolsToInclude = tools.filter(tool => tool.options && tool.options.includeInCaseProgress);
+    const toolsToInclude = tools.filter(tool => tool.options && tool.options.caseProgress && tool.options.caseProgress.include);
     const toolIds = toolsToInclude.map(tool => tool.id);
     const api = instance.data.measurementApi;
 

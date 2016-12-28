@@ -3,7 +3,7 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
-const NonTargetHandlesSchema = new SimpleSchema({
+const TargetUNHandlesSchema = new SimpleSchema({
     start: {
         type: CornerstoneHandleSchema,
         label: 'Start'
@@ -18,19 +18,28 @@ const NonTargetHandlesSchema = new SimpleSchema({
     }
 });
 
-const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
+const TargetUNSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
     handles: {
-        type: NonTargetHandlesSchema,
+        type: TargetUNHandlesSchema,
         label: 'Handles'
+    },
+    measurementNumber: {
+        type: Number,
+        label: 'Measurement Number'
+    },
+    location: {
+        type: String,
+        label: 'Location',
+        optional: true
     },
     response: {
         type: String,
         label: 'Response',
         optional: true // Optional because it is added after initial drawing, via a callback
     },
-    location: {
+    description: {
         type: String,
-        label: 'Location',
+        label: 'Description',
         optional: true
     },
     locationUid: {
@@ -40,21 +49,16 @@ const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneTool
     }
 }]);
 
-function displayFunction(data) {
-    return data.response;
-}
-
-export const nonTarget = {
-    id: 'nonTargets',
-    name: 'Non-Targets',
-    cornerstoneToolType: 'nonTarget',
-    schema: NonTargetSchema,
-    displayFunction: displayFunction,
+export const targetUN = {
+    toolGroup: 'targets',
+    cornerstoneToolType: 'targetUN',
+    schema: TargetUNSchema,
     options: {
-        showInMeasurementTable: true,
-        measurementTableOptions: {
-            displayFunction: displayFunction
+        measurementTable: {
+            displayFunction: data => data.response
         },
-        includeInCaseProgress: true,
+        caseProgress: {
+            include: true
+        }
     }
 };
