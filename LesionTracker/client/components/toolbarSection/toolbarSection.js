@@ -171,6 +171,14 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
+            id: 'linkStackScroll',
+            title: 'Link Scroll',
+            classes: 'imageViewerCommand toolbarSectionButton nonAutoDisableState',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link-stack-scroll',
+            disableFunction: isStackScrollLinkingDisabled
+        });
+
+        buttonData.push({
             id: 'toggleCineDialog',
             title: 'CINE',
             classes: 'imageViewerCommand toolbarSectionButton',
@@ -235,7 +243,7 @@ Template.toolbarSection.onRendered(function() {
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
-    const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton');
+    const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton:not(.nonAutoDisableState)');
 
     // Additional toolbar buttons whose classes are not toolbarSectionButton
     allToolbarButtons.push($('#toolbarSectionEntry')[0]);

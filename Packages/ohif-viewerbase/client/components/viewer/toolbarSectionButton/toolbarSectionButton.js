@@ -12,7 +12,8 @@ Template.toolbarSectionButton.helpers({
         }
     },
     disableButton() {
-        return this.disableFunction();
+        const instance = Template.instance();
+        return this.disableFunction && this.disableFunction();
     }
 });
 

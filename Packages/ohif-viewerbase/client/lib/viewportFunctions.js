@@ -115,6 +115,16 @@ clearTools = () => {
     cornerstone.updateImage(element);
 };
 
+linkStackScroll = () => {
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+
+    if(synchronizer.isActive()) {
+        synchronizer.deactivate();
+    } else {
+        synchronizer.activate();
+    }
+}
+
 // Toggle the play/stop state for the cornerstone clip tool
 toggleCinePlay = () => {
     // Get the active viewport element
@@ -167,6 +177,8 @@ isPlaying = () => {
 
     return false;
 };
+
+
 
 // Check if a study has multiple frames
 hasMultipleFrames = () => {
@@ -238,6 +250,17 @@ hasMultipleFrames = () => {
 
     return false;
 };
+
+isStackScrollLinkingDisabled = () => {
+    // Its called everytime active viewport and/or layout change
+    Session.get('activeViewport');
+    Session.get('LayoutManagerUpdated');
+
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+    const linkableViewports = synchronizer.getLinkableViewports();
+
+    return linkableViewports.length <= 1;
+}
 
 // Create an event listener to update playing state when a clip stops playing
 $(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Random.id()));

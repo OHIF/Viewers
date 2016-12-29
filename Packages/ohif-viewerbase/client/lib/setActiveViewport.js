@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 setActiveViewport = element => {
     if (!element) {
         return;
@@ -26,6 +28,7 @@ setActiveViewport = element => {
         const domElement = jQueryElement.get(0);
         enablePrefetchOnElement(domElement);
         displayReferenceLines(domElement);
+        OHIF.viewer.stackImagePositionOffsetSynchronizer.update();
     }
 
     // Set the div to focused, so keypress events are handled

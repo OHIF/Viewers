@@ -218,6 +218,7 @@ Package.onUse(function(api) {
     api.addFiles('client/lib/resizeViewportElements.js', 'client');
     api.addFiles('client/lib/setFocusToActiveViewport.js', 'client');
     api.addFiles('client/lib/updateAllViewports.js', 'client');
+    api.addFiles('client/lib/stackImagePositionOffsetSynchronizer.js', 'client');
 
     api.addFiles('client/lib/instanceClassSpecificViewport.js', 'client');
     api.addFiles('client/lib/setMammogramViewportAlignment.js', 'client');
@@ -252,6 +253,7 @@ Package.onUse(function(api) {
     api.export('sopClassDictionary', 'client');
     api.export('addMetaData', 'client');
     api.export('hasMultipleFrames', 'client');
+    api.export('isStackScrollLinkingDisabled')
 
     // Viewer management objects
     api.export('toolManager', 'client');
@@ -295,4 +297,5 @@ Package.onUse(function(api) {
     api.export('flipH', 'client');
     api.export('rotateR', 'client');
     api.export('rotateL', 'client');
+    api.export('linkStackScroll', 'client');
 });
