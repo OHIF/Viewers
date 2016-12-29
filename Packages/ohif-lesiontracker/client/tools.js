@@ -37,6 +37,7 @@ Meteor.startup(function() {
     // Update default state for tools making sure each tool is only inserted once
     let currentDefaultStates = toolManager.getToolDefaultStates();
     let newDefaultStates = {
+        enable: [ 'scaleOverlayTool' ],
         deactivate: ['bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX'],
         activate: [] // 'deleteLesionKeyboardTool'
     };
