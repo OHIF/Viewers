@@ -138,7 +138,9 @@ Template.viewer.onCreated(() => {
         // to hang the first measurement's imageId immediately, rather
         // than changing images after initial loading...
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        const measurementTypeId = config.measurementTools[0].id;
+        const tools = config.measurementTools[0].childTools;
+        const firstTool = tools[Object.keys(tools)[0]];
+        const measurementTypeId = firstTool.id;
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
 

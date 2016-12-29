@@ -5,18 +5,14 @@ import { OHIF } from 'meteor/ohif:core';
 class MeasurementHandlers {
 
     static onAdded(e, instance, eventData) {
-        const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        const toolTypes = config.measurementTools.map(tool => tool.cornerstoneToolType);
+        const measurementData = eventData.measurementData;
+        const measurementApi = instance.data.measurementApi;
+        const Collection = measurementApi.tools[eventData.toolType];
 
-        const index = toolTypes.indexOf(eventData.toolType);
-        if (index === -1) {
+        // Stop here if collection was not found for the given tool
+        if (!Collection) {
             return;
         }
-
-        const measurementData = eventData.measurementData;
-        const measurementToolConfiguration = config.measurementTools[index];
-        const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi.tools[measurementToolConfiguration.id];
 
         // Get the Cornerstone imageId
         const enabledElement = cornerstone.getEnabledElement(eventData.element);
@@ -76,13 +72,15 @@ class MeasurementHandlers {
         }
 
         // Clean the measurement according to the Schema
-        measurementToolConfiguration.schema.clean(measurement);
+        Collection._c2._simpleSchema.clean(measurement);
 
         // Insert the new measurement into the collection
+        console.warn('>>>>INSERTING', measurement);
         measurementData._id = Collection.insert(measurement);
+        console.warn('>>>>INSERTED', measurementData);
 
         // Signal unsaved changes
-        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + measurementToolConfiguration.id);
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
 
         // Update the Overall Measurement Numbers for all Measurements
         if (timepointApi) {
@@ -97,18 +95,8 @@ class MeasurementHandlers {
 
     static onModified(e, instance, eventData) {
         const measurementData = eventData.measurementData;
-
-        const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        const toolTypes = config.measurementTools.map(tool => tool.cornerstoneToolType);
-
-        const index = toolTypes.indexOf(eventData.toolType);
-        if (index === -1) {
-            return;
-        }
-
-        const measurementToolConfiguration = config.measurementTools[index];
         const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi.tools[measurementToolConfiguration.id];
+        const Collection = measurementApi.tools[eventData.toolType];
 
         OHIF.log.info('CornerstoneToolsMeasurementModified');
 
@@ -123,12 +111,12 @@ class MeasurementHandlers {
 
         // If the measurement configuration includes a value for Viewport,
         // we will populate this with the Cornerstone Viewport
-        if (measurementToolConfiguration.schema.schema('viewport')) {
+        if (Collection._c2._simpleSchema.schema('viewport')) {
             measurement.viewport = cornerstone.getViewport(eventData.element);
         }
 
         // Clean the measurement according to the Schema
-        measurementToolConfiguration.schema.clean(measurement);
+        Collection._c2._simpleSchema.clean(measurement);
 
         // Insert the new measurement into the collection
         Collection.update(measurementId, {
@@ -136,30 +124,20 @@ class MeasurementHandlers {
         });
 
         // Signal unsaved changes
-        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + measurementToolConfiguration.id);
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
     }
 
     static onRemoved(e, instance, eventData) {
-        const measurementData = eventData.measurementData;
-
-        const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        const toolTypes = config.measurementTools.map(tool => tool.cornerstoneToolType);
-
-        const index = toolTypes.indexOf(measurementData.toolType);
-        if (index === -1) {
-            return;
-        }
-
         OHIF.log.info('CornerstoneToolsMeasurementRemoved');
-
-        const measurementToolConfiguration = config.measurementTools[index];
+        const measurementData = eventData.measurementData;
         const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi.tools[measurementToolConfiguration.id];
+        const Collection = measurementApi.tools[eventData.toolType];
 
+        // Remove the measurement from the collection
         Collection.remove(measurementData._id);
 
         // Signal unsaved changes
-        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + measurementToolConfiguration.id);
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
 
         // Update the Overall Measurement Numbers for all Measurements
         const timepointApi = instance.data.timepointApi;

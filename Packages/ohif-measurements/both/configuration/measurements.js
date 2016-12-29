@@ -54,7 +54,7 @@ class MeasurementApi {
 
                     measurements.forEach(measurement => {
                         delete measurement._id;
-                        this.tools[measurementTypeId].insert(measurement);
+                        this.tools[measurement.toolType].insert(measurement);
                     });
                 });
 
@@ -70,9 +70,14 @@ class MeasurementApi {
         }
 
         let measurementData = {};
-        configuration.measurementTools.forEach(tool => {
-            const measurementTypeId = tool.id;
-            measurementData[measurementTypeId] = this.tools[measurementTypeId].find().fetch();
+        configuration.measurementTools.forEach(toolGroup => {
+            toolGroup.childTools.forEach(tool => {
+                if (!measurementData[toolGroup.id]) {
+                    measurementData[toolGroup.id] = [];
+                }
+
+                measurementData[toolGroup.id] = measurementData[toolGroup.id].concat(this.tools[tool.id].find().fetch());
+            });
         });
 
         const timepointIds = timepoints.map(t => t.timepointId);
@@ -97,10 +102,12 @@ class MeasurementApi {
     }
 
     syncMeasurementsAndToolData() {
-        configuration.measurementTools.forEach(tool => {
-            const measurements = this.tools[tool.id].find().fetch();
-            measurements.forEach(measurement => {
-                OHIF.measurements.syncMeasurementAndToolData(measurement);
+        configuration.measurementTools.forEach(toolGroup => {
+            toolGroup.childTools.forEach(tool => {
+                const measurements = this.tools[tool.id].find().fetch();
+                measurements.forEach(measurement => {
+                    OHIF.measurements.syncMeasurementAndToolData(measurement);
+                });
             });
         });
     }
