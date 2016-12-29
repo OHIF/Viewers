@@ -23,16 +23,53 @@ class MeasurementApi {
         this.tools = {};
 
         configuration.measurementTools.forEach(toolGroup => {
-            const collection = new Mongo.Collection(null);
-            collection._debugName = toolGroup.name;
-            collection.attachSchema(toolGroup.schema);
-            this.toolGroups[toolGroup.id] = collection;
+            const groupCollection = new Mongo.Collection(null);
+            groupCollection._debugName = toolGroup.name;
+            groupCollection.attachSchema(toolGroup.schema);
+            this.toolGroups[toolGroup.id] = groupCollection;
 
             toolGroup.childTools.forEach(tool => {
                 const collection = new Mongo.Collection(null);
                 collection._debugName = tool.name;
                 collection.attachSchema(tool.schema);
                 this.tools[tool.id] = collection;
+
+                collection.find().observe({
+                    added(measurement) {
+                        groupCollection.insert({
+                            toolId: tool.id,
+                            toolItemUid: measurement._id,
+                            createdAt: measurement.createdAt
+                        });
+
+                        const measurementCount = groupCollection.find().count();
+                        collection.update(measurement._id, {
+                            $set: {
+                                measurementNumber: measurementCount
+                            }
+                        });
+                    },
+
+                    removedAt(measurement, atIndex) {
+                        groupCollection.remove({
+                            toolItemUid: measurement._id
+                        });
+
+                        toolGroup.childTools.forEach(childTool => {
+                            this.tools[childTool.id].update({
+                                measurementNumber: {
+                                    $gt: atIndex
+                                }
+                            }, {
+                                $inc: {
+                                    measurementNumber: -1
+                                }
+                            }, {
+                                multi: true
+                            });
+                        });
+                    }
+                });
             });
         });
     }

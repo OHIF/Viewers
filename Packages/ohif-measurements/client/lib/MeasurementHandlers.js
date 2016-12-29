@@ -75,9 +75,7 @@ class MeasurementHandlers {
         Collection._c2._simpleSchema.clean(measurement);
 
         // Insert the new measurement into the collection
-        console.warn('>>>>INSERTING', measurement);
         measurementData._id = Collection.insert(measurement);
-        console.warn('>>>>INSERTED', measurementData);
 
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);

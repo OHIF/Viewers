@@ -6,9 +6,12 @@ const NonTargetSchema = new SimpleSchema({
         type: String,
         label: 'Tool ID'
     },
-    toolItemUid: {
+    toolItemId: {
         type: String,
-        label: 'Tool Item UID'
+        label: 'Tool Item ID'
+    },
+    createdAt: {
+        type: Date
     }
 });
 
