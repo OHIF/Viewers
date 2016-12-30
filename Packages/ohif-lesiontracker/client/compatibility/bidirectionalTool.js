@@ -10,7 +10,6 @@ import { OHIF } from 'meteor/ohif:core';
     const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
 
     var configuration = {
-        setMeasurementNumberCallback: setMeasurementNumberCallback,
         getMeasurementLocationCallback: getMeasurementLocationCallback,
         changeMeasurementLocationCallback: changeMeasurementLocationCallback,
         ...shadowConfig
@@ -23,13 +22,6 @@ import { OHIF } from 'meteor/ohif:core';
 
     // The distance between the mouse and the tool to make it active
     var distanceThreshold = 7;
-
-    // Set lesion number
-    // Get Target lesions on image
-    function setMeasurementNumberCallback(measurementData, eventData, doneCallback) {
-        var measurementNumber = 1;
-        doneCallback(measurementNumber);
-    }
 
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
@@ -111,8 +103,7 @@ import { OHIF } from 'meteor/ohif:core';
             return;
         }
 
-        function doneCallback(measurementNumber) {
-            measurementData.measurementNumber = measurementNumber;
+        function doneCallback() {
             measurementData.active = false;
             cornerstone.updateImage(element);
         }
@@ -124,11 +115,7 @@ import { OHIF } from 'meteor/ohif:core';
             mouseButtonMask: mouseEventData.which
         };
 
-        // Set lesion number and lesion name
         var config = cornerstoneTools.bidirectional.getConfiguration();
-        if (measurementData.measurementNumber === undefined) {
-            config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
-        }
 
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(element, toolType, measurementData);
@@ -190,19 +177,14 @@ import { OHIF } from 'meteor/ohif:core';
             return;
         }
 
-        function doneCallback(measurementNumber) {
-            measurementData.measurementNumber = measurementNumber;
+        function doneCallback() {
             measurementData.active = false;
             cornerstone.updateImage(element);
         }
 
         var measurementData = createNewMeasurement(touchEventData);
 
-        // Set lesion number and lesion name
         var config = cornerstoneTools.bidirectional.getConfiguration();
-        if (measurementData.measurementNumber === undefined) {
-            config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
-        }
 
         // associate this data with this imageId so we can render it and manipulate it
         cornerstoneTools.addToolState(element, toolType, measurementData);

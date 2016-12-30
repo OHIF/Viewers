@@ -36,26 +36,26 @@ class MeasurementApi {
 
                 collection.find().observe({
                     added: measurement => {
+                        const timepoint = this.timepointApi.timepoints.findOne({
+                            studyInstanceUids: measurement.studyInstanceUid
+                        });
                         groupCollection.insert({
                             toolId: tool.id,
                             toolItemId: measurement._id,
-                            timepointId: measurement.timepointId,
+                            timepointId: timepoint.timepointId,
                             studyInstanceUid: measurement.studyInstanceUid,
                             createdAt: measurement.createdAt
                         });
 
-                        const timepoint = this.timepointApi.timepoints.findOne({
-                            timepointId: measurement.timepointId
-                        });
-                        const measurementCount = groupCollection.find({
+                        const measurementNumber = groupCollection.find({
                             studyInstanceUid: {
                                 $in: timepoint.studyInstanceUids
                             }
                         }).count();
-
+                        measurement.measurementNumber = measurementNumber;
                         collection.update(measurement._id, {
                             $set: {
-                                measurementNumber: measurementCount
+                                measurementNumber
                             }
                         });
                     },

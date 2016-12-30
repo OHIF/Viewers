@@ -13,7 +13,6 @@
     }];
 
     var configuration = {
-        setMeasurementNumberCallback: setMeasurementNumberCallback,
         getMeasurementLocationCallback: getMeasurementLocationCallback,
         changeMeasurementLocationCallback: changeMeasurementLocationCallback,
         drawHandles: false,
@@ -26,12 +25,6 @@
         ESC: 27
     };
 
-    // Set lesion number
-    // Get Non-Target lesions on image
-    function setMeasurementNumberCallback(measurementData, eventData, doneCallback) {
-        var measurementNumber = 1;
-        doneCallback(measurementNumber);
-    }
     // Define a callback to get your text annotation
     // This could be used, e.g. to open a modal
     function getMeasurementLocationCallback(measurementData, eventData, doneCallback) {
@@ -61,8 +54,7 @@
         function addNewMeasurement(mouseEventData) {
             var element = mouseEventData.element;
 
-            function doneCallback(measurementNumber) {
-                measurementData.measurementNumber = measurementNumber;
+            function doneCallback() {
                 measurementData.active = true;
                 cornerstone.updateImage(element);
             }
@@ -74,11 +66,6 @@
             };
 
             var config = cornerstoneTools[toolType].getConfiguration();
-
-            // Set lesion number and lesion name
-            if (measurementData.measurementNumber === undefined) {
-                config.setMeasurementNumberCallback(measurementData, mouseEventData, doneCallback);
-            }
 
             // associate this data with this imageId so we can render it and manipulate it
             cornerstoneTools.addToolState(mouseEventData.element, toolType, measurementData);
@@ -317,8 +304,7 @@
         function addNewMeasurementTouch(touchEventData) {
             var element = touchEventData.element;
 
-            function doneCallback(measurementNumber) {
-                measurementData.measurementNumber = measurementNumber;
+            function doneCallback() {
                 measurementData.active = true;
                 cornerstone.updateImage(element);
             }
@@ -329,11 +315,6 @@
             $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools[toolType + "Touch"].touchDownActivateCallback);
             $(element).off('CornerstoneToolsTap', cornerstoneTools[toolType + "Touch"].tapCallback);
             var config = cornerstoneTools[toolType].getConfiguration();
-
-            // Set lesion number and lesion name
-            if (measurementData.lesionName === undefined) {
-                config.setMeasurementNumberCallback(measurementData, touchEventData, doneCallback);
-            }
 
             cornerstone.updateImage(element);
 

@@ -2,37 +2,6 @@
 // is in the process of being moved into another location
 import { OHIF } from 'meteor/ohif:core';
 
-// This event sets measurement number for new measurement
-function getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi) {
-    return (measurementData, eventData, doneCallback) => {
-        // Get the current element's timepointId from the study date metadata
-        var element = eventData.element;
-        var enabledElement = cornerstone.getEnabledElement(element);
-        var imageId = enabledElement.image.imageId;
-
-        var study = cornerstoneTools.metaData.get('study', imageId);
-        if (!timepointApi) {
-            return;
-        }
-
-        // Find the relevant timepoint given the current study
-        var timepoint = timepointApi.study(study.studyInstanceUid)[0];
-        if (!timepoint) {
-            return;
-        }
-
-        // Get a measurement number for this measurement, depending on whether or not the same measurement previously
-        // exists at a different timepoint
-        const timepointId = timepoint.timepointId;
-        const collection = measurementApi.tools[measurementTypeId];
-        const measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, collection, timepointApi);
-        measurementData.measurementNumber = measurementNumber;
-
-        // Set measurement number
-        doneCallback(measurementNumber);
-    };
-}
-
 Template.measurementLocationDialog.onCreated(() => {
     const instance = Template.instance();
     const measurementTypeId = 'bidirectional';
@@ -67,7 +36,6 @@ Template.measurementLocationDialog.onCreated(() => {
     };
 
     const callbackConfig = {
-        setMeasurementNumberCallback: getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi),
         // TODO: Check the position for these, the Add Label button position seems very awkward
         getMeasurementLocationCallback: toggleLabel,
         changeMeasurementLocationCallback: toggleLabel,

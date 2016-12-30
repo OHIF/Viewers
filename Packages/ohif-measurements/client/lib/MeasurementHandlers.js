@@ -44,21 +44,6 @@ class MeasurementHandlers {
             imageId: imageId // TODO: In the future we should consider removing this
         }, measurementData);
 
-        const timepointApi = instance.data.timepointApi;
-        if (timepointApi) {
-            const timepoint = timepointApi.study(studyInstanceUid)[0];
-            if (timepoint) {
-                const timepointId = timepoint.timepointId;
-                measurement.timepointId = timepointId;
-                measurement.measurementNumber = OHIF.measurements.MeasurementManager.getNewMeasurementNumber(timepointId, Collection, timepointApi);
-            }
-        } else {
-            const numCurrentMeasurementsInStudy = Collection.find({
-                studyInstanceUid: study.studyInstanceUid
-            }).count();
-            measurement.measurementNumber = numCurrentMeasurementsInStudy + 1;
-        }
-
         // Get the related timepoint by the measurement number and use its location if defined
         const relatedTimepoint = Collection.findOne({
             measurementNumber: measurement.measurementNumber,
@@ -77,18 +62,14 @@ class MeasurementHandlers {
         // Insert the new measurement into the collection
         measurementData._id = Collection.insert(measurement);
 
+        // Get the update the measurement number after inserting
+        Meteor.defer(() => {
+            measurementData.measurementNumber = Collection.findOne(measurementData._id).measurementNumber;
+            cornerstone.updateImage(getActiveViewportElement());
+        });
+
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
-
-        // Update the Overall Measurement Numbers for all Measurements
-        if (timepointApi) {
-            const baseline = timepointApi.baseline();
-
-            // TODO: Fix this it is a terrible workaround but we have a demo to do
-            if (baseline) {
-                measurementApi.sortMeasurements(baseline.timepointId);
-            }
-        }
     }
 
     static onModified(e, instance, eventData) {
@@ -136,17 +117,6 @@ class MeasurementHandlers {
 
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
-
-        // Update the Overall Measurement Numbers for all Measurements
-        const timepointApi = instance.data.timepointApi;
-        if (timepointApi) {
-            const baseline = timepointApi.baseline();
-
-            // TODO: Fix this it is a terrible workaround but we have a demo to do
-            if (baseline) {
-                measurementApi.sortMeasurements(baseline.timepointId);
-            }
-        }
     }
 }
 
