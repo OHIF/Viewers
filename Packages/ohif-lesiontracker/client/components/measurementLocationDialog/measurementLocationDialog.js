@@ -70,7 +70,7 @@ Template.measurementLocationDialog.onCreated(() => {
         setMeasurementNumberCallback: getSetMeasurementNumberCallbackFunction(measurementTypeId, measurementApi, timepointApi),
         // TODO: Check the position for these, the Add Label button position seems very awkward
         getMeasurementLocationCallback: toggleLabel,
-        changeMeasurementLocationCallback: toggleLabel
+        changeMeasurementLocationCallback: toggleLabel,
     };
 
 

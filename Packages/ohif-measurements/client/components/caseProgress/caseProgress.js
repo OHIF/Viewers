@@ -11,16 +11,10 @@ Template.caseProgress.onCreated(() => {
     instance.isLocked = new ReactiveVar();
 
     instance.saveData = () => {
-
-        const timepointApi = instance.data.timepointApi;
-        const timepoints = timepointApi.all();
-        OHIF.log.info('Saving Measurements for timepoints:');
-        OHIF.log.info(timepoints);
-        instance.data.measurementApi.storeMeasurements(timepoints);
+        instance.data.measurementApi.storeMeasurements();
 
         // Clear signaled unsaved changes...
         OHIF.ui.unsavedChanges.clear('viewer.studyViewer.measurements.*');
-
     };
 
     instance.unsavedChangesHandler = () => {
