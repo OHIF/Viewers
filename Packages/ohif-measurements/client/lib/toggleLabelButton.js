@@ -17,8 +17,7 @@ OHIF.measurements.toggleLabelButton = options => {
         removeButtonView();
     }
 
-    const tool = options.toolType;
-    const toolCollection = options.measurementApi.tools[tool];
+    const toolCollection = options.measurementApi.tools[options.toolType];
     const measurement = toolCollection.findOne(options.measurementId);
 
     const data = {

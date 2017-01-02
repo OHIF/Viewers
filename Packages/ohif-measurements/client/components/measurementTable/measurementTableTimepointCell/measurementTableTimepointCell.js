@@ -6,9 +6,10 @@ Template.measurementTableTimepointCell.helpers({
         // exists for this Measurement at this Timepoint
         const instance = Template.instance();
         const rowItem = instance.data.rowItem;
+        const timepointId = instance.data.timepointId;
 
-        if (this.timepointId) {
-            const dataAtThisTimepoint = _.where(rowItem.entries, {timepointId: this.timepointId});
+        if (timepointId) {
+            const dataAtThisTimepoint = _.where(rowItem.entries, { timepointId });
             return dataAtThisTimepoint.length > 0;
         } else {
             return rowItem.entries.length > 0;
@@ -16,11 +17,12 @@ Template.measurementTableTimepointCell.helpers({
     },
     displayData() {
         const instance = Template.instance();
-
         const rowItem = instance.data.rowItem;
+        const timepointId = instance.data.timepointId;
+
         let data;
-        if (this.timepointId) {
-            const dataAtThisTimepoint = _.where(rowItem.entries, {timepointId: this.timepointId});
+        if (timepointId) {
+            const dataAtThisTimepoint = _.where(rowItem.entries, { timepointId });
             if (dataAtThisTimepoint.length > 1) {
                 throw 'More than one measurement was found at the same timepoint with the same measurement number?';
             }
@@ -32,7 +34,8 @@ Template.measurementTableTimepointCell.helpers({
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
         const measurementTools = config.measurementTools;
 
-        const tool = _.where(measurementTools, {id: rowItem.measurementTypeId})[0];
+        const toolGroup = _.findWhere(measurementTools, { id: rowItem.measurementTypeId });
+        const tool = _.findWhere(toolGroup.childTools, { id: data.toolType });
         if (!tool) {
             // TODO: Figure out what is going on here?
             console.warn('Something went wrong?');

@@ -31,12 +31,13 @@ Template.measurementTableRow.events({
 
     'click .js-rename'(event, instance) {
         const rowItem = instance.data.rowItem;
+        const entry = rowItem.entries[0];
 
         // Show the measure flow for targets
         OHIF.measurements.toggleLabelButton({
             instance,
-            measurementId: rowItem.entries[0]._id,
-            measurementTypeId: rowItem.measurementTypeId,
+            measurementId: entry._id,
+            toolType: entry.toolType,
             element: document.body,
             measurementApi: instance.data.measurementApi,
             position: {
@@ -56,16 +57,12 @@ Template.measurementTableRow.events({
         OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(formData => {
             const measurementTypeId = instance.data.rowItem.measurementTypeId;
             const measurement = instance.data.rowItem.entries[0];
-            const toolType = measurement.toolType;
             const measurementNumber = measurement.measurementNumber;
             const measurementApi = instance.data.measurementApi;
             const timepointApi = instance.data.timepointApi;
 
             // Remove all the measurements with the given type and number
-            measurementApi.deleteMeasurements(measurementTypeId, {
-                toolType,
-                measurementNumber
-            });
+            measurementApi.deleteMeasurements(measurementTypeId, { measurementNumber });
 
             // Update the Overall Measurement Numbers for all Measurements
             const baseline = timepointApi.baseline();
@@ -74,27 +71,5 @@ Template.measurementTableRow.events({
             // Repaint the images on all viewports without the removed measurements
             _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
         });
-    },
-
-    'keydown .location'(event) {
-        const keyCode = event.which;
-
-        if (keyCode === keys.DELETE ||
-            (keyCode === keys.D && event.ctrlKey === true)) {
-            const currentMeasurement = this;
-            const options = {
-                keyPressAllowed: false,
-                title: 'Remove measurement?',
-                text: 'Are you sure you would like to remove the entire measurement?'
-            };
-
-            showConfirmDialog(() => {
-                Meteor.call('removeMeasurement', currentMeasurement._id, (error, response) => {
-                    if (error) {
-                        OHIF.log.warn(error);
-                    }
-                });
-            }, options);
-        }
     }
 });

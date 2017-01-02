@@ -1,11 +1,11 @@
 <template name="measurementTableView">
     <div class="measurementTableView scrollArea">
         {{#let config=measurementConfiguration}}
-            {{#each measurementType in config.measurementTools}}
-                {{#if measurementType.options.measurementTable.displayFunction}}
-                    {{#let collection=(groupByMeasurementNumber measurementType.id)}}
+            {{#each toolGroup in config.measurementTools}}
+                {{#if shallDisplayGroup toolGroup.id}}
+                    {{#let collection=(groupByMeasurementNumber toolGroup.id)}}
                         {{>measurementTableHeaderRow
-                            measurementType=measurementType
+                            measurementType=toolGroup
                             measurements=collection
                             currentTimepointId=currentTimepointId
                             timepointApi=timepointApi

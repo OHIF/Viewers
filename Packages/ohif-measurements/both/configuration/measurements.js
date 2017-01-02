@@ -39,23 +39,26 @@ class MeasurementApi {
                         const timepoint = this.timepointApi.timepoints.findOne({
                             studyInstanceUids: measurement.studyInstanceUid
                         });
+                        const measurementNumber = groupCollection.find({
+                            studyInstanceUid: {
+                                $in: timepoint.studyInstanceUids
+                            }
+                        }).count() + 1;
+                        measurement.measurementNumber = measurementNumber;
+
                         groupCollection.insert({
                             toolId: tool.id,
                             toolItemId: measurement._id,
                             timepointId: timepoint.timepointId,
                             studyInstanceUid: measurement.studyInstanceUid,
-                            createdAt: measurement.createdAt
+                            createdAt: measurement.createdAt,
+                            measurementNumber
                         });
 
-                        const measurementNumber = groupCollection.find({
-                            studyInstanceUid: {
-                                $in: timepoint.studyInstanceUids
-                            }
-                        }).count();
-                        measurement.measurementNumber = measurementNumber;
                         collection.update(measurement._id, {
                             $set: {
-                                measurementNumber
+                                measurementNumber,
+                                timepointId: timepoint.timepointId
                             }
                         });
                     },
@@ -68,22 +71,27 @@ class MeasurementApi {
                         const timepoint = this.timepointApi.timepoints.findOne({
                             timepointId: measurement.timepointId
                         });
+                        const filter = {
+                            studyInstanceUid: {
+                                $in: timepoint.studyInstanceUids
+                            },
+                            measurementNumber: {
+                                $gt: atIndex
+                            }
+                        };
+                        const operator = {
+                            $inc: {
+                                measurementNumber: -1
+                            }
+                        };
+                        const options = {
+                            multi: true
+                        };
 
+                        groupCollection.update(filter, operator, options);
                         toolGroup.childTools.forEach(childTool => {
-                            this.tools[childTool.id].update({
-                                studyInstanceUid: {
-                                    $in: timepoint.studyInstanceUids
-                                },
-                                measurementNumber: {
-                                    $gt: atIndex
-                                }
-                            }, {
-                                $inc: {
-                                    measurementNumber: -1
-                                }
-                            }, {
-                                multi: true
-                            });
+                            const collection = this.tools[childTool.id];
+                            collection.update(filter, operator, options);
                         });
                     }
                 });
@@ -186,11 +194,16 @@ class MeasurementApi {
     }
 
     deleteMeasurements(measurementTypeId, filter) {
-        const collection = this.tools[measurementTypeId];
+        const groupCollection = this.toolGroups[measurementTypeId];
 
         // Get the entries information before removing them
-        const entries = collection.find(filter).fetch();
-        collection.remove(filter);
+        const groupItems = groupCollection.find(filter).fetch();
+        const entries = [];
+        groupItems.forEach(groupItem => {
+            const collection = this.tools[groupItem.toolId];
+            entries.push(collection.findOne(groupItem.toolItemId));
+            collection.remove(groupItem.toolItemId);
+        });
 
         // Stop here if no entries were found
         if (!entries.length) {
@@ -219,24 +232,33 @@ class MeasurementApi {
 
         // Synchronize the updated measurements with Cornerstone Tools
         // toolData to make sure the displayed measurements show 'Target X' correctly
-        const syncFilter = _.clone(updateFilter);
+        const syncFilter = _.clone(filter);
         syncFilter.measurementNumber = {
             $gt: measurementNumber - 1
         };
 
-        collection.find(syncFilter).forEach(measurement => {
-            OHIF.measurements.syncMeasurementAndToolData(measurement);
+        const toolTypes = _.uniq(entries.map(entry => entry.toolType));
+        toolTypes.forEach(toolType => {
+            const collection = this.tools[toolType];
+            collection.find(syncFilter).forEach(measurement => {
+                OHIF.measurements.syncMeasurementAndToolData(measurement);
+            });
         });
     }
 
     fetch(measurementTypeId, selector, options) {
-        if (!this.tools[measurementTypeId]) {
+        if (!this.toolGroups[measurementTypeId]) {
             throw 'MeasurementApi: No Collection with the id: ' + measurementTypeId;
         }
 
         selector = selector || {};
         options = options || {};
-        return this.tools[measurementTypeId].find(selector, options).fetch();
+        const result = [];
+        const items = this.toolGroups[measurementTypeId].find(selector, options).fetch();
+        items.forEach(item => {
+            result.push(this.tools[item.toolId].findOne(item.toolItemId));
+        });
+        return result;
     }
 }
 

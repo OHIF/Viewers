@@ -10,6 +10,26 @@ OHIF.measurements.getLocation = collection => {
     }
 };
 
+Template.measurementTableView.onCreated(() => {
+    const instance = Template.instance();
+    const measurementApi = instance.data.measurementApi;
+    const configuration = OHIF.measurements.MeasurementApi.getConfiguration();
+
+    instance.displayToolGroupMap = {};
+    instance.displayToolList = [];
+    configuration.measurementTools.forEach(toolGroup => {
+        instance.displayToolGroupMap[toolGroup.id] = false;
+        toolGroup.childTools.forEach(tool => {
+            const willDisplay = !!(tool.options && tool.options.measurementTable && tool.options.measurementTable.displayFunction);
+            if (willDisplay) {
+                instance.displayToolList.push(tool.id);
+                instance.displayToolGroupMap[toolGroup.id] = true;
+            }
+        });
+    });
+});
+
+
 Template.measurementTableView.helpers({
     getNewMeasurementType(tool) {
         // TODO: Check Conformance criteria here.
@@ -20,6 +40,11 @@ Template.measurementTableView.helpers({
             cornerstoneToolType: 'nonTarget',
             measurementTypeId: 'nonTargets'
         };
+    },
+
+    shallDisplayGroup(toolGroupId) {
+        const instance = Template.instance();
+        return instance.displayToolGroupMap[toolGroupId];
     },
 
     groupByMeasurementNumber(measurementTypeId) {
@@ -44,6 +69,9 @@ Template.measurementTableView.helpers({
         // Retrieve all the data for this Measurement type which
         // match the Measurement Numbers obtained above
         const data = measurementApi.fetch(measurementTypeId, {
+            toolId: {
+                $in: instance.displayToolList
+            },
             measurementNumber: {
                 $in: numbers
             }

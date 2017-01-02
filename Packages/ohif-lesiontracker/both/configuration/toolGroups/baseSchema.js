@@ -19,5 +19,9 @@ export const ToolGroupBaseSchema = new SimpleSchema({
     timepointId: {
         type: String,
         label: 'Timepoint ID'
+    },
+    measurementNumber: {
+        type: Number,
+        label: 'Measurement Number'
     }
 });
