@@ -13,9 +13,16 @@ Template.imageThumbnail.onCreated(() => {
     // Get the image ID for current thumbnail
     instance.getThumbnailImageId = () => {
         const stack = instance.data.thumbnail.stack;
-        const lastIndex = (stack.images.length || 1) - 1;
-        const imageIndex = Math.floor(lastIndex / 2) !== 0 ? 0 : 0;
-        const imageInstance = stack.images[imageIndex];
+        const lastIndex = (stack.numImageFrames || stack.images.length || 1) - 1;
+        let imageIndex = Math.floor(lastIndex / 2);
+        let imageInstance;
+
+        if(stack.isMultiFrame) {
+            imageInstance = stack.images[0];
+        } else {
+            imageInstance = stack.images[imageIndex];
+            imageIndex = 0;
+        }
 
         return imageInstance.getImageId();
     };
