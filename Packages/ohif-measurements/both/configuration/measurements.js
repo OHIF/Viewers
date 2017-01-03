@@ -1,6 +1,5 @@
 import { Mongo } from 'meteor/mongo';
 import { _ } from 'meteor/underscore';
-
 import { OHIF } from 'meteor/ohif:core';
 
 let configuration = {};
@@ -34,66 +33,65 @@ class MeasurementApi {
                 collection.attachSchema(tool.schema);
                 this.tools[tool.id] = collection;
 
-                collection.find().observe({
-                    added: measurement => {
-                        const timepoint = this.timepointApi.timepoints.findOne({
-                            studyInstanceUids: measurement.studyInstanceUid
-                        });
-                        const measurementNumber = groupCollection.find({
-                            studyInstanceUid: {
-                                $in: timepoint.studyInstanceUids
-                            }
-                        }).count() + 1;
-                        measurement.measurementNumber = measurementNumber;
+                const addedHandler = measurement => {
+                    const timepoint = this.timepointApi.timepoints.findOne({
+                        studyInstanceUids: measurement.studyInstanceUid
+                    });
+                    const measurementNumber = groupCollection.find({
+                        studyInstanceUid: { $in: timepoint.studyInstanceUids }
+                    }).count() + 1;
+                    measurement.measurementNumber = measurementNumber;
 
-                        groupCollection.insert({
-                            toolId: tool.id,
-                            toolItemId: measurement._id,
-                            timepointId: timepoint.timepointId,
-                            studyInstanceUid: measurement.studyInstanceUid,
-                            createdAt: measurement.createdAt,
-                            measurementNumber
-                        });
+                    groupCollection.insert({
+                        toolId: tool.id,
+                        toolItemId: measurement._id,
+                        timepointId: timepoint.timepointId,
+                        studyInstanceUid: measurement.studyInstanceUid,
+                        createdAt: measurement.createdAt,
+                        measurementNumber
+                    });
 
-                        collection.update(measurement._id, {
-                            $set: {
-                                measurementNumber,
-                                timepointId: timepoint.timepointId
-                            }
-                        });
-                    },
+                    collection.update(measurement._id, {
+                        $set: {
+                            measurementNumber,
+                            timepointId: timepoint.timepointId
+                        }
+                    });
+                };
 
-                    removedAt: (measurement, atIndex) => {
-                        groupCollection.remove({
-                            toolItemId: measurement._id
-                        });
+                const removedHandler = measurement => {
+                    // Remove the record from the tools group collection too
+                    groupCollection.remove({
+                        toolItemId: measurement._id
+                    });
 
-                        const timepoint = this.timepointApi.timepoints.findOne({
-                            timepointId: measurement.timepointId
-                        });
-                        const filter = {
-                            studyInstanceUid: {
-                                $in: timepoint.studyInstanceUids
-                            },
-                            measurementNumber: {
-                                $gt: atIndex
-                            }
-                        };
+                    // Update the measurement numbers only if it is last item
+                    const measurementNumber = measurement.measurementNumber;
+                    const timepoint = this.timepointApi.timepoints.findOne({
+                        timepointId: measurement.timepointId
+                    });
+                    const filter = {
+                        studyInstanceUid: { $in: timepoint.studyInstanceUids },
+                        measurementNumber
+                    };
+                    const remainingItems = groupCollection.find(filter).count();
+                    if (!remainingItems) {
+                        filter.measurementNumber = { $gte: measurementNumber };
                         const operator = {
-                            $inc: {
-                                measurementNumber: -1
-                            }
+                            $inc: { measurementNumber: -1 }
                         };
-                        const options = {
-                            multi: true
-                        };
-
+                        const options = { multi: true };
                         groupCollection.update(filter, operator, options);
                         toolGroup.childTools.forEach(childTool => {
                             const collection = this.tools[childTool.id];
                             collection.update(filter, operator, options);
                         });
                     }
+                };
+
+                collection.find().observe({
+                    added: addedHandler,
+                    removed: removedHandler
                 });
             });
         });
