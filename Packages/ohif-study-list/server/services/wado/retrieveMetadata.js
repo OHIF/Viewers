@@ -107,7 +107,19 @@ function getPaletteColors(server, instance) {
 
 }
 
+function getFrameIncrementPointer(element) {
+    const frameIncrementPointerNames = {
+        '00181065': 'frameTimeVector',
+        '00181063': 'frameTime'
+    };
 
+    if(!element || !element.Value || !element.Value.length) {
+        return;
+    }
+
+    const value = element.Value[0];
+    return frameIncrementPointerNames[value];
+}
 
 /**
  * Parses result data from a WADO search into Study MetaData
@@ -195,7 +207,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             viewPosition: DICOMWeb.getString(instance['00185101']),
             acquisitionDateTime: DICOMWeb.getString(instance['0008002A']),
             numberOfFrames: DICOMWeb.getNumber(instance['00280008']),
-            frameIncrementPointer: DICOMWeb.getAttribute(instance['00280009']),
+            frameIncrementPointer: getFrameIncrementPointer(instance['00280009']),
             frameTime: DICOMWeb.getNumber(instance['00181063']),
             frameTimeVector: parseFloatArray(DICOMWeb.getString(instance['00181065'])),
             sliceThickness: DICOMWeb.getNumber(instance['00180050']),
