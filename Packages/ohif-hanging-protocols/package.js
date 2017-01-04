@@ -15,7 +15,7 @@ Package.onUse(function(api) {
     api.use('templating');
     api.use('natestrauser:select2@4.0.1', 'client');
     api.use('clinical:router');
-
+    api.use('momentjs:moment');
     api.use('validatejs');
 
     // Our custom packages
@@ -28,7 +28,6 @@ Package.onUse(function(api) {
     api.addFiles('both/collections.js');
     //api.addFiles('both/dicomTagDescriptions.js');
     api.addFiles('both/schema.js');
-    api.addFiles('both/routes.js');
     api.addFiles('both/hardcodedData.js');
     api.addFiles('both/testData.js');
 
@@ -37,6 +36,8 @@ Package.onUse(function(api) {
     api.addFiles('client/protocolEngine.js', 'client');
     api.addFiles('client/helpers/displayConstraint.js', 'client');
     api.addFiles('client/helpers/attributes.js', 'client');
+    api.addFiles('client/protocolStore/protocolStore.js', 'client');
+    api.addFiles('client/protocolStore/defaultStrategy.js', 'client');
 
     // UI Components
     api.addFiles('client/components/previousPresentationGroupButton/previousPresentationGroupButton.html', 'client');
@@ -83,12 +84,7 @@ Package.onUse(function(api) {
 
     // Server-only
     api.addFiles('server/collections.js', 'server');
-    api.addFiles('server/methods.js', 'server');
 
     // Global exports
     api.export('HP');
-
-    // Collections
-    api.export('HangingProtocols');
-    api.export('MatchedProtocols');
 });

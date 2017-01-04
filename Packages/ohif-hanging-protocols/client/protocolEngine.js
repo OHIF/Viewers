@@ -191,7 +191,7 @@ HP.ProtocolEngine = class ProtocolEngine {
     findMatchByStudy(study) {
         var matched = [];
 
-        HangingProtocols.find().forEach(protocol => {
+        HP.ProtocolStore.getProtocol().forEach(protocol => {
             // Clone the protocol's protocolMatchingRules array
             // We clone it so that we don't accidentally add the
             // numberOfPriorsReferenced rule to the Protocol itself.
@@ -220,9 +220,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         });
 
         if (!matched.length) {
-            var defaultProtocol = HangingProtocols.findOne({
-                id: 'defaultProtocol'
-            });
+            var defaultProtocol = HP.ProtocolStore.getProtocol('defaultProtocol');
 
             return [{
                 score: 1,

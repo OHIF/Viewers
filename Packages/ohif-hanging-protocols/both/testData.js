@@ -20,6 +20,7 @@ function getDefaultProtocol() {
 
 function getMRTwoByTwoTest() {
     var proto = new HP.Protocol('MR_TwoByTwo');
+    proto.id = 'MR_TwoByTwo';
     proto.locked = true;
     // Use http://localhost:3000/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78
 

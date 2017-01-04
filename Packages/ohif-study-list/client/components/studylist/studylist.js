@@ -41,6 +41,4 @@ Template.studylist.onRendered(() => {
             switchToTab(contentId);
         }
     }
-
-    Meteor.subscribe('hangingprotocols');
 });

@@ -103,13 +103,9 @@ Meteor.startup(() => {
     HP.lesionTrackerFollowupProtocol = protoFollowup;
     HP.lesionTrackerFollowupProtocol.id = 'lesionTrackerFollowupProtocol';
 
-    Meteor.call('removeHangingProtocolByID', HP.lesionTrackerBaselineProtocol.id, function() {
-        HangingProtocols.insert(HP.lesionTrackerBaselineProtocol);
+    HP.ProtocolStore.onReady(() => {
+        console.log('Inserting lesion tracker protocols');
+        HP.ProtocolStore.addProtocol(HP.lesionTrackerBaselineProtocol);
+        HP.ProtocolStore.addProtocol(HP.lesionTrackerFollowupProtocol);
     });
-
-    Meteor.call('removeHangingProtocolByID', HP.lesionTrackerFollowupProtocol.id, function() {
-        HangingProtocols.insert(HP.lesionTrackerFollowupProtocol);
-    });
-
-    HangingProtocols.insert(HP.defaultProtocol);
 });

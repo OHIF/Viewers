@@ -75,7 +75,7 @@ Template.stageSortable.helpers({
         }
 
         // Retrieve the last saved copy of the current protocol
-        var lastSavedCopy = HangingProtocols.findOne(ProtocolEngine.protocol._id);
+        var lastSavedCopy = HP.ProtocolStore.getProtocol(ProtocolEngine.protocol.id);
 
         // Try to find the index of this stage in the previously saved copy
         var stageIndex = getStageIndex(lastSavedCopy, stage.id);

@@ -6,11 +6,11 @@ function updateProtocolSelect() {
         return;
     }
     
-    // Loop through the available HangingProtocols
+    // Loop through the available hanging protocols
     // to create an array with the protocols that includes
     // a property labelled 'text', so that Select2 has something
     // to display
-    var protocols = HangingProtocols.find().map(function(protocol) {
+    var protocols = HP.ProtocolStore.getProtocol().map(function(protocol) {
         protocol.text = protocol.name;
         return protocol;
     });
@@ -39,9 +39,8 @@ Template.protocolEditor.onRendered(() => {
         Session.set('timeAgoVariable', new Date());
     }, 60000);
 
-    // Subscribe to the Hanging Protocols Collection
-    instance.subscribe('hangingprotocols', () => {
-        // Update the Protocol select box when the Collection is ready
+    // Update the Protocol select box when the hanging protocol store is ready
+    HP.ProtocolStore.onReady(() => {
         updateProtocolSelect();
     });
 });
@@ -74,9 +73,7 @@ Template.protocolEditor.helpers({
         updateProtocolSelect();
 
         // Find the protocol in the database
-        var protocolInDatabase = HangingProtocols.findOne({
-            id: ProtocolEngine.protocol.id
-        });
+        var protocolInDatabase = HP.ProtocolStore.getProtocol(ProtocolEngine.protocol.id);
 
         // Give the current Protocol an _id property from the Database
         if (protocolInDatabase) {
@@ -171,8 +168,8 @@ Template.protocolEditor.events({
         // Change the Protocol ID from the default value
         protocol.id = Random.id();
 
-        // Insert the Protocol into the HangingProtocols Collection
-        HangingProtocols.insert(protocol);
+        // Insert the protocol
+        HP.ProtocolStore.addProtocol(protocol);
 
         // Activate the new Protocol using the ProtocolEngine
         ProtocolEngine.setHangingProtocol(protocol);
@@ -198,13 +195,8 @@ Template.protocolEditor.events({
         // and fire the callback function when finished.
         openTextEntryDialog(title, instructions, currentValue, function(value) {
             // Update the name with the entered text
-            HangingProtocols.update(selectedProtocol._id, {
-                $set: {
-                    name: value
-                }
-            });
-
             selectedProtocol.name = value;
+            HP.ProtocolStore.updateProtocol(selectedProtocol.id, selectedProtocol)
         });
     },
     /**
@@ -240,21 +232,9 @@ Template.protocolEditor.events({
         var reader = new FileReader();
 
         reader.onload = () => {
-            var text = reader.result;
-
-            // POST the file to our protocol-import Route
-            // for it to be parsed and included in the
-            // HangingProtocols Collection
-            $.post('/protocol-import', {
-                protocol: text
-            }, function(resp, text, xhr) {
-                if (xhr.status !== 200) {
-                    // If the server returns an error during importing, alert the user
-
-                    // TODO: Use a custom dialog box, rather than "alert"
-                    alert('Protocol import failed.');
-                }
-            });
+            // Insert the protocol
+            var toImport = JSON.parse(reader.result);
+            HP.ProtocolStore.addProtocol(toImport);
         };
 
         // Instruct the FileReader to read the (first) selected file
@@ -270,10 +250,8 @@ Template.protocolEditor.events({
         // Retrieve the protocolId
         var protocolId = event.params.data.id;
 
-        // Retrieve the Protocol from the HangingProtocols Collection
-        var selectedProtocol = HangingProtocols.findOne({
-            id: protocolId
-        });
+        // Retrieve the protocol from the protocol store
+        var selectedProtocol = HP.ProtocolStore.getProtocol(protocolId);
 
         // If it doesn't exist, stop here
         if (!selectedProtocol) {
@@ -291,7 +269,7 @@ Template.protocolEditor.events({
         $(this).addClass('active').siblings().removeClass('active');
     },
     /**
-     * Update the HangingProtocols Collection with the latest changes to the current Protocol
+     * Update the protocol with the latest changes to the current Protocol
      */
     'click #saveProtocol'() {
         var selectedProtocol = this;
@@ -299,23 +277,14 @@ Template.protocolEditor.events({
             return;
         }
 
-        // Store the ID for the update call
-        var id = selectedProtocol._id;
-
-        // Remove the MongoDB _id property so that we can
-        // simplify the $set value
-        delete selectedProtocol._id;
-
         // Update the Protocol's modifiedDate and modifiedBy User details
         selectedProtocol.protocolWasModified();
 
         // Update the current Protocol in the database with the latest changes
-        HangingProtocols.update(id, {
-            $set: selectedProtocol
-        });
+        HP.ProtocolStore.updateProtocol(selectedProtocol.id, selectedProtocol);
     },
     /**
-     * Save the current Protocol as a new document in the HangingProtocols Collection
+     * Save the current Protocol as a new document
      */
     'click #saveAsProtocol'() {
         var selectedProtocol = this;
@@ -328,9 +297,6 @@ Template.protocolEditor.events({
         // Open the text entry dialog with the details above
         // and fire the callback function when finished.
         openTextEntryDialog(title, instructions, currentValue, function(value) {
-            // Erase the MongoDB _id
-            delete selectedProtocol._id;
-
             // Create a new ID for the protocol
             selectedProtocol.id = Random.id();
 
@@ -341,17 +307,21 @@ Template.protocolEditor.events({
             selectedProtocol.protocolWasModified();
 
             // Insert the new Protocol
-            HangingProtocols.insert(selectedProtocol);
+            HP.ProtocolStore.addProtocol(selectedProtocol);
         });
     },
     /**
      * Export the currently selected Protocol as a JSON file
      */
     'click #exportJSON'() {
-        // Tell the User's Browser to download the JSON file by routing a hidden iframe to our
-        // protocol-export Route. This prevents the tab from changing its current content.
         var selectedProtocol = this;
-        document.getElementById('download_iframe').src = '/protocol-export/' + selectedProtocol.id;
+
+        var protocolJSON = JSON.stringify(selectedProtocol, null, 2),
+            currentDate = new Date(),
+            filename = selectedProtocol.name + '-' + (currentDate.getTime().toString()) + '.json',
+            protocolBlob = new Blob([protocolJSON], { type: 'application/json' });
+
+        saveAs(protocolBlob, filename);
     },
     /**
      * Delete the currently selected Protocol
@@ -368,8 +338,8 @@ Template.protocolEditor.events({
         };
 
         showConfirmDialog(() => {
-            // Send a call to remove the Protocol from the HangingProtocols Collection on the server
-            Meteor.call('removeHangingProtocol', selectedProtocol._id);
+            // Remove the Protocol
+            HP.ProtocolStore.removeProtocol(selectedProtocol.id);
 
             // Reset the ProtocolEngine to the next best match
             ProtocolEngine.reset();

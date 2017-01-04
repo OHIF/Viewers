@@ -27,8 +27,6 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
-    instance.subscribe('hangingprotocols');
-
     const contentId = instance.data.contentId;
 
     if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {

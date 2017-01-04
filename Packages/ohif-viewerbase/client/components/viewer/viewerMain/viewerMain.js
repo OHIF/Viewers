@@ -20,7 +20,7 @@ Template.viewerMain.onCreated(() => {
 Template.viewerMain.onRendered(() => {
     const instance = Template.instance();
 
-    instance.subscribe('hangingprotocols', () => {
+    HP.ProtocolStore.onReady(() => {
         const { studies, currentTimepointId, measurementApi, timepointIds } = instance.data;
         const parentElement = instance.$('#layoutManagerTarget').get(0);
         window.layoutManager = new LayoutManager(parentElement, studies);
