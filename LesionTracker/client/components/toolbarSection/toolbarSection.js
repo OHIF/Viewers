@@ -203,13 +203,14 @@ Template.toolbarSection.helpers({
             disabled: isToolDisabled
         });
 
-        buttonData.push({
-            id: 'targetEX',
-            title: 'EX Target',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
-            disabled: isToolDisabled
-        });
+        // Disabling this on Lesion Tracker
+        // buttonData.push({
+        //     id: 'targetEX',
+        //     title: 'EX Target',
+        //     classes: 'imageViewerTool toolbarSectionButton',
+        //     svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+        //     disabled: isToolDisabled
+        // });
 
         return buttonData;
     }

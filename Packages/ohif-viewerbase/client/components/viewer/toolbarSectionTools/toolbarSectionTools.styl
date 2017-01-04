@@ -1,30 +1,43 @@
 @import "{design}/app"
 
-$distance = 12px
+$distance = 10px
 
 .toolbarSectionTools
   position: relative
 
+  .toolbarSectionButton.active>.toolbarSectionDrawerContainer
+    opacity: 1
+    transform(translateX(-50%) translateY(0) scale(1))
+
   .toolbarSectionDrawerContainer
-    bottom: - ($toolbarDrawerHeight + $distance)
+    bottom: - $toolbarDrawerHeight
     height: $toolbarDrawerHeight
-    left: 0
+    left: 50%
     min-width: 100%
+    opacity: 0
+    padding-top: $distance
     position: absolute
+    transition(opacity 0.3s ease\, transform 0.3s ease)
+    transform(translateX(-50%) translateY( - ($toolbarDrawerHeight + $distance)) scale(0))
     white-space: nowrap
+    z-index: 1
 
     .toolbarSectionDrawer
-      theme('background-color', '$uiGrayDarker')
+      theme('background', '$uiGrayDarkest', 0.95)
+      theme('border', '2px solid $uiBorderColor', 0.95)
       border-radius: 7px
       theme('color', '$textPrimaryColor')
       content: ''
       display: block
       font-size: 18px
-      height: $toolbarDrawerHeight - $distance
+      height: $toolbarDrawerHeight
+      padding-top: 6px
       text-align: center
       width: 100%
 
   #moreTools
+    position: relative
+
     .buttonLabel i
       text-align: center
       transition(all 300ms ease)

@@ -1,4 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 
 Template.toolbarSectionButton.helpers({
     activeClass() {
@@ -11,9 +13,10 @@ Template.toolbarSectionButton.helpers({
             return 'active';
         }
     },
+
     disableButton() {
         const instance = Template.instance();
-        return this.disableFunction && this.disableFunction();
+        return instance.disableFunction && instance.disableFunction();
     }
 });
 
@@ -37,7 +40,11 @@ Template.toolbarSectionButton.events({
             toolManager.setActiveTool(tool, elements);
         }
     },
+
     'click .imageViewerCommand'(event, instance) {
+        // Prevent the event from bubbling to parent tools
+        event.stopPropagation();
+
         // Stop here if the tool is disabled
         if ($(event.currentTarget).hasClass('disabled')) {
             return;

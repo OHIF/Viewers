@@ -4,27 +4,25 @@
             {{>toolbarSectionButton toolbarButton}}
         {{/each}}
 
-        {{ #if extraToolbarButtons}}
-        <div id="moreTools" class="js-open-more-tools toolbarSectionButton rp-x-1 rm-l-3">
-            <div class="svgContainer">
-                <svg>
-                    <use xlink:href="/packages/ohif_viewerbase/assets/icons.svg#icon-tools-more"></use>
-                </svg>
+        {{#if extraToolbarButtons}}
+            <div id="moreTools" class="js-open-more-tools toolbarSectionButton rp-x-1 rm-l-3">
+                <div class="svgContainer">
+                    <svg>
+                        <use xlink:href="/packages/ohif_viewerbase/assets/icons.svg#icon-tools-more"></use>
+                    </svg>
+                </div>
+                <div class="buttonLabel">
+                    <span>More</span>
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>
+                </div>
+                <div class="toolbarSectionDrawerContainer">
+                    <div class="toolbarSectionDrawer">
+                        {{#each toolbarButton in extraToolbarButtons}}
+                            {{>toolbarSectionButton toolbarButton}}
+                        {{/each}}
+                    </div>
+                </div>
             </div>
-            <div class="buttonLabel">
-                <span>More</span>
-                <i class="fa fa-caret-down" aria-hidden="true"></i>
-            </div>
-        </div>
-
-        <div class="toolbarSectionDrawerContainer">
-            <!-- TODO: [design] check which group of tools shall be shown -->
-            <div class="toolbarSectionDrawer">
-                {{#each toolbarButton in extraToolbarButtons}}
-                    {{>toolbarSectionButton toolbarButton}}
-                {{/each}}
-            </div>
-        </div>
-        {{ /if }}
+        {{/if}}
     </div>
 </template>

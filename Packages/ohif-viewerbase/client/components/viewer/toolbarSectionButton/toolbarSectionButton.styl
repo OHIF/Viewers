@@ -10,13 +10,13 @@
   text-align: center
 
   &.disabled
-    opacity: 0.5
-    cursor: not-allowed
-    
-    &:hover 
-      i,
-      .buttonLabel
-        theme('color', '$textSecondaryColor')
+    &>.buttonLabel, &>.svgContainer
+      opacity: 0.5
+      cursor: not-allowed
+
+      &:hover
+        &, i
+          theme('color', '$textSecondaryColor')
 
   .buttonLabel
     theme('color', '$textSecondaryColor')
@@ -26,7 +26,7 @@
   .svgContainer
     margin: 0 auto
     text-align: center
-    
+
     i
       theme('color', '$textSecondaryColor')
       font-size: 18px
@@ -39,23 +39,23 @@
     height: 21px
 
   &:hover
-    .buttonLabel
+    &>.buttonLabel, &>.svgContainer
       theme('color', '$hoverColor')
 
-    svg
-      theme('fill', '$hoverColor')
-      theme('stroke', '$hoverColor')
-      
-    i
-      theme('color', '$hoverColor')
+      svg
+        theme('fill', '$hoverColor')
+        theme('stroke', '$hoverColor')
+
+      i
+        theme('color', '$hoverColor')
 
   &:active, &.active
-    .buttonLabel
+    &>.buttonLabel, &>.svgContainer
       theme('color', '$activeColor')
 
-    svg
-      theme('fill', '$activeColor')
-      theme('stroke', '$activeColor')
-      
-    i
-      theme('color', '$activeColor')
+      svg
+        theme('fill', '$activeColor')
+        theme('stroke', '$activeColor')
+
+      i
+        theme('color', '$activeColor')
