@@ -2,13 +2,14 @@
     {{#if this.buttonTemplateName}}
         {{>UI.dynamic template=this.buttonTemplateName data=this}}
     {{else}}
-        <div id="{{this.id}}"
+        <div id="{{this.id}}" tabindex="1"
             class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if or this.disabled (disableButton)}}disabled{{/if}} {{#if this.subTools}}expandable{{/if}}"
-            title="{{#if this.tooltipTitle}}{{this.tooltipTitle}}{{else}}{{this.title}}{{/if}}">
+            title="{{this.tooltipTitle}}">
+            <div class="focus-holder" tabindex="1"></div>
             <div class="svgContainer">
                 {{#if this.svgLink}}
                 <svg>
-                    <use xlink:href={{this.svgLink}}></use>
+                    <use xlink:href={{svgLink}}></use>
                 </svg>
                 {{else}}
                 <i class={{iconClasses}}></i>

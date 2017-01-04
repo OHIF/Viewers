@@ -3,20 +3,42 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
 
-Template.toolbarSectionButton.helpers({
-    activeClass() {
+Template.toolbarSectionButton.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.isActive = activeToolId => {
         // TODO: Find a way to prevent the 'flash' after a click, but before this helper runs
         const instance = Template.instance();
         const subTools = instance.data.subTools;
         const currentId = instance.data.id;
-        const activeId = Session.get('ToolManagerActiveTool');
-        const isCurrentTool = currentId === activeId;
-        const isSubTool = subTools && _.findWhere(subTools, { id: activeId });
+        const isCurrentTool = currentId === activeToolId;
+        const isSubTool = subTools && _.findWhere(subTools, { id: activeToolId });
 
         // Check if the current tool or a sub tool is the active one
-        if (isCurrentTool || isSubTool) {
-            // Return the active class
-            return 'active';
+        return isCurrentTool || isSubTool;
+    };
+});
+
+Template.toolbarSectionButton.helpers({
+    activeClass() {
+        const instance = Template.instance();
+        const activeToolId = Session.get('ToolManagerActiveTool');
+        const isActive = instance.isActive(activeToolId);
+        return isActive ? 'active' : '';
+    },
+
+    svgLink() {
+        const instance = Template.instance();
+        const subTools = instance.data.subTools;
+        const defaultSvgLink = instance.data.svgLink;
+        const activeToolId = Session.get('ToolManagerActiveTool');
+        const currentId = instance.data.id;
+
+        if (subTools && activeToolId !== currentId && instance.isActive(activeToolId)) {
+            const subTool = _.findWhere(subTools, { id: activeToolId });
+            return subTool ? subTool.svgLink : defaultSvgLink;
+        } else {
+            return defaultSvgLink;
         }
     },
 
