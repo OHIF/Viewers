@@ -1,4 +1,5 @@
-import { OHIF } from 'meteor/ohif:core';
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
 
 Template.toolbarSection.helpers({
     // Returns true if the view shall be split in two viewports
@@ -50,6 +51,116 @@ Template.toolbarSection.helpers({
         // Check if the measure tools shall be disabled
         const isToolDisabled = false; //!Template.instance().data.timepointApi;
 
+        const targetSubTools = [];
+
+        targetSubTools.push({
+            id: 'bidirectional',
+            title: 'Bidirectional',
+            classes: 'imageViewerTool rm-l-3',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-target',
+            disabled: isToolDisabled
+        });
+
+        // TODO: Get real icons for CR / UN / EX
+        targetSubTools.push({
+            id: 'targetCR',
+            title: 'CR Target',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            disabled: isToolDisabled
+        });
+
+        targetSubTools.push({
+            id: 'targetUN',
+            title: 'UN Target',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            disabled: isToolDisabled
+        });
+
+        // Disabling this on Lesion Tracker
+        // targetSubTools.push({
+        //     id: 'targetEX',
+        //     title: 'EX Target',
+        //     classes: 'imageViewerTool',
+        //     svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+        //     disabled: isToolDisabled
+        // });
+
+        const extraTools = [];
+
+        extraTools.push({
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-stack-scroll'
+        });
+
+        extraTools.push({
+            id: 'resetViewport',
+            title: 'Reset',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-reset'
+        });
+
+        extraTools.push({
+            id: 'rotateR',
+            title: 'Rotate Right',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
+        });
+
+        extraTools.push({
+            id: 'flipH',
+            title: 'Flip H',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
+        });
+
+        extraTools.push({
+            id: 'flipV',
+            title: 'Flip V',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
+        });
+
+        extraTools.push({
+            id: 'invert',
+            title: 'Invert',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-invert'
+        });
+
+        extraTools.push({
+            id: 'magnify',
+            title: 'Magnify',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-magnify'
+        });
+
+        extraTools.push({
+            id: 'ellipticalRoi',
+            title: 'Ellipse',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-elliptical-roi'
+        });
+
+        extraTools.push({
+            id: 'linkStackScroll',
+            title: 'Link Scroll',
+            classes: 'imageViewerCommand nonAutoDisableState',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link-stack-scroll',
+            disableFunction: isStackScrollLinkingDisabled
+        });
+
+        extraTools.push({
+            id: 'toggleCineDialog',
+            title: 'CINE',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-cineplay-toggle',
+            disableFunction: hasMultipleFrames
+        });
+
         const buttonData = [];
 
         buttonData.push({
@@ -79,22 +190,23 @@ Template.toolbarSection.helpers({
         buttonData.push({
             id: 'link',
             title: 'Link',
-            classes: 'imageViewerCommand toolbarSectionButton',
+            classes: 'imageViewerCommand',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link'
         });*/
 
         buttonData.push({
-            id: 'bidirectional',
+            id: 'toggleTarget',
             title: 'Target',
-            classes: 'imageViewerTool rm-l-3',
+            classes: 'rm-l-3',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-target',
-            disabled: isToolDisabled
+            disabled: isToolDisabled,
+            subTools: targetSubTools
         });
 
         buttonData.push({
             id: 'nonTarget',
             title: 'Non-Target',
-            classes: 'imageViewerTool toolbarSectionButton',
+            classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target',
             disabled: isToolDisabled
         });
@@ -102,121 +214,31 @@ Template.toolbarSection.helpers({
         buttonData.push({
             id: 'length',
             title: 'Temp',
-            classes: 'imageViewerTool toolbarSectionButton',
+            classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
 
-        return buttonData;
-    },
-
-    extraToolbarButtons() {
-        // Check if the measure tools shall be disabled
-        const isToolDisabled = !Template.instance().data.timepointApi.currentTimepointId;
-        const buttonData = [];
-
         buttonData.push({
-            id: 'stackScroll',
-            title: 'Stack Scroll',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-stack-scroll'
+            id: 'toggleMore',
+            title: 'More',
+            classes: 'rp-x-1 rm-l-3',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-more',
+            disabled: isToolDisabled,
+            subTools: extraTools
         });
-
-        buttonData.push({
-            id: 'resetViewport',
-            title: 'Reset',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-reset'
-        });
-
-        buttonData.push({
-            id: 'rotateR',
-            title: 'Rotate Right',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
-        });
-
-        buttonData.push({
-            id: 'flipH',
-            title: 'Flip H',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
-        });
-
-        buttonData.push({
-            id: 'flipV',
-            title: 'Flip V',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
-        });
-
-        buttonData.push({
-            id: 'invert',
-            title: 'Invert',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-invert'
-        });
-
-        buttonData.push({
-            id: 'magnify',
-            title: 'Magnify',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-magnify'
-        });
-
-        buttonData.push({
-            id: 'ellipticalRoi',
-            title: 'Ellipse',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-elliptical-roi'
-        });
-
-        buttonData.push({
-            id: 'linkStackScroll',
-            title: 'Link Scroll',
-            classes: 'imageViewerCommand toolbarSectionButton nonAutoDisableState',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link-stack-scroll',
-            disableFunction: isStackScrollLinkingDisabled
-        });
-
-        buttonData.push({
-            id: 'toggleCineDialog',
-            title: 'CINE',
-            classes: 'imageViewerCommand toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-cineplay-toggle',
-            disableFunction: hasMultipleFrames
-        });
-
-        // TODO: Get real icons for CR / UN / EX
-        buttonData.push({
-            id: 'targetCR',
-            title: 'CR Target',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
-            disabled: isToolDisabled
-        });
-
-        buttonData.push({
-            id: 'targetUN',
-            title: 'UN Target',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
-            disabled: isToolDisabled
-        });
-
-        // Disabling this on Lesion Tracker
-        // buttonData.push({
-        //     id: 'targetEX',
-        //     title: 'EX Target',
-        //     classes: 'imageViewerTool toolbarSectionButton',
-        //     svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
-        //     disabled: isToolDisabled
-        // });
 
         return buttonData;
     }
 });
 
 Template.toolbarSection.events({
+    'click #toggleTarget'(event, instance) {
+        const $target = $(event.currentTarget);
+        if (!$target.hasClass('active') && $target.hasClass('expanded')) {
+            toolManager.setActiveTool('bidirectional');
+        }
+    },
+
     'click #toggleHUD'(event) {
         const $this = $(event.currentTarget);
 
@@ -228,6 +250,7 @@ Template.toolbarSection.events({
         const state = Session.get('measurementTableHudOpen');
         Session.set('measurementTableHudOpen', !state);
     },
+
     'click #toggleTrial'(event) {
         const $this = $(event.currentTarget);
 
@@ -251,7 +274,7 @@ Template.toolbarSection.onRendered(function() {
     allToolbarButtons.push($('#toggleMeasurements')[0]);
 
     if (disabledToolButtons && disabledToolButtons.length > 0) {
-        for (var i = 0; i < allToolbarButtons.length; i++) {
+        for (let i = 0; i < allToolbarButtons.length; i++) {
             const toolbarButton = allToolbarButtons[i];
             const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
             if (index !== -1) {

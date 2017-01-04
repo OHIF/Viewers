@@ -1,12 +1,13 @@
 @import "{design}/app"
 
 .toolbarSectionButton
-  display: inline-block
   theme('color', '$defaultColor')
   theme('fill', '$defaultColor')
   theme('stroke', '$defaultColor')
-  min-width: 30px
   cursor: pointer
+  display: inline-block
+  min-width: 30px
+  position: relative
   text-align: center
 
   &.disabled
@@ -39,15 +40,15 @@
     height: 21px
 
   &:hover
-    &>.buttonLabel, &>.svgContainer
+    &>.buttonLabel
       theme('color', '$hoverColor')
 
-      svg
-        theme('fill', '$hoverColor')
-        theme('stroke', '$hoverColor')
-
-      i
+      &>i
         theme('color', '$hoverColor')
+
+    &>.svgContainer>svg
+      theme('fill', '$hoverColor')
+      theme('stroke', '$hoverColor')
 
   &:active, &.active
     &>.buttonLabel, &>.svgContainer

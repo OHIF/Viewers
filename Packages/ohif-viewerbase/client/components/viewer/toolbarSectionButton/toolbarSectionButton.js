@@ -1,14 +1,20 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { _ } from 'meteor/underscore';
 
 Template.toolbarSectionButton.helpers({
     activeClass() {
         // TODO: Find a way to prevent the 'flash' after a click, but before this helper runs
         const instance = Template.instance();
+        const subTools = instance.data.subTools;
+        const currentId = instance.data.id;
+        const activeId = Session.get('ToolManagerActiveTool');
+        const isCurrentTool = currentId === activeId;
+        const isSubTool = subTools && _.findWhere(subTools, { id: activeId });
 
-        // Check if the current tool is the active one
-        if (instance.data.id === Session.get('ToolManagerActiveTool')) {
+        // Check if the current tool or a sub tool is the active one
+        if (isCurrentTool || isSubTool) {
             // Return the active class
             return 'active';
         }
@@ -22,6 +28,9 @@ Template.toolbarSectionButton.helpers({
 
 Template.toolbarSectionButton.events({
     'click .imageViewerTool'(event, instance) {
+        // Prevent the event from bubbling to parent tools
+        event.stopPropagation();
+
         // Stop here if the tool is disabled
         if ($(event.currentTarget).hasClass('disabled')) {
             return;

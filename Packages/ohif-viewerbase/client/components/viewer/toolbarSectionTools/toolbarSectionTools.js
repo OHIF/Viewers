@@ -1,9 +1,9 @@
 import { Template } from 'meteor/templating';
 
 Template.toolbarSectionTools.events({
-    'click .js-open-more-tools'(event, instance) {
+    'click .expandable'(event, instance) {
         const $target = $(event.currentTarget);
-        const isActive = $target.hasClass('active');
-        $target.toggleClass('active', !isActive);
+        const isExpanded = $target.hasClass('expanded');
+        $target.toggleClass('expanded', !isExpanded);
     }
 });
