@@ -9,7 +9,7 @@ class MeasurementHandlers {
         const measurementApi = instance.data.measurementApi;
         const Collection = measurementApi.tools[eventData.toolType];
 
-        // Stop here if collection was not found for the given tool
+        // Stop here if the tool data shall not be stored (e.g. temp tools)
         if (!Collection) {
             return;
         }
@@ -76,6 +76,11 @@ class MeasurementHandlers {
         const measurementData = eventData.measurementData;
         const measurementApi = instance.data.measurementApi;
         const Collection = measurementApi.tools[eventData.toolType];
+
+        // Stop here if the tool data shall not be stored (e.g. temp tools)
+        if (!Collection) {
+            return;
+        }
 
         OHIF.log.info('CornerstoneToolsMeasurementModified');
 

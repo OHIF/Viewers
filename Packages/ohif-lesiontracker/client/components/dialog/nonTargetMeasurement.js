@@ -18,8 +18,8 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
     // Remove the measurement from the collection
     instance.removeMeasurement = () => {
         const measurementApi = instance.viewerData.measurementApi;
-        measurementApi.deleteMeasurements(instance.measurementTypeId, {
-            _id: instance.data.measurementData._id
+        measurementApi.deleteMeasurements('nonTargets', {
+            toolItemId: instance.data.measurementData._id
         });
 
         // Update the Overall Measurement Numbers for all Measurements
