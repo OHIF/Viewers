@@ -66,7 +66,7 @@ Template.toolbarSection.helpers({
             id: 'targetCR',
             title: 'CR Target',
             classes: 'imageViewerTool',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-target-cr',
             disabled: isToolDisabled
         });
 
@@ -74,7 +74,7 @@ Template.toolbarSection.helpers({
             id: 'targetUN',
             title: 'UN Target',
             classes: 'imageViewerTool',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-target-un',
             disabled: isToolDisabled
         });
 
@@ -83,7 +83,7 @@ Template.toolbarSection.helpers({
         //     id: 'targetEX',
         //     title: 'EX Target',
         //     classes: 'imageViewerTool',
-        //     svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp',
+        //     svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-target-ex',
         //     disabled: isToolDisabled
         // });
 

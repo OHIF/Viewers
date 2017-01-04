@@ -91,6 +91,33 @@
       <path id="icon-tools-measure-target-plus" d="m6,0 a6 6 0 0 1 0 12 a6 6 0 0 1 0 -12 m0.5,3 a0.5 0.5 0 0 0 -1 0 l0,2.5 -2.5,0 a0.5 0.5 0 0 0 0 1 l2.5,0 0,2.5 a0.5 0.5 0 0 0 1 0 l0,-2.5 2.5,0 a0.5 0.5 0 0 0 0 -1 l-2.5,0 z" />
     </g>
   </symbol>
+  <symbol id="icon-tools-measure-target-cr" viewBox="0 0 24 24">
+    <title>
+      Target CR Measurement
+    </title>
+    <g id="icon-tools-measure-target-cr-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <text id="icon-tools-measure-target-cr-text" fill="#000000" x="0" y="8" style="font-size:10px; font-family:sans-serif">CR</text>
+      <path id="icon-tools-measure-target-cr-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-target-ex" viewBox="0 0 24 24">
+    <title>
+      Target EX Measurement
+    </title>
+    <g id="icon-tools-measure-target-ex-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <text id="icon-tools-measure-target-ex-text" fill="#000000" x="0" y="8" style="font-size:10px; font-family:sans-serif">EX</text>
+      <path id="icon-tools-measure-target-ex-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-target-un" viewBox="0 0 24 24">
+    <title>
+      Target UN Measurement
+    </title>
+    <g id="icon-tools-measure-target-un-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <text id="icon-tools-measure-target-un-text" fill="#000000" x="0" y="8" style="font-size:10px; font-family:sans-serif">UN</text>
+      <path id="icon-tools-measure-target-un-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
+    </g>
+  </symbol>
   <symbol id="icon-tools-measure-temp" viewBox="0 0 24 24">
     <title>
       Temporary Measurement
