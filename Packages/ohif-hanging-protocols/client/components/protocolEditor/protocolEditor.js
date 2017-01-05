@@ -190,8 +190,21 @@ Template.protocolEditor.events({
         openTextEntryDialog(title, instructions, currentValue, function(value) {
             // Update the name with the entered text
             selectedProtocol.name = value;
-            HP.ProtocolStore.updateProtocol(selectedProtocol.id, selectedProtocol)
+
+            // Update the protocol
+            HP.ProtocolStore.updateProtocol(selectedProtocol.id, selectedProtocol);
+
+            // Update the protocol selector
+            updateProtocolSelect();
         });
+    },
+    /**
+     * Import a Protocol
+     */
+    'click #importProtocol'() {
+        // Hide the protocol dropdown manually, because it is not hidden automatically
+        // when it has input as a child
+        $("#protocolDropdown").dropdown('toggle');
     },
     /**
      * Triggers a custom event when for the HTML5 File input when files are selected
@@ -226,9 +239,13 @@ Template.protocolEditor.events({
         var reader = new FileReader();
 
         reader.onload = () => {
+            var protocolToImport = JSON.parse(reader.result);
+
             // Insert the protocol
-            var toImport = JSON.parse(reader.result);
-            HP.ProtocolStore.addProtocol(toImport);
+            HP.ProtocolStore.addProtocol(protocolToImport);
+
+            // Update the protocol selector to display the imported Protocol
+            updateProtocolSelect();
         };
 
         // Instruct the FileReader to read the (first) selected file
@@ -283,28 +300,37 @@ Template.protocolEditor.events({
     'click #saveAsProtocol'() {
         var selectedProtocol = this;
 
+        // Clone the selected Protocol
+        var protocol = selectedProtocol.createClone();
+
         // Define some details for the text entry dialog
         var title = 'Save Protocol As';
         var instructions = 'Enter a new name';
-        var currentValue = selectedProtocol.name;
+        var currentValue = protocol.name;
 
         // Open the text entry dialog with the details above
         // and fire the callback function when finished.
         openTextEntryDialog(title, instructions, currentValue, function(value) {
             // Create a new ID for the protocol
-            selectedProtocol.id = Random.id();
+            protocol.id = Random.id();
 
             // Update the name with the entered text
-            selectedProtocol.name = value;
+            protocol.name = value;
 
             // Unlock the protocol
-            selectedProtocol.locked = false;
+            protocol.locked = false;
 
             // Update the Protocol's modifiedDate and modifiedBy User details
-            selectedProtocol.protocolWasModified();
+            protocol.protocolWasModified();
 
             // Insert the new Protocol
-            HP.ProtocolStore.addProtocol(selectedProtocol);
+            HP.ProtocolStore.addProtocol(protocol);
+
+            // Activate the new Protocol using the ProtocolEngine
+            ProtocolEngine.setHangingProtocol(protocol);
+
+            // Update the protocol selector to display the new Protocols
+            updateProtocolSelect();
         });
     },
     /**
