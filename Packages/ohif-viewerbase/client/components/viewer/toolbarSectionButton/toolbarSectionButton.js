@@ -17,6 +17,20 @@ Template.toolbarSectionButton.onCreated(() => {
         // Check if the current tool or a sub tool is the active one
         return isCurrentTool || isSubTool;
     };
+
+    instance.getActiveToolSubProperty = (propertyName, activeToolId) => {
+        const instance = Template.instance();
+        const subTools = instance.data.subTools;
+        const defaultProperty = instance.data[propertyName];
+        const currentId = instance.data.id;
+
+        if (subTools && activeToolId !== currentId && instance.isActive(activeToolId)) {
+            const subTool = _.findWhere(subTools, { id: activeToolId });
+            return subTool ? subTool[propertyName] : defaultProperty;
+        } else {
+            return defaultProperty;
+        }
+    };
 });
 
 Template.toolbarSectionButton.helpers({
@@ -29,17 +43,14 @@ Template.toolbarSectionButton.helpers({
 
     svgLink() {
         const instance = Template.instance();
-        const subTools = instance.data.subTools;
-        const defaultSvgLink = instance.data.svgLink;
         const activeToolId = Session.get('ToolManagerActiveTool');
-        const currentId = instance.data.id;
+        return instance.getActiveToolSubProperty('svgLink', activeToolId);
+    },
 
-        if (subTools && activeToolId !== currentId && instance.isActive(activeToolId)) {
-            const subTool = _.findWhere(subTools, { id: activeToolId });
-            return subTool ? subTool.svgLink : defaultSvgLink;
-        } else {
-            return defaultSvgLink;
-        }
+    iconClasses() {
+        const instance = Template.instance();
+        const activeToolId = Session.get('ToolManagerActiveTool');
+        return instance.getActiveToolSubProperty('iconClasses', activeToolId);
     },
 
     disableButton() {

@@ -7,13 +7,15 @@
             title="{{this.tooltipTitle}}">
             <div class="focus-holder" tabindex="1"></div>
             <div class="svgContainer">
-                {{#if this.svgLink}}
-                <svg>
-                    <use xlink:href={{svgLink}}></use>
-                </svg>
-                {{else}}
-                <i class={{iconClasses}}></i>
-                {{/if}}
+                {{#let svg=svgLink icon=iconClasses}}
+                    {{#if svg}}
+                        <svg>
+                            <use xlink:href={{svg}}></use>
+                        </svg>
+                    {{else}}
+                        <i class={{icon}}></i>
+                    {{/if}}
+                {{/let}}
             </div>
             <div class="buttonLabel">
                 <span>{{this.title}}</span>
