@@ -321,7 +321,10 @@ Template.protocolEditor.events({
             filename = selectedProtocol.name + '-' + (currentDate.getTime().toString()) + '.json',
             protocolBlob = new Blob([protocolJSON], { type: 'application/json' });
 
-        saveAs(protocolBlob, filename);
+        var downloadElement = document.getElementById('downloadElement');
+        downloadElement.href = URL.createObjectURL(protocolBlob);
+        downloadElement.download = filename;
+        downloadElement.click();
     },
     /**
      * Delete the currently selected Protocol
