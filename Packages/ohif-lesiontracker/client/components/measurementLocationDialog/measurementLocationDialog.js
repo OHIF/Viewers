@@ -4,9 +4,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementLocationDialog.onCreated(() => {
     const instance = Template.instance();
-    const measurementTypeId = 'bidirectional';
     const measurementApi = instance.data.measurementApi;
-    const timepointApi = instance.data.timepointApi;
 
     const toggleLabel = (measurementData, eventData, doneCallback) => {
         delete measurementData.isCreating;
@@ -26,7 +24,7 @@ Template.measurementLocationDialog.onCreated(() => {
             measurementId: measurementData._id,
             toolType: measurementData.toolType,
             element: eventData.element,
-            measurementApi: instance.data.measurementApi,
+            measurementApi,
             position: position,
             direction: {
                 x: getDirection('x'),
@@ -40,7 +38,6 @@ Template.measurementLocationDialog.onCreated(() => {
         getMeasurementLocationCallback: toggleLabel,
         changeMeasurementLocationCallback: toggleLabel,
     };
-
 
     // TODO: Reconcile this with the configuration in toolManager
     // it would be better to have this all in one place.
@@ -61,12 +58,12 @@ Template.measurementLocationDialog.onCreated(() => {
 
 // Note: None of these events work anymore
 Template.measurementLocationDialog.events({
-    'click #removeMeasurement': function() {
-        var measurementData = Template.measurementLocationDialog.measurementData;
-        var doneCallback = Template.measurementLocationDialog.doneCallback;
-        var dialog = Template.measurementLocationDialog.dialog;
+    'click #removeMeasurement'() {
+        const measurementData = Template.measurementLocationDialog.measurementData;
+        const doneCallback = Template.measurementLocationDialog.doneCallback;
+        const dialog = Template.measurementLocationDialog.dialog;
 
-        var options = {
+        const options = {
             keyPressAllowed: false,
             title: 'Remove measurement?',
             text: 'Are you sure you would like to remove the entire measurement?'
@@ -74,16 +71,17 @@ Template.measurementLocationDialog.events({
 
         showConfirmDialog(function() {
             if (doneCallback && typeof doneCallback === 'function') {
-                var deleteTool = true;
+                const deleteTool = true;
                 doneCallback(measurementData, deleteTool);
             }
         }, options);
 
         closeHandler(dialog);
     },
-    'click #convertToNonTarget': function() {
-        var measurementData = Template.measurementLocationDialog.measurementData;
-        var dialog = Template.measurementLocationDialog.dialog;
+
+    'click #convertToNonTarget'() {
+        const measurementData = Template.measurementLocationDialog.measurementData;
+        const dialog = Template.measurementLocationDialog.dialog;
 
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;

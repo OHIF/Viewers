@@ -14,11 +14,6 @@ const Measurement = new SimpleSchema({
         label: 'Measurement Number',
         optional: true
     },
-    measurementNumberOverall: {
-        type: Number,
-        label: 'Measurement Number Overall',
-        optional: true
-    },
     timepointId: {
         type: String,
         label: 'Timepoint ID',

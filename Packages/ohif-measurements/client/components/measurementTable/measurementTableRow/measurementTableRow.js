@@ -64,7 +64,7 @@ Template.measurementTableRow.events({
             // Remove all the measurements with the given type and number
             measurementApi.deleteMeasurements(measurementTypeId, { measurementNumber });
 
-            // Update the Overall Measurement Numbers for all Measurements
+            // Sync the new measurement data with cornerstone tools
             const baseline = timepointApi.baseline();
             measurementApi.sortMeasurements(baseline.timepointId);
 

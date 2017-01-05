@@ -17,7 +17,8 @@ OHIF.measurements.toggleLabelButton = options => {
         removeButtonView();
     }
 
-    const toolCollection = options.measurementApi.tools[options.toolType];
+    const measurementApi = options.measurementApi;
+    const toolCollection = measurementApi.tools[options.toolType];
     const measurement = toolCollection.findOne(options.measurementId);
 
     const data = {
@@ -29,17 +30,21 @@ OHIF.measurements.toggleLabelButton = options => {
         autoClick: options.autoClick,
         doneCallback: removeButtonView,
         updateCallback(location, description) {
-            toolCollection.update({
-                measurementNumber: measurement.measurementNumber,
-                toolType: measurement.toolType,
-                patientId: measurement.patientId
-            }, {
-                $set: {
-                    location,
-                    description
-                }
-            }, {
-                multi: true
+            const groupId = measurementApi.toolsGroupsMap[measurement.toolType];
+            const config = OHIF.measurements.MeasurementApi.getConfiguration();
+            const group = _.findWhere(config.measurementTools, { id: groupId });
+            group.childTools.forEach(tool => {
+                measurementApi.tools[tool.id].update({
+                    measurementNumber: measurement.measurementNumber,
+                    patientId: measurement.patientId
+                }, {
+                    $set: {
+                        location,
+                        description
+                    }
+                }, {
+                    multi: true
+                });
             });
         }
     };

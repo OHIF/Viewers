@@ -22,7 +22,7 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
             toolItemId: instance.data.measurementData._id
         });
 
-        // Update the Overall Measurement Numbers for all Measurements
+        // Sync the new measurement data with cornerstone tools
 
         // Commenting this out for now, we need the timepointApi
         //const baseline = timepointApi.baseline();

@@ -87,7 +87,6 @@ Template.measurementTableView.helpers({
             return {
                 measurementTypeId: measurementTypeId,
                 measurementNumber: key,
-                measurementNumberOverall: anEntry.measurementNumberOverall,
                 location: OHIF.measurements.getLocation(groupObject[key]),
                 responseStatus: false, // TODO: Get the latest timepoint and determine the response status
                 entries: groupObject[key]
@@ -142,7 +141,6 @@ Template.measurementTableView.helpers({
             return {
                 measurementTypeId: measurementTypeId,
                 measurementNumber: key,
-                measurementNumberOverall: anEntry.measurementNumberOverall,
                 location: OHIF.measurements.getLocation(groupObject[key]),
                 responseStatus: false, // TODO: Get the latest timepoint and determine the response status
                 entries: groupObject[key]

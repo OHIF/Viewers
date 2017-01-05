@@ -20,6 +20,7 @@ class MeasurementApi {
 
         this.toolGroups = {};
         this.tools = {};
+        this.toolsGroupsMap = {};
 
         configuration.measurementTools.forEach(toolGroup => {
             const groupCollection = new Mongo.Collection(null);
@@ -32,8 +33,10 @@ class MeasurementApi {
                 collection._debugName = tool.name;
                 collection.attachSchema(tool.schema);
                 this.tools[tool.id] = collection;
+                this.toolsGroupsMap[tool.id] = toolGroup.id;
 
                 const addedHandler = measurement => {
+                    // Get the measurement number
                     const timepoint = this.timepointApi.timepoints.findOne({
                         studyInstanceUids: measurement.studyInstanceUid
                     });
@@ -42,6 +45,18 @@ class MeasurementApi {
                     }).count() + 1;
                     measurement.measurementNumber = measurementNumber;
 
+                    // Get the current location (if already defined)
+                    let location;
+                    const baselineTimepoint = timepointApi.baseline();
+                    const baselineGroupEntry = groupCollection.findOne({
+                        timepointId: baselineTimepoint.timepointId
+                    });
+                    if (baselineGroupEntry) {
+                        const tool = this.tools[baselineGroupEntry.toolId];
+                        location = tool.findOne({ measurementNumber }).location;
+                    }
+
+                    // Reflect the entry in the tool group collection
                     groupCollection.insert({
                         toolId: tool.id,
                         toolItemId: measurement._id,
@@ -51,10 +66,12 @@ class MeasurementApi {
                         measurementNumber
                     });
 
+                    // Set the timepoint ID, measurement number and location
                     collection.update(measurement._id, {
                         $set: {
+                            timepointId: timepoint.timepointId,
                             measurementNumber,
-                            timepointId: timepoint.timepointId
+                            location
                         }
                     });
                 };
