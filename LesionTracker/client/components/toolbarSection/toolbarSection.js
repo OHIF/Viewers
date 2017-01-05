@@ -78,15 +78,6 @@ Template.toolbarSection.helpers({
             disabled: isToolDisabled
         });
 
-        // Disabling this on Lesion Tracker
-        // targetSubTools.push({
-        //     id: 'targetEX',
-        //     title: 'EX Target',
-        //     classes: 'imageViewerTool',
-        //     svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-target-ex',
-        //     disabled: isToolDisabled
-        // });
-
         const extraTools = [];
 
         extraTools.push({
@@ -146,14 +137,6 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
-            id: 'linkStackScroll',
-            title: 'Link Scroll',
-            classes: 'imageViewerCommand nonAutoDisableState',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link-stack-scroll',
-            disableFunction: isStackScrollLinkingDisabled
-        });
-
-        extraTools.push({
             id: 'toggleCineDialog',
             title: 'CINE',
             classes: 'imageViewerCommand',
@@ -184,15 +167,13 @@ Template.toolbarSection.helpers({
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
         });
 
-        /*
-        TODO: design the link functionality
-        Commenting this out until we build this tool
         buttonData.push({
             id: 'link',
             title: 'Link',
-            classes: 'imageViewerCommand',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link'
-        });*/
+            classes: 'imageViewerCommand toolbarSectionButton nonAutoDisableState',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link',
+            disableFunction: isStackScrollLinkingDisabled
+        });
 
         buttonData.push({
             id: 'toggleTarget',

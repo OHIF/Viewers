@@ -25,5 +25,10 @@ Template[defaultTemplate].helpers({
         const timepoint = timepoints[0];
 
         return timepointApi.name(timepoint);
+    },
+
+    linked: function() {
+        const linkedViewports = Session.get('StackImagePositionOffsetSynchronizerLinkedViewports') || [];
+        return (linkedViewports.indexOf(this.viewportIndex) !== -1);
     }
 });

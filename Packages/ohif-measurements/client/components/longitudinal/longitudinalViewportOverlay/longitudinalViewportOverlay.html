@@ -9,6 +9,13 @@
             <div class="topright dicomTag">
                 <div>{{studyDescription}}</div>
                 <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
+                {{#if linked}}
+                    <div class="link-icon">
+                        <svg>
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/packages/ohif_viewerbase/assets/icons.svg#icon-viewport-link"></use>
+                        </svg>
+                    </div>
+                {{/if}}
             </div>
             <div class="bottomright dicomTag">
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>

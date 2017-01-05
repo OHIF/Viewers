@@ -115,7 +115,7 @@ clearTools = () => {
     cornerstone.updateImage(element);
 };
 
-linkStackScroll = () => {
+link = () => {
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
     if(synchronizer.isActive()) {

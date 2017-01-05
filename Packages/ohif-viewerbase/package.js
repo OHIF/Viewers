@@ -297,5 +297,5 @@ Package.onUse(function(api) {
     api.export('flipH', 'client');
     api.export('rotateR', 'client');
     api.export('rotateL', 'client');
-    api.export('linkStackScroll', 'client');
+    api.export('link', 'client');
 });

@@ -5,7 +5,7 @@ import { $ } from 'meteor/jquery';
 class StackImagePositionOffsetSynchronizer {
   constructor() {
     this.active = false;
-    this.syncedViewportElements = [];
+    this.syncedViewports = [];
     this.synchronizer = new cornerstoneTools.Synchronizer("CornerstoneNewImage", cornerstoneTools.stackImagePositionOffsetSynchronizer)
   }
 
@@ -22,16 +22,24 @@ class StackImagePositionOffsetSynchronizer {
       return;
     }
 
-    const viewportElements = this.getLinkableViewports();
+    const viewports = this.getLinkableViewports();
+    const viewportIndexes = [];
 
-    viewportElements.forEach((viewportElement, index) => {
-      this.synchronizer.add(viewportElement);
-      this.syncedViewportElements.push(viewportElement);
+    if(viewports.length <= 1) {
+      return;
+    }
+
+    viewports.forEach((viewport, index) => {
+      this.synchronizer.add(viewport.element);
+      this.syncedViewports.push(viewport);
+      viewportIndexes.push(viewport.index)
       
-      $(viewportElement).on(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.elementDisabledHandler(this));
+      $(viewport.element).on(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.elementDisabledHandler(this));
     });
 
     this.active = true;
+    toolManager.activateCommandButton('link');
+    Session.set('StackImagePositionOffsetSynchronizerLinkedViewports', viewportIndexes);
   }
 
   deactivate() {
@@ -39,12 +47,13 @@ class StackImagePositionOffsetSynchronizer {
       return;
     }
 
-    while(this.syncedViewportElements.length) {
-      const viewportElement = this.syncedViewportElements[0];
-      this.removeViewportElement(viewportElement);
+    while(this.syncedViewports.length) {
+      const viewport = this.syncedViewports[0];
+      this.removeViewport(viewport);
     }
 
     this.active = false;
+    toolManager.deactivateCommandButton('link');
   }
 
   update() {
@@ -62,43 +71,68 @@ class StackImagePositionOffsetSynchronizer {
     this.activate();
   }
 
+  isViewportSynced(viewportElement) {
+    return !!this.getViewportByElement(viewportElement);
+  }
+
   getActiveViewportElement() {
     const viewportIndex = Session.get('activeViewport') || 0;
     return $('.imageViewerViewport').get(viewportIndex);
   }
 
-  isViewportSynced(viewportElement) {
-    let isSynced = false;
-
-    this.syncedViewportElements.forEach(syncedViewportElement => {
-      isSynced = isSynced || (syncedViewportElement === viewportElement);
-    });
-
-    return isSynced;
-  }
-
-  removeViewportElement(viewportElement) {
-    const index = this.syncedViewportElements.indexOf(viewportElement);
+  removeViewport(viewport) {
+    const index = this.syncedViewports.indexOf(viewport);
 
     if(index === -1) {
       return;
     }
 
-    this.syncedViewportElements.splice(index, 1);
-    this.synchronizer.remove(viewportElement);
-    $(viewportElement).off(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT);
+    this.syncedViewports.splice(index, 1);
+    this.synchronizer.remove(viewport.element);
+    this.removeLinkedViewportFromSession(viewport);
+    $(viewport.element).off(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT);
+  }
+
+  getViewportByElement(viewportElement) {
+    const length = this.syncedViewports.length;
+
+    for(let i = 0; i < length; i++) {
+      const viewport = this.syncedViewports[i];
+      
+      if(viewport.element === viewportElement) {
+        return viewport;
+      }
+    }
+  }
+
+  removeViewportByElement(viewportElement) {
+    let viewport = this.getViewportByElement(viewportElement);
+
+    if(viewport) {
+      this.removeViewport(viewport);
+    }
+  }
+
+  removeLinkedViewportFromSession(viewport) {
+    const linkedViewports = Session.get('StackImagePositionOffsetSynchronizerLinkedViewports');
+    const index = linkedViewports.indexOf(viewport.index);
+
+    if(index !== -1) {
+      linkedViewports.splice(index, 1);
+      Session.set('StackImagePositionOffsetSynchronizerLinkedViewports', linkedViewports);
+    }
   }
 
   elementDisabledHandler(context) {
     return (e, eventData) => {
-      context.removeViewportElement(eventData.element);
+      context.removeViewportByElement(eventData.element);
     }
   }
 
   getLinkableViewports() {
     const activeViewportElement = this.getActiveViewportElement();
     const activeViewportImageNormal = this.getViewportImageNormal(activeViewportElement);
-    const viewportElements = [];
+    const viewports = [];
 
     $('.imageViewerViewport').each((index, viewportElement) => {
       const viewportImageNormal = this.getViewportImageNormal(viewportElement);
@@ -109,12 +143,15 @@ class StackImagePositionOffsetSynchronizer {
         // Pi / 12 radians = 15 degrees
         // If the angle between two vectors is Pi, it means they are just inverted
         if (angleInRadians < Math.PI / 12 || angleInRadians === Math.PI) {
-          viewportElements.push(viewportElement)
+          viewports.push({
+            index: index,
+            element: viewportElement
+          });
         }
       }
     });
 
-    return viewportElements;
+    return viewports;
   }
 
   getViewportImageNormal(element) {

@@ -40,7 +40,7 @@ Template.viewer.onCreated(() => {
         flipH,
         rotateL,
         rotateR,
-        linkStackScroll
+        link
     });
 
     if (ViewerData[contentId].loadedSeriesData) {

@@ -276,6 +276,23 @@ toolManager = {
     },
     getDefaultTool() {
         return defaultTool;
+    },
+    activateCommandButton(button) {
+        const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
+
+        if(activeCommandButtons.indexOf(button) === -1) {
+            activeCommandButtons.push('link');
+            Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
+        }
+    },
+    deactivateCommandButton(button) {
+        const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
+        const index = activeCommandButtons.indexOf(button);
+
+        if(index !== -1) {
+            activeCommandButtons.splice(index, 1);
+            Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
+        }
     }
 
 };

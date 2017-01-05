@@ -13,9 +13,11 @@ Template.toolbarSectionButton.onCreated(() => {
         const currentId = instance.data.id;
         const isCurrentTool = currentId === activeToolId;
         const isSubTool = subTools && _.findWhere(subTools, { id: activeToolId });
+        const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
+        const isActiveCommandButton = activeCommandButtons.indexOf(instance.data.id) !== -1;
 
-        // Check if the current tool or a sub tool is the active one
-        return isCurrentTool || isSubTool;
+        // Check if the current tool, a sub tool or a command button is active
+        return isCurrentTool || isSubTool || isActiveCommandButton;
     };
 
     instance.getActiveToolSubProperty = (propertyName, activeToolId) => {
