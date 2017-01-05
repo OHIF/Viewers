@@ -173,10 +173,6 @@ HP.Protocol = class Protocol {
     /**
      * Creates a clone of the current Protocol with a new name
      *
-     * Note! This method absolutely cannot be renamed 'clone', because
-     * Minimongo's insert method uses 'clone' internally and this
-     * somehow causes very bizarre behaviour
-     *
      * @param name
      * @returns {Protocol|*}
      */
@@ -196,44 +192,11 @@ HP.Protocol = class Protocol {
             clonedProtocol.name = name;
         }
 
-        // Remove any MongoDB ID the current protocol may have had
-        delete clonedProtocol._id;
-
         // Unlock the clone
         clonedProtocol.locked = false;
 
         // Return the cloned Protocol
         return clonedProtocol;
-    }
-
-    /**
-     * Add a Role to the Set of Roles that have access
-     * to this Protocol
-     *
-     * @param role
-     */
-    addAvailableTo(role) {
-        // Add the role's MongoDB _id to the availableTo Set
-        this.availableTo.add(role._id);
-
-        // Update the modifiedDate and User that last
-        // modified this Protocol
-        this.protocolWasModified();
-    }
-
-    /**
-     * Add a Role to the Set of Roles that have access
-     * to this Protocol
-     *
-     * @param role
-     */
-    addEditableBy(role) {
-        // Add the role's MongoDB _id to the editableBy Set
-        this.editableBy.add(role._id);
-
-        // Update the modifiedDate and User that last
-        // modified this Protocol
-        this.protocolWasModified();
     }
 
     /**

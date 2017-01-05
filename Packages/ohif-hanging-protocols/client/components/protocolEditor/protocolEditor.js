@@ -10,9 +10,11 @@ function updateProtocolSelect() {
     // to create an array with the protocols that includes
     // a property labelled 'text', so that Select2 has something
     // to display
-    var protocols = HP.ProtocolStore.getProtocol().map(function(protocol) {
-        protocol.text = protocol.name;
-        return protocol;
+    var protocolsSelect2Data = HP.ProtocolStore.getProtocol().map(function(protocol) {
+        return {
+            id: protocol.id,
+            text: protocol.name
+        };
     });
 
     // Select the Protocol select DOM element
@@ -24,7 +26,7 @@ function updateProtocolSelect() {
     // Initialize the select element with Select2 using the
     // array of protocols
     protocolSelect.select2({
-        data: protocols
+        data: protocolsSelect2Data
     });
 
     // Update the ProtocolSelector to display the current active Protocol
@@ -71,14 +73,6 @@ Template.protocolEditor.helpers({
 
         // Update the Protocol Select box
         updateProtocolSelect();
-
-        // Find the protocol in the database
-        var protocolInDatabase = HP.ProtocolStore.getProtocol(ProtocolEngine.protocol.id);
-
-        // Give the current Protocol an _id property from the Database
-        if (protocolInDatabase) {
-            ProtocolEngine.protocol._id = protocolInDatabase._id;
-        }
 
         // Make sure that the number of referenced priors is correct
         ProtocolEngine.protocol.updateNumberOfPriorsReferenced();
@@ -302,6 +296,9 @@ Template.protocolEditor.events({
 
             // Update the name with the entered text
             selectedProtocol.name = value;
+
+            // Unlock the protocol
+            selectedProtocol.locked = false;
 
             // Update the Protocol's modifiedDate and modifiedBy User details
             selectedProtocol.protocolWasModified();
