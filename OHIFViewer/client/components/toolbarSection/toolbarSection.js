@@ -42,7 +42,66 @@ Template.toolbarSection.helpers({
     },
 
     toolbarButtons() {
+        const extraTools = [];
+
+        extraTools.push({
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-bars'
+        });
+
+        extraTools.push({
+            id: 'magnify',
+            title: 'Magnify',
+            classes: 'imageViewerTool toolbarSectionButton',
+            iconClasses: 'fa fa-circle'
+        });
+
+        extraTools.push({
+            id: 'wwwcRegion',
+            title: 'ROI Window',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-square'
+        });
+
+        extraTools.push({
+            id: 'dragProbe',
+            title: 'Probe',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-dot-circle-o'
+        });
+
+        extraTools.push({
+            id: 'ellipticalRoi',
+            title: 'Ellipse',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-circle-o'
+        });
+
+        extraTools.push({
+            id: 'rectangleRoi',
+            title: 'Rectangle',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-square-o'
+        });
+
+        extraTools.push({
+            id: 'invert',
+            title: 'Invert',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-adjust'
+        });
+
+        extraTools.push({
+            id: 'clearTools',
+            title: 'Clear',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-trash'
+        });
+
         var buttonData = [];
+
         buttonData.push({
             id: 'zoom',
             title: 'Zoom',
@@ -133,66 +192,12 @@ Template.toolbarSection.helpers({
             buttonTemplateName: 'layoutButton'
         });
 
-        return buttonData;
-    },
-
-    extraToolbarButtons() {
-        let buttonData = [];
-
         buttonData.push({
-            id: 'stackScroll',
-            title: 'Stack Scroll',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-bars'
-        });
-
-        buttonData.push({
-            id: 'magnify',
-            title: 'Magnify',
-            classes: 'imageViewerTool toolbarSectionButton',
-            iconClasses: 'fa fa-circle'
-        });
-
-        buttonData.push({
-            id: 'wwwcRegion',
-            title: 'ROI Window',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-square'
-        });
-
-        buttonData.push({
-            id: 'dragProbe',
-            title: 'Probe',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-dot-circle-o'
-        });
-
-        buttonData.push({
-            id: 'ellipticalRoi',
-            title: 'Ellipse',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-circle-o'
-        });
-
-        buttonData.push({
-            id: 'rectangleRoi',
-            title: 'Rectangle',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-square-o'
-        });
-
-        buttonData.push({
-            id: 'invert',
-            title: 'Invert',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-adjust'
-        });
-
-        buttonData.push({
-            id: 'clearTools',
-            title: 'Clear',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-trash'
+            id: 'toggleMore',
+            title: 'More',
+            classes: 'rp-x-1 rm-l-3',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-more',
+            subTools: extraTools
         });
 
         return buttonData;
