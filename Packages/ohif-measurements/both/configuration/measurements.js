@@ -53,7 +53,10 @@ class MeasurementApi {
                     });
                     if (baselineGroupEntry) {
                         const tool = this.tools[baselineGroupEntry.toolId];
-                        location = tool.findOne({ measurementNumber }).location;
+                        const found = tool.findOne({ measurementNumber });
+                        if (found) {
+                            location = found.location;
+                        }
                     }
 
                     // Reflect the entry in the tool group collection
