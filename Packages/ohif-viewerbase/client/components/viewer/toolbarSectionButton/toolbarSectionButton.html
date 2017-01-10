@@ -9,7 +9,7 @@
                 {{#let svg=svgLink icon=iconClasses}}
                     {{#if svg}}
                         <svg>
-                            <use xlink:href={{svg}}></use>
+                            <use xlink:href={{absoluteUrl svg}}></use>
                         </svg>
                     {{else}}
                         <i class={{icon}}></i>

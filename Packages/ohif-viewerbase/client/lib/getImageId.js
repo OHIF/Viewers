@@ -1,3 +1,5 @@
+import { Meteor } from "meteor/meteor";
+
 /**
  * Obtain an imageId for Cornerstone from an image instance
  *
@@ -14,7 +16,7 @@ getImageId = function(instance, frame) {
     }
 
     if (instance.wadouri) {
-        var imageId = 'dicomweb:' + instance.wadouri; // WADO-URI;
+        var imageId = 'dicomweb:' + Meteor.absoluteUrl(instance.wadouri); // WADO-URI;
         if (frame !== undefined) {
             imageId += '&frame=' + frame;
         }

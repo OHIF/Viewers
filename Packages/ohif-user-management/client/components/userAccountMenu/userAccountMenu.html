@@ -10,17 +10,17 @@
             <ul class="dropdown-menu dropdown-menu-right">
                 {{#if showStudyListMenu}}
                     <li>
-                        <a href="studylist" id="studylist">
+                        <a href="{{absoluteUrl "studylist"}}" id="studylist">
                             <svg class="study-list">
-                                <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#study-list></use>
+                                <use xlink:href={{absoluteUrl "packages/ohif_user-management/assets/user-menu-icons.svg#study-list"}}></use>
                             </svg> Study List
                         </a>
                     </li>
                 {{else}}
                     <li>
-                        <a href="/audit" id="audit">
+                        <a href="{{absoluteUrl "audit"}}" id="audit">
                             <svg class="log">
-                                <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#log></use>
+                                <use xlink:href={{absoluteUrl "packages/ohif_user-management/assets/user-menu-icons.svg#log"}}></use>
                             </svg> View Audit Log
                         </a>
                     </li>
@@ -29,7 +29,7 @@
                 <li>
                     <a id="themeSelector">
                         <svg class="theme">
-                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#theme></use>
+                            <use xlink:href={{absoluteUrl "packages/ohif_user-management/assets/user-menu-icons.svg#theme"}}></use>
                         </svg> Themes
                     </a>
                 </li>
@@ -37,22 +37,22 @@
                 <li>
                     <a id="serverInformation">
                         <svg class="server">
-                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#server></use>
+                            <use xlink:href={{absoluteUrl "packages/ohif_user-management/assets/user-menu-icons.svg#server"}}></use>
                         </svg> Server Information
                     </a>
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
-                    <a href="changePassword" id="changePassword">
+                    <a href="{{absoluteUrl "changePassword"}}" id="changePassword">
                         <svg class="password">
-                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#password></use>
+                            <use xlink:href={{absoluteUrl "packages/ohif_user-management/assets/user-menu-icons.svg#password"}}></use>
                         </svg> Change Password
                     </a>
                 </li>
                 <li>
                     <a id="logoutButton">
                         <svg class="logout">
-                            <use xlink:href=/packages/ohif_user-management/assets/user-menu-icons.svg#logout></use>
+                            <use xlink:href={{absoluteUrl "packages/ohif_user-management/assets/user-menu-icons.svg#logout"}}></use>
                         </svg> Logout
                     </a>
                 </li>

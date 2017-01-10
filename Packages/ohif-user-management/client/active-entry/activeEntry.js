@@ -1,8 +1,10 @@
+import { Meteor } from 'meteor/meteor';
+
 Meteor.startup(function() {
     if (Meteor.isClient){
         ActiveEntry.configure({
             logo: {
-                url: '/images/logo.png',
+                url: Meteor.absoluteUrl('/images/logo.png'),
                 displayed: true
             },
             signIn: {

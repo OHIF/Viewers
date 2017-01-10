@@ -5,7 +5,7 @@
                 <div class="roundedButton">
                     {{#if item.svgLink}}
                         <svg style="width: {{item.svgWidth}}px; height: {{item.svgHeight}}px">
-                            <use xlink:href="{{item.svgLink}}"></use>
+                            <use xlink:href="{{absoluteUrl item.svgLink}}"></use>
                         </svg>
                     {{/if}}
                     {{#if item.text}}

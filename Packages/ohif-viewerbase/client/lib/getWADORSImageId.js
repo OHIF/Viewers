@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -25,7 +26,7 @@ getWADORSImageId = function(instance) {
     }
 
     var image = {
-        uri: instance.wadorsuri,
+        uri: Meteor.absoluteUrl(instance.wadorsuri),
         //imageId : '',
         //minPixelValue : 0,
         //maxPixelValue : 255,

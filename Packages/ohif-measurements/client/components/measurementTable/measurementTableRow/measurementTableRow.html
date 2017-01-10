@@ -7,7 +7,7 @@
             {{#unless rowItem.location}}
                 <div class="warning-icon">
                     <svg>
-                        <use xlink:href=/packages/ohif_viewerbase/assets/icons.svg#icon-ui-warning></use>
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-warning"}}></use>
                     </svg>
                 </div>
             {{/unless}}
@@ -36,13 +36,13 @@
             <div class="rowOptions">
                 <div class="rowAction js-rename pull-left m-r-2" tabindex="1">
                     <svg class="edit-icon">
-                        <use xlink:href="/packages/ohif_viewerbase/assets/icons.svg#icon-measurements-additional"></use>
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-measurements-additional"}}></use>
                     </svg>
                     Rename
                 </div>
                 <div class="rowAction js-delete pull-left" tabindex="1">
                     <svg class="close-icon">
-                        <use xlink:href=/packages/ohif_viewerbase/assets/icons.svg#icon-ui-close></use>
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-close"}}></use>
                     </svg>
                     Delete
                 </div>

@@ -7,7 +7,7 @@
         <div class="svgContainer">
             {{#if this.svgLink}}
                 <svg>
-                    <use xlink:href={{this.svgLink}}></use>
+                    <use xlink:href={{absoluteUrl this.svgLink}}></use>
                 </svg>
             {{else}}
                 <i class={{iconClasses}}></i>
