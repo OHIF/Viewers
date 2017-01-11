@@ -21,6 +21,7 @@ class MeasurementApi {
         this.toolGroups = {};
         this.tools = {};
         this.toolsGroupsMap = {};
+        this.changeObserver = new Tracker.Dependency();
 
         configuration.measurementTools.forEach(toolGroup => {
             const groupCollection = new Mongo.Collection(null);
@@ -77,6 +78,9 @@ class MeasurementApi {
                             location
                         }
                     });
+
+                    // Enable reactivity
+                    this.changeObserver.changed();
                 };
 
                 const removedHandler = measurement => {
@@ -107,6 +111,9 @@ class MeasurementApi {
                             collection.update(filter, operator, options);
                         });
                     }
+
+                    // Enable reactivity
+                    this.changeObserver.changed();
                 };
 
                 collection.find().observe({
@@ -264,15 +271,15 @@ class MeasurementApi {
         });
     }
 
-    fetch(measurementTypeId, selector, options) {
-        if (!this.toolGroups[measurementTypeId]) {
-            throw 'MeasurementApi: No Collection with the id: ' + measurementTypeId;
+    fetch(toolGroupId, selector, options) {
+        if (!this.toolGroups[toolGroupId]) {
+            throw 'MeasurementApi: No Collection with the id: ' + toolGroupId;
         }
 
         selector = selector || {};
         options = options || {};
         const result = [];
-        const items = this.toolGroups[measurementTypeId].find(selector, options).fetch();
+        const items = this.toolGroups[toolGroupId].find(selector, options).fetch();
         items.forEach(item => {
             result.push(this.tools[item.toolId].findOne(item.toolItemId));
         });

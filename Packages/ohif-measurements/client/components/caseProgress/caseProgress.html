@@ -1,8 +1,8 @@
 <template name="caseProgress">
     <div class="caseProgress">
         {{#unless progressComplete}}
-        {{>radialProgressBar isLocked=isLocked progressPercent=progressPercent progressText=progressText}}
-        {{ /unless }}
+            {{>radialProgressBar isLocked=isLocked progressPercent=progressPercent progressText=progressText}}
+        {{/unless}}
         {{#if isLocked}}
             <div class="caseProgressStatus">
                 <h5>Locked</h5>

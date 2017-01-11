@@ -58,47 +58,50 @@ Template.caseProgress.onRendered(() => {
     // follow-up. Note that this is done outside of the reactive function
     // below so that new lesions don't change the initial target count.
 
-    const config = OHIF.measurements.MeasurementApi.getConfiguration();
-    const tools = config.measurementTools;
-    const toolsToInclude = tools.filter(tool => tool.options && tool.options.caseProgress && tool.options.caseProgress.include);
-    const toolIds = toolsToInclude.map(tool => tool.id);
     const api = instance.data.measurementApi;
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
+    const toolGroups = config.measurementTools;
+
+    const toolIds = [];
+    toolGroups.forEach(toolGroup => toolGroup.childTools.forEach(tool => {
+        const option = 'options.caseProgress.include';
+        if (OHIF.utils.ObjectPath.get(tool, option)) {
+            toolIds.push(tool.id);
+        }
+    }));
+
+    const getTimepointFilter = timepointId => ({
+        timepointId,
+        toolId: { $in: toolIds }
+    });
 
     const getNumMeasurementsAtTimepoint = timepointId => {
         OHIF.log.info('getNumMeasurementsAtTimepoint');
-        const filter = {
-            timepointId: timepointId
-        };
+        const filter = getTimepointFilter(timepointId);
 
         let count = 0;
-        toolIds.forEach(measurementTypeId => {
-            count += api.fetch(measurementTypeId, filter).length;
+        toolGroups.forEach(toolGroup => {
+            count += api.fetch(toolGroup.id, filter).length;
         });
 
         return count;
     };
 
     const getNumRemainingBetweenTimepoints = (currentTimepointId, priorTimepointId) => {
-        const currentFilter = {
-            timepointId: currentTimepointId
-        };
-
-        const priorFilter = {
-            timepointId: priorTimepointId
-        };
+        const currentFilter = getTimepointFilter(currentTimepointId);
+        const priorFilter = getTimepointFilter(priorTimepointId);
 
         let totalRemaining = 0;
-        toolIds.forEach(measurementTypeId => {
-            const numCurrent = api.fetch(measurementTypeId, currentFilter).length;
-            const numPrior = api.fetch(measurementTypeId, priorFilter).length;
+        toolGroups.forEach(toolGroup => {
+            const toolGroupId = toolGroup.id;
+            const numCurrent = api.fetch(toolGroupId, currentFilter).length;
+            const numPrior = api.fetch(toolGroupId, priorFilter).length;
             const remaining = Math.max(numPrior - numCurrent, 0);
             totalRemaining += remaining;
         });
 
         return totalRemaining;
     };
-
-    const totalMeasurements = getNumMeasurementsAtTimepoint(prior.timepointId);
 
     // If we're currently reviewing a Baseline timepoint, don't do any
     // progress measurement.
@@ -108,8 +111,10 @@ Template.caseProgress.onRendered(() => {
         // Setup a reactive function to update the progress whenever
         // a measurement is made
         instance.autorun(() => {
+            api.changeObserver.depend();
             // Obtain the number of Measurements for which the current Timepoint has
             // no Measurement data
+            const totalMeasurements = getNumMeasurementsAtTimepoint(prior.timepointId);
             const numRemainingMeasurements = getNumRemainingBetweenTimepoints(current.timepointId, prior.timepointId);
             const numMeasurementsMade = totalMeasurements - numRemainingMeasurements;
 

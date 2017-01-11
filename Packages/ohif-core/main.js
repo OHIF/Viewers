@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 const OHIF = {
     log: {},
     ui: {},
+    utils: {},
     viewer: {}
 };
 

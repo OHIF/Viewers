@@ -1,7 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 
-OHIF.utils = {};
-
 // Return the array sorting function for its object's properties
 OHIF.utils.sortBy = function() {
     var fields = [].slice.call(arguments),
