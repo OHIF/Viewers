@@ -1,5 +1,4 @@
 import { BaseCriteria } from './BaseCriteria';
-import { _ } from 'meteor/underscore';
 
 export class MaxTargetPerOrganCriteria extends BaseCriteria {
 
