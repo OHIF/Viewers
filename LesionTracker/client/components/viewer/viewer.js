@@ -103,7 +103,7 @@ Template.viewer.onCreated(() => {
         instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.timepointApi);
         console.warn('>>>>REMOVE THE LINES BELOW');
         window.measurementApi = instance.data.measurementApi;
-        window.conformanceCriteriaApi = new OHIF.measurements.ConformanceCriteriaApi(window.measurementApi);
+        window.conformanceCriteria = new OHIF.measurements.ConformanceCriteria(window.measurementApi);
         const measurementsPromise = instance.data.measurementApi.retrieveMeasurements(patientId, timepointIds);
         measurementsPromise.then(() => {
             Session.set('MeasurementsReady', true);
