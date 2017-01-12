@@ -326,6 +326,21 @@ class MeasurementApi {
         });
     }
 
+    getMeasurementById(measurementId) {
+        let foundGroup;
+        _.find(this.toolGroups, toolGroup => {
+            foundGroup = toolGroup.findOne({ toolItemId: measurementId });
+            return !!foundGroup;
+        });
+
+        // Stop here if no group was found or if the record is a placeholder
+        if (!foundGroup || !foundGroup.toolId) {
+            return;
+        }
+
+        return this.tools[foundGroup.toolId].findOne(measurementId);
+    }
+
     fetch(toolGroupId, selector, options) {
         if (!this.toolGroups[toolGroupId]) {
             throw 'MeasurementApi: No Collection with the id: ' + toolGroupId;
@@ -336,7 +351,7 @@ class MeasurementApi {
         const result = [];
         const items = this.toolGroups[toolGroupId].find(selector, options).fetch();
         items.forEach(item => {
-            if(item.toolId) {
+            if (item.toolId) {
                 result.push(this.tools[item.toolId].findOne(item.toolItemId));
             } else {
                 result.push({ measurementNumber: item.measurementNumber });
