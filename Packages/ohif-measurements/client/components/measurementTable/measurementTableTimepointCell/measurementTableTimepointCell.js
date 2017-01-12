@@ -70,17 +70,40 @@ Template.measurementTableTimepointCell.events({
         const rowItem = instance.data.rowItem;
         const timepoints = instance.data.timepoints.get();
         OHIF.measurements.jumpToRowItem(rowItem, timepoints);
-    }/*,
+    },
+    
     'keydown .measurementTableTimepointCell'(event, instance) {
         const keyCode = event.which;
-        if (keyCode === keys.DELETE ||
-            (keyCode === keys.D && e.ctrlKey === true)) {
-            const currentMeasurement = Template.parentData(1).rowItem;
-            const currentTimepointID = this.timepointId;
 
-            showConfirmDialog(function() {
-                OHIF.lesiontracker.clearMeasurementTimepointData(currentMeasurement._id, currentTimepointID);
+        if (keyCode === keys.DELETE || keyCode === keys.BACKSPACE || (keyCode === keys.D && event.ctrlKey === true)) {
+            const currentMeasurement = Template.parentData(1).rowItem;
+            const timepointId = this.timepointId;
+            
+            const dialogSettings = {
+                title: 'Delete measurements',
+                message: 'Are you sure you want to delete this measurement?'
+            };
+
+            OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {
+                const measurementTypeId = instance.data.rowItem.measurementTypeId;
+                const measurement = instance.data.rowItem.entries[0];
+                const measurementNumber = measurement.measurementNumber;
+                const measurementApi = instance.data.measurementApi;
+                const timepointApi = instance.data.timepointApi;
+
+                // Remove all the measurements with the given type and number
+                measurementApi.deleteMeasurements(measurementTypeId, {
+                    measurementNumber,
+                    timepointId
+                });
+
+                // Sync the new measurement data with cornerstone tools
+                const baseline = timepointApi.baseline();
+                measurementApi.sortMeasurements(baseline.timepointId);
+
+                // Repaint the images on all viewports without the removed measurements
+                _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
             });
         }
-    }*/
+    }
 });

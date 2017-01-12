@@ -124,7 +124,6 @@ class TimepointApi {
         });
     }
 
-    // Return the prior timepoint
     lock() {
         const current = this.current();
         if (!current) {
@@ -138,6 +137,7 @@ class TimepointApi {
         });
     }
 
+    // Return the prior timepoint
     prior() {
         const current = this.current();
         if (!current) {

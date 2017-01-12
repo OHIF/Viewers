@@ -114,11 +114,26 @@ class MeasurementHandlers {
     static onRemoved(e, instance, eventData) {
         OHIF.log.info('CornerstoneToolsMeasurementRemoved');
         const measurementData = eventData.measurementData;
+        const measurementNumber = measurementData.measurementNumber;
         const measurementApi = instance.data.measurementApi;
-        const Collection = measurementApi.tools[eventData.toolType];
+        const timepointApi = instance.data.timepointApi;
+        const collection = measurementApi.tools[eventData.toolType];
+        const measurementTypeId = measurementApi.toolsGroupsMap[measurementData.toolType];
+        const measurement = collection.findOne(measurementData._id);
+        const timepointId = measurement.timepointId;
 
-        // Remove the measurement from the collection
-        Collection.remove(measurementData._id);
+        // Remove all the measurements with the given type and number
+        measurementApi.deleteMeasurements(measurementTypeId, {
+            measurementNumber,
+            timepointId
+        });
+
+        // Sync the new measurement data with cornerstone tools
+        const baseline = timepointApi.baseline();
+        measurementApi.sortMeasurements(baseline.timepointId);
+
+        // Repaint the images on all viewports without the removed measurements
+        _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
 
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);

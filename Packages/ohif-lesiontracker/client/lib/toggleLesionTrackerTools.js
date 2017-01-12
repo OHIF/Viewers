@@ -17,7 +17,7 @@ OHIF.lesiontracker.toggleLesionTrackerTools = () => {
 
         // Hide the tools (set them all to disabled)
         const toolDefaultStates = {
-            activate: [], //'deleteLesionKeyboardTool'
+            activate: ['deleteLesionKeyboardTool'],
             deactivate: [],
             enable: [],
             disable: [ 'bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX' ]

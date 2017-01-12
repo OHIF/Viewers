@@ -15,16 +15,8 @@
             imageId = enabledElement.image.imageId;
         }
 
-        var enabledElements = cornerstone.getEnabledElementsByImageId(imageId);
-        enabledElements.forEach(function(enabledElement) {
-            var element = enabledElement.element;
-
-            // The HandleMeasurementRemoved handler should do the rest
-            cornerstoneTools.removeToolState(element, toolType, data);
-
-            //Update element
-            cornerstone.updateImage(element);
-        });
+        cornerstoneTools.removeToolState(element, toolType, data);
+        cornerstone.updateImage(element);
     }
 
     // TODO = Check if we have the same function already in Cornerstone Tools
@@ -32,7 +24,7 @@
         var allTools = toolManager.getTools();
         var pointNearTool = false;
         var touchDevice = isTouchDevice();
-        var nearbyTool,
+        var nearbyTool = {},
             nearbyToolIndex,
             nearbyToolType;
 
@@ -54,9 +46,9 @@
 
                 if (toolInterface.pointNearTool(element, data, coords)) {
                     pointNearTool = true;
-                    nearbyTool = data;
-                    nearbyToolIndex = i;
-                    nearbyToolType = toolType;
+                    nearbyTool.tool = data;
+                    nearbyTool.index = i;
+                    nearbyTool.toolType = toolType;
                     break;
                 }
             }
@@ -66,17 +58,12 @@
             }
         });
 
-        if (pointNearTool === true) {
-            return {
-                nearbyTool: nearbyTool,
-                nearbyToolIndex: nearbyToolIndex,
-                nearbyToolType: nearbyToolType
-            };
-        }
+        return pointNearTool ? nearbyTool : undefined;
     }
 
     function keyDownCallback(e, eventData) {
         var keyCode = eventData.which;
+
         if (keyCode === keys.DELETE ||
             (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
@@ -87,12 +74,17 @@
                 return;
             }
 
+            const dialogSettings = {
+                title: 'Delete measurements',
+                message: 'Are you sure you want to delete this measurement?'
+            };
+
             // TODO= Refactor this so the confirmation dialog is an
             // optional settable callback in the tool's configuration
-            showConfirmDialog(function() {
-                removeMeasurementTimepoint(nearbyToolData.nearbyTool,
-                    nearbyToolData.nearbyToolIndex,
-                    nearbyToolData.nearbyToolType,
+            OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {
+                removeMeasurementTimepoint(nearbyToolData.tool,
+                    nearbyToolData.index,
+                    nearbyToolData.toolType,
                     eventData.element
                 );
             });

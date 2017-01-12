@@ -39,7 +39,7 @@ Meteor.startup(function() {
     let newDefaultStates = {
         enable: [ 'scaleOverlayTool' ],
         deactivate: ['bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX'],
-        activate: [] // 'deleteLesionKeyboardTool'
+        activate: ['deleteLesionKeyboardTool']
     };
 
     for (let state in newDefaultStates) {
