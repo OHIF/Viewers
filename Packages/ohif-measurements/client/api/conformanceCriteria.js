@@ -1,7 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
 
-class RecistApi {
+class ConformanceCriteriaApi {
 
     constructor(measurementApi) {
         if (measurementApi) {
@@ -12,6 +12,10 @@ class RecistApi {
     }
 
     validate() {
+        this.validateRecist();
+    }
+
+    validateRecist() {
         const measurements = this.getMeasurements();
 
         measurements.targets.forEach(measurement => {
@@ -27,10 +31,6 @@ class RecistApi {
             targets,
             nonTargets
         };
-    }
-
-    getModalities() {
-
     }
 
     getImageById(studyInstanceUid, imageId) {
@@ -61,4 +61,4 @@ class RecistApi {
 
 }
 
-OHIF.measurements.RecistApi = RecistApi;
+OHIF.measurements.ConformanceCriteriaApi = ConformanceCriteriaApi;

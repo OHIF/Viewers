@@ -1,1 +1,1 @@
-import './recist';
+import './conformanceCriteria';
