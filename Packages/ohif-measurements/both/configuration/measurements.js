@@ -274,6 +274,10 @@ class MeasurementApi {
         const groupItems = groupCollection.find(filter).fetch();
         const entries = [];
         groupItems.forEach(groupItem => {
+            if (!groupItem.toolId) {
+                return;
+            }
+
             const collection = this.tools[groupItem.toolId];
             entries.push(collection.findOne(groupItem.toolItemId));
             collection.remove(groupItem.toolItemId);
