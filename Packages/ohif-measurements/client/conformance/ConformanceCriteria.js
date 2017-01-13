@@ -4,10 +4,9 @@ import { RecistChecker } from './checkers/RecistChecker';
 
 class ConformanceCriteria {
 
-    constructor(measurementApi) {
-        if (measurementApi) {
-            this.measurementApi = measurementApi;
-        }
+    constructor(measurementApi, timepointApi) {
+        this.measurementApi = measurementApi;
+        this.timepointApi = timepointApi;
 
         this.warnings = {};
     }
@@ -36,9 +35,13 @@ class ConformanceCriteria {
             measurements.forEach(measurement => {
                 const { studyInstanceUid, imageId } = measurement;
                 const metadata = this.getImageMetadata(studyInstanceUid, imageId);
+                const timepointId = measurement.timepointId;
+                const timepoint = this.timepointApi.timepoints.findOne({ timepointId });
+
                 data[measurementType].push({
                     measurement,
-                    metadata
+                    metadata,
+                    timepoint
                 });
             });
         };

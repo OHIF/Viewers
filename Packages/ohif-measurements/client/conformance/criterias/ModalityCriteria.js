@@ -16,15 +16,15 @@ export class ModalityCriteria extends BaseCriteria {
     }
 
     check(data) {
-        const measurementTypesIds = this.options.measurementTypesIds || ['targets'];
+        const measurementTypes = this.options.measurementTypes || ['targets'];
         const modalitiesSet = new Set(this.options.modalities);
         const validationMethod = this.options.method;
         const measurements = [];
         const invalidModalities = [];
         let message;
 
-        measurementTypesIds.forEach(measurementTypesId => {
-            const items = data[measurementTypesId];
+        measurementTypes.forEach(measurementType => {
+            const items = data[measurementType];
 
             items.forEach(item => {
                 const measurement = item.measurement;

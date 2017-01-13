@@ -3,6 +3,7 @@ import { MaxTargetPerOrganCriteria } from '../criterias/MaxTargetPerOrganCriteri
 import { MaxTargetsCriteria } from '../criterias/MaxTargetsCriteria';
 import { MeasurementsLengthCriteria } from '../criterias/MeasurementsLengthCriteria';
 import { ModalityCriteria } from '../criterias/ModalityCriteria';
+import { NonTargetResponseCriteria } from '../criterias/NonTargetResponseCriteria';
 
 export class RecistChecker extends BaseChecker {
 
@@ -12,7 +13,8 @@ export class RecistChecker extends BaseChecker {
         this.criterias.push(new MaxTargetsCriteria(5));
         this.criterias.push(new MaxTargetPerOrganCriteria(2));
         this.criterias.push(new MeasurementsLengthCriteria({}));
-        this.criterias.push(new ModalityCriteria(this.getModalityCheckerOptions()));
+        this.criterias.push(new ModalityCriteria(this.getModalityCriteriaOptions()));
+        this.criterias.push(new NonTargetResponseCriteria());
     }
 
     check(data) {
@@ -26,7 +28,7 @@ export class RecistChecker extends BaseChecker {
         return nonconformity;
     }
 
-    getModalityCheckerOptions() {
+    getModalityCriteriaOptions() {
         return {
             method: 'restrict',
             modalities: ['US']

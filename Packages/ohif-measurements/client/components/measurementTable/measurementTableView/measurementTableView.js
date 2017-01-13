@@ -95,7 +95,6 @@ Template.measurementTableView.helpers({
     },
 
     newMeasurements(measurementType) {
-        console.warn('>>>>measurementType', measurementType);
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
