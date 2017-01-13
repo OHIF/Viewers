@@ -1,15 +1,15 @@
 export class BaseChecker {
 
     constructor() {
-        this.criterias = [];
+        this.criteria = [];
     }
 
     check(data) {
         const nonconformity = [];
-        this.criterias.forEach(criteria => {
-            const criteriaResult = criteria.check(data);
-            if (!criteriaResult.passed) {
-                nonconformity.push(criteriaResult);
+        this.criteria.forEach(criterion => {
+            const criterionResult = criterion.evaluate(data);
+            if (!criterionResult.passed) {
+                nonconformity.push(criterionResult);
             }
         });
         return nonconformity;

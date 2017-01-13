@@ -1,36 +1,36 @@
 import { BaseChecker } from './BaseChecker';
-import { MaxTargetPerOrganCriteria } from '../criterias/MaxTargetPerOrganCriteria';
-import { MaxTargetsCriteria } from '../criterias/MaxTargetsCriteria';
-import { MeasurementsLengthCriteria } from '../criterias/MeasurementsLengthCriteria';
-import { ModalityCriteria } from '../criterias/ModalityCriteria';
-import { NonTargetResponseCriteria } from '../criterias/NonTargetResponseCriteria';
-import { TargetTypeCriteria } from '../criterias/TargetTypeCriteria';
+import { MaxTargetPerOrganCriterion } from '../criteria/MaxTargetPerOrgan';
+import { MaxTargetsCriterion } from '../criteria/MaxTargets';
+import { MeasurementsLengthCriterion } from '../criteria/MeasurementsLength';
+import { ModalityCriterion } from '../criteria/Modality';
+import { NonTargetResponseCriterion } from '../criteria/NonTargetResponse';
+import { TargetTypeCriterion } from '../criteria/TargetType';
 
 export class RecistChecker extends BaseChecker {
 
     constructor() {
         super();
 
-        const addCriteria = criteria => this.criterias.push(criteria);
+        const addCriterion = criterion => this.criteria.push(criterion);
 
-        addCriteria(new MaxTargetsCriteria(5));
-        addCriteria(new MaxTargetPerOrganCriteria(2));
-        addCriteria(new ModalityCriteria(this.getModalityCriteriaOptions()));
-        addCriteria(new NonTargetResponseCriteria());
-        addCriteria(new TargetTypeCriteria());
-        addCriteria(new MeasurementsLengthCriteria(this.getExtranodalLengthCriteriaOptions()));
-        addCriteria(new MeasurementsLengthCriteria(this.getExtranodalXrayLengthCriteriaOptions()));
-        addCriteria(new MeasurementsLengthCriteria(this.getNodalLengthCriteriaOptions()));
+        addCriterion(new MaxTargetsCriterion(5));
+        addCriterion(new MaxTargetPerOrganCriterion(2));
+        addCriterion(new ModalityCriterion(this.getModalityOptions()));
+        addCriterion(new NonTargetResponseCriterion());
+        addCriterion(new TargetTypeCriterion());
+        addCriterion(new MeasurementsLengthCriterion(this.getExtranodalLengthOptions()));
+        addCriterion(new MeasurementsLengthCriterion(this.getExtranodalXrayLengthOptions()));
+        addCriterion(new MeasurementsLengthCriterion(this.getNodalLengthOptions()));
     }
 
-    getModalityCriteriaOptions() {
+    getModalityOptions() {
         return {
             method: 'restrict',
             modalities: ['US']
         };
     }
 
-    getExtranodalLengthCriteriaOptions() {
+    getExtranodalLengthOptions() {
         return {
             longAxis: 10,
             longAxisSliceThicknessMultiplier: 2,
@@ -41,7 +41,7 @@ export class RecistChecker extends BaseChecker {
         };
     }
 
-    getExtranodalXrayLengthCriteriaOptions() {
+    getExtranodalXrayLengthOptions() {
         return {
             shortAxis: 20,
             longAxis: 20,
@@ -52,7 +52,7 @@ export class RecistChecker extends BaseChecker {
         };
     }
 
-    getNodalLengthCriteriaOptions() {
+    getNodalLengthOptions() {
         return {
             shortAxis: 15,
             shortAxisSliceThicknessMultiplier: 2,

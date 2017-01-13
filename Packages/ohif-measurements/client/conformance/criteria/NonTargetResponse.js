@@ -1,12 +1,12 @@
-import { BaseCriteria } from './BaseCriteria';
+import { BaseCriterion } from './BaseCriterion';
 
-export class NonTargetResponseCriteria extends BaseCriteria {
+export class NonTargetResponseCriterion extends BaseCriterion {
 
     constructor() {
         super();
     }
 
-    check(data) {
+    evaluate(data) {
         const items = data.nonTargets;
         const measurements = [];
         let message;
@@ -26,7 +26,7 @@ export class NonTargetResponseCriteria extends BaseCriteria {
             message = 'Non-targets can only be assessed as "present"';
         }
 
-        return this.respond(message, measurements);
+        return this.generateResponse(message, measurements);
     }
 
 }

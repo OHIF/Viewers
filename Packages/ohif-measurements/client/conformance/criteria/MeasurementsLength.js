@@ -1,13 +1,13 @@
-import { BaseCriteria } from './BaseCriteria';
+import { BaseCriterion } from './BaseCriterion';
 
-export class MeasurementsLengthCriteria extends BaseCriteria {
+export class MeasurementsLengthCriterion extends BaseCriterion {
 
     constructor(options) {
         super();
         this.options = options;
     }
 
-    check(data) {
+    evaluate(data) {
         let message;
         let measurements = [];
         const { options } = this;
@@ -49,7 +49,7 @@ export class MeasurementsLengthCriteria extends BaseCriteria {
             message = options.message;
         }
 
-        return this.respond(message, measurements);
+        return this.generateResponse(message, measurements);
     }
 
 }

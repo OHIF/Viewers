@@ -1,14 +1,14 @@
-import { BaseCriteria } from './BaseCriteria';
+import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
 
-export class MaxTargetsCriteria extends BaseCriteria {
+export class MaxTargetsCriterion extends BaseCriterion {
 
     constructor(targetsLimit) {
         super();
         this.targetsLimit = targetsLimit;
     }
 
-    check(data) {
+    evaluate(data) {
         const measurementNumbers = _.uniq(_.map(data.targets, target => {
             return target.measurement.measurementNumber;
         }));
@@ -18,7 +18,7 @@ export class MaxTargetsCriteria extends BaseCriteria {
             message = `The study should not have more than ${this.targetsLimit} targets.`;
         }
 
-        return this.respond(message);
+        return this.generateResponse(message);
     }
 
 }

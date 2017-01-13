@@ -1,12 +1,12 @@
-import { BaseCriteria } from './BaseCriteria';
+import { BaseCriterion } from './BaseCriterion';
 
-export class TargetTypeCriteria extends BaseCriteria {
+export class TargetTypeCriterion extends BaseCriterion {
 
     constructor() {
         super();
     }
 
-    check(data) {
+    evaluate(data) {
         const items = data.targets;
         const measurements = [];
         let message;
@@ -26,7 +26,7 @@ export class TargetTypeCriteria extends BaseCriteria {
             message = 'Target lesions must have measurements (cannot be assessed as CR, UN/NE, EX)';
         }
 
-        return this.respond(message, measurements);
+        return this.generateResponse(message, measurements);
     }
 
 }

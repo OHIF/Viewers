@@ -1,4 +1,4 @@
-import { BaseCriteria } from './BaseCriteria';
+import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
 
 /*
@@ -8,14 +8,14 @@ import { _ } from 'meteor/underscore';
  *   method (string): allow, restrict
  *   modalities (string[]): list of allowed/restricted modalities
  */
-export class ModalityCriteria extends BaseCriteria {
+export class ModalityCriterion extends BaseCriterion {
 
     constructor(options) {
         super();
         this.options = options;
     }
 
-    check(data) {
+    evaluate(data) {
         const measurementTypes = this.options.measurementTypes || ['targets'];
         const modalitiesSet = new Set(this.options.modalities);
         const validationMethod = this.options.method;
@@ -31,7 +31,7 @@ export class ModalityCriteria extends BaseCriteria {
                 const metadata = item.metadata;
                 const modality = metadata.modality.toUpperCase();
 
-                if (((validationMethod === 'allow') && !modalitiesSet.has(modality)) || 
+                if (((validationMethod === 'allow') && !modalitiesSet.has(modality)) ||
                     ((validationMethod === 'restrict') && modalitiesSet.has(modality))) {
                     measurements.push(measurement);
                     invalidModalities.push(modality);
@@ -47,7 +47,7 @@ export class ModalityCriteria extends BaseCriteria {
             message = `The ${modalityText} ${uniqueModalitiesText} should not be used as a method of measurement`;
         }
 
-        return this.respond(message, measurements);
+        return this.generateResponse(message, measurements);
     }
 
 };

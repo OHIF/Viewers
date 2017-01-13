@@ -1,13 +1,13 @@
-import { BaseCriteria } from './BaseCriteria';
+import { BaseCriterion } from './BaseCriterion';
 
-export class MaxTargetPerOrganCriteria extends BaseCriteria {
+export class MaxTargetPerOrganCriterion extends BaseCriterion {
 
     constructor(targetsLimit) {
         super();
         this.targetsLimit = targetsLimit;
     }
 
-    check(data) {
+    evaluate(data) {
         const targetsPerOrgan = {};
         let message;
         let measurements = [];
@@ -29,7 +29,7 @@ export class MaxTargetPerOrganCriteria extends BaseCriteria {
             message = `Each organ should not have more than ${this.targetsLimit} targets.`;
         }
 
-        return this.respond(message, measurements);
+        return this.generateResponse(message, measurements);
     }
 
 }
