@@ -1,6 +1,17 @@
 import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
 
+export const MaxTargetsSchema = {
+    properties: {
+        limit: {
+            label: 'Max targets allowed in study',
+            type: 'integer',
+            minimum: 1
+        }
+    },
+    required: ['limit']
+};
+
 export class MaxTargetsCriterion extends BaseCriterion {
 
     constructor(options) {

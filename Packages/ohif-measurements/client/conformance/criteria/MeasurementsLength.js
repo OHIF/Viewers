@@ -1,5 +1,75 @@
 import { BaseCriterion } from './BaseCriterion';
 
+export const MeasurementsLengthSchema = {
+    properties: {
+        longAxis: {
+            label: 'Minimum length of long axis',
+            type: 'number',
+            minimum: 0
+        },
+        shortAxis: {
+            label: 'Minimum length of short axis',
+            type: 'number',
+            minimum: 0
+        },
+        longAxisSliceThicknessMultiplier: {
+            label: 'Length of long axis multiplier',
+            type: 'number',
+            minimum: 0
+        },
+        shortAxisSliceThicknessMultiplier: {
+            label: 'Length of short axis multiplier',
+            type: 'number',
+            minimum: 0
+        },
+        modalityIn: {
+            label: 'Filter to evaluate only measurements with the specified modalities',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        },
+        modalityNotIn: {
+            label: 'Filter to evaluate only measurements without the specified modalities',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        },
+        locationIn: {
+            label: 'Filter to evaluate only measurements with the specified locations',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        },
+        locationNotIn: {
+            label: 'Filter to evaluate only measurements without the specified locations',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        },
+        message: {
+            label: 'Message to be displayed in case of nonconformity'
+        }
+    },
+    oneOf: [
+        { required: ['message', 'longAxis'] },
+        { required: ['message', 'shortAxis'] },
+        { required: ['message', 'longAxisSliceThicknessMultiplier'] },
+        { required: ['message', 'shortAxisSliceThicknessMultiplier'] }
+    ]
+};
+
 export class MeasurementsLengthCriterion extends BaseCriterion {
 
     constructor(options) {

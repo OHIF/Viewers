@@ -1,6 +1,17 @@
 import { BaseCriterion } from './BaseCriterion';
 
-export class MaxTargetPerOrganCriterion extends BaseCriterion {
+export const MaxTargetsPerOrganSchema = {
+    properties: {
+        limit: {
+            label: 'Max targets allowed per organ',
+            type: 'integer',
+            minimum: 1
+        }
+    },
+    required: ['limit']
+};
+
+export class MaxTargetsPerOrganCriterion extends BaseCriterion {
 
     constructor(options) {
         super(options);
