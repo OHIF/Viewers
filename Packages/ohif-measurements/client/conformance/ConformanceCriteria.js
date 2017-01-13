@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
-import { RecistChecker } from './checkers/RecistChecker';
+import { CriteriaEvaluator } from './CriteriaEvaluator';
+import * as recistBaselineEvaluation from './evaluations/recistBaseline.json';
 
 class ConformanceCriteria {
 
@@ -17,8 +18,8 @@ class ConformanceCriteria {
     }
 
     validateRecist(data) {
-        const recistChecker = new RecistChecker();
-        console.warn('>>>>check', recistChecker.check(data));
+        const recistBaselineEvaluator = new CriteriaEvaluator(recistBaselineEvaluation);
+        console.warn('>>>>check', recistBaselineEvaluator.evaluate(data));
     }
 
     /*

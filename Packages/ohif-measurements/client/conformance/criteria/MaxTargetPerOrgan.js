@@ -2,9 +2,8 @@ import { BaseCriterion } from './BaseCriterion';
 
 export class MaxTargetPerOrganCriterion extends BaseCriterion {
 
-    constructor(targetsLimit) {
-        super();
-        this.targetsLimit = targetsLimit;
+    constructor(options) {
+        super(options);
     }
 
     evaluate(data) {
@@ -20,13 +19,13 @@ export class MaxTargetPerOrganCriterion extends BaseCriterion {
             }
 
             targetsPerOrgan[location].add(measurementNumber);
-            if (targetsPerOrgan[location].size > this.targetsLimit) {
+            if (targetsPerOrgan[location].size > this.options.limit) {
                 measurements.push(measurement);
             }
         }
 
         if (measurements.length) {
-            message = `Each organ should not have more than ${this.targetsLimit} targets.`;
+            message = `Each organ should not have more than ${this.options.limit} targets.`;
         }
 
         return this.generateResponse(message, measurements);

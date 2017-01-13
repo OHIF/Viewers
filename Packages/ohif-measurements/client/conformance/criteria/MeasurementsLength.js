@@ -3,8 +3,7 @@ import { BaseCriterion } from './BaseCriterion';
 export class MeasurementsLengthCriterion extends BaseCriterion {
 
     constructor(options) {
-        super();
-        this.options = options;
+        super(options);
     }
 
     evaluate(data) {

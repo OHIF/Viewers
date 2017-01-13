@@ -6,13 +6,13 @@ import { _ } from 'meteor/underscore';
  * Check if a modality is allowed or restricted
  * Options:
  *   method (string): allow, restrict
+ *   measurementTypes (string[]): list of measurement types that will be evaluated
  *   modalities (string[]): list of allowed/restricted modalities
  */
 export class ModalityCriterion extends BaseCriterion {
 
     constructor(options) {
-        super();
-        this.options = options;
+        super(options);
     }
 
     evaluate(data) {

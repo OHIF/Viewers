@@ -3,9 +3,8 @@ import { _ } from 'meteor/underscore';
 
 export class MaxTargetsCriterion extends BaseCriterion {
 
-    constructor(targetsLimit) {
-        super();
-        this.targetsLimit = targetsLimit;
+    constructor(options) {
+        super(options);
     }
 
     evaluate(data) {
@@ -14,8 +13,8 @@ export class MaxTargetsCriterion extends BaseCriterion {
         }));
 
         let message;
-        if (measurementNumbers.length > this.targetsLimit) {
-            message = `The study should not have more than ${this.targetsLimit} targets.`;
+        if (measurementNumbers.length > this.options.limit) {
+            message = `The study should not have more than ${this.options.limit} targets.`;
         }
 
         return this.generateResponse(message);

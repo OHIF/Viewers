@@ -2,8 +2,8 @@ import { BaseCriterion } from './BaseCriterion';
 
 export class NonTargetResponseCriterion extends BaseCriterion {
 
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
     }
 
     evaluate(data) {

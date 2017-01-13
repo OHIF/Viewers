@@ -1,6 +1,8 @@
 export class BaseCriterion {
 
-    constructor() {}
+    constructor(options) {
+        this.options = options;
+    }
 
     generateResponse(message, measurements) {
         const passed = !message;
