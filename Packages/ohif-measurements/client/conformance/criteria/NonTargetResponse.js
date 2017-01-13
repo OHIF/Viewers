@@ -1,8 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
-import Ajv from 'ajv';
 
-export const NonTargetResponseValidator = new Ajv().compile({
-});
+export const NonTargetResponseSchema = {
+};
 
 /* NonTargetResponseCriterion
  *   Check if the there are non-target measurements with response different than "present" on baseline

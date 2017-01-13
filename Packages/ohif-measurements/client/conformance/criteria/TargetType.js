@@ -1,8 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
-import Ajv from 'ajv';
 
-export const TargetTypeValidator = new Ajv().compile({
-});
+export const TargetTypeSchema = {
+};
 
 /* TargetTypeCriterion
  *   Check if the there are non-bidirectional target measurements on baseline

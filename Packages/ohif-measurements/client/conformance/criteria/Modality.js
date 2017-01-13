@@ -1,8 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
-import Ajv from 'ajv';
 
-export const ModalityValidator = new Ajv().compile({
+export const ModalitySchema = {
     properties: {
         method: {
             label: 'Specify if it\'s goinig to "allow" or "deny" the modalities',
@@ -29,7 +28,7 @@ export const ModalityValidator = new Ajv().compile({
         }
     },
     required: ['method', 'modalities']
-});
+};
 
 /*
  * ModalityCriteria

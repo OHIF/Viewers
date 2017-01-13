@@ -1,8 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
-import Ajv from 'ajv';
 
-export const MaxTargetsValidator = new Ajv().compile({
+export const MaxTargetsSchema = {
     properties: {
         limit: {
             label: 'Max targets allowed in study',
@@ -11,7 +10,7 @@ export const MaxTargetsValidator = new Ajv().compile({
         }
     },
     required: ['limit']
-});
+};
 
 /* MaxTargetsCriterion
  *   Check if the number of target measurements exceeded the limit allowed

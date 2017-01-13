@@ -1,7 +1,6 @@
 import { BaseCriterion } from './BaseCriterion';
-import Ajv from 'ajv';
 
-export const MeasurementsLengthValidator = new Ajv().compile({
+export const MeasurementsLengthSchema = {
     properties: {
         longAxis: {
             label: 'Minimum length of long axis',
@@ -70,7 +69,7 @@ export const MeasurementsLengthValidator = new Ajv().compile({
         { required: ['message', 'longAxisSliceThicknessMultiplier'] },
         { required: ['message', 'shortAxisSliceThicknessMultiplier'] }
     ]
-});
+};
 
 /*
  * MeasurementsLengthCriterion

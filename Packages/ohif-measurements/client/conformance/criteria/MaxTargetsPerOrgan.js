@@ -1,7 +1,6 @@
 import { BaseCriterion } from './BaseCriterion';
-import Ajv from 'ajv';
 
-export const MaxTargetsPerOrganValidator = new Ajv().compile({
+export const MaxTargetsPerOrganSchema = {
     properties: {
         limit: {
             label: 'Max targets allowed per organ',
@@ -10,7 +9,7 @@ export const MaxTargetsPerOrganValidator = new Ajv().compile({
         }
     },
     required: ['limit']
-});
+};
 
 /*
  * MaxTargetsPerOrganCriterion
