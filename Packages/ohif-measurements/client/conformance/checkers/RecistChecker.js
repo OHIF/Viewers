@@ -4,6 +4,7 @@ import { MaxTargetsCriteria } from '../criterias/MaxTargetsCriteria';
 import { MeasurementsLengthCriteria } from '../criterias/MeasurementsLengthCriteria';
 import { ModalityCriteria } from '../criterias/ModalityCriteria';
 import { NonTargetResponseCriteria } from '../criterias/NonTargetResponseCriteria';
+import { TargetTypeCriteria } from '../criterias/TargetTypeCriteria';
 
 export class RecistChecker extends BaseChecker {
 
@@ -15,6 +16,7 @@ export class RecistChecker extends BaseChecker {
         this.criterias.push(new MeasurementsLengthCriteria({}));
         this.criterias.push(new ModalityCriteria(this.getModalityCriteriaOptions()));
         this.criterias.push(new NonTargetResponseCriteria());
+        this.criterias.push(new TargetTypeCriteria());
     }
 
     check(data) {
