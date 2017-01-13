@@ -11,6 +11,12 @@ export const MaxTargetsPerOrganSchema = {
     required: ['limit']
 };
 
+/*
+ * MaxTargetsPerOrganCriterion
+ *   Check if the number of target measurements per organ exceeded the limit allowed
+ * Options
+ *   limit: Max targets allowed in study
+ */
 export class MaxTargetsPerOrganCriterion extends BaseCriterion {
 
     constructor(options) {
