@@ -1,5 +1,8 @@
 import { BaseCriterion } from './BaseCriterion';
 
+export const NonTargetResponseSchema = {
+};
+
 export class NonTargetResponseCriterion extends BaseCriterion {
 
     constructor(options) {

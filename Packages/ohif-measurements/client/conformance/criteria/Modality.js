@@ -1,13 +1,41 @@
 import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
 
+export const ModalitySchema = {
+    properties: {
+        method: {
+            label: 'Specify if it\'s goinig to "allow" or "restrict" the modalities',
+            type: 'string'
+        },
+        measurementTypes: {
+            label: 'List of measurement types that will be evaluated',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        },
+        modalities: {
+            label: 'List of allowed/restricted modalities',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        }
+    },
+    required: ['method', 'modalities']
+};
+
 /*
  * ModalityCriteria
  * Check if a modality is allowed or restricted
  * Options:
- *   method (string): allow, restrict
- *   measurementTypes (string[]): list of measurement types that will be evaluated
- *   modalities (string[]): list of allowed/restricted modalities
+ *   method (string): Specify if it\'s goinig to "allow" or "restrict" the modalities
+ *   measurementTypes (string[]): List of measurement types that will be evaluated
+ *   modalities (string[]): List of allowed/restricted modalities
  */
 export class ModalityCriterion extends BaseCriterion {
 

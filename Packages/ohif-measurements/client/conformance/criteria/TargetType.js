@@ -1,5 +1,8 @@
 import { BaseCriterion } from './BaseCriterion';
 
+export const TargetTypeSchema = {
+};
+
 export class TargetTypeCriterion extends BaseCriterion {
 
     constructor(options) {
