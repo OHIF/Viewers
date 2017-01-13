@@ -1,6 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
+import Ajv from 'ajv';
 
-export const MeasurementsLengthSchema = {
+export const MeasurementsLengthValidator = new Ajv().compile({
     properties: {
         longAxis: {
             label: 'Minimum length of long axis',
@@ -63,17 +64,17 @@ export const MeasurementsLengthSchema = {
             type: 'string'
         }
     },
-    oneOf: [
+    anyOf: [
         { required: ['message', 'longAxis'] },
         { required: ['message', 'shortAxis'] },
         { required: ['message', 'longAxisSliceThicknessMultiplier'] },
         { required: ['message', 'shortAxisSliceThicknessMultiplier'] }
     ]
-};
+});
 
 /*
  * MeasurementsLengthCriterion
- *   Check the measurements of all bidirectional tools based on 
+ *   Check the measurements of all bidirectional tools based on
  *   short axis, long axis, modalities, location and slice thickness
  * Options:
  *   longAxis: Minimum length of long axis

@@ -1,11 +1,13 @@
 import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
+import Ajv from 'ajv';
 
-export const ModalitySchema = {
+export const ModalityValidator = new Ajv().compile({
     properties: {
         method: {
-            label: 'Specify if it\'s goinig to "allow" or "restrict" the modalities',
-            type: 'string'
+            label: 'Specify if it\'s goinig to "allow" or "deny" the modalities',
+            type: 'string',
+            enum: ['allow', 'deny']
         },
         measurementTypes: {
             label: 'List of measurement types that will be evaluated',
@@ -17,7 +19,7 @@ export const ModalitySchema = {
             uniqueItems: true
         },
         modalities: {
-            label: 'List of allowed/restricted modalities',
+            label: 'List of allowed/denied modalities',
             type: 'array',
             items: {
                 type: 'string'
@@ -27,15 +29,15 @@ export const ModalitySchema = {
         }
     },
     required: ['method', 'modalities']
-};
+});
 
 /*
  * ModalityCriteria
- *   Check if a modality is allowed or restricted
+ *   Check if a modality is allowed or denied
  * Options:
- *   method (string): Specify if it\'s goinig to "allow" or "restrict" the modalities
+ *   method (string): Specify if it\'s goinig to "allow" or "deny" the modalities
  *   measurementTypes (string[]): List of measurement types that will be evaluated
- *   modalities (string[]): List of allowed/restricted modalities
+ *   modalities (string[]): List of allowed/denied modalities
  */
 export class ModalityCriterion extends BaseCriterion {
 
@@ -60,7 +62,7 @@ export class ModalityCriterion extends BaseCriterion {
                 const modality = metadata.modality.toUpperCase();
 
                 if (((validationMethod === 'allow') && !modalitiesSet.has(modality)) ||
-                    ((validationMethod === 'restrict') && modalitiesSet.has(modality))) {
+                    ((validationMethod === 'deny') && modalitiesSet.has(modality))) {
                     measurements.push(measurement);
                     invalidModalities.push(modality);
                 }

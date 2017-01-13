@@ -8,14 +8,20 @@ export class CriteriaEvaluator {
 
         _.each(criteriaObject, (optionsObject, criterionkey) => {
             const Criterion = Criteria[`${criterionkey}Criterion`];
-            if (optionsObject instanceof Array) {
-                _.each(optionsObject, options => {
-                    const criterion = new Criterion(options);
-                    this.criteria.push(criterion);
-                });
-            } else {
-                this.criteria.push(new Criterion(optionsObject));
-            }
+            const optionsArray = optionsObject instanceof Array ? optionsObject : [optionsObject];
+            _.each(optionsArray, options => {
+                const validator = Criteria[`${criterionkey}Validator`];
+                if (!validator(options)) {
+                    let message = `Invalid ${criterionkey}Criterion definition.`;
+                    _.each(validator.errors, error => {
+                        message += `\noptions${error.dataPath} ${error.message}`;
+                    });
+                    throw new Error(message);
+                }
+
+                const criterion = new Criterion(options);
+                this.criteria.push(criterion);
+            });
         });
     }
 
