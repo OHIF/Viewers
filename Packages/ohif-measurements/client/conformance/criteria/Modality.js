@@ -31,7 +31,7 @@ export const ModalitySchema = {
 
 /*
  * ModalityCriteria
- * Check if a modality is allowed or restricted
+ *   Check if a modality is allowed or restricted
  * Options:
  *   method (string): Specify if it\'s goinig to "allow" or "restrict" the modalities
  *   measurementTypes (string[]): List of measurement types that will be evaluated

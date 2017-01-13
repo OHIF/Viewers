@@ -3,6 +3,9 @@ import { BaseCriterion } from './BaseCriterion';
 export const NonTargetResponseSchema = {
 };
 
+/* NonTargetResponseCriterion
+ *   Check if the there are non-target measurements with response different than "present" on baseline
+ */
 export class NonTargetResponseCriterion extends BaseCriterion {
 
     constructor(options) {

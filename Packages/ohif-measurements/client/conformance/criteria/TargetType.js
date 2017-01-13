@@ -3,6 +3,9 @@ import { BaseCriterion } from './BaseCriterion';
 export const TargetTypeSchema = {
 };
 
+/* TargetTypeCriterion
+ *   Check if the there are non-bidirectional target measurements on baseline
+ */
 export class TargetTypeCriterion extends BaseCriterion {
 
     constructor(options) {

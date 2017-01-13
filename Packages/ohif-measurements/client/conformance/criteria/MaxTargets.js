@@ -12,6 +12,11 @@ export const MaxTargetsSchema = {
     required: ['limit']
 };
 
+/* MaxTargetsCriterion
+ *   Check if the number of target measurements exceeded the limit allowed
+ * Options
+ *   limit: Max targets allowed in study
+ */
 export class MaxTargetsCriterion extends BaseCriterion {
 
     constructor(options) {

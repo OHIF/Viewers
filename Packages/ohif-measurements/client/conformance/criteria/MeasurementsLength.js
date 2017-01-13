@@ -59,7 +59,8 @@ export const MeasurementsLengthSchema = {
             uniqueItems: true
         },
         message: {
-            label: 'Message to be displayed in case of nonconformity'
+            label: 'Message to be displayed in case of nonconformity',
+            type: 'string'
         }
     },
     oneOf: [
@@ -70,6 +71,21 @@ export const MeasurementsLengthSchema = {
     ]
 };
 
+/*
+ * MeasurementsLengthCriterion
+ *   Check the measurements of all bidirectional tools based on 
+ *   short axis, long axis, modalities, location and slice thickness
+ * Options:
+ *   longAxis: Minimum length of long axis
+ *   shortAxis: Minimum length of short axis
+ *   longAxisSliceThicknessMultiplier: Length of long axis multiplier
+ *   shortAxisSliceThicknessMultiplier: Length of short axis multiplier
+ *   modalityIn: Filter to evaluate only measurements with the specified modalities
+ *   modalityNotIn: Filter to evaluate only measurements without the specified modalities
+ *   locationIn: Filter to evaluate only measurements with the specified locations
+ *   locationNotIn: Filter to evaluate only measurements without the specified locations
+ *   message: Message to be displayed in case of nonconformity
+ */
 export class MeasurementsLengthCriterion extends BaseCriterion {
 
     constructor(options) {
