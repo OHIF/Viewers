@@ -2,6 +2,7 @@ import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
 
 export const ModalitySchema = {
+    type: 'object',
     properties: {
         method: {
             label: 'Specify if it\'s goinig to "allow" or "deny" the modalities',

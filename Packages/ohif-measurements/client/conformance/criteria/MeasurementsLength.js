@@ -1,6 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
 
 export const MeasurementsLengthSchema = {
+    type: 'object',
     properties: {
         longAxis: {
             label: 'Minimum length of long axis',

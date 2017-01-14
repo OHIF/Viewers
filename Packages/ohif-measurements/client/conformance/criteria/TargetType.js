@@ -1,6 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
 
 export const TargetTypeSchema = {
+    type: 'object'
 };
 
 /* TargetTypeCriterion

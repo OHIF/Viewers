@@ -1,6 +1,7 @@
 import { BaseCriterion } from './BaseCriterion';
 
 export const MaxTargetsPerOrganSchema = {
+    type: 'object',
     properties: {
         limit: {
             label: 'Max targets allowed per organ',
