@@ -22,6 +22,26 @@ const keys = {
     DELETE: 46
 };
 
+Template.measurementTableRow.helpers({
+    hasWarnings() {
+        const toolsGroupsMap = this.measurementApi.toolsGroupsMap;
+        const nonConformities = this.conformanceCriteria.nonConformities.get();
+        const foundNonConformity = _.find(nonConformities, nonConformity => {
+            const measurement = _.find(nonConformity.measurements, measurement => {
+                if(toolsGroupsMap[measurement.toolType] !== this.rowItem.measurementTypeId) {
+                    return false;
+                }
+
+                return measurement.measurementNumber === parseInt(this.rowItem.measurementNumber, 10);
+            });
+
+            return !!measurement;
+        });
+
+        return !!foundNonConformity;
+    }
+});
+
 Template.measurementTableRow.events({
     'click .measurementRowSidebar'(event, instance) {
         const $row = instance.$('.measurementTableRow');

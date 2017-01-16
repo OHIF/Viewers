@@ -6,8 +6,11 @@ export class BaseCriterion {
 
     generateResponse(message, measurements) {
         const passed = !message;
+        const isGlobal = !measurements || !measurements.length;
+
         return {
             passed,
+            isGlobal,
             message,
             measurements
         };

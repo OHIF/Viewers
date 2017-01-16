@@ -8,7 +8,7 @@ class ConformanceCriteria {
     constructor(measurementApi, timepointApi) {
         this.measurementApi = measurementApi;
         this.timepointApi = timepointApi;
-        this.results = [];
+        this.nonConformities = new ReactiveVar();
 
         const validate = _.debounce(trialCriteriaType => {
             this.validate(trialCriteriaType);
@@ -32,23 +32,23 @@ class ConformanceCriteria {
         const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
         const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
         const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
-        const results = resultBaseline.concat(resultFollowup).concat(resultBoth);
+        const nonConformities = resultBaseline.concat(resultFollowup).concat(resultBoth);
 
-        console.warn('>>>> validate', results);
+        this.nonConformities.set(nonConformities);
 
-        return results;
+        return nonConformities;
     }
 
     validateTimepoint(timepointId, trialCriteriaType, data) {
         const evaluators = this.getEvaluators(timepointId, trialCriteriaType);
-        let results = [];
+        let nonConformities = [];
 
         evaluators.forEach(evaluator => {
             const result = evaluator.evaluate(data);
-            results = results.concat(result);
+            nonConformities = nonConformities.concat(result);
         });
 
-        return results;
+        return nonConformities;
     }
 
     getEvaluators(timepointId, trialCriteriaType) {

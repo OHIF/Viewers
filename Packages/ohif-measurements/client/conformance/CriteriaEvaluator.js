@@ -25,6 +25,10 @@ export class CriteriaEvaluator {
     }
 
     getCriteriaValidator() {
+        if(CriteriaEvaluator.criteriaValidator) {
+            return CriteriaEvaluator.criteriaValidator;
+        }
+
         const schema = {
             properties: {},
             definitions: {}
@@ -50,18 +54,18 @@ export class CriteriaEvaluator {
             }
         });
         
-        return new Ajv().compile(schema);
+        return CriteriaEvaluator.criteriaValidator = new Ajv().compile(schema);
     }
 
     evaluate(data) {
-        const nonconformity = [];
+        const nonConformities = [];
         this.criteria.forEach(criterion => {
             const criterionResult = criterion.evaluate(data);
             if (!criterionResult.passed) {
-                nonconformity.push(criterionResult);
+                nonConformities.push(criterionResult);
             }
         });
-        return nonconformity;
+        return nonConformities;
     }
 
 }
