@@ -25,10 +25,6 @@ export class CriteriaEvaluator {
     }
 
     getCriteriaValidator() {
-        if (CriteriaEvaluator.validator) {
-            return CriteriaEvaluator.validator;
-        }
-
         const schema = {
             properties: {},
             definitions: {}
@@ -54,7 +50,7 @@ export class CriteriaEvaluator {
             }
         });
         
-        return CriteriaEvaluator.validator = new Ajv().compile(schema);
+        return new Ajv().compile(schema);
     }
 
     evaluate(data) {

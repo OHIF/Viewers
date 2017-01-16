@@ -1,3 +1,4 @@
+export * from './Location';
 export * from './MaxTargetsPerOrgan';
 export * from './MaxTargets';
 export * from './MeasurementsLength';

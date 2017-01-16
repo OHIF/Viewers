@@ -109,6 +109,10 @@ class MeasurementApi {
                     this.changeObserver.changed();
                 };
 
+                const changedHandler = () => {
+                    this.changeObserver.changed();
+                }
+
                 const removedHandler = measurement => {
                     const measurementNumber = measurement.measurementNumber;
 
@@ -167,6 +171,7 @@ class MeasurementApi {
 
                 collection.find().observe({
                     added: addedHandler,
+                    changed: changedHandler,
                     removed: removedHandler
                 });
             });

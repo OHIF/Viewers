@@ -1,31 +1,72 @@
 import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
 import { CriteriaEvaluator } from './CriteriaEvaluator';
-import * as recistBaselineEvaluation from './evaluations/recistBaseline.json';
+import * as evaluations from './evaluations';
 
 class ConformanceCriteria {
 
     constructor(measurementApi, timepointApi) {
         this.measurementApi = measurementApi;
         this.timepointApi = timepointApi;
+        this.results = [];
 
-        this.warnings = {};
+        Tracker.autorun(() => {
+            const trialCriteriaType = TrialCriteriaTypes.findOne({ selected: true });
+            this.measurementApi.changeObserver.depend();
+            this.validate(trialCriteriaType);
+        });
     }
 
-    validate() {
-        const data = this.getData();
-        this.validateRecist(data);
+    validate(trialCriteriaType) {
+        const baselineData = this.getData('baseline');
+        const followupData = this.getData('followup');
+        const mergedData = baselineData;
+
+        mergedData.targets = mergedData.targets.concat(followupData.targets);
+        mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
+
+        const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
+        const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
+        const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
+        const results = resultBaseline.concat(resultFollowup).concat(resultBoth);
+
+        console.warn('>>>> validate', results);
+
+        return results;
     }
 
-    validateRecist(data) {
-        const recistBaselineEvaluator = new CriteriaEvaluator(recistBaselineEvaluation);
-        console.warn('>>>>check', recistBaselineEvaluator.evaluate(data));
+    validateTimepoint(timepointId, trialCriteriaType, data) {
+        const evaluators = this.getEvaluators(timepointId, trialCriteriaType);
+        let results = [];
+
+        evaluators.forEach(evaluator => {
+            const result = evaluator.evaluate(data);
+            results = results.concat(result);
+        });
+
+        return results;
+    }
+
+    getEvaluators(timepointId, trialCriteriaType) {
+        const evaluators = [];
+        const trialCriteriaTypeId = trialCriteriaType.id.toLowerCase();
+        const evaluation = evaluations[trialCriteriaTypeId]
+        
+        if(evaluation) {
+            const evaluationTimepoint = evaluation[timepointId];
+
+            if(evaluationTimepoint) {
+                evaluators.push(new CriteriaEvaluator(evaluationTimepoint));
+            }
+        }
+
+        return evaluators;
     }
 
     /*
      * Build the data that will be used to do the conformance criteria checks
      */
-    getData() {
+    getData(timepointType) {
         const data = {
             targets: [],
             nonTargets: []
@@ -33,11 +74,16 @@ class ConformanceCriteria {
 
         const fillData = measurementType => {
             const measurements = this.measurementApi.fetch(measurementType);
+
             measurements.forEach(measurement => {
                 const { studyInstanceUid, imageId } = measurement;
                 const metadata = this.getImageMetadata(studyInstanceUid, imageId);
                 const timepointId = measurement.timepointId;
                 const timepoint = this.timepointApi.timepoints.findOne({ timepointId });
+
+                if((timepointType !== 'both') && (timepoint.timepointType !== timepointType)) {
+                    return;
+                }
 
                 data[measurementType].push({
                     measurement,
