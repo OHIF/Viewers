@@ -1,3 +1,5 @@
+import { viewportUtils } from './viewportUtils';
+
 /**
  * This function switches to an image given an element and the index of the image in the current stack
  * Note: Negative indexing is supported:
@@ -7,7 +9,7 @@
  * @param element
  * @param {number} [newImageIdIndex] The image index in the stack to switch to.
  */
-switchToImageByIndex = function(newImageIdIndex) {
-    var element = getActiveViewportElement();
+export function switchToImageByIndex(newImageIdIndex) {
+    var element = viewportUtils.getActiveViewportElement();
     cornerstoneTools.scrollToIndex(element, newImageIdIndex);
-};
+}

@@ -2,6 +2,7 @@ import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
+import { toolManager } from '../../../lib/toolManager';
 
 Template.toolbarSectionButton.onCreated(() => {
     const instance = Template.instance();

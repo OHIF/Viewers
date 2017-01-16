@@ -1,8 +1,11 @@
+import { Template } from 'meteor/templating';
+import { viewportUtils } from '../../../lib/viewportUtils';
+
 Template.playClipButton.helpers({
     isPlaying: function() {
-        return isPlaying();
+        return viewportUtils.isPlaying();
     },
     disableButton() {
-        return hasMultipleFrames();
+        return viewportUtils.hasMultipleFrames();
     }
 });

@@ -1,3 +1,7 @@
+import { Template } from 'meteor/templating';
+import { $ } from 'meteor/jquery';
+import { viewportUtils } from '../../../lib/viewportUtils';
+
 Template.layoutButton.events({
     // TODO: Check why 'click' event won't fire?
     'mousedown .js-dropdown-toggle'(event) {
@@ -12,6 +16,6 @@ Template.layoutButton.events({
         });
 
         // Open or close the layout chooser dialog
-        toggleDialog($dropdown);
+        viewportUtils.toggleDialog($dropdown);
     }
 });

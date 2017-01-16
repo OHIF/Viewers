@@ -1,3 +1,6 @@
+import { Template } from 'meteor/templating';
+import { _ } from 'meteor/underscore';
+
 /**
  * A global Blaze UI helper to get the thumbnails for the given study
  */

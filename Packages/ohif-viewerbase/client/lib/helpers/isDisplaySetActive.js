@@ -1,3 +1,11 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { $ } from 'meteor/jquery';
+import { viewportUtils } from '../viewportUtils';
+
+import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
+
 /**
  * Boolean helper to identify if a series instance is active in some viewport
  */
@@ -6,7 +14,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
     Session.get('LayoutManagerUpdated');
 
     // Stop here if layoutManager is not defined yet
-    if (!window.layoutManager) {
+    if (!OHIF.viewerbase.layoutManager) {
         return;
     }
 
@@ -22,22 +30,28 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
     if (_.isUndefined(viewportIndex)) {
         // Get the number of viewports that are currently displayed
         // (Note, viewportData may have more entries!)
-        const currentNumberOfViewports = layoutManager.getNumberOfViewports();
+        const currentNumberOfViewports = OHIF.viewerbase.layoutManager.getNumberOfViewports();
+
+        // Get active viewport element
+        const activeViewport = viewportUtils.getActiveViewportElement();
+
+        // Get viewports elements
+        const viewportsElement = $('.imageViewerViewport');
 
         // Loop through the viewport data up until the currently displayed
         // number of viewports
-        let viewportData = window.layoutManager.viewportData;
+        const viewportData = OHIF.viewerbase.layoutManager.viewportData;
         for (let i = 0; i < currentNumberOfViewports; i++) {
             const data = viewportData[i];
 
-            // If the display set is displayed in this viewport, stop here
-            if (data && data.displaySetInstanceUid === displaySetInstanceUid) {
+            // If the display set is displayed in this viewport and is active, stop here
+            if (data && data.displaySetInstanceUid === displaySetInstanceUid && viewportsElement.get(data.viewportIndex) === activeViewport) {
                 result = true;
                 break;
             }
         }
     } else {
-        const data = window.layoutManager.viewportData[viewportIndex];
+        const data = OHIF.viewerbase.layoutManager.viewportData[viewportIndex];
 
         // If the display set is displayed in this viewport, stop here
         if (data && data.displaySetInstanceUid === displaySetInstanceUid) {

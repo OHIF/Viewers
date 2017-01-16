@@ -1,4 +1,5 @@
-sopClassDictionary = {
+
+export const sopClassDictionary = {
     ComputedRadiographyImageStorage: "1.2.840.10008.5.1.4.1.1.1",
     DigitalXRayImageStorageForPresentation: "1.2.840.10008.5.1.4.1.1.1.1",
     DigitalXRayImageStorageForProcessing: "1.2.840.10008.5.1.4.1.1.1.1.1",

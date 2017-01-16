@@ -1,5 +1,5 @@
-import { _ } from 'meteor/underscore';
 import { Template } from 'meteor/templating';
+import { _ } from 'meteor/underscore';
 
 /**
  * Global Blaze UI helper to sort array elements

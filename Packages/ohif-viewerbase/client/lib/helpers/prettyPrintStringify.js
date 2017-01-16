@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+
 /**
  * A global Blaze UI helper to Stringify a JavaScript object
  *
@@ -5,7 +7,7 @@
  *
  * http://stackoverflow.com/questions/1026069/capitalize-the-first-letter-of-string-in-javascript
  */
-UI.registerHelper('prettyPrintStringify', function(context) {
+Blaze.registerHelper('prettyPrintStringify', function(context) {
     if (!context) {
         return;
     }

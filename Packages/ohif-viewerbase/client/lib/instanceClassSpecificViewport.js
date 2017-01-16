@@ -1,6 +1,8 @@
-var instanceClassViewportSettingsFunctions = {};
-getInstanceClassDefaultViewport = function(series, enabledElement, imageId) {
-    var instanceClass = series.sopClassUid;
+
+const  instanceClassViewportSettingsFunctions = {};
+
+const getInstanceClassDefaultViewport = (series, enabledElement, imageId) => {
+    let instanceClass = series.sopClassUid;
 
     if (!instanceClassViewportSettingsFunctions[instanceClass]) {
         return;
@@ -9,6 +11,8 @@ getInstanceClassDefaultViewport = function(series, enabledElement, imageId) {
     return instanceClassViewportSettingsFunctions[instanceClass](series, enabledElement, imageId);
 };
 
-setInstanceClassDefaultViewportFunction = function(instanceClass, fn) {
+const setInstanceClassDefaultViewportFunction = (instanceClass, fn) => {
     instanceClassViewportSettingsFunctions[instanceClass] = fn;
 };
+
+export { getInstanceClassDefaultViewport, setInstanceClassDefaultViewportFunction };

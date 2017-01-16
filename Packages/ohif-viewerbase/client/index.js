@@ -185,7 +185,8 @@ import { OHIFError } from './lib/classes/OHIFError';
 Viewerbase.OHIFError = OHIFError;
 
 /**
- * Imports for Side Effects Only
+ * Imports for Side Effects Only (Files that do not export anything...)
  */
 
+import './lib/stackImagePositionOffsetSynchronizer.js';
 import './lib/debugReactivity';

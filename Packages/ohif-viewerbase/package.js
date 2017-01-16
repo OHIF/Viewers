@@ -16,9 +16,10 @@ Package.onUse(function(api) {
     api.use('validatejs');
 
     // Our custom packages
-    api.use('design');
+    api.use('ohif:design');
     api.use('ohif:core');
     api.use('ohif:cornerstone');
+    api.use('ohif:log');
 
     const assets = [
         'assets/icons.svg',
@@ -137,7 +138,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.styl', 'client');
 
     api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.html', 'client');
-    api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.js', 'client');
     api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.styl', 'client');
 
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.html', 'client');
@@ -178,6 +178,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
 
+    api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.html', 'client');
+    api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.js', 'client');
+    api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.styl', 'client');
+
     api.addFiles('client/components/viewer/displaySetNavigation/displaySetNavigation.html', 'client');
     api.addFiles('client/components/viewer/displaySetNavigation/displaySetNavigation.js', 'client');
 
@@ -197,105 +201,13 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.js', 'client');
 
-
     // Library functions
-    api.addFiles('client/lib/layoutManager.js', 'client');
-    api.addFiles('client/lib/createStacks.js', 'client');
-    api.addFiles('client/lib/getImageId.js', 'client');
-    api.addFiles('client/lib/getWADORSImageId.js', 'client');
-    api.addFiles('client/lib/metaDataProvider.js', 'client');
-    api.addFiles('client/lib/sortStudy.js', 'client');
-    api.addFiles('client/lib/toolManager.js', 'client');
-    api.addFiles('client/lib/enablePrefetchOnElement.js', 'client');
-    api.addFiles('client/lib/displayReferenceLines.js', 'client');
-    api.addFiles('client/lib/toggleDialog.js', 'client');
-    api.addFiles('client/lib/setActiveViewport.js', 'client');
-    api.addFiles('client/lib/switchToImageByIndex.js', 'client');
-    api.addFiles('client/lib/switchToImageRelative.js', 'client');
-    api.addFiles('client/lib/enableHotkeys.js', 'client');
-    api.addFiles('client/lib/viewportFunctions.js', 'client');
-    api.addFiles('client/lib/WLPresets.js', 'client');
-    api.addFiles('client/lib/resizeViewportElements.js', 'client');
-    api.addFiles('client/lib/setFocusToActiveViewport.js', 'client');
-    api.addFiles('client/lib/updateAllViewports.js', 'client');
-    api.addFiles('client/lib/stackImagePositionOffsetSynchronizer.js', 'client');
-
-    api.addFiles('client/lib/instanceClassSpecificViewport.js', 'client');
-    api.addFiles('client/lib/setMammogramViewportAlignment.js', 'client');
-    api.addFiles('client/lib/isImage.js', 'client');
-    api.addFiles('client/lib/sopClassDictionary.js', 'client');
-    api.addFiles('client/lib/debugReactivity.js', 'client');
-    api.addFiles('client/lib/unloadHandlers.js', 'client');
-
-    api.export('resizeViewportElements', 'client');
-    api.export('handleResize', 'client');
-    api.export('enableHotkeys', 'client');
-    api.export('enablePrefetchOnElement', 'client');
-    api.export('displayReferenceLines', 'client');
-    api.export('setActiveViewport', 'client');
-    api.export('createStacks', 'client');
-    api.export('getImageId', 'client');
-    api.export('getWADORSImageId', 'client');
-    api.export('metaDataProvider', 'client');
-    api.export('sortStudy', 'client');
-    api.export('updateOrientationMarkers', 'client');
-    api.export('setFocusToActiveViewport', 'client');
-    api.export('updateAllViewports', 'client');
-    api.export('queryStudies', 'client');
-    api.export('getNumberOfFilesInStudy', 'client');
-    api.export('importStudies', 'client');
-    api.export('getActiveViewportElement', 'client');
-    api.export('getInstanceClassDefaultViewport', 'client');
-    api.export('showConfirmDialog', 'client');
-    api.export('applyWLPreset', 'client');
-    api.export('toggleDialog', 'client');
-    api.export('isImage', 'client');
-    api.export('sopClassDictionary', 'client');
-    api.export('addMetaData', 'client');
-    api.export('hasMultipleFrames', 'client');
-    api.export('isStackScrollLinkingDisabled')
-
-    // Viewer management objects
-    api.export('toolManager', 'client');
-    api.export('LayoutManager', 'client');
 
     // Collections
     api.export('ViewerStudies', 'client');
 
-    // UI Helpers
-    api.addFiles([
-        'client/lib/helpers/formatDA.js',
-        'client/lib/helpers/formatJSDate.js',
-        'client/lib/helpers/jsDateFromNow.js',
-        'client/lib/helpers/formatNumberPrecision.js',
-        'client/lib/helpers/formatTM.js',
-        'client/lib/helpers/inc.js',
-        'client/lib/helpers/isDisplaySetActive.js',
-        'client/lib/helpers/getUsername.js',
-        'client/lib/helpers/capitalizeFirstLetter.js',
-        'client/lib/helpers/objectToPairs.js',
-        'client/lib/helpers/objectEach.js',
-        'client/lib/helpers/ifTypeIs.js',
-        'client/lib/helpers/prettyPrintStringify.js',
-        'client/lib/helpers/sorting.js',
-        'client/lib/helpers/studyThumbnails.js',
-        'client/lib/helpers/formatPN.js'
-    ], 'client');
-    api.export('formatPN', 'client');
+    api.export('dialogPolyfill', 'client');
 
-    api.addFiles('client/lib/helpers/isTouchDevice.js', 'client');
-    api.export('isTouchDevice', 'client');
+    api.mainModule('main.js', 'client');
 
-    // TODO: Clean this up later, no real need to export these
-    // Need to move functionList into viewerbase
-    api.export('toggleCineDialog', 'client');
-    api.export('toggleCinePlay', 'client');
-    api.export('clearTools', 'client');
-    api.export('resetViewport', 'client');
-    api.export('invert', 'client');
-    api.export('flipV', 'client');
-    api.export('flipH', 'client');
-    api.export('rotateR', 'client');
-    api.export('rotateL', 'client');
-    api.export('link', 'client');
 });

@@ -1,7 +1,10 @@
+import { Blaze } from 'meteor/blaze';
+import { moment } from 'meteor/momentjs:moment';
+
 /**
  * A global Blaze UI helper function to format JavaScript Dates using the Moment library
  */
-UI.registerHelper('formatJSDate', function(context, format, options) {
+Blaze.registerHelper('formatJSDate', function(context, format, options) {
     if (!context) {
         return;
     }

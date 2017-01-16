@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+
 /**
  * A global Blaze UI helper to capitalizes the first letter of an input String
  *
@@ -5,7 +7,7 @@
  *
  * http://stackoverflow.com/questions/1026069/capitalize-the-first-letter-of-string-in-javascript
  */
-UI.registerHelper('capitalizeFirstLetter', function (context) {
+Blaze.registerHelper('capitalizeFirstLetter', function (context) {
     if (!context) {
         return;
     }

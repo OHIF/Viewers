@@ -1,6 +1,7 @@
-import {parsingUtils} from './parsingUtils'
+import { Meteor } from 'meteor/meteor';
+import { parsingUtils } from './parsingUtils';
 
-var metaDataLookup = {};
+const metaDataLookup = {};
 
 /**
  * Cornerstone MetaData provider to store image meta data
@@ -14,14 +15,14 @@ var metaDataLookup = {};
  * @param {String} imageId The Cornerstone ImageId
  * @param {Object} data An object containing instance, series, and study metaData
  */
-addMetaData = function(imageId, data) {
-    var instanceMetaData = data.instance;
-    var seriesMetaData = data.series;
-    var studyMetaData = data.study;
-    var imageIndex = data.imageIndex;
-    var numImages = data.numImages;
+const addMetaData = (imageId, data) => {
+    let instanceMetaData = data.instance;
+    let seriesMetaData = data.series;
+    let studyMetaData = data.study;
+    let imageIndex = data.imageIndex;
+    let numImages = data.numImages;
 
-    var metaData = {};
+    let metaData = {};
 
     metaData.study = {
         patientId: studyMetaData.patientId,
@@ -66,8 +67,8 @@ addMetaData = function(imageId, data) {
  * @param type (e.g. series, instance, tagDisplay)
  * @param data
  */
-addSpecificMetadata = function(imageId, type, data) {
-    var metaData = {};
+const addSpecificMetadata = (imageId, type, data) => {
+    let metaData = {};
     metaData[type] = data;
 
     metaDataLookup[imageId] = $.extend(metaDataLookup[imageId], metaData);
@@ -92,8 +93,8 @@ function getFromDataSet(dataSet, type, tag) {
  *
  * @param image
  */
-updateMetaData = function(image) {
-    var imageMetaData = metaDataLookup[image.imageId];
+const updateMetaData = image => {
+    const imageMetaData = metaDataLookup[image.imageId];
     if (!imageMetaData) {
         return;
     }
@@ -141,13 +142,13 @@ function getImagePlane(instance) {
         return;
     }
 
-    var imageOrientation = instance.imageOrientationPatient.split('\\');
-    var imagePosition = instance.imagePositionPatient.split('\\');
+    let imageOrientation = instance.imageOrientationPatient.split('\\');
+    let imagePosition = instance.imagePositionPatient.split('\\');
 
-    var columnPixelSpacing = 1.0;
-    var rowPixelSpacing = 1.0;
+    let columnPixelSpacing = 1.0;
+    let rowPixelSpacing = 1.0;
     if (instance.pixelSpacing) {
-        var split = instance.pixelSpacing.split('\\');
+        let split = instance.pixelSpacing.split('\\');
         rowPixelSpacing = parseFloat(split[0]);
         columnPixelSpacing = parseFloat(split[1]);
     }
@@ -178,9 +179,9 @@ function getImagePlane(instance) {
  * @param dataSet {Object} An instance of dicomParser.DataSet object where multiframe information can be found.
  * @return {Object} An object containing multiframe image metadata (frameIncrementPointer, frameTime, frameTimeVector, etc).
  */
-getMultiframeModuleMetaData = function(dataSet) {
+function getMultiframeModuleMetaData(dataSet) {
 
-    var numberOfFrames,
+    let numberOfFrames,
         frameIncrementPointer,
         frameTime,
         frameTimeVector,
@@ -232,7 +233,7 @@ getMultiframeModuleMetaData = function(dataSet) {
     }
 
     return imageInfo;
-};
+}
 
 /**
  * Looks up metaData for Cornerstone Tools given a specified type and imageId
@@ -244,7 +245,7 @@ getMultiframeModuleMetaData = function(dataSet) {
  * @returns {Object} Relevant metaData of the specified type
  */
 function provider(type, imageId) {
-    var imageMetaData = metaDataLookup[imageId];
+    let imageMetaData = metaDataLookup[imageId];
     if (!imageMetaData) {
         return;
     }
@@ -257,3 +258,9 @@ function provider(type, imageId) {
 Meteor.startup(function() {
     cornerstoneTools.metaData.addProvider(provider);
 });
+
+/**
+ * Export relevant symbols
+ */
+
+export { addMetaData, addSpecificMetadata, updateMetaData };

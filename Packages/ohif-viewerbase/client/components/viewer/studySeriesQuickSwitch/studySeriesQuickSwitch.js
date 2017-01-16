@@ -1,6 +1,10 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { $ } from 'meteor/jquery';
+
+import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
 
 Template.studySeriesQuickSwitch.onCreated(() => {
     const instance = Template.instance();
@@ -10,7 +14,7 @@ Template.studySeriesQuickSwitch.onCreated(() => {
 
     // Gets the viewport data for the given viewport index
     instance.getViewportData = viewportIndex => {
-        const layoutManager = window.layoutManager;
+        const layoutManager = OHIF.viewerbase.layoutManager;
         return layoutManager && layoutManager.viewportData && layoutManager.viewportData[viewportIndex];
     };
 

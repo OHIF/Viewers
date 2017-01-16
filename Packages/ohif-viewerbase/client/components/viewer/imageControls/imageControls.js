@@ -1,3 +1,8 @@
+import { Template } from 'meteor/templating';
+import { $ } from 'meteor/jquery';
+import { setActiveViewport } from '../../../lib/setActiveViewport';
+import { switchToImageByIndex } from '../../../lib/switchToImageByIndex';
+
 const slideTimeoutTime = 40;
 let slideTimeout;
 
@@ -33,7 +38,7 @@ Template.imageControls.events({
             OHIF.viewer.hotkeyFunctions.scrollUp();
         }
     },
-    'input #imageSlider, change #imageSlider'(event) {
+    'input input[type=range], change input[type=range]'(event) {
         // Note that we throttle requests to prevent the
         // user's ultrafast scrolling from firing requests too quickly.
         clearTimeout(slideTimeout);
@@ -41,7 +46,7 @@ Template.imageControls.events({
             // Using the slider in an inactive viewport
             // should cause that viewport to become active
             const slider = $(event.currentTarget);
-            const newActiveElement = slider.parents().eq(2).siblings('.imageViewerViewport').get(0);
+            const newActiveElement = slider.parents('.viewportContainer').find('.imageViewerViewport');
             setActiveViewport(newActiveElement);
 
             // Subtract 1 here since the slider goes from 1 to N images

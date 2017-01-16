@@ -2,6 +2,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
 import { _ } from 'meteor/underscore';
 
 Session.set('ViewerMainReady', false);
@@ -32,15 +33,15 @@ Template.viewer.onCreated(() => {
             toolManager.setActiveTool('nonTarget');
         },
         // Viewport functions
-        toggleCineDialog,
-        clearTools,
-        resetViewport,
-        invert,
-        flipV,
-        flipH,
-        rotateL,
-        rotateR,
-        link
+        toggleCineDialog: OHIF.viewerbase.viewportUtils.toggleCineDialog,
+        clearTools: OHIF.viewerbase.viewportUtils.clearTools,
+        resetViewport: OHIF.viewerbase.viewportUtils.resetViewport,
+        invert: OHIF.viewerbase.viewportUtils.invert,
+        flipV: OHIF.viewerbase.viewportUtils.flipV,
+        flipH: OHIF.viewerbase.viewportUtils.flipH,
+        rotateL: OHIF.viewerbase.viewportUtils.rotateL,
+        rotateR: OHIF.viewerbase.viewportUtils.rotateR,
+        linkStackScroll: OHIF.viewerbase.viewportUtils.linkStackScroll
     });
 
     if (ViewerData[contentId].loadedSeriesData) {

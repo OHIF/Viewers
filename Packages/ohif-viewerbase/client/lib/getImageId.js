@@ -1,4 +1,5 @@
 import { Meteor } from "meteor/meteor";
+import { getWADORSImageId } from './getWADORSImageId';
 
 /**
  * Obtain an imageId for Cornerstone from an image instance
@@ -6,17 +7,17 @@ import { Meteor } from "meteor/meteor";
  * @param instance
  * @returns {string} The imageId to be used by Cornerstone
  */
-getImageId = function(instance, frame) {
+export function getImageId(instance, frame) {
     if (!instance) {
         return;
     }
 
     if (instance.url) {
-        return instance.url;
+        return instance.url; 
     }
 
     if (instance.wadouri) {
-        var imageId = 'dicomweb:' + Meteor.absoluteUrl(instance.wadouri); // WADO-URI;
+        var imageId = 'dicomweb:' + Meteor.absoluteUrl(instance.wadouri);
         if (frame !== undefined) {
             imageId += '&frame=' + frame;
         }
@@ -26,4 +27,4 @@ getImageId = function(instance, frame) {
         // TODO= Check multiframe image support with WADO-RS
         return getWADORSImageId(instance); // WADO-RS Retrieve Frame
     }
-};
+}

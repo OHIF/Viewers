@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.toolbarSection.helpers({
     // Returns true if the view shall be split in two viewports
@@ -141,7 +142,7 @@ Template.toolbarSection.helpers({
             title: 'CINE',
             classes: 'imageViewerCommand',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-cineplay-toggle',
-            disableFunction: hasMultipleFrames
+            disableFunction: Viewerbase.viewportUtils.hasMultipleFrames
         });
 
         const buttonData = [];
@@ -168,11 +169,11 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'link',
+            id: 'linkStackScroll',
             title: 'Link',
             classes: 'imageViewerCommand toolbarSectionButton nonAutoDisableState',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-link',
-            disableFunction: isStackScrollLinkingDisabled
+            disableFunction: Viewerbase.viewportUtils.isStackScrollLinkingDisabled
         });
 
         buttonData.push({

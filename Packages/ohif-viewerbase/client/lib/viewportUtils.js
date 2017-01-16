@@ -3,6 +3,7 @@ import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 // Local Modules
+import { OHIF } from 'meteor/ohif:core';
 import { updateOrientationMarkers } from './updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from './instanceClassSpecificViewport';
 
@@ -118,6 +119,16 @@ function clearTools() {
     const toolStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
     toolStateManager.clear(element);
     cornerstone.updateImage(element);
+}
+
+function linkStackScroll() {
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+
+    if(synchronizer.isActive()) {
+        synchronizer.deactivate();
+    } else {
+        synchronizer.activate();
+    }
 }
 
 // This function was originally defined alone inside client/lib/toggleDialog.js
@@ -238,6 +249,17 @@ function stopAllClips() {
 }
 
 
+function isStackScrollLinkingDisabled() {
+    // Its called everytime active viewport and/or layout change
+    Session.get('activeViewport');
+    Session.get('LayoutManagerUpdated');
+
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+    const linkableViewports = synchronizer.getLinkableViewports();
+
+    return linkableViewports.length <= 1;
+}
+
 // Create an event listener to update playing state when a clip stops playing
 $(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Random.id()));
 
@@ -257,12 +279,14 @@ const viewportUtils = {
     flipH,
     resetViewport,
     clearTools,
+    linkStackScroll,
     toggleDialog,
     toggleCinePlay,
     toggleCineDialog,
     isPlaying,
     hasMultipleFrames,
-    stopAllClips
+    stopAllClips,
+    isStackScrollLinkingDisabled
 };
 
 export { viewportUtils };

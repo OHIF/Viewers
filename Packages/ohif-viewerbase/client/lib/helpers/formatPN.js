@@ -1,7 +1,8 @@
+import { Blaze } from 'meteor/blaze';
 /**
  * Formats a patient name for display purposes
  */
-formatPN = function(context) {
+const formatPN = context => {
     if (!context) {
         return;
     }
@@ -11,4 +12,6 @@ formatPN = function(context) {
 /**
  * A global Blaze UI helper to format a patient name for display purposes
  */
-UI.registerHelper('formatPN', formatPN);
+Blaze.registerHelper('formatPN', formatPN);
+
+export { formatPN };

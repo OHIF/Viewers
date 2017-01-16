@@ -3,6 +3,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 
+import { OHIFError } from '../../../lib/classes/OHIFError';
+
 Template.studyTimepointBrowser.onCreated(() => {
     const instance = Template.instance();
 
@@ -36,7 +38,7 @@ Template.studyTimepointBrowser.onCreated(() => {
 
             const notYetLoaded = StudyListStudies.findOne(query);
             if (!notYetLoaded) {
-                throw 'No study data available for Study: ' + studyInstanceUid;
+                throw new OHIFError(`No study data available for Study: ${studyInstanceUid}`);
             }
 
             return notYetLoaded;

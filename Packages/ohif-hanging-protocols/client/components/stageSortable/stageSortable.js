@@ -1,9 +1,16 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Random } from 'meteor/random';
+
+import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
+
 /**
  * Extend the Array prototype with a Swap function
  * so we can swap stages more easily
  */
 Array.prototype.move = function(oldIndex, newIndex) {
-    var value = this[oldIndex];
+    const value = this[oldIndex];
 
     newIndex = Math.max(0, newIndex);
     newIndex = Math.min(this.length, newIndex);
@@ -22,13 +29,13 @@ Array.prototype.move = function(oldIndex, newIndex) {
  * @returns {number} The index of the specified stage within the Protocol,
  *                   or undefined if it is not present.
  */
-function getStageIndex(protocol, id) {
-    var stageIndex;
+const getStageIndex = (protocol, id) => {
+    let stageIndex;
     if (!protocol || !protocol.stages) {
         return;
     }
 
-    protocol.stages.forEach(function(stage, index) {
+    protocol.stages.forEach((stage, index) => {
         if (stage.id === id) {
             stageIndex = index;
             return false;
@@ -36,7 +43,7 @@ function getStageIndex(protocol, id) {
     });
 
     return stageIndex;
-}
+};
 
 Template.stageSortable.helpers({
     /**
@@ -44,7 +51,7 @@ Template.stageSortable.helpers({
      *
      * @returns {boolean} Whether or not the stage is currently being displayed
      */
-    isActiveStage: function() {
+    isActiveStage() {
         // Rerun this function every time the layout manager has been updated
         Session.get('LayoutManagerUpdated');
 
@@ -53,7 +60,7 @@ Template.stageSortable.helpers({
             return;
         }
 
-        var currentStage = ProtocolEngine.getCurrentStageModel();
+        const currentStage = ProtocolEngine.getCurrentStageModel();
         if (!currentStage) {
             return false;
         }
@@ -66,8 +73,8 @@ Template.stageSortable.helpers({
      *
      * @returns {number|*}
      */
-    stageLabel: function() {
-        var stage = this;
+    stageLabel() {
+        const stage = this;
 
         // If no Protocol Engine has been defined yet, stop here to prevent errors
         if (!ProtocolEngine) {
@@ -75,10 +82,10 @@ Template.stageSortable.helpers({
         }
 
         // Retrieve the last saved copy of the current protocol
-        var lastSavedCopy = HP.ProtocolStore.getProtocol(ProtocolEngine.protocol.id);
+        const lastSavedCopy = HangingProtocols.findOne(ProtocolEngine.protocol._id);
 
         // Try to find the index of this stage in the previously saved copy
-        var stageIndex = getStageIndex(lastSavedCopy, stage.id);
+        let stageIndex = getStageIndex(lastSavedCopy, stage.id);
 
         // If the stage is new, and therefore wasn't present in the last save,
         // retrieve it's index in the array of new stage ids and use that for
@@ -88,11 +95,11 @@ Template.stageSortable.helpers({
             Session.get('timeAgoVariable');
 
             // Find the index of the stage in the array of newly created stage IDs
-            var newStageNumber = ProtocolEngine.newStageIds.indexOf(stage.id) + 1;
+            const newStageNumber = ProtocolEngine.newStageIds.indexOf(stage.id) + 1;
 
             // Use Moment.js to format the createdDate of this stage relative to the
             // current time
-            var dateCreatedFromNow = moment(stage.createdDate).fromNow();
+            const dateCreatedFromNow = moment(stage.createdDate).fromNow();
 
             // Return the label for the new stage,
             // e.g. "New Stage 1 (created a few seconds ago)"
@@ -108,7 +115,7 @@ Template.stageSortable.helpers({
      *
      * @returns {boolean} Whether or not a later stage exists
      */
-    isNextAvailable: function() {
+    isNextAvailable() {
         // Run this helper whenever the ProtocolEngine / LayoutManager has changed
         Session.get('LayoutManagerUpdated');
 
@@ -125,7 +132,7 @@ Template.stageSortable.helpers({
      *
      * @returns {boolean} Whether or not an earlier stage exists
      */
-    isPreviousAvailable: function() {
+    isPreviousAvailable() {
         // Run this helper whenever the ProtocolEngine / LayoutManager has changed
         Session.get('LayoutManagerUpdated');
 
@@ -143,9 +150,9 @@ Template.stageSortable.events({
     /**
      * Displays a stage when its title is clicked
      */
-    'click .sortable-item span': function() {
+    'click .sortable-item span'() {
         // Retrieve the index of this stage in the display set sequences
-        var stageIndex = getStageIndex(ProtocolEngine.protocol, this.id);
+        const stageIndex = getStageIndex(ProtocolEngine.protocol, this.id);
 
         // Display the selected stage
         ProtocolEngine.setCurrentProtocolStage(stageIndex);
@@ -154,12 +161,12 @@ Template.stageSortable.events({
      * Creates a new stage and adds it to the currently loaded Protocol at
      * the end of the display set sequence
      */
-    'click #addStage': function() {
+    'click #addStage'() {
         // Retrieve the model describing the current stage
-        var stage = ProtocolEngine.getCurrentStageModel();
+        const stage = ProtocolEngine.getCurrentStageModel();
 
         // Clone this stage to create a new stage
-        var newStage = stage.createClone();
+        const newStage = stage.createClone();
 
         // Remove the stage's name if it has one
         delete newStage.name;
@@ -171,7 +178,7 @@ Template.stageSortable.events({
         ProtocolEngine.newStageIds.push(newStage.id);
 
         // Calculate the index of the last stage in the display set sequence
-        var stageIndex = ProtocolEngine.protocol.stages.length - 1;
+        const stageIndex = ProtocolEngine.protocol.stages.length - 1;
 
         // Switch to the last stage in the display set sequence
         ProtocolEngine.setCurrentProtocolStage(stageIndex);
@@ -181,22 +188,22 @@ Template.stageSortable.events({
      * the stages array. If it is the currently active stage, the current stage is
      * set to one stage earlier in the display set sequence.
      */
-    'click .deleteStage': function() {
+    'click .deleteStage'() {
         // If this is the only stage in the Protocol, stop here
         if (ProtocolEngine.protocol.stages.length === 1) {
             return;
         }
 
-        var stageId = this.id;
+        const stageId = this.id;
 
-        var options = {
+        const options = {
             title: 'Remove Protocol Stage',
             text: 'Are you sure you would like to remove this Protocol Stage? This cannot be reversed.'
         };
 
-        showConfirmDialog(function() {
+        OHIF.viewerbase.showConfirmDialog(() => {
             // Retrieve the index of this stage in the display set sequences
-            var stageIndex = getStageIndex(ProtocolEngine.protocol, stageId);
+            const stageIndex = getStageIndex(ProtocolEngine.protocol, stageId);
 
             // Remove it from the display set sequence
             ProtocolEngine.protocol.stages.splice(stageIndex, 1);
@@ -204,7 +211,7 @@ Template.stageSortable.events({
             // If we have removed the currently active stage, switch to the one before it
             if (ProtocolEngine.stage === stageIndex) {
                 // Make sure we don't try to switch to a stage index below zero
-                var newStageIndex = Math.max(stageIndex - 1, 0);
+                const newStageIndex = Math.max(stageIndex - 1, 0);
 
                 // Display the new stage
                 ProtocolEngine.setCurrentProtocolStage(newStageIndex);
@@ -215,10 +222,10 @@ Template.stageSortable.events({
         }, options);
     },
 
-    'click .moveStageUp': function() {
+    'click .moveStageUp'() {
         // Get the old and new indices following a 'sort' event
-        var oldIndex = ProtocolEngine.stage;
-        var newIndex = Math.max(ProtocolEngine.stage - 1, 0);
+        const oldIndex = ProtocolEngine.stage;
+        const newIndex = Math.max(ProtocolEngine.stage - 1, 0);
 
         if (oldIndex === newIndex) {
             return;
@@ -235,10 +242,10 @@ Template.stageSortable.events({
         // Update the Session variable to the UI re-renders
         Session.set('LayoutManagerUpdated', Random.id());
     },
-    'click .moveStageDown': function() {
+    'click .moveStageDown'() {
         // Get the old and new indices following a 'sort' event
-        var oldIndex = ProtocolEngine.stage;
-        var newIndex = Math.min(ProtocolEngine.stage + 1, ProtocolEngine.protocol.stages.length - 1);
+        const oldIndex = ProtocolEngine.stage;
+        const newIndex = Math.min(ProtocolEngine.stage + 1, ProtocolEngine.protocol.stages.length - 1);
 
         if (oldIndex === newIndex) {
             return;

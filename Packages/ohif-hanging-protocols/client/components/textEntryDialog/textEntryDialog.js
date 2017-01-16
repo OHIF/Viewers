@@ -1,4 +1,10 @@
-var keys = {
+import { Blaze } from 'meteor/blaze';
+import { $ } from 'meteor/jquery';
+import { Template } from 'meteor/templating';
+
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
+const keys = {
     ESC: 27,
     ENTER: 13
 };
@@ -9,7 +15,7 @@ var keys = {
  *
  * @param dialog The DOM element of the dialog to close
  */
-function closeHandler(dialog) {
+const closeHandler = dialog => {
     // Hide the lesion dialog
     $(dialog).css('display', 'none');
 
@@ -17,8 +23,8 @@ function closeHandler(dialog) {
     $('.removableBackdrop').remove();
 
     // Restore the focus to the active viewport
-    setFocusToActiveViewport();
-}
+    Viewerbase.setFocusToActiveViewport();
+};
 
 /**
  * Displays and updates the UI of the Text Entry Dialog given a new title,
@@ -30,10 +36,10 @@ function closeHandler(dialog) {
  */
 openTextEntryDialog = function(title, instructions, currentValue, doneCallback) {
     // Get the lesion location dialog
-    var dialog = $('.textEntryDialog');
+    const dialog = $('.textEntryDialog');
 
     // Clear any input that is still on the page
-    var currentValueInput = dialog.find('input.currentValue');
+    const currentValueInput = dialog.find('input.currentValue');
     currentValueInput.val(currentValue);
 
     // Store the Dialog DOM data, rule level and rule in the template data
@@ -49,10 +55,10 @@ openTextEntryDialog = function(title, instructions, currentValue, doneCallback) 
     dialog.css('display', 'block');
 
     // Show the backdrop
-    UI.render(Template.removableBackdrop, document.body);
+    Blaze.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $('.removableBackdrop').one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', () => {
         closeHandler(dialog);
     });
 };
@@ -68,17 +74,17 @@ Template.textEntryDialog.events({
      * Save the user-specified text
      *
      */
-    'click .save': function() {
+    'click .save'() {
         // Retrieve the input properties to the template
-        var dialog = Template.textEntryDialog.dialog;
-        var currentValue = dialog.find('input.currentValue').val();
+        const dialog = Template.textEntryDialog.dialog;
+        const currentValue = dialog.find('input.currentValue').val();
 
         // If currentValue input is undefined, prevent saving this rule
         if (currentValue === undefined) {
             return;
         }
 
-        var doneCallback = Template.textEntryDialog.doneCallback;
+        const doneCallback = Template.textEntryDialog.doneCallback;
         if (doneCallback) {
             doneCallback(currentValue);
         }
@@ -89,7 +95,7 @@ Template.textEntryDialog.events({
     /**
      * Allow the user to click the Cancel button to close the dialog
      */
-    'click .cancel': function() {
+    'click .cancel'() {
         closeHandler(Template.textEntryDialog.dialog);
     },
     /**
@@ -98,22 +104,22 @@ Template.textEntryDialog.events({
      * @param event The Keydown event details
      * @returns {boolean} Return false to prevent bubbling of the event
      */
-    'keydown .textEntryDialog': function(event) {
-        var dialog = Template.textEntryDialog.dialog;
+    'keydown .textEntryDialog'(event) {
+        const dialog = Template.textEntryDialog.dialog;
 
         // If Esc key is pressed, close the dialog
         if (event.which === keys.ESC) {
             closeHandler(dialog);
             return false;
         } else if (event.which === keys.ENTER) {
-            var currentValue = dialog.find('input.currentValue').val();
+            const currentValue = dialog.find('input.currentValue').val();
 
             // If currentValue input is undefined, prevent saving this rule
             if (currentValue === undefined) {
                 return;
             }
 
-            var doneCallback = Template.textEntryDialog.doneCallback;
+            const doneCallback = Template.textEntryDialog.doneCallback;
             if (doneCallback) {
                 doneCallback(currentValue);
             }
@@ -128,9 +134,9 @@ Template.textEntryDialog.events({
      * @param event The Change event for the input
      * @param template The current template context
      */
-    'change input.currentValue': function(event, template) {
+    'change input.currentValue'(event, template) {
         // Get the DOM element representing the input box
-        var input = $(event.currentTarget);
+        const input = $(event.currentTarget);
 
         // Update the template data with the current value
         Template.textEntryDialog.currentValue = input.val();

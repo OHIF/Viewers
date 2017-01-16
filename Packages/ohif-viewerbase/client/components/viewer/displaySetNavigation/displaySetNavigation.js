@@ -15,13 +15,13 @@ Template.displaySetNavigation.events({
             return;
         }
 
-        OHIF.viewer.moveDisplaySets(false);
+        OHIF.viewerbase.layoutManager.moveDisplaySets(false);
     }
 });
 
 Template.displaySetNavigation.helpers({
     disableButton(isNext) {
         Session.get('LayoutManagerUpdated');
-        return !OHIF.viewer.canMoveDisplaySets(isNext);
+        return !OHIF.viewerbase.layoutManager.canMoveDisplaySets(isNext);
     }
 });

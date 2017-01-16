@@ -7,20 +7,29 @@ import { OHIF } from 'meteor/ohif:core';
  *
  * @param element {node} DOM Node representing the viewport element
  */
-displayReferenceLines = element => {
-    OHIF.log.info("imageViewerViewport displayReferenceLines");
+export function displayReferenceLines(element) {
 
     // Check if image plane (orientation / loction) data is present for the current image
     const enabledElement = cornerstone.getEnabledElement(element);
-    const imageId = enabledElement.image.imageId;
-    const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
 
-    if (!OHIF.viewer.refLinesEnabled || !imagePlane || !imagePlane.frameOfReferenceUID) {
+    // Check if element is already enabled and it's image was rendered
+    if(!enabledElement || !enabledElement.image) {
+        OHIF.log.info('displayReferenceLines enabled element is undefined or it\'s image is not rendered');
         return;
     }
 
+    const imageId = enabledElement.image.imageId;
+    const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+
     // Disable reference lines for the current element
     cornerstoneTools.referenceLines.tool.disable(element);
+
+    if (!OHIF.viewer.refLinesEnabled || !imagePlane || !imagePlane.frameOfReferenceUID) {
+        OHIF.log.info('displayReferenceLines refLinesEnabled is not enabled, no imagePlane or no frameOfReferenceUID');
+        return;
+    }
+
+    OHIF.log.info(`displayReferenceLines for image with id: ${imageId}`);
 
     // Loop through all other viewport elements and enable reference lines
     $('.imageViewerViewport').not(element).each((index, viewportElement) => {
@@ -40,4 +49,4 @@ displayReferenceLines = element => {
             cornerstoneTools.referenceLines.tool.enable(viewportElement, OHIF.viewer.updateImageSynchronizer);
         }
     });
-};
+}

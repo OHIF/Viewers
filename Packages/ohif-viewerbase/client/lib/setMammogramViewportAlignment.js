@@ -1,19 +1,24 @@
-setMammogramViewportAlignment = function(series, enabledElement, imageId) {
-    // Don't apply the MG viewport alignment to other series types
-    var viewTypes = ['MLO', 'CC', 'LM', 'ML', 'XCCL'];
-    var requiresInversion = ['LM']; // Tomo series are flipped
+import { Meteor } from 'meteor/meteor';
+import { $ } from 'meteor/jquery';
+import { setInstanceClassDefaultViewportFunction } from './instanceClassSpecificViewport';
+import { addSpecificMetadata } from './metaDataProvider';
 
-    var instance = cornerstoneTools.metaData.get('instance', imageId);
+const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
+    // Don't apply the MG viewport alignment to other series types
+    let viewTypes = ['MLO', 'CC', 'LM', 'ML', 'XCCL'];
+    let requiresInversion = ['LM']; // Tomo series are flipped
+
+    let instance = cornerstoneTools.metaData.get('instance', imageId);
     if (!instance) {
         return;
     }
 
-    var laterality = instance.laterality;
-    var element = enabledElement.element;
-    var position;
+    let laterality = instance.laterality;
+    let element = enabledElement.element;
+    let position;
 
-    var left = $(enabledElement.canvas).offset().left;
-    var right = left + enabledElement.canvas.width;
+    let left = $(enabledElement.canvas).offset().left;
+    let right = left + enabledElement.canvas.width;
 
     if (viewTypes.indexOf(instance.viewPosition) < 0) {
         return;
@@ -59,3 +64,5 @@ setMammogramViewportAlignment = function(series, enabledElement, imageId) {
 Meteor.startup(function() {
     setInstanceClassDefaultViewportFunction("1.2.840.10008.5.1.4.1.1.1.2", setMammogramViewportAlignment);
 });
+
+export { setMammogramViewportAlignment };

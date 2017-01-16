@@ -1,9 +1,12 @@
 import { Template } from 'meteor/templating';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { OHIF } from 'meteor/ohif:core';
 import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
+import { OHIF } from 'meteor/ohif:core';
+import { viewportUtils } from '../../../lib/viewportUtils';
+import { switchToImageRelative } from '../../../lib/switchToImageRelative';
+import { switchToImageByIndex } from '../../../lib/switchToImageByIndex';
 
 Template.cineDialog.onCreated(() => {
     const instance = Template.instance();
@@ -34,18 +37,15 @@ Template.cineDialog.onCreated(() => {
         OHIF.viewer.cine.framesPerSecond = rate;
 
         // Update playClip toolData for this imageId
-        const element = getActiveViewportElement();
+        const element = viewportUtils.getActiveViewportElement();
         if (!element) {
             return;
         }
 
-        const playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
-        playClipToolData.data[0].framesPerSecond = OHIF.viewer.cine.framesPerSecond;
-
         // If the movie is playing, stop/start to update the framerate
-        if (isPlaying()) {
+        if (viewportUtils.isPlaying()) {
             cornerstoneTools.stopClip(element);
-            cornerstoneTools.playClip(element);
+            cornerstoneTools.playClip(element, OHIF.viewer.cine.framesPerSecond);
         }
 
         Session.set('UpdateCINE', Random.id());
@@ -55,7 +55,7 @@ Template.cineDialog.onCreated(() => {
     instance.api = {
         displaySetPrevious: () => OHIF.viewer.moveDisplaySets(false),
         displaySetNext: () => OHIF.viewer.moveDisplaySets(true),
-        cineToggle: () => toggleCinePlay(),
+        cineToggle: () => viewportUtils.toggleCinePlay(),
         cineFirst: () => switchToImageByIndex(0),
         cineLast: () => switchToImageByIndex(-1),
         cinePrevious: () => switchToImageRelative(-1),
@@ -80,13 +80,19 @@ Template.cineDialog.onCreated(() => {
 
         Tracker.afterFlush(() => {
             // Get the active viewportElement
-            const element = getActiveViewportElement();
+            const element = viewportUtils.getActiveViewportElement();
             if (!element) {
                 return;
             }
 
+            // check if playClip tool has been initialized...
+            const playClipData = cornerstoneTools.getToolState(element, 'playClip');
+            if (!playClipData) {
+                return;
+            }
+
             // Get the cornerstone playClip tool data
-            const toolData = cornerstoneTools.getToolState(element, 'playClip').data[0];
+            const toolData = playClipData.data[0];
 
             // Get the cine object
             const cine = OHIF.viewer.cine;
@@ -99,7 +105,10 @@ Template.cineDialog.onCreated(() => {
             cine.loop = _.isUndefined(cine.loop) ? true : cine.loop;
 
             // Set the updated data on the form inputs
-            instance.$('form:first').data('component').value(cine);
+            const elementComponent = instance.$('form:first').data('component');
+            if (elementComponent) {
+                elementComponent.value(cine);
+            }
 
             // Update the session to refresh the framerate text
             Session.set('UpdateCINE', Random.id());
@@ -204,11 +213,9 @@ Template.cineDialog.onCreated(() => {
 });
 
 Template.cineDialog.onRendered(() => {
-
     const instance = Template.instance();
-
-    let dialog = instance.$('#cineDialog'),
-        singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
+    const dialog = instance.$('#cineDialog');
+    const singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
 
     // set dialog in optimal position and make sure it continues in a optimal position...
     // ... when the window has been resized
@@ -222,7 +229,10 @@ Template.cineDialog.onRendered(() => {
     instance.setResizeHandler(instance.setOptimalPosition);
 
     // Make the CINE dialog bounded and draggable
-    dialog.bounded().draggable({ defaultElementCursor: 'move' });
+    dialog.draggable({ defaultElementCursor: 'move' });
+
+    // Polyfill for older browsers
+    dialogPolyfill.registerDialog(dialog.get(0));
 
     // Prevent dialog from being dragged when user clicks any button
     dialog.find('.cine-navigation, .cine-controls, .cine-options').on('mousedown touchstart', function (e) {
@@ -239,7 +249,7 @@ Template.cineDialog.onDestroyed(() => {
 
 Template.cineDialog.events({
     'change [data-key=loop] input'(event, instance) {
-        const element = getActiveViewportElement();
+        const element = viewportUtils.getActiveViewportElement();
         const playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
         playClipToolData.data[0].loop = $(event.currentTarget).is(':checked');
         OHIF.viewer.cine.loop = playClipToolData.data[0].loop;
@@ -254,7 +264,7 @@ Template.cineDialog.events({
 
 Template.cineDialog.helpers({
     isPlaying() {
-        return isPlaying();
+        return viewportUtils.isPlaying();
     },
 
     framerate() {
@@ -264,11 +274,11 @@ Template.cineDialog.helpers({
 
     displaySetDisabled(isNext) {
         Session.get('LayoutManagerUpdated');
-        return !OHIF.viewer.canMoveDisplaySets(isNext) ? 'disabled' : '';
+        return !OHIF.viewerbase.layoutManager.canMoveDisplaySets(isNext) ? 'disabled' : '';
     },
 
     buttonDisabled() {
-        return hasMultipleFrames();
+        return viewportUtils.hasMultipleFrames();
     },
 
     getClassNames(baseCls) {

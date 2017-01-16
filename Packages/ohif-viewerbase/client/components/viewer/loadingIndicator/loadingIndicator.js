@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
@@ -8,42 +11,40 @@ Meteor.startup(function() {
 
 var loadHandlerTimeout;
 
-startLoadingHandler = function(element) {
+const startLoadingHandler = function(element) {
     clearTimeout(loadHandlerTimeout);
     loadHandlerTimeout = setTimeout(function() {
         console.log('startLoading');
         var elem = $(element);
         elem.siblings('.imageViewerErrorLoadingIndicator').css('display', 'none');
-        elem.find('canvas').not('.magnifyTool').addClass("faded");
+        elem.find('canvas').not('.magnifyTool').addClass('faded');
         elem.siblings('.imageViewerLoadingIndicator').css('display', 'block');
     }, OHIF.viewer.loadIndicatorDelay);
 };
 
-doneLoadingHandler = function(element) {
+const doneLoadingHandler = function(element) {
     clearTimeout(loadHandlerTimeout);
     var elem = $(element);
     elem.siblings('.imageViewerErrorLoadingIndicator').css('display', 'none');
-    elem.find('canvas').not('.magnifyTool').removeClass("faded");
+    elem.find('canvas').not('.magnifyTool').removeClass('faded');
     elem.siblings('.imageViewerLoadingIndicator').css('display', 'none');
 };
 
-errorLoadingHandler = function(element, imageId, error, source) {
+const errorLoadingHandler = function(element, imageId, error, source) {
     clearTimeout(loadHandlerTimeout);
     var elem = $(element);
 
     // Could probably chain all of these, but this is more readable
-    elem.find('canvas').not('.magnifyTool').removeClass("faded");
+    elem.find('canvas').not('.magnifyTool').removeClass('faded');
     elem.siblings('.imageViewerLoadingIndicator').css('display', 'none');
 
     // Don't display errors from the stackPrefetch tool
-    if (source === "stackPrefetch") {
+    if (source === 'stackPrefetch') {
         return;
     }
 
     var errorLoadingIndicator = elem.siblings('.imageViewerErrorLoadingIndicator');
     errorLoadingIndicator.css('display', 'block');
-
-    var cleanedImageId = imageId;
 
     // This is just used to expand upon some error messages that are sent
     // when things fail. An example is a network error throwing the error
@@ -57,7 +58,7 @@ errorLoadingHandler = function(element, imageId, error, source) {
         error = errorDetails[error];
     }
 
-    errorLoadingIndicator.find('.description').text("An error has occurred while loading image: " + cleanedImageId);
+    errorLoadingIndicator.find('.description').text("An error has occurred while loading image: " + imageId);
     if (error) {
         errorLoadingIndicator.find('.details').text("Details: " + error);
     }

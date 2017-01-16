@@ -1,6 +1,10 @@
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
+// OHIF Modules
+import { OHIF } from 'meteor/ohif:core';
+// Local Modules
+import { getImageId } from '../../../lib/getImageId.js';
 
 Template.imageThumbnail.onCreated(() => {
     const instance = Template.instance();
@@ -26,6 +30,10 @@ Template.imageThumbnail.onRendered(() => {
     const element = $element.get(0);
 
     instance.refreshImage = () => {
+        if (!element) {
+            return;
+        }
+
         // Disable cornerstone for thumbnail element and remove its canvas
         cornerstone.disable(element);
 
@@ -75,7 +83,9 @@ Template.imageThumbnail.onDestroyed(() => {
     const $element = $parent.find('.imageThumbnailCanvas');
     const element = $element.get(0);
 
-    cornerstone.disable(element);
+    if (element) {
+        cornerstone.disable(element);
+    }
 });
 
 Template.imageThumbnail.helpers({

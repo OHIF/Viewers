@@ -1,3 +1,5 @@
+import { Blaze } from 'meteor/blaze';
+
 /**
  * Helper function to determine if the current client devices
  * is touch-capable. This can be used to modify certain aspects of the UI.
@@ -6,7 +8,7 @@
  *
  * @returns {boolean} true if the client device is touch-capable, false otherwise
  */
-isTouchDevice = function() {
+const isTouchDevice = () => {
     return (('ontouchstart' in window) ||
     (navigator.MaxTouchPoints > 0) ||
     (navigator.msMaxTouchPoints > 0));
@@ -17,4 +19,6 @@ isTouchDevice = function() {
  *
  * @returns {boolean} true if the client device is touch-capable, false otherwise
  */
-UI.registerHelper('isTouchDevice', isTouchDevice);
+Blaze.registerHelper('isTouchDevice', isTouchDevice);
+
+export { isTouchDevice };

@@ -8,7 +8,7 @@ import { OHIF } from 'meteor/ohif:core';
  * @returns {string} The imageId to be used by Cornerstone
  */
 
-getWADORSImageId = function(instance) {
+export function getWADORSImageId(instance) {
     var columnPixelSpacing = 1.0;
     var rowPixelSpacing = 1.0;
     if (instance.pixelSpacing) {

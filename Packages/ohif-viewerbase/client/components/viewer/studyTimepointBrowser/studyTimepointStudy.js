@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
+import { sortingManager } from '../../../lib/sortingManager';
 
 Template.studyTimepointStudy.onCreated(() => {
     const instance = Template.instance();
@@ -14,11 +15,6 @@ Template.studyTimepointStudy.onCreated(() => {
         const studyInstanceUid = instance.data.study.studyInstanceUid;
         const selector = `.studyTimepointStudy[data-uid='${studyInstanceUid}']`;
         return isGlobal ? $(selector) : instance.$browser.find(selector);
-    };
-
-    // Set all the studies with the same uid to loading state
-    instance.setLoading = () => {
-
     };
 
     // Set the current study as selected in the studies list
@@ -110,7 +106,7 @@ Template.studyTimepointStudy.events({
                 const $studies = instance.getStudyElement(true);
                 $studies.trigger('loadStarted');
                 getStudyMetadata(studyInstanceUid, study => {
-                    study.displaySets = createStacks(study);
+                    study.displaySets = sortingManager.getDisplaySets(study);
                     instance.data.study = study;
                     ViewerStudies.insert(study, () => {
                         // To make sure studies are rendered in the DOM
