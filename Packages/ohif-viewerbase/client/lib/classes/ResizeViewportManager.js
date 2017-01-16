@@ -1,0 +1,153 @@
+import { Session } from 'meteor/session';
+import { $ } from 'meteor/jquery';
+import { OHIF } from 'meteor/ohif:core';
+import { getInstanceClassDefaultViewport } from '../instanceClassSpecificViewport';
+
+// Manage resizing viewports triggered by window resize
+export class ResizeViewportManager {
+    constructor() {
+        OHIF.log.info('ResizeViewportManager');
+    }
+
+    // Reposition Study Series Quick Switch based whether side bars are opened or not
+    repositionStudySeriesQuickSwitch() {
+        OHIF.log.info('ResizeViewportManager repositionStudySeriesQuickSwitch');
+
+        const activeTab = Session.get('activeContentId');
+        if(activeTab === 'viewerTab') {
+            const nViewports = OHIF.viewerbase.layoutManager.viewportData.length;
+
+            if(nViewports && nViewports > 1) {
+                const viewer = $('#viewer');
+                const leftSidebar = viewer.find('.sidebar-left.sidebar-open');
+                const rightSidebar = viewer.find('.sidebar-right.sidebar-open');
+
+                const leftQuickSwitch = $('.quickSwitchWrapper.left');
+                const rightQuickSwitch = $('.quickSwitchWrapper.right');
+
+                const hasLeftSidebar = leftSidebar.length > 0;
+                const hasRightSidebar = rightSidebar.length > 0;
+
+                rightQuickSwitch.removeClass('left-sidebar-only');
+                leftQuickSwitch.removeClass('right-sidebar-only');
+
+                let leftOffset = 0;
+
+                if(hasLeftSidebar) {
+                    leftOffset = ( leftSidebar.width()/$(window).width() ) * 100;
+
+                    if(!hasRightSidebar) {
+                        rightQuickSwitch.addClass('left-sidebar-only');
+                    }
+                }
+
+                if(hasRightSidebar && !hasLeftSidebar) {
+                    leftQuickSwitch.addClass('right-sidebar-only');
+                }
+
+                const leftPosition = ( ($('#imageViewerViewports').width() / nViewports) / $(window).width() ) * 100 + leftOffset;
+                const rightPosition = 100 - leftPosition;
+
+                leftQuickSwitch.css('right', rightPosition + '%');
+                rightQuickSwitch.css('left', leftPosition + '%');
+            }
+            
+        }
+    }
+
+    // Relocate dialogs positions
+    relocateDialogs(){
+        OHIF.log.info('ResizeViewportManager relocateDialogs');
+
+        const bottomRightDialogs = $('#cineDialog, #annotationDialog, #textMarkerOptionsDialog');
+        bottomRightDialogs.css({
+            top: '', // This removes the CSS property completely
+            left: '',
+            bottom: 0,
+            right: 0
+        });
+
+        const centerDialogs = $('.draggableDialog').not(bottomRightDialogs);
+
+        centerDialogs.css({
+            top: 0,
+            left:0,
+            bottom: 0,
+            right: 0
+        });
+    }
+
+    // Resize viewport scrollbars
+    resizeScrollbars(element) {
+        OHIF.log.info('ResizeViewportManager resizeScrollbars');
+
+        const currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
+        const imageControls = currentOverlay.find('.imageControls');
+        currentOverlay.find('.imageControls').height($(element).height());
+
+        // Set it's width to its parent's height
+        // (because webkit is stupid and can't style vertical sliders)
+        const scrollbar = currentOverlay.find('#scrollbar');
+        scrollbar.height(scrollbar.parent().height() - 20);
+
+        const currentImageSlider = currentOverlay.find('#imageSlider');
+        const overlayHeight = currentImageSlider.parent().height();
+        const browserInfo = cornerstoneTools.getBrowserInfo();
+
+        if (browserInfo.indexOf('IE') > -1) {
+            currentImageSlider.height(overlayHeight);
+        } else {
+            currentImageSlider.width(overlayHeight);
+        }
+    }
+
+    // Resize a single viewport element
+    resizeViewportElement(element) {
+        let enabledElement;
+        try {
+            enabledElement = cornerstone.getEnabledElement(element);
+        } catch(error) {
+            return;
+        }
+
+        cornerstone.resize(element, true);
+
+        if (enabledElement.fitToWindow === false) {
+            const imageId = enabledElement.image.imageId;
+            const instance = cornerstoneTools.metaData.get('instance', imageId);
+            const instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
+            cornerstone.setViewport(element, instanceClassViewport);
+        }
+    }
+
+    // Resize each viewport element
+    resizeViewportElements() {
+        this.relocateDialogs();
+
+        const viewportResizeTimer = setTimeout(() => {
+            this.repositionStudySeriesQuickSwitch();
+
+            const elements = $('.imageViewerViewport').not('.empty');
+            elements.each((index, element) => {
+                this.resizeViewportElement(element);
+                this.resizeScrollbars(element);
+            });
+        }, 1);
+    }
+
+    // Function to override resizeViewportElements function
+    setResizeViewportElement(resizeViewportElements) {
+        this.resizeViewportElements = resizeViewportElements;
+    }
+
+    // Avoid doing DOM manipulation during the resize handler
+    // because it is fired very often.
+    // Resizing is therefore performed 100 ms after the resize event stops.
+    handleResize() {
+        clearTimeout(this.resizeTimer);
+        this.resizeTimer = setTimeout(() => {
+            OHIF.log.info('ResizeViewportManager resizeViewportElements');
+            this.resizeViewportElements();
+        }, 100);
+    }
+}

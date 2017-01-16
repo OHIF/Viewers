@@ -1,0 +1,99 @@
+<template name="textMarkerDialogs">
+    <dialog id="textMarkerOptionsDialog" oncontextmenu="return false" class="textMarkerDialog noselect">
+        <h5>Spine Labels</h5>
+        <a class="closeTextMarkerDialogs">{{> iconCrossCircle}}</a>
+        <div class='optionsDiv'>
+            <div class="select2-wrapper optionBox">
+                <label for="startFrom">Label: </label>
+                <select name="start" id="startFrom" tabindex="-1" class="select2">
+                    <!-- Cervical spine !-->
+                    <option value="C1" selected>C1</option>
+                    <option value="C2">C2</option>
+                    <option value="C3">C3</option>
+                    <option value="C4">C4</option>
+                    <option value="C5">C5</option>
+                    <option value="C6">C6</option>
+                    <option value="C7">C7</option>
+
+                    <!-- Thoracic spine !-->
+                    <option value="T1">T1</option>
+                    <option value="T2">T2</option>
+                    <option value="T3">T3</option>
+                    <option value="T4">T4</option>
+                    <option value="T5">T5</option>
+                    <option value="T6">T6</option>
+                    <option value="T7">T7</option>
+                    <option value="T8">T8</option>
+                    <option value="T9">T9</option>
+                    <option value="T10">T10</option>
+                    <option value="T11">T11</option>
+                    <option value="T12">T12</option>
+
+                    <!-- Lumbar spine !-->
+                    <option value="L1">L1</option>
+                    <option value="L2">L2</option>
+                    <option value="L3">L3</option>
+                    <option value="L4">L4</option>
+                    <option value="L5">L5</option>
+                </select>
+            </div>
+            <div class="optionBox">
+                <div class="btn-group iconSwitch" data-toggle="buttons">
+                    <label for="ascending" class="btn btn-link" title="Add labels from head to feet (down) or feet to head (up)" data-toggle="tooltip" data-container="body">
+                        <input type="checkbox" id="ascending"> <span class="on"><i class="fa fa-long-arrow-up" aria-hidden="true"></i></span> <span class="off"><i class="fa fa-long-arrow-down" aria-hidden="true"></i></span>
+                    </label>
+                </div>
+            </div>
+            <button id="clearLabels" class="btn viewerBtn btn-xs" type="button">
+                Clear Labels <i class="viewerIcon-clear"></i>
+            </button>
+        </div>        
+    </dialog>
+
+    <dialog id="textMarkerRelabelDialog" oncontextmenu="return false" class="textMarkerDialog noselect">
+        <h5>Change Spine Label</h5>
+        <div class="relabelOptions">
+
+            <div class="select2-wrapper optionBox">
+                <label for="relabelSelect">Label:</label>
+                <select name="relabelSelect" class="relabelSelect">
+                    <!-- Cervical spine !-->
+                    <option value="C1">C1</option>
+                    <option value="C2">C2</option>
+                    <option value="C3">C3</option>
+                    <option value="C4">C4</option>
+                    <option value="C5">C5</option>
+                    <option value="C6">C6</option>
+                    <option value="C7">C7</option>
+
+                    <!-- Thoracic spine !-->
+                    <option value="T1">T1</option>
+                    <option value="T2">T2</option>
+                    <option value="T3">T3</option>
+                    <option value="T4">T4</option>
+                    <option value="T5">T5</option>
+                    <option value="T6">T6</option>
+                    <option value="T7">T7</option>
+                    <option value="T8">T8</option>
+                    <option value="T9">T9</option>
+                    <option value="T10">T10</option>
+                    <option value="T11">T11</option>
+                    <option value="T12">T12</option>
+
+                    <!-- Lumbar spine !-->
+                    <option value="L1">L1</option>
+                    <option value="L2">L2</option>
+                    <option value="L3">L3</option>
+                    <option value="L4">L4</option>
+                    <option value="L5">L5</option>
+                </select>
+            </div>
+        </div>
+        <div class="relabelButtons">
+            <button class="relabelRemove btn btn-xs btn-secondary viewerBtn">Delete</button>
+            <button class="relabelConfirm btn btn-xs viewerBtn">Save</button>
+        </div>
+        <div class="dialog arrow">
+        </div>
+    </dialog>
+</template>
