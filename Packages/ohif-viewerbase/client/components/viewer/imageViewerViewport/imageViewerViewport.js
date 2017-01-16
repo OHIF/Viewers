@@ -593,7 +593,6 @@ Template.imageViewerViewport.onRendered(function() {
     const study = ViewerStudies.findOne({
         studyInstanceUid: this.data.studyInstanceUid
     });
-    var displaySetInstanceUid = this.data.displaySetInstanceUid;
 
     data.study = study;
     setDisplaySet(data, displaySetInstanceUid, templateData);
