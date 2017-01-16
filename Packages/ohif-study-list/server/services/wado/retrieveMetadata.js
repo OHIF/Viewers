@@ -109,7 +109,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             laterality: DICOMWeb.getString(instance['00200062']),
             viewPosition: DICOMWeb.getString(instance['00185101']),
             acquisitionDatetime: DICOMWeb.getString(instance['0008002A']),
-            numFrames: DICOMWeb.getNumber(instance['00280008']),
+            numberOfFrames: DICOMWeb.getNumber(instance['00280008']),
             frameIncrementPointer: DICOMWeb.getAttribute(instance['00280009']),
             frameTime: DICOMWeb.getNumber(instance['00181063']),
             frameTimeVector: parseFloatArray(DICOMWeb.getString(instance['00181065'])),

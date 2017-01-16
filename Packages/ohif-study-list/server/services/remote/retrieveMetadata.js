@@ -97,7 +97,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             laterality: remoteGetValue(instance['0020,0062']),
             viewPosition: remoteGetValue(instance['0018,5101']),
             acquisitionDatetime: remoteGetValue(instance['0008,002A']),
-            numFrames: parseFloat(remoteGetValue(instance['0028,0008'])),
+            numberOfFrames: parseFloat(remoteGetValue(instance['0028,0008'])),
             frameIncrementPointer: remoteGetValue(instance['0028,0009']),
             frameTime: parseFloat(remoteGetValue(instance['0018,1063'])),
             frameTimeVector: parseFloatArray(remoteGetValue(instance['0018,1065']))

@@ -30,10 +30,10 @@ function createAndAddStack(stackMap, study, displaySet) {
           imageIndex: imageIndex + 1
       };
 
-      const numFrames = image.numFrames;
-      if (numFrames > 1) {
+      const numberOfFrames = image.numberOfFrames;
+      if (numberOfFrames > 1) {
           OHIF.log.info('Multiframe image detected');
-          for (let i = 0; i < numFrames; i++) {
+          for (let i = 0; i < numberOfFrames; i++) {
               metaData.frame = i;
               imageId = getImageId(image, i);
               imageIds.push(imageId);

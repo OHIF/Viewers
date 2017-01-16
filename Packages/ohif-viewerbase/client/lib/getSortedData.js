@@ -126,7 +126,6 @@ const stackOfInstancesToDisplaySets = (sopInstances, seriesView) => {
     const groups = _.groupBy(sopInstances, sopInstance => {
         // Create an empty string to store our key
         let result = '';
-        const instanceView = sopInstance.getData();
 
         // For each rule, find out if the tag exists
         seriesSplittingRules.forEach(rule => {
@@ -134,8 +133,8 @@ const stackOfInstancesToDisplaySets = (sopInstances, seriesView) => {
             result += ';'
 
             // If the tag exists, concatenate its value to our key
-            if (instanceView.exists(rule.tag)) {
-                result += instanceView.raw(rule.tag);
+            if (sopInstance.tagExists(rule.tag)) {
+                result += sopInstance.getRawValue(rule.tag);
             }
         });
         

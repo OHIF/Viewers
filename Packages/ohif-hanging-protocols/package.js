@@ -26,7 +26,6 @@ Package.onUse(function(api) {
     // Both client & server
     api.addFiles('both/namespace.js');
     api.addFiles('both/collections.js');
-    //api.addFiles('both/dicomTagDescriptions.js');
     api.addFiles('both/schema.js');
     api.addFiles('both/hardcodedData.js');
     api.addFiles('both/testData.js');

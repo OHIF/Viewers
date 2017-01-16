@@ -1,9 +1,10 @@
 import { Metadata } from './Metadata';
+import { dicomTagDescriptions } from '../../dicomTagDescriptions';
 
 const UNDEFINED = 'undefined';
 const NUMBER = 'number';
 const STRING = 'string';
-const REGEX_TAG = /^x[0-9a-f]{8}$/;
+const REGEX_TAG = /^x[0-9a-fx]{8}$/;
 
 export class InstanceMetadata extends Metadata {
 
@@ -132,7 +133,17 @@ export class InstanceMetadata extends Metadata {
             propertyName = tagOrProperty;
         }
 
-        // @TODO: map tagName to propertyName and vice versa
+        // It's a property
+        if (tagName === null) {
+            for (let tag in dicomTagDescriptions) {
+                if (dicomTagDescriptions[tag] === propertyName) {
+                    tagName = tag;
+                    break;
+                }
+            }
+        } else if (propertyName === null) {
+            propertyName = dicomTagDescriptions[tagName] || null;
+        }
 
         return { tagName, propertyName };
     }

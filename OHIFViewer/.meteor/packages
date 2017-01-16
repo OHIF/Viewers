@@ -13,6 +13,7 @@ ohif:study-list
 ohif:dicom-services
 ohif:hanging-protocols
 # ohif:user-management
+ohif:metadata
 
 twbs:bootstrap
 http@1.2.10

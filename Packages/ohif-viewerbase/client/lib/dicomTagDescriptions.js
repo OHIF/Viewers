@@ -1,4 +1,4 @@
-HP.tagDescriptions = {
+export const dicomTagDescriptions = {
     x00020000: 'FileMetaInfoGroupLength',
     x00020001: 'FileMetaInfoVersion',
     x00020002: 'MediaStorageSOPClassUID',

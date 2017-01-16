@@ -44,7 +44,7 @@ function createStacks(study) {
                 displaySet.setAttributes({
                     isClip: true,
                     studyInstanceUid: study.studyInstanceUid, // Include the study instance Uid for drag/drop purposes
-                    numImageFrames: instance.numFrames, // Override the default value of instances.length
+                    numImageFrames: instance.numberOfFrames, // Override the default value of instances.length
                     instanceNumber: instance.instanceNumber, // Include the instance number
                     acquisitionDatetime: instance.acquisitionDatetime // Include the acquisition datetime
                 });
@@ -110,7 +110,7 @@ function isSingleImageModality(modality) {
 }
 
 function isMultiFrame(instance) {
-    return instance.numFrames > 1;
+    return instance.numberOfFrames > 1;
 }
 
 /**
