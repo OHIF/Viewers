@@ -13,7 +13,7 @@ Session.set('TimepointsReady', false);
 Session.set('MeasurementsReady', false);
 
 Template.viewer.onCreated(() => {
-    const toolManager = Viewerbase.toolManager;
+    const toolManager = OHIF.viewerbase.toolManager;
     ViewerData = window.ViewerData || ViewerData;
 
     const instance = Template.instance();
@@ -69,7 +69,7 @@ Template.viewer.onCreated(() => {
 
     instance.data.studies.forEach(study => {
         study.selected = true;
-        study.displaySets = Viewerbase.createStacks(study);
+        study.displaySets = OHIF.viewerbase.createStacks(study);
         ViewerStudies.insert(study);
     });
 

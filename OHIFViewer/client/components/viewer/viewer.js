@@ -54,7 +54,7 @@ Template.viewer.onCreated(() => {
     ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
-        study.displaySets = Viewerbase.createStacks(study);
+        study.displaySets = OHIF.viewerbase.createStacks(study);
         // const studyMetadata = new OHIF.metadata.StudyMetadata(study);
         // study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
         ViewerStudies.insert(study);
