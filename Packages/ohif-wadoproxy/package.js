@@ -9,7 +9,7 @@ Package.onUse(function(api) {
 
     api.use('ecmascript');
     api.use('standard-app-packages');
-    api.use('clinical:router');
+    api.use('iron:router@1.0.13');
 
     api.addFiles('server/namespace.js');
     

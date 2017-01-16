@@ -9,11 +9,11 @@ OHIF.viewer.cine = {
 };
 
 OHIF.viewer.functionList = {
-    toggleCineDialog: toggleCineDialog,
-    toggleCinePlay: toggleCinePlay,
-    clearTools: clearTools,
-    resetViewport: resetViewport,
-    invert: invert
+    toggleCineDialog: OHIF.viewerbase.viewportUtils.toggleCineDialog,
+    toggleCinePlay: OHIF.viewerbase.viewportUtils.toggleCinePlay,
+    clearTools: OHIF.viewerbase.viewportUtils.clearTools,
+    resetViewport: OHIF.viewerbase.viewportUtils.resetViewport,
+    invert: OHIF.viewerbase.viewportUtils.invert
 };
 
 Session.setDefault('activeViewport', false);

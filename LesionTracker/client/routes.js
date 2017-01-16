@@ -1,3 +1,6 @@
+import { Session } from 'meteor/session';
+import { Router } from 'meteor/iron:router';
+
 Session.setDefault('ViewerData', {});
 
 // verifyEmail controls whether emailVerification template will be rendered or not
