@@ -27,7 +27,7 @@ let gestures = {
 
 let toolDefaultStates = {
     activate: [],
-    deactivate: ['length', 'angle', 'annotate', 'ellipticalRoi', 'rectangleRoi', 'textMarker'],
+    deactivate: ['length', 'angle', 'annotate', 'ellipticalRoi', 'rectangleRoi', 'spine'],
     enable: [],
     disable: [],
     disabledToolButtons: [],
@@ -168,13 +168,15 @@ export const toolManager = {
         });
 
         // Set the configuration values for the text annotation (Arrow) tool
-        const annotateConfig = {
+
+        // @TODO: Fix this, needs to import them from somewhere
+        /*const annotateConfig = {
             getTextCallback: getAnnotationTextCallback,
             changeTextCallback: changeAnnotationTextCallback,
             drawHandles: false,
             arrowFirst: true
         };
-        arrowAnnotate.setConfiguration(annotateConfig);
+        arrowAnnotate.setConfiguration(annotateConfig);*/
 
         const zoomConfig = {
             minScale: 0.05,
