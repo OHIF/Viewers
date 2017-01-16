@@ -1,3 +1,5 @@
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
 StudyList = {
     functions: {},
     callbacks: {}
@@ -8,7 +10,7 @@ StudyList.callbacks.middleClickOnStudy = dblClickOnStudy;
 
 function dblClickOnStudy(data) {
     // Use the formatPN template helper to clean up the patient name
-    var title = formatPN(data.patientName);
+    var title = Viewerbase.helpers.formatPN(data.patientName);
     openNewTab(data.studyInstanceUid, title);
 }
 

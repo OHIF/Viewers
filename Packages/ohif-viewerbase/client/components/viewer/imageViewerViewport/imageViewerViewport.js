@@ -478,11 +478,11 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
  */
 const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
     const study = data.study;
-    if (!study || !study.series) {
+    if (!study || !study.displaySets) {
         throw new OHIFError('Study does not exist or has no display sets');
     }
 
-    study.series.every(displaySet => {
+    study.displaySets.every(displaySet => {
         if (displaySet.displaySetInstanceUid === displaySetInstanceUid) {
             data.displaySet = displaySet;
             return false;

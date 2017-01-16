@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 // Define the StudyMetaData object. This is used as a cache
 // to store study meta data information to prevent unnecessary
@@ -55,7 +56,7 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
 
         // Once we have retrieved the data, we sort the series' by series
         // and instance number in ascending order
-        sortStudy(study);
+        Viewerbase.sortStudy(study);
 
         // Add additional metadata to our study from the studylist
         var studylistStudy = StudyListStudies.findOne({

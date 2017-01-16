@@ -22,6 +22,11 @@ Template.displaySetNavigation.events({
 Template.displaySetNavigation.helpers({
     disableButton(isNext) {
         Session.get('LayoutManagerUpdated');
+
+        if (!OHIF.viewerbase.layoutManager) {
+            return;
+        }
+
         return !OHIF.viewerbase.layoutManager.canMoveDisplaySets(isNext);
     }
 });

@@ -55,13 +55,11 @@ export class LayoutManager {
             // Keep the displayed display sets
             self.viewportData = oldViewportData;
             currentViewportIndex = oldViewportData.length;
-        } 
-        else if (viewportsAmount <= oldViewportData.length) {
+        } else if (viewportsAmount <= oldViewportData.length) {
             // Reduce the original displayed display sets
             self.viewportData = oldViewportData.slice(0, viewportsAmount);
             return;
-        } 
-        else {
+        } else {
             // Reset all display sets
             self.viewportData = [];
         }
@@ -69,7 +67,7 @@ export class LayoutManager {
         // Get all the display sets for the viewer studies
         let displaySets = [];
         this.studies.forEach(study => {
-            study.series.forEach(displaySet => {
+            study.displaySets.forEach(displaySet => {
                 displaySet.images.length && displaySets.push(displaySet);
             });
         });
@@ -82,8 +80,7 @@ export class LayoutManager {
             const beginIndex = sequenceMap.values().next().value[0].displaySetIndex + currentLength;
             const endIndex = beginIndex + (viewportsAmount - currentLength);
             appendix = displaySets.slice(beginIndex, endIndex);
-        } 
-        else {
+        } else {
             // Get available display sets from the first to the grid size
             appendix = displaySets.slice(0, viewportsAmount);
         }

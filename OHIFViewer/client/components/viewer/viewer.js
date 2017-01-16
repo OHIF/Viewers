@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 OHIF.viewer = OHIF.viewer || {};
 OHIF.viewer.defaultTool = 'wwwc';
@@ -52,7 +53,7 @@ Template.viewer.onCreated(() => {
     ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
-        study.displaySets = createStacks(study);
+        study.displaySets = Viewerbase.createStacks(study);
         ViewerStudies.insert(study);
         ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });

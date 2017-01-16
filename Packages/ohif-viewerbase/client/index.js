@@ -131,6 +131,11 @@ Viewerbase.sortingManager = sortingManager;
 import { crosshairsSynchronizers } from './lib/crosshairsSynchronizers';
 Viewerbase.crosshairsSynchronizers = crosshairsSynchronizers;
 
+// createStacks.*
+import { createStacks } from './lib/createStacks';
+Viewerbase.createStacks = createStacks;
+
+
 /**
  * Exported Singletons
  */

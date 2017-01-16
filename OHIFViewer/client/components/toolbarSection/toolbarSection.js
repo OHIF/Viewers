@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.toolbarSection.onCreated(() => {
     const instance = Template.instance();
@@ -181,7 +182,7 @@ Template.toolbarSection.helpers({
                 title: 'CINE',
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-youtube-play',
-                disableFunction: hasMultipleFrames
+                disableFunction: Viewerbase.viewportUtils.hasMultipleFrames
             });
         }
 
@@ -231,11 +232,11 @@ Template.toolbarSection.onRendered(function() {
     instance.$('#layout').dropdown();
 
     if (OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
-        toggleCineDialog();
+        Viewerbase.viewportUtils.toggleCineDialog();
     }
 
     // Set disabled/enabled tool buttons that are set in toolManager
-    const states = toolManager.getToolDefaultStates();
+    const states = Viewerbase.toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
     const allToolbarButtons = $('#toolbar').find('button');
     if (disabledToolButtons && disabledToolButtons.length > 0) {

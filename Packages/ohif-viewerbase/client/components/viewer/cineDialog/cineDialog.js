@@ -274,6 +274,12 @@ Template.cineDialog.helpers({
 
     displaySetDisabled(isNext) {
         Session.get('LayoutManagerUpdated');
+
+        // @TODO: Investigate why this is running while OHIF.viewerbase.layoutManager is undefined
+        if (!OHIF.viewerbase.layoutManager) {
+            return;
+        }
+
         return !OHIF.viewerbase.layoutManager.canMoveDisplaySets(isNext) ? 'disabled' : '';
     },
 
