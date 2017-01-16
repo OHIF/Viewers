@@ -247,7 +247,7 @@ Template.toolbarSection.events({
 
 Template.toolbarSection.onRendered(function() {
     // Set disabled/enabled tool buttons that are set in toolManager
-    const states = toolManager.getToolDefaultStates();
+    const states = Viewerbase.toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
     const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton:not(.nonAutoDisableState)');
 

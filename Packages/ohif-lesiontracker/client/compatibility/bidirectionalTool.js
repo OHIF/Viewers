@@ -1,5 +1,6 @@
 import { toolManager } from 'meteor/ohif:viewerbase';
 import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
@@ -7,7 +8,7 @@ import { OHIF } from 'meteor/ohif:core';
 
     var toolType = 'bidirectional';
 
-    const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
+    const shadowConfig = Viewerbase.toolManager.getToolDefaultStates().shadowConfig;
 
     var configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,

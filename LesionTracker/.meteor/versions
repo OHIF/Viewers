@@ -26,15 +26,9 @@ callback-hook@1.0.10
 check@1.2.4
 clinical:active-entry@1.5.16
 clinical:auto-resizing@0.2.0
-clinical:error-pages@0.2.0
-clinical:extended-api@2.2.4
 clinical:fonts@1.1.4
 clinical:hipaa-audit-log@2.4.2
 clinical:hipaa-logger@1.0.1
-clinical:router@2.0.19
-clinical:router-location@2.1.0
-clinical:router-middleware-stack@2.1.2
-clinical:router-url@2.1.0
 clinical:theming@0.4.10
 coffeescript@1.11.1_4
 ddp@1.2.5

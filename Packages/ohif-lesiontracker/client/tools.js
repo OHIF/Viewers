@@ -1,4 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
 Meteor.startup(function() {
+    const toolManager = Viewerbase.toolManager;
+
     toolManager.addTool('bidirectional', {
         mouse: cornerstoneTools.bidirectional,
         touch: cornerstoneTools.bidirectionalTouch
@@ -53,5 +58,4 @@ Meteor.startup(function() {
     }
 
     toolManager.setToolDefaultStates(currentDefaultStates);
-
 });

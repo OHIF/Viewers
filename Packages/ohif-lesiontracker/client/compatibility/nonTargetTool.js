@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { toolManager } from 'meteor/ohif:viewerbase';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
@@ -7,7 +7,7 @@ import { toolManager } from 'meteor/ohif:viewerbase';
 
     const toolType = 'nonTarget';
 
-    const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
+    const shadowConfig = Viewerbase.toolManager.getToolDefaultStates().shadowConfig;
 
     const configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,

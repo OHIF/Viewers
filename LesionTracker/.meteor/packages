@@ -17,10 +17,7 @@ tracker@1.1.1                 # Meteor's client-side reactive programming librar
 es5-shim@4.6.15               # ECMAScript 5 compatibility for older browsers.
 ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
 
-clinical:router
-clinical:extended-api
 clinical:active-entry
-clinical:error-pages
 clinical:theming
 clinical:fonts
 clinical:hipaa-audit-log

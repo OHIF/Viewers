@@ -13,7 +13,7 @@ Package.on_use(function (api) {
   api.use('mrt:moment@2.8.1', 'client');
   api.use('grove:less@0.1.1', 'client');
 
-  api.use('clinical:router@2.0.17');
+  api.use('iron:router@1.0.13');
   api.use('clinical:fonts@1.0.0', 'client');
   api.use('clinical:auto-resizing@0.1.2', 'client');
   api.use('clinical:hipaa-logger@1.0.0');

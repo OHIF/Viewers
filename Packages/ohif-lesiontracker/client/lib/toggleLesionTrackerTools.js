@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 /**
  * Show / hide lesion tracker tools
@@ -10,6 +11,8 @@ let previousActiveTool;
 let toolsShown = true;
 
 OHIF.lesiontracker.toggleLesionTrackerTools = () => {
+    const toolManager = Viewerbase.toolManager;
+
     if (toolsShown === true) {
         // Save the current settings for later
         previousStates = toolManager.getToolDefaultStates();
@@ -43,6 +46,7 @@ OHIF.lesiontracker.toggleLesionTrackerTools = () => {
 };
 
 OHIF.lesiontracker.toggleLesionTrackerToolsButtons = (isEnabled) => {
+    const toolManager = Viewerbase.toolManager;
     const toolStates = previousStates || toolManager.getToolDefaultStates();
 
     if (isEnabled) {

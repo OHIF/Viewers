@@ -5,11 +5,15 @@ import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 import { _ } from 'meteor/underscore';
 
+// @TODO: Figure out what to change so we don't have this duplicate import (export createStacks?)
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
 Session.set('ViewerMainReady', false);
 Session.set('TimepointsReady', false);
 Session.set('MeasurementsReady', false);
 
 Template.viewer.onCreated(() => {
+    const toolManager = Viewerbase.toolManager;
     ViewerData = window.ViewerData || ViewerData;
 
     const instance = Template.instance();
@@ -65,7 +69,7 @@ Template.viewer.onCreated(() => {
 
     instance.data.studies.forEach(study => {
         study.selected = true;
-        study.displaySets = createStacks(study);
+        study.displaySets = Viewerbase.createStacks(study);
         ViewerStudies.insert(study);
     });
 
