@@ -1,4 +1,9 @@
+import { Meteor } from 'meteor/meteor';
+import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
+// OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
 
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
@@ -74,7 +79,7 @@ HP.addCustomViewportSetting = function(settingId, settingName, options, callback
 Meteor.startup(function() {
     HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.keys(OHIF.viewer.wlPresets), function(element, optionValue) {
         if (OHIF.viewer.wlPresets.hasOwnProperty(optionValue)) {
-            applyWLPreset(optionValue, element);
+            OHIF.viewerbase.wlPresets.applyWLPreset(optionValue, element);
         }
     });
 });
@@ -191,7 +196,7 @@ HP.ProtocolEngine = class ProtocolEngine {
     findMatchByStudy(study) {
         var matched = [];
 
-        HP.ProtocolStore.getProtocol().forEach(protocol => {
+        HangingProtocols.find().forEach(protocol => {
             // Clone the protocol's protocolMatchingRules array
             // We clone it so that we don't accidentally add the
             // numberOfPriorsReferenced rule to the Protocol itself.
@@ -220,7 +225,9 @@ HP.ProtocolEngine = class ProtocolEngine {
         });
 
         if (!matched.length) {
-            var defaultProtocol = HP.ProtocolStore.getProtocol('defaultProtocol');
+            var defaultProtocol = HangingProtocols.findOne({
+                id: 'defaultProtocol'
+            });
 
             return [{
                 score: 1,
@@ -403,7 +410,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 if (!alreadyLoaded) {
                     getStudyMetadata(priorStudy.studyInstanceUid, study => {
                         study.abstractPriorValue = abstractPriorValue;
-                        study.displaySets = createStacks(study);
+                        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
                         ViewerStudies.insert(study);
                         this.studies.push(study);
                         this.matchImages(viewport);
@@ -437,7 +444,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                     // This tests to make sure there is actually image data in this instance
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227
-                    if (!isImage(instance.sopClassUid) && !instance.rows) {
+                    if (!OHIF.viewerbase.isImage(instance.sopClassUid) && !instance.rows) {
                         return;
                     }
 
@@ -482,7 +489,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                     // If the instance was found, set the displaySet ID
                     if (displaySet) {
                         imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
-                        imageDetails.imageId = getImageId(instance);
+                        imageDetails.imageId = OHIF.viewerbase.getImageId(instance);
                     }
 
                     if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {

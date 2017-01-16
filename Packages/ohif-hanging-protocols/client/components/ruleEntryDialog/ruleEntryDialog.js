@@ -1,6 +1,13 @@
-import { OHIF } from 'meteor/ohif:core';
+import { $ } from 'meteor/jquery';
+import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Template } from 'meteor/templating';
+import { Blaze } from 'meteor/blaze';
 
-var keys = {
+import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
+const keys = {
     ESC: 27
 };
 
@@ -10,7 +17,7 @@ var keys = {
  *
  * @param dialog The DOM element of the dialog to close
  */
-function closeHandler(dialog) {
+const closeHandler = dialog => {
     // Hide the lesion dialog
     $(dialog).css('display', 'none');
 
@@ -18,8 +25,8 @@ function closeHandler(dialog) {
     $('.removableBackdrop').remove();
 
     // Restore the focus to the active viewport
-    setFocusToActiveViewport();
-}
+    Viewerbase.setFocusToActiveViewport();
+};
 
 /**
  * Displays and updates the UI of the Rule Entry Dialog given a new set of
@@ -32,10 +39,10 @@ function closeHandler(dialog) {
  */
 openRuleEntryDialog = function(attributes, level, rule) {
     // Get the lesion location dialog
-    var dialog = $('.ruleEntryDialog');
+    const dialog = $('.ruleEntryDialog');
 
     // Clear any input that is still on the page
-    var currentValueInput = dialog.find('input.currentValue');
+    const currentValueInput = dialog.find('input.currentValue');
     currentValueInput.val('');
 
     // Store the Dialog DOM data, rule level and rule in the template data
@@ -44,7 +51,7 @@ openRuleEntryDialog = function(attributes, level, rule) {
     Template.ruleEntryDialog.rule = rule;
 
     // Initialize the Select2 search box for the attribute list
-    var attributeSelect = dialog.find('.attributes');
+    const attributeSelect = dialog.find('.attributes');
     attributeSelect.html('').select2({
         data: attributes,
         placeholder: 'Select an attribute',
@@ -63,15 +70,15 @@ openRuleEntryDialog = function(attributes, level, rule) {
 
     // If a rule has been provided, use its constraint to find the relevant Comparator
     if (rule && rule.constraint) {
-        var validator = Object.keys(rule.constraint)[0];
-        var validatorOption = Object.keys(rule.constraint[validator])[0];
-        var comparator = Comparators.findOne({
+        const validator = Object.keys(rule.constraint)[0];
+        const validatorOption = Object.keys(rule.constraint[validator])[0];
+        const comparator = Comparators.findOne({
             validator: validator,
             validatorOption: validatorOption
         });
 
         // Set the current value input based on the rule constraint
-        var currentValue = rule.constraint[validator][validatorOption];
+        const currentValue = rule.constraint[validator][validatorOption];
         currentValueInput.val(currentValue);
     }
 
@@ -86,10 +93,10 @@ openRuleEntryDialog = function(attributes, level, rule) {
     dialog.css('display', 'block');
 
     // Show the backdrop
-    UI.render(Template.removableBackdrop, document.body);
+    Blaze.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $('.removableBackdrop').one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', () => {
         closeHandler(dialog);
     });
 };
@@ -99,23 +106,23 @@ openRuleEntryDialog = function(attributes, level, rule) {
  */
 function getActiveViewportImageId() {
     // Retrieve the active viewport index from the Session
-    var activeViewport = Session.get('activeViewport');
+    const activeViewport = Session.get('activeViewport');
     if (activeViewport === undefined) {
         return;
     }
 
     // Obtain the list of all Viewports on the page
-    var viewports = $('.imageViewerViewport');
+    const viewports = $('.imageViewerViewport');
 
     // Retrieve the active viewport element
-    var element = viewports.get(activeViewport);
+    const element = viewports.get(activeViewport);
     if (!element) {
         return;
     }
 
     // Obtain the enabled element from Cornerstone
     try {
-        var enabledElement = cornerstone.getEnabledElement(element);
+        const enabledElement = cornerstone.getEnabledElement(element);
         if (!enabledElement) {
             return;
         }
@@ -128,7 +135,7 @@ function getActiveViewportImageId() {
 }
 
 function getAbstractPriorValue(imageId) {
-    var currentStudy = ViewerStudies.findOne({}, {
+    const currentStudy = ViewerStudies.findOne({}, {
         sort: {
             studyDate: -1
         },
@@ -139,12 +146,12 @@ function getAbstractPriorValue(imageId) {
         return;
     }
 
-    var priorStudy = cornerstoneTools.metaData.get('study', imageId);
+    const priorStudy = cornerstoneTools.metaData.get('study', imageId);
     if (!priorStudy) {
         return;
     }
 
-    var studies = StudyListStudies.find({
+    const studies = StudyListStudies.find({
         patientId: currentStudy.patientId,
         studyDate: {
             $lt: currentStudy.studyDate
@@ -155,7 +162,7 @@ function getAbstractPriorValue(imageId) {
         }
     });
 
-    var priorIndex = 0;
+    let priorIndex = 0;
 
     // TODO: Check what the abstract prior value should equal for an unrelated study?
     studies.forEach(function(study, index) {
@@ -176,7 +183,7 @@ function getAbstractPriorValue(imageId) {
  */
 function getCurrentAttributeValue(attribute, level) {
     // Retrieve the active viewport's imageId. If none exists, stop here
-    var imageId = getActiveViewportImageId();
+    const imageId = getActiveViewportImageId();
     if (!imageId) {
         return;
     }
@@ -193,7 +200,7 @@ function getCurrentAttributeValue(attribute, level) {
 
     // Retrieve the metadata values for the specified level from
     // the Cornerstone Tools metaData provider
-    var metadata = cornerstoneTools.metaData.get(level, imageId);
+    const metadata = cornerstoneTools.metaData.get(level, imageId);
 
     if (metadata[attribute] === undefined) {
         return HP.attributeDefaults[attribute];
@@ -204,7 +211,7 @@ function getCurrentAttributeValue(attribute, level) {
 
 Template.ruleEntryDialog.onCreated(function() {
     // Define the ReactiveVars that will be used to link aspects of the UI
-    var template = this;
+    const template = this;
     // Note: currentValue's initial value must be a string so the template renders properly
     template.currentValue = new ReactiveVar('');
     template.attribute = new ReactiveVar();
@@ -213,12 +220,12 @@ Template.ruleEntryDialog.onCreated(function() {
 
 Template.ruleEntryDialog.onRendered(function() {
     // Initialize the Comparators Select2 box
-    var template = Template.instance();
+    const template = Template.instance();
     template.$('.comparators').select2();
 
     // Get the default Comparator from the Select2 box and use it to
     // initialize the comparatorId ReactiveVar
-    var comparatorId = template.$('.comparators').val();
+    const comparatorId = template.$('.comparators').val();
     template.comparatorId.set(comparatorId);
 
     const dialog = template.$('.ruleEntryDialog');
@@ -229,7 +236,7 @@ Template.ruleEntryDialog.helpers({
     /**
      * Returns the Comparators Collection to the Template with reactive rerendering
      */
-    comparators: function() {
+    comparators() {
         return Comparators.find();
     },
     /**
@@ -237,7 +244,7 @@ Template.ruleEntryDialog.helpers({
      *
      * @returns {*} Attribute value for the active image
      */
-    currentValue: function() {
+    currentValue() {
         return Template.instance().currentValue.get();
     }
 });
@@ -249,15 +256,15 @@ Template.ruleEntryDialog.events({
      * @param event the Click event
      * @param template The template context
      */
-    'click #save': function(event, template) {
+    'click #save'(event, template) {
         // Retrieve the input properties to the template
-        var dialog = Template.ruleEntryDialog.dialog;
-        var level = Template.ruleEntryDialog.level;
+        const dialog = Template.ruleEntryDialog.dialog;
+        const level = Template.ruleEntryDialog.level;
 
         // Retrieve the current values for the attribute value and comparatorId
-        var attribute = template.attribute.get();
-        var comparatorId = template.comparatorId.get();
-        var currentValue = template.currentValue.get();
+        const attribute = template.attribute.get();
+        const comparatorId = template.comparatorId.get();
+        const currentValue = template.currentValue.get();
 
         // If currentValue input is undefined, prevent saving this rule
         if (currentValue === undefined) {
@@ -265,14 +272,14 @@ Template.ruleEntryDialog.events({
         }
 
         // Check if we are editing a rule or creating a new one
-        var rule;
+        let rule;
         if (Template.ruleEntryDialog.rule) {
             // If we are editing a rule, change the rule data
             rule = Template.ruleEntryDialog.rule;
         } else {
             // If we are creating a rule, obtain the active Viewport model
             // from the Protocol and Stage
-            var viewport = getActiveViewportModel();
+            const viewport = getActiveViewportModel();
 
             // Create a rule depending on the level property of this dialog
             switch (level) {
@@ -296,12 +303,12 @@ Template.ruleEntryDialog.events({
         }
 
         // Find the Comparator from the Comparators Collection given its ID
-        var comparator = Comparators.findOne({
+        const comparator = Comparators.findOne({
             id: comparatorId
         });
 
         // Create a new constraint to add to the rule
-        var constraint = {};
+        const constraint = {};
         constraint[comparator.validator] = {};
         constraint[comparator.validator][comparator.validatorOption] = currentValue;
 
@@ -310,7 +317,7 @@ Template.ruleEntryDialog.events({
         rule.constraint = constraint;
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        const viewportIndex = Session.get('activeViewport');
         ProtocolEngine.updateViewports(viewportIndex);
 
         // Close the dialog
@@ -319,8 +326,8 @@ Template.ruleEntryDialog.events({
     /**
      * Allow the user to click the Cancel button to close the dialog
      */
-    'click #cancel': function() {
-        var dialog = Template.ruleEntryDialog.dialog;
+    'click #cancel'() {
+        const dialog = Template.ruleEntryDialog.dialog;
         closeHandler(dialog);
     },
     /**
@@ -329,8 +336,8 @@ Template.ruleEntryDialog.events({
      * @param event The Keydown event details
      * @returns {boolean} Return false to prevent bubbling of the event
      */
-    'keydown .ruleEntryDialog': function(event) {
-        var dialog = Template.ruleEntryDialog.dialog;
+    'keydown .ruleEntryDialog'(event) {
+        const dialog = Template.ruleEntryDialog.dialog;
 
         // If Esc key is pressed, close the dialog
         if (event.which === keys.ESC) {
@@ -344,9 +351,9 @@ Template.ruleEntryDialog.events({
      * @param event The Change event for the select box
      * @param template The current template context
      */
-    'change select.attributes': function(event, template) {
+    'change select.attributes'(event, template) {
         // Obtain the user-specified attribute to test against
-        var attribute = $(event.currentTarget).val();
+        const attribute = $(event.currentTarget).val();
 
         // Store it in the ReactiveVar
         template.attribute.set(attribute);
@@ -355,10 +362,10 @@ Template.ruleEntryDialog.events({
         Template.ruleEntryDialog.selectedAttribute = attribute;
 
         // Get the level of this dialog
-        var level = Template.ruleEntryDialog.level;
+        const level = Template.ruleEntryDialog.level;
 
         // Retrieve the current value of the attribute for the active viewport model
-        var value = getCurrentAttributeValue(attribute, level);
+        const value = getCurrentAttributeValue(attribute, level);
 
         // Update the ReactiveVar with the user-specified value
         template.currentValue.set(value);
@@ -369,12 +376,12 @@ Template.ruleEntryDialog.events({
      * @param event The Change event for the input
      * @param template The current template context
      */
-    'change input.currentValue': function(event, template) {
+    'change input.currentValue'(event, template) {
         // Get the DOM element representing the input box
-        var input = $(event.currentTarget);
+        const input = $(event.currentTarget);
 
         // Get the current value of the input
-        var value = input.val();
+        let value = input.val();
 
         // If the input is of type 'number', parse it as a Float
         if (input.attr('type') === 'number') {
@@ -390,9 +397,9 @@ Template.ruleEntryDialog.events({
      * @param event The Change event for the select box
      * @param template The current template context
      */
-    'change select.comparators': function(event, template) {
+    'change select.comparators'(event, template) {
         // Get the current value of the select box
-        var comparatorId = $(event.currentTarget).val();
+        const comparatorId = $(event.currentTarget).val();
 
         // Update the ReactiveVar with the value of the Comparators select box
         template.comparatorId.set(comparatorId);

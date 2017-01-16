@@ -1,4 +1,4 @@
-import { Router } from 'meteor/clinical:router';
+import { Router } from 'meteor/iron:router';
 
 Router.route('/playground', function() {
     this.render('componentPlayground');

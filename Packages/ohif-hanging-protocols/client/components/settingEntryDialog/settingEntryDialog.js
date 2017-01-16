@@ -1,4 +1,12 @@
-var keys = {
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Blaze } from 'meteor/blaze';
+import { $ } from 'meteor/jquery';
+
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
+const keys = {
     ESC: 27
 };
 
@@ -8,7 +16,7 @@ var keys = {
  *
  * @param dialog The DOM element of the dialog to close
  */
-function closeHandler(dialog) {
+const closeHandler = dialog => {
     // Hide the lesion dialog
     $(dialog).css('display', 'none');
 
@@ -16,8 +24,8 @@ function closeHandler(dialog) {
     $('.removableBackdrop').remove();
 
     // Restore the focus to the active viewport
-    setFocusToActiveViewport();
-}
+    Viewerbase.setFocusToActiveViewport();
+};
 
 /**
  * Displays and updates the UI of the Setting Entry Dialog given an
@@ -27,40 +35,40 @@ function closeHandler(dialog) {
  */
 openSettingEntryDialog = function(settingObject) {
     // Get the lesion location dialog
-    var dialog = $('.settingEntryDialog');
+    const dialog = $('.settingEntryDialog');
 
     // Store the Dialog DOM data, setting level and setting in the template data
     Template.settingEntryDialog.dialog = dialog;
     Template.settingEntryDialog.settingObject = settingObject;
 
     // Initialize the Select2 search box for the attribute list
-    var settings = Object.keys(HP.displaySettings);
+    const settings = Object.keys(HP.displaySettings);
     settings.concat(Object.keys(HP.CustomViewportSettings));
 
-    var displaySettingsOptions = Object.keys(HP.displaySettings).map(key => {
+    const displaySettingsOptions = Object.keys(HP.displaySettings).map(key => {
         return {
             id: key,
             text: HP.displaySettings[key].text
         };
     });
 
-    var customSettingsOptions = Object.keys(HP.CustomViewportSettings).map(key => {
+    const customSettingsOptions = Object.keys(HP.CustomViewportSettings).map(key => {
         return {
             id: key,
             text: HP.CustomViewportSettings[key].text
         };
     });
 
-    var settingsOptions = displaySettingsOptions.concat(customSettingsOptions);
+    const settingsOptions = displaySettingsOptions.concat(customSettingsOptions);
 
-    var settingSelect = dialog.find('.settings');
+    const settingSelect = dialog.find('.settings');
     settingSelect.html('').select2({
         data: settingsOptions,
         placeholder: 'Select a setting',
         allowClear: true
     });
 
-    var settingDetails = {
+    let settingDetails = {
         options: []
     };
 
@@ -70,7 +78,7 @@ openSettingEntryDialog = function(settingObject) {
         settingDetails = HP.CustomViewportSettings[settingObject.id];
     }
 
-    var valueSelect = dialog.find('.currentValue');
+    const valueSelect = dialog.find('.currentValue');
     valueSelect.html('').select2({
         data: settingDetails.options,
         placeholder: 'Select a value',
@@ -99,14 +107,14 @@ openSettingEntryDialog = function(settingObject) {
     Blaze.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
-    $('.removableBackdrop').one('mousedown touchstart', function() {
+    $('.removableBackdrop').one('mousedown touchstart', () => {
         closeHandler(dialog);
     });
 };
 
 Template.settingEntryDialog.onCreated(function() {
     // Define the ReactiveVars that will be used to link aspects of the UI
-    var template = this;
+    const template = this;
 
     // Note: currentValue's initial value must be a string so the template renders properly
     template.currentValue = new ReactiveVar('');
@@ -126,29 +134,29 @@ Template.settingEntryDialog.events({
      * @param event the Click event
      * @param template The template context
      */
-    'click #save': function(event, template) {
+    'click #save'(event, template) {
         // Retrieve the input properties to the template
-        var dialog = Template.settingEntryDialog.dialog;
+        const dialog = Template.settingEntryDialog.dialog;
 
         // Retrieve the current values for the id and current value
-        var setting = template.setting.get();
-        var currentValue = template.currentValue.get();
+        const setting = template.setting.get();
+        const currentValue = template.currentValue.get();
 
         // If currentValue input is undefined, prevent saving this setting
         if (currentValue === undefined) {
             return;
         }
 
-        var viewportSetting = {
+        const viewportSetting = {
             id: setting,
             value: currentValue
         };
 
         // Obtain the active Viewport model from the Protocol and Stage
-        var viewport = getActiveViewportModel();
+        const viewport = getActiveViewportModel();
 
         // Remove any old rules if the ID has been changes
-        var originalSettingObject = Template.settingEntryDialog.settingObject;
+        const originalSettingObject = Template.settingEntryDialog.settingObject;
         if (originalSettingObject && originalSettingObject.id) {
             delete viewport.viewportSettings[originalSettingObject.id];
         }
@@ -157,7 +165,7 @@ Template.settingEntryDialog.events({
         viewport.viewportSettings[viewportSetting.id] = viewportSetting.value;
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        const viewportIndex = Session.get('activeViewport');
         ProtocolEngine.updateViewports(viewportIndex);
 
         // Close the dialog
@@ -166,8 +174,8 @@ Template.settingEntryDialog.events({
     /**
      * Allow the user to click the Cancel button to close the dialog
      */
-    'click #cancel': function() {
-        var dialog = Template.settingEntryDialog.dialog;
+    'click #cancel'() {
+        const dialog = Template.settingEntryDialog.dialog;
         closeHandler(dialog);  
     },
     /**
@@ -176,8 +184,8 @@ Template.settingEntryDialog.events({
      * @param event The Keydown event details
      * @returns {boolean} Return false to prevent bubbling of the event
      */
-    'keydown .settingEntryDialog': function(event) {
-        var dialog = Template.settingEntryDialog.dialog;
+    'keydown .settingEntryDialog'(event) {
+        const dialog = Template.settingEntryDialog.dialog;
 
         // If Esc key is pressed, close the dialog
         if (event.which === keys.ESC) {
@@ -191,15 +199,15 @@ Template.settingEntryDialog.events({
      * @param event The Change event for the select box
      * @param template The current template context
      */
-    'change select.settings': function(event, template) {
+    'change select.settings'(event, template) {
         // Obtain the user-specified attribute to test against
-        var settingId = $(event.currentTarget).val();
+        const settingId = $(event.currentTarget).val();
 
         // Store it in the ReactiveVar
         template.setting.set(settingId);
 
         // Retrieve the current value from the attribute
-        var settingDetails = {
+        let settingDetails = {
             options: []
         };
         if (settingId && HP.displaySettings[settingId]) {
@@ -208,8 +216,8 @@ Template.settingEntryDialog.events({
             settingDetails = HP.CustomViewportSettings[settingId];
         }
 
-        var dialog = Template.settingEntryDialog.dialog;
-        var valueSelect = dialog.find('.currentValue');
+        const dialog = Template.settingEntryDialog.dialog;
+        const valueSelect = dialog.find('.currentValue');
         valueSelect.html('').select2({
             data: settingDetails.options,
             placeholder: 'Select a value',
@@ -228,9 +236,9 @@ Template.settingEntryDialog.events({
      * @param event The Change event for the input
      * @param template The current template context
      */
-    'change select.currentValue': function(event, template) {
+    'change select.currentValue'(event, template) {
         // Get the current value of the select box
-        var value = $(event.currentTarget).val();
+        const value = $(event.currentTarget).val();
 
         // Update the ReactiveVar with the user-specified value
         template.currentValue.set(value);

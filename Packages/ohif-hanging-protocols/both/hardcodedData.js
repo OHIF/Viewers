@@ -18,9 +18,6 @@ HP.studyAttributes = [{
     id: 'studyInstanceUid',
     text: '(x0020000d) Study Instance UID'
 }, {
-    id: 'studyInstanceUid',
-    text: '(x0020000d) Study Instance UID'
-}, {
     id: 'studyDate',
     text: '(x00080020) Study Date'
 }, {

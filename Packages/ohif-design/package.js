@@ -1,5 +1,5 @@
 Package.describe({
-    name: 'design',
+    name: 'ohif:design',
     summary: 'OHIF Design styles and components',
     version: '0.0.1'
 });

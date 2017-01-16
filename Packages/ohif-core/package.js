@@ -16,7 +16,8 @@ Package.onUse(function(api) {
     api.use('reactive-var');
 
     // Router dependencies
-    api.use('clinical:router@2.0.18', 'client');
+    // api.use('clinical:router@2.0.18', 'client');
+    api.use('iron:router@1.0.13', 'client');
 
     // Component's library dependencies
     api.use('natestrauser:select2@4.0.1', 'client');
