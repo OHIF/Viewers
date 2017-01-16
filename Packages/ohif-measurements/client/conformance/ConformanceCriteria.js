@@ -10,10 +10,14 @@ class ConformanceCriteria {
         this.timepointApi = timepointApi;
         this.results = [];
 
+        const validate = _.debounce(trialCriteriaType => {
+            this.validate(trialCriteriaType);
+        }, 300);
+
         Tracker.autorun(() => {
             const trialCriteriaType = TrialCriteriaTypes.findOne({ selected: true });
             this.measurementApi.changeObserver.depend();
-            this.validate(trialCriteriaType);
+            validate(trialCriteriaType);
         });
     }
 
@@ -25,9 +29,9 @@ class ConformanceCriteria {
         mergedData.targets = mergedData.targets.concat(followupData.targets);
         mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
 
+        const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
         const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
         const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
-        const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
         const results = resultBaseline.concat(resultFollowup).concat(resultBoth);
 
         console.warn('>>>> validate', results);

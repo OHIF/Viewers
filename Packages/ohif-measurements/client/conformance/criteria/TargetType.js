@@ -20,11 +20,8 @@ export class TargetTypeCriterion extends BaseCriterion {
 
         items.forEach(item => {
             const measurement = item.measurement;
-            const toolType = measurement.toolType.toLowerCase();
-            const timepoint = item.timepoint;
-            const timepointType = timepoint.timepointType.toLowerCase();
 
-            if ((timepointType === 'baseline') && (toolType !== 'bidirectional')) {
+            if (measurement.toolType !== 'bidirectional') {
                 measurements.push(measurement);
             }
         });

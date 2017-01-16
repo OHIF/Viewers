@@ -20,11 +20,9 @@ export class NonTargetResponseCriterion extends BaseCriterion {
 
         items.forEach(item => {
             const measurement = item.measurement;
-            const response = measurement.response.toLowerCase();
-            const timepoint = item.timepoint;
-            const timepointType = timepoint.timepointType.toLowerCase();
+            const response = (measurement.response || '').toLowerCase();
 
-            if ((timepointType === 'baseline') && (response !== 'present')) {
+            if (response !== 'present') {
                 measurements.push(measurement);
             }
         });
