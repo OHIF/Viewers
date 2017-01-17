@@ -58,6 +58,10 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
     }
 }
 
+function syncViewports(viewportsIndexes) {
+    OHIF.viewer.stackImagePositionOffsetSynchronizer.activateByViewportIndexes(viewportsIndexes);
+}
+
 /**
  * Activates a set of lesions when lesion table row is clicked
  *
@@ -67,6 +71,14 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     OHIF.measurements.deactivateAllToolData();
 
     const activateMeasurements = OHIF.measurements.activateMeasurements;
+    const activatedViewportIndexes = [];
+    const syncViewportsByIndexesOnce = _.once(syncViewports);
+    let syncViewportsCaller = syncViewports;
+    let renderCount = 0;
+
+    // Deactivate stack synchronizer because it will be re-activated later
+    OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
+
     console.log('jumpToRowItem');
 
     // Retrieve the timepoints that are currently being displayed in the
@@ -101,6 +113,8 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
         // Check if the study / series we need is already the one in the viewport
         const element = $viewports.get(i);
 
+        activatedViewportIndexes.push(i);
+
         // TODO: Implement isEnabledElement in Cornerstone
         // or maybe just remove the 'error' this throws?
         let enabledElement;
@@ -124,10 +138,13 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
             }
         }
 
+        syncViewportsCaller = _.after(++renderCount, syncViewportsCaller);
+
         // Otherwise, re-render the viewport with the required study/series, then
         // add an onRendered callback to activate the measurements
         const renderedCallback = element => {
             activateMeasurements(element, measurementData);
+            syncViewportsCaller(activatedViewportIndexes);
         };
 
         // TODO: Support frames? e.g. for measurements on multi-frame instances
@@ -136,5 +153,9 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
                            measurementData.seriesInstanceUid,
                            measurementData.sopInstanceUid,
                            renderedCallback);
+    }
+
+    if(!renderCount) {
+        syncViewportsCaller(activatedViewportIndexes);
     }
 };

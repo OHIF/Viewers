@@ -18,28 +18,13 @@ class StackImagePositionOffsetSynchronizer {
   }
 
   activate() {
-    if(this.isActive()) {
-      return;
-    }
-
     const viewports = this.getLinkableViewports();
-    const viewportIndexes = [];
+    this.syncViewports(viewports);
+  }
 
-    if(viewports.length <= 1) {
-      return;
-    }
-
-    viewports.forEach((viewport, index) => {
-      this.synchronizer.add(viewport.element);
-      this.syncedViewports.push(viewport);
-      viewportIndexes.push(viewport.index)
-      
-      $(viewport.element).on(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.elementDisabledHandler(this));
-    });
-
-    this.active = true;
-    toolManager.activateCommandButton('link');
-    Session.set('StackImagePositionOffsetSynchronizerLinkedViewports', viewportIndexes);
+  activateByViewportIndexes(viewportIndexes) {
+    const viewports = this.getViewportByIndexes(viewportIndexes);
+    this.syncViewports(viewports);
   }
 
   deactivate() {
@@ -69,6 +54,27 @@ class StackImagePositionOffsetSynchronizer {
 
     this.deactivate();
     this.activate();
+  }
+
+  syncViewports(viewports) {
+    const viewportIndexes = [];
+
+    if(this.isActive() || (viewports.length <= 1)) {
+      return;
+    }
+
+    viewports.forEach((viewport, index) => {
+      this.synchronizer.add(viewport.element);
+      this.syncedViewports.push(viewport);
+      viewportIndexes.push(viewport.index)
+      
+      $(viewport.element).on(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.elementDisabledHandler(this));
+    });
+
+    this.active = true;
+    toolManager.activateCommandButton('link');
+    Session.set('StackImagePositionOffsetSynchronizerLinkedViewports', viewportIndexes);
+
   }
 
   isViewportSynced(viewportElement) {
@@ -127,6 +133,26 @@ class StackImagePositionOffsetSynchronizer {
     return (e, eventData) => {
       context.removeViewportByElement(eventData.element);
     }
+  }
+
+  getViewportByIndexes(viewportIndexes) {
+      const viewports = [];
+      const viewportElements = $('.imageViewerViewport');
+
+      viewportIndexes.forEach(index => {
+          const element = viewportElements.get(index);
+
+          if(!element) {
+            return;
+          }
+
+          viewports.push({
+            index,
+            element
+          });
+      });
+
+      return viewports;
   }
 
   getLinkableViewports() {

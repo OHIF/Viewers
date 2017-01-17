@@ -25,8 +25,13 @@ const keys = {
 Template.measurementTableRow.events({
     'click .measurementRowSidebar'(event, instance) {
         const $row = instance.$('.measurementTableRow');
+        const rowItem = instance.data.rowItem;
+        const timepoints = instance.data.timepoints.get();
+
         $row.closest('.measurementTableView').find('.measurementTableRow').not($row).removeClass('active');
         $row.toggleClass('active');
+
+        OHIF.measurements.jumpToRowItem(rowItem, timepoints);
     },
 
     'click .js-rename'(event, instance) {
