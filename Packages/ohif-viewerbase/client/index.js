@@ -1,6 +1,14 @@
 import { Viewerbase } from '../namespace';
 
 /**
+ * Imports file with side effects only (files that do not export anything...)
+ */
+
+import './collections';
+import './lib/stackImagePositionOffsetSynchronizer.js';
+import './lib/debugReactivity';
+
+/**
  * Exported Functions
  */
 
@@ -192,10 +200,3 @@ Viewerbase.TypeSafeCollection = TypeSafeCollection;
 // OHIFError
 import { OHIFError } from './lib/classes/OHIFError';
 Viewerbase.OHIFError = OHIFError;
-
-/**
- * Imports for Side Effects Only (Files that do not export anything...)
- */
-
-import './lib/stackImagePositionOffsetSynchronizer.js';
-import './lib/debugReactivity';

@@ -135,16 +135,22 @@ function getActiveViewportImageId() {
 }
 
 function getAbstractPriorValue(imageId) {
-    const currentStudy = ViewerStudies.findOne({}, {
-        sort: {
-            studyDate: -1
-        },
-        limit: 1
+    // @TypeSafeStudies
+    debugger;
+    // @TODO: Implement MIN and MAX methods in TypeSafeCollection
+    // const currentStudy = ViewerStudies.findOne({}, {
+    //     sort: {
+    //         studyDate: -1
+    //     },
+    //     limit: 1
+    // });
+    const allStudies = OHIF.viewer.Studies.all({
+        sort: [ ['studyDate', 'desc'] ]
     });
-
-    if (!currentStudy) {
+    if (allStudies.length < 1) {
         return;
     }
+    const currentStudy = allStudies[0];
 
     const priorStudy = cornerstoneTools.metaData.get('study', imageId);
     if (!priorStudy) {

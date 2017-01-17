@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
 
 OHIF.viewer = OHIF.viewer || {};
 
@@ -42,14 +43,16 @@ Template.viewer.onCreated(() => {
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
-    // Update the ViewerStudies collection with the loaded studies
-    ViewerStudies.remove({});
+    // @TypeSafeStudies
+    debugger;
+    // Update the OHIF.viewer.Studies collection with the loaded studies
+    OHIF.viewer.Studies.removeAll();
 
     ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
         study.displaySets = createStacks(study);
-        ViewerStudies.insert(study);
+        OHIF.viewer.Studies.insert(study);
         ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });
 

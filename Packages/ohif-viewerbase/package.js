@@ -89,9 +89,6 @@ Package.onUse(function(api) {
     });
     api.addFiles('client/compatibility/dialogPolyfill.styl', 'client');
 
-    // ---------- Collections ----------
-    api.addFiles('client/collections.js', 'client');
-
     // ---------- Components ----------
 
     // Basic components
@@ -200,11 +197,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.html', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.js', 'client');
-
-    // Library functions
-
-    // Collections
-    api.export('ViewerStudies', 'client');
 
     api.export('dialogPolyfill', 'client');
 

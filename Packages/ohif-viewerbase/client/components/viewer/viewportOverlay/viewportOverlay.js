@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { OHIF } from 'meteor/ohif:core';
 import { viewportOverlayUtils } from '../../../lib/viewportOverlayUtils';
 import { getElementIfNotEmpty } from '../../../lib/getElementIfNotEmpty';
 import { getStackDataIfNotEmpty } from '../../../lib/getStackDataIfNotEmpty';
@@ -217,17 +218,19 @@ Template.viewportOverlay.helpers({
             return;
         }
 
+        // @TypeSafeStudies
+        debugger
         // Make sure there are more than two studies loaded in the viewer
-        const viewportStudies = ViewerStudies.find();
-        if (viewportStudies.count() < 2) {
+        const viewportStudies = OHIF.viewer.Studies.all();
+        if (viewportStudies.length < 2) {
             return;
         }
 
         // Here we sort the collection in ascending order by study date, so
         // that we can obtain the oldest study as the first element of the array
         //
-        // TODO= Find out if we should encode studyDate as a Date in the ViewerStudies Collection
-        const viewportStudiesArray = _.sortBy(viewportStudies.fetch(), function(study) {
+        // TODO= Find out if we should encode studyDate as a Date in the OHIF.viewer.Studies Collection
+        const viewportStudiesArray = _.sortBy(viewportStudies, function(study) {
             return viewportOverlayUtils.formatDateTime(study.studyDate, study.studyTime);
         });
 

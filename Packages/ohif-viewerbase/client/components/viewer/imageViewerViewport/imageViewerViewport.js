@@ -585,14 +585,9 @@ Template.imageViewerViewport.onRendered(function() {
         return;
     }
 
-    // @TODO: Reconcile ViewerStudies and Studies Collection.
-    // const study = Studies.findBy({ studyInstanceUid });
-
-    // Look through the ViewerStudies collection for a
-    // study with this studyInstanceUid
-    const study = ViewerStudies.findOne({
-        studyInstanceUid: this.data.studyInstanceUid
-    });
+    // @TypeSafeStudies
+    debugger;
+    const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
     data.study = study;
     setDisplaySet(data, displaySetInstanceUid, templateData);
@@ -669,7 +664,9 @@ Template.imageViewerViewport.events({
                 // Set the active viewport as the previous zoomed viewport
                 viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
             }
-            setActiveViewport($('.imageViewerViewport').get(viewportIndexToZoom));
+            // Set zoomed viewport as active...
+            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
+            setActiveViewport(element);
         });
     }
 });

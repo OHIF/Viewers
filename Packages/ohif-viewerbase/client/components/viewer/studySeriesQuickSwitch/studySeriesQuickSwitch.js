@@ -4,7 +4,6 @@ import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
 
 Template.studySeriesQuickSwitch.onCreated(() => {
     const instance = Template.instance();
@@ -29,13 +28,16 @@ Template.studySeriesQuickSwitch.onCreated(() => {
 
         const viewportData = instance.getViewportData(viewportIndex);
 
+        // @TypeSafeStudies
+        debugger;
+
         if (viewportData) {
             // Finds the current study and return it
-            instance.study = ViewerStudies.findOne({
+            instance.study = OHIF.viewer.Studies.findBy({
                 studyInstanceUid: viewportData.studyInstanceUid
             });
         } else {
-            instance.study = ViewerStudies.findOne();
+            instance.study = OHIF.viewer.Studies.getElementByIndex(0);
         }
 
         if (!instance.study) {

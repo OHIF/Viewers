@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.studyTimepoint.onCreated(() => {
     const instance = Template.instance();
@@ -39,9 +40,12 @@ Template.studyTimepoint.events({
         // Defines where will be the studies searched
         let $studiesTarget = instance.$('.studyTimepoint');
 
+        // @TypeSafeStudies
+        debugger;
+
         if (changed.isQuickSwitch) {
             // Changes the current quick switch study
-            const study = ViewerStudies.findOne({
+            const study = OHIF.viewer.Studies.findBy({
                 studyInstanceUid: changed.studyInstanceUid
             });
             instance.data.currentStudy.set(study);

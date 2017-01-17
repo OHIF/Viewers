@@ -64,13 +64,16 @@ Template.viewer.onCreated(() => {
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element
     instance.autorun(OHIF.lesiontracker.pixelSpacingAutorunCheck);
 
-    // Update the ViewerStudies collection with the loaded studies
-    ViewerStudies.remove({});
+    // @TypeSafeStudies
+    debugger;
+
+    // Update the OHIF.viewer.Studies collection with the loaded studies
+    OHIF.viewer.Studies.removeAll();
 
     instance.data.studies.forEach(study => {
         study.selected = true;
         study.displaySets = OHIF.viewerbase.createStacks(study);
-        ViewerStudies.insert(study);
+        OHIF.viewer.Studies.insert(study);
     });
 
     instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);

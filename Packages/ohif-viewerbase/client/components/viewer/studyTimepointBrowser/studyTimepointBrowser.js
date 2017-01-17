@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
-
+import { OHIF } from 'meteor/ohif:core';
 import { OHIFError } from '../../../lib/classes/OHIFError';
 
 Template.studyTimepointBrowser.onCreated(() => {
@@ -21,8 +21,11 @@ Template.studyTimepointBrowser.onCreated(() => {
 
     // Get the studies for a specific timepoint
     instance.getStudies = timepoint => {
+        // @TypeSafeStudies
+        debugger;
+
         if (!timepoint) {
-            return ViewerStudies.find().fetch();
+            return OHIF.viewer.Studies.all();
         }
 
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
@@ -31,7 +34,7 @@ Template.studyTimepointBrowser.onCreated(() => {
                 studyInstanceUid: studyInstanceUid
             };
 
-            const loadedStudy = ViewerStudies.findOne(query);
+            const loadedStudy = OHIF.viewer.Studies.findBy(query);
             if (loadedStudy) {
                 return loadedStudy;
             }

@@ -67,6 +67,21 @@ export class TypeSafeCollection {
         return propertyValue;
     }
 
+    // [WIP]...
+    static compareToPropertyMapStrict(propertyMap, object) {
+        const hasOwnProperty = Object.prototype.hasOwnProperty;
+        const getPropertyValue = TypeSafeCollection.getPropertyValue;
+        for (let propertyName in propertyMap) {
+            if (hasOwnProperty.call(propertyMap, propertyName)) {
+                const propertyValue = getPropertyValue(object, propertyName);
+                if (propertyMap[propertyName] !== propertyValue) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * Checks if a sorting specifier is valid.
      * A valid sorting specifier consists of an array of arrays being each subarray a pair
@@ -194,7 +209,7 @@ export class TypeSafeCollection {
     }
 
     remove(propertyMap) {
-        let found = this.findAllBy(propertyMap),
+        let found = this.findAllEntriesBy(propertyMap),
             foundCount = found.length,
             removed = [];
         if (foundCount > 0) {
@@ -267,13 +282,11 @@ export class TypeSafeCollection {
      * Find all elements that match a specified property map.
      * Attention!!! The reactive source will not be notified if no valid property map is supplied...
      * @param {Object} propertyMap A property map that will be macthed against all collection elements.
-     * @param {Object} options A set of options. Currently only "options.sort" option is supported.
-     * @param {Object.SortingSpecifier} options.sort An optional sorting specifier. If a sorting specifier is supplied
-     * but it's not valid, an exception will be thrown.
-     * @returns {Array} An array with all elements stored in the collection.
+     * @returns {Array} An array of entries of all elements that match the given criteria. Each set in
+     * in the array has the following format: [ elementData, elementId, elementIndex ].
      */
-    findAllBy(propertyMap, options) {
-        let found = [];
+    findAllEntriesBy(propertyMap) {
+        const found = [];
         if (typeof propertyMap === OBJECT && propertyMap !== null) {
             const hasOwn = Object.prototype.hasOwnProperty;
             this._elements().forEach((item, index) => {
@@ -289,6 +302,20 @@ export class TypeSafeCollection {
                 found.push([ payload, item.id, index ]);
             });
         }
+        return found;
+    }
+
+    /**
+     * Find all elements that match a specified property map.
+     * Attention!!! The reactive source will not be notified if no valid property map is supplied...
+     * @param {Object} propertyMap A property map that will be macthed against all collection elements.
+     * @param {Object} options A set of options. Currently only "options.sort" option is supported.
+     * @param {Object.SortingSpecifier} options.sort An optional sorting specifier. If a sorting specifier is supplied
+     * but it's not valid, an exception will be thrown.
+     * @returns {Array} An array with all elements that match the given criteria and sorted in the specified sorting order.
+     */
+    findAllBy(propertyMap, options) {
+        const found = this.findAllEntriesBy(propertyMap).map(item => item[0]); // Only payload is relevant...
         if (options instanceof Object && 'sort' in options) {
             TypeSafeCollection.sortListBy(found, options.sort);
         }

@@ -1,5 +1,6 @@
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
 
 function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
         // Find the proper stack to display
@@ -29,8 +30,12 @@ function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, s
 }
 
 function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
+
+    // @TypeSafeStudies
+    debugger;
+
     // First, check if we already have this study loaded
-    const alreadyLoadedStudy = ViewerStudies.findOne({studyInstanceUid});
+    const alreadyLoadedStudy = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
     if (alreadyLoadedStudy) {
         // If the Study is already loaded, find the display set and render it
@@ -47,10 +52,12 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
             OHIF.log.warn('renderIntoViewport');
 
             // Double check to make sure this study wasn't already inserted
-            // into ViewerStudies, so we don't cause duplicate entry errors
-            const loaded = ViewerStudies.findOne(loadedStudy._id);
+            // into OHIF.viewer.Studies, so we don't cause duplicate entry errors
+            const loaded = OHIF.viewer.Studies.findBy({
+                studyInstanceUid: loadedStudy.studyInstanceUid
+            });
             if (!loaded) {
-                ViewerStudies.insert(loadedStudy);    
+                OHIF.viewer.Studies.insert(loadedStudy);
             }
 
             findAndRenderDisplaySet(loadedStudy.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback)

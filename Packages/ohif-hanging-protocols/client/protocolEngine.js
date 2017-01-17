@@ -403,7 +403,10 @@ HP.ProtocolEngine = class ProtocolEngine {
                     return;
                 }
 
-                var alreadyLoaded = ViewerStudies.findOne({
+                // @TypeSafeStudies
+                debugger;
+
+                var alreadyLoaded = OHIF.viewer.Studies.findBy({
                     studyInstanceUid: priorStudy.studyInstanceUid
                 });
 
@@ -411,7 +414,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                     getStudyMetadata(priorStudy.studyInstanceUid, study => {
                         study.abstractPriorValue = abstractPriorValue;
                         study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
-                        ViewerStudies.insert(study);
+                        OHIF.viewer.Studies.insert(study);
                         this.studies.push(study);
                         this.matchImages(viewport);
                         this.updateViewports();
