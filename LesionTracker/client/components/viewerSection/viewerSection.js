@@ -4,7 +4,7 @@ Template.viewerSection.events({
              return;
          }
  
-         handleResize();
+         window.ResizeViewportManager.handleResize();
      }
  });
 
