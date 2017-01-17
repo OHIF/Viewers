@@ -6,6 +6,13 @@
             </div>
         {{/if}}
         <div class="measurementTableTimepointHeaderRow">
+            {{#if hasWarnings}}
+                <div class="warning-status">
+                    <svg>
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-warning"}}></use>
+                    </svg>
+                </div>
+            {{/if}}
             {{#each timepoint in this.timepoints.get}}
                 {{>measurementTableTimepointHeader (clone this timepoint)}}
             {{/each}}

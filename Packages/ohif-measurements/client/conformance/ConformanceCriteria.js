@@ -10,7 +10,7 @@ class ConformanceCriteria {
     constructor(measurementApi, timepointApi) {
         this.measurementApi = measurementApi;
         this.timepointApi = timepointApi;
-        this.nonConformities = new ReactiveVar();
+        this.nonconformities = new ReactiveVar();
         this.groupedNonConformities = new ReactiveVar();
 
         const validate = _.debounce(trialCriteriaType => {
@@ -35,22 +35,22 @@ class ConformanceCriteria {
         const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
         const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
         const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
-        const nonConformities = resultBaseline.concat(resultFollowup).concat(resultBoth);
-        const groupedNonConformities = this.groupNonConformities(nonConformities);
+        const nonconformities = resultBaseline.concat(resultFollowup).concat(resultBoth);
+        const groupedNonConformities = this.groupNonConformities(nonconformities);
 
         // Keep both? Group the data only on viewer/measurementTable views?
         // Work with not grouped data (worse lookup performance on measurementTableRow)?
-        this.nonConformities.set(nonConformities);
+        this.nonconformities.set(nonconformities);
         this.groupedNonConformities.set(groupedNonConformities);
 
-        return nonConformities;
+        return nonconformities;
     }
 
-    groupNonConformities(nonConformities) {
+    groupNonConformities(nonconformities) {
         const groups = {};
         const toolsGroupsMap = this.measurementApi.toolsGroupsMap;
 
-        nonConformities.forEach(nonConformity => {
+        nonconformities.forEach(nonConformity => {
             if (nonConformity.isGlobal) {
                 groups.globals = groups.globals || { messages: [] };
                 groups.globals.messages.push(nonConformity.message);
@@ -83,14 +83,14 @@ class ConformanceCriteria {
 
     validateTimepoint(timepointId, trialCriteriaType, data) {
         const evaluators = this.getEvaluators(timepointId, trialCriteriaType);
-        let nonConformities = [];
+        let nonconformities = [];
 
         evaluators.forEach(evaluator => {
             const result = evaluator.evaluate(data);
-            nonConformities = nonConformities.concat(result);
+            nonconformities = nonconformities.concat(result);
         });
 
-        return nonConformities;
+        return nonconformities;
     }
 
     getEvaluators(timepointId, trialCriteriaType) {

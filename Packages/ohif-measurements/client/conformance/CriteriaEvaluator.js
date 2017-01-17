@@ -58,14 +58,14 @@ export class CriteriaEvaluator {
     }
 
     evaluate(data) {
-        const nonConformities = [];
+        const nonconformities = [];
         this.criteria.forEach(criterion => {
             const criterionResult = criterion.evaluate(data);
             if (!criterionResult.passed) {
-                nonConformities.push(criterionResult);
+                nonconformities.push(criterionResult);
             }
         });
-        return nonConformities;
+        return nonconformities;
     }
 
 }

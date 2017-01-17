@@ -8,6 +8,35 @@
 .measurementTableTimepointHeaderRow
   display: flex
   padding: 2px 2px 0 44px
+  position: relative
+
+  .warning-status
+    theme('border', '2px solid $uiYellow')
+    border-radius: 16px
+    cursor: pointer
+    height: 32px
+    left: 0
+    margin: 4px 6px
+    position: absolute
+    top: 0
+    transition(border-color 0.3s ease)
+    width: 32px
+
+    &:hover
+      theme('border-color', '$hoverColor')
+
+      svg
+        theme('fill', '$hoverColor')
+
+    svg
+      theme('fill', '$uiYellow')
+      height: 20px
+      left: 50%
+      position: absolute
+      top: 2px
+      transform(translateX(-50%) scale(0.9))
+      transition(all 0.3s ease)
+      width: 22px
 
 .measurementTableLayoutChanger
   margin: 0 auto

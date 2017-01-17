@@ -9,11 +9,11 @@ Template.measurementTableRow.onCreated(() => {
         const measurementTypeId = instance.data.rowItem.measurementTypeId;
         const measurementNumber = instance.data.rowItem.measurementNumber;
         const groupedNonConformities = instance.data.conformanceCriteria.groupedNonConformities.get() || {};
-        const nonConformitiesByMeasurementTypeId = groupedNonConformities[measurementTypeId] || {};
-        const nonConformitiesByMeasurementNumbers = nonConformitiesByMeasurementTypeId.measurementNumbers || {};
-        const nonConformitiesByMeasurementNumber = nonConformitiesByMeasurementNumbers[measurementNumber] || {};
+        const nonconformitiesByMeasurementTypeId = groupedNonConformities[measurementTypeId] || {};
+        const nonconformitiesByMeasurementNumbers = nonconformitiesByMeasurementTypeId.measurementNumbers || {};
+        const nonconformitiesByMeasurementNumber = nonconformitiesByMeasurementNumbers[measurementNumber] || {};
 
-        return nonConformitiesByMeasurementNumber.messages || [];
+        return nonconformitiesByMeasurementNumber.messages || [];
     };
 });
 
@@ -27,7 +27,6 @@ Template.measurementTableRow.events({
     'click .measurementRowSidebar .warning-icon'(event, instance) {
         event.stopPropagation();
         OHIF.ui.showDialog('measurementTableWarningsDialog', {
-            title: 'Criteria Nonconformities',
             messages: instance.getWarningMessages(),
             position: {
                 x: event.clientX,

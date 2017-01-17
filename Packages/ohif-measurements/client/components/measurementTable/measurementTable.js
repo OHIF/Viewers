@@ -1,6 +1,7 @@
-import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementTable.onCreated(() => {
     const instance = Template.instance();
@@ -18,7 +19,7 @@ Template.measurementTable.onCreated(() => {
             timepoints = [];
         } else if (tableLayout === 'key') {
             timepoints = instance.data.timepointApi.key();
-        } else  {
+        } else {
             timepoints = instance.data.timepointApi.currentAndPrior();
         }
 
@@ -49,6 +50,10 @@ Template.measurementTable.onRendered(() => {
 });
 
 Template.measurementTable.helpers({
+    hasWarnings() {
+        return Template.instance().data.conformanceCriteria.nonconformities.get();
+    },
+
     buttonGroupData() {
         const instance = Template.instance();
         return {
@@ -61,5 +66,21 @@ Template.measurementTable.helpers({
                 text: 'Key Timepoints'
             }]
         };
+    }
+});
+
+Template.measurementTable.events({
+    'click .warning-status'(event, instance) {
+        const nonconformities = instance.data.conformanceCriteria.nonconformities.get();
+        const messages = [];
+        _.each(nonconformities, nonconformity => messages.push(nonconformity.message));
+
+        OHIF.ui.showDialog('measurementTableWarningsDialog', {
+            messages,
+            position: {
+                x: event.clientX,
+                y: event.clientY
+            }
+        });
     }
 });
