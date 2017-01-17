@@ -1,0 +1,19 @@
+<template name="dialogSimple">
+    <div id="{{this.id}}" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog {{this.dialogClass}}" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {{#button class='close' action='cancel'
+                        tagAttributes=(extend this.tagAttributes
+                            data-dismiss='modal' aria-label='Close'
+                        )
+                    }}<span aria-hidden="true">&times;</span>{{/button}}
+                    <h4 class="modal-title">{{this.title}}</h4>
+                </div>
+                <div class="modal-body">
+                    {{>UI.contentBlock}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

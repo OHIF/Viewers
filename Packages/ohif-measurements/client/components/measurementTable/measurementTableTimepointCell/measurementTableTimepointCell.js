@@ -84,7 +84,7 @@ Template.measurementTableTimepointCell.events({
                 message: 'Are you sure you want to delete this measurement?'
             };
 
-            OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {
+            OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {
                 const measurementTypeId = instance.data.rowItem.measurementTypeId;
                 const measurement = instance.data.rowItem.entries[0];
                 const measurementNumber = measurement.measurementNumber;

@@ -44,7 +44,7 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
                 message: 'Are you sure you want to remove this Non-Target measurement?'
             };
 
-            OHIF.ui.showFormDialog('dialogConfirm', dialogSettings)
+            OHIF.ui.showDialog('dialogConfirm', dialogSettings)
                 .then(instance.removeMeasurement);
 
             instance.closeDialog();

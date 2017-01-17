@@ -32,7 +32,7 @@ queryStudies = function(studiesToQuery, options) {
 }
 
 queryStudiesWithProgress = function(studiesToQuery) {
-    return OHIF.ui.showFormDialog('dialogProgress', {
+    return OHIF.ui.showDialog('dialogProgress', {
         title: 'Querying Studies...',
         message: `Queried: 0 / ${studiesToQuery.length}`,
         total: studiesToQuery.length,

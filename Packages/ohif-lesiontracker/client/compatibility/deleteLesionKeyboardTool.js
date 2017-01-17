@@ -81,7 +81,7 @@
 
             // TODO= Refactor this so the confirmation dialog is an
             // optional settable callback in the tool's configuration
-            OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {
+            OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {
                 removeMeasurementTimepoint(nearbyToolData.tool,
                     nearbyToolData.index,
                     nearbyToolData.toolType,

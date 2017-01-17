@@ -23,7 +23,7 @@ OHIF.ui.repositionDialog = ($modal, x, y) => {
     $dialog.css({
         left,
         top
-    }).trigger('spatialChanged');
+    }).trigger('spatialChanged').one('transitionend', () => $dialog.trigger('spatialChanged'));
 
     // Switch the modal to its previous visibility state
     $modal.toggle(isVisible);

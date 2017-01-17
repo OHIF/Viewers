@@ -1,0 +1,9 @@
+<template name="measurementTableWarningsDialog">
+    {{#dialogSimple (extend this dialogClass='modal-sm')}}
+        <ol>
+            {{#each message in this.messages}}
+                <li>{{message}}</li>
+            {{/each}}
+        </ol>
+    {{/dialogSimple}}
+</template>

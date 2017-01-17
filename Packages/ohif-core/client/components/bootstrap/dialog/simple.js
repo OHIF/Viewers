@@ -1,0 +1,44 @@
+import { Template } from 'meteor/templating';
+import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
+
+Template.dialogSimple.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.close = () => {
+        const $modal = instance.$('.modal');
+        $modal.on('hidden.bs.modal', () => instance.data.promiseResolve()).modal('hide');
+    };
+});
+
+Template.dialogSimple.onRendered(() => {
+    const instance = Template.instance();
+
+    // Allow options ovewrite
+    const modalOptions = _.extend({
+        backdrop: 'static',
+        keyboard: false
+    }, instance.data.modalOptions);
+
+    const $modal = instance.$('.modal');
+
+    // Create the bootstrap modal
+    $modal.modal(modalOptions);
+
+    const position = instance.data.position;
+    if (position) {
+        OHIF.ui.repositionDialog($modal, position.x, position.y);
+    }
+});
+
+Template.dialogSimple.events({
+    keydown(event) {
+        const instance = Template.instance();
+        const keyCode = event.keyCode || event.which;
+
+        if (keyCode === 27) {
+            instance.close();
+            event.stopPropagation();
+        }
+    }
+});

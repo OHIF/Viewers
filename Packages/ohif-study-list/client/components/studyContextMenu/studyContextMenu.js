@@ -48,7 +48,7 @@ function exportSelectedStudies($study, event) {
     const studiesCount = selectedStudies.length;
     const studyText = studiesCount > 1 ? 'Studies' : 'Study';
 
-    OHIF.ui.showFormDialog('dialogConfirm', {
+    OHIF.ui.showDialog('dialogConfirm', {
         element: event.element,
         title: `Export ${studyText}`,
         message: `Would you like to export ${studiesCount} ${studyText.toLowerCase()}?`

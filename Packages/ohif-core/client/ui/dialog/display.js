@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
-OHIF.ui.showFormDialog = (templateName, dialogData) => {
+OHIF.ui.showDialog = (templateName, dialogData) => {
     // Check if the given template exists
     const template = Template[templateName];
     if (!template) {

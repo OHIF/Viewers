@@ -1,6 +1,6 @@
 import './bounded/bounded.js';
 import './dimensional/dimensional.js';
-import './dialog/form.js';
+import './dialog/display.js';
 import './dialog/spatial.js';
 import './dialog/unsavedChangesDialog.js';
 import './draggable/draggable.js';

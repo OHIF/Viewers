@@ -417,7 +417,7 @@ export const unsavedChanges = {
                 title: 'You have unsaved changes!',
                 message: "Your changes will be lost if you don't save them before leaving the current page... Are you sure you want to proceed?"
             }, options);
-            OHIF.ui.showFormDialog('dialogConfirm', dialogOptions).then(function() {
+            OHIF.ui.showDialog('dialogConfirm', dialogOptions).then(function() {
                 // Unsaved changes exist but user confirms action...
                 shouldProceed = true;
                 callback.call(null, shouldProceed, hasChanges);

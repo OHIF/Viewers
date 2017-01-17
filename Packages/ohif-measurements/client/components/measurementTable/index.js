@@ -26,3 +26,5 @@ import './measurementTableTimepointCell/measurementTableTimepointCell.js';
 import './measurementTableTimepointHeader/measurementTableTimepointHeader.html';
 import './measurementTableTimepointHeader/measurementTableTimepointHeader.styl';
 import './measurementTableTimepointHeader/measurementTableTimepointHeader.js';
+
+import './measurementTableWarnings/measurementTableWarningsDialog.html';

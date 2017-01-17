@@ -67,7 +67,7 @@ Template.longitudinalStudyListContextMenu.helpers({
 Template.longitudinalStudyListContextMenu.replaces(defaultTemplate);
 Template[defaultTemplate].inheritsHelpersFrom('longitudinalStudyListContextMenu');
 
-StudyList.functions.launchStudyAssociation = () => OHIF.ui.showFormDialog('dialogStudyAssociation');
+StudyList.functions.launchStudyAssociation = () => OHIF.ui.showDialog('dialogStudyAssociation');
 StudyList.functions.removeTimepointAssociations = removeTimepointAssociations;
 StudyList.functions.exportSelectedStudies = exportSelectedStudies;
 StudyList.functions.viewStudies = viewStudies;
@@ -86,7 +86,7 @@ function removeTimepointAssociations($study, event) {
         }
     };
 
-    OHIF.ui.showFormDialog('dialogConfirm', dialogSettings).then(() => {
+    OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {
         // Get a Cursor pointing to the selected Studies from the StudyList
         const selectedStudies = OHIF.studylist.getSelectedStudies();
 

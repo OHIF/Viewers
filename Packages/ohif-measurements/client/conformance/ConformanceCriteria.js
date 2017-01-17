@@ -1,5 +1,7 @@
-import { OHIF } from 'meteor/ohif:core';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 import { CriteriaEvaluator } from './CriteriaEvaluator';
 import * as evaluations from './evaluations';
 
@@ -49,7 +51,7 @@ class ConformanceCriteria {
         const toolsGroupsMap = this.measurementApi.toolsGroupsMap;
 
         nonConformities.forEach(nonConformity => {
-            if(nonConformity.isGlobal) {
+            if (nonConformity.isGlobal) {
                 groups.globals = groups.globals || { messages: [] };
                 groups.globals.messages.push(nonConformity.message);
 
@@ -64,19 +66,17 @@ class ConformanceCriteria {
                 const measureNumber = measurement.measurementNumber;
                 let measurementNumbers = group.measurementNumbers[measureNumber];
 
-                if(!measurementNumbers) {
+                if (!measurementNumbers) {
                     measurementNumbers = group.measurementNumbers[measureNumber] = {
                         messages: [],
                         measurements: []
-                    }
+                    };
                 }
 
                 measurementNumbers.messages.push(nonConformity.message);
                 measurementNumbers.measurements.push(measurement);
             });
         });
-
-        console.log('>>>>> groups: ', groups);
 
         return groups;
     }
@@ -96,12 +96,12 @@ class ConformanceCriteria {
     getEvaluators(timepointId, trialCriteriaType) {
         const evaluators = [];
         const trialCriteriaTypeId = trialCriteriaType.id.toLowerCase();
-        const evaluation = evaluations[trialCriteriaTypeId]
-        
-        if(evaluation) {
+        const evaluation = evaluations[trialCriteriaTypeId];
+
+        if (evaluation) {
             const evaluationTimepoint = evaluation[timepointId];
 
-            if(evaluationTimepoint) {
+            if (evaluationTimepoint) {
                 evaluators.push(new CriteriaEvaluator(evaluationTimepoint));
             }
         }
@@ -127,7 +127,7 @@ class ConformanceCriteria {
                 const timepointId = measurement.timepointId;
                 const timepoint = this.timepointApi.timepoints.findOne({ timepointId });
 
-                if((timepointType !== 'both') && (timepoint.timepointType !== timepointType)) {
+                if ((timepointType !== 'both') && (timepoint.timepointType !== timepointType)) {
                     return;
                 }
 
