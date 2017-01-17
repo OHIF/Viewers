@@ -25,20 +25,14 @@ const keys = {
 Template.measurementTableRow.helpers({
     hasWarnings() {
         const toolsGroupsMap = this.measurementApi.toolsGroupsMap;
-        const nonConformities = this.conformanceCriteria.nonConformities.get();
-        const foundNonConformity = _.find(nonConformities, nonConformity => {
-            const measurement = _.find(nonConformity.measurements, measurement => {
-                if(toolsGroupsMap[measurement.toolType] !== this.rowItem.measurementTypeId) {
-                    return false;
-                }
+        const measurementTypeId = this.rowItem.measurementTypeId;
+        const measurementNumber = this.rowItem.measurementNumber;
+        const groupedNonConformities = this.conformanceCriteria.groupedNonConformities.get() || {};
+        const nonConformitiesByMeasurementTypeId = groupedNonConformities[measurementTypeId] || {};
+        const nonConformitiesByMeasurementNumbers = nonConformitiesByMeasurementTypeId.measurementNumbers || {};
+        const nonConformitiesByMeasurementNumber = nonConformitiesByMeasurementNumbers[measurementNumber] || {};
 
-                return measurement.measurementNumber === parseInt(this.rowItem.measurementNumber, 10);
-            });
-
-            return !!measurement;
-        });
-
-        return !!foundNonConformity;
+        return nonConformitiesByMeasurementNumber.messages && nonConformitiesByMeasurementNumber.messages.length;
     }
 });
 

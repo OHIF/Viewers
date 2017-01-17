@@ -9,6 +9,7 @@ class ConformanceCriteria {
         this.measurementApi = measurementApi;
         this.timepointApi = timepointApi;
         this.nonConformities = new ReactiveVar();
+        this.groupedNonConformities = new ReactiveVar();
 
         const validate = _.debounce(trialCriteriaType => {
             this.validate(trialCriteriaType);
@@ -33,10 +34,51 @@ class ConformanceCriteria {
         const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
         const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
         const nonConformities = resultBaseline.concat(resultFollowup).concat(resultBoth);
+        const groupedNonConformities = this.groupNonConformities(nonConformities);
 
+        // Keep both? Group the data only on viewer/measurementTable views?
+        // Work with not grouped data (worse lookup performance on measurementTableRow)?
         this.nonConformities.set(nonConformities);
+        this.groupedNonConformities.set(groupedNonConformities);
 
         return nonConformities;
+    }
+
+    groupNonConformities(nonConformities) {
+        const groups = {};
+        const toolsGroupsMap = this.measurementApi.toolsGroupsMap;
+
+        nonConformities.forEach(nonConformity => {
+            if(nonConformity.isGlobal) {
+                groups.globals = groups.globals || { messages: [] };
+                groups.globals.messages.push(nonConformity.message);
+
+                return;
+            }
+
+            nonConformity.measurements.forEach(measurement => {
+                const groupName = toolsGroupsMap[measurement.toolType];
+                groups[groupName] = groups[groupName] || { measurementNumbers: {} };
+
+                const group = groups[groupName];
+                const measureNumber = measurement.measurementNumber;
+                let measurementNumbers = group.measurementNumbers[measureNumber];
+
+                if(!measurementNumbers) {
+                    measurementNumbers = group.measurementNumbers[measureNumber] = {
+                        messages: [],
+                        measurements: []
+                    }
+                }
+
+                measurementNumbers.messages.push(nonConformity.message);
+                measurementNumbers.measurements.push(measurement);
+            });
+        });
+
+        console.log('>>>>> groups: ', groups);
+
+        return groups;
     }
 
     validateTimepoint(timepointId, trialCriteriaType, data) {
