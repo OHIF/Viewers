@@ -1,14 +1,19 @@
 import { Random } from 'meteor/random';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-const FUNCTION = 'function';
-const OBJECT = 'object';
-const STRING = 'string';
+/**
+ * Constants
+ */
+
 const PROPERTY_SEPARATOR = '.';
 const ORDER_ASC = 'asc';
 const ORDER_DESC = 'desc';
 const MIN_COUNT = 0x00000000;
 const MAX_COUNT = 0x7FFFFFFF;
+
+/**
+ * Class Definition
+ */
 
 export class TypeSafeCollection {
 
@@ -37,115 +42,6 @@ export class TypeSafeCollection {
 
     _elementWithId(id, silent) {
         return this._elements(silent).find(item => item.id === id);
-    }
-
-    /**
-     * Static Methods
-     */
-
-    /**
-     * Retrieve an object's property value by name
-     * @param {Object} object The object we want read the property from...
-     * @param {String} propertyName The property to be read (e.g., 'address.street.name' or 'address.street.number'
-     * to read object.address.street.name or object.address.street.number);
-     * @returns {Any} Returns whatever the property holds or undefined if the property cannot be read or reached.
-     */
-    static getPropertyValue(object, propertyName) {
-        let propertyValue;
-        if (typeof object === OBJECT && object !== null && typeof propertyName === STRING) {
-            let fragments = propertyName.split(PROPERTY_SEPARATOR),
-                fragmentCount = fragments.length;
-            if (fragmentCount > 0) {
-                let firstFragment = fragments[0],
-                    remainingFragments = fragmentCount > 1 ? fragments.slice(1).join(PROPERTY_SEPARATOR) : null;
-                propertyValue = object[firstFragment];
-                if (remainingFragments !== null) {
-                    propertyValue = TypeSafeCollection.getPropertyValue(propertyValue, remainingFragments);
-                }
-            }
-        }
-        return propertyValue;
-    }
-
-    // [WIP]...
-    static compareToPropertyMapStrict(propertyMap, object) {
-        const hasOwnProperty = Object.prototype.hasOwnProperty;
-        const getPropertyValue = TypeSafeCollection.getPropertyValue;
-        for (let propertyName in propertyMap) {
-            if (hasOwnProperty.call(propertyMap, propertyName)) {
-                const propertyValue = getPropertyValue(object, propertyName);
-                if (propertyMap[propertyName] !== propertyValue) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Checks if a sorting specifier is valid.
-     * A valid sorting specifier consists of an array of arrays being each subarray a pair
-     * in the format ["property name", "sorting order"].
-     * The following exemple can be used to sort studies by "date"" and use "time" to break ties in descending order.
-     * [ [ 'study.date', 'desc' ], [ 'study.time', 'desc' ] ]
-     * @param {Array} specifiers The sorting specifier to be tested.
-     * @returns {boolean} Returns true if the specifiers are valid, false otherwise.
-     */
-    static isValidSortingSpecifier(specifiers) {
-        let result = true;
-        if (specifiers instanceof Array && specifiers.length > 0) {
-            for (let i = specifiers.length - 1; i >= 0; i--) {
-                const item = specifiers[i];
-                if (item instanceof Array) {
-                    const property = item[0];
-                    const order = item[1];
-                    if (typeof property === STRING && (order === ORDER_ASC || order === ORDER_DESC)) {
-                        continue;
-                    }
-                }
-                result = false;
-                break;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Sorts an array based on sorting specifier options.
-     * @param {Array} list The that needs to be sorted.
-     * @param {Array} specifiers An array of specifiers. Please read isValidSortingSpecifier method definition for further details.
-     * @returns {void} No value is returned. The array is sorted in place.
-     */
-    static sortListBy(list, specifiers) {
-        const thisClass = TypeSafeCollection;
-        if (list instanceof Array && thisClass.isValidSortingSpecifier(specifiers)) {
-            const getPropertyValue = thisClass.getPropertyValue;
-            const specifierCount = specifiers.length;
-            list.sort((a, b) => {
-                let index = 0;
-                while (index < specifierCount) {
-                    const specifier = specifiers[index];
-                    const property = specifier[0];
-                    const order = specifier[1] === ORDER_DESC ? -1 : 1;
-                    const aValue = getPropertyValue(a, property);
-                    const bValue = getPropertyValue(b, property);
-                    // @TODO: should we check for the types being compared, like:
-                    // ~~ if (typeof aValue !== typeof bValue) continue;
-                    // Not sure because dates, for example, can be correctly compared to numbers...
-                    if (aValue < bValue) {
-                        return order * -1;
-                    }
-                    if (aValue > bValue) {
-                        return order * 1;
-                    }
-                    if (++index >= specifierCount) {
-                        return 0;
-                    }
-                }
-            });
-        } else {
-            throw new Error('TypeSafeCollection::sortListBy Invalid Arguments');
-        }
     }
 
     /**
@@ -247,39 +143,40 @@ export class TypeSafeCollection {
         return found && found.payload;
     }
 
-    // the reactive var will not be notified if no valid callback is supplied...
+    /**
+     * Find an element by a criteria defined by the given callback function.
+     * Attention!!! The reactive source will not be notified if no valid callback is supplied...
+     * @param {function} callback A callback function which will define the search criteria. The callback
+     * function will be passed the collection element, its ID and its index in this very order. The callback
+     * shall return true when its criterea has been fulfilled.
+     * @returns {Any} The matched element or undefined if not match was found.
+     */
     find(callback) {
         let found;
-        if (typeof callback === FUNCTION) {
+        if (_isFunction(callback)) {
             found = this._elements().find((item, index) => {
-                return callback.call(this, item.payload, index);
-            });
-        }
-        return found && found.payload;
-    }
-
-    // the reactive var will not be notified if no valid property map is supplied...
-    findBy(propertyMap) {
-        let found;
-        if (typeof propertyMap === OBJECT && propertyMap !== null) {
-            const hasOwn = Object.prototype.hasOwnProperty;
-            found = this._elements().find(item => {
-                const payload = item.payload;
-                for (let propertyName in propertyMap) {
-                    if (hasOwn.call(propertyMap, propertyName)) {
-                        if (propertyMap[propertyName] !== TypeSafeCollection.getPropertyValue(payload, propertyName)) {
-                            return false;
-                        }
-                    }
-                }
-                return true;
+                return callback.call(this, item.payload, item.id, index);
             });
         }
         return found && found.payload;
     }
 
     /**
-     * Find all elements that match a specified property map.
+     * Find the first element that strictly matches the specified property map.
+     * Attention!!! The reactive source will not be notified if no valid property map is supplied...
+     * @param {Object} propertyMap A property map that will be macthed against all collection elements.
+     * @returns {Any} The matched element or undefined if not match was found.
+     */
+    findBy(propertyMap) {
+        let found;
+        if (_isObject(propertyMap)) {
+            found = this._elements().find(item => _compareToPropertyMapStrict(propertyMap, item.payload));
+        }
+        return found && found.payload;
+    }
+
+    /**
+     * Find all elements that strictly match the specified property map.
      * Attention!!! The reactive source will not be notified if no valid property map is supplied...
      * @param {Object} propertyMap A property map that will be macthed against all collection elements.
      * @returns {Array} An array of entries of all elements that match the given criteria. Each set in
@@ -287,19 +184,12 @@ export class TypeSafeCollection {
      */
     findAllEntriesBy(propertyMap) {
         const found = [];
-        if (typeof propertyMap === OBJECT && propertyMap !== null) {
-            const hasOwn = Object.prototype.hasOwnProperty;
+        if (_isObject(propertyMap)) {
             this._elements().forEach((item, index) => {
-                const payload = item.payload;
-                for (let propertyName in propertyMap) {
-                    if (hasOwn.call(propertyMap, propertyName)) {
-                        if (propertyMap[propertyName] !== TypeSafeCollection.getPropertyValue(payload, propertyName)) {
-                            return; // skip this element since it does not match the criteria...
-                        }
-                    }
+                if (_compareToPropertyMapStrict(propertyMap, item.payload)) {
+                    // Match! Add it to the found list...
+                    found.push([ item.payload, item.id, index ]);
                 }
-                // Match! Add it to the found list...
-                found.push([ payload, item.id, index ]);
             });
         }
         return found;
@@ -316,15 +206,23 @@ export class TypeSafeCollection {
      */
     findAllBy(propertyMap, options) {
         const found = this.findAllEntriesBy(propertyMap).map(item => item[0]); // Only payload is relevant...
-        if (options instanceof Object && 'sort' in options) {
-            TypeSafeCollection.sortListBy(found, options.sort);
+        if (_isObject(options)) {
+            if ('sort' in options) {
+                _sortListBy(found, options.sort);
+            }
         }
         return found;
     }
 
-    // the reactive var will not be notified if no valid callback is supplied...
+    /**
+     * Executes the supplied callback function for each element of the collection.
+     * Attention!!! The reactive source will not be notified if no valid property map is supplied...
+     * @param {function} callback The callback function to be executed. The callback is passed the element,
+     * its ID and its index in this very order.
+     * @returns {void} Nothing is returned.
+     */
     forEach(callback) {
-        if (typeof callback === FUNCTION) {
+        if (_isFunction(callback)) {
             this._elements().forEach((item, index) => {
                 callback.call(this, item.payload, item.id, index);
             });
@@ -348,10 +246,150 @@ export class TypeSafeCollection {
      */
     all(options) {
         let list = this._elements().map(item => item.payload);
-        if (options instanceof Object && 'sort' in options) {
-            TypeSafeCollection.sortListBy(list, options.sort);
+        if (_isObject(options)) {
+            if ('sort' in options) {
+                _sortListBy(list, options.sort);
+            }
         }
         return list;
     }
 
+}
+
+/**
+ * Utility Functions
+ */
+
+/**
+ * Test if supplied argument is a valid object for current class purposes.
+ * Atention! The underscore version of this function should not be used for performance reasons.
+ */
+function _isObject(subject) {
+    return subject instanceof Object || typeof subject === 'object' && subject !== null;
+}
+
+/**
+ * Test if supplied argument is a valid string for current class purposes.
+ * Atention! The underscore version of this function should not be used for performance reasons.
+ */
+function _isString(subject) {
+    return typeof subject === 'string';
+}
+
+/**
+ * Test if supplied argument is a valid function for current class purposes.
+ * Atention! The underscore version of this function should not be used for performance reasons.
+ */
+function _isFunction(subject) {
+    return typeof subject === 'function';
+}
+
+/**
+ * Retrieve an object's property value by name. Composite property names (e.g., 'address.country.name') are accepted.
+ * @param {Object} targetObject The object we want read the property from...
+ * @param {String} propertyName The property to be read (e.g., 'address.street.name' or 'address.street.number'
+ * to read object.address.street.name or object.address.street.number, respectively);
+ * @returns {Any} Returns whatever the property holds or undefined if the property cannot be read or reached.
+ */
+function _getPropertyValue(targetObject, propertyName) {
+    let propertyValue; // undefined (the default return value)
+    if (_isObject(targetObject) && _isString(propertyName)) {
+        const fragments = propertyName.split(PROPERTY_SEPARATOR);
+        const fragmentCount = fragments.length;
+        if (fragmentCount > 0) {
+            const firstFragment = fragments[0];
+            const remainingFragments = fragmentCount > 1 ? fragments.slice(1).join(PROPERTY_SEPARATOR) : null;
+            propertyValue = targetObject[firstFragment];
+            if (remainingFragments !== null) {
+                propertyValue = _getPropertyValue(propertyValue, remainingFragments);
+            }
+        }
+    }
+    return propertyValue;
+}
+
+/**
+ * Compare a property map with a target object using strict comparison.
+ * @param {Object} propertyMap The property map whose properties will be used for comparison. Composite
+ * property names (e.g., 'address.country.name') will be tested against the "resolved" properties from the target object.
+ * @param {Object} targetObject The target object whose properties will be tested.
+ * @returns {boolean} Returns true if the properties match, false otherwhise.
+ */
+function _compareToPropertyMapStrict(propertyMap, targetObject) {
+    let result = false;
+    // "for in" loops do not thown exceptions for invalid data types...
+    for (let propertyName in propertyMap) {
+        // Attention!!! The 'hasOwnProperty' test has been intentionally skipped...
+        if (propertyMap[propertyName] !== _getPropertyValue(targetObject, propertyName)) {
+            result = false;
+            break;
+        } else if (result !== true) {
+            result = true;
+        }
+    }
+    return result;
+}
+
+/**
+ * Checks if a sorting specifier is valid.
+ * A valid sorting specifier consists of an array of arrays being each subarray a pair
+ * in the format ["property name", "sorting order"].
+ * The following exemple can be used to sort studies by "date"" and use "time" to break ties in descending order.
+ * [ [ 'study.date', 'desc' ], [ 'study.time', 'desc' ] ]
+ * @param {Array} specifiers The sorting specifier to be tested.
+ * @returns {boolean} Returns true if the specifiers are valid, false otherwise.
+ */
+function _isValidSortingSpecifier(specifiers) {
+    let result = true;
+    if (specifiers instanceof Array && specifiers.length > 0) {
+        for (let i = specifiers.length - 1; i >= 0; i--) {
+            const item = specifiers[i];
+            if (item instanceof Array) {
+                const property = item[0];
+                const order = item[1];
+                if (_isString(property) && (order === ORDER_ASC || order === ORDER_DESC)) {
+                    continue;
+                }
+            }
+            result = false;
+            break;
+        }
+    }
+    return result;
+}
+
+/**
+ * Sorts an array based on sorting specifier options.
+ * @param {Array} list The that needs to be sorted.
+ * @param {Array} specifiers An array of specifiers. Please read isValidSortingSpecifier method definition for further details.
+ * @returns {void} No value is returned. The array is sorted in place.
+ */
+function _sortListBy(list, specifiers) {
+    if (list instanceof Array && _isValidSortingSpecifier(specifiers)) {
+        const specifierCount = specifiers.length;
+        list.sort(function _sortListByCallback(a, b) { // callback name for stack traces...
+            let index = 0;
+            while (index < specifierCount) {
+                const specifier = specifiers[index];
+                const property = specifier[0];
+                const order = specifier[1] === ORDER_DESC ? -1 : 1;
+                const aValue = _getPropertyValue(a, property);
+                const bValue = _getPropertyValue(b, property);
+                // @TODO: should we check for the types being compared, like:
+                // ~~ if (typeof aValue !== typeof bValue) continue;
+                // Not sure because dates, for example, can be correctly compared to numbers...
+                if (aValue < bValue) {
+                    return order * -1;
+                }
+                if (aValue > bValue) {
+                    return order * 1;
+                }
+                if (++index >= specifierCount) {
+                    return 0;
+                }
+            }
+        });
+    } else {
+        throw new Error('Invalid Arguments');
+    }
 }
