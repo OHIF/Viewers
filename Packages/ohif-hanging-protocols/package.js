@@ -19,6 +19,7 @@ Package.onUse(function(api) {
     api.use('validatejs');
 
     // Our custom packages
+    api.use('ohif:metadata');
     api.use('ohif:viewerbase');
 
     api.addAssets('assets/dots.svg', 'client');

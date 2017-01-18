@@ -4,6 +4,7 @@ import { _ } from 'meteor/underscore';
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
+import 'meteor/ohif:metadata';
 
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
@@ -422,9 +423,8 @@ HP.ProtocolEngine = class ProtocolEngine {
             // TODO: Add relative Date / time
         });
 
-        var lastStudyIndex = this.studies.length - 1;
-        this.studies.forEach(function(study) {
-            var studyMatchDetails = HP.match(study, studyMatchingRules);
+        this.studies.forEach(study => {
+            const studyMatchDetails = HP.match(study, studyMatchingRules);
             if ((studyMatchingRules.length && !studyMatchDetails.score) ||
                 studyMatchDetails.score < highestStudyMatchingScore) {
                 return;
@@ -441,7 +441,7 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                 highestSeriesMatchingScore = seriesMatchDetails.score;
 
-                series.instances.forEach(function(instance, index) {
+                series.instances.forEach((instance, index) => {
                     // This tests to make sure there is actually image data in this instance
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227
@@ -449,9 +449,9 @@ HP.ProtocolEngine = class ProtocolEngine {
                         return;
                     }
 
-                    var instanceMatchDetails = HP.match(instance, instanceMatchingRules);
+                    const instanceMatchDetails = HP.match(instance, instanceMatchingRules);
 
-                    var matchDetails = {
+                    const matchDetails = {
                         passed: [],
                         failed: []
                     };
@@ -464,9 +464,9 @@ HP.ProtocolEngine = class ProtocolEngine {
                     matchDetails.failed = matchDetails.failed.concat(seriesMatchDetails.details.failed);
                     matchDetails.failed = matchDetails.failed.concat(studyMatchDetails.details.failed);
 
-                    var totalMatchScore = instanceMatchDetails.score + seriesMatchDetails.score + studyMatchDetails.score;
+                    const totalMatchScore = instanceMatchDetails.score + seriesMatchDetails.score + studyMatchDetails.score;
 
-                    var imageDetails = {
+                    const imageDetails = {
                         studyInstanceUid: study.studyInstanceUid,
                         seriesInstanceUid: series.seriesInstanceUid,
                         sopInstanceUid: instance.sopInstanceUid,
@@ -481,16 +481,19 @@ HP.ProtocolEngine = class ProtocolEngine {
                         }
                     };
 
-                    // Find the displaySet
-                    const filter = {
-                        sopInstanceUid: instance.sopInstanceUid
+                    // Filter imageSet function: filter by InstanceUid
+                    const filterImageSetFn = (imageSet, sopInstanceUid) => {
+                        return imageSet.getData().sopInstanceUid === instance.sopInstanceUid;
                     };
-                    const displaySet = _.filter(study.displaySets, ds => _.findWhere(ds.images, filter))[0];
+
+                    // Find the displaySet
+                    const displaySet = study.displaySets.find(ds => ds.images.filter(imageSet => filterImageSetFn));
 
                     // If the instance was found, set the displaySet ID
                     if (displaySet) {
+                        const instanceMetadata = new OHIF.metadata.InstanceMetadata(instance);
                         imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
-                        imageDetails.imageId = OHIF.viewerbase.getImageId(instance);
+                        imageDetails.imageId = OHIF.viewerbase.getImageId(instanceMetadata);
                     }
 
                     if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {
