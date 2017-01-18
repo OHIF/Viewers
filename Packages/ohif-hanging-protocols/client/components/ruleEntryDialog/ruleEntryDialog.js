@@ -136,20 +136,12 @@ function getActiveViewportImageId() {
 
 function getAbstractPriorValue(imageId) {
     // @TypeSafeStudies
-    // @TODO: Implement MIN and MAX methods in TypeSafeCollection
-    // const currentStudy = ViewerStudies.findOne({}, {
-    //     sort: {
-    //         studyDate: -1
-    //     },
-    //     limit: 1
-    // });
-    const allStudies = OHIF.viewer.Studies.all({
+    // Retrieves the first study of the collection using the given sort order.
+    // Since we're only interrested in the first record, "null" will be used
+    // as search criteria (thus no actual search will be made).
+    const currentStudy = OHIF.viewer.Studies.findBy(null, {
         sort: [ ['studyDate', 'desc'] ]
     });
-    if (allStudies.length < 1) {
-        return;
-    }
-    const currentStudy = allStudies[0];
 
     const priorStudy = cornerstoneTools.metaData.get('study', imageId);
     if (!priorStudy) {

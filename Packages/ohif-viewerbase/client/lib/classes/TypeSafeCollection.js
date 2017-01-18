@@ -163,16 +163,32 @@ export class TypeSafeCollection {
 
     /**
      * Find the first element that strictly matches the specified property map.
-     * Attention!!! The reactive source will not be notified if no valid property map is supplied...
      * @param {Object} propertyMap A property map that will be macthed against all collection elements.
+     * @param {Object} options A set of options. Currently only "options.sort" option is supported.
+     * @param {Object.SortingSpecifier} options.sort An optional sorting specifier. If a sorting specifier is supplied
+     * but is not valid, an exception will be thrown.
      * @returns {Any} The matched element or undefined if not match was found.
      */
-    findBy(propertyMap) {
+    findBy(propertyMap, options) {
         let found;
-        if (_isObject(propertyMap)) {
+        if (_isObject(options)) {
+            // if the "options" argument is provided and is a valid object,
+            // it must be applied to the dataset before search...
+            const all = this.all(options);
+            if (all.length > 0) {
+                if (_isObject(propertyMap)) {
+                    found = all.find(item => _compareToPropertyMapStrict(propertyMap, item));
+                } else {
+                    found = all[0]; // simply extract the first element...
+                }
+            }
+        } else if (_isObject(propertyMap)) {
             found = this._elements().find(item => _compareToPropertyMapStrict(propertyMap, item.payload));
+            if (found) {
+                found = found.payload;
+            }
         }
-        return found && found.payload;
+        return found;
     }
 
     /**
@@ -201,7 +217,7 @@ export class TypeSafeCollection {
      * @param {Object} propertyMap A property map that will be macthed against all collection elements.
      * @param {Object} options A set of options. Currently only "options.sort" option is supported.
      * @param {Object.SortingSpecifier} options.sort An optional sorting specifier. If a sorting specifier is supplied
-     * but it's not valid, an exception will be thrown.
+     * but is not valid, an exception will be thrown.
      * @returns {Array} An array with all elements that match the given criteria and sorted in the specified sorting order.
      */
     findAllBy(propertyMap, options) {
@@ -241,7 +257,7 @@ export class TypeSafeCollection {
      * Returns a list with all elements of the collection optionally sorted by a sorting specifier criteria.
      * @param {Object} options A set of options. Currently only "options.sort" option is supported.
      * @param {Object.SortingSpecifier} options.sort An optional sorting specifier. If a sorting specifier is supplied
-     * but it's not valid, an exception will be thrown.
+     * but is not valid, an exception will be thrown.
      * @returns {Array} An array with all elements stored in the collection.
      */
     all(options) {
@@ -285,6 +301,11 @@ function _isFunction(subject) {
 }
 
 /**
+ * Shortcut for Object's prototype "hasOwnProperty" method.
+ */
+const _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
  * Retrieve an object's property value by name. Composite property names (e.g., 'address.country.name') are accepted.
  * @param {Object} targetObject The object we want read the property from...
  * @param {String} propertyName The property to be read (e.g., 'address.street.name' or 'address.street.number'
@@ -319,12 +340,13 @@ function _compareToPropertyMapStrict(propertyMap, targetObject) {
     let result = false;
     // "for in" loops do not thown exceptions for invalid data types...
     for (let propertyName in propertyMap) {
-        // Attention!!! The 'hasOwnProperty' test has been intentionally skipped...
-        if (propertyMap[propertyName] !== _getPropertyValue(targetObject, propertyName)) {
-            result = false;
-            break;
-        } else if (result !== true) {
-            result = true;
+        if (_hasOwnProperty.call(propertyMap, propertyName)) {
+            if (propertyMap[propertyName] !== _getPropertyValue(targetObject, propertyName)) {
+                result = false;
+                break;
+            } else if (result !== true) {
+                result = true;
+            }
         }
     }
     return result;
