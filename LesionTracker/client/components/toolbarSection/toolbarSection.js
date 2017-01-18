@@ -9,11 +9,11 @@ Template.toolbarSection.helpers({
         Session.get('LayoutManagerUpdated');
 
         // Stops here if layout manager is not defined yet
-        if (!window.layoutManager) {
+        if (!Viewerbase.layoutManager) {
             return;
         }
 
-        return window.layoutManager.viewportData.length > 1;
+        return Viewerbase.layoutManager.viewportData.length > 1;
     },
 
     leftSidebarToggleButtonData() {
@@ -217,7 +217,7 @@ Template.toolbarSection.events({
     'click #toggleTarget'(event, instance) {
         const $target = $(event.currentTarget);
         if (!$target.hasClass('active') && $target.hasClass('expanded')) {
-            toolManager.setActiveTool('bidirectional');
+            Viewerbase.toolManager.setActiveTool('bidirectional');
         }
     },
 

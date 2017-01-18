@@ -181,14 +181,23 @@ class StackImagePositionOffsetSynchronizer {
   }
 
   getViewportImageNormal(element) {
+      if(!element) {
+        return;
+      }
+
       element = $(element).get(0);
 
       try {
         const enabledElement = cornerstone.getEnabledElement(element);
+
+        if(!enabledElement || !enabledElement.image) {
+          return;
+        }
+
         const imageId = enabledElement.image.imageId;
         const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
 
-        return imagePlane.rowCosines.clone().cross(imagePlane.columnCosines);;
+        return imagePlane.rowCosines.clone().cross(imagePlane.columnCosines);
       } catch(error) {
         console.log(error.message);
       }

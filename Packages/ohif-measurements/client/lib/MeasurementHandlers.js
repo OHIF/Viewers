@@ -65,7 +65,7 @@ class MeasurementHandlers {
         // Get the update the measurement number after inserting
         Meteor.defer(() => {
             measurementData.measurementNumber = Collection.findOne(measurementData._id).measurementNumber;
-            cornerstone.updateImage(getActiveViewportElement());
+            cornerstone.updateImage(OHIF.viewerbase.viewportUtils.getActiveViewportElement());
         });
 
         // Signal unsaved changes

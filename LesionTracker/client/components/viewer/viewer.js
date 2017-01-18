@@ -1,12 +1,11 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
 import { _ } from 'meteor/underscore';
 
-// @TODO: Figure out what to change so we don't have this duplicate import (export createStacks?)
-import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
+import 'meteor/ohif:metadata';
 
 Session.set('ViewerMainReady', false);
 Session.set('TimepointsReady', false);
@@ -70,7 +69,8 @@ Template.viewer.onCreated(() => {
 
     instance.data.studies.forEach(study => {
         study.selected = true;
-        study.displaySets = OHIF.viewerbase.createStacks(study);
+        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
         OHIF.viewer.Studies.insert(study);
     });
 
