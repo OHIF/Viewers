@@ -1,3 +1,7 @@
+Npm.depends({
+    ajv: '4.10.4'
+});
+
 Package.describe({
     name: 'ohif:measurements',
     summary: 'OHIF Measurement Tools',

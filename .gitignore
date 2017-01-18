@@ -5,5 +5,6 @@ docs/
 .meteor/dev_bundle
 */.meteor/dev_bundle
 node_modules
+.npm
 Packages/active-entry/helloworld/
 LesionTracker/tests/nightwatch/reports/
