@@ -133,7 +133,7 @@ const linkStackScroll = () => {
 
 // This function was originally defined alone inside client/lib/toggleDialog.js
 // and has been moved here to avoid circular dependency issues.
-const toggleDialog = (e =>lement) {
+const toggleDialog = element => {
     const $element = $(element);
     if($element.is('dialog')) {
         if (element.hasAttribute('open')) {
