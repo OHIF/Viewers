@@ -100,7 +100,9 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             numberOfFrames: parseFloat(remoteGetValue(instance['0028,0008'])),
             frameIncrementPointer: remoteGetValue(instance['0028,0009']),
             frameTime: parseFloat(remoteGetValue(instance['0018,1063'])),
-            frameTimeVector: parseFloatArray(remoteGetValue(instance['0018,1065']))
+            frameTimeVector: parseFloatArray(remoteGetValue(instance['0018,1065'])),
+            echoNumber: remoteGetValue(instance['0018,0086']),
+            contrastBolusAgent: remoteGetValue(instance['0018,0010'])
         };
 
         var iid = instance['xxxx,0001'].Value;

@@ -1,3 +1,8 @@
+import { Blaze } from 'meteor/blaze';
+import { Session } from 'meteor/session';
+import { jQuery, $ } from 'meteor/jquery';
+import { Template } from 'meteor/templating';
+
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -33,7 +38,7 @@ switchToTab = function(contentId) {
     // If we are switching to the StudyList tab, reset any CSS styles
     // that have been applied to prevent scrolling in the Viewer.
     // Then stop here, since nothing needs to be re-rendered.
-    var container;
+    let container;
     if (contentId === 'studylistTab') {
         container = $('.tab-content').find('#studylistTab').get(0);
 
@@ -41,7 +46,7 @@ switchToTab = function(contentId) {
             return;
         }
 
-        var studylistContainer = document.createElement('div');
+        const studylistContainer = document.createElement('div');
         studylistContainer.classList.add('studylistContainer');
         container.appendChild(studylistContainer);
 
@@ -61,14 +66,14 @@ switchToTab = function(contentId) {
         return;
     }
 
-    var container = $('.tab-content').find('#viewerTab').get(0);
+    container = $('.tab-content').find('#viewerTab').get(0);
     container.innerHTML = '';
 
     // Use Blaze to render the Loading Template into the container
     // viewStudiesInTab will clear this container
     Blaze.renderWithData(Template.loadingText, {}, container);
 
-    var studies = ViewerData[contentId].studies;
+    const studies = ViewerData[contentId].studies;
 
     if (studies) {
         // ViewerData already has the meta data (in cases when studylist is launched externally)
@@ -76,7 +81,7 @@ switchToTab = function(contentId) {
     } else {
         // Use the stored ViewerData global object to retrieve the studyInstanceUid
         // related to this tab
-        var studyInstanceUids = ViewerData[contentId].studyInstanceUids;
+        const studyInstanceUids = ViewerData[contentId].studyInstanceUids;
 
         // Attempt to retrieve the meta data (it might be cached)
         OHIF.studylist.getStudiesMetadata(studyInstanceUids, function(studies) {
@@ -85,7 +90,7 @@ switchToTab = function(contentId) {
     }
 };
 
-function viewStudiesInTab(contentId, studies) {
+const viewStudiesInTab = (contentId, studies) => {
     // Tab closed while study data was being retrieved, stop here
     if (!ViewerData[contentId]) {
         OHIF.log.warn('Tab closed while study data was being retrieved');
@@ -94,8 +99,11 @@ function viewStudiesInTab(contentId, studies) {
 
     // Once we have the study data, store it in a structure with
     // any other saved data about this tab (e.g. layout structure)
-    var data = jQuery.extend({}, ViewerData[contentId]);
+    const data = jQuery.extend({}, ViewerData[contentId]);
     data.studies = studies;
+
+    // TODO: check if this is necessary. Since the typo bug
+    // was fixed (it was contentid instead of contentId)
     data.contentId = contentId;
 
     if (ViewerData[contentId].studies && ViewerData[contentId].studies.length) {
@@ -103,8 +111,8 @@ function viewStudiesInTab(contentId, studies) {
     }
 
     // Add additional metadata to our study from the studylist
-    data.studies.forEach(function(study) {
-        var studylistStudy = StudyListStudies.findOne({
+    data.studies.forEach(study => {
+        const studylistStudy = StudyListStudies.findOne({
             studyInstanceUid: study.studyInstanceUid
         });
 
@@ -117,10 +125,10 @@ function viewStudiesInTab(contentId, studies) {
 
     // Get tab content container given the contentId string
     // If no such container exists, stop here because something is wrong
-    var container = $('.tab-content').find('#viewerTab').get(0);
+    const container = $('.tab-content').find('#viewerTab').get(0);
 
     // Remove the loading text template that is inside the tab container by default
-    var viewerContainer = document.createElement('div');
+    const viewerContainer = document.createElement('div');
     viewerContainer.classList.add('viewerContainer');
     container.innerHTML = '';
     container.appendChild(viewerContainer);
@@ -129,7 +137,7 @@ function viewStudiesInTab(contentId, studies) {
     Blaze.renderWithData(Template.viewer, data, viewerContainer);
 
     // Retrieve the DOM element of the viewer
-    var imageViewer = $('#viewer');
+    const imageViewer = $('#viewer');
 
     // If it is present in the DOM (it should be), then apply
     // styles to prevent page scrolling and overscrolling on mobile devices
@@ -142,4 +150,4 @@ function viewStudiesInTab(contentId, studies) {
         // Prevent overscroll on mobile devices
         document.body.style.position = 'fixed';
     }
-}
+};

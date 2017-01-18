@@ -135,17 +135,17 @@ function viewStudies() {
 
     const title = selectedStudies[0].patientName;
     const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid);
-    const contentid = 'viewerTab';
+    const contentId = 'viewerTab';
 
     ViewerData = window.ViewerData || ViewerData;
 
     // Update the ViewerData global object
-    ViewerData[contentid] = {
+    ViewerData[contentId] = {
         title: title,
-        contentid: contentid,
+        contentId: contentId,
         studyInstanceUids: studyInstanceUids
     };
 
     // Switch to the new tab
-    switchToTab(contentid);
+    switchToTab(contentId);
 }

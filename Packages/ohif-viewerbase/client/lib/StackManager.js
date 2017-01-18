@@ -17,41 +17,50 @@ const stackUpdatedCallbacks = [];
  * @return {Array}                        Array with image IDs
  */
 function createAndAddStack(stackMap, study, displaySet) {
-  const numImages = displaySet.images.length;
-  const imageIds = [];
-  let imageId;
+    const numImages = displaySet.images.length;
+    const imageIds = [];
+    let imageId;
 
-  displaySet.images.forEach((image, imageIndex) => {
-      const metaData = {
-          instance: image,
-          series: displaySet, // TODO: Check this
-          study: study,
-          numImages: numImages,
-          imageIndex: imageIndex + 1
-      };
+    displaySet.images.forEach((image, imageIndex) => {
+        const metaData = {
+            instance: image,
+            series: displaySet, // TODO: Check this
+            study: study,
+            numImages: numImages,
+            imageIndex: imageIndex + 1
+        };
 
-      const numberOfFrames = image.numberOfFrames;
-      if (numberOfFrames > 1) {
-          OHIF.log.info('Multiframe image detected');
-          for (let i = 0; i < numberOfFrames; i++) {
-              metaData.frame = i;
-              imageId = getImageId(image, i);
-              imageIds.push(imageId);
-              addMetaData(imageId, metaData);
-          }
-      } 
-      else {
-          imageId = getImageId(image);
-          imageIds.push(imageId);
-          addMetaData(imageId, metaData);
-      }
-  });
+        const numberOfFrames = image.numberOfFrames;
+        if (numberOfFrames > 1) {
+            OHIF.log.info('Multiframe image detected');
+            for (let i = 0; i < numberOfFrames; i++) {
+                metaData.frame = i;
+                imageId = getImageId(image, i);
+                imageIds.push(imageId);
+                addMetaData(imageId, metaData);
+            }
+        } 
+        else {
+            imageId = getImageId(image);
+            imageIds.push(imageId);
+            addMetaData(imageId, metaData);
+        }
+    });
 
-  return imageIds;
+    const stack = {
+        displaySetInstanceUid: displaySet.displaySetInstanceUid,
+        imageIds: imageIds,
+        frameRate: displaySet.frameRate,
+        isClip: displaySet.isClip
+    };
+
+    stackMap[displaySet.displaySetInstanceUid] = stack;
+
+    return imageIds;
 }
 
 configuration = {
-  createAndAddStack: createAndAddStack
+    createAndAddStack: createAndAddStack
 };
 
 /**
@@ -61,64 +70,64 @@ configuration = {
  * clearStacks and makeAndAddStack should not used outside of loadStudy and removeStudies.
  */
 const StackManager = {
-  /**
-   * Removes all current stacks
-   */
-  clearStacks() {
-    stackMap = {};
-  },
-  /**
-   * Create a stack from an image set, as well as add in the metadata on a per image bases.
-   * @param study The study who's metadata will be added
-   * @param displaySet The set of images to make the stack from
-   * @return {Array} Array with image IDs
-   */
-  makeAndAddStack(study, displaySet) {
-    return configuration.createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks);
-  },
-  /**
-   * Find a stack from the currently created stacks.
-   * @param displaySetInstanceUid The UID of the stack to find.
-   * @returns {*} undefined if not found, otherwise the stack object is returned.
-   */
-  findStack(displaySetInstanceUid) {
-    return stackMap[displaySetInstanceUid];
-  },
-  /**
-   * Gets the underlying map of displaySetInstanceUid to stack object.
-   * WARNING: Do not change this object. It directly affects the manager.
-   * @returns {{}} map of displaySetInstanceUid -> stack.
-   */
-  getAllStacks() {
-    return stackMap;
-  },
-  /**
-   * Adds in a callback to be called on a stack being added / updated.
-   * @param callback must accept at minimum one argument,
-   * which is the stack that was added / updated.
-   */
-  addStackUpdatedCallback(callback) {
-    if (typeof callback !== 'function') {
-      throw new OHIFError('callback must be provided as a function');
+    /**
+     * Removes all current stacks
+     */
+    clearStacks() {
+        stackMap = {};
+    },
+    /**
+     * Create a stack from an image set, as well as add in the metadata on a per image bases.
+     * @param study The study who's metadata will be added
+     * @param displaySet The set of images to make the stack from
+     * @return {Array} Array with image IDs
+     */
+    makeAndAddStack(study, displaySet) {
+        return configuration.createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks);
+    },
+    /**
+     * Find a stack from the currently created stacks.
+     * @param displaySetInstanceUid The UID of the stack to find.
+     * @returns {*} undefined if not found, otherwise the stack object is returned.
+     */
+    findStack(displaySetInstanceUid) {
+        return stackMap[displaySetInstanceUid];
+    },
+    /**
+     * Gets the underlying map of displaySetInstanceUid to stack object.
+     * WARNING: Do not change this object. It directly affects the manager.
+     * @returns {{}} map of displaySetInstanceUid -> stack.
+     */
+    getAllStacks() {
+        return stackMap;
+    },
+    /**
+     * Adds in a callback to be called on a stack being added / updated.
+     * @param callback must accept at minimum one argument,
+     * which is the stack that was added / updated.
+     */
+    addStackUpdatedCallback(callback) {
+        if (typeof callback !== 'function') {
+            throw new OHIFError('callback must be provided as a function');
+        }
+        stackUpdatedCallbacks.push(callback);
+    },
+    /**
+     * Return configuration
+     */
+    getConfiguration() {
+        return configuration;
+    },
+    /**
+     * Set configuration, in order to provide compatibility
+     * with other systems by overriding this functions
+     * @param {Object} config object with functions to be overrided
+     *
+     * For now, only makeAndAddStack can be overrided
+     */
+    setConfiguration(config) {
+        configuration = config;
     }
-    stackUpdatedCallbacks.push(callback);
-  },
-  /**
-   * Return configuration
-   */
-  getConfiguration() {
-    return configuration;
-  },
-  /**
-   * Set configuration, in order to provide compatibility
-   * with other systems by overriding this functions
-   * @param {Object} config object with functions to be overrided
-   *
-   * For now, only makeAndAddStack can be overrided
-   */
-  setConfiguration(config) {
-    configuration = config;
-  }
 };
 
 export { StackManager };

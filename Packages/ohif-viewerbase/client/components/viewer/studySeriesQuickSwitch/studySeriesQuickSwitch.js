@@ -29,7 +29,6 @@ Template.studySeriesQuickSwitch.onCreated(() => {
         const viewportData = instance.getViewportData(viewportIndex);
 
         // @TypeSafeStudies
-
         if (viewportData) {
             // Finds the current study and return it
             instance.study = OHIF.viewer.Studies.findBy({

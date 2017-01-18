@@ -88,13 +88,18 @@ export class LayoutManager {
         // Generate the additional data based on the appendix
         const additionalData = [];
         appendix.forEach((displaySet, index) => {
-            additionalData.push({
-                viewportIndex: currentViewportIndex + index,
-                studyInstanceUid: displaySet.studyInstanceUid,
-                seriesInstanceUid: displaySet.seriesInstanceUid,
-                displaySetInstanceUid: displaySet.displaySetInstanceUid,
-                sopInstanceUid: displaySet.images[0].sopInstanceUid
-            });
+            const { images, studyInstanceUid, seriesInstanceUid, displaySetInstanceUid } = displaySet;
+            const sopInstanceUid = images[0] && images[0].getSOPInstanceUID ? images[0].getSOPInstanceUID() : '';
+            const viewportIndex = currentViewportIndex + index;
+            const data = {
+                viewportIndex,
+                studyInstanceUid,
+                seriesInstanceUid,
+                displaySetInstanceUid,
+                sopInstanceUid
+            };
+
+            additionalData.push(data);
         });
 
         // Append the additional data with the viewport data

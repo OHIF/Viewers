@@ -139,6 +139,14 @@ Viewerbase.sortingManager = sortingManager;
 import { crosshairsSynchronizers } from './lib/crosshairsSynchronizers';
 Viewerbase.crosshairsSynchronizers = crosshairsSynchronizers;
 
+// annotateTextUtils.*
+import { annotateTextUtils } from './lib/annotateTextUtils';
+Viewerbase.annotateTextUtils = annotateTextUtils;
+
+// textMarkerUtils.*
+import { textMarkerUtils } from './lib/textMarkerUtils';
+Viewerbase.textMarkerUtils = textMarkerUtils;
+
 // createStacks.*
 import { createStacks } from './lib/createStacks';
 Viewerbase.createStacks = createStacks;

@@ -127,7 +127,9 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             derivationDescription: instance[0x00282111],
             lossyImageCompressionRatio: instance[0x00282112],
             lossyImageCompressionMethod: instance[0x00282114],
-            spacingBetweenSlices: instance[0x00180088]
+            spacingBetweenSlices: instance[0x00180088],
+            echoNumber: instance[0x00180086],
+            contrastBolusAgent: instance[0x00180010]
         };
 
         // Retrieve the actual data over WADO-URI

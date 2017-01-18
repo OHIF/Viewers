@@ -41,7 +41,6 @@ Template.studyTimepoint.events({
         let $studiesTarget = instance.$('.studyTimepoint');
 
         // @TypeSafeStudies
-
         if (changed.isQuickSwitch) {
             // Changes the current quick switch study
             const study = OHIF.viewer.Studies.findBy({

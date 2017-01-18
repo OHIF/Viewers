@@ -2715,37 +2715,37 @@ var JpegImage = (function jpegImage() {
 
 
 
-//	Huffman table for fast search: (HuffTab) 8-bit Look up table 2-layer search architecture, 1st-layer represent 256 node (8 bits) if codeword-length > 8
-//	bits, then the entry of 1st-layer = (# of 2nd-layer table) | MSB and it is stored in the 2nd-layer Size of tables in each layer are 256.
-//	HuffTab[*][*][0-256] is always the only 1st-layer table.
+//  Huffman table for fast search: (HuffTab) 8-bit Look up table 2-layer search architecture, 1st-layer represent 256 node (8 bits) if codeword-length > 8
+//  bits, then the entry of 1st-layer = (# of 2nd-layer table) | MSB and it is stored in the 2nd-layer Size of tables in each layer are 256.
+//  HuffTab[*][*][0-256] is always the only 1st-layer table.
 //
-//	An entry can be: (1) (# of 2nd-layer table) | MSB , for code length > 8 in 1st-layer (2) (Code length) << 8 | HuffVal
+//  An entry can be: (1) (# of 2nd-layer table) | MSB , for code length > 8 in 1st-layer (2) (Code length) << 8 | HuffVal
 //
-//	HuffmanValue(table   HuffTab[x][y] (ex) HuffmanValue(HuffTab[1][0],...)
-//	                ):
-//	    return: Huffman Value of table
-//	            0xFF?? if it receives a MARKER
-//	    Parameter:  table   HuffTab[x][y] (ex) HuffmanValue(HuffTab[1][0],...)
-//	                temp    temp storage for remainded bits
-//	                index   index to bit of temp
-//	                in      FILE pointer
-//	    Effect:
-//	        temp  store new remainded bits
-//	        index change to new index
-//	        in    change to new position
-//	    NOTE:
-//	      Initial by   temp=0; index=0;
-//	    NOTE: (explain temp and index)
-//	      temp: is always in the form at calling time or returning time
-//	       |  byte 4  |  byte 3  |  byte 2  |  byte 1  |
-//	       |     0    |     0    | 00000000 | 00000??? |  if not a MARKER
-//	                                               ^index=3 (from 0 to 15)
-//	                                               321
-//	    NOTE (marker and marker_index):
-//	      If get a MARKER from 'in', marker=the low-byte of the MARKER
-//	        and marker_index=9
-//	      If marker_index=9 then index is always > 8, or HuffmanValue()
-//	        will not be called
+//  HuffmanValue(table   HuffTab[x][y] (ex) HuffmanValue(HuffTab[1][0],...)
+//                  ):
+//      return: Huffman Value of table
+//              0xFF?? if it receives a MARKER
+//      Parameter:  table   HuffTab[x][y] (ex) HuffmanValue(HuffTab[1][0],...)
+//                  temp    temp storage for remainded bits
+//                  index   index to bit of temp
+//                  in      FILE pointer
+//      Effect:
+//          temp  store new remainded bits
+//          index change to new index
+//          in    change to new position
+//      NOTE:
+//        Initial by   temp=0; index=0;
+//      NOTE: (explain temp and index)
+//        temp: is always in the form at calling time or returning time
+//         |  byte 4  |  byte 3  |  byte 2  |  byte 1  |
+//         |     0    |     0    | 00000000 | 00000??? |  if not a MARKER
+//                                                 ^index=3 (from 0 to 15)
+//                                                 321
+//      NOTE (marker and marker_index):
+//        If get a MARKER from 'in', marker=the low-byte of the MARKER
+//          and marker_index=9
+//        If marker_index=9 then index is always > 8, or HuffmanValue()
+//          will not be called
   jpeg.lossless.Decoder.prototype.getHuffmanValue = function (table, temp, index) {
     /*jslint bitwise: true */
 
@@ -3302,13 +3302,13 @@ var JpegImage = (function jpegImage() {
 
 
 
-//	Build_HuffTab()
-//	Parameter:  t       table ID
-//	            c       table class ( 0 for DC, 1 for AC )
-//	            L[i]    # of codewords which length is i
-//	            V[i][j] Huffman Value (length=i)
-//	Effect:
-//	    build up HuffTab[t][c] using L and V.
+//  Build_HuffTab()
+//  Parameter:  t       table ID
+//              c       table class ( 0 for DC, 1 for AC )
+//              L[i]    # of codewords which length is i
+//              V[i][j] Huffman Value (length=i)
+//  Effect:
+//      build up HuffTab[t][c] using L and V.
   jpeg.lossless.HuffmanTable.prototype.buildHuffTable = function(tab, L, V) {
     /*jslint bitwise: true */
 
@@ -4575,7 +4575,7 @@ var JpegImage = (function jpegImage() {
       // https://groups.google.com/forum/#!searchin/comp.protocols.dicom/Modality$20LUT$20XA/comp.protocols.dicom/UBxhOZ2anJ0/D0R_QP8V2wIJ
       var sopClassUid = dataSet.string('x00080016');
       return  sopClassUid !== '1.2.840.10008.5.1.4.1.1.12.1' && // XA
-              sopClassUid !== '1.2.840.10008.5.1.4.1.1.12.2.1	'; // XRF
+              sopClassUid !== '1.2.840.10008.5.1.4.1.1.12.2.1 '; // XRF
     }
 
     function makeGrayscaleImage(imageId, dataSet, frame, sharedCacheKey) {

@@ -32,7 +32,6 @@ function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, s
 function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
 
     // @TypeSafeStudies
-
     // First, check if we already have this study loaded
     const alreadyLoadedStudy = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 

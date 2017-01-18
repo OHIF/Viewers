@@ -7,7 +7,13 @@ import { getWADORSImageId } from './getWADORSImageId';
  * @param instance
  * @returns {string} The imageId to be used by Cornerstone
  */
-export function getImageId(instance, frame) {
+export function getImageId(instanceMetadata, frame) {
+    if (!instanceMetadata) {
+        return;
+    }
+
+    const instance = instanceMetadata.getData();
+
     if (!instance) {
         return;
     }

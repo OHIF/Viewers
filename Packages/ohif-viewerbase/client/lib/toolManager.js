@@ -4,6 +4,8 @@ import { OHIF } from 'meteor/ohif:core';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
 import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
+import { annotateTextUtils } from './annotateTextUtils';
+import { textMarkerUtils } from './textMarkerUtils';
 
 let activeTool = 'wwwc';
 let defaultTool = 'wwwc';
@@ -167,16 +169,34 @@ export const toolManager = {
             ...shadowConfig
         });
 
-        // Set the configuration values for the text annotation (Arrow) tool
+        // Set the configuration values for the Text Marker (Spine Labelling) tool
+        const startFrom = $('#startFrom');
+        const ascending = $('#ascending');
+        const textMarkerConfig = {
+            markers: [ 'L5', 'L4', 'L3', 'L2', 'L1', // Lumbar spine
+                         'T12', 'T11', 'T10', 'T9', 'T8', 'T7', // Thoracic spine
+                         'T6', 'T5', 'T4', 'T3', 'T2', 'T1',
+                         'C7', 'C6', 'C5', 'C4', 'C3', 'C2', 'C1', // Cervical spine
+            ],
+            current: startFrom.val(),
+            ascending: ascending.is(':checked'),
+            loop: true,
+            changeTextCallback: textMarkerUtils.changeTextCallback,
+            shadow: shadowConfig.shadow,
+            shadowColor: shadowConfig.shadowColor,
+            shadowOffsetX: shadowConfig.shadowOffsetX,
+            shadowOffsetY: shadowConfig.shadowOffsetY
+        };
+        cornerstoneTools.textMarker.setConfiguration(textMarkerConfig);
 
-        // @TODO: Fix this, needs to import them from somewhere
-        /*const annotateConfig = {
-            getTextCallback: getAnnotationTextCallback,
-            changeTextCallback: changeAnnotationTextCallback,
+        // Set the configuration values for the text annotation (Arrow) tool
+        const annotateConfig = {
+            getTextCallback: annotateTextUtils.getTextCallback,
+            changeTextCallback: annotateTextUtils.changeTextCallback,
             drawHandles: false,
             arrowFirst: true
         };
-        arrowAnnotate.setConfiguration(annotateConfig);*/
+        arrowAnnotate.setConfiguration(annotateConfig);
 
         const zoomConfig = {
             minScale: 0.05,

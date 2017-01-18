@@ -30,7 +30,7 @@ OHIF.lesiontracker.openNewTabWithTimepoint = (timepointId, title) => {
     // Update the ViewerData global object
     ViewerData[contentId] = {
         title: title,
-        contentid: contentId,
+        contentId: contentId,
         studyInstanceUids: data.studyInstanceUids,
         timepointIds: data.timepointIds,
         currentTimepointId: timepointId

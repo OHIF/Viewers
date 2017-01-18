@@ -118,6 +118,8 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             derivationDescription: DICOMWeb.getString(instance['00282111']),
             lossyImageCompressionRatio: DICOMWeb.getString(instance['00282112']),
             lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
+            echoNumber: DICOMWeb.getString(instance['00180086']),
+            contrastBolusAgent: DICOMWeb.getString(instance['00180010'])
         };
 
         if (server.imageRendering === 'wadouri') {

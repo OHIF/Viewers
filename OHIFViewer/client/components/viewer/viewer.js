@@ -55,9 +55,9 @@ Template.viewer.onCreated(() => {
     ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
-        study.displaySets = OHIF.viewerbase.createStacks(study);
-        // const studyMetadata = new OHIF.metadata.StudyMetadata(study);
-        // study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
+        // study.displaySets = OHIF.viewerbase.createStacks(study);
+        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
         OHIF.viewer.Studies.insert(study);
         ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });
