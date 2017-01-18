@@ -99,7 +99,6 @@ Template.studyTimepointStudy.events({
         const isQuickSwitch = !_.isUndefined(instance.data.viewportIndex);
 
         // @TypeSafeStudies
-        debugger;
         // Check if the study already has series data,
         // and if not, retrieve it.
         if (!studyData.seriesList) {
@@ -128,7 +127,6 @@ Template.studyTimepointStudy.events({
 Template.studyTimepointStudy.helpers({
     isLoading() {
         // @TypeSafeStudies
-        debugger;
         const instance = Template.instance();
         const studyData = instance.data.study;
         const alreadyLoaded = OHIF.viewer.Studies.findBy({ studyInstanceUid: studyData.studyInstanceUid });

@@ -4,7 +4,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 const getStudyFromStudyInstanceUid = studyInstanceUid => {
     // @TypeSafeStudies
-    return Studies.findBy({ studyInstanceUid });
+    return OHIF.viewer.Studies.findBy({ studyInstanceUid });
 };
 
 const getNumberOfStacks = studyInstanceUid => {

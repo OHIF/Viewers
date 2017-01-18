@@ -49,8 +49,6 @@ Template.viewer.onCreated(() => {
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
     // @TypeSafeStudies
-    debugger;
-
     // Update the OHIF.viewer.Studies collection with the loaded studies
     OHIF.viewer.Studies.removeAll();
 

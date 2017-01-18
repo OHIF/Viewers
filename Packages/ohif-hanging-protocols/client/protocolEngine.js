@@ -404,7 +404,6 @@ HP.ProtocolEngine = class ProtocolEngine {
                 }
 
                 // @TypeSafeStudies
-                debugger;
 
                 var alreadyLoaded = OHIF.viewer.Studies.findBy({
                     studyInstanceUid: priorStudy.studyInstanceUid

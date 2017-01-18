@@ -22,7 +22,6 @@ Template.studyTimepointBrowser.onCreated(() => {
     // Get the studies for a specific timepoint
     instance.getStudies = timepoint => {
         // @TypeSafeStudies
-        debugger;
 
         if (!timepoint) {
             return OHIF.viewer.Studies.all();

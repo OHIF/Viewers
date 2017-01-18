@@ -136,7 +136,6 @@ function getActiveViewportImageId() {
 
 function getAbstractPriorValue(imageId) {
     // @TypeSafeStudies
-    debugger;
     // @TODO: Implement MIN and MAX methods in TypeSafeCollection
     // const currentStudy = ViewerStudies.findOne({}, {
     //     sort: {

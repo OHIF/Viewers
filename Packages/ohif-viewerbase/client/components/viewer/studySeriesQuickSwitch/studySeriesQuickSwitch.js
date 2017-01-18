@@ -29,7 +29,6 @@ Template.studySeriesQuickSwitch.onCreated(() => {
         const viewportData = instance.getViewportData(viewportIndex);
 
         // @TypeSafeStudies
-        debugger;
 
         if (viewportData) {
             // Finds the current study and return it

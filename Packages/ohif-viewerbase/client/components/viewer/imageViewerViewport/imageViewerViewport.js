@@ -586,7 +586,6 @@ Template.imageViewerViewport.onRendered(function() {
     }
 
     // @TypeSafeStudies
-    debugger;
     const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
     data.study = study;

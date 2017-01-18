@@ -65,8 +65,6 @@ Template.viewer.onCreated(() => {
     instance.autorun(OHIF.lesiontracker.pixelSpacingAutorunCheck);
 
     // @TypeSafeStudies
-    debugger;
-
     // Update the OHIF.viewer.Studies collection with the loaded studies
     OHIF.viewer.Studies.removeAll();
 

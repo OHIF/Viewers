@@ -219,7 +219,6 @@ Template.viewportOverlay.helpers({
         }
 
         // @TypeSafeStudies
-        debugger
         // Make sure there are more than two studies loaded in the viewer
         const viewportStudies = OHIF.viewer.Studies.all();
         if (viewportStudies.length < 2) {
