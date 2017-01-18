@@ -6,12 +6,12 @@ function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, s
         // Find the proper stack to display
     const stacksFromSeries = displaySets.filter(stack => stack.seriesInstanceUid === seriesInstanceUid);
     const stack = stacksFromSeries.find(stack => {
-        const imageIndex = stack.images.findIndex(image => image.sopInstanceUid === sopInstanceUid);
-        return imageIndex > -1;    
+        const imageIndex = stack.images.findIndex(image => image.getSOPInstanceUID() === sopInstanceUid);
+        return imageIndex > -1;
     });
 
     // TODO: make this work for multi-frame instances
-    const specificImageIndex = stack.images.findIndex(image => image.sopInstanceUid === sopInstanceUid);
+    const specificImageIndex = stack.images.findIndex(image => image.getSOPInstanceUID() === sopInstanceUid);
 
     const displaySetData = {
         studyInstanceUid: studyInstanceUid,
@@ -23,10 +23,10 @@ function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, s
 
     // Add a renderedCallback to activate the measurements once it's 
     if (renderedCallback) {
-        displaySetData.renderedCallback = renderedCallback;    
+        displaySetData.renderedCallback = renderedCallback;
     }
 
-    window.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
+    OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
 }
 
 function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
@@ -44,7 +44,7 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
         const $viewports = $('.imageViewerViewport');
         const element = $viewports.get(viewportIndex);
         const startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
-        startLoadingHandler(element)
+        startLoadingHandler(element);
         getStudyMetadata(studyInstanceUid, loadedStudy => {
             loadedStudy.displaySets = createStacks(loadedStudy);
             OHIF.log.warn('renderIntoViewport');

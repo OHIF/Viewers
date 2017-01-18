@@ -1,4 +1,3 @@
-import { toolManager } from 'meteor/ohif:viewerbase';
 import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 

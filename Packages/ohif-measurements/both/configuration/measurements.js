@@ -44,6 +44,12 @@ class MeasurementApi {
                         studyInstanceUids: measurement.studyInstanceUid
                     });
 
+                    // Preventing errors thrown when non-associated (standalone) study is opened...
+                    // @TODO: Make sure this logic is correct.
+                    if (!timepoint) {
+                        return;
+                    }
+
                     const emptyItem = groupCollection.findOne({
                         toolId: { $eq: null },
                         timepointId: timepoint.timepointId

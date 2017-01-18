@@ -1,3 +1,5 @@
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
 (function(cornerstoneTools) {
 
     'use strict';
@@ -21,9 +23,9 @@
 
     // TODO = Check if we have the same function already in Cornerstone Tools
     function getNearbyToolData(element, coords, toolTypes) {
-        var allTools = toolManager.getTools();
+        var allTools = Viewerbase.toolManager.getTools();
         var pointNearTool = false;
-        var touchDevice = isTouchDevice();
+        var touchDevice = Viewerbase.helpers.isTouchDevice();
         var nearbyTool = {},
             nearbyToolIndex,
             nearbyToolType;
