@@ -12,6 +12,7 @@ class ConformanceCriteria {
         this.timepointApi = timepointApi;
         this.nonconformities = new ReactiveVar();
         this.groupedNonConformities = new ReactiveVar();
+        this.maxTargets = new ReactiveVar(null);
 
         const validate = _.debounce(trialCriteriaType => {
             this.validate(trialCriteriaType);
@@ -32,6 +33,7 @@ class ConformanceCriteria {
         mergedData.targets = mergedData.targets.concat(followupData.targets);
         mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
 
+        this.maxTargets.set(null);
         const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
         const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
         const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
@@ -86,6 +88,11 @@ class ConformanceCriteria {
         let nonconformities = [];
 
         evaluators.forEach(evaluator => {
+            const maxTargets = evaluator.getMaxTargets();
+            if (maxTargets) {
+                this.maxTargets.set(maxTargets);
+            }
+
             const result = evaluator.evaluate(data);
             nonconformities = nonconformities.concat(result);
         });

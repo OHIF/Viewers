@@ -24,8 +24,18 @@ export class CriteriaEvaluator {
         });
     }
 
+    getMaxTargets() {
+        let result;
+        _.each(this.criteria, criterion => {
+            if (criterion instanceof Criteria.MaxTargetsCriterion) {
+                result = criterion.options.limit;
+            }
+        });
+        return result;
+    }
+
     getCriteriaValidator() {
-        if(CriteriaEvaluator.criteriaValidator) {
+        if (CriteriaEvaluator.criteriaValidator) {
             return CriteriaEvaluator.criteriaValidator;
         }
 
@@ -53,8 +63,9 @@ export class CriteriaEvaluator {
                 };
             }
         });
-        
-        return CriteriaEvaluator.criteriaValidator = new Ajv().compile(schema);
+
+        CriteriaEvaluator.criteriaValidator = new Ajv().compile(schema);
+        return CriteriaEvaluator.criteriaValidator;
     }
 
     evaluate(data) {
