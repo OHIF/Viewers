@@ -1,15 +1,21 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { _ } from 'meteor/underscore';
+import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
-Session.set('ViewerMainReady', false);
-Session.set('TimepointsReady', false);
-Session.set('MeasurementsReady', false);
+Meteor.startup(() => {
+    Session.set('ViewerMainReady', false);
+    Session.set('TimepointsReady', false);
+    Session.set('MeasurementsReady', false);
+
+    OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
+});
 
 Template.viewer.onCreated(() => {
     const toolManager = OHIF.viewerbase.toolManager;
@@ -24,6 +30,7 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
     const contentId = instance.data.contentId;
+    const viewportUtils = OHIF.viewerbase.viewportUtils;
 
     OHIF.viewer.functionList = $.extend(OHIF.viewer.functionList, {
         toggleLesionTrackerTools: OHIF.lesiontracker.toggleLesionTrackerTools,
@@ -36,15 +43,15 @@ Template.viewer.onCreated(() => {
             toolManager.setActiveTool('nonTarget');
         },
         // Viewport functions
-        toggleCineDialog: OHIF.viewerbase.viewportUtils.toggleCineDialog,
-        clearTools: OHIF.viewerbase.viewportUtils.clearTools,
-        resetViewport: OHIF.viewerbase.viewportUtils.resetViewport,
-        invert: OHIF.viewerbase.viewportUtils.invert,
-        flipV: OHIF.viewerbase.viewportUtils.flipV,
-        flipH: OHIF.viewerbase.viewportUtils.flipH,
-        rotateL: OHIF.viewerbase.viewportUtils.rotateL,
-        rotateR: OHIF.viewerbase.viewportUtils.rotateR,
-        linkStackScroll: OHIF.viewerbase.viewportUtils.linkStackScroll
+        toggleCineDialog: viewportUtils.toggleCineDialog,
+        clearTools: viewportUtils.clearTools,
+        resetViewport: viewportUtils.resetViewport,
+        invert: viewportUtils.invert,
+        flipV: viewportUtils.flipV,
+        flipH: viewportUtils.flipH,
+        rotateL: viewportUtils.rotateL,
+        rotateR: viewportUtils.rotateR,
+        linkStackScroll: viewportUtils.linkStackScroll
     });
 
     if (ViewerData[contentId].loadedSeriesData) {

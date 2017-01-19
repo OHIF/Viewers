@@ -1,26 +1,38 @@
+import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { ReactiveDict } from 'meteor/reactive-dict';
+
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
-OHIF.viewer = OHIF.viewer || {};
-OHIF.viewer.defaultTool = 'wwwc';
-OHIF.viewer.refLinesEnabled = true;
-OHIF.viewer.cine = {
-    framesPerSecond: 24,
-    loop: true
-};
+Meteor.startup(() => {
+    Session.setDefault('activeViewport', false);
+    Session.setDefault('leftSidebar', false);
+    Session.setDefault('rightSidebar', false);
 
-OHIF.viewer.functionList = {
-    toggleCineDialog: OHIF.viewerbase.viewportUtils.toggleCineDialog,
-    toggleCinePlay: OHIF.viewerbase.viewportUtils.toggleCinePlay,
-    clearTools: OHIF.viewerbase.viewportUtils.clearTools,
-    resetViewport: OHIF.viewerbase.viewportUtils.resetViewport,
-    invert: OHIF.viewerbase.viewportUtils.invert
-};
+    OHIF.viewer = OHIF.viewer || {};
+    OHIF.viewer.defaultTool = 'wwwc';
+    OHIF.viewer.refLinesEnabled = true;
+    OHIF.viewer.cine = {
+        framesPerSecond: 24,
+        loop: true
+    };
 
-Session.setDefault('activeViewport', false);
-Session.setDefault('leftSidebar', false);
-Session.setDefault('rightSidebar', false);
+    const viewportUtils = OHIF.viewerbase.viewportUtils;
+
+    OHIF.viewer.functionList = {
+        toggleCineDialog: viewportUtils.toggleCineDialog,
+        toggleCinePlay: viewportUtils.toggleCinePlay,
+        clearTools: viewportUtils.clearTools,
+        resetViewport: viewportUtils.resetViewport,
+        invert: viewportUtils.invert
+    };
+
+    OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
+});
+
 
 Template.viewer.onCreated(() => {
     const instance = Template.instance();

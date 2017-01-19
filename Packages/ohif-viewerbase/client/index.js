@@ -5,7 +5,6 @@ import { Viewerbase } from '../namespace';
  */
 
 import './collections';
-import './lib/stackImagePositionOffsetSynchronizer.js';
 import './lib/debugReactivity';
 
 /**
@@ -208,3 +207,7 @@ Viewerbase.TypeSafeCollection = TypeSafeCollection;
 // OHIFError
 import { OHIFError } from './lib/classes/OHIFError';
 Viewerbase.OHIFError = OHIFError;
+
+// StackImagePositionOffsetSynchronizer
+import { StackImagePositionOffsetSynchronizer } from './lib/classes/StackImagePositionOffsetSynchronizer';
+Viewerbase.StackImagePositionOffsetSynchronizer = StackImagePositionOffsetSynchronizer;

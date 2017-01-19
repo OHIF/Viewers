@@ -124,6 +124,10 @@ const clearTools = () => {
 const linkStackScroll = () => {
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
+    if(!synchronizer) {
+        return;
+    }
+
     if(synchronizer.isActive()) {
         synchronizer.deactivate();
     } else {

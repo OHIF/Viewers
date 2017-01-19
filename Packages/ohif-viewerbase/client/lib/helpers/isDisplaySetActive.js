@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
-import { viewportUtils } from '../viewportUtils';
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
@@ -32,12 +31,6 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
         // (Note, viewportData may have more entries!)
         const currentNumberOfViewports = OHIF.viewerbase.layoutManager.getNumberOfViewports();
 
-        // Get active viewport element
-        const activeViewport = viewportUtils.getActiveViewportElement();
-
-        // Get viewports elements
-        const viewportsElement = $('.imageViewerViewport');
-
         // Loop through the viewport data up until the currently displayed
         // number of viewports
         const viewportData = OHIF.viewerbase.layoutManager.viewportData;
@@ -45,7 +38,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
             const data = viewportData[i];
 
             // If the display set is displayed in this viewport and is active, stop here
-            if (data && data.displaySetInstanceUid === displaySetInstanceUid && viewportsElement.get(data.viewportIndex) === activeViewport) {
+            if (data && data.displaySetInstanceUid === displaySetInstanceUid) {
                 result = true;
                 break;
             }

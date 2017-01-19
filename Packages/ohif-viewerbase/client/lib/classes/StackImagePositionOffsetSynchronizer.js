@@ -1,9 +1,9 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
-import { toolManager } from './toolManager';
+import { toolManager } from '../toolManager';
 
-class StackImagePositionOffsetSynchronizer {
+export class StackImagePositionOffsetSynchronizer {
   constructor() {
     this.active = false;
     this.syncedViewports = [];
@@ -208,6 +208,4 @@ class StackImagePositionOffsetSynchronizer {
         OHIF.log.info(`StackImagePositionOffsetSynchronizer getViewportImageNormal: ${errorMessage}`);
       }
   }
-}
-
-OHIF.viewer.stackImagePositionOffsetSynchronizer = new StackImagePositionOffsetSynchronizer();
+};

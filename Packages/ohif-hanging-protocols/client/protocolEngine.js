@@ -4,7 +4,6 @@ import { _ } from 'meteor/underscore';
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
-import 'meteor/ohif:metadata';
 
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
