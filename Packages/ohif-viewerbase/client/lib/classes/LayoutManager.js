@@ -270,7 +270,7 @@ export class LayoutManager {
             }) || this.studies[0];
 
             // Get the display sets
-            const displaySets = currentStudy.series;
+            const displaySets = currentStudy.displaySets;
 
             // Get the current display set
             const displaySet = _.findWhere(displaySets, {
