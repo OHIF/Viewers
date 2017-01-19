@@ -126,22 +126,25 @@ export class InstanceMetadata extends Metadata {
         if (typeof tagOrProperty === NUMBER) {
             // if it's a number, build an hexadecimal representation...
             tagName = 'x' + ('00000000' + tagOrProperty.toString(16)).substr(-8);
-        } else if (typeof tagOrProperty === STRING && REGEX_TAG.test(tagOrProperty)) {
-            tagName = tagOrProperty;
-        } else {
-            // use it as a property name otherwise...
-            propertyName = tagOrProperty;
+        } else if (typeof tagOrProperty === STRING) {
+            if (REGEX_TAG.test(tagOrProperty)) {
+                tagName = tagOrProperty;
+            } else {
+                propertyName = tagOrProperty;
+            }
         }
 
-        // It's a property
-        if (tagName === null) {
+        if (propertyName !== null) {
+            // try to figure out the "tagName" using the provided "propertyName"...
             for (let tag in dicomTagDescriptions) {
+                // No need to check for "hasOwnProperty" here since dicomTagDescriptions is an object with no prototype...
                 if (dicomTagDescriptions[tag] === propertyName) {
                     tagName = tag;
                     break;
                 }
             }
-        } else if (propertyName === null) {
+        } else if (tagName !== null) {
+            // try to figure out the "propertyName" using the provided "tagName"...
             propertyName = dicomTagDescriptions[tagName] || null;
         }
 

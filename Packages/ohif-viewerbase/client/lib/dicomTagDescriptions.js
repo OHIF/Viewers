@@ -1,4 +1,6 @@
-export const dicomTagDescriptions = {
+
+const dicomTagDescriptions = Object.create(null); // Object with null prototype for fast and safe lookups...
+let _dicomTagDescriptions = {
     x00020000: 'FileMetaInfoGroupLength',
     x00020001: 'FileMetaInfoVersion',
     x00020002: 'MediaStorageSOPClassUID',
@@ -3146,3 +3148,18 @@ export const dicomTagDescriptions = {
     xfffee00d: 'EndOfItems',
     xfffee0dd: 'EndOfSequence'
 };
+
+// Safely copy tag descriptions to exported objects...
+(function(_dicomTagDescriptions) {
+    const _hasOwn = Object.prototype.hasOwnProperty;
+    for (let tag in _dicomTagDescriptions) {
+        if (_hasOwn.call(_dicomTagDescriptions, tag)) {
+            dicomTagDescriptions[tag] = _dicomTagDescriptions[tag];
+        }
+    }
+}(_dicomTagDescriptions));
+
+// Discard original object...
+_dicomTagDescriptions = null;
+
+export { dicomTagDescriptions };

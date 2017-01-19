@@ -9,6 +9,7 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
      */
     constructor(data) {
         super(data);
+        this._cache = Object.create(null); // Object with null prototype for fast and safe lookups...
         this.init();
     }
 
@@ -19,13 +20,24 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     }
 
     // Override
-    getRawValue(tagOrProperty, defaultValue) {
-        const propertyName = OHIFInstanceMetadata.getPropertyName(tagOrProperty);
+    getRawValue(tagOrProperty, defaultValue, bypassCache) {
 
+        // check if this property has been cached...
+        if (tagOrProperty in this._cache && bypassCache !== true) {
+            return this._cache[tagOrProperty];
+        }
+
+        const propertyName = OHIFInstanceMetadata.getPropertyName(tagOrProperty);
         const data = this.getData();
         const rawValue = data[propertyName];
 
-        return rawValue !== void 0 ? rawValue : defaultValue;
+        if (rawValue !== void 0) {
+            // if rawValue value is not undefined, cache result...
+            this._cache[tagOrProperty] = rawValue;
+            return rawValue;
+        }
+
+        return defaultValue;
     }
 
     // Override
@@ -40,18 +52,19 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     /**
      * Static methods
      */
-    
+
+    // @TODO: The current mapping of standard DICOM property names to local property names is not optimal.
+    // The inconsistency in property naming makes this function increasingly complex.
+    // A possible solution to improve this would be adapt retriveMetadata names to use DICOM standard names as in dicomTagDescriptions.js
     static getPropertyName(tagOrProperty) {
+        let propertyName;
         const tagInfo = InstanceMetadata.getTagInfo(tagOrProperty);
 
-        if(tagInfo.propertyName === null) {
-            return;
+        if (tagInfo.propertyName !== null) {
+            // This function tries to translate standard DICOM property names into local naming convention.
+            propertyName = tagInfo.propertyName.replace(/^SOP/, 'sop').replace(/UID$/, 'Uid');
+            propertyName = propertyName.charAt(0).toLowerCase() + propertyName.substr(1);
         }
-
-        let propertyName = tagInfo.propertyName.charAt(0).toLowerCase() + tagInfo.propertyName.substr(1);
-        // TODO: Improve this: change retriveMetadata to use dicom standard names (see dicomTagDescriptions.js)
-        propertyName = propertyName.replace(/^sop/, 'SOP');
-        propertyName = propertyName.replace(/uid$/i, 'UID');
 
         return propertyName;
     }

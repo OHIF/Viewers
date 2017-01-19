@@ -2,7 +2,8 @@ import { ImageSet } from './classes/ImageSet';
 import { isImage } from './isImage';
 
 const isMultiFrame = instance => {
-    return instance.getRawValue('NumberOfFrames') > 1;
+    // NumberOfFrames (0028,0008)
+    return instance.getRawValue('x00280008') > 1;
 };
 
 const makeDisplaySet = (series, instances) => {
@@ -25,13 +26,8 @@ const makeDisplaySet = (series, instances) => {
 
     // Sort the images in this series
     imageSet.sortBy((a, b) => {
-        // Sort by instance Number
-        const aInstanceNumber = a.getRawValue('x00200013');
-        const bInstanceNumber = b.getRawValue('x00200013');
-        if (a.instanceNumber && b.instanceNumber &&
-            a.instanceNumber !== b.instanceNumber) {
-            return a.instanceNumber - b.instanceNumber;
-        }
+        // Sort by InstanceNumber (0020,0013)
+        return (parseInt(a.getRawValue('x00200013', 0)) || 0) - (parseInt(b.getRawValue('x00200013', 0)) || 0);
     });
 
     // Include the first image instance number (after sorted)
