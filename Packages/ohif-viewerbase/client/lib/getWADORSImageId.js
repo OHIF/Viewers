@@ -42,7 +42,7 @@ class ImageMetadataBuilder {
     }
 }
 
-formatWADOREImageUrl = function(wadorsuri, frame) {
+formatWADORSImageUrl = function(wadorsuri, frame) {
     // We need to sum 1 because WADO-RS frame number is 1-based
     frame = (frame || 0) + 1;
 
@@ -61,7 +61,7 @@ formatWADOREImageUrl = function(wadorsuri, frame) {
  * @returns {string} The imageId to be used by Cornerstone
  */
 export function getWADORSImageId(instance, frame) {
-    const uri = formatWADOREImageUrl(instance.wadorsuri, frame);
+    const uri = formatWADORSImageUrl(instance.wadorsuri, frame);
     const imageId = `wadors:${uri}`;
 
     const imageMetadata = new ImageMetadataBuilder()

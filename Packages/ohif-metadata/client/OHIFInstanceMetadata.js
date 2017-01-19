@@ -88,10 +88,10 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     }
 
     // Override
-    getImageId(frame) {
+    getImageId(frame, thumbnail) {
         // If _imageID is not cached, create it
         if (this._imageId === null) {
-            this._imageId = Viewerbase.getImageId(this.getData(), frame);
+            this._imageId = Viewerbase.getImageId(this.getData(), frame, thumbnail);
         }
 
         return this._imageId;

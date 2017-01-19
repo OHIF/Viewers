@@ -4,10 +4,11 @@ import { getWADORSImageId } from './getWADORSImageId';
  * Obtain an imageId for Cornerstone from an image instance
  *
  * @param instance
+ * @param frame
+ * #param thumbnail
  * @returns {string} The imageId to be used by Cornerstone
  */
-export function getImageId(instance, frame) {
-
+export function getImageId(instance, frame, thumbnail) {
     if (!instance) {
         return;
     }
@@ -16,15 +17,17 @@ export function getImageId(instance, frame) {
         return instance.url; 
     }
 
-    if (instance.wadouri) {
+    const renderingAttr = thumbnail ? 'thumbnailRendering' : 'imageRendering';
+
+    if (instance[renderingAttr] === 'wadouri') {
         var imageId = 'dicomweb:' + instance.wadouri;
+
         if (frame !== undefined) {
             imageId += '&frame=' + frame;
         }
 
         return imageId;
     } else {
-        // TODO= Check multiframe image support with WADO-RS
-        return getWADORSImageId(instance, frame); // WADO-RS Retrieve Frame
+        return getWADORSImageId(instance, frame, thumbnail); // WADO-RS Retrieve Frame
     }
 }

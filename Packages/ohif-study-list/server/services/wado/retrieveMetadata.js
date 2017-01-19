@@ -48,6 +48,37 @@ function buildUrl(server, studyInstanceUid) {
     return server.wadoRoot + '/studies/' + studyInstanceUid + '/metadata';
 }
 
+/** Returns a WADO url for an instance
+ *
+ * @param studyInstanceUid
+ * @param seriesInstanceUid
+ * @param sopInstanceUid
+ * @returns  {string}
+ */
+function buildInstanceWadoUrl(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid) {
+    const params = [];
+
+    params.push('requestType=WADO');
+    params.push(`studyUID=${studyInstanceUid}`);
+    params.push(`seriesUID=${seriesInstanceUid}`);
+    params.push(`objectUID=${sopInstanceUid}`);
+    params.push('contentType=application%2Fdicom');
+    params.push('transferSyntax=*');
+
+    return `${server.wadoUriRoot}?${params.join('&')}`;
+}
+
+function buildInstanceWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid) {
+    return `${server.wadoRoot}/studies/${studyInstanceUid}/series/${seriesInstanceUid}/instances/${sopInstanceUid}`
+}
+
+function buildInstanceFrameWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid, frame) {
+    const baseWadoRsUri = buildInstanceWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
+    frame = frame != null || 1;
+
+    return `${baseWadoRsUri}/frames/${frame}`
+}
+
 /**
  * Parses the SourceImageSequence, if it exists, in order
  * to return a ReferenceSOPInstanceUID. The ReferenceSOPInstanceUID
@@ -174,6 +205,10 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         var sopInstanceUid = DICOMWeb.getString(instance['00080018']);
 
+        const wadouri = buildInstanceWadoUrl(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
+        const baseWadoRsUri = buildInstanceWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
+        const wadorsuri = buildInstanceFrameWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
+
         var instanceSummary = {
             imageType: DICOMWeb.getString(instance['00080008']),
             sopClassUid: DICOMWeb.getString(instance['00080016']),
@@ -217,7 +252,11 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
             echoNumber: DICOMWeb.getString(instance['00180086']),
             contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
-            baseWadoRsUri: server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid
+            baseWadoRsUri: baseWadoRsUri,
+            wadouri: WADOProxy.convertURL(wadouri, server.requestOptions),
+            wadorsuri: WADOProxy.convertURL(wadorsuri),
+            imageRendering: server.imageRendering,
+            thumbnailRendering: server.thumbnailRendering,
         };
 
         // Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
@@ -234,12 +273,6 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                 instanceSummary.greenPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281102']));
                 instanceSummary.bluePaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281103']));
             }
-        }
-
-        if (server.imageRendering === 'wadouri') {
-            instanceSummary.wadouri = WADOProxy.convertURL(server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom&transferSyntax=*', server.requestOptions);
-        } else {
-            instanceSummary.wadorsuri = WADOProxy.convertURL(server.wadoRoot + '/studies/' + studyInstanceUid + '/series/' + seriesInstanceUid + '/instances/' + sopInstanceUid + '/frames/1');
         }
 
         series.instances.push(instanceSummary);

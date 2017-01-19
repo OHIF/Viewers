@@ -24,7 +24,7 @@ Template.imageThumbnail.onCreated(() => {
             imageIndex = 0;
         }
 
-        return imageInstance.getImageId();
+        return imageInstance.getImageId(imageIndex, true);
     };
 });
 
