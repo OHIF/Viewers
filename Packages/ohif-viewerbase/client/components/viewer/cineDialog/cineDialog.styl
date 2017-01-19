@@ -9,6 +9,7 @@
   z-index: 1000
   overflow: hidden
   cursor: move
+  padding: 0
 
   h5
     font-size: 20px
@@ -43,99 +44,99 @@
       border: 0 none
       outline: 0 none
 
-#cineDialog.double-row-style
-  box-sizing: border-box
-  width: 300px
-  height: 80px
-  padding: 10px
-  top: 2%
-  left: 35%
+  .double-row-style
+    box-sizing: border-box
+    width: 300px
+    height: 80px
+    padding: 10px
+    top: 2%
+    left: 35%
 
-  .cine-navigation
-    position: absolute
-    right: 4px
-    top: 4px
+    .cine-navigation
+      position: absolute
+      right: 4px
+      top: 4px
 
-    .btn
-      padding: 0 4px
+      .btn
+        padding: 0 4px
 
-      i
-        font-size: 36px
-        line-height: 36px
+        i
+          font-size: 36px
+          line-height: 36px
 
-  .cine-controls
-    left: 0px
+    .cine-controls
+      left: 0px
 
-  .cine-options
-    padding: 0px 0
+    .cine-options
+      padding: 0px 0
 
-    .fps-section
-      width: 175px
-      float: left
+      .fps-section
+        width: 175px
+        float: left
 
-    #fps
+      #fps
+        float: right
+        padding: 5px 10px 0 0
+
+
+  .single-row-style
+    box-sizing: content-box
+    width: 425px
+    height: 45px
+    padding: 4px 8px
+    top: 2%
+    left: 35%
+
+    .cine-navigation
+      position: relative
       float: right
-      padding: 5px 10px 0 0
+      overflow: hidden
 
+      .btn
+        padding: 0 2px
+        margin: 0 0 0 2px
+        border: 0 none
+        &:first-of-type
+          margin-left: 0
 
-#cineDialog.single-row-style
-  box-sizing: content-box
-  width: 425px
-  height: 45px
-  padding: 4px 8px
-  top: 2%
-  left: 35%
+        i
+          font-size: 38px
+          line-height: 45px
 
-  .cine-navigation
-    position: relative
-    float: right
-    overflow: hidden
-
-    .btn
-      padding: 0 2px
-      margin: 0 0 0 2px
-      border: 0 none
-      &:first-of-type
-        margin-left: 0
-
-      i
-        font-size: 38px
-        line-height: 45px
-
-  .cine-controls
-    position: relative
-    float: left
-    overflow: hidden
-    .btn
-      font-size: 22px
-      line-height: 45px
-      min-width: 28px
-      padding: 0 0px
-      margin: 0 4px
-      border: 0 none
-
-  .cine-options
-    display: block
-    position: relative
-    width: 150px
-    float: left
-    overflow: hidden
-    padding: 0
-    margin: 0 0 0 10px
-
-    .fps-section
-      display: block
+    .cine-controls
+      position: relative
       float: left
-      width: 80px
-      input[type="range"]
+      overflow: hidden
+      .btn
+        font-size: 22px
         line-height: 45px
-        height: 45px
+        min-width: 28px
+        padding: 0 0px
+        margin: 0 4px
+        border: 0 none
 
-    #fps
+    .cine-options
       display: block
-      width: 68px
+      position: relative
+      width: 150px
       float: left
+      overflow: hidden
       padding: 0
-      margin: 0 0 0 2px
-      text-align: center
-      line-height: 45px
+      margin: 0 0 0 10px
+
+      .fps-section
+        display: block
+        float: left
+        width: 80px
+        input[type="range"]
+          line-height: 45px
+          height: 45px
+
+      #fps
+        display: block
+        width: 68px
+        float: left
+        padding: 0
+        margin: 0 0 0 2px
+        text-align: center
+        line-height: 45px
