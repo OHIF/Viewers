@@ -21,6 +21,15 @@ export class Metadata {
         return this._data;
     }
 
+    getDataProperty(propertyName) {
+        let propertyValue;
+        const _data = this._data;
+        if (_data instanceof Object || typeof _data === 'object' && _data !== null) {
+            propertyValue = _data[propertyName];
+        }
+        return propertyValue;
+    }
+
     /**
      * Static Methods
      */

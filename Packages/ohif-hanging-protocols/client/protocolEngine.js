@@ -491,9 +491,8 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                     // If the instance was found, set the displaySet ID
                     if (displaySet) {
-                        const instanceMetadata = new OHIF.metadata.InstanceMetadata(instance);
                         imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
-                        imageDetails.imageId = OHIF.viewerbase.getImageId(instanceMetadata);
+                        imageDetails.imageId = OHIF.viewerbase.getImageId(instance);
                     }
 
                     if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {

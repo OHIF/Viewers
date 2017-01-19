@@ -21,9 +21,10 @@ function createAndAddStack(stackMap, study, displaySet) {
     const imageIds = [];
     let imageId;
 
-    displaySet.images.forEach((image, imageIndex) => {
+    displaySet.images.forEach((instance, imageIndex) => {
+        const image = instance.getData();
         const metaData = {
-            instance: image,
+            instance: image, // in this context, instance will be the data of the InstanceMetadata object...
             series: displaySet, // TODO: Check this
             study: study,
             numImages: numImages,
@@ -56,7 +57,7 @@ function createAndAddStack(stackMap, study, displaySet) {
 
     stackMap[displaySet.displaySetInstanceUid] = stack;
 
-    return imageIds;
+    return stack;
 }
 
 configuration = {

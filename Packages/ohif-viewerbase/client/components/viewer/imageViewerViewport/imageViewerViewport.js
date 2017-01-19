@@ -62,35 +62,29 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         ViewerData[contentId].loadedSeriesData[viewportIndex] = {};
     }
 
+    // Create shortcut to displaySet
     const displaySet = data.displaySet;
 
     // Get stack from Stack Manager
-    const displaySetStack = StackManager.findStack(displaySet.displaySetInstanceUid);
+    let stack = StackManager.findStack(displaySet.displaySetInstanceUid);
+    // Make sure if the stack is already loaded in the stack manager, otherwise create it
+    if(!stack || !stack.imageIds) {
+        stack = StackManager.makeAndAddStack(data.study, displaySet);
+    }
 
     // If is a clip, updates the global FPS for cine dialog
-    if (displaySetStack && displaySetStack.isClip === true && displaySetStack.frameRate) {
+    if (stack.isClip && stack.frameRate > 0) {
         // Sets the global variable
-        OHIF.viewer.cine.framesPerSecond = parseFloat(displaySetStack.frameRate);
+        OHIF.viewer.cine.framesPerSecond = parseFloat(stack.frameRate);
         // Update the cine dialog FPS
         Session.set('UpdateCINE', Random.id());
     }
 
-    // Array with image IDs
-    let imageIds = [];
-    // Make sure if the stack is already loaded in the stack manager, otherwise create it
-    if(!displaySetStack || !displaySetStack.imageIds) {
-        imageIds = StackManager.makeAndAddStack(data.study, displaySet);
-    }
-    else {
-        imageIds = displaySetStack.imageIds;
-    }
+    // Shortcut for array with image IDs...
+    const imageIds = stack.imageIds;
 
-    // Define the current image stack using the newly created image IDs
-    const stack = {
-        currentImageIdIndex: data.currentImageIdIndex || 0,
-        imageIds: imageIds,
-        displaySetInstanceUid: data.displaySetInstanceUid
-    };
+    // Update stack's currentImageIdIndex property...
+    stack.currentImageIdIndex = data.currentImageIdIndex > 0 && data.currentImageIdIndex < imageIds.length ? data.currentImageIdIndex : 0;
 
     // If is a clip, updates the global FPS for cine dialog
     if (displaySet && displaySet.isClip && displaySet.frameRate > 0) {
@@ -257,7 +251,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         cornerstoneTools.addToolState(element, 'stack', stack);
 
         // Set the default CINE settings
-        const multiframeMetadata = instance.multiframeMetadata;
+        const multiframeMetadata = instance.getDataProperty('multiframeMetadata');
 
         let fps;
         if (multiframeMetadata && multiframeMetadata.averageFrameRate > 0) {
