@@ -135,8 +135,7 @@ const updateMetaData = image => {
  * @param metadataInstance The metadata instance (InstanceMetadata class) containing information to construct imagePlane
  * @returns imagePlane The constructed imagePlane to be used in viewer easily
  */
-function getImagePlane(metadataInstance) {
-    const instance = metadataInstance.getData();
+function getImagePlane(instance) {
     if (!instance.rows || !instance.columns || !instance.pixelSpacing ||
         !instance.frameOfReferenceUID || !instance.imageOrientationPatient ||
         !instance.imagePositionPatient) {
