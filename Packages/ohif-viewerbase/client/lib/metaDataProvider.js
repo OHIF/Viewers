@@ -130,25 +130,26 @@ const updateMetaData = image => {
 };
 
 /**
- * Constructs and returns the imagePlane given the instance
+ * Constructs and returns the imagePlane given the metadata instance
  *
- * @param instance The instance containing information to construct imagePlane
+ * @param metadataInstance The metadata instance (InstanceMetadata class) containing information to construct imagePlane
  * @returns imagePlane The constructed imagePlane to be used in viewer easily
  */
-function getImagePlane(instance) {
+function getImagePlane(metadataInstance) {
+    const instance = metadataInstance.getData();
     if (!instance.rows || !instance.columns || !instance.pixelSpacing ||
         !instance.frameOfReferenceUID || !instance.imageOrientationPatient ||
         !instance.imagePositionPatient) {
         return;
     }
 
-    let imageOrientation = instance.imageOrientationPatient.split('\\');
-    let imagePosition = instance.imagePositionPatient.split('\\');
+    const imageOrientation = instance.imageOrientationPatient.split('\\');
+    const imagePosition = instance.imagePositionPatient.split('\\');
 
     let columnPixelSpacing = 1.0;
     let rowPixelSpacing = 1.0;
     if (instance.pixelSpacing) {
-        let split = instance.pixelSpacing.split('\\');
+        const split = instance.pixelSpacing.split('\\');
         rowPixelSpacing = parseFloat(split[0]);
         columnPixelSpacing = parseFloat(split[1]);
     }
