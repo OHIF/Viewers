@@ -27,6 +27,9 @@ const formatTM = (context, options) => {
     return dateTime.format(format);
 };
 
-Blaze.registerHelper('formatTM', formatTM);
+// Check if global helper already exists to not override it
+if (!Blaze._getGlobalHelper('formatTM')) {
+    Blaze.registerHelper('formatTM', formatTM);
+}
 
 export { formatTM };

@@ -12,6 +12,10 @@ const formatPN = context => {
 /**
  * A global Blaze UI helper to format a patient name for display purposes
  */
-Blaze.registerHelper('formatPN', formatPN);
+
+// Check if global helper already exists to not override it
+if (!Blaze._getGlobalHelper('formatPN')) {
+    Blaze.registerHelper('formatPN', formatPN);
+}
 
 export { formatPN };

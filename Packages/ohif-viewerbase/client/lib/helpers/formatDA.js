@@ -17,6 +17,9 @@ const formatDA = (context, format, options) => {
     return dateAsMoment.format(strFormat);
 };
 
-Blaze.registerHelper('formatDA', formatDA);
+// Check if global helper already exists to not override it
+if (!Blaze._getGlobalHelper('formatDA')) {
+  Blaze.registerHelper('formatDA', formatDA);
+}
 
 export { formatDA };
