@@ -86,6 +86,10 @@ Viewerbase.addMetaData = addMetaData;
 Viewerbase.addSpecificMetadata = addSpecificMetadata;
 Viewerbase.updateMetaData = updateMetaData;
 
+// displayReferenceLines
+import { displayReferenceLines } from './lib/displayReferenceLines';
+Viewerbase.displayReferenceLines = displayReferenceLines;
+
 /**
  * Exported Namespaces (sub-namespaces)
  */

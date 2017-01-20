@@ -287,7 +287,9 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
         const onImageRendered = (event, eventData) => {
-            OHIF.log.info('imageViewerViewport onImageRendered');
+            // Attention: Adding OHIF.log.info in this function may decrease the performance
+            // since this callback function is called multiple times (eg: when a tool is
+            // enabled/disabled -> cornerstone[toolName].tool.enable)
 
             if (!layoutManager.viewportData[viewportIndex]) {
                 OHIF.log.warn(`onImageRendered: LayoutManager has no viewport data for this viewport index?: ${viewportIndex}`);
@@ -306,7 +308,6 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // Check if it has onImageRendered loadAndCacheImage callback
             if(typeof callbacks.onImageRendered === 'function') {
-                OHIF.log.info('imageViewerViewport onImageRendered callback');
                 callbacks.onImageRendered(event, eventData, viewportIndex, templateData);
             }
         };
@@ -321,7 +322,9 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Define a function to run whenever the Cornerstone viewport changes images
         // (e.g. during scrolling)
         const onNewImage = (event, eventData) => {
-            OHIF.log.info('imageViewerViewport onNewImage');
+            // Attention: Adding OHIF.log.info in this function may decrease the performance
+            // since this callback function is called multiple times (eg: when a tool is
+            // enabled/disabled -> cornerstone[toolName].tool.enable)
 
             // Update the metaData for missing fields
             updateMetaData(eventData.enabledElement.image);
@@ -355,7 +358,6 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // Check if it has onNewImage loadAndCacheImage callback
             if(typeof callbacks.onNewImage === 'function') {
-                OHIF.log.info('imageViewerViewport onNewImage callback');
                 callbacks.onNewImage(event, eventData, viewportIndex, templateData);
             }
         };
@@ -368,7 +370,9 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
 
         const onStackScroll = (e, eventData) => {
-            OHIF.log.info('imageViewerViewport onStackScroll');
+            // Attention: Adding OHIF.log.info in this function may decrease the performance
+            // since this callback function is called multiple times (eg: when a tool is
+            // enabled/disabled -> cornerstone[toolName].tool.enable)
 
             // Update the imageSlider value
             Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
@@ -383,6 +387,10 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // This is used to update the value of the "active viewport", when the user interacts
         // with a new viewport element
         const sendActivationTrigger = (event, eventData) => {
+            // Attention: Adding OHIF.log.info in this function decrease the performance
+            // since this callback function is called multiple times (eg: when a tool is
+            // enabled/disabled -> cornerstone[toolName].tool.enable)
+
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
@@ -421,6 +429,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // If it is, add this element to the global synchronizer...
             OHIF.viewer.updateImageSynchronizer.add(element);
+
             if (OHIF.viewer.refLinesEnabled) {
                 // ... and if reference lines are globally enabled, let cornerstoneTools know.
                 cornerstoneTools.referenceLines.tool.enable(element, OHIF.viewer.updateImageSynchronizer);
