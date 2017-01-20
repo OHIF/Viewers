@@ -1,5 +1,7 @@
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
+import { Random } from 'meteor/random';
+
 import { OHIF } from 'meteor/ohif:core';
 import { enablePrefetchOnElement } from './enablePrefetchOnElement';
 import { displayReferenceLines } from './displayReferenceLines';
@@ -30,8 +32,13 @@ export function setActiveViewport(element) {
     // with the viewport index that it was fired from.
     Session.set('activeViewport', viewportIndex);
 
+    const randomId = Random.id();
+
+    // Update the Session variable to inform that a viewport is active
+    Session.set('viewportActivated', randomId);
+
     // Update the Session variable to the UI re-renders
-    Session.set('LayoutManagerUpdated', Random.id());
+    Session.set('LayoutManagerUpdated', randomId);
 
     // Add the 'active' class to the parent container to highlight the active viewport
     $('#imageViewerViewports .viewportContainer').removeClass('active');
