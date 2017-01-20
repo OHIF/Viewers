@@ -41,8 +41,13 @@ Template.thumbnailEntry.events({
 
     // Event handlers for double click
     'dblclick .thumbnailEntry'(event, instance) {
-        // Get the active viewport index
-        const viewportIndex = Session.get('activeViewport') || 0;
+
+        // Get the active viewport index and total number of viewports...
+        const viewportCount = OHIF.viewerbase.layoutManager.getNumberOfViewports();
+        let viewportIndex = Session.get('activeViewport') || 0;
+        if (viewportIndex >= viewportCount) {
+            viewportIndex = viewportCount > 0 ? viewportCount - 1 : 0;
+        }
 
         // Get the thumbnail stack data
         const data = instance.data.thumbnail.stack;
