@@ -37,7 +37,7 @@ function filterToQIDOURL(server, filter) {
         AccessionNumber: filter.accessionNumber,
         StudyDescription: filter.studyDescription,
         ModalitiesInStudy: filter.modalitiesInStudy,
-        limit: filter.limit || 20,
+        limit: filter.limit,
         includefield: server.qidoSupportsIncludeField ? 'all' : commaSeparatedFields
     };
 
