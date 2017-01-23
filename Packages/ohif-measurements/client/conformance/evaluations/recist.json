@@ -28,7 +28,6 @@
         }]
     },
     "baseline": {
-        "NonTargetResponse": {},
         "TargetType": {}
     },
     "followup": {}
