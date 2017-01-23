@@ -3,37 +3,30 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.measurementTableHeaderRow.helpers({
     numberOfMeasurements() {
-        const instance = Template.instance();
-        if (!instance.data.measurements) {
-            return;
-        }
-
-        return instance.data.measurements.length;
+        const { measurementRows } = Template.instance().data;
+        return measurementRows.length ? measurementRows.length : null;
     },
 
     maxNumMeasurements() {
-        const instance = Template.instance();
-        if (!instance.data.conformanceCriteria) {
-            return;
-        }
+        const { conformanceCriteria } = Template.instance().data;
+        if (!conformanceCriteria) return;
 
-        return instance.data.conformanceCriteria.maxTargets.get();
+        return conformanceCriteria.maxTargets.get();
     },
 
     anyUnmarkedLesionsLeft() {
         // Skip New Lesions section
         const instance = Template.instance();
-        if (!instance.data.measurements) {
+        const { toolGroup, measurementRows, timepointApi, measurementApi } = instance.data;
+        if (!measurementRows) {
             return;
         }
 
-        const measurementType = instance.data.measurementType;
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        if (measurementType.id === config.newMeasurementTool.id) {
+        if (toolGroup.id === config.newMeasurementTool.id) {
             return;
         }
 
-        const timepointApi = instance.data.timepointApi;
         const current = timepointApi.current();
         const prior = timepointApi.prior();
         if (!prior) {
@@ -42,11 +35,10 @@ Template.measurementTableHeaderRow.helpers({
 
         const currentFilter = { timepointId: current.timepointId };
         const priorFilter = { timepointId: prior.timepointId };
-        const measurementTypeId = measurementType.id;
+        const toolGroupId = toolGroup.id;
 
-        const measurementApi = instance.data.measurementApi;
-        const numCurrent = measurementApi.fetch(measurementTypeId, currentFilter).length;
-        const numPrior = measurementApi.fetch(measurementTypeId, priorFilter).length;
+        const numCurrent = measurementApi.fetch(toolGroupId, currentFilter).length;
+        const numPrior = measurementApi.fetch(toolGroupId, priorFilter).length;
         const remaining = Math.max(numPrior - numCurrent, 0);
         return remaining > 0;
     }
@@ -54,7 +46,7 @@ Template.measurementTableHeaderRow.helpers({
 
 Template.measurementTableHeaderRow.events({
     'click .js-setTool'(event, instance) {
-        const measurementType = instance.data.measurementType;
-        toolManager.setActiveTool(measurementType.cornerstoneToolType);
+        const { toolGroup } = instance.data;
+        toolManager.setActiveTool(toolGroup.childTools[0].cornerstoneToolType);
     }
 });

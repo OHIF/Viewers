@@ -2,6 +2,7 @@ import './jumpToRowItem.js';
 import './activateMeasurements.js';
 import './deactivateAllToolData.js';
 import './exportPdf.js';
+import './getMeasurementsGroupedByNumber.js';
 import './getTimepointName.js';
 import './hangingProtocolCustomizations.js';
 import './MeasurementHandlers.js';

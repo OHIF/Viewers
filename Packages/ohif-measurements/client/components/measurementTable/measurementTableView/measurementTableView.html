@@ -1,22 +1,13 @@
 <template name="measurementTableView">
     <div class="measurementTableView scrollArea">
-        {{#let config=measurementConfiguration}}
-            {{#each toolGroup in config.measurementTools}}
-                {{#if shallDisplayGroup toolGroup.id}}
-                    {{#let collection=(groupByMeasurementNumber toolGroup.id)}}
-                        {{>measurementTableHeaderRow
-                            measurementType=toolGroup
-                            measurements=collection
-                            currentTimepointId=currentTimepointId
-                            timepointApi=timepointApi
-                            measurementApi=measurementApi
-                            conformanceCriteria=conformanceCriteria}}
-
-                        {{#each entry in collection}}
-                            {{>measurementTableRow (clone this rowItem=entry)}}
-                        {{/each}}
-                    {{/let}}
-                {{/if}}
+        {{#let config=measurementConfiguration measurementGroups=getMeasurementsGroupedByNumber}}
+            {{#each measurementGroup in measurementGroups}}
+                {{>measurementTableHeaderRow (clone this
+                    toolGroup=measurementGroup.toolGroup
+                    measurementRows=measurementGroup.measurementRows)}}
+                {{#each rowItem in measurementGroup.measurementRows}}
+                    {{>measurementTableRow (clone this rowItem=rowItem)}}
+                {{/each}}
             {{/each}}
 
             {{#if config.newMeasurementTool}}
