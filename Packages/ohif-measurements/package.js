@@ -1,5 +1,6 @@
 Npm.depends({
-    ajv: '4.10.4'
+    ajv: '4.10.4',
+    jspdf: '1.3.2'
 });
 
 Package.describe({
