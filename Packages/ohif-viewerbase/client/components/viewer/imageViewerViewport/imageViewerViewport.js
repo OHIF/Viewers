@@ -80,11 +80,15 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         Session.set('UpdateCINE', Random.id());
     }
 
-    // Shortcut for array with image IDs...
+    // Shortcut for array with image IDs
     const imageIds = stack.imageIds;
 
-    // Update stack's currentImageIdIndex property...
-    stack.currentImageIdIndex = data.currentImageIdIndex > 0 && data.currentImageIdIndex < imageIds.length ? data.currentImageIdIndex : 0;
+    // Define the current image stack using the newly created image IDs
+    stack = {
+        currentImageIdIndex: data.currentImageIdIndex > 0 && data.currentImageIdIndex < imageIds.length ? data.currentImageIdIndex : 0,
+        imageIds: imageIds,
+        displaySetInstanceUid: data.displaySetInstanceUid
+    };
 
     // If is a clip, updates the global FPS for cine dialog
     if (displaySet && displaySet.isClip && displaySet.frameRate > 0) {
