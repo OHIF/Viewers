@@ -11,3 +11,7 @@ Template.registerHelper('sum', (...values) => {
     _.each(_.initial(values, 1), value => (result += (value | 0)));
     return result;
 });
+
+Template.registerHelper('isValidNumber', value => {
+    return typeof value === 'number' && !isNaN(value);
+});

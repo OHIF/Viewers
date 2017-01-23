@@ -21,7 +21,7 @@
                 <div>{{#if frameRate}}{{formatNumberPrecision frameRate 2}} FPS{{/if}}</div>
                 <div>{{imageDimensions}}</div>
                 <div>
-                    <span>{{#if location}}Loc: {{formatNumberPrecision location 2}} mm{{/if}}</span>
+                    <span>{{#if isValidNumber location}}Loc: {{formatNumberPrecision location 2}} mm{{/if}}</span>
                     <span>{{#if thickness}}Thick: {{formatNumberPrecision thickness 2}} mm{{/if}}</span>
                     <span>{{#if spacingBetweenSlices}}Spacing: {{formatNumberPrecision spacingBetweenSlices 2}} mm{{/if}}</span>
                 </div>

@@ -1,6 +1,6 @@
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
-// @TODO: import symbols into local scope: Studies and ViewerData
+// @TODO: import symbols into local scope: ViewerData
 
 const getStudyFromStudyInstanceUid = studyInstanceUid => {
     // @TypeSafeStudies
@@ -11,11 +11,11 @@ const getNumberOfStacks = studyInstanceUid => {
     // May not work if the Study contains non-image series?
     const study = getStudyFromStudyInstanceUid(studyInstanceUid);
 
-    if (!study || !study.series || !study.series.length) {
+    if (!study || !study.displaySets || !study.displaySets.length) {
       return;
     }
 
-    return study.series.length;
+    return study.displaySets.length;
 };
 
 const getActiveViewportIndex = () => {
@@ -48,8 +48,8 @@ const loadSeries = indexCalculator => {
 
     const study = getStudyFromStudyInstanceUid(studyInstanceUid);
 
-    const displaySetInstanceUids = study.series.map(series => {
-      return series.displaySetInstanceUid;
+    const displaySetInstanceUids = study.displaySets.map(displaySet => {
+      return displaySet.displaySetInstanceUid;
     });
 
     const currentLoadedStackIndex = displaySetInstanceUids.indexOf(displaySetInstanceUid);
