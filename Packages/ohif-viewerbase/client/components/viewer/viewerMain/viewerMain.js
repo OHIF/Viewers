@@ -38,7 +38,6 @@ Template.viewerMain.onRendered(() => {
 
         OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
 
-        // OHIF.viewerbase.layoutManager.updateViewports();
         // Default actions for Associated Studies
         if(currentTimepointId) {
             // Follow-up studies: same as the first measurement in the table
@@ -98,8 +97,13 @@ Template.viewerMain.onRendered(() => {
             }
         }
 
-        ProtocolEngine = new HP.ProtocolEngine(OHIF.viewerbase.layoutManager, studies);
-        HP.setEngine(ProtocolEngine);
+        if (OHIF.viewer.isProtocolEngineDisabled === true) {
+            OHIF.viewerbase.layoutManager.updateViewports();
+        } else {
+            // updateViewports method from current layout manager will be automatically called by the protocol engine;
+            ProtocolEngine = new HP.ProtocolEngine(OHIF.viewerbase.layoutManager, studies);
+            HP.setEngine(ProtocolEngine);
+        }
 
         // Enable hotkeys
         hotkeyUtils.enableHotkeys();
