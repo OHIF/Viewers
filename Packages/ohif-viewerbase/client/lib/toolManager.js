@@ -423,7 +423,8 @@ export const toolManager = {
         Session.set('ToolManagerActiveTool', tool);
     },
     getActiveTool() {
-        if (!activeTool) {
+        // If toolManager is not initialized, we should set as defaultTool
+        if (!initialized) {
             activeTool = defaultTool;
         }
 
