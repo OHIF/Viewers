@@ -1,6 +1,26 @@
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
+
+Template.measurementTableView.onCreated(() => {
+    const instance = Template.instance();
+    const { measurementApi, timepointApi } = instance.data;
+
+    instance.data.measurementGroups = new ReactiveVar();
+
+    Tracker.autorun(() => {
+        measurementApi.changeObserver.depend();
+        const data = OHIF.measurements.getMeasurementsGroupedByNumber(measurementApi, timepointApi);
+        instance.data.measurementGroups.set(data);
+    });
+});
+
+Template.measurementTableView.events({
+    'click .js-pdf'(event, instance) {
+        OHIF.measurements.exportPdf(instance.data.measurementGroups.get());
+    }
+});
 
 Template.measurementTableView.helpers({
     getNewMeasurementType(tool) {
@@ -12,11 +32,6 @@ Template.measurementTableView.helpers({
             cornerstoneToolType: 'nonTarget',
             measurementTypeId: 'nonTargets'
         };
-    },
-
-    getMeasurementsGroupedByNumber() {
-        const { measurementApi, timepointApi } = Template.instance().data;
-        return OHIF.measurements.getMeasurementsGroupedByNumber(measurementApi, timepointApi);
     },
 
     newMeasurements(measurementType) {

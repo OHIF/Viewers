@@ -1,7 +1,7 @@
 <template name="measurementTableView">
     <div class="measurementTableView scrollArea">
-        {{#let config=measurementConfiguration measurementGroups=getMeasurementsGroupedByNumber}}
-            {{#each measurementGroup in measurementGroups}}
+        {{#let config=measurementConfiguration}}
+            {{#each measurementGroup in measurementGroups.get}}
                 {{>measurementTableHeaderRow (clone this
                     toolGroup=measurementGroup.toolGroup
                     measurementRows=measurementGroup.measurementRows)}}
@@ -31,5 +31,6 @@
                 {{/let}}
             {{/if}}
         {{/let}}
+        <div class="btn btn-primary js-pdf">Export PDF</div>
     </div>
 </template>

@@ -6,6 +6,49 @@ import html2canvas from 'html2canvas';
 window.jsPDF = jsPDF;
 window.html2canvas = html2canvas;
 
+OHIF.measurements.exportPdf = measurementGroups => {
+    console.warn('>>>>Adding canvas to body', measurementGroups);
+
+    const $element = $('<div></div>').css({
+        border: '1px solid red',
+        height: 1000,
+        left: 0,
+        position: 'fixed',
+        top: 0,
+        width: 1000,
+        'z-index': 100000
+    });
+
+    $element.appendTo(document.body);
+
+    const element = $element[0];
+
+    cornerstone.enable(element, { renderer: 'webgl' });
+
+    const measurements = {
+        targets: [],
+        nonTargets: []
+    };
+    measurementGroups.forEach(measurementGroup => {
+        const { toolGroup, measurementRows } = measurementGroup;
+        measurementRows.forEach(rowItem => {
+            rowItem.entries.forEach(entry => measurements[toolGroup.id].push(entry));
+        });
+    });
+
+    let i = 0;
+    measurements.targets.forEach(target => {
+        setTimeout(() => {
+            cornerstone.loadImage(target.imageId).then(image => {
+                cornerstone.displayImage(element, image);
+            });
+        }, i * 1000);
+        i++;
+    });
+
+    setTimeout(() => $element.remove(), i * 1000);
+};
+
 // window.exportCanvasToPdf = canvas => {
 //     // only jpeg is supported by jsPDF
 //     const imgData = canvas.toDataURL('image/jpeg', 1.0);
