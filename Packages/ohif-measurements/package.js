@@ -1,6 +1,7 @@
 Npm.depends({
     ajv: '4.10.4',
-    jspdf: '1.3.2'
+    jspdf: '1.3.2',
+    html2canvas: '0.5.0-beta4'
 });
 
 Package.describe({

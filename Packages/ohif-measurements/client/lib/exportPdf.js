@@ -1,93 +1,115 @@
 import { OHIF } from 'meteor/ohif:core';
-// import * as jsPDF from 'jspdf';
+// import { $ } from 'meteor/jquery';
 import jsPDF from 'jspdf';
-import * as pdfDebug from 'jspdf';
-// import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas';
 
 window.jsPDF = jsPDF;
-window.pdfDebug = pdfDebug;
-// window.html2canvas = html2canvas;
+window.html2canvas = html2canvas;
 
-// console.log('>>>>>>>>>>> html2canvas: ', html2canvas);
+// window.exportCanvasToPdf = canvas => {
+//     // only jpeg is supported by jsPDF
+//     const imgData = canvas.toDataURL('image/jpeg', 1.0);
+//     const pdf = new jsPDF();
 
-window.exportCanvasToPdf = canvas => {
-    // only jpeg is supported by jsPDF
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    const pdf = new jsPDF();
+//     pdf.addImage(imgData, 'JPEG', 0, 0);
+//     pdf.save('download.pdf');
+// };
 
-    pdf.addImage(imgData, 'JPEG', 0, 0);
-    pdf.save('download.pdf');
-};
+// window.exportActiveViewportToPdf = () => {
+//     const activeViewportElement = getActiveViewportElement();
+//     if (!activeViewportElement) {
+//         console.log('>>>>> No active viewport element');
+//         return;
+//     }
 
-window.exportActiveViewportToPdf = () => {
-    const activeViewportElement = getActiveViewportElement();
-    if (!activeViewportElement) {
-        console.log('>>>>> No active viewport element');
-        return;
-    }
+//     console.log('>>>>> activeViewportElement: ', activeViewportElement);
+//     const canvas = $(activeViewportElement).find('canvas').get(0);
 
-    console.log('>>>>> activeViewportElement: ', activeViewportElement);
-    const canvas = $(activeViewportElement).find('canvas').get(0);
+//     if (!canvas) {
+//         console.log('>>>>> canvas is not available');
+//         return;
+//     }
 
-    if (!canvas) {
-        console.log('>>>>> canvas is not available');
-        return;
-    }
+//     exportCanvasToPdf(canvas);
+// };
 
-    exportCanvasToPdf(canvas);
+// Split the data into pages
+// To make it easier we're going to work with a fixed grid (4R x 2C)
+const getReportData = data => {
+    const patient = data.patient;
+    const pages = [];
+    let page;
+
+    // Working with ITEMS until we get real data (measurements)
+    const itemsPerPage = 3;
+    data.items.forEach(item => {
+        if (!page || (page.items.length === itemsPerPage)) {
+            page = {
+                width: 595, // points
+                height: 841, // points
+                patient,
+                items: []
+            };
+
+            pages.push(page);
+        }
+
+        page.items.push(item);
+    });
+
+    return pages;
 };
 
 window.exportPdf = (options) => {
-    const parentElement = document.createElement('div');
-    const template = Template[options.templateName];
-    const data = options.data;
-    const pdf = new jsPDF();
-    const page = options.page;
-    const width = page.width - page.margins.left - page.margins.right; // A4 = 210 × 297;
-
-    // const html = Blaze.toHTMLWithData(Template['measurementsReport'], data);
-    // console.log('>>>>> html: ', html);
+    const pages = getReportData(options.data);
+    const template = Template.measurementsReport;
+    const pdf = new jsPDF('portrait', 'pt', 'a4');
+    let renderedView;
 
     const parentNode = document.createElement('div');
-    document.body.appendChild(parentNode);
 
-    parentNode.style.position = 'absolute';
-    parentNode.style.top = 0;
-    parentNode.style.right = 0;
-    parentNode.style.bottom = 0;
-    parentNode.style.left = 0;
-    parentNode.style.backgroundColor = '#F00';
-    // parentNode.style.transform = 'translate(-100%, -100%)';
+    const onRendered = (template) => {
+        const printableElement = template.find('.print');
+        const renderOptions = {
+            pagesplit: true
+        };
 
-    Blaze.renderWithData(Template['measurementsReport'], data, parentNode);
-    console.log('>>>>> parentNode: ', parentNode);
+        document.body.appendChild(parentNode);
+        pdf.addHTML(printableElement, 0, 0, renderOptions, () => {
+            // Blaze.remove(renderedView);
+            // document.body.removeChild(parentNode);
+            pdf.save('html2pdf.pdf');
+            console.log('Done!');
+        });
+    };
 
-    pdf.fromHTML(parentNode, page.margins.left, page.margins.right, { width }, () => {
-        pdf.save('pdfFromHtml.pdf');
-    });
+    const viewModel = {
+        pages,
+        onRendered
+    };
 
-    window.parentNode = parentNode;
-    window.pdf = pdf;
+    renderedView = Blaze.renderWithData(Template['measurementsReport'], viewModel, parentNode);
+    // const html = Blaze.toHTMLWithData(Template['measurementsReport'], pages);
 };
 
 window.testExportPdf = () => {
     const options = {
-        templateName: 'measurementsReport',
-        page: {
-            format: 'a4',
-            orientation: 'portrait',
-            width: 595.28,
-            margins: {
-                left: 10,
-                right: 10
-            }
-        },
         data: {
+            patient: {
+                name: 'Patient name'
+            },
+            // study: {
+            //     foo: 'bar'
+            // },
+            // timepoint: {
+            //     date: '1/1/1900'
+            // },
+            // measurements: [ ],
             items: []
         }
     };
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 8; i++) {
         options.data.items.push('Lorem ipsum dolor sit amet, consectetur adipisicing elit. Praesentium possimus sit alias. Repellendus minus placeat mollitia voluptas quod repellat vero quasi similique dolores minima excepturi, adipisci iusto optio, omnis accusamus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum repudiandae alias praesentium possimus minima sunt velit voluptates maxime labore sequi, quasi cum eos perferendis tempora dolorem obcaecati ut commodi qui.');
     }
 
