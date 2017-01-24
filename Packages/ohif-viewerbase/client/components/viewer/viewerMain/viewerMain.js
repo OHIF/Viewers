@@ -10,9 +10,6 @@ import { ResizeViewportManager } from '../../../lib/classes/ResizeViewportManage
 import { LayoutManager } from '../../../lib/classes/LayoutManager';
 
 Meteor.startup(() => {
-    // Create the synchronizer used to update reference lines
-    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
-
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
 });
 

@@ -6,6 +6,7 @@ import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
@@ -15,6 +16,15 @@ Meteor.startup(() => {
     Session.set('MeasurementsReady', false);
 
     OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
+
+    // Create the synchronizer used to update reference lines
+    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
+
+    OHIF.viewer.metadataProvider = OHIF.cornerstone.metadataProvider;
+
+    // Metadata configuration
+    const metadataProvider = OHIF.viewer.metadataProvider;
+    cornerstoneTools.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 });
 
 Template.viewer.onCreated(() => {

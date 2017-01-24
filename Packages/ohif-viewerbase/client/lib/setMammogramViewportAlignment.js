@@ -1,24 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
+
+import { OHIF } from 'meteor/ohif:core';
 import { setInstanceClassDefaultViewportFunction } from './instanceClassSpecificViewport';
-import { addSpecificMetadata } from './metaDataProvider';
 
 const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
     // Don't apply the MG viewport alignment to other series types
-    let viewTypes = ['MLO', 'CC', 'LM', 'ML', 'XCCL'];
-    let requiresInversion = ['LM']; // Tomo series are flipped
+    const viewTypes = ['MLO', 'CC', 'LM', 'ML', 'XCCL'];
+    const requiresInversion = ['LM']; // Tomo series are flipped
 
-    let instance = cornerstoneTools.metaData.get('instance', imageId);
+    const instance = cornerstoneTools.metaData.get('instance', imageId);
     if (!instance) {
         return;
     }
 
-    let laterality = instance.laterality;
-    let element = enabledElement.element;
-    let position;
+    const element = enabledElement.element;
 
-    let left = $(enabledElement.canvas).offset().left;
-    let right = left + enabledElement.canvas.width;
+    const left = $(enabledElement.canvas).offset().left;
+    const right = left + enabledElement.canvas.width;
+
+    const metadataProvider = OHIF.viewer.metadataProvider;
+    
+    let laterality = instance.laterality;
+    let position;
 
     if (viewTypes.indexOf(instance.viewPosition) < 0) {
         return;
@@ -26,14 +30,14 @@ const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
 
     // Check if we should flip the laterality
     if (requiresInversion.indexOf(instance.viewPosition) > -1) {
-        if (laterality === "R") {
-            laterality = "L";
-        } else if (laterality === "L") {
-            laterality = "R";
+        if (laterality === 'R') {
+            laterality = 'L';
+        } else if (laterality === 'L') {
+            laterality = 'R';
         }
     }
 
-    if (laterality === "R") {
+    if (laterality === 'R') {
         // Set X translation to Canvas max in image pixels - image width
         // This places it on the right side of the screen
         position = cornerstone.pageToPixel(element, right, 0);
@@ -41,7 +45,7 @@ const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
             enabledElement.viewport.translation.x += position.x - enabledElement.image.width;
         }
 
-        addSpecificMetadata(imageId, 'tagDisplay', {
+        metadataProvider.addSpecificMetadata(imageId, 'tagDisplay', {
             side: 'L'
         });
 
@@ -53,7 +57,7 @@ const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
             enabledElement.viewport.translation.x += position.x;
         }
 
-        addSpecificMetadata(imageId, 'tagDisplay', {
+        metadataProvider.addSpecificMetadata(imageId, 'tagDisplay', {
             side: 'R'
         });
     }
@@ -62,7 +66,7 @@ const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
 };
 
 Meteor.startup(function() {
-    setInstanceClassDefaultViewportFunction("1.2.840.10008.5.1.4.1.1.1.2", setMammogramViewportAlignment);
+    setInstanceClassDefaultViewportFunction('1.2.840.10008.5.1.4.1.1.1.2', setMammogramViewportAlignment);
 });
 
 export { setMammogramViewportAlignment };

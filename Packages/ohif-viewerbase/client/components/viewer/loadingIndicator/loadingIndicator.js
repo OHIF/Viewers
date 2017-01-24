@@ -3,36 +3,41 @@ import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
-Meteor.startup(function() {
-    cornerstoneTools.loadHandlerManager.setStartLoadHandler(startLoadingHandler);
-    cornerstoneTools.loadHandlerManager.setEndLoadHandler(doneLoadingHandler);
-    cornerstoneTools.loadHandlerManager.setErrorLoadingHandler(errorLoadingHandler);
+Meteor.startup(() => {
+    // This checking is necessary because cornerstoneTools may not have some tools available.
+    // Example: when an app defines its own cornerstone's lib versions, so it 
+    // uses only ohif-viewerbase and not ohif-cornerstone and those libs are added later.
+    if (cornerstoneTools.loadHandlerManager) {
+        cornerstoneTools.loadHandlerManager.setStartLoadHandler(startLoadingHandler);
+        cornerstoneTools.loadHandlerManager.setEndLoadHandler(doneLoadingHandler);
+        cornerstoneTools.loadHandlerManager.setErrorLoadingHandler(errorLoadingHandler);
+    }
 });
 
-var loadHandlerTimeout;
+let loadHandlerTimeout;
 
-const startLoadingHandler = function(element) {
+const startLoadingHandler = element => {
     clearTimeout(loadHandlerTimeout);
-    loadHandlerTimeout = setTimeout(function() {
+    loadHandlerTimeout = setTimeout(() => {
         console.log('startLoading');
-        var elem = $(element);
+        const elem = $(element);
         elem.siblings('.imageViewerErrorLoadingIndicator').css('display', 'none');
         elem.find('canvas').not('.magnifyTool').addClass('faded');
         elem.siblings('.imageViewerLoadingIndicator').css('display', 'block');
     }, OHIF.viewer.loadIndicatorDelay);
 };
 
-const doneLoadingHandler = function(element) {
+const doneLoadingHandler = element => {
     clearTimeout(loadHandlerTimeout);
-    var elem = $(element);
+    const elem = $(element);
     elem.siblings('.imageViewerErrorLoadingIndicator').css('display', 'none');
     elem.find('canvas').not('.magnifyTool').removeClass('faded');
     elem.siblings('.imageViewerLoadingIndicator').css('display', 'none');
 };
 
-const errorLoadingHandler = function(element, imageId, error, source) {
+const errorLoadingHandler = (element, imageId, error, source) => {
     clearTimeout(loadHandlerTimeout);
-    var elem = $(element);
+    const elem = $(element);
 
     // Could probably chain all of these, but this is more readable
     elem.find('canvas').not('.magnifyTool').removeClass('faded');
@@ -43,14 +48,14 @@ const errorLoadingHandler = function(element, imageId, error, source) {
         return;
     }
 
-    var errorLoadingIndicator = elem.siblings('.imageViewerErrorLoadingIndicator');
+    const errorLoadingIndicator = elem.siblings('.imageViewerErrorLoadingIndicator');
     errorLoadingIndicator.css('display', 'block');
 
     // This is just used to expand upon some error messages that are sent
     // when things fail. An example is a network error throwing the error
     // which is only described as "network".
-    var errorDetails = {
-        network: "A network error has occurred"
+    const errorDetails = {
+        network: 'A network error has occurred'
         // We need to expand this further when we see more obscure error messages
     };
 
@@ -58,17 +63,17 @@ const errorLoadingHandler = function(element, imageId, error, source) {
         error = errorDetails[error];
     }
 
-    errorLoadingIndicator.find('.description').text("An error has occurred while loading image: " + imageId);
+    errorLoadingIndicator.find('.description').text(`An error has occurred while loading image: ${imageId}`);
     if (error) {
-        errorLoadingIndicator.find('.details').text("Details: " + error);
+        errorLoadingIndicator.find('.details').text(`Details: ${error}`);
     }
 };
 
 Template.loadingIndicator.helpers({
     'percentComplete'() {
-        var percentComplete = Session.get('CornerstoneLoadProgress' + this.viewportIndex);
+        const percentComplete = Session.get('CornerstoneLoadProgress' + this.viewportIndex);
         if (percentComplete && percentComplete !== 100) {
-            return percentComplete + '%';
+            return `${percentComplete}%`;
         }
     }
 });

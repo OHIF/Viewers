@@ -1,6 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 import { getImageId } from './getImageId';
-import { addMetaData } from './metaDataProvider';
 import { OHIFError } from './classes/OHIFError';
 
 let stackMap = {};
@@ -17,6 +16,7 @@ const stackUpdatedCallbacks = [];
  * @return {Array}                        Array with image IDs
  */
 function createAndAddStack(stackMap, study, displaySet) {
+    const metadataProvider = OHIF.viewer.metadataProvider;
     const numImages = displaySet.images.length;
     const imageIds = [];
     let imageId;
@@ -38,13 +38,13 @@ function createAndAddStack(stackMap, study, displaySet) {
                 metaData.frame = i;
                 imageId = getImageId(image, i);
                 imageIds.push(imageId);
-                addMetaData(imageId, metaData);
+                metadataProvider.addMetadata(imageId, metaData);
             }
         } 
         else {
             imageId = getImageId(image);
             imageIds.push(imageId);
-            addMetaData(imageId, metaData);
+            metadataProvider.addMetadata(imageId, metaData);
         }
     });
 

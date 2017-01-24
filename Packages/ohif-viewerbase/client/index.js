@@ -76,16 +76,6 @@ import { getInstanceClassDefaultViewport, setInstanceClassDefaultViewportFunctio
 Viewerbase.getInstanceClassDefaultViewport = getInstanceClassDefaultViewport;
 Viewerbase.setInstanceClassDefaultViewportFunction = setInstanceClassDefaultViewportFunction;
 
-// setMammogramViewportAlignment
-import { setMammogramViewportAlignment } from './lib/setMammogramViewportAlignment';
-Viewerbase.setMammogramViewportAlignment = setMammogramViewportAlignment;
-
-// addMetaData, addSpecificMetadata, updateMetaData
-import { addMetaData, addSpecificMetadata, updateMetaData } from './lib/metaDataProvider';
-Viewerbase.addMetaData = addMetaData;
-Viewerbase.addSpecificMetadata = addSpecificMetadata;
-Viewerbase.updateMetaData = updateMetaData;
-
 // displayReferenceLines
 import { displayReferenceLines } from './lib/displayReferenceLines';
 Viewerbase.displayReferenceLines = displayReferenceLines;

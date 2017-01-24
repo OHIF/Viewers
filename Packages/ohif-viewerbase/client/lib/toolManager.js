@@ -122,7 +122,8 @@ export const toolManager = {
     configureTools() {
         // Get Cornerstone Tools
         const { panMultiTouch, textStyle, toolStyle, toolColors,
-                length, arrowAnnotate, zoom, ellipticalRoi } = cornerstoneTools;
+                length, arrowAnnotate, zoom, ellipticalRoi,
+                textMarker, magnify } = cornerstoneTools;
 
         // Set the configuration for the multitouch pan tool
         const multiTouchPanConfig = {
@@ -187,7 +188,7 @@ export const toolManager = {
             shadowOffsetX: shadowConfig.shadowOffsetX,
             shadowOffsetY: shadowConfig.shadowOffsetY
         };
-        cornerstoneTools.textMarker.setConfiguration(textMarkerConfig);
+        textMarker.setConfiguration(textMarkerConfig);
 
         // Set the configuration values for the text annotation (Arrow) tool
         const annotateConfig = {
@@ -203,6 +204,38 @@ export const toolManager = {
             maxScale: 10
         };
         zoom.setConfiguration(zoomConfig);
+
+        const magnifyConfig = {
+            magnifySize: 300,
+            magnificationLevel: 3
+        };
+        magnify.setConfiguration(magnifyConfig);
+    },
+    /**
+     * This function searches an object to return the keys that contain a specific value
+     *
+     * @param object {object} The object to be searched
+     * @param value The value to be found
+     *
+     * @returns {array} The keys for which the object has the specified value
+     */
+    getKeysByValue(object, value) {
+        // http://stackoverflow.com/questions/9907419/javascript-object-get-key-by-value
+        return Object.keys(object).filter(key => object[key] === value);
+    },
+    configureLoadProcess() {
+        // Whenever the CornerstoneImageLoadProgress is fired, identify which viewports
+        // the "in-progress" image is to be displayed in. Then pass the percent complete
+        // via the Meteor Session to the other templates to be displayed in the relevant viewports.
+        $(cornerstone).on('CornerstoneImageLoadProgress', (e, eventData) => {
+            viewportIndices = this.getKeysByValue(window.ViewportLoading, eventData.imageId);
+            viewportIndices.forEach(viewportIndex => {
+                Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
+            });
+
+            const encodedId = OHIF.string.encodeId(eventData.imageId);
+            Session.set('CornerstoneThumbnailLoadProgress' + encodedId, eventData.percentComplete);
+        });
     },
     setGestures(newGestures) {
         gestures = newGestures;

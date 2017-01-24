@@ -7,7 +7,11 @@ Package.describe({
 Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
+    api.use('ecmascript');
+    
     api.use('jquery');
+
+    api.use('ohif:core');
 
     api.addFiles('client/cornerstone.js', 'client', {
         bare: true
@@ -42,4 +46,6 @@ Package.onUse(function(api) {
     api.export('cornerstoneTools', 'client');
     api.export('cornerstoneWADOImageLoader', 'client');
     api.export('dicomParser', 'client');
+
+    api.mainModule('main.js', 'client');
 });

@@ -14,7 +14,6 @@ import { updateCrosshairsSynchronizer } from '../../../lib/updateCrosshairsSynch
 import { toolManager } from '../../../lib/toolManager';
 import { updateOrientationMarkers } from '../../../lib/updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from '../../../lib/instanceClassSpecificViewport';
-import { updateMetaData } from '../../../lib/metaDataProvider';
 import { OHIFError } from '../../../lib/classes/OHIFError';
 
 const allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
@@ -110,7 +109,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     // The ViewportLoading object relates the viewport elements with whichever
     // image is currently being loaded into them. This is useful so that we can
     // place progress (download %) for each image inside the proper viewports.
-    ViewportLoading[viewportIndex] = imageId;
+    window.ViewportLoading[viewportIndex] = imageId;
 
     // Enable Cornerstone for the viewport element
     const options = {
@@ -159,6 +158,14 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         }
     }
 
+    // Additional tasks for metadata provider. If using your own
+    // metadata provider, this may not be necessary.
+    // updateMetadata is important, though, to update image metadata that
+    // for any reason was missing some information such as rows, columns, 
+    // sliceThickness, etc (See MetadataProvider class from ohif-cornerstone package)
+    const metadataProvider = OHIF.viewer.metadataProvider;
+    const isUpdateMetadataDefined = metadataProvider && typeof metadataProvider.updateMetadata === 'function';
+
     // loadAndCacheImage configurable callbacks
     const callbacks = imageViewerViewportData.callbacks;
 
@@ -188,8 +195,10 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         enabledElement.image = image;
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, image);
 
-        // Update the metaData for missing fields
-        updateMetaData(image);
+        if (isUpdateMetadataDefined) {
+            // Update the metaData for missing fields
+            metadataProvider.updateMetadata(image);
+        }
 
         // Check if there are default viewport settings for this sopClassUid
         if (!displaySet.images || !displaySet.images.length) {
@@ -230,7 +239,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
         // Remove the data for this viewport from the ViewportLoading object
         // This will stop the loading percentage complete from being displayed.
-        delete ViewportLoading[viewportIndex];
+        delete window.ViewportLoading[viewportIndex];
 
         // Call the handler function that represents the end of the image loading phase
         // (e.g. hide the progress text box)
@@ -330,8 +339,10 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
 
-            // Update the metaData for missing fields
-            updateMetaData(eventData.enabledElement.image);
+            if(isUpdateMetadataDefined) {
+                // Update the metaData for missing fields
+                metadataProvider.updateMetadata(eventData.enabledElement.image);
+            }
 
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
@@ -507,43 +518,9 @@ const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
     loadDisplaySetIntoViewport(data, templateData);
 };
 
-/**
- * This function searches an object to return the keys that contain a specific value
- *
- * @param object {object} The object to be searched
- * @param value The value to be found
- *
- * @returns {array} The keys for which the object has the specified value
- */
-const getKeysByValue = (object, value) => {
-    // http://stackoverflow.com/questions/9907419/javascript-object-get-key-by-value
-    return Object.keys(object).filter(key => object[key] === value);
-};
-
-Meteor.startup(function() {
-    // On Meteor startup, define the global objects used to store loading imageIds
-    // by viewport / thumbnail element
-    ViewportLoading = {};
-
-    // Whenever the CornerstoneImageLoadProgress is fired, identify which viewports
-    // the "in-progress" image is to be displayed in. Then pass the percent complete
-    // via the Meteor Session to the other templates to be displayed in the relevant viewports.
-    $(cornerstone).on('CornerstoneImageLoadProgress', function(e, eventData) {
-        viewportIndices = getKeysByValue(ViewportLoading, eventData.imageId);
-        viewportIndices.forEach(function(viewportIndex) {
-            Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
-        });
-
-        const encodedId = OHIF.string.encodeId(eventData.imageId);
-        Session.set('CornerstoneThumbnailLoadProgress' + encodedId, eventData.percentComplete);
-    });
-
-    const config = {
-        magnifySize: 300,
-        magnificationLevel: 3
-    };
-
-    cornerstoneTools.magnify.setConfiguration(config);
+Meteor.startup(() => {
+    window.ViewportLoading = window.ViewportLoading || {};
+    toolManager.configureLoadProcess();
 });
 
 Template.imageViewerViewport.onRendered(function() {
