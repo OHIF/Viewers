@@ -25,6 +25,9 @@ OHIF.measurements.exportPdf = measurementGroups => {
 
     cornerstone.enable(element, { renderer: 'webgl' });
 
+    const enabledElement = cornerstone.getEnabledElement(element);
+    enabledElement.toolStateManager = cornerstoneTools.newImageIdSpecificToolStateManager();
+
     const measurements = {
         targets: [],
         nonTargets: []
@@ -37,14 +40,22 @@ OHIF.measurements.exportPdf = measurementGroups => {
     });
 
     let i = 0;
-    measurements.targets.forEach(target => {
-        setTimeout(() => {
-            cornerstone.loadImage(target.imageId).then(image => {
-                cornerstone.displayImage(element, image);
-            });
-        }, i * 1000);
-        i++;
-    });
+    const readMeasurements = toolGroupId => {
+        measurements[toolGroupId].forEach(measurement => {
+            setTimeout(() => {
+                cornerstone.loadImage(measurement.imageId).then(image => {
+                    cornerstone.displayImage(element, image);
+                    cornerstoneTools.addToolState(element, measurement.toolType, measurement);
+                    cornerstoneTools[measurement.toolType].enable(element);
+                    cornerstoneTools.clearToolState(element, measurement.toolType);
+                });
+            }, i * 1000);
+            i++;
+        });
+    };
+
+    readMeasurements('targets');
+    readMeasurements('nonTargets');
 
     setTimeout(() => $element.remove(), i * 1000);
 };
