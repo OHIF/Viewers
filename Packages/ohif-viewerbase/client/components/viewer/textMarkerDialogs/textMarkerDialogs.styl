@@ -96,7 +96,9 @@
   .optionsDiv
     padding-top: 10px
 
-
+//Avoids Cine Play and Text Marker dialog to overlap
+#textMarkerOptionsDialog[open='open'] ~ #cineDialog[open='open']
+  bottom: 90px
 
 .relabelButtons
   text-align:right

@@ -42,10 +42,20 @@ Template.cineDialog.onCreated(() => {
             return;
         }
 
+        let playClipData = cornerstoneTools.getToolState(element, 'playClip');
+        if (!playClipData || !playClipData.data || !playClipData.data.length) {
+            return;
+        }
+
+        // A valid playClip data object is available.
+        playClipData = playClipData.data[0];
+
         // If the movie is playing, stop/start to update the framerate
-        if (viewportUtils.isPlaying()) {
+        if (playClipData.intervalId !== void 0) {
             cornerstoneTools.stopClip(element);
             cornerstoneTools.playClip(element, OHIF.viewer.cine.framesPerSecond);
+        } else {
+            playClipData.framesPerSecond = OHIF.viewer.cine.framesPerSecond;
         }
 
         Session.set('UpdateCINE', Random.id());
@@ -250,9 +260,12 @@ Template.cineDialog.onDestroyed(() => {
 Template.cineDialog.events({
     'change [data-key=loop] input'(event, instance) {
         const element = viewportUtils.getActiveViewportElement();
-        const playClipToolData = cornerstoneTools.getToolState(element, 'playClip');
-        playClipToolData.data[0].loop = $(event.currentTarget).is(':checked');
-        OHIF.viewer.cine.loop = playClipToolData.data[0].loop;
+        OHIF.viewer.cine.loop = $(event.currentTarget).is(':checked');
+        // Update playClip tool data if available.
+        let playClipData = cornerstoneTools.getToolState(element, 'playClip');
+        if (playClipData && playClipData.data && playClipData.data.length > 0) {
+            playClipData.data[0].loop = OHIF.viewer.cine.loop;
+        }
     },
 
     'input [data-key=framesPerSecond] input'(event, instance) {

@@ -7,8 +7,8 @@ import { crosshairsSynchronizers } from './crosshairsSynchronizers';
 import { annotateTextUtils } from './annotateTextUtils';
 import { textMarkerUtils } from './textMarkerUtils';
 
-let activeTool = 'wwwc';
 let defaultTool = 'wwwc';
+let activeTool;
 
 let tools = {};
 
@@ -112,8 +112,10 @@ export const toolManager = {
             touch: cornerstoneTools.crosshairsTouch
         });
 
+        // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
-            activeTool = OHIF.viewer.defaultTool;
+            defaultTool = OHIF.viewer.defaultTool;
+            activeTool = defaultTool;
         }
 
         this.configureTools();
