@@ -21,6 +21,7 @@ export class LayoutManager {
             rows: 1,
             columns: 1
         };
+        this.layoutClassName = this.getLayoutClass();
 
         this.isZoomed = false;
 
@@ -111,6 +112,28 @@ export class LayoutManager {
         }
     }
 
+    getLayoutClass() {
+        const { rows, columns } = this.layoutProps;
+        const layoutClass = `layout-${rows}-${columns}`;
+
+        return layoutClass;
+    }
+
+    // To help other apps using ohif-viewerbase,
+    // so they can style on their own
+    updateLayoutClass() {
+        const newLayoutClass = this.getLayoutClass();
+        
+        // If layout has changed, change its class
+        if (this.layoutClassName !== newLayoutClass) {
+            this.parentNode.classList.remove(this.layoutClassName);
+        }
+
+        this.layoutClassName = newLayoutClass;
+
+        this.parentNode.classList.add(newLayoutClass);
+    }
+
     updateViewports() {
         OHIF.log.info('LayoutManager updateViewports');
 
@@ -133,8 +156,10 @@ export class LayoutManager {
         });
 
         const layoutTemplate = Template[this.layoutTemplateName];
+        const $parentNode = $(this.parentNode);
 
-        $(this.parentNode).html('');
+        $parentNode.html('');
+        this.updateLayoutClass();
         Blaze.renderWithData(layoutTemplate, data, this.parentNode);
 
         this.updateSession();

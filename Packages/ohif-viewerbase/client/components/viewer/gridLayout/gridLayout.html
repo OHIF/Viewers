@@ -1,7 +1,7 @@
 <template name="gridLayout">
     <div id='imageViewerViewports'>
         {{#each viewport in viewports}}
-            <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
+            <div class="viewportContainer {{getClass @index}}" style="height:{{height}}%;width:{{width}}%;">
                 <div class="removable">
                     {{>imageViewerViewport (clone viewport)}}
                 </div>

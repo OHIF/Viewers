@@ -1,6 +1,10 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 
+const TOP_CLASS = 'top';
+const BOTTOM_CLASS = 'bottom';
+const MIDDLE_CLASS = 'middle';
+
 Template.gridLayout.helpers({
     // Get the height percentage for each viewport
     height() {
@@ -16,6 +20,27 @@ Template.gridLayout.helpers({
         return 100 / columns;
     },
 
+    // Get class for each viewport, so each app
+    // using ohif-viewerbase can style on their own
+    getClass(index) {
+        const { rows, columns } = this;
+
+        if (rows === 1) {
+            return `${TOP_CLASS} ${BOTTOM_CLASS}`;
+        }
+
+        const actualRow = Math.floor(index / columns);
+            
+        if ( actualRow === 0 ) {
+            return TOP_CLASS;
+        }
+        if ( actualRow + 1 === rows ) {
+            return BOTTOM_CLASS;
+        }
+
+        return MIDDLE_CLASS;
+    },
+    
     // Return the viewports list
     viewports() {
         const instance = Template.instance();
