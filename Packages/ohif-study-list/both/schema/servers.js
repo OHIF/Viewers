@@ -166,6 +166,21 @@ export const UISettings = new SimpleSchema({
     }    
 });
 
+export const PrefetchSchema = new SimpleSchema({
+    order: {
+        type: String,
+        label: 'Prefetch Order',
+        allowedValues: ['topdown', 'downward', 'closest'],
+        optional: false
+    },
+    displaySetCount: {
+        type: Number,
+        label: 'Display Set Count',
+        min: 1,
+        defaultValue: 1
+    }
+});
+
 export const PublicServerConfig = new SimpleSchema({
     verifyEmail: {
         type: Boolean,
@@ -180,6 +195,10 @@ export const PublicServerConfig = new SimpleSchema({
     ui: {
         type: UISettings,
         label: 'UI Settings'
+    },
+    prefetch: {
+        type: PrefetchSchema,
+        label: 'Prefetch settings'
     }
 });
 

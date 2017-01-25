@@ -8,6 +8,7 @@ import { unloadHandlers } from '../../../lib/unloadHandlers';
 import { hotkeyUtils } from '../../../lib/hotkeyUtils';
 import { ResizeViewportManager } from '../../../lib/classes/ResizeViewportManager';
 import { LayoutManager } from '../../../lib/classes/LayoutManager';
+import { StudyPrefetcher } from '../../../lib/classes/StudyPrefetcher';
 
 Meteor.startup(() => {
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
@@ -34,8 +35,10 @@ Template.viewerMain.onRendered(() => {
     const instance = Template.instance();
     const { studies } = instance.data;
     const parentElement = instance.$('#layoutManagerTarget').get(0);
+    const studyPrefetcher = StudyPrefetcher.getInstance();
 
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
+    studyPrefetcher.setStudies(studies);
 
     // Enable hotkeys
     hotkeyUtils.enableHotkeys();

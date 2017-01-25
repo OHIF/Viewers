@@ -3,7 +3,7 @@ import { $ } from 'meteor/jquery';
 import { Random } from 'meteor/random';
 
 import { OHIF } from 'meteor/ohif:core';
-import { enablePrefetchOnElement } from './enablePrefetchOnElement';
+import { StudyPrefetcher } from './classes/StudyPrefetcher';
 import { displayReferenceLines } from './displayReferenceLines';
 
 /**
@@ -51,8 +51,9 @@ export function setActiveViewport(element) {
         // Cornerstone Tools compare DOM elements (check getEnabledElement cornerstone function)
         // so we can't pass a jQuery object as an argument, otherwise it throws an excepetion
         const domElement = jQueryElement.get(0);
-        enablePrefetchOnElement(domElement);
         displayReferenceLines(domElement);
+        StudyPrefetcher.getInstance().prefetch();
+
         // @TODO Add this to OHIFAfterActivateViewport handler...
         if (OHIF.viewer.stackImagePositionOffsetSynchronizer) {
             OHIF.viewer.stackImagePositionOffsetSynchronizer.update();

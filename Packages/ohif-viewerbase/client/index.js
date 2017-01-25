@@ -180,6 +180,10 @@ Viewerbase.ImageSet = ImageSet;
 import { LayoutManager } from './lib/classes/LayoutManager';
 Viewerbase.LayoutManager = LayoutManager;
 
+// StudyPrefetcher
+import { StudyPrefetcher } from './lib/classes/StudyPrefetcher';
+Viewerbase.StudyPrefetcher = StudyPrefetcher;
+
 // ResizeViewportManager
 import { ResizeViewportManager } from './lib/classes/ResizeViewportManager';
 Viewerbase.ResizeViewportManager = ResizeViewportManager;
