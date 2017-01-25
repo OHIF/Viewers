@@ -196,7 +196,7 @@ HP.ProtocolEngine = class ProtocolEngine {
     findMatchByStudy(study) {
         var matched = [];
 
-        HangingProtocols.find().forEach(protocol => {
+        HP.ProtocolStore.getProtocol().forEach(protocol => {
             // Clone the protocol's protocolMatchingRules array
             // We clone it so that we don't accidentally add the
             // numberOfPriorsReferenced rule to the Protocol itself.
@@ -225,9 +225,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         });
 
         if (!matched.length) {
-            var defaultProtocol = HangingProtocols.findOne({
-                id: 'defaultProtocol'
-            });
+            var defaultProtocol = HP.ProtocolStore.getProtocol('defaultProtocol');
 
             return [{
                 score: 1,
@@ -422,7 +420,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             // TODO: Add relative Date / time
         });
 
-        this.studies.forEach(study => {
+        this.studies.forEach(function(study) {
             const studyMatchDetails = HP.match(study, studyMatchingRules);
             if ((studyMatchingRules.length && !studyMatchDetails.score) ||
                 studyMatchDetails.score < highestStudyMatchingScore) {
@@ -440,7 +438,7 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                 highestSeriesMatchingScore = seriesMatchDetails.score;
 
-                series.instances.forEach((instance, index) => {
+                series.instances.forEach(function(instance, index) {
                     // This tests to make sure there is actually image data in this instance
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227

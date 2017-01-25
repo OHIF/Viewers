@@ -107,7 +107,7 @@ Template.protocolEditor.helpers({
         }
 
         // Retrieve the Stage Model for the current Protocol's active Stage
-        const stage = ProtocolEngine.getCurrentStageModel();
+        var stage = ProtocolEngine.getCurrentStageModel();
         if (!stage) {
             return;
         }
@@ -123,14 +123,14 @@ Template.protocolEditor.helpers({
         // by removing or adding Viewports to the stage
         //
         // First, calculate the difference, if any exists
-        const difference = stage.viewportStructure.getNumViewports() - stage.viewports.length;
+        var difference = stage.viewportStructure.getNumViewports() - stage.viewports.length;
 
         if (difference < 0) {
             // Make the viewport difference into a positive value
-            const absDifference = Math.abs(difference);
+            var absDifference = Math.abs(difference);
 
             // If there are more Viewports defined than necessary, remove the extraneous Viewports
-            const position = stage.viewports.length - absDifference;
+            var position = stage.viewports.length - absDifference;
 
             // Splice extra viewports from the Stage's viewports array
             stage.viewports.splice(position, absDifference);
@@ -139,9 +139,9 @@ Template.protocolEditor.helpers({
             // required amount
 
             // Count up until the difference in number of Viewports
-            for (let i = 0; i < difference; i++) {
+            for (var i = 0; i < difference; i++) {
                 // Instantiate a new Viewport Model
-                const viewport = new HP.Viewport();
+                var viewport = new HP.Viewport();
 
                 // Add new Viewports to the Stage's viewports array
                 stage.viewports.push(viewport);
@@ -163,7 +163,7 @@ Template.protocolEditor.events({
      */
     'click #newProtocol'() {
         // Clone the default Protocol
-        const protocol = HP.defaultProtocol.createClone();
+        var protocol = HP.defaultProtocol.createClone();
 
         // Change the Protocol name to state that it is New, and give it a timestamp
         protocol.name = 'New (created ' + moment().format('h:mm:ss a') + ')';
@@ -184,19 +184,19 @@ Template.protocolEditor.events({
      * Rename the current Protocol
      */
     'click #renameProtocol'() {
-        const selectedProtocol = this;
+        var selectedProtocol = this;
         if (selectedProtocol.locked) {
             return;
         }
 
         // Define some details for the text entry dialog
-        const title = 'Rename Protocol';
-        const instructions = 'Enter a new name';
-        const currentValue = selectedProtocol.name;
+        var title = 'Rename Protocol';
+        var instructions = 'Enter a new name';
+        var currentValue = selectedProtocol.name;
 
         // Open the text entry dialog with the details above
         // and fire the callback function when finished.
-        openTextEntryDialog(title, instructions, currentValue, value => {
+        openTextEntryDialog(title, instructions, currentValue, function(value) {
             // Update the name with the entered text
             selectedProtocol.name = value;
 
@@ -220,17 +220,17 @@ Template.protocolEditor.events({
      *
      * @param event The Change event for the input
      */
-    'change .btn-file :file'(event) {
+    'change .btn-file :file': function(event) {
         // http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/
 
         // Find the Input in the DOM
-        const input = $(event.currentTarget);
+        var input = $(event.currentTarget);
 
         // Get the number of selected files
-        const numFiles = input.get(0).files ? input.get(0).files.length : 1;
+        var numFiles = input.get(0).files ? input.get(0).files.length : 1;
 
         // Get the label of the file
-        const label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        var label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
 
         // Trigger our custom event with the number of files and label
         input.trigger('fileselect', [numFiles, label]);
@@ -240,15 +240,15 @@ Template.protocolEditor.events({
      *
      * @param event The custom fileselect event
      */
-    'fileselect .btn-file :file'(event) {
+    'fileselect .btn-file :file': function(event) {
         // Retreieve the FileList
-        const files = event.target.files;
+        var files = event.target.files;
 
         // Create an HTML5 File Reader
-        const reader = new FileReader();
+        var reader = new FileReader();
 
         reader.onload = () => {
-            const protocolToImport = JSON.parse(reader.result);
+            var protocolToImport = JSON.parse(reader.result);
 
             // Insert the protocol
             HP.ProtocolStore.addProtocol(protocolToImport);
@@ -266,14 +266,12 @@ Template.protocolEditor.events({
      *
      * @param event The select2:select event
      */
-    'select2:select #protocolSelect'(event) {
+    'select2:select #protocolSelect': function(event) {
         // Retrieve the protocolId
-        const protocolId = event.params.data.id;
+        var protocolId = event.params.data.id;
 
-        // Retrieve the Protocol from the HangingProtocols Collection
-        const selectedProtocol = HangingProtocols.findOne({
-            id: protocolId
-        });
+        // Retrieve the protocol from the protocol store
+        var selectedProtocol = HP.ProtocolStore.getProtocol(protocolId);
 
         // If it doesn't exist, stop here
         if (!selectedProtocol) {
@@ -291,85 +289,92 @@ Template.protocolEditor.events({
         $(this).addClass('active').siblings().removeClass('active');
     },
     /**
-     * Update the HangingProtocols Collection with the latest changes to the current Protocol
+     * Update the protocol with the latest changes to the current Protocol
      */
     'click #saveProtocol'() {
-        const selectedProtocol = this;
+        var selectedProtocol = this;
         if (selectedProtocol.locked) {
             return;
         }
-
-        // Store the ID for the update call
-        const id = selectedProtocol._id;
-
-        // Remove the MongoDB _id property so that we can
-        // simplify the $set value
-        delete selectedProtocol._id;
 
         // Update the Protocol's modifiedDate and modifiedBy User details
         selectedProtocol.protocolWasModified();
 
         // Update the current Protocol in the database with the latest changes
-        HangingProtocols.update(id, {
-            $set: selectedProtocol
-        });
+        HP.ProtocolStore.updateProtocol(selectedProtocol.id, selectedProtocol);
     },
     /**
-     * Save the current Protocol as a new document in the HangingProtocols Collection
+     * Save the current Protocol as a new document
      */
     'click #saveAsProtocol'() {
-        const selectedProtocol = this;
+        var selectedProtocol = this;
+
+        // Clone the selected Protocol
+        var protocol = selectedProtocol.createClone();
 
         // Define some details for the text entry dialog
-        const title = 'Save Protocol As';
-        const instructions = 'Enter a new name';
-        const currentValue = selectedProtocol.name;
+        var title = 'Save Protocol As';
+        var instructions = 'Enter a new name';
+        var currentValue = protocol.name;
 
         // Open the text entry dialog with the details above
         // and fire the callback function when finished.
-        openTextEntryDialog(title, instructions, currentValue, value => {
-            // Erase the MongoDB _id
-            delete selectedProtocol._id;
-
+        openTextEntryDialog(title, instructions, currentValue, function(value) {
             // Create a new ID for the protocol
-            selectedProtocol.id = Random.id();
+            protocol.id = Random.id();
 
             // Update the name with the entered text
-            selectedProtocol.name = value;
+            protocol.name = value;
+
+            // Unlock the protocol
+            protocol.locked = false;
 
             // Update the Protocol's modifiedDate and modifiedBy User details
-            selectedProtocol.protocolWasModified();
+            protocol.protocolWasModified();
 
             // Insert the new Protocol
-            HangingProtocols.insert(selectedProtocol);
+            HP.ProtocolStore.addProtocol(protocol);
+
+            // Activate the new Protocol using the ProtocolEngine
+            ProtocolEngine.setHangingProtocol(protocol);
+
+            // Update the protocol selector to display the new Protocols
+            updateProtocolSelect();
         });
     },
     /**
      * Export the currently selected Protocol as a JSON file
      */
     'click #exportJSON'() {
-        // Tell the User's Browser to download the JSON file by routing a hidden iframe to our
-        // protocol-export Route. This prevents the tab from changing its current content.
-        const selectedProtocol = this;
-        document.getElementById('download_iframe').src = '/protocol-export/' + selectedProtocol.id;
+        var selectedProtocol = this;
+
+        var protocolJSON = JSON.stringify(selectedProtocol, null, 2),
+            currentDate = new Date(),
+            filename = selectedProtocol.name + '-' + (currentDate.getTime().toString()) + '.json',
+            protocolBlob = new Blob([protocolJSON], { type: 'application/json' });
+
+        var downloadElement = document.getElementById('downloadElement');
+        downloadElement.href = URL.createObjectURL(protocolBlob);
+        downloadElement.download = filename;
+        downloadElement.click();
     },
     /**
      * Delete the currently selected Protocol
      */
     'click #deleteProtocol'() {
-        const selectedProtocol = this;
+        var selectedProtocol = this;
         if (selectedProtocol.locked) {
             return;
         }
 
-        const options = {
+        var options = {
             title: 'Delete Protocol',
             text: 'Are you sure you would like to remove this Protocol? This cannot be reversed.'
         };
 
         OHIF.viewerbase.showConfirmDialog(() => {
-            // Send a call to remove the Protocol from the HangingProtocols Collection on the server
-            Meteor.call('removeHangingProtocol', selectedProtocol._id);
+            // Remove the Protocol
+            HP.ProtocolStore.removeProtocol(selectedProtocol.id);
 
             // Reset the ProtocolEngine to the next best match
             ProtocolEngine.reset();
