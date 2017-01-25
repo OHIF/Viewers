@@ -8719,7 +8719,7 @@ Display scroll progress bar across bottom of image.
     var configuration = {};
 
     var resetPrefetchTimeout,
-        resetPrefetchDelay;
+        resetPrefetchDelay = 300;
 
     function sortNumber(a, b) {
         // http://stackoverflow.com/questions/1063007/how-to-sort-an-array-of-integers-correctly
