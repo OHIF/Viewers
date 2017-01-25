@@ -1,11 +1,11 @@
 import { OHIF } from 'meteor/ohif:core';
 // import { $ } from 'meteor/jquery';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// import jsPDF from 'jspdf';
+// import html2canvas from 'html2canvas';
 // import * as pdfMake from 'pdfmake';
 
-window.jsPDF = jsPDF;
-window.html2canvas = html2canvas;
+// window.jsPDF = jsPDF;
+// window.html2canvas = html2canvas;
 // window.pdfMake = pdfMake;
 
 OHIF.measurements.exportPdf = (measurementGroups, measurementApi, timepointApi) => {

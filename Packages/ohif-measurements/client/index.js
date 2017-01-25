@@ -2,4 +2,3 @@ import './conformance';
 import './lib';
 import './helpers';
 import './components';
-import './reports';
