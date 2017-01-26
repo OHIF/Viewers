@@ -49,6 +49,8 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
             cornerstoneTools.addToolState(element, measurement.toolType, measurement);
             cornerstoneTools[measurement.toolType].enable(element);
 
+            const series = cornerstoneTools.metaData.get('series', measurement.imageId);
+            const instance = cornerstoneTools.metaData.get('instance', measurement.imageId);
             let info = measurement.response;
             if (!info) {
                 info = measurement.longestDiameter;
@@ -58,6 +60,8 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
 
                 info += ' mm';
             }
+
+            info += ` (S:${series.seriesNumber}, I:${instance.instanceNumber})`;
 
             let type = measurementApi.toolsGroupsMap[measurement.toolType];
             type = type === 'targets' ? 'Target' : 'Non-target';
