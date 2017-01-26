@@ -68,7 +68,6 @@ configuration = {
  * This object contains all the functions needed for interacting with the stack manager.
  * Generally, findStack is the only function used. If you want to know when new stacks
  * come in, you can register a callback with addStackUpdatedCallback.
- * clearStacks and makeAndAddStack should not used outside of loadStudy and removeStudies.
  */
 const StackManager = {
     /**
