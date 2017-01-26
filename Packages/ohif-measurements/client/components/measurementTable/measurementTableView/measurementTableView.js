@@ -19,8 +19,7 @@ Template.measurementTableView.onCreated(() => {
 Template.measurementTableView.events({
     'click .js-pdf'(event, instance) {
         const { measurementApi, timepointApi } = instance.data;
-        const measurementGroups = instance.data.measurementGroups.get();
-        OHIF.measurements.exportPdf(measurementGroups, measurementApi, timepointApi);
+        OHIF.measurements.exportPdf(measurementApi, timepointApi);
     }
 });
 
