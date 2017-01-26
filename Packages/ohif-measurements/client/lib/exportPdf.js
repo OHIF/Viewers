@@ -59,8 +59,11 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
                 info += ' mm';
             }
 
+            let type = measurementApi.toolsGroupsMap[measurement.toolType];
+            type = type === 'targets' ? 'Target' : 'Non-target';
+
             report.printMeasurement({
-                type: measurement.toolType,
+                type,
                 number: measurement.measurementNumber,
                 location: measurement.location || '',
                 info,
