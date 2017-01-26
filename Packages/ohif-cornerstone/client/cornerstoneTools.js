@@ -8887,8 +8887,14 @@ Display scroll progress bar across bottom of image.
         // Stop prefetching if the ImageCacheFull event is fired from cornerstone
         // console.log('CornerstoneImageCacheFull full, stopping');
         var element = e.data.element;
+        var stackPrefetchData;
 
-        var stackPrefetchData = cornerstoneTools.getToolState(element, toolType);
+        try {
+            stackPrefetchData = cornerstoneTools.getToolState(element, toolType);
+        } catch(error) {
+            return;
+        }
+
         if (!stackPrefetchData || !stackPrefetchData.data || !stackPrefetchData.data.length) {
             return;
         }
@@ -8905,7 +8911,15 @@ Display scroll progress bar across bottom of image.
         // it to the indicesToRequest list so that it will be retrieved later if the
         // currentImageIdIndex is changed to an image nearby
         var element = e.data.element;
-        var stackData = cornerstoneTools.getToolState(element, 'stack');
+        var stackData;
+
+        try {
+            // It will throw an exception in some cases (eg: thumbnails)
+            stackData = cornerstoneTools.getToolState(element, 'stack');
+        } catch(error) {
+            return;
+        }
+
         if (!stackData || !stackData.data || !stackData.data.length) {
             return;
         }
