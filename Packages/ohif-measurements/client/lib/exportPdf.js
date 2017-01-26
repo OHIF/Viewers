@@ -67,7 +67,7 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
                 number: measurement.measurementNumber,
                 location: measurement.location || '',
                 info,
-                image: enabledElement.canvas.toDataURL()
+                image: enabledElement.canvas.toDataURL('image/jpeg', 0.85)
             });
             cornerstoneTools.clearToolState(element, measurement.toolType);
 
