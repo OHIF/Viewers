@@ -1,10 +1,12 @@
 <template name="measurementTableView">
     <div class="measurementTableView scrollArea">
-        {{#let config=measurementConfiguration}}
-            {{#each measurementGroup in measurementGroups.get}}
-                {{>measurementTableHeaderRow (clone this
-                    toolGroup=measurementGroup.toolGroup
-                    measurementRows=measurementGroup.measurementRows)}}
+        {{#let config=measurementConfiguration groups=measurementGroups.get}}
+            {{#each measurementGroup in groups}}
+                {{! #if hasMeasurements measurementGroup.toolGroup.id}}
+                    {{>measurementTableHeaderRow (clone this
+                        toolGroup=measurementGroup.toolGroup
+                        measurementRows=measurementGroup.measurementRows)}}
+                {{! /if}}
                 {{#each rowItem in measurementGroup.measurementRows}}
                     {{>measurementTableRow (clone this rowItem=rowItem)}}
                 {{/each}}
@@ -31,6 +33,10 @@
                 {{/let}}
             {{/if}}
         {{/let}}
-        <div class="btn btn-primary js-pdf">Export PDF</div>
+        {{#if or (hasMeasurements 'targets') (hasMeasurements 'nonTargets')}}
+            <div class="report-area">
+                <div class="btn btn-sm js-pdf">Generate Report</div>
+            </div>
+        {{/if}}
     </div>
 </template>

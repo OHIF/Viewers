@@ -24,6 +24,13 @@ Template.measurementTableView.events({
 });
 
 Template.measurementTableView.helpers({
+    hasMeasurements(toolGroupId) {
+        const instance = Template.instance();
+        const groups = instance.data.measurementGroups.get();
+        const group = _.find(groups, item => item.toolGroup.id === toolGroupId);
+        return !!group.measurementRows.length;
+    },
+
     getNewMeasurementType(tool) {
         // TODO: Check Conformance criteria here.
         // RECIST should be nonTargets, irRC should be targets
