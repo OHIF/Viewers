@@ -997,12 +997,6 @@ import { OHIF } from 'meteor/ohif:core';
                 width = 0;
             }
 
-            // Draw the textbox
-            var suffix = ' mm';
-            if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
-                suffix = ' pixels';
-            }
-
             // Length is always longer than width
             if (width > length) {
                 var tempW = width;
@@ -1011,64 +1005,72 @@ import { OHIF } from 'meteor/ohif:core';
                 width = tempL;
             }
 
-            var lengthText = ' L ' + length.toFixed(1) + suffix;
-            var widthText = ' W ' + width.toFixed(1) + suffix;
-            var textLines = [ 'Target ' + data.measurementNumber, lengthText, widthText ];
+            if (data.measurementNumber) {
+                // Draw the textbox
+                var suffix = ' mm';
+                if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
+                    suffix = ' pixels';
+                }
 
-            var boundingBox = cornerstoneTools.drawTextBox(context,
-                textLines,
-                canvasTextLocation.x, canvasTextLocation.y, color);
+                var lengthText = ' L ' + length.toFixed(1) + suffix;
+                var widthText = ' W ' + width.toFixed(1) + suffix;
+                var textLines = [`Target ${data.measurementNumber}`, lengthText, widthText];
 
-            data.handles.textBox.boundingBox = boundingBox;
+                var boundingBox = cornerstoneTools.drawTextBox(context,
+                    textLines,
+                    canvasTextLocation.x, canvasTextLocation.y, color);
 
-            OHIF.cornerstone.repositionTextBox(eventData, data);
+                data.handles.textBox.boundingBox = boundingBox;
 
-            // Draw linked line as dashed
-            var link = {
-                start: {},
-                end: {}
-            };
+                OHIF.cornerstone.repositionTextBox(eventData, data);
 
-            var midpointCanvas = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
-            };
+                // Draw linked line as dashed
+                var link = {
+                    start: {},
+                    end: {}
+                };
 
-            var points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
+                var midpointCanvas = {
+                    x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
+                    y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
+                };
 
-            link.end.x = canvasTextLocation.x;
-            link.end.y = canvasTextLocation.y;
+                var points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
 
-            link.start = cornerstoneMath.point.findClosestPoint(points, link.end);
+                link.end.x = canvasTextLocation.x;
+                link.end.y = canvasTextLocation.y;
 
-            var boundingBoxPoints = [ {
-                    // Top middle point of bounding box
-                    x: boundingBox.left + boundingBox.width / 2,
-                    y: boundingBox.top
-                }, {
-                    // Left middle point of bounding box
-                    x: boundingBox.left,
-                    y: boundingBox.top + boundingBox.height / 2
-                }, {
-                    // Bottom middle point of bounding box
-                    x: boundingBox.left + boundingBox.width / 2,
-                    y: boundingBox.top + boundingBox.height
-                }, {
-                    // Right middle point of bounding box
-                    x: boundingBox.left + boundingBox.width,
-                    y: boundingBox.top + boundingBox.height / 2
-                },
-            ];
+                link.start = cornerstoneMath.point.findClosestPoint(points, link.end);
 
-            link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = lineWidth;
-            context.setLineDash([ 2, 3 ]);
+                var boundingBoxPoints = [ {
+                        // Top middle point of bounding box
+                        x: boundingBox.left + boundingBox.width / 2,
+                        y: boundingBox.top
+                    }, {
+                        // Left middle point of bounding box
+                        x: boundingBox.left,
+                        y: boundingBox.top + boundingBox.height / 2
+                    }, {
+                        // Bottom middle point of bounding box
+                        x: boundingBox.left + boundingBox.width / 2,
+                        y: boundingBox.top + boundingBox.height
+                    }, {
+                        // Right middle point of bounding box
+                        x: boundingBox.left + boundingBox.width,
+                        y: boundingBox.top + boundingBox.height / 2
+                    },
+                ];
 
-            context.moveTo(link.start.x, link.start.y);
-            context.lineTo(link.end.x, link.end.y);
-            context.stroke();
+                link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
+                context.beginPath();
+                context.strokeStyle = color;
+                context.lineWidth = lineWidth;
+                context.setLineDash([ 2, 3 ]);
+
+                context.moveTo(link.start.x, link.start.y);
+                context.lineTo(link.end.x, link.end.y);
+                context.stroke();
+            }
 
             // Set measurement text to show lesion table
             data.longestDiameter = length.toFixed(1);

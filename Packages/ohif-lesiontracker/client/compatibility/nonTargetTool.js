@@ -253,7 +253,7 @@ import { toolManager } from 'meteor/ohif:viewerbase';
             // Draw the text
             if (data.measurementNumber) {
 
-                var boundingBox = cornerstoneTools.drawTextBox(context, 'Non-Target ' + data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
+                var boundingBox = cornerstoneTools.drawTextBox(context, `Non-Target ${data.measurementNumber}`, canvasTextLocation.x, canvasTextLocation.y, color);
                 data.handles.textBox.boundingBox = boundingBox;
 
                 OHIF.cornerstone.repositionTextBox(eventData, data);

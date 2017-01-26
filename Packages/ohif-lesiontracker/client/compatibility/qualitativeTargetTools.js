@@ -290,7 +290,7 @@
                     context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                     context.stroke();
 
-                    var boundingBox = cornerstoneTools.drawTextBox(context, "Target " + +data.measurementNumber, canvasTextLocation.x, canvasTextLocation.y, color);
+                    var boundingBox = cornerstoneTools.drawTextBox(context, `Target ${data.measurementNumber}`, canvasTextLocation.x, canvasTextLocation.y, color);
                     data.handles.textBox.boundingBox = boundingBox;
                 }
 
