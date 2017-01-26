@@ -92,10 +92,6 @@ Viewerbase.imageViewerViewportData = imageViewerViewportData;
 import { panelNavigation } from './lib/panelNavigation';
 Viewerbase.panelNavigation = panelNavigation;
 
-// seriesNavigation.*
-import { seriesNavigation } from './lib/seriesNavigation';
-Viewerbase.seriesNavigation = seriesNavigation;
-
 // WLPresets.*
 import { WLPresets } from './lib/WLPresets';
 Viewerbase.wlPresets = WLPresets;

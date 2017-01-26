@@ -7,7 +7,6 @@ import { switchToImageRelative } from './switchToImageRelative';
 import { switchToImageByIndex } from './switchToImageByIndex';
 import { viewportUtils } from './viewportUtils';
 import { panelNavigation } from './panelNavigation';
-import { seriesNavigation } from './seriesNavigation';
 import { WLPresets } from './WLPresets';
 
 // TODO: add this to namespace definitions
@@ -138,10 +137,10 @@ Meteor.startup(function() {
             }
         },
         previousDisplaySet() {
-            OHIF.viewer.moveDisplaySets(false);
+            OHIF.viewerbase.layoutManager.moveDisplaySets(false);
         },
         nextDisplaySet() {
-            OHIF.viewer.moveDisplaySets(true);
+            OHIF.viewerbase.layoutManager.moveDisplaySets(true);
         },
         nextPanel() {
             panelNavigation.loadNextActivePanel();
@@ -198,12 +197,6 @@ Meteor.startup(function() {
             const button = document.getElementById('clearImageAnnotations');
             flashButton(button);
             clearImageAnnotations();
-        },
-        nextSeries () {
-            seriesNavigation.loadNextSeries();
-        },
-        previousSeries () {
-            seriesNavigation.loadPreviousSeries();
         },
         cineDialog () {
             /**
