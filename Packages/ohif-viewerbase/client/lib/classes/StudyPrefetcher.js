@@ -206,7 +206,10 @@ export class StudyPrefetcher {
         const getDisplaySets = this[methodName];
 
         if (!getDisplaySets) {
-            OHIF.log.warn(`Invalid prefetch order configuration (${prefetchOrder})`);
+            if (prefetchOrder) {
+                OHIF.log.warn(`Invalid prefetch order configuration (${prefetchOrder})`);
+            }
+
             return [];
         }
 
