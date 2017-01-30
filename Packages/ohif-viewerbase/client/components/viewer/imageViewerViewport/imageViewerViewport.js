@@ -89,14 +89,6 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         displaySetInstanceUid: data.displaySetInstanceUid
     };
 
-    // If is a clip, updates the global FPS for cine dialog
-    if (displaySet && displaySet.isClip && displaySet.frameRate > 0) {
-        // Sets the global variable
-        OHIF.viewer.cine.framesPerSecond = parseFloat(displaySet.frameRate);
-        // Update the cine dialog FPS
-        Session.set('UpdateCINE', Random.id());
-    }
-
     // Get the current image ID for the stack that will be rendered
     const imageId = imageIds[stack.currentImageIdIndex];
 
