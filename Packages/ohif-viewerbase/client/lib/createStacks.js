@@ -85,18 +85,18 @@ const createStacks = study => {
                 displaySet = makeDisplaySet(series, [ instance ]);
                 displaySet.setAttributes({
                     isClip: true,
-                    studyInstanceUid: study.studyInstanceUid, // Include the study instance Uid for drag/drop purposes
-                    numImageFrames: instance.numberOfFrames, // Override the default value of instances.length
-                    instanceNumber: instance.instanceNumber, // Include the instance number
-                    acquisitionDatetime: instance.acquisitionDatetime // Include the acquisition datetime
+                    studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid for drag/drop purposes
+                    numImageFrames: instance.getRawValue('x00280008'), // Override the default value of instances.length
+                    instanceNumber: instance.getRawValue('x00200013'), // Include the instance number
+                    acquisitionDatetime: instance.getRawValue('x0008002a') // Include the acquisition datetime
                 });
                 displaySets.push(displaySet);
             } else if (isSingleImageModality(instance.modality)) {
                 displaySet = makeDisplaySet(series, [ instance ]);
                 displaySet.setAttributes({
-                    studyInstanceUid: study.studyInstanceUid, // Include the study instance Uid
-                    instanceNumber: instance.instanceNumber, // Include the instance number
-                    acquisitionDatetime: instance.acquisitionDatetime // Include the acquisition datetime
+                    studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid
+                    instanceNumber: instance.getRawValue('x00200013'), // Include the instance number
+                    acquisitionDatetime: instance.getRawValue('x0008002a') // Include the acquisition datetime
                 });
                 displaySets.push(displaySet);
             } else {
