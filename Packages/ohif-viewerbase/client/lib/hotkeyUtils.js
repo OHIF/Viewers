@@ -211,9 +211,6 @@ Meteor.startup(function() {
     };
 
     OHIF.viewer.loadedSeriesData = {};
-    OHIF.viewer.linkSeries = {
-        classifiedOrientation: {}
-    };
 });
 
 // Define a jQuery reverse function
