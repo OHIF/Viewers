@@ -43,10 +43,6 @@ Viewerbase.getImageId = getImageId;
 import { setActiveViewport } from './lib/setActiveViewport';
 Viewerbase.setActiveViewport = setActiveViewport;
 
-// classifyImageOrientation
-import { classifyImageOrientation } from './lib/classifyImageOrientation';
-Viewerbase.classifyImageOrientation = classifyImageOrientation;
-
 // setFocusToActiveViewport
 import { setFocusToActiveViewport } from './lib/setFocusToActiveViewport';
 Viewerbase.setFocusToActiveViewport = setFocusToActiveViewport;
