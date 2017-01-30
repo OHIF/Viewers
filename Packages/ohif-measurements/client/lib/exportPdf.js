@@ -4,7 +4,7 @@ import { MeasurementReport } from 'meteor/ohif:measurements/client/reports/measu
 OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
     const currentTimepoint = timepointApi.current();
     const { timepointId } = currentTimepoint;
-    const study = ViewerStudies.findOne({
+    const study = OHIF.viewer.Studies.findBy({
         studyInstanceUid: currentTimepoint.studyInstanceUids[0]
     });
     const report = new MeasurementReport({

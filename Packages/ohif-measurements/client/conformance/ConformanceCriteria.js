@@ -2,6 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase';
 import { CriteriaEvaluator } from './CriteriaEvaluator';
 import * as evaluations from './evaluations';
 
@@ -153,7 +154,7 @@ class ConformanceCriteria {
     }
 
     getImageMetadata(studyInstanceUid, imageId) {
-        const study = ViewerStudies.findOne({ studyInstanceUid });
+        const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
         // Stop here if the study was not found
         if (!study) {
@@ -169,7 +170,7 @@ class ConformanceCriteria {
             _.each(displaySet.images, image => {
                 if (foundImage) {
                     return;
-                } else if (getImageId(image) === imageId) {
+                } else if (OHIF.viewerbase.getImageId(image) === imageId) {
                     foundImage = image;
                 }
             });
