@@ -1,4 +1,6 @@
-import { dicomParser } from 'meteor/ohif:cornerstone';
+/**
+ * Globals: dicomParser
+ */
 
 /**
  * A small set of utilities to help parsing DICOM element values.
