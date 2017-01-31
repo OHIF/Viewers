@@ -22,7 +22,6 @@ export class MetadataProvider {
         const instanceMetadata = data.instance;
         const seriesMetadata = data.series;
         const studyMetadata = data.study;
-        const imageIndex = data.imageIndex;
         const numImages = data.numImages;
 
         const metadata = {};
@@ -63,6 +62,15 @@ export class MetadataProvider {
     }
 
     /**
+     * Return the metadata for the given imageId
+     * @param {String} imageId The Cornerstone ImageId
+     * @returns image metadata
+     */
+    getMetadata(imageId) {
+        return this.metadataLookup[imageId];
+    }
+
+    /**
      * Adds a set of metadata to the Cornerstone metadata provider given a specific
      * imageId, type, and dataset
      *
@@ -76,7 +84,6 @@ export class MetadataProvider {
 
         this.metadataLookup[imageId] = $.extend(this.metadataLookup[imageId], metadata);
     }
-
 
     getFromDataSet(dataSet, type, tag) {
         if (!dataSet) {
@@ -254,4 +261,4 @@ export class MetadataProvider {
             return imageMetadata[type];
         }
     }
-};
+}
