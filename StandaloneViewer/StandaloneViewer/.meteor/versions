@@ -19,10 +19,6 @@ caching-compiler@1.1.9
 caching-html-compiler@1.0.7
 callback-hook@1.0.10
 check@1.2.4
-clinical:router@2.0.19
-clinical:router-location@2.1.0
-clinical:router-middleware-stack@2.1.2
-clinical:router-url@2.1.0
 coffeescript@1.11.1_4
 ddp@1.2.5
 ddp-client@1.3.2
@@ -30,7 +26,6 @@ ddp-common@1.2.8
 ddp-rate-limiter@1.0.6
 ddp-server@1.3.12
 deps@1.0.12
-design@0.0.1
 diff-sequence@1.0.7
 ecmascript@0.6.1
 ecmascript-runtime@0.3.15
@@ -49,6 +44,10 @@ iron:controller@1.0.12
 iron:core@1.0.11
 iron:dynamic-template@1.0.12
 iron:layout@1.0.12
+iron:location@1.0.11
+iron:middleware-stack@1.1.0
+iron:router@1.0.13
+iron:url@1.0.11
 jquery@1.11.10
 launch-screen@1.1.0
 livedata@1.0.18
@@ -74,9 +73,11 @@ npm-mongo@2.2.11_2
 observe-sequence@1.0.14
 ohif:core@0.0.1
 ohif:cornerstone@0.0.1
+ohif:design@0.0.1
 ohif:dicom-services@0.0.1
 ohif:hanging-protocols@0.0.1
 ohif:log@0.0.1
+ohif:metadata@0.0.1
 ohif:study-list@0.0.1
 ohif:viewerbase@0.0.1
 ohif:wadoproxy@0.0.1

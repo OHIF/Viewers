@@ -1,10 +1,10 @@
 Template.flexboxLayout.events({
     'transitionend .sidebarMenu'(event) {
         if (!event.target.classList.contains('sidebarMenu')) {
-        	return;
+            return;
         }
 
-    	handleResize();
+        window.ResizeViewportManager.handleResize();
     }
 });
 

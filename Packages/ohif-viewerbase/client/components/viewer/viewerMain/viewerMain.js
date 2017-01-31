@@ -20,7 +20,7 @@ Template.viewerMain.onCreated(() => {
     // and change it to jQuery._data(window, 'events')['resize']. 
     // Otherwise this function will be probably overrided.
     // See cineDialog instance.setResizeHandler function
-    window.addEventListener('resize', window.ResizeViewportManager.handleResize.bind(window.ResizeViewportManager));
+    window.addEventListener('resize', window.ResizeViewportManager.getResizeHandler());
 
     // Add beforeUnload event handler to check for unsaved changes
     window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
@@ -113,7 +113,7 @@ Template.viewerMain.onDestroyed(() => {
     OHIF.log.info('viewerMain onDestroyed');
 
     // Remove the Window resize listener
-    window.removeEventListener('resize', window.ResizeViewportManager.handleResize.bind(window.ResizeViewportManager));
+    window.removeEventListener('resize', window.ResizeViewportManager.getResizeHandler());
 
     // Remove beforeUnload event handler...
     window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);

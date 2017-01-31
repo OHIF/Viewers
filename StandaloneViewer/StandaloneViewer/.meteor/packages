@@ -19,10 +19,11 @@ ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
 shell-server@0.2.1            # Server-side component of the `meteor shell` command
 
 # OHIF Packages
-design
 ohif:core
+ohif:design
 ohif:cornerstone
 ohif:viewerbase
+ohif:metadata
 ohif:study-list
 ohif:dicom-services
 ohif:hanging-protocols
@@ -31,7 +32,7 @@ ohif:hanging-protocols
 aldeed:template-extension
 aldeed:simple-schema@1.5.3
 stylus@2.513.8
-clinical:router
+iron:router
 session@1.1.7
 practicalmeteor:loglevel
 reactive-dict@1.1.8

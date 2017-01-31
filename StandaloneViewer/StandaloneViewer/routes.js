@@ -65,6 +65,7 @@ if (Meteor.isClient) {
 
             // Fire the request the server
             oReq.send();
+            this.next();
         }
     });
 }

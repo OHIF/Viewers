@@ -6,6 +6,7 @@ import { getInstanceClassDefaultViewport } from '../instanceClassSpecificViewpor
 // Manage resizing viewports triggered by window resize
 export class ResizeViewportManager {
     constructor() {
+        this._resizeHandler = null;
         OHIF.log.info('ResizeViewportManager');
     }
 
@@ -150,4 +151,18 @@ export class ResizeViewportManager {
             this.resizeViewportElements();
         }, 100);
     }
+
+    /**
+     * Returns a unique event handler function associated with a given instance using lazy assignment.
+     * @return {function} Returns a unique copy of the event handler of this class.
+     */
+    getResizeHandler() {
+        let resizeHandler = this._resizeHandler;
+        if (resizeHandler === null) {
+            resizeHandler = this.handleResize.bind(this);
+            this._resizeHandler = resizeHandler;
+        }
+        return resizeHandler;
+    }
+
 }
