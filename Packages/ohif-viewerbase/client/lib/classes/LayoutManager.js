@@ -10,6 +10,11 @@ import { OHIF } from 'meteor/ohif:core';
 
 // Displays Series in Viewports given a Protocol and list of Studies
 export class LayoutManager {
+    /**
+     * Constructor: initializes a Layout Manager object.
+     * @param  {DOM element}    parentNode DOM element representing the parent node, which wraps the Layout Manager content
+     * @param  {Array} studies  Array of studies objects that will be rendered in the Viewer. Each object will be rendered in a div.imageViewerViewport
+     */
     constructor(parentNode, studies) {
         OHIF.log.info('LayoutManager constructor');
 
@@ -29,16 +34,23 @@ export class LayoutManager {
         this.updateSession = _.throttle(updateSessionFn, 300);
     }
 
+    /**
+     * Returns the number of viewports rendered, based on layoutProps
+     * @return {integer} number of viewports
+     */
     getNumberOfViewports() {
         return this.layoutProps.rows * this.layoutProps.columns;
     }
 
+    /**
+     * It creates a new viewport data. This is useful for the first rendering when no viewportData is set yet.
+     */
     setDefaultViewportData() {
         OHIF.log.info('LayoutManager setDefaultViewportData');
 
         const self = this;
 
-        // Get the number of vieports to be rendered
+        // Get the number of viewports to be rendered
         const viewportsAmount = this.getNumberOfViewports();
 
         // Store the old viewport data and reset the current
@@ -112,6 +124,10 @@ export class LayoutManager {
         }
     }
 
+    /**
+     * Returns the name of the class to be added to the parentNode
+     * @return {string} class name following the pattern layout-<rows>-<columns>. Ex: layout-1-1, layout-2-2
+     */
     getLayoutClass() {
         const { rows, columns } = this.layoutProps;
         const layoutClass = `layout-${rows}-${columns}`;
@@ -119,8 +135,12 @@ export class LayoutManager {
         return layoutClass;
     }
 
-    // To help other apps using ohif-viewerbase,
-    // so they can style on their own
+    /**
+     * Add a class to the parentNode based on the layout configuration.
+     * This function is helpful to style the layout of viewports.
+     * Besides that, each inner div.viewportContainer will have helpful classes
+     * as well. See viewer/components/gridLayout/ component in this ohif-viewerbase package.
+     */
     updateLayoutClass() {
         const newLayoutClass = this.getLayoutClass();
         
@@ -134,6 +154,12 @@ export class LayoutManager {
         this.parentNode.classList.add(newLayoutClass);
     }
 
+    /**
+     * Updates the grid with the new layout props. 
+     * It iterates over all viewportData to render the studies
+     * in the viewports. 
+     * If no viewportData or no viewports defined, it renders the default viewport data.
+     */
     updateViewports() {
         OHIF.log.info('LayoutManager updateViewports');
 
@@ -170,9 +196,8 @@ export class LayoutManager {
     /**
      * This function destroys and re-renders the imageViewerViewport template.
      * It uses the data provided to load a new display set into the produced viewport.
-     *
-     * @param viewportIndex
-     * @param data
+     * @param  {integer} viewportIndex index of the viewport to be re-rendered
+     * @param  {Object} data           instance data object
      */
     rerenderViewportWithNewDisplaySet(viewportIndex, data) {
         OHIF.log.info(`LayoutManager rerenderViewportWithNewDisplaySet: ${viewportIndex}`);
@@ -215,6 +240,10 @@ export class LayoutManager {
         this.updateSession();
     }
 
+    /**
+     * Enlarge a single viewport. Useful when the layout has more than one viewport
+     * @param  {integer} viewportIndex Index of the viewport to be enlarged
+     */
     enlargeViewport(viewportIndex) {
         OHIF.log.info(`LayoutManager enlargeViewport: ${viewportIndex}`);
 
@@ -249,6 +278,10 @@ export class LayoutManager {
         this.updateSession();
     }
 
+    /**
+     * Resets to the previous layout configuration. 
+     * Useful after enlarging a single viewport.
+     */
     resetPreviousLayout() {
         OHIF.log.info('LayoutManager resetPreviousLayout');
 
@@ -262,6 +295,11 @@ export class LayoutManager {
         this.updateViewports();
     }
 
+    /**
+     * Toogle viewport enlargement.
+     * Useful for user to enlarge or going back to previous layout configurations
+     * @param  {integer} viewportIndex Index of the viewport to be toggled
+     */
     toggleEnlargement(viewportIndex) {
         OHIF.log.info(`LayoutManager toggleEnlargement: ${viewportIndex}`);
 
@@ -277,7 +315,9 @@ export class LayoutManager {
         }
     }
 
-    // Return the display sets map sequence of display sets and viewports
+    /**
+     * Return the display sets map sequence of display sets and viewports
+     */
     getDisplaySetSequenceMap() {
         OHIF.log.info('LayoutManager getDisplaySetSequenceMap');
 
@@ -324,7 +364,11 @@ export class LayoutManager {
         return sequenceMap;
     }
 
-    // Check if all the display sets and viewports are sequenced
+    /**
+     * Check if all the display sets and viewports are sequenced
+     * @param  {Array}  definedSequenceMap Array of display set sequence map
+     * @return {Boolean}                   Returns if the display set sequence map is sequenced or not
+     */
     isDisplaySetsSequenced(definedSequenceMap) {
         OHIF.log.info('LayoutManager isDisplaySetsSequenced');
 
@@ -361,7 +405,12 @@ export class LayoutManager {
         return isSequenced;
     }
 
-        // Check if is possible to move display sets on a specific direction
+    /**
+     * Check if is possible to move display sets on a specific direction.
+     * It checks if looping is allowed by OHIF.uiSettings.displaySetNavigationLoopOverSeries
+     * @param  {Boolean} isNext Represents the direction
+     * @return {Boolean}        Returns if display sets can be moved
+     */
     canMoveDisplaySets(isNext) {
         OHIF.log.info('LayoutManager canMoveDisplaySets');
 
@@ -442,7 +491,11 @@ export class LayoutManager {
         return true;
     }
 
-    // Move display sets forward or backward in the given viewport index
+    /**
+     * Move display sets forward or backward in the given viewport index
+     * @param  {integer}  viewportIndex Index of the viewport to be moved
+     * @param  {Boolean} isNext         Represents the direction (true = forward, false = backward)
+     */
     moveSingleViewportDisplaySets(viewportIndex, isNext) {
         OHIF.log.info(`LayoutManager moveSingleViewportDisplaySets: ${viewportIndex}`);
 
@@ -496,7 +549,10 @@ export class LayoutManager {
         this.rerenderViewportWithNewDisplaySet(viewportIndex, newDisplaySetData);
     }
 
-    // Move multiple display sets forward or backward in all viewports
+    /**
+     * Move multiple display sets forward or backward in all viewports
+     * @param  {Boolean} isNext Represents the direction (true = forward, false = backward)
+     */
     moveMultipleViewportDisplaySets(isNext) {
         OHIF.log.info('LayoutManager moveMultipleViewportDisplaySets');
 
@@ -588,7 +644,10 @@ export class LayoutManager {
         });
     }
 
-    // Move display sets forward or backward
+    /**
+     * Move display sets forward or backward
+     * @param  {Boolean} isNext Represents the direction (true = forward, false = backward)
+     */
     moveDisplaySets(isNext) {
         OHIF.log.info('LayoutManager moveDisplaySets');
         
@@ -605,10 +664,20 @@ export class LayoutManager {
         }
     }
 
+    /**
+     * Check if a study is loaded into a viewport
+     * @param  {string}  studyInstanceUid Study instance Uid string
+     * @param  {integer}  viewportIndex   Index of the viewport to be checked
+     * @return {Boolean}                  Returns if the given study is in the given viewport or not
+     */
     isStudyLoadedIntoViewport(studyInstanceUid, viewportIndex) {
         return (this.viewportData.find(item => item.studyInstanceUid === studyInstanceUid && item.viewportIndex === viewportIndex) !== void 0);
     }
 
+    /**
+     * Check if the layout has multiple rows and columns
+     * @return {Boolean} Return if the layout has multiple rows and columns or not
+     */
     isMultipleLayout() {
         return this.layoutProps.row !== 1 && this.layoutProps.columns !== 1;
     }
