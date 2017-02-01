@@ -103,7 +103,7 @@ export class ResizeViewportManager {
     }
 
     // Resize a single viewport element
-    resizeViewportElement(element) {
+    resizeViewportElement(element, fitToWindow = true) {
         let enabledElement;
         try {
             enabledElement = cornerstone.getEnabledElement(element);
@@ -111,7 +111,7 @@ export class ResizeViewportManager {
             return;
         }
 
-        cornerstone.resize(element, true);
+        cornerstone.resize(element, fitToWindow);
 
         if (enabledElement.fitToWindow === false) {
             const imageId = enabledElement.image.imageId;
@@ -164,5 +164,4 @@ export class ResizeViewportManager {
         }
         return resizeHandler;
     }
-
 }
