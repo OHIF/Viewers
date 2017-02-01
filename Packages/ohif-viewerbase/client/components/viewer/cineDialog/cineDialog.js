@@ -63,8 +63,8 @@ Template.cineDialog.onCreated(() => {
 
     // Define the actions API
     instance.api = {
-        displaySetPrevious: () => OHIF.viewer.moveDisplaySets(false),
-        displaySetNext: () => OHIF.viewer.moveDisplaySets(true),
+        displaySetPrevious: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
+        displaySetNext: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
         cineToggle: () => viewportUtils.toggleCinePlay(),
         cineFirst: () => switchToImageByIndex(0),
         cineLast: () => switchToImageByIndex(-1),

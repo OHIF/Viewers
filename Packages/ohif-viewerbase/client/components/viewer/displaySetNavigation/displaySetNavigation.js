@@ -7,7 +7,7 @@ Template.displaySetNavigation.events({
             return;
         }
 
-        OHIF.viewer.moveDisplaySets(true);
+        OHIF.viewerbase.layoutManager.moveDisplaySets(true);
     },
 
     'click .js-prev'(event, instance) {
