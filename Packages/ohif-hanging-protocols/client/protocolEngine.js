@@ -479,12 +479,14 @@ HP.ProtocolEngine = class ProtocolEngine {
                     };
 
                     // Filter imageSet function: filter by InstanceUid
-                    const filterImageSetFn = (imageSet, sopInstanceUid) => {
-                        return imageSet.getData().sopInstanceUid === instance.sopInstanceUid;
+                    const filterImageFn = (image) => {
+                        return image.getData().sopInstanceUid === instance.sopInstanceUid;
                     };
 
                     // Find the displaySet
-                    const displaySet = study.displaySets.find(ds => ds.images.filter(imageSet => filterImageSetFn));
+                    const displaySet = study.displaySets.find(ds => {
+                        return ds.images.filter(filterImageFn).length > 0;
+                    });
 
                     // If the instance was found, set the displaySet ID
                     if (displaySet) {
