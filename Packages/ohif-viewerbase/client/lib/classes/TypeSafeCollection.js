@@ -48,6 +48,12 @@ export class TypeSafeCollection {
      * Public Methods
      */
 
+    /**
+     * Update the payload associated with the given ID to be the new supplied payload.
+     * @param {string} id The ID of the entry that will be updated.
+     * @param {any} payload The element that will replace the previous payload.
+     * @returns {boolean} Returns true if the given ID is present in the collection, false otherwise.
+     */
     updateById(id, payload) {
         let result = false,
             found = this._elementWithPayload(payload, true);
@@ -69,6 +75,12 @@ export class TypeSafeCollection {
         return result;
     }
 
+    /**
+     * Signal that the given element has been changed by notifying reactive data-source observers.
+     * This method is basically a means to invalidate the inernal reactive data-source.
+     * @param {any} payload The element that has been altered.
+     * @returns {boolean} Returns true if the element is present in the collection, false otherwise.
+     */
     update(payload) {
         let result = false,
             found = this._elementWithPayload(payload, true);
@@ -80,6 +92,12 @@ export class TypeSafeCollection {
         return result;
     }
 
+    /**
+     * Insert an element in the collection. On success, the element ID (a unique string) is returned. On failure, returns null.
+     * A failure scenario only happens when the given payload is already present in the collection. Note that NO exceptions are thrown!
+     * @param {any} payload The element to be stored.
+     * @returns {string} The ID of the inserted element or null if the element already exists...
+     */
     insert(payload) {
         let id = null,
             found = this._elementWithPayload(payload, true);
@@ -91,6 +109,10 @@ export class TypeSafeCollection {
         return id;
     }
 
+    /**
+     * Remove all elements from the collection.
+     * @returns {void} No meaningful value is returned.
+     */
     removeAll() {
         let all = this._elements(true),
             length = all.length;
@@ -104,6 +126,11 @@ export class TypeSafeCollection {
         this._invalidate();
     }
 
+    /**
+     * Remove elements from the collection that match the criteria given in the property map.
+     * @param {Object} propertyMap A property map that will be macthed against all collection elements.
+     * @returns {Array} A list with all removed elements.
+     */
     remove(propertyMap) {
         let found = this.findAllEntriesBy(propertyMap),
             foundCount = found.length,
@@ -120,24 +147,49 @@ export class TypeSafeCollection {
         return removed;
     }
 
+    /**
+     * Provides the ID of the given element inside the collection.
+     * @param {any} payload The element being searched for.
+     * @returns {string} The ID of the given element or undefined if the element is not present.
+     */
     getElementId(payload) {
         let found = this._elementWithPayload(payload);
         return found && found.id;
     }
 
+    /**
+     * Provides the position of the given element in the internal list returning -1 if the element is not present.
+     * @param {any} payload The element being searched for.
+     * @returns {number} The position of the given element in the internal list. If the element is not present -1 is returned.
+     */
     findById(id) {
         let found = this._elementWithId(id);
         return found && found.payload;
     }
 
+    /**
+     * Provides the position of the given element in the internal list returning -1 if the element is not present.
+     * @param {any} payload The element being searched for.
+     * @returns {number} The position of the given element in the internal list. If the element is not present -1 is returned.
+     */
     indexOfElement(payload) {
         return this._elements().indexOf(this._elementWithPayload(payload, true));
     }
 
+    /**
+     * Provides the position of the element associated with the given ID in the internal list returning -1 if the element is not present.
+     * @param {string} id The index of the element.
+     * @returns {number} The position of the element associated with the given ID in the internal list. If the element is not present -1 is returned.
+     */
     indexOfId(id) {
         return this._elements().indexOf(this._elementWithId(id, true));
     }
 
+    /**
+     * Provides a list-like approach to the collection returning an element by index.
+     * @param {number} index The index of the element.
+     * @returns {any} If out of bounds, undefined is returned. Otherwise the element in the given position is returned.
+     */
     getElementByIndex(index) {
         let found = ((this._elements())[index >= 0 ? index : -1]);
         return found && found.payload;
@@ -149,7 +201,7 @@ export class TypeSafeCollection {
      * @param {function} callback A callback function which will define the search criteria. The callback
      * function will be passed the collection element, its ID and its index in this very order. The callback
      * shall return true when its criterea has been fulfilled.
-     * @returns {Any} The matched element or undefined if not match was found.
+     * @returns {any} The matched element or undefined if not match was found.
      */
     find(callback) {
         let found;
@@ -334,7 +386,7 @@ function _getPropertyValue(targetObject, propertyName) {
  * @param {Object} propertyMap The property map whose properties will be used for comparison. Composite
  * property names (e.g., 'address.country.name') will be tested against the "resolved" properties from the target object.
  * @param {Object} targetObject The target object whose properties will be tested.
- * @returns {boolean} Returns true if the properties match, false otherwhise.
+ * @returns {boolean} Returns true if the properties match, false otherwise.
  */
 function _compareToPropertyMapStrict(propertyMap, targetObject) {
     let result = false;

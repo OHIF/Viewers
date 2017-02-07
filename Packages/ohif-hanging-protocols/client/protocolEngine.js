@@ -165,9 +165,22 @@ var sortByScore = function(arr) {
 };
 
 HP.ProtocolEngine = class ProtocolEngine {
-    constructor(LayoutManager, studies) {
+    /**
+     * Constructor
+     * @param  {Object} LayoutManager  Layout Manager Object
+     * @param  {Array} studies        Array of study metadata
+     * @param  {Array} relatedStudies Array of related studies
+     * @param  {Object} studyMedadataSource Instance of StudyMetadataSource (ohif-viewerbase) Object to get study metadata
+     */
+    constructor(LayoutManager, studies, relatedStudies, studyMetadataSource) {
+        if (!(studyMetadataSource instanceof OHIF.viewerbase.StudyMetadataSource)) {
+            throw new OHIF.viewerbase.OHIFError('ProtocolEngine::constructor studyMetadataSource is not an instance of StudyMetadataSource');
+        }
+
         this.LayoutManager = LayoutManager;
         this.studies = studies;
+        this.relatedStudies = relatedStudies;
+        this.studyMetadataSource = studyMetadataSource;
 
         this.reset();
 
@@ -252,7 +265,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             matched.forEach(function(matchedDetail) {
                 var protocol = matchedDetail.protocol;
                 if (!protocol) {
-                	return;
+                    return;
                 }
 
                 var protocolInCollection = MatchedProtocols.findOne({
@@ -352,6 +365,11 @@ HP.ProtocolEngine = class ProtocolEngine {
         });
     }
 
+    getRelatedStudies(options, sorting) {
+        HP.setGetRelatedStudies = getNucleusRelatedStudies();
+        HP.getRelatedStudies(options, sorting);
+    }
+
     // Match images given a list of Studies and a Viewport's image matching reqs
     matchImages(viewport) {
         var studyMatchingRules = viewport.studyMatchingRules;
@@ -375,6 +393,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 abstractPriorValue = parseInt(abstractPriorValue, 10);
                 // TODO: Restrict or clarify validators for abstractPriorValue?
 
+                // @TODO replace for this.relatedStudies (TypeSafeCollection of StudyMetadatas)
                 var studies = StudyListStudies.find({
                     patientId: currentStudy.patientId,
                     studyDate: {
@@ -407,9 +426,11 @@ HP.ProtocolEngine = class ProtocolEngine {
                 });
 
                 if (!alreadyLoaded) {
-                    OHIF.studylist.retrieveStudyMetadata(priorStudy.studyInstanceUid).then(study => {
+                    this.studyMetadataSource.getByInstanceUID(priorStudy.studyInstanceUid, study => {
                         study.abstractPriorValue = abstractPriorValue;
+                        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
                         OHIF.viewer.Studies.insert(study);
+
                         this.studies.push(study);
                         this.matchImages(viewport);
                         this.updateViewports();
@@ -428,8 +449,8 @@ HP.ProtocolEngine = class ProtocolEngine {
 
             highestStudyMatchingScore = studyMatchDetails.score;
 
-            study.seriesList.forEach(function(series) {
-                var seriesMatchDetails = HP.match(series, seriesMatchingRules);
+            study.forEachSeries(function(series) {
+                const seriesMatchDetails = HP.match(series, seriesMatchingRules);
                 if ((seriesMatchingRules.length && !seriesMatchDetails.score) ||
                     seriesMatchDetails.score < highestSeriesMatchingScore) {
                     return;
@@ -437,11 +458,13 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                 highestSeriesMatchingScore = seriesMatchDetails.score;
 
-                series.instances.forEach(function(instance, index) {
+                series.forEachInstance(function(instance, index) {
                     // This tests to make sure there is actually image data in this instance
                     // TODO: Change this when we add PDF and MPEG support
                     // See https://ohiforg.atlassian.net/browse/LT-227
-                    if (!OHIF.viewerbase.isImage(instance.sopClassUid) && !instance.rows) {
+                    // sopClassUid = x00080016
+                    // rows = x00280010
+                    if (!OHIF.viewerbase.isImage(instance.getRawValue('x00080016')) && !instance.getRawValue('x00280010')) {
                         return;
                     }
 
@@ -463,34 +486,34 @@ HP.ProtocolEngine = class ProtocolEngine {
                     const totalMatchScore = instanceMatchDetails.score + seriesMatchDetails.score + studyMatchDetails.score;
 
                     const imageDetails = {
-                        studyInstanceUid: study.studyInstanceUid,
-                        seriesInstanceUid: series.seriesInstanceUid,
-                        sopInstanceUid: instance.sopInstanceUid,
+                        studyInstanceUid: study.getStudyInstanceUID(),
+                        seriesInstanceUid: series.getSeriesInstanceUID(),
+                        sopInstanceUid: instance.getSOPInstanceUID(),
                         currentImageIdIndex: index,
                         matchingScore: totalMatchScore,
                         matchDetails: matchDetails,
                         sortingInfo: {
                             score: totalMatchScore,
-                            study: study.studyDate + study.studyTime,
-                            series: parseInt(series.seriesNumber), // TODO: change for seriesDateTime
-                            instance: parseInt(instance.instanceNumber) // TODO: change for acquisitionTime
+                            study: instance.getRawValue('x00080020') + instance.getRawValue('x00080030'), // StudyDate = x00080020 StudyTime = x00080030
+                            series: parseInt(instance.getRawValue('x00200011')), // TODO: change for seriesDateTime SeriesNumber = x00200011
+                            instance: parseInt(instance.getRawValue('x00200013')) // TODO: change for acquisitionTime InstanceNumber = x00200013
                         }
                     };
 
                     // Filter imageSet function: filter by InstanceUid
-                    const filterImageFn = (image) => {
-                        return image.getData().sopInstanceUid === instance.sopInstanceUid;
+                    const filterImageSetFn = (imageSet, sopInstanceUid) => {
+                        // @TODO: remove getData() here
+                        const found = imageSet.getData().sopInstanceUid === instance.sopInstanceUid;
+                        return found;
                     };
 
                     // Find the displaySet
-                    const displaySet = study.displaySets.find(ds => {
-                        return ds.images.filter(filterImageFn).length > 0;
-                    });
+                    const displaySet = study.getDisplaySets().find(ds => ds.images.filter(imageSet => filterImageSetFn));
 
                     // If the instance was found, set the displaySet ID
                     if (displaySet) {
                         imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
-                        imageDetails.imageId = OHIF.viewerbase.getImageId(instance);
+                        imageDetails.imageId = instance.getImageId();
                     }
 
                     if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {

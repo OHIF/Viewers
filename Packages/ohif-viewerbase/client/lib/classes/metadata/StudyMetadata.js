@@ -1,12 +1,92 @@
 import { Metadata } from './Metadata';
 import { SeriesMetadata } from './SeriesMetadata';
+import { ImageSet } from '../ImageSet';
 
 export class StudyMetadata extends Metadata {
+
     constructor(data) {
         super(data);
         this._studyInstanceUID = null;
         this._series = [];  // SeriesMetadata[]
+        this._displaySets = [];
+        // Initialize Public Properties
+        this._definePublicProperties();
+    }
 
+    /**
+     * Private Methods
+     */
+
+    /**
+     * Define Public Properties
+     * This method should only be called during initialization (inside the class constructor)
+     */
+    _definePublicProperties() {
+
+        /**
+         * Property: this.studyInstanceUID
+         * Same as this.getStudyInstanceUID()
+         * It's specially useful in contexts where a method call is not suitable like in search criteria. For example:
+         * studyCollection.findBy({
+         *   studyInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
+         * });
+         */
+        Object.defineProperty(this, 'studyInstanceUID', {
+            configurable: false,
+            enumerable: false,
+            get: function() {
+                return this.getStudyInstanceUID();
+            }
+        });
+
+    }
+
+    /**
+     * Public Methods
+     */
+
+    /**
+     * Getter for displaySets
+     * @return {Array} Array of display set object
+     */
+    getDisplaySets() {
+        return this._displaySets.slice();
+    }
+
+    /**
+     * Set display sets
+     * @param {Array} displaySets Array of display sets (ImageSet[])
+     */
+    setDisplaySets(displaySets) {
+        displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
+    }
+
+    /**
+     * Add a single display set to the list
+     * @param {Object} displaySet Display set object
+     * @returns {boolean} True on success, false on failure.
+     */
+    addDisplaySet(displaySet) {
+        if (displaySet instanceof ImageSet) {
+            this._displaySets.push(displaySet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Invokes the supplied callback for each display set in the current study passing
+     * two arguments: display set (a ImageSet instance) and index (the integer
+     * index of the display set within the current study)
+     * @param {function} callback The callback function which will be invoked for each display set instance.
+     * @returns {undefined} Nothing is returned.
+     */
+    forEachDisplaySet(callback) {
+        if (Metadata.isValidCallback(callback)) {
+            this._displaySets.forEach((displaySet, index) => {
+                callback.call(null, displaySet, index);
+            });
+        }
     }
 
     /**

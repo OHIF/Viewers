@@ -1,5 +1,5 @@
 # Table of contents
-In this document, some important objects are described. In the files there are comments that can help better undestand methods and properties.
+In this document, some important objects are described. In the files there are comments that can help better undestand their methods and properties.
   - [ResizeViewportManager object](#the-resize-viewport-manager-object)
   - [ImageSet object](#the-image-set-object)
   - [Layout Manager](#the-layout-manager-object)
@@ -14,7 +14,7 @@ It's only necessary to bind **handleResize** function to the window resize event
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 const ResizeViewportManager = new Viewerbase.ResizeViewportManager();
-window.addEventListener('resize', ResizeViewportManager.handleResize.bind(ResizeViewportManager));
+window.addEventListener('resize', ResizeViewportManager.getResizeHandler());
 ```
 An example os its usage can be found in **ohif-viewerbase/client/components/viewer/viewerMain/viewerMain.js**.
 
@@ -104,25 +104,64 @@ Each of this _div.viewportContainer_ will have some classes to help CSS specific
 
 With the introduction of the new _Study Metadata API_ in which study metadata is represented by class hierarchies (using prototype-based inheritance), the usage of standard _Minimongo_ collections as a central client-side storage for this data became no longer an option. Standard _Mongo_ and _Minimongo_ collections internally _flatten_ data (in other words, data gets serialized) before storage hence no functions or prototype chains are preserved. In that scenario, when an object is restored (fetched), what is returned is actually a flattened copy of the original object with no functions or prototype (it's no longer an instance of it's original class). As an attempt to overcome this limitation a new type of collection was intruduced: the *TypeSafeCollection*.
 
-The _TypeSafeCollection_ is a simple list-like collection which tries to implement an API _similar_ but not compatible with _Mongo_'s API. It supports basic features like search by attribute map and ID, retrieval by index, sorting of result sets, insertion, removal and reactive operations but, unlike _Mongo_'s API, it (still) lacks support to advanced functionality like complex search criterea or flexible sorting options.
+The `TypeSafeCollection` is a simple list-like collection which tries to implement an API _similar_ but not compatible with _Mongo_'s API. It supports basic features like search by attribute map and ID, retrieval by index, sorting of result sets, insertion, removal and reactive operations but, unlike _Mongo_'s API, it (still) lacks support to advanced functionality like complex search criterea or flexible sorting options.
+
+## Implementation
+
+The `TypeSafeCollection` is implemented on top of the _JavaScript_ `Array` object. Each element inserted in the collection is appended to the end of its internal array as a _key-value pair (KVP)_ object where the _key_ is a unique randomly generated ID string and the _value_ is the element itself. Once the object has been successfully stored, the generated ID (its ID) is returned to the client code and can later be used to access that specific element. At this point, an important difference to the _Minimongo_ API can be highlighted: a _TypeSafeCollection_ instance will never make any changes to the stored element (e.g., no "\_id" property will ever be assigned to the original object). Another relevant feature that is supported by this design decision is that _not only objects_ can be stored in this collections, but literally _anything_.
+
+Inside the codebase, the _value_ attribute of each _KVP_ entry in the collection is refered to as _the **payload** of the entry_ since it's what really matters to the user. Hence, this term will also be used here to refer to the _value that has been stored in the collection_. That being said, we can approach another important feature of these collections: A single _payload_ cannot be stored more than once in a given collection. When an attempt of inserting a _payload_ which is already present in the collection is detected, the insert operation will fail and `null` will be returned. In that regard, the collection behaves like `Set` object not permitting a payload to be stored more than once. Strict equality is used when comparing payloads, thus cloned objects are not considered the same. This feature adds an additional garantee that a given study/series/instance will not be listed more than once (it was designed as a replacement for central study collections which were always checked for duplicates).
+
+Please refer to the codebase for the full `TypeSafeCollection` API.
 
 ## Usage
 
-In order to use _TypeSafeCollection_ the **ohif:viewerbase** package needs to be imported by the referring code and instantiated as follows.
-
-Basic usage:
+In order to use the `TypeSafeCollection` class, the **ohif:viewerbase** package needs to be imported by the referring code and instantiated as follows:
 
 ```javascript
-import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { Viewerbase } from 'meteor/ohif:viewerbase'; // i.e., Viewerbase.TypeSafeCollection
+OR
+import { OHIF } from 'meteor/ohif:core';
+import 'meteor/ohif:viewerbase'; // i.e., OHIF.viewerbase.TypeSafeCollection
+// The later is preferred when the client code already makes use of the "OHIF" namespace making the second
+// "import" a garantee that the ".viewerbase" namespace has been properly loaded.
+```
 
-const users = new Viewerbase.TypeSafeCollection();
-let id = users.insert({
+A few usage examples:
+
+```javascript
+
+const Users = new OHIF.viewerbase.TypeSafeCollection();
+
+[[ ... ]]
+
+// Insert a User object...
+let userId = Users.insert({
     data: {
-        name: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
         age: 45
     },
-    getName() {
-        return this.data.name;
+    getFullName() {
+        return `${this.data.firstName} ${this.data.lastName}`;
+    },
+    getAge() {
+        return this.data.age;
     }
 });
+
+[[ ... ]]
+
+let theUserWeJustStored = Users.findById(userId); // ;-)
+
+[[ ... ]]
+
+// Retrieve a single user with "Doe" as `lastName`...
+let myUser = Users.findBy({ 'data.lastName': 'Doe' });
+// Or all users with "Doe" as `lastName`, sorted by `firstName` in ascending
+// order and using the `age` attribute to break ties in descending order...
+let myUsers = Users.findAllBy({ 'data.lastName': 'Doe' }, {
+    sort: [ [ 'data.firstName', 'asc' ], [ 'data.age', 'desc' ] ]
+});
+
 ```

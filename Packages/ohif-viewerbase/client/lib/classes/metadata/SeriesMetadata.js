@@ -7,7 +7,41 @@ export class SeriesMetadata extends Metadata {
         super(data);
         this._seriesInstanceUID = null;
         this._instances = []; // InstanceMetadata[]
+        // Initialize Public Properties
+        this._definePublicProperties();
     }
+
+    /**
+     * Private Methods
+     */
+
+    /**
+     * Define Public Properties
+     * This method should only be called during initialization (inside the class constructor)
+     */
+    _definePublicProperties() {
+
+        /**
+         * Property: this.seriesInstanceUID
+         * Same as this.getSeriesInstanceUID()
+         * It's specially useful in contexts where a method call is not suitable like in search criteria. For example:
+         * seriesCollection.findBy({
+         *   seriesInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
+         * });
+         */
+        Object.defineProperty(this, 'seriesInstanceUID', {
+            configurable: false,
+            enumerable: false,
+            get: function() {
+                return this.getSeriesInstanceUID();
+            }
+        });
+
+    }
+
+    /**
+     * Public Methods
+     */
 
     /**
      * Returns the SeriesInstanceUID of the current series.

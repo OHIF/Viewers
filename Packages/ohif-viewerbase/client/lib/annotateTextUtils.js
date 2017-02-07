@@ -50,7 +50,9 @@ const changeTextCallback = (data, eventData, doneChangingTextCallback) => {
         return;
     }
 
-    if (Viewerbase.helpers.isTouchDevice()) {
+    // Is necessary to use Blaze object to not create 
+    // circular depencency with helper object (./helpers)
+    if (Blaze._globalHelpers.isTouchDevice()) {
         // Center the dialog on screen on touch devices
         dialog.css({
             top: 0,

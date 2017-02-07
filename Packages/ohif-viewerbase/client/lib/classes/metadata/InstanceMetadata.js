@@ -1,5 +1,6 @@
 import { Metadata } from './Metadata';
 import { dicomTagDescriptions } from '../../dicomTagDescriptions';
+import { OHIFError } from '../OHIFError';
 
 const UNDEFINED = 'undefined';
 const NUMBER = 'number';
@@ -11,7 +12,42 @@ export class InstanceMetadata extends Metadata {
     constructor(data) {
         super(data);
         this._sopInstanceUID = null;
+        this._imageId = null;
+        // Initialize Public Properties
+        this._definePublicProperties();
     }
+
+    /**
+     * Private Methods
+     */
+
+    /**
+     * Define Public Properties
+     * This method should only be called during initialization (inside the class constructor)
+     */
+    _definePublicProperties() {
+
+        /**
+         * Property: this.sopInstanceUID
+         * Same as this.getSOPInstanceUID()
+         * It's specially useful in contexts where a method call is not suitable like in search criteria. For example:
+         * sopInstanceCollection.findBy({
+         *   sopInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
+         * });
+         */
+        Object.defineProperty(this, 'sopInstanceUID', {
+            configurable: false,
+            enumerable: false,
+            get: function() {
+                return this.getSOPInstanceUID();
+            }
+        });
+
+    }
+
+    /**
+     * Public Methods
+     */
 
     /**
      * Returns the SOPInstanceUID of the current instance.
@@ -70,6 +106,7 @@ export class InstanceMetadata extends Metadata {
         /**
          * Please override this method on a specialized class.
          */
+        throw new OHIFError('InstanceMetadata::getRawValue is not overriden. Please, override it in a specialized class. See OHIFInstanceMetadata for example');
     }
 
     /**
@@ -97,22 +134,18 @@ export class InstanceMetadata extends Metadata {
         /**
          * Please override this method
          */
+        throw new OHIFError('InstanceMetadata::tagExists is not overriden. Please, override it in a specialized class. See OHIFInstanceMetadata for example');
     }
 
     /**
-    * Returns a URI for the specified resource related to this instance (if an instance).
-    * @param {string} resource The name of the resource. This name cannot have any leading or
-    * trailing slashes
-    * @param {string|number} [optParameter] An optional parameter. This cannot have any leading or
-    * trailing slashes
-    * @returns {string|undefined} The constructed URI for the specified resource related to this
-    * instance or undefined if this sequence is a sub-sequence (i.e.: it has no related resources of
-    * its own).
-    */
-    getResourceUri(resource, optParameter) {
+     * Get custom image id of a sop instance
+     * @return {Any}          sop instance image id
+     */
+    getImageId() {
         /**
          * Please override this method
          */
+        throw new OHIFError('InstanceMetadata::getImageId is not overriden. Please, override it in a specialized class. See OHIFInstanceMetadata for example');
     }
 
     /**

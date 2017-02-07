@@ -176,10 +176,6 @@ Viewerbase.dicomTagDescriptions = dicomTagDescriptions;
 import { ImageSet } from './lib/classes/ImageSet';
 Viewerbase.ImageSet = ImageSet;
 
-// LayoutManager
-import { LayoutManager } from './lib/classes/LayoutManager';
-Viewerbase.LayoutManager = LayoutManager;
-
 // ResizeViewportManager
 import { ResizeViewportManager } from './lib/classes/ResizeViewportManager';
 Viewerbase.ResizeViewportManager = ResizeViewportManager;
@@ -201,3 +197,7 @@ Viewerbase.OHIFError = OHIFError;
 // StackImagePositionOffsetSynchronizer
 import { StackImagePositionOffsetSynchronizer } from './lib/classes/StackImagePositionOffsetSynchronizer';
 Viewerbase.StackImagePositionOffsetSynchronizer = StackImagePositionOffsetSynchronizer;
+
+// StudyMetadataSource
+import { StudyMetadataSource } from './lib/classes/StudyMetadataSource';
+Viewerbase.StudyMetadataSource = StudyMetadataSource;

@@ -5,7 +5,6 @@ import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
-import { Viewerbase } from 'meteor/ohif:viewerbase';
 import 'meteor/ohif:viewerbase';
 
 /**
@@ -373,7 +372,7 @@ Template.protocolEditor.events({
             text: 'Are you sure you would like to remove this Protocol? This cannot be reversed.'
         };
 
-        Viewerbase.dialogUtils.showConfirmDialog(() => {
+        OHIF.viewerbase.showConfirmDialog(() => {
             // Remove the Protocol
             HP.ProtocolStore.removeProtocol(selectedProtocol.id);
 
