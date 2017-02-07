@@ -11,6 +11,10 @@ import { LayoutManager } from '../../../lib/classes/LayoutManager';
 
 Meteor.startup(() => {
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
+
+    // Set initial value for OHIFViewerMainRendered 
+    // session variable. This can used in viewer main template
+    Session.set('OHIFViewerMainRendered', false);
 });
 
 Template.viewerMain.onCreated(() => {
@@ -36,8 +40,7 @@ Template.viewerMain.onRendered(() => {
     // Enable hotkeys
     hotkeyUtils.enableHotkeys();
 
-    Session.set('OHIFViewerMainRendered', {});
-
+    Session.set('OHIFViewerMainRendered', Random.id());
 });
 
 Template.viewerMain.onDestroyed(() => {
@@ -54,4 +57,6 @@ Template.viewerMain.onDestroyed(() => {
 
     delete OHIF.viewerbase.layoutManager;
     delete ProtocolEngine;
+
+    Session.set('OHIFViewerMainRendered', false);
 });

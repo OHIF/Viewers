@@ -27,6 +27,11 @@ Template.measurementTableView.helpers({
     hasMeasurements(toolGroupId) {
         const instance = Template.instance();
         const groups = instance.data.measurementGroups.get();
+
+        if (!groups) {
+            return false;
+        }
+        
         const group = _.find(groups, item => item.toolGroup.id === toolGroupId);
         return group && !!group.measurementRows.length;
     },

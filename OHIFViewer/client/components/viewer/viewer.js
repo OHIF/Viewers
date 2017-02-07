@@ -100,8 +100,12 @@ Template.viewer.onCreated(() => {
     Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
 
     // @TypeSafeStudies
-    // Update the OHIF.viewer.Studies collection with the loaded studies
+    // Clears OHIF.viewer.Studies collection
     OHIF.viewer.Studies.removeAll();
+
+    // @TypeSafeStudies
+    // Clears OHIF.viewer.StudyMetadataList collection
+    OHIF.viewer.StudyMetadataList.removeAll();
 
     ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {

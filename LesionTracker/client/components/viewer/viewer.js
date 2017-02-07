@@ -46,11 +46,11 @@ Template.viewer.onCreated(() => {
         toggleLesionTrackerTools: OHIF.lesiontracker.toggleLesionTrackerTools,
         bidirectional: () => {
             // Used for hotkeys
-            toolManager.setActiveTool('bidirectional');
+            OHIF.viewerbase.toolManager.setActiveTool('bidirectional');
         },
         nonTarget: () => {
             // Used for hotkeys
-            toolManager.setActiveTool('nonTarget');
+            OHIF.viewerbase.toolManager.setActiveTool('nonTarget');
         },
         // Viewport functions
         toggleCineDialog: viewportUtils.toggleCineDialog,
@@ -81,12 +81,23 @@ Template.viewer.onCreated(() => {
     instance.autorun(OHIF.lesiontracker.pixelSpacingAutorunCheck);
 
     // @TypeSafeStudies
-    // Update the OHIF.viewer.Studies collection with the loaded studies
+    // Clears OHIF.viewer.Studies collection
     OHIF.viewer.Studies.removeAll();
 
+    // @TypeSafeStudies
+    // Clears OHIF.viewer.StudyMetadataList collection
+    OHIF.viewer.StudyMetadataList.removeAll();
+
     instance.data.studies.forEach(study => {
+        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+        const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
+
+        studyMetadata.setDisplaySets(displaySets);
+
         study.selected = true;
+        study.displaySets = displaySets;
         OHIF.viewer.Studies.insert(study);
+        OHIF.viewer.StudyMetadataList.insert(studyMetadata);
     });
 
     instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
@@ -208,36 +219,11 @@ Template.viewer.onCreated(() => {
 });
 
 /**
- * Inits OHIF Hanging Protocol's onReady.
- * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
- * Hanging Protocol will use OHIF LayoutManager to render viewports properly
- */
-const initHangingProtocol = () => {
-    // When Hanging Protocol is ready
-    HP.ProtocolStore.onReady(() => {
-
-        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
-        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
-
-        // Caches Layout Manager: Hanging Protocol uses it for layout management according to current protocol
-        const layoutManager = OHIF.viewerbase.layoutManager;
-        
-        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new NucleusStudyMetadataSource();
-
-        // Creates Protocol Engine object with required arguments
-        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
-
-        // Sets up Hanging Protocol engine
-        HP.setEngine(ProtocolEngine);
-    });
-};
-
-/**
  * Sets sidebar configuration and active tool based on viewer template instance
  * @param  {Object} instance Template instance for viewer template
  */
-const setActiveToolAndSidebar = instance => {
+const setActiveToolAndSidebar = () => {
+    const instance = Template.instance();
     const { studies, currentTimepointId, measurementApi, timepointIds } = instance.data;
 
     // Default actions for Associated Studies
@@ -284,7 +270,7 @@ const setActiveToolAndSidebar = instance => {
             }
 
             // If not set, for associated studies default is target-tool
-            toolManager.setActiveTool(activeTool || 'bidirectional');
+            OHIF.viewerbase.toolManager.setActiveTool(activeTool || 'bidirectional');
         }
 
         // Toggle Measurement Table 
@@ -300,21 +286,37 @@ const setActiveToolAndSidebar = instance => {
     }
 };
 
-Template.viewer.onRendered(() => {
+/**
+ * Inits OHIF Hanging Protocol's onReady.
+ * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
+ * Hanging Protocol will use OHIF LayoutManager to render viewports properly
+ */
+
+const initHangingProtocol = () => {
+    // When Hanging Protocol is ready
     HP.ProtocolStore.onReady(() => {
-        const instance = Template.instance();
-        
-        setActiveToolAndSidebar(instance);
 
-        // updateViewports method from current layout manager will be automatically called by the protocol engine;
+        setActiveToolAndSidebar();
+
+        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
         const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
-        const layoutManager = OHIF.viewerbase.layoutManager;
-        
-        const studyMetadataSource = new OHIFStudyMetadataSource;
-        ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
-        HP.setEngine(ProtocolEngine);
-    });
 
+        // Caches Layout Manager: Hanging Protocol uses it for layout management according to current protocol
+        const layoutManager = OHIF.viewerbase.layoutManager;
+
+        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
+        const studyMetadataSource = new StudyList.classes.OHIFStudyMetadataSource();
+
+        // Creates Protocol Engine object with required arguments
+        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
+
+        // Sets up Hanging Protocol engine
+        HP.setEngine(ProtocolEngine);
+
+    });
+};
+
+Template.viewer.onRendered(function() {
     this.autorun(() => {
         // To make sure ohif viewerMain is rendered before initializing Hanging Protocols
         const isOHIFViewerMainRendered = Session.get('OHIFViewerMainRendered');
