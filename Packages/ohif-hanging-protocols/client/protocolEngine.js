@@ -665,7 +665,8 @@ HP.ProtocolEngine = class ProtocolEngine {
             }
 
             if (!currentViewportData.displaySetInstanceUid) {
-                throw new Meteor.Error('No matching display set found?');
+				//@TODO: make OHIFError use Meteor.Error instead of simple Error()
+                throw new OHIF.viewerbase.OHIFError('ProtocolEngine::updateViewports No matching display set found?');
             }
 
             viewportData.push(currentViewportData);

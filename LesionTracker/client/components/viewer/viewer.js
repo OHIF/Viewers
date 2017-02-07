@@ -207,6 +207,127 @@ Template.viewer.onCreated(() => {
     });
 });
 
+/**
+ * Inits OHIF Hanging Protocol's onReady.
+ * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
+ * Hanging Protocol will use OHIF LayoutManager to render viewports properly
+ */
+const initHangingProtocol = () => {
+    // When Hanging Protocol is ready
+    HP.ProtocolStore.onReady(() => {
+
+        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
+        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
+
+        // Caches Layout Manager: Hanging Protocol uses it for layout management according to current protocol
+        const layoutManager = OHIF.viewerbase.layoutManager;
+        
+        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
+        const studyMetadataSource = new NucleusStudyMetadataSource();
+
+        // Creates Protocol Engine object with required arguments
+        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
+
+        // Sets up Hanging Protocol engine
+        HP.setEngine(ProtocolEngine);
+    });
+};
+
+/**
+ * Sets sidebar configuration and active tool based on viewer template instance
+ * @param  {Object} instance Template instance for viewer template
+ */
+const setActiveToolAndSidebar = instance => {
+    const { studies, currentTimepointId, measurementApi, timepointIds } = instance.data;
+
+    // Default actions for Associated Studies
+    if(currentTimepointId) {
+        // Follow-up studies: same as the first measurement in the table
+        // Baseline studies: target-tool
+        if(studies[0]) {
+            let activeTool;
+            // In follow-ups, get the baseline timepointId
+            const timepointId = timepointIds.find(id => id !== currentTimepointId);
+
+            // Follow-up studies
+            if(studies[0].timepointType === 'followup' && timepointId) {
+                const measurementTools = OHIF.measurements.MeasurementApi.getConfiguration().measurementTools;
+
+                // Create list of measurement tools
+                const measurementTypes = measurementTools.map( 
+                    tool => {
+                        const { id, cornerstoneToolType } = tool;
+                        return {
+                            id,
+                            cornerstoneToolType
+                        }
+                    }
+                );
+
+                // Iterate over each measurement tool to find the first baseline
+                // measurement. If so, stops the loop and prevent fetching from all
+                // collections
+                measurementTypes.every(({id, cornerstoneToolType}) => {
+                    // Get measurement
+                    if(measurementApi[id]) {
+                        const measurement = measurementApi[id].findOne({ timepointId });
+
+                        // Found a measurement, save tool and stop loop
+                        if(measurement) {
+                            activeTool = cornerstoneToolType;
+
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+
+            // If not set, for associated studies default is target-tool
+            toolManager.setActiveTool(activeTool || 'bidirectional');
+        }
+
+        // Toggle Measurement Table 
+        if(instance.data.state) {
+            instance.data.state.set('rightSidebar', 'measurements');
+        }
+    }
+    // Hide as default for single study
+    else {
+        if(instance.data.state) {
+            instance.data.state.set('rightSidebar', null);
+        }
+    }
+};
+
+Template.viewer.onRendered(() => {
+    HP.ProtocolStore.onReady(() => {
+        const instance = Template.instance();
+        
+        setActiveToolAndSidebar(instance);
+
+        // updateViewports method from current layout manager will be automatically called by the protocol engine;
+        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
+        const layoutManager = OHIF.viewerbase.layoutManager;
+        
+        const studyMetadataSource = new OHIFStudyMetadataSource;
+        ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
+        HP.setEngine(ProtocolEngine);
+    });
+
+    this.autorun(() => {
+        // To make sure ohif viewerMain is rendered before initializing Hanging Protocols
+        const isOHIFViewerMainRendered = Session.get('OHIFViewerMainRendered');
+
+        // To avoid first run
+        if (isOHIFViewerMainRendered) {
+            // To run only when ViewerMainRendered dependency has changed.
+            // because initHangingProtocol can have other reactive components
+            Tracker.nonreactive(initHangingProtocol);
+        }
+    });
+});
+
 Template.viewer.helpers({
     dataSourcesReady() {
         // TODO: Find a better way to do this
