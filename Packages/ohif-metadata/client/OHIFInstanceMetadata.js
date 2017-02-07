@@ -49,6 +49,16 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
         return (propertyName in data);
     }
 
+    // Override
+    getImageId() {
+        // If _imageID is not cached, create it
+        if (this._imageId === null) {
+            this._imageId = Viewerbase.getImageId(this.getData());
+        }
+
+        return this._imageId;
+    }
+
     /**
      * Static methods
      */
