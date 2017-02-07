@@ -176,6 +176,10 @@ Viewerbase.dicomTagDescriptions = dicomTagDescriptions;
 import { ImageSet } from './lib/classes/ImageSet';
 Viewerbase.ImageSet = ImageSet;
 
+// LayoutManager
+import { LayoutManager } from './lib/classes/LayoutManager';
+Viewerbase.LayoutManager = LayoutManager;
+
 // ResizeViewportManager
 import { ResizeViewportManager } from './lib/classes/ResizeViewportManager';
 Viewerbase.ResizeViewportManager = ResizeViewportManager;
