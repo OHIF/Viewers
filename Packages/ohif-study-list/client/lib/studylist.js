@@ -1,8 +1,12 @@
 import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { OHIFStudyMetadataSource } from './OHIFStudyMetadataSource';
 
 StudyList = {
     functions: {},
-    callbacks: {}
+    callbacks: {},
+    classes: {
+        OHIFStudyMetadataSource
+    }
 };
 
 StudyList.callbacks.dblClickOnStudy = dblClickOnStudy;

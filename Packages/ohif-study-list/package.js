@@ -65,5 +65,4 @@ Package.onUse(function(api) {
     // Export the Collections
     api.export('StudyListStudies', 'client');
     api.export('StudyListSelectedStudies', 'client');
-    api.export('OHIFStudyMetadataSource', 'client');
 });

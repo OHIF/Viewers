@@ -114,10 +114,7 @@ Template.viewerMain.onRendered(() => {
     // Enable hotkeys
     hotkeyUtils.enableHotkeys();
 
-    Session.set('OHIFViewerMainRendered', {
-        instance,
-        date: new Date()
-    });
+    Session.set('OHIFViewerMainRendered', {});
 
 });
 
