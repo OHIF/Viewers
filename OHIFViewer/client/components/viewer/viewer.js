@@ -2,11 +2,40 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { Tracker } from 'meteor/tracker'
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
+
+
+/**
+ * Inits OHIF Hanging Protocol's onReady.
+ * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
+ * Hanging Protocol will use OHIF LayoutManager to render viewports properly
+ */
+const initHangingProtocol = () => {
+    // When Hanging Protocol is ready
+    HP.ProtocolStore.onReady(() => {
+
+        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
+        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
+
+        // Caches Layout Manager: Hanging Protocol uses it for layout management according to current protocol
+        const layoutManager = OHIF.viewerbase.layoutManager;
+
+        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
+        const studyMetadataSource = new OHIFStudyMetadataSource();
+
+        // Creates Protocol Engine object with required arguments
+        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
+
+        // Sets up Hanging Protocol engine
+        HP.setEngine(ProtocolEngine);
+
+    });
+};
 
 Meteor.startup(() => {
     Session.setDefault('activeViewport', false);
@@ -78,10 +107,27 @@ Template.viewer.onCreated(() => {
     instance.data.studies.forEach(study => {
         study.selected = true;
         OHIF.viewer.Studies.insert(study);
+        OHIF.viewer.StudyMetadataList.insert(studyMetadata);
         ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });
 
     Session.set('ViewerData', ViewerData);
+});
+
+Template.viewer.onRendered(function() {
+
+    this.autorun(function() {
+        // To make sure ohif viewerMain is rendered before initializing Hanging Protocols
+        const isOHIFViewerMainRendered = Session.get('OHIFViewerMainRendered');
+
+        // To avoid first run
+        if (isOHIFViewerMainRendered) {
+            // To run only when ViewerMainRendered dependency has changed.
+            // because initHangingProtocol can have other reactive components
+            Tracker.nonreactive(initHangingProtocol);
+        }
+    });
+
 });
 
 Template.viewer.events({

@@ -114,7 +114,11 @@ Template.viewerMain.onRendered(() => {
     // Enable hotkeys
     hotkeyUtils.enableHotkeys();
 
-    Session.set('ViewerMainRendered', Random.id());
+    Session.set('OHIFViewerMainRendered', {
+        instance,
+        date: new Date()
+    });
+
 });
 
 Template.viewerMain.onDestroyed(() => {
