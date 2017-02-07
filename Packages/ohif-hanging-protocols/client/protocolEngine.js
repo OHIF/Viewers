@@ -500,19 +500,13 @@ HP.ProtocolEngine = class ProtocolEngine {
                         }
                     };
 
-                    // Filter imageSet function: filter by InstanceUid
-                    const filterImageSetFn = (imageSet, sopInstanceUid) => {
-                        // @TODO: remove getData() here
-                        const found = imageSet.getData().sopInstanceUid === instance.sopInstanceUid;
-                        return found;
-                    };
-
                     // Find the displaySet
-                    const displaySet = study.getDisplaySets().find(ds => ds.images.filter(imageSet => filterImageSetFn));
+                    const currentSOPInstanceUID = instance.getSOPInstanceUID();
+                    const displaySet = study.findDisplaySet(displaySet => displaySet.images.find(image => image.getSOPInstanceUID() === currentSOPInstanceUID));
 
                     // If the instance was found, set the displaySet ID
                     if (displaySet) {
-                        imageDetails.displaySetInstanceUid = displaySet.displaySetInstanceUid;
+                        imageDetails.displaySetInstanceUid = displaySet.getUID();
                         imageDetails.imageId = instance.getImageId();
                     }
 

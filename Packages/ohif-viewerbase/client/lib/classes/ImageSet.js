@@ -1,4 +1,7 @@
 import { Random } from 'meteor/random';
+import { OHIFError } from './OHIFError';
+
+const OBJECT = 'object';
 
 /**
  * This class defines an ImageSet object which will be used across the viewer. This object represents
@@ -11,13 +14,29 @@ export class ImageSet {
     constructor(images) {
 
         if (Array.isArray(images) !== true) {
-            throw new TypeError('ImageSet expects an array of images...');
+            throw new OHIFError('ImageSet expects an array of images...');
         }
 
-        // Main ImageSet attributes
-        this.images = images; // Array of images
-        this.uid = Random.id(); // Unique ID of the instance
+        // @property "images"
+        Object.defineProperty(this, 'images', {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: images
+        });
 
+        // @property "uid"
+        Object.defineProperty(this, 'uid', {
+            enumerable: false,
+            configurable: false,
+            writable: false,
+            value: Random.id() // Unique ID of the instance
+        });
+
+    }
+
+    getUID() {
+        return this.uid;
     }
 
     setAttribute(attribute, value) {
@@ -29,7 +48,7 @@ export class ImageSet {
     }
 
     setAttributes(attributes) {
-        if (typeof attributes === 'object' && attributes !== null) {
+        if (typeof attributes === OBJECT && attributes !== null) {
             const imageSet = this, hasOwn = Object.prototype.hasOwnProperty;
             for (let attribute in attributes) {
                 if (hasOwn.call(attributes, attribute)) {
