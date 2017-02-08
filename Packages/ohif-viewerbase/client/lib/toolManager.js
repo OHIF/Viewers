@@ -447,7 +447,7 @@ export const toolManager = {
         const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
 
         if(activeCommandButtons.indexOf(button) === -1) {
-            activeCommandButtons.push('link');
+            activeCommandButtons.push(button);
             Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
         }
     },

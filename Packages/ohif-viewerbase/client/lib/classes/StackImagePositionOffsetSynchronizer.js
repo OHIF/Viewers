@@ -39,7 +39,7 @@ export class StackImagePositionOffsetSynchronizer {
     }
 
     this.active = false;
-    toolManager.deactivateCommandButton('link');
+    toolManager.deactivateCommandButton('linkStackScroll');
   }
 
   update() {
@@ -73,7 +73,7 @@ export class StackImagePositionOffsetSynchronizer {
     });
 
     this.active = true;
-    toolManager.activateCommandButton('link');
+    toolManager.activateCommandButton('linkStackScroll');
     Session.set('StackImagePositionOffsetSynchronizerLinkedViewports', viewportIndexes);
 
   }

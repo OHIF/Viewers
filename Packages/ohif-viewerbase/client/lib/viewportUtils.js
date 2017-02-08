@@ -255,7 +255,7 @@ const stopAllClips = () => {
 
 const isStackScrollLinkingDisabled = () => {
     // Its called everytime active viewport and/or layout change
-    Session.get('activeViewport');
+    Session.get('viewportActivated');
     Session.get('LayoutManagerUpdated');
 
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;

@@ -77,7 +77,6 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
     const activateMeasurements = OHIF.measurements.activateMeasurements;
     const activatedViewportIndexes = [];
-    const syncViewportsByIndexesOnce = _.once(syncViewports);
     let syncViewportsCaller = syncViewports;
     let renderCount = 0;
 
@@ -143,7 +142,8 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
             }
         }
 
-        syncViewportsCaller = _.after(++renderCount, syncViewportsCaller);
+        // The sync will be called only after loading all series on viewports
+        syncViewportsCaller = _.after(++renderCount, syncViewports);
 
         // Otherwise, re-render the viewport with the required study/series, then
         // add an onRendered callback to activate the measurements
@@ -160,7 +160,8 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
                            renderedCallback);
     }
 
-    if(!renderCount) {
+    // If all viewports are already rendered then sync them
+    if (!renderCount) {
         syncViewportsCaller(activatedViewportIndexes);
     }
 };

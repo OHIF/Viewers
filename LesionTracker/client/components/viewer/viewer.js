@@ -236,4 +236,6 @@ Template.viewer.onDestroyed(() => {
     Session.set('ViewerMainReady', false);
     Session.set('TimepointsReady', false);
     Session.set('MeasurementsReady', false);
+
+    OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
 });

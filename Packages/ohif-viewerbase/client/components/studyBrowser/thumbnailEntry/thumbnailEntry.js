@@ -8,8 +8,8 @@ import { thumbnailDragHandlers } from '../../../lib/thumbnailDragHandlers';
 Template.thumbnailEntry.onCreated(() => {
     const instance = Template.instance();
 
-    // Check if the thumbnails will be draggable or clickable
-    instance.isDragAndDrop = _.isUndefined(instance.data.viewportIndex);
+// Check if the thumbnails will be draggable or clickable
+instance.isDragAndDrop = _.isUndefined(instance.data.viewportIndex);
 });
 
 Template.thumbnailEntry.events({
@@ -41,19 +41,20 @@ Template.thumbnailEntry.events({
 
     // Event handlers for double click
     'dblclick .thumbnailEntry'(event, instance) {
+        if (instance.isDragAndDrop) {
+            // Get the active viewport index and total number of viewports...
+            const viewportCount = OHIF.viewerbase.layoutManager.getNumberOfViewports();
+            let viewportIndex = Session.get('activeViewport') || 0;
+            if (viewportIndex >= viewportCount) {
+                viewportIndex = viewportCount > 0 ? viewportCount - 1 : 0;
+            }
 
-        // Get the active viewport index and total number of viewports...
-        const viewportCount = OHIF.viewerbase.layoutManager.getNumberOfViewports();
-        let viewportIndex = Session.get('activeViewport') || 0;
-        if (viewportIndex >= viewportCount) {
-            viewportIndex = viewportCount > 0 ? viewportCount - 1 : 0;
+            // Get the thumbnail stack data
+            const data = instance.data.thumbnail.stack;
+
+            // Rerender the viewport using the clicked thumbnail data
+            OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, data);
         }
-
-        // Get the thumbnail stack data
-        const data = instance.data.thumbnail.stack;
-
-        // Rerender the viewport using the clicked thumbnail data
-        OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, data);
     }
 });
 
