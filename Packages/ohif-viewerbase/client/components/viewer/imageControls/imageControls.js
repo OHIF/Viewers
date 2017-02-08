@@ -19,12 +19,9 @@ Template.imageControls.onRendered(() => {
 })
 
 Template.imageControls.events({
-    'keydown #imageSlider'(event) {
+    'keydown input[type=range]'(event) {
         // We don't allow direct keyboard up/down input on the
         // image sliders since the natural direction is reversed (0 is at the top)
-
-        // Prevent the browser's default behaviour (scrolling)
-        event.preventDefault();
 
         // Store the KeyCodes in an object for readability
         const keys = {
@@ -34,8 +31,10 @@ Template.imageControls.events({
 
         if (event.which === keys.DOWN) {
             OHIF.viewer.hotkeyFunctions.scrollDown();
+            event.preventDefault();
         } else if (event.which === keys.UP) {
             OHIF.viewer.hotkeyFunctions.scrollUp();
+            event.preventDefault();
         }
     },
     'input input[type=range], change input[type=range]'(event) {

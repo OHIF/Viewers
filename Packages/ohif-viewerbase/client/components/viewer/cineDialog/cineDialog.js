@@ -268,7 +268,7 @@ Template.cineDialog.events({
         }
     },
 
-    'input [data-key=framesPerSecond] input'(event, instance) {
+    'input [data-key=framesPerSecond] input, change [data-key=framesPerSecond] input'(event, instance) {
         // Update the FPS text onscreen
         const rate = parseFloat($(event.currentTarget).val());
         instance.updateFramerate(rate);
