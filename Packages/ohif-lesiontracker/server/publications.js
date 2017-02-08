@@ -32,16 +32,6 @@ Meteor.publish('singlePatientImageMeasurements', function(patientId) {
     });
 });
 
-Meteor.publish('additionalFindings', function() {
-    return AdditionalFindings.find();
-});
-
-Meteor.publish('singlePatientAdditionalFindings', function(patientId) {
-    return AdditionalFindings.find({
-        patientId: patientId
-    });
-});
-
 Meteor.publish('reviewers', function() {
     return Reviewers.find();
 });

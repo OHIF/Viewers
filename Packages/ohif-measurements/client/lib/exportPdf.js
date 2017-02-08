@@ -10,7 +10,7 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
     const report = new MeasurementReport({
         header: {
             trial: 'RECIST 1.1',
-            patientName: formatPN(study.patientName),
+            patientName: OHIF.viewerbase.helpers.formatPN(study.patientName),
             mrn: study.patientId,
             timepoint: timepointApi.name(currentTimepoint)
         }
@@ -69,7 +69,7 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
             report.printMeasurement({
                 type,
                 number: measurement.measurementNumber,
-                location: measurement.location || '',
+                location: OHIF.measurements.getLocationLabel(measurement.location) || '',
                 info,
                 image: enabledElement.canvas.toDataURL('image/jpeg', 0.85)
             });

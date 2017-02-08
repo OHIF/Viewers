@@ -41,6 +41,5 @@ Package.onUse(function(api) {
     api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
-    api.export('AdditionalFindings', [ 'client', 'server' ]);
     api.export('Configuration', ['client', 'server']);
 });
