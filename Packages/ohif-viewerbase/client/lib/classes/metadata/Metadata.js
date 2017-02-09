@@ -6,6 +6,7 @@
 const STRING = 'string';
 const NUMBER = 'number';
 const FUNCTION = 'function';
+const OBJECT = 'object';
 
 export class Metadata {
 
@@ -14,7 +15,14 @@ export class Metadata {
      */
 
     constructor(data) {
-        this._data = data;
+        // Define the main "_data" private property as an immutable property.
+        // IMPORTANT: This property can only be set during instance construction.
+        Object.defineProperty(this, '_data', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: data
+        });
     }
 
     getData() {
@@ -24,7 +32,7 @@ export class Metadata {
     getDataProperty(propertyName) {
         let propertyValue;
         const _data = this._data;
-        if (_data instanceof Object || typeof _data === 'object' && _data !== null) {
+        if (_data instanceof Object || typeof _data === OBJECT && _data !== null) {
             propertyValue = _data[propertyName];
         }
         return propertyValue;

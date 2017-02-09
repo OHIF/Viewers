@@ -5,8 +5,21 @@ export class SeriesMetadata extends Metadata {
 
     constructor(data) {
         super(data);
-        this._seriesInstanceUID = null;
-        this._instances = []; // InstanceMetadata[]
+        // Initialize Private Properties
+        Object.defineProperties(this, {
+            _seriesInstanceUID: {
+                configurable: true, // configurable so that it can be redefined in sub-classes...
+                enumerable: false,
+                writable: true,
+                value: null
+            },
+            _instances: {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: []
+            }
+        });
         // Initialize Public Properties
         this._definePublicProperties();
     }

@@ -308,10 +308,11 @@ HP.ProtocolEngine = class ProtocolEngine {
      * @returns {any|*} The number of available prior studies with the same patientId
      */
     getNumberOfAvailablePriors(study) {
-        var studies = StudyListStudies.find({
-            patientId: study.patientId,
+        const instance = study.getFirstInstance();
+        const studies = StudyListStudies.find({
+            patientId: instance.getRawValue('x00100020'), // PatientID,
             studyDate: {
-                $lt: study.studyDate
+                $lt: instance.getRawValue('x00080020') // StudyDate
             }
         });
 

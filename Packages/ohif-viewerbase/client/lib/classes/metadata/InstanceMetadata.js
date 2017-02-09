@@ -11,8 +11,21 @@ export class InstanceMetadata extends Metadata {
 
     constructor(data) {
         super(data);
-        this._sopInstanceUID = null;
-        this._imageId = null;
+        // Initialize Private Properties
+        Object.defineProperties(this, {
+            _sopInstanceUID: {
+                configurable: true, // configurable so that it can be redefined in sub-classes...
+                enumerable: false,
+                writable: true,
+                value: null
+            },
+            _imageId: {
+                configurable: true, // configurable so that it can be redefined in sub-classes...
+                enumerable: false,
+                writable: true,
+                value: null
+            }
+        });
         // Initialize Public Properties
         this._definePublicProperties();
     }

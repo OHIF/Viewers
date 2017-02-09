@@ -6,9 +6,27 @@ export class StudyMetadata extends Metadata {
 
     constructor(data) {
         super(data);
-        this._studyInstanceUID = null;
-        this._series = [];  // SeriesMetadata[]
-        this._displaySets = [];
+        // Initialize Private Properties
+        Object.defineProperties(this, {
+            __studyInstanceUID: {
+                configurable: true, // configurable so that it can be redefined in sub-classes...
+                enumerable: false,
+                writable: true,
+                value: null
+            },
+            _series: {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: []
+            },
+            _displaySets: {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: []
+            }
+        });
         // Initialize Public Properties
         this._definePublicProperties();
     }

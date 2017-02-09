@@ -6,19 +6,25 @@ export class OHIFSeriesMetadata extends Viewerbase.metadata.SeriesMetadata {
     /**
      * @param {Object} Series object.
      */
-    constructor(data) {
+    constructor(data, study) {
         super(data);
-        this.init();
+        this.init(study);
     }
 
-    init() {
-        const data = this.getData();
+    init(study) {
+        const series = this.getData();
 
-        // set protected property...
-        this._seriesInstanceUID = data.seriesInstanceUid;
+        // define "_seriesInstanceUID" protected property...
+        Object.defineProperty(this, '_seriesInstanceUID', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: series.seriesInstanceUid
+        });
+
         // populate internal list of instances...
-        data.instances.forEach(instance => {
-            this.addInstance(new OHIFInstanceMetadata(instance));
+        series.instances.forEach(instance => {
+            this.addInstance(new OHIFInstanceMetadata(instance, series, study));
         });
     }
 
