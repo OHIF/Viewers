@@ -39,6 +39,10 @@ $gray6 = #303030
         border-color: transparent
         color: transparent
 
+        input,
+        i
+          opacity: 0
+
     &, .select-tree
 
       &:not(.open)>.tree-content
@@ -94,6 +98,7 @@ $gray6 = #303030
       border-color: $gray5
       font-weight: normal
       padding-left: 34px
+      transition(opacity 0.3s ease)
 
       & ~ i
         color: $gray1
@@ -101,6 +106,7 @@ $gray6 = #303030
         left: 16px
         position: absolute
         top: 37px
+        transition(opacity 0.3s ease)
 
   .tree-breadcrumb
     line-height: 32px
