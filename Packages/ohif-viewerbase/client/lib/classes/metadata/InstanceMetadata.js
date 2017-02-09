@@ -1,5 +1,4 @@
 import { Metadata } from './Metadata';
-import { dicomTagDescriptions } from '../../dicomTagDescriptions';
 import { OHIFError } from '../OHIFError';
 
 const UNDEFINED = 'undefined';
@@ -164,38 +163,6 @@ export class InstanceMetadata extends Metadata {
     /**
      * Static Methods
      */
-
-    static getTagInfo(tagOrProperty) {
-        let tagName = null,
-            propertyName = null;
-
-        if (typeof tagOrProperty === NUMBER) {
-            // if it's a number, build an hexadecimal representation...
-            tagName = 'x' + ('00000000' + tagOrProperty.toString(16)).substr(-8);
-        } else if (typeof tagOrProperty === STRING) {
-            if (REGEX_TAG.test(tagOrProperty)) {
-                tagName = tagOrProperty;
-            } else {
-                propertyName = tagOrProperty;
-            }
-        }
-
-        if (propertyName !== null) {
-            // try to figure out the "tagName" using the provided "propertyName"...
-            for (let tag in dicomTagDescriptions) {
-                // No need to check for "hasOwnProperty" here since dicomTagDescriptions is an object with no prototype...
-                if (dicomTagDescriptions[tag] === propertyName) {
-                    tagName = tag;
-                    break;
-                }
-            }
-        } else if (tagName !== null) {
-            // try to figure out the "propertyName" using the provided "tagName"...
-            propertyName = dicomTagDescriptions[tagName] || null;
-        }
-
-        return { tagName, propertyName };
-    }
 
     /**
      * Get an value based that can be index based. This function is called by all getters. See above functions.

@@ -1,6 +1,7 @@
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 const InstanceMetadata = Viewerbase.metadata.InstanceMetadata;
+const DICOMTagDescriptions = Viewerbase.DICOMTagDescriptions;
 
 export class OHIFInstanceMetadata extends InstanceMetadata {
 
@@ -105,11 +106,11 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     // A possible solution to improve this would be adapt retriveMetadata names to use DICOM standard names as in dicomTagDescriptions.js
     static getPropertyName(tagOrProperty) {
         let propertyName;
-        const tagInfo = InstanceMetadata.getTagInfo(tagOrProperty);
+        const tagInfo = DICOMTagDescriptions.find(tagOrProperty);
 
-        if (tagInfo.propertyName !== null) {
+        if (tagInfo !== void 0) {
             // This function tries to translate standard DICOM property names into local naming convention.
-            propertyName = tagInfo.propertyName.replace(/^SOP/, 'sop').replace(/UID$/, 'Uid').replace(/ID$/, 'Id');
+            propertyName = tagInfo.keyword.replace(/^SOP/, 'sop').replace(/UID$/, 'Uid').replace(/ID$/, 'Id');
             propertyName = propertyName.charAt(0).toLowerCase() + propertyName.substr(1);
         }
 
