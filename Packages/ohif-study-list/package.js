@@ -4,6 +4,10 @@ Package.describe({
     version: '0.0.1'
 });
 
+Npm.depends({
+    hammerjs: '2.0.6'
+});
+
 Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
@@ -30,9 +34,6 @@ Package.onUse(function(api) {
     api.use('ohif:dicom-services');
     api.use('ohif:viewerbase');
     api.use('ohif:wadoproxy');
-
-    // TODO: Replace with NPM dependency
-    api.use('ohif:cornerstone'); // Only for HammerJS
 
     // Client and server imports
     api.addFiles('both/index.js', [ 'client', 'server' ]);
