@@ -15,7 +15,7 @@ Template.imageThumbnail.onCreated(() => {
         const lastIndex = (stack.images.length || 1) - 1;
         const imageIndex = Math.floor(lastIndex / 2);
         const imageInstance = stack.images[imageIndex];
-        return getImageId(imageInstance.getData());
+        return imageInstance.getImageId();
     };
 });
 

@@ -15,12 +15,12 @@ const makeDisplaySet = (series, instances) => {
     // set appropriate attributes to image set...
     imageSet.setAttributes({
         displaySetInstanceUid: imageSet.uid, // create a local alias for the imageSet UID
-        seriesInstanceUid: seriesData.seriesInstanceUid,
-        seriesNumber: seriesData.seriesNumber,
-        seriesDescription: seriesData.seriesDescription,
+        seriesInstanceUid: series.getSeriesInstanceUID(),
+        seriesNumber: instance.getRawValue('x00200011'),
+        seriesDescription: instance.getRawValue('x0008103e'),
         numImageFrames: instances.length,
         frameRate: instance.getRawValue('x00181063'),
-        modality: seriesData.modality,
+        modality: instance.getRawValue('x00080060'),
         isMultiFrame: isMultiFrame(instance)
     });
 

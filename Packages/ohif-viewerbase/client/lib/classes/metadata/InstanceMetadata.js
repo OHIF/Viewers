@@ -154,7 +154,7 @@ export class InstanceMetadata extends Metadata {
      * Get custom image id of a sop instance
      * @return {Any}          sop instance image id
      */
-    getImageId() {
+    getImageId(frame) {
         /**
          * Please override this method
          */
