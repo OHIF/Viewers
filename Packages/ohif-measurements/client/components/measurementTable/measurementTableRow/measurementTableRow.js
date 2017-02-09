@@ -13,7 +13,7 @@ Template.measurementTableRow.onCreated(() => {
         const nonconformitiesByMeasurementNumbers = nonconformitiesByMeasurementTypeId.measurementNumbers || {};
         const nonconformitiesByMeasurementNumber = nonconformitiesByMeasurementNumbers[measurementNumber] || {};
 
-        return nonconformitiesByMeasurementNumber.messages || [];
+        return _.uniq(nonconformitiesByMeasurementNumber.messages || []);
     };
 });
 

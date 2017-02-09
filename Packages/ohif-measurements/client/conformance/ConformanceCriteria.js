@@ -17,7 +17,7 @@ class ConformanceCriteria {
         this.maxTargets = new ReactiveVar(null);
 
         const validate = _.debounce(trialCriteriaType => {
-            if (Session.get('MeasurementsReady')) return;
+            if (!Session.get('MeasurementsReady')) return;
             this.validate(trialCriteriaType);
         }, 300);
 
@@ -31,9 +31,14 @@ class ConformanceCriteria {
     validate(trialCriteriaType) {
         const baselineData = this.getData('baseline');
         const followupData = this.getData('followup');
-        const mergedData = baselineData;
+        const mergedData = {
+            targets: [],
+            nonTargets: []
+        };
 
+        mergedData.targets = mergedData.targets.concat(baselineData.targets);
         mergedData.targets = mergedData.targets.concat(followupData.targets);
+        mergedData.nonTargets = mergedData.nonTargets.concat(baselineData.nonTargets);
         mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
 
         this.maxTargets.set(null);
@@ -135,9 +140,9 @@ class ConformanceCriteria {
                 const { studyInstanceUid, imageId } = measurement;
                 const metadata = this.getImageInstanceMetadata(studyInstanceUid, imageId);
                 const timepointId = measurement.timepointId;
-                const timepoint = this.timepointApi.timepoints.findOne({ timepointId });
+                const timepoint = timepointId && this.timepointApi.timepoints.findOne({ timepointId });
 
-                if ((timepointType !== 'both') && (timepoint.timepointType !== timepointType)) {
+                if (!timepoint || ((timepointType !== 'both') && (timepoint.timepointType !== timepointType))) {
                     return;
                 }
 
