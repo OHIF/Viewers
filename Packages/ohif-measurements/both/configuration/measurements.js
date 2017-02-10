@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo';
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -13,6 +14,14 @@ class MeasurementApi {
         return configuration;
     }
 
+    static getToolsGroupsMap() {
+        const toolsGroupsMap = {};
+        configuration.measurementTools.forEach(toolGroup => {
+            toolGroup.childTools.forEach(tool => (toolsGroupsMap[tool.id] = toolGroup.id));
+        });
+        return toolsGroupsMap;
+    }
+
     constructor(timepointApi) {
         if (timepointApi) {
             this.timepointApi = timepointApi;
@@ -20,7 +29,7 @@ class MeasurementApi {
 
         this.toolGroups = {};
         this.tools = {};
-        this.toolsGroupsMap = {};
+        this.toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
         this.changeObserver = new Tracker.Dependency();
 
         configuration.measurementTools.forEach(toolGroup => {
@@ -34,7 +43,6 @@ class MeasurementApi {
                 collection._debugName = tool.name;
                 collection.attachSchema(tool.schema);
                 this.tools[tool.id] = collection;
-                this.toolsGroupsMap[tool.id] = toolGroup.id;
 
                 const addedHandler = measurement => {
                     let measurementNumber;
@@ -117,7 +125,7 @@ class MeasurementApi {
 
                 const changedHandler = () => {
                     this.changeObserver.changed();
-                }
+                };
 
                 const removedHandler = measurement => {
                     const measurementNumber = measurement.measurementNumber;
@@ -201,9 +209,9 @@ class MeasurementApi {
 
                     measurements.forEach(measurement => {
                         delete measurement._id;
-                        // @TODO: check if this conditional is ok, because is throwing 
+                        // @TODO: check if this conditional is ok, because is throwing
                         // an error for temp measurements -> measurement.toolType is undefined
-                        if(measurement.toolType && this.tools[measurement.toolType]) {
+                        if (measurement.toolType && this.tools[measurement.toolType]) {
                             this.tools[measurement.toolType].insert(measurement);
                         }
                     });
