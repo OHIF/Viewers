@@ -28,8 +28,11 @@ const initHangingProtocol = () => {
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
         const studyMetadataSource = new StudyList.classes.OHIFStudyMetadataSource();
 
+        // Get prior studies map
+        const studyPriorsMap = StudyList.functions.getStudyPriorsMap(studyMetadataList);
+
         // Creates Protocol Engine object with required arguments
-        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
+        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, studyPriorsMap, studyMetadataSource);
 
         // Sets up Hanging Protocol engine
         HP.setEngine(ProtocolEngine);
@@ -132,7 +135,7 @@ Template.viewer.onRendered(function() {
 
         // To avoid first run
         if (isOHIFViewerMainRendered) {
-            // To run only when ViewerMainRendered dependency has changed.
+            // To run only when OHIFViewerMainRendered dependency has changed.
             // because initHangingProtocol can have other reactive components
             Tracker.nonreactive(initHangingProtocol);
         }

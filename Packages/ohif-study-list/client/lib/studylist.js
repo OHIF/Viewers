@@ -1,11 +1,20 @@
 import { Viewerbase } from 'meteor/ohif:viewerbase';
+// Classes
 import { OHIFStudyMetadataSource } from './OHIFStudyMetadataSource';
+import { OHIFStudySummary } from './OHIFStudySummary';
+// Functions
+import { getStudyPriors } from './getStudyPriors';
+import { getStudyPriorsMap } from './getStudyPriorsMap';
 
 StudyList = {
-    functions: {},
+    functions: {
+        getStudyPriors,
+        getStudyPriorsMap
+    },
     callbacks: {},
     classes: {
-        OHIFStudyMetadataSource
+        OHIFStudyMetadataSource,
+        OHIFStudySummary
     }
 };
 

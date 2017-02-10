@@ -1,6 +1,7 @@
 
 const NUMBER = 'number';
 const STRING = 'string';
+const REGEX_TAG = /^x[0-9a-fx]{8}$/;
 
 const DICOMTagDescriptions = Object.create(Object.prototype, {
     _descriptions: {
@@ -9,22 +10,94 @@ const DICOMTagDescriptions = Object.create(Object.prototype, {
         writable: false,
         value: Object.create(null)
     },
+    tagNumberToString: {
+        configurable: false,
+        enumerable: true,
+        writable: false,
+        value: function tagNumberToString(tag) {
+            let string; // by default, undefined is returned...
+            if (this.isValidTagNumber(tag)) {
+                // if it's a number, build its hexadecimal representation...
+                string = 'x' + ('00000000' + tag.toString(16)).substr(-8);
+            }
+            return string;
+        }
+    },
+    isValidTagNumber: {
+        configurable: false,
+        enumerable: true,
+        writable: false,
+        value: function isValidTagNumber(tag) {
+            return (typeof tag === NUMBER && tag >= 0 && tag <= 0xFFFFFFFF);
+        }
+    },
+    isValidTag: {
+        configurable: false,
+        enumerable: true,
+        writable: false,
+        value: function isValidTag(tag) {
+            return (typeof tag === STRING ? REGEX_TAG.test(tag) : this.isValidTagNumber(tag));
+        }
+    },
     find: {
         configurable: false,
         enumerable: true,
         writable: false,
         value: function find(name) {
-            let description; // by default, undefined...
-            if (typeof name === NUMBER) {
-                // if it's a number, build its hexadecimal representation...
-                name = 'x' + ('00000000' + name.toString(16)).substr(-8);
+            let description; // by default, undefined is returned...
+            if (typeof name !== STRING) {
+                // if it's a number, a tag string will be returned...
+                name = this.tagNumberToString(name);
             }
             if (typeof name === STRING) {
                 description = this._descriptions[name];
             }
             return description;
         }
-    }
+    },
+    init: {
+        configurable: false,
+        enumerable: true,
+        writable: false,
+        value: function init(descriptionMap) {
+            const _hasOwn = Object.prototype.hasOwnProperty;
+            const _descriptions = this._descriptions;
+            for (let tag in descriptionMap) {
+                if (_hasOwn.call(descriptionMap, tag)) {
+                    if (!this.isValidTag(tag)) {
+                        // Skip in case tag is not valid...
+                        console.info(`DICOMTagDescriptions: Invalid tag "${tag}"...`);
+                        continue;
+                    }
+                    if (tag in _descriptions) {
+                        // Skip in case the tag is duplicated...
+                        console.info(`DICOMTagDescriptions: Duplicated tag "${tag}"...`);
+                        continue;
+                    }
+                    // Save keyword...
+                    const keyword = descriptionMap[tag];
+                    // Create a description entry and freeze it...
+                    const entry = Object.create(null);
+                    entry.tag = tag;
+                    entry.keyword = keyword;
+                    Object.freeze(entry);
+                    // Add tag references to entry...
+                    _descriptions[tag] = entry;
+                    // Add keyword references to entry (if not present already)...
+                    if (keyword in _descriptions) {
+                        const currentEntry = _descriptions[keyword];
+                        console.info(`DICOMTagDescriptions: Using <${currentEntry.tag},${currentEntry.keyword}> instead of <${entry.tag},${entry.keyword}> for keyword "${keyword}"...`);
+                    } else {
+                        _descriptions[keyword] = entry;
+                    }
+                }
+            }
+            // Freeze internal description map...
+            Object.freeze(_descriptions);
+            // Freeze itself...
+            Object.freeze(this);
+        }
+    },
 });
 
 /**
@@ -3179,41 +3252,7 @@ let initialTagDescriptionMap = {
     xfffee0dd: 'EndOfSequence'
 };
 
-// Safely populate DICOMTagDescriptions object
-(function(initialTagDescriptionMap) {
-    const _hasOwn = Object.prototype.hasOwnProperty;
-    const descriptionMap = DICOMTagDescriptions._descriptions;
-    for (let tag in initialTagDescriptionMap) {
-        if (_hasOwn.call(initialTagDescriptionMap, tag)) {
-            if (tag in descriptionMap) {
-                // Skip in case the tag is duplicated...
-                console.info(`DICOMTagDescriptions: Duplicated tag ${tag}...`);
-                continue;
-            }
-            // Save keyword...
-            const keyword = initialTagDescriptionMap[tag];
-            // Create a description entry and freeze it...
-            const entry = Object.create(null);
-            entry.tag = tag;
-            entry.keyword = keyword;
-            Object.freeze(entry);
-            // Add tag references to entry...
-            descriptionMap[tag] = entry;
-            // Add keyword references to entry (if not present already)...
-            if (keyword in descriptionMap) {
-                const currentEntry = descriptionMap[keyword];
-                console.info(`DICOMTagDescriptions: Using <${currentEntry.tag},${currentEntry.keyword}> instead of <${entry.tag},${entry.keyword}> for keyword "${keyword}"...`);
-            } else {
-                descriptionMap[keyword] = entry;
-            }
-        }
-    }
-    // Freeze internal description map (nothing should be changed in this object afterwords)...
-    Object.freeze(descriptionMap);
-}(initialTagDescriptionMap));
-
-// Freeze exported object...
-Object.freeze(DICOMTagDescriptions);
+DICOMTagDescriptions.init(initialTagDescriptionMap);
 
 // Discard original map...
 initialTagDescriptionMap = null;

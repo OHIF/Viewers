@@ -1,42 +1,94 @@
+import { DICOMTagDescriptions } from '../../DICOMTagDescriptions';
 
-class StudySummary {
+const StudyInstanceUID = 'x0020000D';
 
-    constructor(propertyMap) {
+export class StudySummary {
+
+    constructor(tagMap, propertyMap) {
 
         // Define the main immutable "_data" private property.
-        Object.defineProperty(this, '_data', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: Object.create(null)
+        Object.defineProperties(this, {
+            _tags: {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: Object.create(null)
+            },
+            _properties: {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: Object.create(null)
+            }
         });
 
-        const hasOwn = Object.prototype.hasOwnProperty;
-        const data = this._data;
-        for (let property in propertyMap) {
-            if (hasOwn.call(propertyMap, property)) {
-                data[property] = propertyMap[property];
-            }
+        // Initialize internal tag map if first argument is given.
+        if (tagMap !== void 0) {
+            this.addTags(tagMap);
+        }
+
+        // Initialize internal property map if second argument is given.
+        if (propertyMap !== void 0) {
+            this.addProperties(addProperties);
         }
 
     }
 
+    getStudyInstanceUID() {
+        // This method should return null if StudyInstanceUID is not available to keep compatibility StudyMetadata API
+        return this.getTagValue(StudyInstanceUID) || null;
+    }
+
+    addProperties(propertyMap) {
+        const _hasOwn = Object.prototype.hasOwnProperty;
+        const _properties = this._properties;
+        for (let property in propertyMap) {
+            if (_hasOwn.call(propertyMap, property)) {
+                _properties[property] = propertyMap[property];
+            }
+        }
+    }
+
+    addTags(tagMap) {
+        const _hasOwn = Object.prototype.hasOwnProperty;
+        const _tags = this._tags;
+        for (let tag in tagMap) {
+            if (_hasOwn.call(tagMap, tag)) {
+                const description = DICOMTagDescriptions.find(tag);
+                // When a description is available, use its tag as internal key...
+                if (description) {
+                    _tags[description.tag] = tagMap[tag];
+                } else {
+                    _tags[tag] = tagMap[tag];
+                }
+            }
+        }
+    }
+
+    tagExists(tagName) {
+        const _tags = this._tags;
+        const description = DICOMTagDescriptions.find(tagName);
+        if (description) {
+            return (description.tag in _tags);
+        }
+        return (tagName in _tags);
+    }
+
+    getTagValue(tagName) {
+        const _tags = this._tags;
+        const description = DICOMTagDescriptions.find(tagName);
+        if (description) {
+            return _tags[description.tag];
+        }
+        return _tags[tagName];
+    }
+
     propertyExists(propertyName) {
-        const internalPropertyName = this.getInternalPropertyName(propertyName);
-        return (internalPropertyName in this._data);
+        return (propertyName in this._properties);
     }
 
     getPropertyValue(propertyName) {
-        const internalPropertyName = this.getInternalPropertyName(propertyName);
-        return this._data[internalPropertyName];
-    }
-
-    /**
-     * This function is supposed to translate external property names into internal property names.
-     * By default it implements the simplest translation possible.
-     */
-    getInternalPropertyName(propertyName) {
-        return propertyName;
+        return this._properties[propertyName];
     }
 
 }

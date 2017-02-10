@@ -188,7 +188,8 @@ Viewerbase.ResizeViewportManager = ResizeViewportManager;
 import { StudyMetadata } from './lib/classes/metadata/StudyMetadata';
 import { SeriesMetadata } from './lib/classes/metadata/SeriesMetadata';
 import { InstanceMetadata } from './lib/classes/metadata/InstanceMetadata';
-Viewerbase.metadata = { StudyMetadata, SeriesMetadata, InstanceMetadata };
+import { StudySummary } from './lib/classes/metadata/StudySummary';
+Viewerbase.metadata = { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary };
 
 // TypeSafeCollection
 import { TypeSafeCollection } from './lib/classes/TypeSafeCollection';

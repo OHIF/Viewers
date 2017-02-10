@@ -4,7 +4,6 @@ import { OHIFError } from '../OHIFError';
 const UNDEFINED = 'undefined';
 const NUMBER = 'number';
 const STRING = 'string';
-const REGEX_TAG = /^x[0-9a-fx]{8}$/;
 
 export class InstanceMetadata extends Metadata {
 

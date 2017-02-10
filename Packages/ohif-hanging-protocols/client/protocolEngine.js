@@ -4,6 +4,13 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
+/**
+ * Import Constants
+ */
+
+const StudyMetadata = OHIF.viewerbase.metadata.StudyMetadata;
+const StudySummary = OHIF.viewerbase.metadata.StudySummary;
+
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
 // is instantiated on top of the LayoutManager. If the global ProtocolEngine variable remains
@@ -171,18 +178,30 @@ HP.ProtocolEngine = class ProtocolEngine {
      * @param  {Array} relatedStudies Array of related studies
      * @param  {Object} studyMedadataSource Instance of StudyMetadataSource (ohif-viewerbase) Object to get study metadata
      */
-    constructor(LayoutManager, studies, relatedStudies, studyMetadataSource) {
-        OHIF.log.info('ProtocolEngine::constructor');
+    constructor(layoutManager, studies, priorStudies, studyMetadataSource) {
+
+        // -----------
+        // Validations
+
+        if (!(layoutManager instanceof OHIF.viewerbase.LayoutManager)) {
+            throw new OHIF.viewerbase.OHIFError('ProtocolEngine::constructor layoutManager is not an instance of LayoutManager');
+        }
 
         if (!(studyMetadataSource instanceof OHIF.viewerbase.StudyMetadataSource)) {
             throw new OHIF.viewerbase.OHIFError('ProtocolEngine::constructor studyMetadataSource is not an instance of StudyMetadataSource');
         }
 
-        this.LayoutManager = LayoutManager;
+        // @TODO: Validate "studies" parameter
+
+        // --------------
+        // Initialization
+
+        this.LayoutManager = layoutManager;
         this.studies = studies;
-        this.relatedStudies = relatedStudies;
+        this.priorStudies = priorStudies instanceof Map ? priorStudies : new Map();
         this.studyMetadataSource = studyMetadataSource;
 
+        // Put protocol engine in a known states
         this.reset();
 
         // Create an array for new stage ids to be stored
@@ -221,7 +240,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 return;
             }
 
-            study.numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study);
+            study.numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getStudyInstanceUID());
             const rule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
                 numericality: {
                     greaterThanOrEqualTo: protocol.numberOfPriorsReferenced
@@ -312,69 +331,25 @@ HP.ProtocolEngine = class ProtocolEngine {
     }
 
     /**
-     * Calculates the number of previous studies in the cached StudyList that
-     * have the same patientId and an earlier study date
+     * Get the number of prior studies supplied in the priorStudies map property.
      *
-     * @param study The input study
-     * @returns {any|*} The number of available prior studies with the same patientId
+     * @param {String} studyInstanceUID The StudyInstanceUID of the study whose priors are needed
+     * @returns {number} The number of available prior studies with the same PatientID
      */
-    getNumberOfAvailablePriors(study) {
-        const instance = study.getFirstInstance();
-        const studies = StudyListStudies.find({
-            patientId: instance.getRawValue('x00100020'), // PatientID,
-            studyDate: {
-                $lt: instance.getRawValue('x00080020') // StudyDate
-            }
-        });
-
-        return studies.count();
+    getNumberOfAvailablePriors(studyInstanceUID) {
+        const priors = this.getAvailableStudyPriors(studyInstanceUID);
+        return priors.length;
     }
 
-    findRelatedStudies(protocol, study) {
-        if (!protocol.protocolMatchingRules) {
-            return;
-        }
-
-        var studies = StudyListStudies.find({
-            patientId: study.patientId,
-            studyDate: {
-                $lt: study.studyDate
-            }
-        }, {
-            sort: {
-                studyDate: -1
-            }
-        });
-
-        var related = [];
-        var currentDate = moment(study.studyDate, 'YYYYMMDD');
-
-        studies.forEach(function(priorStudy, priorIndex) {
-            // Calculate an abstract prior value for the study in question
-            if (priorIndex === (studies.length - 1)) {
-                priorStudy.abstractPriorValue = -1;
-            } else {
-                // Abstract prior index starts from 1 in the DICOM standard
-                priorStudy.abstractPriorValue = priorIndex + 1;
-            }
-
-            // Calculate the relative time using Moment.js
-            var priorDate = moment(priorStudy.studyDate, 'YYYYMMDD');
-            priorStudy.relativeTime = currentDate.diff(priorDate);
-
-            var details = HP.match(priorStudy, protocol.protocolMatchingRules);
-            if (details.score) {
-                related.push({
-                    score: details.score,
-                    study: priorStudy
-                });
-            }
-        });
-
-        sortByScore(related);
-        return related.map(function(v) {
-            return v.study;
-        });
+    /**
+     * Get the array prior studies from a specific study.
+     *
+     * @param {String} studyInstanceUID The StudyInstanceUID of the study whose priors are needed
+     * @returns {Array} The array of available priors or an empty array
+     */
+    getAvailableStudyPriors(studyInstanceUID) {
+        const priors = this.priorStudies.get(studyInstanceUID);
+        return priors instanceof Array ? priors : [];
     }
 
     // Match images given a list of Studies and a Viewport's image matching reqs
@@ -403,17 +378,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 abstractPriorValue = parseInt(abstractPriorValue, 10);
                 // TODO: Restrict or clarify validators for abstractPriorValue?
 
-                // @TODO replace for this.relatedStudies (TypeSafeCollection of StudyMetadatas)
-                const studies = StudyListStudies.find({
-                    patientId: currentStudy.patientId,
-                    studyDate: {
-                        $lt: currentStudy.studyDate
-                    }
-                }, {
-                    sort: {
-                        studyDate: -1
-                    }
-                }).fetch();
+                const studies = this.getAvailableStudyPriors(currentStudy.getStudyInstanceUID());
 
                 // TODO: Revisit this later: What about two studies with the same
                 // study date?
@@ -426,25 +391,40 @@ HP.ProtocolEngine = class ProtocolEngine {
                     priorStudy = studies[studyIndex];
                 }
 
-                if (!priorStudy) {
+                if (!(priorStudy instanceof StudyMetadata) && !(priorStudy instanceof StudySummary)) {
                     return;
                 }
 
+                // @TODO: Make sure this study is already loaded into the viewer (OHIF.viewer.Studies)
                 // @TypeSafeStudies
+                const priorStudyInstanceUID = priorStudy.getStudyInstanceUID();
                 const alreadyLoaded = OHIF.viewer.Studies.findBy({
-                    studyInstanceUid: priorStudy.studyInstanceUid
+                    studyInstanceUid: priorStudyInstanceUID
                 });
 
                 if (!alreadyLoaded) {
-                    this.studyMetadataSource.getByInstanceUID(priorStudy.studyInstanceUid, study => {
+                    this.studyMetadataSource.getByInstanceUID(priorStudyInstanceUID).then(study => {
                         study.abstractPriorValue = abstractPriorValue;
-                        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
-                        OHIF.viewer.Studies.insert(study);
 
-                        this.studies.push(study);
-                        this.matchImages(viewport);
-                        this.updateViewports();
-                    });
+                        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+                        const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
+
+                        studyMetadata.setDisplaySets(displaySets);
+
+                        study.selected = true;
+                        study.displaySets = displaySets;
+                        OHIF.viewer.Studies.insert(study);
+                        OHIF.viewer.StudyMetadataList.insert(studyMetadata);
+                    }, error => { console.alert(error) });
+                    // this.studyMetadataSource.getByInstanceUID(priorStudy.studyInstanceUid).then(, study => {
+                    //     study.abstractPriorValue = abstractPriorValue;
+                    //     study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
+                    //     OHIF.viewer.Studies.insert(study);
+
+                    //     this.studies.push(study);
+                    //     this.matchImages(viewport);
+                    //     this.updateViewports();
+                    // });
                 }
             }
             // TODO: Add relative Date / time
