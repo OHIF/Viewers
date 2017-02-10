@@ -417,9 +417,6 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                 // Check if study metadata is already in studies list
                 if (this.studies.find(study => study.getStudyInstanceUID() === priorStudyInstanceUID)) {
-                    // Update the viewport to refresh layout manager with new study
-                    this.updateViewports();
-
                     return;
                 }
 
@@ -433,6 +430,9 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                     // Re-match images
                     this.matchImages(viewport);
+
+                    // Update the viewport to refresh layout manager with new study
+                    this.updateViewports();
                 }, error => { 
                     OHIF.log.warn(error);
                     throw new OHIFError(`ProtocolEngine::matchImages could not get study metadata for studyInstanceUID: ${priorStudyInstanceUID}`);

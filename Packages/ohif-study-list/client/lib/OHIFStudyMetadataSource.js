@@ -36,7 +36,7 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
                 });
 
                 if (!alreadyLoaded) {
-                    this._updateStudyCollections(study);
+                    OHIFStudyMetadataSource._updateStudyCollections(study);
                 }
 
                 resolve(study);
@@ -53,7 +53,7 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
                 // Set studyMetadata display sets
                 studyMetadata.setDisplaySets(displaySets);
 
-                this._updateStudyCollections(studyMetadata);
+                OHIFStudyMetadataSource._updateStudyCollections(studyMetadata);
                 resolve(studyMetadata);
             }, reject);
         });
@@ -65,7 +65,7 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
 
         // Set some studyInfo properties
         studyInfo.selected = true;
-        studyInfo.displaySets = displaySets;
+        studyInfo.displaySets = studyMetadata.getDisplaySets();
 
         // Insert new study info object in Studies TypeSafeCollection
         OHIF.viewer.Studies.insert(studyInfo);
