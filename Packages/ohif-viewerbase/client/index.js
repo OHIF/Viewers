@@ -165,7 +165,7 @@ import { sopClassDictionary } from './lib/sopClassDictionary';
 Viewerbase.sopClassDictionary = sopClassDictionary;
 
 // dicomTagDescriptions
-import { DICOMTagDescriptions } from './lib/dicomTagDescriptions';
+import { DICOMTagDescriptions } from './lib/DICOMTagDescriptions';
 Viewerbase.DICOMTagDescriptions = DICOMTagDescriptions;
 
 /**

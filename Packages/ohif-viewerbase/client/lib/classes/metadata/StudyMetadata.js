@@ -8,7 +8,7 @@ export class StudyMetadata extends Metadata {
         super(data);
         // Initialize Private Properties
         Object.defineProperties(this, {
-            __studyInstanceUID: {
+            _studyInstanceUID: {
                 configurable: true, // configurable so that it can be redefined in sub-classes...
                 enumerable: false,
                 writable: true,

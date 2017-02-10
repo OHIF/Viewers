@@ -33,7 +33,7 @@ class StudySummary {
 
     /**
      * This function is supposed to translate external property names into internal property names.
-     * By default it implements the simplest translation possible. For 
+     * By default it implements the simplest translation possible.
      */
     getInternalPropertyName(propertyName) {
         return propertyName;
