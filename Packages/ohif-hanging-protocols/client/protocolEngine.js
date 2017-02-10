@@ -8,8 +8,9 @@ import 'meteor/ohif:viewerbase';
  * Import Constants
  */
 
-const StudyMetadata = OHIF.viewerbase.metadata.StudyMetadata;
-const StudySummary = OHIF.viewerbase.metadata.StudySummary;
+const { OHIFError } = OHIF.viewerbase;
+const { StudyMetadata, StudySummary } = OHIF.viewerbase.metadata;
+
 
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
@@ -90,40 +91,50 @@ Meteor.startup(function() {
     });
 });
 
-// Log decisions regarding matching
-HP.match = function(attributes, rules) {
-    var options = {
+/**
+ * Match a Metadata instance against rules using Validate.js for validation.
+ * @param  {StudyMetadata|SeriesMetadata|InstanceMetadata} metadataInstance Metadata instance object
+ * @param  {Array} rules Array of MatchingRules instances (StudyMatchingRule|SeriesMatchingRule|ImageMatchingRule) for the match
+ * @return {Object}      Matching Object with score and details (which rule passed or failed)
+ */
+HP.match = function(metadataInstance, rules) {
+    const options = {
         format: 'grouped'
     };
 
-    var score = 0;
-    var details = {
+    const details = {
         passed: [],
         failed: []
     };
-
-    var requiredFailed = false;
+    
+    let requiredFailed = false;
+    let score = 0;
 
     rules.forEach(rule => {
-        var attribute = rule.attribute;
+        const attribute = rule.attribute;
 
-        // If the attributes we are testing (e.g. study, series, or instance attributes) do
+        // If the metadataInstance we are testing (e.g. study, series, or instance MetadataInstance) do
         // not contain the attribute specified in the rule, check whether or not they have been
         // defined in the CustomAttributeRetrievalCallbacks Object.
-
-        // TODO: Investigate why attributes.hasOwnProperty(attribute) doesn't work?
-        if (attributes[attribute] === undefined &&
+        if (!metadataInstance.customAttributeExists(attribute) && 
             HP.CustomAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-            var customAttribute = HP.CustomAttributeRetrievalCallbacks[attribute];
-            attributes[attribute] = customAttribute.callback(attributes);
+            const customAttribute = HP.CustomAttributeRetrievalCallbacks[attribute];
+            metadataInstance.setCustomAttribute(attribute, customAttribute.callback(metadataInstance));
         }
 
         // Format the constraint as required by Validate.js
-        var testConstraint = {};
-        testConstraint[attribute] = rule.constraint;
+        const testConstraint = {
+            [attribute]: rule.constraint
+        };
 
-        // Use Validate.js to evaluate the constraints on the specified attributes
-        var errorMessages = validate(attributes, testConstraint, [options]);
+        // Create a single attribute object to be validated, since metadataInstance is an 
+        // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
+        const attributeMap = {
+            [attribute]: metadataInstance.getCustomAttribute(attribute)
+        };
+
+        // Use Validate.js to evaluate the constraints on the specified metadataInstance
+        const errorMessages = validate(attributeMap, testConstraint, [options]);
 
         if (!errorMessages) {
             // If no errorMessages were returned, then validation passed.
@@ -133,7 +144,7 @@ HP.match = function(attributes, rules) {
 
             // Log that this rule passed in the matching details object
             details.passed.push({
-                rule: rule
+                rule
             });
         } else {
             // If errorMessages were present, then validation failed
@@ -147,8 +158,8 @@ HP.match = function(attributes, rules) {
             // Log that this rule failed in the matching details object
             // and include any error messages
             details.failed.push({
-                rule: rule,
-                errorMessages: errorMessages
+                rule,
+                errorMessages
             });
         }
     });
@@ -159,13 +170,13 @@ HP.match = function(attributes, rules) {
     }
 
     return {
-        score: score,
-        details: details
+        score,
+        details
     };
 };
 
-var sortByScore = function(arr) {
-    arr.sort(function(a, b) {
+const sortByScore = arr => {
+    arr.sort((a, b) => {
         return b.score - a.score;
     });
 };
@@ -173,25 +184,28 @@ var sortByScore = function(arr) {
 HP.ProtocolEngine = class ProtocolEngine {
     /**
      * Constructor
-     * @param  {Object} LayoutManager  Layout Manager Object
+     * @param  {Object} layoutManager  Layout Manager Object
      * @param  {Array} studies        Array of study metadata
-     * @param  {Array} relatedStudies Array of related studies
+     * @param  {Map} priorStudies Map of prior studies
      * @param  {Object} studyMedadataSource Instance of StudyMetadataSource (ohif-viewerbase) Object to get study metadata
      */
     constructor(layoutManager, studies, priorStudies, studyMetadataSource) {
 
+        const { LayoutManager, StudyMetadataSource } = OHIF.viewerbase;
         // -----------
-        // Validations
+        // Type Validations
 
-        if (!(layoutManager instanceof OHIF.viewerbase.LayoutManager)) {
-            throw new OHIF.viewerbase.OHIFError('ProtocolEngine::constructor layoutManager is not an instance of LayoutManager');
+        if (!(layoutManager instanceof LayoutManager)) {
+            throw new OHIFError('ProtocolEngine::constructor layoutManager is not an instance of LayoutManager');
         }
 
-        if (!(studyMetadataSource instanceof OHIF.viewerbase.StudyMetadataSource)) {
-            throw new OHIF.viewerbase.OHIFError('ProtocolEngine::constructor studyMetadataSource is not an instance of StudyMetadataSource');
+        if (!(studyMetadataSource instanceof StudyMetadataSource)) {
+            throw new OHIFError('ProtocolEngine::constructor studyMetadataSource is not an instance of StudyMetadataSource');
         }
 
-        // @TODO: Validate "studies" parameter
+        if (!(studies instanceof Array) && !studies.every(study => study instanceof StudyMetadata)) {
+            throw new OHIFError('ProtocolEngine::constructor studies is not an array or it\'s items are not instances of StudyMetadata');
+        }
 
         // --------------
         // Initialization
@@ -213,7 +227,7 @@ HP.ProtocolEngine = class ProtocolEngine {
      * Resets the ProtocolEngine to the best match
      */
     reset() {
-        var protocol = this.getBestMatch();
+        const protocol = this.getBestMatch();
         this.setHangingProtocol(protocol);
     }
 
@@ -240,7 +254,10 @@ HP.ProtocolEngine = class ProtocolEngine {
                 return;
             }
 
-            study.numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getStudyInstanceUID());
+            // Set custom attribute for study metadata 
+            const numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getStudyInstanceUID());
+            study.setCustomAttribute('numberOfPriorsReferenced', numberOfPriorsReferenced);
+
             const rule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
                 numericality: {
                     greaterThanOrEqualTo: protocol.numberOfPriorsReferenced
@@ -356,9 +373,8 @@ HP.ProtocolEngine = class ProtocolEngine {
     matchImages(viewport) {
         OHIF.log.info('ProtocolEngine::matchImages');
 
-        const studyMatchingRules = viewport.studyMatchingRules;
-        const seriesMatchingRules = viewport.seriesMatchingRules;
-        const instanceMatchingRules = viewport.imageMatchingRules;
+        const { studyMatchingRules, seriesMatchingRules, imageMatchingRules: instanceMatchingRules } = viewport;
+
         const matchingScores = [];
         const currentStudy = this.studies[0];
 
@@ -367,7 +383,8 @@ HP.ProtocolEngine = class ProtocolEngine {
         let highestImageMatchingScore = 0;
         let bestMatch;
 
-        currentStudy.abstractPriorValue = 0;
+        // Set custom attribute for study metadata
+        currentStudy.setCustomAttribute('abstractPriorValue', 0);
 
         studyMatchingRules.forEach(rule => {
             if (rule.attribute === 'abstractPriorValue') {
@@ -391,41 +408,35 @@ HP.ProtocolEngine = class ProtocolEngine {
                     priorStudy = studies[studyIndex];
                 }
 
+                // Invalid data
                 if (!(priorStudy instanceof StudyMetadata) && !(priorStudy instanceof StudySummary)) {
                     return;
                 }
 
-                // @TODO: Make sure this study is already loaded into the viewer (OHIF.viewer.Studies)
-                // @TypeSafeStudies
                 const priorStudyInstanceUID = priorStudy.getStudyInstanceUID();
-                const alreadyLoaded = OHIF.viewer.Studies.findBy({
-                    studyInstanceUid: priorStudyInstanceUID
-                });
 
-                if (!alreadyLoaded) {
-                    this.studyMetadataSource.getByInstanceUID(priorStudyInstanceUID).then(study => {
-                        study.abstractPriorValue = abstractPriorValue;
+                // Check if study metadata is already in studies list
+                if (this.studies.find(study => study.getStudyInstanceUID() === priorStudyInstanceUID)) {
+                    // Update the viewport to refresh layout manager with new study
+                    this.updateViewports();
 
-                        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
-                        const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
-
-                        studyMetadata.setDisplaySets(displaySets);
-
-                        study.selected = true;
-                        study.displaySets = displaySets;
-                        OHIF.viewer.Studies.insert(study);
-                        OHIF.viewer.StudyMetadataList.insert(studyMetadata);
-                    }, error => { console.alert(error) });
-                    // this.studyMetadataSource.getByInstanceUID(priorStudy.studyInstanceUid).then(, study => {
-                    //     study.abstractPriorValue = abstractPriorValue;
-                    //     study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
-                    //     OHIF.viewer.Studies.insert(study);
-
-                    //     this.studies.push(study);
-                    //     this.matchImages(viewport);
-                    //     this.updateViewports();
-                    // });
+                    return;
                 }
+
+                // Get study metadata if necessary and load study in the viewer (each viewer should provide it's own load study method)
+                this.studyMetadataSource.loadStudy(priorStudy).then(studyMetadata => {
+                    // Set the custom attribute abstractPriorValue for the study metadata
+                    studyMetadata.setCustomAttribute('abstractPriorValue', abstractPriorValue);
+
+                    // Insert the new study metadata
+                    this.studies.push(studyMetadata);
+
+                    // Re-match images
+                    this.matchImages(viewport);
+                }, error => { 
+                    OHIF.log.warn(error);
+                    throw new OHIFError(`ProtocolEngine::matchImages could not get study metadata for studyInstanceUID: ${priorStudyInstanceUID}`);
+                });
             }
             // TODO: Add relative Date / time
         });
@@ -527,8 +538,8 @@ HP.ProtocolEngine = class ProtocolEngine {
         OHIF.log.info('ProtocolEngine::matchImages bestMatch', bestMatch);
 
         return {
-            bestMatch: bestMatch,
-            matchingScores: matchingScores
+            bestMatch,
+            matchingScores
         };
     }
 
@@ -658,8 +669,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             }
 
             if (!currentViewportData.displaySetInstanceUid) {
-				//@TODO: make OHIFError use Meteor.Error instead of simple Error()
-                throw new OHIF.viewerbase.OHIFError('ProtocolEngine::updateViewports No matching display set found?');
+                throw new OHIFError('ProtocolEngine::updateViewports No matching display set found?');
             }
 
             viewportData.push(currentViewportData);

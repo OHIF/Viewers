@@ -23,6 +23,15 @@ export class Metadata {
             writable: false,
             value: data
         });
+
+        // Define _custom properties as an immutable property
+        // IMPORTANT: This property can only be set during instance construction.
+        Object.defineProperty(this, '_custom', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: Object.create(null)
+        });
     }
 
     getData() {
@@ -36,6 +45,33 @@ export class Metadata {
             propertyValue = _data[propertyName];
         }
         return propertyValue;
+    }
+
+    /**
+     * Set custom attribute value
+     * @param {String} attribute Custom attribute name
+     * @param {Any} value     Custom attribute value
+     */
+    setCustomAttribute(attribute, value) {
+        this._custom[attribute] = value;
+    }
+
+    /**
+     * Get custom attribute value
+     * @param  {String} attribute Custom attribute name
+     * @return {Any}              Custom attribute value
+     */
+    getCustomAttribute(attribute) {
+        return this._custom[attribute];
+    }
+
+    /**
+     * Check if a custom attribute exists
+     * @param  {String} attribute Custom attribute name
+     * @return {Boolean}          True if custom attribute exists or false if not
+     */
+    customAttributeExists(attribute) {
+        return attribute in this._custom;
     }
 
     /**
