@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
@@ -24,7 +25,7 @@ Template.selectTree.onCreated(() => {
         const leaves = instance.data.component.getLeaves();
 
         // Generate an object with encoded keys from the tree leaves
-        leavesObject = {};
+        const leavesObject = {};
         _.each(leaves, leaf => {
             leavesObject[OHIF.string.encodeId(leaf.value)] = leaf;
         });
@@ -273,7 +274,7 @@ Template.selectTree.events({
         instance.setSelected(false);
 
         // Get the index of the breadcrumb's clicked option
-        const index = $(event.currentTarget).attr('data-index') | 0;
+        const index = parseInt($(event.currentTarget).attr('data-index'));
 
         // Set the current instance
         let currentInstance = instance.component.parent.templateInstance;
@@ -323,7 +324,9 @@ Template.selectTree.helpers({
             const sortedItems = [];
             _.each(begin, (item, index) => {
                 sortedItems.push(item);
-                items[index] && sortedItems.push(items[index]);
+                if (items[index]) {
+                    sortedItems.push(items[index]);
+                }
             });
             items = sortedItems;
         }

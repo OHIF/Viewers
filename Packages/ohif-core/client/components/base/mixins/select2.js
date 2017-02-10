@@ -65,13 +65,15 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
             // Attach focus and blur handlers to focusable elements
             $(elements).on('focus', event => {
-                event.stopPropagation();
-                // Show the state message on elements focus
-                component.toggleMessage(true);
+                if (event.target === event.currentTarget) {
+                    // Show the state message on elements focus
+                    component.toggleMessage(true);
+                }
             }).on('blur', event => {
-                event.stopPropagation();
-                // Hide the state message on elements blur
-                component.toggleMessage(false);
+                if (event.target === event.currentTarget) {
+                    // Hide the state message on elements blur
+                    component.toggleMessage(false);
+                }
             });
         },
 
