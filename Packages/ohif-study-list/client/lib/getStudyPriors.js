@@ -40,9 +40,6 @@ const getStudyPriors = study => {
         const summary = new OHIFStudySummary();
         summary.addTags(study);
         priorStudies.push(summary);
-        console.log('@StudyListStudies');
-        console.log(study);
-        console.log(study);
     });
 
     return priorStudies;

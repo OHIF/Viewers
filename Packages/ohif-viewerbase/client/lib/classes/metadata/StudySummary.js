@@ -1,6 +1,6 @@
 import { DICOMTagDescriptions } from '../../DICOMTagDescriptions';
 
-const StudyInstanceUID = 'x0020000D';
+const StudyInstanceUID = 'x0020000d';
 
 export class StudySummary {
 
