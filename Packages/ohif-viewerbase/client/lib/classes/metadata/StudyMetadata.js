@@ -1,6 +1,7 @@
 import { Metadata } from './Metadata';
 import { SeriesMetadata } from './SeriesMetadata';
 import { ImageSet } from '../ImageSet';
+import { OHIFError } from '../OHIFError';
 
 export class StudyMetadata extends Metadata {
 
@@ -123,10 +124,26 @@ export class StudyMetadata extends Metadata {
     }
 
     /**
+     * Retrieve the number of display sets within the current study.
+     * @returns {number} The number of display sets in the current study.
+     */
+    getDisplaySetCount() {
+        return this._displaySets.length;
+    }
+
+    /**
      * Returns the StudyInstanceUID of the current study.
      */
     getStudyInstanceUID() {
         return this._studyInstanceUID;
+    }
+
+    /**
+     * Getter for series
+     * @return {Array} Array of SeriesMetadata object
+     */
+    getSeries() {
+        return this._series.slice();
     }
 
     /**
@@ -211,6 +228,58 @@ export class StudyMetadata extends Metadata {
      */
     indexOfSeries(series) {
         return this._series.indexOf(series);
+    }
+
+    /**
+     * It sorts the series based on display sets order. Each series must be an instance 
+     * of SeriesMetadata and each display sets must be an instance of ImageSet. 
+     * Both array must have the same length, otherwise it throws an error.
+     * Useful example of usage: 
+     *     Study data provided by backend does not sort series at all and client-side 
+     *     needs series sorted by the same criteria used for sorting display sets.
+     */
+    sortSeriesByDisplaySets() {
+        // Check if the study is multiframe. If it is, 
+        const firstInstance = this.getFirstInstance();
+        const isMultiframe = firstInstance.getRawValue('x00280008') > 1;
+
+        // @TODO: Check if is necessary to do a similar check for multiframe studies
+        // Check if both arrays have same length in case of non-multiframe studies
+        if (!isMultiframe && this.getSeriesCount() !== this.getDisplaySetCount()) {
+            throw new OHIFError('StudyMetadata::sortSeriesByDisplaySets series count and display set count does not match');
+        }
+ 
+        // Object for mapping display sets' index by seriesInstanceUid
+        const displaySetsMapping = {};
+
+        // Loop through each display set to create the mapping
+        this.forEachDisplaySet( (displaySet, index) => {
+
+            if (!(displaySet instanceof ImageSet)) {
+              throw new OHIFError(`StudyMetadata::sortSeriesByDisplaySets display set at index ${index} is not an instance of ImageSet`);
+            }
+
+            // In case of multiframe studies, just get the first index occurence
+            if (displaySetsMapping[displaySet.seriesInstanceUid] === void 0) {
+                displaySetsMapping[displaySet.seriesInstanceUid] = index;
+            }
+        });
+
+        // Clone of actual series
+        const actualSeries = this.getSeries();
+
+        actualSeries.forEach( (series, index) => {
+
+            if (!(series instanceof SeriesMetadata)) {
+              throw new OHIFError(`StudyMetadata::sortSeriesByDisplaySets series at index ${index} is not an instance of SeriesMetadata`);
+            }
+
+            // Get the new series index
+            const seriesIndex = displaySetsMapping[series.getSeriesInstanceUID()];
+
+            // Update the series object with the new series position
+            this._series[seriesIndex] = series;
+        });
     }
 
     /**

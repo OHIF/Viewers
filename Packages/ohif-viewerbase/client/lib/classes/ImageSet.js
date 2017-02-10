@@ -14,7 +14,7 @@ export class ImageSet {
     constructor(images) {
 
         if (Array.isArray(images) !== true) {
-            throw new OHIFError('ImageSet expects an array of images...');
+            throw new OHIFError('ImageSet expects an array of images');
         }
 
         // @property "images"
