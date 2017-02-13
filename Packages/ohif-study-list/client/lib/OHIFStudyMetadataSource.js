@@ -20,7 +20,7 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
 
     /**
      * Load study info (OHIF.viewer.Studies) and study metadata (OHIF.viewer.StudyMetadataList) for a given study.
-     * @param  {StudySummary|StudyMetadata} Instance of StudySummary or StudyMetadata object
+     * @param {StudySummary|StudyMetadata} study of StudySummary or StudyMetadata object.
      */
     loadStudy(study) {
         if (!(study instanceof StudyMetadata) && !(study instanceof StudySummary)) {
