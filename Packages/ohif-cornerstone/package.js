@@ -25,12 +25,6 @@ Package.onUse(function(api) {
     api.addFiles('client/cornerstoneWADOImageLoader.js', 'client', {
         bare: true
     });
-    api.addFiles('client/libopenjpeg.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/libCharLS.js', 'client', {
-        bare: true
-    });
     api.addFiles('client/dicomParser.js', 'client', {
         bare: true
     });
@@ -40,6 +34,9 @@ Package.onUse(function(api) {
     api.addFiles('client/jquery.hammer.js', 'client', {
         bare: true
     });
+
+    api.addAssets('public/js/cornerstoneWADOImageLoaderCodecs.es5.js', 'client');
+    api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.es5.js', 'client');
 
     api.export('cornerstone', 'client');
     api.export('cornerstoneMath', 'client');

@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.7.9 - 2016-10-29 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.8.1 - 2017-02-11 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -22,70 +22,81 @@ if (typeof cornerstoneTools === 'undefined') {
 
     'use strict';
 
-    var scrollTimeout;
-    var scrollTimeoutDelay = 1;
-
     function mouseWheel(e) {
-        clearTimeout(scrollTimeout);
+        // !!!HACK/NOTE/WARNING!!!
+        // for some reason I am getting mousewheel and DOMMouseScroll events on my
+        // mac os x mavericks system when middle mouse button dragging.
+        // I couldn't find any info about this so this might break other systems
+        // webkit hack
+        if (e.originalEvent.type === 'mousewheel' && e.originalEvent.wheelDeltaY === 0) {
+            return;
+        }
+        // firefox hack
+        if (e.originalEvent.type === 'DOMMouseScroll' && e.originalEvent.axis === 1) {
+            return;
+        }
 
-        scrollTimeout = setTimeout(function() {
-            var element = e.target.parentNode;
+        var element = e.currentTarget;
 
-            if (!e.deltaY) {
-                return;
-            }
+        var x;
+        var y;
 
-            var x;
-            var y;
-            if (e.pageX !== undefined && e.pageY !== undefined) {
-                x = e.pageX;
-                y = e.pageY;
-            }
+        if (e.pageX !== undefined && e.pageY !== undefined) {
+            x = e.pageX;
+            y = e.pageY;
+        } else if (e.originalEvent &&
+                   e.originalEvent.pageX !== undefined &&
+                   e.originalEvent.pageY !== undefined) {
+            x = e.originalEvent.pageX;
+            y = e.originalEvent.pageY;
+        } else {
+            // IE9 & IE10
+            x = e.x;
+            y = e.y;
+        }
 
-            var startingCoords = cornerstone.pageToPixel(element, x, y);
+        var startingCoords = cornerstone.pageToPixel(element, x, y);
 
-            var wheelDeltaPixels;
-            var pixelsPerLine = 40;
-            var pixelsPerPage = 800;
+        e = window.event || e; // old IE support
 
-            if (e.deltaMode === 2) {
-                // DeltaY is in Pages
-                wheelDeltaPixels = e.deltaY * pixelsPerPage;
-            } else if (e.deltaMode === 1) {
-                // DeltaY is in Lines
-                wheelDeltaPixels = e.deltaY * pixelsPerLine;
-            } else {
-                // DeltaY is already in Pixels
-                wheelDeltaPixels = e.deltaY;
-            }
+        var wheelDelta;
+        if (e.originalEvent && e.originalEvent.wheelDelta) {
+            wheelDelta = -e.originalEvent.wheelDelta;
+        } else if (e.originalEvent && e.originalEvent.deltaY) {
+            wheelDelta = -e.originalEvent.deltaY;
+        } else if (e.originalEvent && e.originalEvent.detail) {
+            wheelDelta = -e.originalEvent.detail;
+        } else {
+            wheelDelta = e.wheelDelta;
+        }
 
-            var direction = e.deltaY < 0 ? -1 : 1;
+        var direction = wheelDelta < 0 ? -1 : 1;
 
-            var mouseWheelData = {
-                element: element,
-                viewport: cornerstone.getViewport(element),
-                image: cornerstone.getEnabledElement(element).image,
-                direction: direction,
-                wheelDeltaPixels: wheelDeltaPixels,
-                pageX: x,
-                pageY: y,
-                imageX: startingCoords.x,
-                imageY: startingCoords.y
-            };
+        var mouseWheelData = {
+            element: element,
+            viewport: cornerstone.getViewport(element),
+            image: cornerstone.getEnabledElement(element).image,
+            direction: direction,
+            pageX: x,
+            pageY: y,
+            imageX: startingCoords.x,
+            imageY: startingCoords.y
+        };
 
-            $(element).trigger('CornerstoneToolsMouseWheel', mouseWheelData);
-        }, scrollTimeoutDelay);
+        $(element).trigger('CornerstoneToolsMouseWheel', mouseWheelData);
     }
+
+    var mouseWheelEvents = 'mousewheel DOMMouseScroll';
 
     function enable(element) {
         // Prevent handlers from being attached multiple times
         disable(element);
 
-        cornerstoneTools.addWheelListener(element, mouseWheel);
+        $(element).on(mouseWheelEvents, mouseWheel);
     }
 
     function disable(element) {
-        cornerstoneTools.removeWheelListener(element, mouseWheel);
+        $(element).unbind(mouseWheelEvents, mouseWheel);
     }
 
     // module exports
@@ -1440,8 +1451,6 @@ if (typeof cornerstoneTools === 'undefined') {
     'use strict';
 
     function mouseWheelTool(mouseWheelCallback) {
-        var configuration = {};
-
         var toolInterface = {
             activate: function(element) {
                 $(element).off('CornerstoneToolsMouseWheel', mouseWheelCallback);
@@ -1451,9 +1460,7 @@ if (typeof cornerstoneTools === 'undefined') {
             },
             disable: function(element) {$(element).off('CornerstoneToolsMouseWheel', mouseWheelCallback);},
             enable: function(element) {$(element).off('CornerstoneToolsMouseWheel', mouseWheelCallback);},
-            deactivate: function(element) {$(element).off('CornerstoneToolsMouseWheel', mouseWheelCallback);},
-            getConfiguration: function() { return configuration;},
-            setConfiguration: function(config) {configuration = config;}
+            deactivate: function(element) {$(element).off('CornerstoneToolsMouseWheel', mouseWheelCallback);}
         };
         return toolInterface;
     }
@@ -4747,8 +4754,18 @@ if (typeof cornerstoneTools === 'undefined') {
     }
 
     function dragCallback(e, eventData) {
-        eventData.viewport.translation.x += (eventData.deltaPoints.page.x / eventData.viewport.scale);
-        eventData.viewport.translation.y += (eventData.deltaPoints.page.y / eventData.viewport.scale);
+
+        // FIXME: Copied from Cornerstone src/internal/calculateTransform.js, should be exposed from there.
+        var widthScale = eventData.viewport.scale;
+        var heightScale = eventData.viewport.scale;
+        if (eventData.image.rowPixelSpacing < eventData.image.columnPixelSpacing) {
+            widthScale = widthScale * (eventData.image.columnPixelSpacing / eventData.image.rowPixelSpacing);
+        } else if (eventData.image.columnPixelSpacing < eventData.image.rowPixelSpacing) {
+            heightScale = heightScale * (eventData.image.rowPixelSpacing / eventData.image.columnPixelSpacing);
+        }
+
+        eventData.viewport.translation.x += (eventData.deltaPoints.page.x / widthScale);
+        eventData.viewport.translation.y += (eventData.deltaPoints.page.y / heightScale);
         cornerstone.setViewport(eventData.element, eventData.viewport);
         return false; // false = causes jquery to preventDefault() and stopPropagation() this event
     }
@@ -4926,6 +4943,7 @@ if (typeof cornerstoneTools === 'undefined') {
         var measurementData = {
             visible: true,
             active: true,
+            invalidated: true,
             handles: {
                 start: {
                     x: mouseEventData.currentPoints.image.x,
@@ -4938,6 +4956,14 @@ if (typeof cornerstoneTools === 'undefined') {
                     y: mouseEventData.currentPoints.image.y,
                     highlight: true,
                     active: true
+                },
+                textBox: {
+                    active: false,
+                    hasMoved: false,
+                    movesIndependently: false,
+                    drawnIndependently: true,
+                    allowedOutsideImage: true,
+                    hasBoundingBox: true
                 }
             }
         };
@@ -5000,25 +5026,35 @@ if (typeof cornerstoneTools === 'undefined') {
         };
     }
 
-    function onImageRendered(e, eventData) {
+    function numberWithCommas(x) {
+        // http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+        var parts = x.toString().split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return parts.join('.');
+    }
 
+    function onImageRendered(e, eventData) {
         // if we have no toolData for this element, return immediately as there is nothing to do
         var toolData = cornerstoneTools.getToolState(e.currentTarget, toolType);
-        if (toolData === undefined) {
+        if (!toolData) {
             return;
         }
 
-        // we have tool data for this element - iterate over each one and draw it
+        var image = eventData.image;
+        var element = eventData.element;
+        var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
+        var config = cornerstoneTools.rectangleRoi.getConfiguration();
         var context = eventData.canvasContext.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
 
-        //activation color
-        var color;
-        var lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-        var font = cornerstoneTools.textStyle.getFont();
-        var fontHeight = cornerstoneTools.textStyle.getFontSize();
-        var config = cornerstoneTools.rectangleRoi.getConfiguration();
+        // Retrieve the image modality from its metadata, if available
+        var modalityTag = 'x00080060';
+        var modality;
+        if (image.data) {
+            modality = image.data.string(modalityTag);
+        }
 
+        // If we have tool data for this element - iterate over each set and draw it
         for (var i = 0; i < toolData.data.length; i++) {
             context.save();
 
@@ -5031,65 +5067,261 @@ if (typeof cornerstoneTools === 'undefined') {
                 context.shadowOffsetY = config.shadowOffsetY || 1;
             }
 
-            //differentiate the color of activation tool
-            if (data.active) {
-                color = cornerstoneTools.toolColors.getActiveColor();
-            } else {
-                color = cornerstoneTools.toolColors.getToolColor();
-            }
+            // Check which color the rendered tool should be
+            var color = cornerstoneTools.toolColors.getColorIfActive(data.active);
 
-            // draw the rectangle
-            var handleStartCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.start);
-            var handleEndCanvas = cornerstone.pixelToCanvas(eventData.element, data.handles.end);
+            // Convert Image coordinates to Canvas coordinates given the element
+            var handleStartCanvas = cornerstone.pixelToCanvas(element, data.handles.start);
+            var handleEndCanvas = cornerstone.pixelToCanvas(element, data.handles.end);
 
-            var widthCanvas = Math.abs(handleStartCanvas.x - handleEndCanvas.x);
-            var heightCanvas = Math.abs(handleStartCanvas.y - handleEndCanvas.y);
+            // Retrieve the bounds of the ellipse (left, top, width, and height)
+            // in Canvas coordinates
             var leftCanvas = Math.min(handleStartCanvas.x, handleEndCanvas.x);
             var topCanvas = Math.min(handleStartCanvas.y, handleEndCanvas.y);
-            var centerX = (handleStartCanvas.x + handleEndCanvas.x) / 2;
-            var centerY = (handleStartCanvas.y + handleEndCanvas.y) / 2;
+            var widthCanvas = Math.abs(handleStartCanvas.x - handleEndCanvas.x);
+            var heightCanvas = Math.abs(handleStartCanvas.y - handleEndCanvas.y);
 
+            // Draw the rectangle on the canvas
             context.beginPath();
             context.strokeStyle = color;
             context.lineWidth = lineWidth;
             context.rect(leftCanvas, topCanvas, widthCanvas, heightCanvas);
             context.stroke();
 
-            // draw the handles
-            cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+            // If the tool configuration specifies to only draw the handles on hover / active,
+            // follow this logic
+            if (config && config.drawHandlesOnHover) {
+                // Draw the handles if the tool is active
+                if (data.active === true) {
+                    cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+                } else {
+                    // If the tool is inactive, draw the handles only if each specific handle is being
+                    // hovered over
+                    var handleOptions = {
+                        drawHandlesIfActive: true
+                    };
+                    cornerstoneTools.drawHandles(context, eventData, data.handles, color, handleOptions);
+                }
+            } else {
+                // If the tool has no configuration settings, always draw the handles
+                cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+            }
 
-            // Calculate the mean, stddev, and area
-            // TODO: calculate this in web worker for large pixel counts...
+            // Define variables for the area and mean/standard deviation
+            var area,
+                meanStdDev,
+                meanStdDevSUV;
 
-            var width = Math.abs(data.handles.start.x - data.handles.end.x);
-            var height = Math.abs(data.handles.start.y - data.handles.end.y);
-            var left = Math.min(data.handles.start.x, data.handles.end.x);
-            var top = Math.min(data.handles.start.y, data.handles.end.y);
-            var pixels = cornerstone.getPixels(eventData.element, left, top, width, height);
+            // Perform a check to see if the tool has been invalidated. This is to prevent
+            // unnecessary re-calculation of the area, mean, and standard deviation if the
+            // image is re-rendered but the tool has not moved (e.g. during a zoom)
+            if (!data.invalidated) {
+                // If the data is not invalidated, retrieve it from the toolData
+                meanStdDev = data.meanStdDev;
+                meanStdDevSUV = data.meanStdDevSUV;
+                area = data.area;
+            } else {
+                // If the data has been invalidated, we need to calculate it again
 
-            var ellipse = {
-                left: left,
-                top: top,
-                width: width,
-                height: height
+                // Retrieve the bounds of the ellipse in image coordinates
+                var ellipse = {
+                    left: Math.min(data.handles.start.x, data.handles.end.x),
+                    top: Math.min(data.handles.start.y, data.handles.end.y),
+                    width: Math.abs(data.handles.start.x - data.handles.end.x),
+                    height: Math.abs(data.handles.start.y - data.handles.end.y)
+                };
+
+                // First, make sure this is not a color image, since no mean / standard
+                // deviation will be calculated for color images.
+                if (!image.color) {
+                    // Retrieve the array of pixels that the ellipse bounds cover
+                    var pixels = cornerstone.getPixels(element, ellipse.left, ellipse.top, ellipse.width, ellipse.height);
+
+                    // Calculate the mean & standard deviation from the pixels and the ellipse details
+                    meanStdDev = calculateMeanStdDev(pixels, ellipse);
+
+                    if (modality === 'PT') {
+                        // If the image is from a PET scan, use the DICOM tags to
+                        // calculate the SUV from the mean and standard deviation.
+
+                        // Note that because we are using modality pixel values from getPixels, and
+                        // the calculateSUV routine also rescales to modality pixel values, we are first
+                        // returning the values to storedPixel values before calcuating SUV with them.
+                        // TODO: Clean this up? Should we add an option to not scale in calculateSUV?
+                        meanStdDevSUV = {
+                            mean: cornerstoneTools.calculateSUV(image, (meanStdDev.mean - image.intercept) / image.slope),
+                            stdDev: cornerstoneTools.calculateSUV(image, (meanStdDev.stdDev - image.intercept) / image.slope)
+                        };
+                    }
+
+                    // If the mean and standard deviation values are sane, store them for later retrieval
+                    if (meanStdDev && !isNaN(meanStdDev.mean)) {
+                        data.meanStdDev = meanStdDev;
+                        data.meanStdDevSUV = meanStdDevSUV;
+                    }
+                }
+
+                // Retrieve the pixel spacing values, and if they are not
+                // real non-zero values, set them to 1
+                var columnPixelSpacing = image.columnPixelSpacing || 1;
+                var rowPixelSpacing = image.rowPixelSpacing || 1;
+
+                // Calculate the image area from the ellipse dimensions and pixel spacing
+                area = (ellipse.width * columnPixelSpacing) * (ellipse.height * rowPixelSpacing);
+
+                // If the area value is sane, store it for later retrieval
+                if (!isNaN(area)) {
+                    data.area = area;
+                }
+
+                // Set the invalidated flag to false so that this data won't automatically be recalculated
+                data.invalidated = false;
+            }
+
+            // Define an array to store the rows of text for the textbox
+            var textLines = [];
+
+            // If the mean and standard deviation values are present, display them
+            if (meanStdDev && meanStdDev.mean) {
+                // If the modality is CT, add HU to denote Hounsfield Units
+                var moSuffix = '';
+                if (modality === 'CT') {
+                    moSuffix = ' HU';
+                }
+
+                // Create a line of text to display the mean and any units that were specified (i.e. HU)
+                var meanText = 'Mean: ' + numberWithCommas(meanStdDev.mean.toFixed(2)) + moSuffix;
+                // Create a line of text to display the standard deviation and any units that were specified (i.e. HU)
+                var stdDevText = 'StdDev: ' + numberWithCommas(meanStdDev.stdDev.toFixed(2)) + moSuffix;
+
+                // If this image has SUV values to display, concatenate them to the text line
+                if (meanStdDevSUV && meanStdDevSUV.mean !== undefined) {
+                    var SUVtext = ' SUV: ';
+                    meanText += SUVtext + numberWithCommas(meanStdDevSUV.mean.toFixed(2));
+                    stdDevText += SUVtext + numberWithCommas(meanStdDevSUV.stdDev.toFixed(2));
+                }
+
+                // Add these text lines to the array to be displayed in the textbox
+                textLines.push(meanText);
+                textLines.push(stdDevText);
+            }
+
+            // If the area is a sane value, display it
+            if (area) {
+                // Determine the area suffix based on the pixel spacing in the image.
+                // If pixel spacing is present, use millimeters. Otherwise, use pixels.
+                // This uses Char code 178 for a superscript 2
+                var suffix = ' mm' + String.fromCharCode(178);
+                if (!image.rowPixelSpacing || !image.columnPixelSpacing) {
+                    suffix = ' pixels' + String.fromCharCode(178);
+                }
+
+                // Create a line of text to display the area and its units
+                var areaText = 'Area: ' + numberWithCommas(area.toFixed(2)) + suffix;
+
+                // Add this text line to the array to be displayed in the textbox
+                textLines.push(areaText);
+            }
+
+            // If the textbox has not been moved by the user, it should be displayed on the right-most
+            // side of the tool.
+            if (!data.handles.textBox.hasMoved) {
+                // Find the rightmost side of the ellipse at its vertical center, and place the textbox here
+                // Note that this calculates it in image coordinates
+                data.handles.textBox.x = Math.max(data.handles.start.x, data.handles.end.x);
+                data.handles.textBox.y = (data.handles.start.y + data.handles.end.y) / 2;
+            }
+
+            // Convert the textbox Image coordinates into Canvas coordinates
+            var textCoords = cornerstone.pixelToCanvas(element, data.handles.textBox);
+
+            // Set options for the textbox drawing function
+            var options = {
+                centering: {
+                    x: false,
+                    y: true
+                }
             };
 
-            var meanStdDev = calculateMeanStdDev(pixels, ellipse);
-            var area = (width * eventData.image.columnPixelSpacing) * (height * eventData.image.rowPixelSpacing);
-            var areaText = 'Area: ' + area.toFixed(2) + ' mm^2';
+            // Draw the textbox and retrieves it's bounding box for mouse-dragging and highlighting
+            var boundingBox = cornerstoneTools.drawTextBox(context, textLines, textCoords.x,
+                textCoords.y, color, options);
 
-            // Draw text
-            context.font = font;
+            // Store the bounding box data in the handle for mouse-dragging and highlighting
+            data.handles.textBox.boundingBox = boundingBox;
 
-            var textSize = context.measureText(area);
+            // If the textbox has moved, we would like to draw a line linking it with the tool
+            // This section decides where to draw this line to on the Ellipse based on the location
+            // of the textbox relative to the ellipse.
+            if (data.handles.textBox.hasMoved) {
+                // Draw dashed link line between tool and text
 
-            var textX = centerX < (eventData.image.columns / 2) ? centerX + (widthCanvas / 2): centerX - (widthCanvas / 2) - textSize.width;
-            var textY = centerY < (eventData.image.rows / 2) ? centerY + (heightCanvas / 2): centerY - (heightCanvas / 2);
+                // The initial link position is at the center of the
+                // textbox.
+                var link = {
+                    start: {},
+                    end: {
+                        x: textCoords.x,
+                        y: textCoords.y
+                    }
+                };
 
-            context.fillStyle = color;
-            cornerstoneTools.drawTextBox(context, 'Mean: ' + meanStdDev.mean.toFixed(2), textX, textY - fontHeight - 5, color);
-            cornerstoneTools.drawTextBox(context, 'StdDev: ' + meanStdDev.stdDev.toFixed(2), textX, textY, color);
-            cornerstoneTools.drawTextBox(context, areaText, textX, textY + fontHeight + 5, color);
+                // First we calculate the ellipse points (top, left, right, and bottom)
+                var ellipsePoints = [ {
+                    // Top middle point of ellipse
+                    x: leftCanvas + widthCanvas / 2,
+                    y: topCanvas
+                }, {
+                    // Left middle point of ellipse
+                    x: leftCanvas,
+                    y: topCanvas + heightCanvas / 2
+                }, {
+                    // Bottom middle point of ellipse
+                    x: leftCanvas + widthCanvas / 2,
+                    y: topCanvas + heightCanvas
+                }, {
+                    // Right middle point of ellipse
+                    x: leftCanvas + widthCanvas,
+                    y: topCanvas + heightCanvas / 2
+                } ];
+
+                // We obtain the link starting point by finding the closest point on the ellipse to the
+                // center of the textbox
+                link.start = cornerstoneMath.point.findClosestPoint(ellipsePoints, link.end);
+
+                // Next we calculate the corners of the textbox bounding box
+                var boundingBoxPoints = [ {
+                    // Top middle point of bounding box
+                    x: boundingBox.left + boundingBox.width / 2,
+                    y: boundingBox.top
+                }, {
+                    // Left middle point of bounding box
+                    x: boundingBox.left,
+                    y: boundingBox.top + boundingBox.height / 2
+                }, {
+                    // Bottom middle point of bounding box
+                    x: boundingBox.left + boundingBox.width / 2,
+                    y: boundingBox.top + boundingBox.height
+                }, {
+                    // Right middle point of bounding box
+                    x: boundingBox.left + boundingBox.width,
+                    y: boundingBox.top + boundingBox.height / 2
+                }, ];
+
+                // Now we recalculate the link endpoint by identifying which corner of the bounding box
+                // is closest to the start point we just calculated.
+                link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
+
+                // Finally we draw the dashed linking line
+                context.beginPath();
+                context.strokeStyle = color;
+                context.lineWidth = lineWidth;
+                context.setLineDash([ 2, 3 ]);
+                context.moveTo(link.start.x, link.start.y);
+                context.lineTo(link.end.x, link.end.y);
+                context.stroke();
+            }
+
             context.restore();
         }
     }
@@ -8025,43 +8257,8 @@ if (typeof cornerstoneTools === 'undefined') {
 
     'use strict';
 
-    // this module defines a way for tools to access various metadata about an imageId.  This layer of abstraction exists
-    // so metadata can be provided to the tools in different ways (e.g. by parsing DICOM P10 or by a WADO-RS document)
-    // NOTE: We may want to push this function down into the cornerstone core library, not sure yet...
-
-    var providers = [];
-
-    function addProvider( provider) {
-        providers.push(provider);
-    }
-
-    function removeProvider( provider) {
-        var index = providers.indexOf(provider);
-        if (index === -1) {
-            return;
-        }
-
-        providers.splice(index, 1);
-    }
-
-    function getMetaData(type, imageId) {
-        var result;
-        $.each(providers, function(index, provider) {
-            result = provider(type, imageId);
-            if (result !== undefined) {
-                return true;
-            }
-        });
-        return result;
-    }
-
     // module/private exports
-    cornerstoneTools.metaData = {
-        addProvider: addProvider,
-        removeProvider: removeProvider,
-        get: getMetaData
-    };
-
+    cornerstoneTools.metaData = cornerstone.metaData;
 })($, cornerstone, cornerstoneTools);
  
 // End Source; src/metaData.js
@@ -8379,12 +8576,7 @@ if (typeof cornerstoneTools === 'undefined') {
             }
 
             setTimeout(function() {
-                var requestDetails = getNextRequest();
-                if (!requestDetails) {
-                    return;
-                }
-
-                sendRequest(requestDetails);
+                startGrabbing();
             }, grabDelay);
         }
 
@@ -8418,11 +8610,29 @@ if (typeof cornerstoneTools === 'undefined') {
                 return;
             }
 
+            function requestTypeToLoadPriority(requestDetails) {
+                if (requestDetails.type === 'prefetch') {
+                    return -5;
+                } else if (requestDetails.type === 'interactive') {
+                    return 0;
+                } else if (requestDetails.type === 'thumbnail') {
+                    return 5;
+                }
+            }
+
+            var priority = requestTypeToLoadPriority(requestDetails);
+
             var loader;
             if (requestDetails.preventCache === true) {
-                loader = cornerstone.loadImage(imageId);
+                loader = cornerstone.loadImage(imageId, {
+                    priority: priority,
+                    type: requestDetails.type
+                });
             } else {
-                loader = cornerstone.loadAndCacheImage(imageId);
+                loader = cornerstone.loadAndCacheImage(imageId, {
+                    priority: priority,
+                    type: requestDetails.type
+                });
             }
 
             // Load and cache the image
@@ -8441,10 +8651,6 @@ if (typeof cornerstoneTools === 'undefined') {
 
         function startGrabbing() {
             // Begin by grabbing X images
-            if (awake) {
-                return;
-            }
-
             var maxSimultaneousRequests = cornerstoneTools.getMaxSimultaneousRequests();
 
             maxNumRequests = {
@@ -8453,7 +8659,11 @@ if (typeof cornerstoneTools === 'undefined') {
                 prefetch: Math.max(maxSimultaneousRequests - 1, 1)
             };
 
-            for (var i = 0; i < maxSimultaneousRequests; i++) {
+            var currentRequests = numRequests.interaction +
+                numRequests.thumbnail +
+                numRequests.prefetch;
+            var requestsToSend = maxSimultaneousRequests - currentRequests;
+            for (var i = 0; i < requestsToSend; i++) {
                 var requestDetails = getNextRequest();
                 if (requestDetails) {
                     sendRequest(requestDetails);
@@ -8887,14 +9097,8 @@ Display scroll progress bar across bottom of image.
         // Stop prefetching if the ImageCacheFull event is fired from cornerstone
         // console.log('CornerstoneImageCacheFull full, stopping');
         var element = e.data.element;
-        var stackPrefetchData;
 
-        try {
-            stackPrefetchData = cornerstoneTools.getToolState(element, toolType);
-        } catch(error) {
-            return;
-        }
-
+        var stackPrefetchData = cornerstoneTools.getToolState(element, toolType);
         if (!stackPrefetchData || !stackPrefetchData.data || !stackPrefetchData.data.length) {
             return;
         }
@@ -8911,15 +9115,7 @@ Display scroll progress bar across bottom of image.
         // it to the indicesToRequest list so that it will be retrieved later if the
         // currentImageIdIndex is changed to an image nearby
         var element = e.data.element;
-        var stackData;
-
-        try {
-            // It will throw an exception in some cases (eg: thumbnails)
-            stackData = cornerstoneTools.getToolState(element, 'stack');
-        } catch(error) {
-            return;
-        }
-
+        var stackData = cornerstoneTools.getToolState(element, 'stack');
         if (!stackData || !stackData.data || !stackData.data.length) {
             return;
         }
@@ -9069,9 +9265,7 @@ Display scroll progress bar across bottom of image.
     }
 
     function mouseWheelCallback(e, eventData) {
-        var config = cornerstoneTools.stackScroll.getConfiguration();
-        var pixelsPerImage = config.wheelDeltaPixelsPerImage || 100;
-        var images = eventData.direction * Math.max(1, Math.round(Math.abs(eventData.wheelDeltaPixels) / pixelsPerImage));
+        var images = -eventData.direction;
         cornerstoneTools.scroll(eventData.element, images);
     }
 
@@ -9109,19 +9303,6 @@ Display scroll progress bar across bottom of image.
     // module/private exports
     cornerstoneTools.stackScroll = cornerstoneTools.simpleMouseButtonTool(mouseDownCallback);
     cornerstoneTools.stackScrollWheel = cornerstoneTools.mouseWheelTool(mouseWheelCallback);
-
-    var stackScrollWheelConfig = {
-        // Smaller numbers lead to faster scrolling
-        // 100 is the default here because in my empirical tests,
-        // a single tick of my mouse produces a value of 100 pixels
-        // on Firefox on Windows. This is the largest I noticed in my
-        // tests. In some cases (e.g. >500 image stacks), the user
-        // may want to speed up stack scrolling. Lowering this value
-        // can do this.
-        wheelDeltaPixelsPerImage: 100
-    };
-
-    cornerstoneTools.stackScrollWheel.setConfiguration(stackScrollWheelConfig);
 
     var options = {
         eventData: {
@@ -10837,9 +11018,10 @@ Display scroll progress bar across bottom of image.
     var toolType = 'timeSeriesPlayer';
 
     /**
-     * Starts playing a clip or adjusts the frame rate of an already playing clip.  framesPerSecond is
-     * optional and defaults to 30 if not specified.  A negative framesPerSecond will play the clip in reverse.
-     * The element must be a stack of images
+     * Starts playing a clip of different time series of the same image or adjusts the frame rate of an
+     * already playing clip. framesPerSecond is optional and defaults to 30 if not specified. A negative
+     * framesPerSecond will play the clip in reverse.
+     * The element must have time series
      * @param element
      * @param framesPerSecond
      */
@@ -11403,6 +11585,10 @@ Display scroll progress bar across bottom of image.
             return config.maxSimultaneousRequests;
         }
 
+        return getDefaultSimultaneousRequests();
+    }
+
+    function getDefaultSimultaneousRequests() {
         var infoString = getBrowserInfo();
         var info = infoString.split(' ');
         var browserName = info[0];
@@ -11426,6 +11612,7 @@ Display scroll progress bar across bottom of image.
     }
 
     // module exports
+    cornerstoneTools.getDefaultSimultaneousRequests = getDefaultSimultaneousRequests;
     cornerstoneTools.getMaxSimultaneousRequests = getMaxSimultaneousRequests;
     cornerstoneTools.getBrowserInfo = getBrowserInfo;
     cornerstoneTools.isMobileDevice = isMobileDevice;
@@ -11730,14 +11917,6 @@ Display scroll progress bar across bottom of image.
 
     'use strict';
 
-    function isNumber(value) {
-        return typeof value === 'number' && !isNaN(value);
-    }
-
-    function isInteger(number) {
-        return number % 1 === 0;
-    }
-
     function scrollToIndex(element, newImageIdIndex) {
         var toolData = cornerstoneTools.getToolState(element, 'stack');
         if (!toolData || !toolData.data || !toolData.data.length) {
@@ -11745,12 +11924,6 @@ Display scroll progress bar across bottom of image.
         }
 
         var stackData = toolData.data[0];
-
-        if (!isNumber(newImageIdIndex)) {
-            throw 'scrollToIndex: index provided is not numeric: ' + newImageIdIndex;
-        } else if (isNumber(newImageIdIndex) && !isInteger(newImageIdIndex)) {
-            throw 'scrollToIndex: index provided is not an integer: ' + newImageIdIndex;
-        }
 
         // Allow for negative indexing
         if (newImageIdIndex < 0) {
@@ -11815,16 +11988,19 @@ Display scroll progress bar across bottom of image.
             }
         }
 
-        var requestPoolManager = cornerstoneTools.requestPoolManager;
-
-        var type = 'interaction';
-        requestPoolManager.clearRequestStack(type);
-
         // Convert the preventCache value in stack data to a boolean
         var preventCache = !!stackData.preventCache;
 
-        requestPoolManager.addRequest(element, newImageId, type, preventCache, doneCallback, failCallback);
-        requestPoolManager.startGrabbing();
+        var imagePromise;
+        if (preventCache) {
+            imagePromise = cornerstone.loadImage(newImageId);
+        } else {
+            imagePromise = cornerstone.loadAndCacheImage(newImageId);
+        }
+
+        imagePromise.then(doneCallback, failCallback);
+        // Make sure we kick off any changed download request pools
+        cornerstoneTools.requestPoolManager.startGrabbing();
 
         $(element).trigger('CornerstoneStackScroll', eventData);
     }
@@ -11877,127 +12053,3 @@ Display scroll progress bar across bottom of image.
 })(cornerstone, cornerstoneTools);
  
 // End Source; src/util/setContextToDisplayFontSize.js
-
-// Begin Source: src/util/wheelListeners.js
-(function(cornerstoneTools) {
-
-    'use strict';
-
-    // Thanks to Andrei Kashcha (@anvaka)
-    // https://github.com/anvaka/wheel/blob/master/index.js
-
-    /**
-     * This module unifies handling of mouse whee event across different browsers
-     *
-     * See https://developer.mozilla.org/en-US/docs/Web/Reference/Events/wheel?redirectlocale=en-US&redirectslug=DOM%2FMozilla_event_reference%2Fwheel
-     * for more details
-     *
-     * Usage:
-     *  var addWheelListener = require('wheel').addWheelListener;
-     *  var removeWheelListener = require('wheel').removeWheelListener;
-     *  addWheelListener(domElement, function (e) {
-     *    // mouse wheel event
-     *  });
-     *  removeWheelListener(domElement, function);
-     */
-    // by default we shortcut to 'addEventListener':
-
-    // creates a global "addWheelListener" method
-    // example: addWheelListener( elem, function( e ) { console.log( e.deltaY ); e.preventDefault(); } );
-
-    var prefix = '',
-        _addEventListener,
-        _removeEventListener,
-        support;
-
-    function detectEventModel(window, document) {
-        if (window && window.addEventListener) {
-            _addEventListener = 'addEventListener';
-            _removeEventListener = 'removeEventListener';
-        } else {
-            _addEventListener = 'attachEvent';
-            _removeEventListener = 'detachEvent';
-            prefix = 'on';
-        }
-
-        if (document) {
-            // detect available wheel event
-            support = 'onwheel' in document.createElement('div') ? 'wheel' : // Modern browsers support "wheel"
-                document.onmousewheel !== undefined ? 'mousewheel' : // Webkit and IE support at least "mousewheel"
-                'DOMMouseScroll'; // let's assume that remaining browsers are older Firefox
-        } else {
-            support = 'wheel';
-        }
-    }
-
-    function addWheelListener(elem, callback, useCapture) {
-        detectEventModel(window, document);
-
-        _addWheelListener(elem, support, callback, useCapture);
-
-        // handle MozMousePixelScroll in older Firefox
-        if (support === 'DOMMouseScroll') {
-            _addWheelListener(elem, 'MozMousePixelScroll', callback, useCapture);
-        }
-    }
-
-    function removeWheelListener(elem, callback, useCapture) {
-        detectEventModel(window, document);
-
-        _removeWheelListener(elem, support, callback, useCapture);
-
-        // handle MozMousePixelScroll in older Firefox
-        if (support === 'DOMMouseScroll') {
-            _removeWheelListener(elem, 'MozMousePixelScroll', callback, useCapture);
-        }
-    }
-
-    function _removeWheelListener(elem, eventName, callback, useCapture) {
-        elem[_removeEventListener](prefix + eventName, callback, useCapture || false);
-    }
-
-    function _addWheelListener(elem, eventName, callback, useCapture) {
-        elem[_addEventListener](prefix + eventName, support === 'wheel' ? callback : function(originalEvent) {
-            if (!originalEvent) {
-                originalEvent = window.event;
-            }
-
-            // create a normalized event object
-            var event = {
-                // keep a ref to the original event object
-                originalEvent: originalEvent,
-                target: originalEvent.target || originalEvent.srcElement,
-                type: 'wheel',
-                deltaMode: originalEvent.type === 'MozMousePixelScroll' ? 0 : 1,
-                deltaX: 0,
-                deltaY: 0,
-                deltaZ: 0,
-                preventDefault: function() {
-                    return originalEvent.preventDefault ? originalEvent.preventDefault() : false;
-                }
-            };
-
-            // calculate deltaY (and deltaX) according to the event
-            if (support === 'mousewheel') {
-                event.deltaY = -1 / 40 * originalEvent.wheelDelta;
-                // Webkit also support wheelDeltaX
-                if (originalEvent.wheelDeltaX) {
-                    event.deltaX = -1 / 40 * originalEvent.wheelDeltaX;
-                }
-            } else {
-                event.deltaY = originalEvent.detail;
-            }
-
-            // it's time to fire the callback
-            return callback(event);
-
-        }, useCapture || false);
-    }
-
-    // Module exports
-    cornerstoneTools.addWheelListener = addWheelListener;
-    cornerstoneTools.removeWheelListener = removeWheelListener;
-
-})(cornerstoneTools);
- 
-// End Source; src/util/wheelListeners.js

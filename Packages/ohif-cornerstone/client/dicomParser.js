@@ -1,4 +1,4 @@
-/*! dicom-parser - v1.7.1 - 2016-06-09 | (c) 2014 Chris Hafey | https://github.com/chafey/dicomParser */
+/*! dicom-parser - v1.7.4 - 2016-08-18 | (c) 2014 Chris Hafey | https://github.com/chafey/dicomParser */
 (function (root, factory) {
 
     // node.js
@@ -194,20 +194,6 @@ var dicomParser = (function (dicomParser)
     dataSet.byteArray[position + 1] === 0xD9);
   }
 
-  // Each JPEG image has a start of image marker
-  function isStartOfImageMarker(dataSet, position) {
-    return (dataSet.byteArray[position] === 0xFF &&
-    dataSet.byteArray[position + 1] === 0xD8);
-  }
-
-  function isFragmentStartOfImage(dataSet, pixelDataElement, fragmentIndex) {
-    var fragment = pixelDataElement.fragments[fragmentIndex];
-    if(isStartOfImageMarker(dataSet, fragment.position)) {
-      return true;
-    }
-    return false;
-  }
-
   function isFragmentEndOfImage(dataSet, pixelDataElement, fragmentIndex) {
     var fragment = pixelDataElement.fragments[fragmentIndex];
     // Need to check the last two bytes and the last three bytes for marker since odd length
@@ -222,12 +208,7 @@ var dicomParser = (function (dicomParser)
   function findLastImageFrameFragmentIndex(dataSet, pixelDataElement, startFragment) {
     for(var fragmentIndex=startFragment; fragmentIndex < pixelDataElement.fragments.length; fragmentIndex++) {
       if(isFragmentEndOfImage(dataSet, pixelDataElement, fragmentIndex)) {
-        // if not last fragment, peek ahead to make sure the next fragment has a start of image marker just to
-        // be safe
-        if(fragmentIndex === pixelDataElement.fragments.length - 1 ||
-          isFragmentStartOfImage(dataSet, pixelDataElement, fragmentIndex+1)) {
-          return fragmentIndex;
-        }
+        return fragmentIndex;
       }
     }
   }
@@ -275,10 +256,6 @@ var dicomParser = (function (dicomParser)
     var basicOffsetTable = [];
 
     var startFragmentIndex = 0;
-    // sanity check first fragment has a JPEG start of image marker
-    if(!isFragmentStartOfImage(dataSet, pixelDataElement, startFragmentIndex)) {
-      throw 'first fragment does not have JPEG start of image marker';
-    }
 
     while(true) {
       // Add the offset for the start fragment
@@ -1419,6 +1396,65 @@ var dicomParser = (function (dicomParser)
 
 var dicomParser = (function (dicomParser)
 {
+  "use strict";
+
+  if(dicomParser === undefined)
+  {
+    dicomParser = {};
+  }
+
+  /**
+   * reads from the byte stream until it finds the magic number for the Sequence Delimitation Item item
+   * and then sets the length of the element
+   * @param byteStream
+   * @param element
+   */
+  dicomParser.findAndSetUNElementLength = function(byteStream, element)
+  {
+    if(byteStream === undefined)
+    {
+      throw "dicomParser.findAndSetUNElementLength: missing required parameter 'byteStream'";
+    }
+
+    var itemDelimitationItemLength = 8; // group, element, length
+    var maxPosition = byteStream.byteArray.length - itemDelimitationItemLength;
+    while(byteStream.position <= maxPosition)
+    {
+      var groupNumber;
+      groupNumber = byteStream.readUint16();
+      if(groupNumber === 0xfffe)
+      {
+        var elementNumber;
+        elementNumber = byteStream.readUint16();
+        if(elementNumber === 0xe0dd)
+        {
+          // NOTE: It would be better to also check for the length to be 0 as part of the check above
+          // but we will just log a warning for now
+          var itemDelimiterLength;
+          itemDelimiterLength = byteStream.readUint32(); // the length
+          if(itemDelimiterLength !== 0) {
+            byteStream.warnings('encountered non zero length following item delimiter at position' + byteStream.position - 4 + " while reading element of undefined length with tag ' + element.tag");
+          }
+          element.length = byteStream.position - element.dataOffset;
+          return;
+        }
+      }
+    }
+
+    // No item delimitation item - silently set the length to the end of the buffer and set the position past the end of the buffer
+    element.length = byteStream.byteArray.length - element.dataOffset;
+    byteStream.seek(byteStream.byteArray.length - byteStream.position);
+  };
+
+
+  return dicomParser;
+}(dicomParser));
+/**
+ * Internal helper functions for parsing DICOM elements
+ */
+
+var dicomParser = (function (dicomParser)
+{
     "use strict";
 
     if(dicomParser === undefined)
@@ -1891,10 +1927,15 @@ var dicomParser = (function (dicomParser)
             dicomParser.readSequenceItemsExplicit(byteStream, element, warnings);
             return element;
         }
+
+
         if(element.length === 4294967295)
         {
             if(element.tag === 'x7fe00010') {
                 dicomParser.findEndOfEncapsulatedElement(byteStream, element, warnings);
+                return element;
+            }   else if(element.vr === 'UN') {
+                dicomParser.findAndSetUNElementLength(byteStream, element);
                 return element;
             } else {
                 dicomParser.findItemDelimitationItemAndSetElementLength(byteStream, element);
@@ -2633,7 +2674,7 @@ var dicomParser = (function (dicomParser)
     dicomParser = {};
   }
 
-  dicomParser.version = "1.7.1";
+  dicomParser.version = "1.7.3";
 
   return dicomParser;
 }(dicomParser));
