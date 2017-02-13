@@ -24,7 +24,7 @@ export class Metadata {
             value: data
         });
 
-        // Define _custom properties as an immutable property
+        // Define "_custom" properties as an immutable property
         // IMPORTANT: This property can only be set during instance construction.
         Object.defineProperty(this, '_custom', {
             configurable: false,

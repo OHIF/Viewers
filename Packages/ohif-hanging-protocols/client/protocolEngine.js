@@ -428,9 +428,6 @@ HP.ProtocolEngine = class ProtocolEngine {
                     // Insert the new study metadata
                     this.studies.push(studyMetadata);
 
-                    // Re-match images
-                    this.matchImages(viewport);
-
                     // Update the viewport to refresh layout manager with new study
                     this.updateViewports();
                 }, error => { 
@@ -668,9 +665,10 @@ HP.ProtocolEngine = class ProtocolEngine {
                 currentViewportData.imageId = currentMatch.imageId;
             }
 
-            if (!currentViewportData.displaySetInstanceUid) {
-                throw new OHIFError('ProtocolEngine::updateViewports No matching display set found?');
-            }
+            // @TODO Why should we throw an exception when a best match is not found? This was aborting the whole process.
+            // if (!currentViewportData.displaySetInstanceUid) {
+            //     throw new OHIFError('ProtocolEngine::updateViewports No matching display set found?');
+            // }
 
             viewportData.push(currentViewportData);
         });
