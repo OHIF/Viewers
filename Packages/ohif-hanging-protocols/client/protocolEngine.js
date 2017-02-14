@@ -9,7 +9,7 @@ import 'meteor/ohif:viewerbase';
  */
 
 const { OHIFError } = OHIF.viewerbase;
-const { StudyMetadata, StudySummary } = OHIF.viewerbase.metadata;
+const { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary } = OHIF.viewerbase.metadata;
 
 
 // Define a global variable that will be used to refer to the Protocol Engine
@@ -98,6 +98,11 @@ Meteor.startup(function() {
  * @return {Object}      Matching Object with score and details (which rule passed or failed)
  */
 HP.match = function(metadataInstance, rules) {
+
+    if (!(metadataInstance instanceof StudyMetadata || metadataInstance instanceof SeriesMetadata || metadataInstance instanceof InstanceMetadata)) {
+        throw new OHIFError('HP::match metadataInstance must be an instance of StudyMetadata, SeriesMetadata or InstanceMetadata');
+    }
+
     const options = {
         format: 'grouped'
     };
@@ -109,17 +114,27 @@ HP.match = function(metadataInstance, rules) {
     
     let requiredFailed = false;
     let score = 0;
+    let instance;
+
+    if (metadataInstance instanceof StudyMetadata) {
+        instance = metadataInstance.getFirstInstance();
+    } else if (metadataInstance instanceof SeriesMetadata) {
+        instance = metadataInstance.getInstanceByIndex(0);
+    } else {
+        instance = metadataInstance;
+    }
 
     rules.forEach(rule => {
         const attribute = rule.attribute;
+        let customAttributeExists = metadataInstance.customAttributeExists(attribute);
 
         // If the metadataInstance we are testing (e.g. study, series, or instance MetadataInstance) do
         // not contain the attribute specified in the rule, check whether or not they have been
         // defined in the CustomAttributeRetrievalCallbacks Object.
-        if (!metadataInstance.customAttributeExists(attribute) && 
-            HP.CustomAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
+        if (!customAttributeExists && HP.CustomAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
             const customAttribute = HP.CustomAttributeRetrievalCallbacks[attribute];
             metadataInstance.setCustomAttribute(attribute, customAttribute.callback(metadataInstance));
+            customAttributeExists = true;
         }
 
         // Format the constraint as required by Validate.js
@@ -129,8 +144,9 @@ HP.match = function(metadataInstance, rules) {
 
         // Create a single attribute object to be validated, since metadataInstance is an 
         // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
+        const attributeValue = customAttributeExists ? metadataInstance.getCustomAttribute(attribute) : instance.getRawValue(attribute);
         const attributeMap = {
-            [attribute]: metadataInstance.getCustomAttribute(attribute)
+            [attribute]: attributeValue + ''
         };
 
         // Use Validate.js to evaluate the constraints on the specified metadataInstance

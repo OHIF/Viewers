@@ -11,20 +11,21 @@ HP.displaySettings = {
     }
 };
 
+// @TODO Fix abstractPriorValue comparison
 HP.studyAttributes = [{
-    id: 'patientId',
+    id: 'x00100020',
     text: '(x00100020) Patient ID'
 }, {
-    id: 'studyInstanceUid',
+    id: 'x0020000d',
     text: '(x0020000d) Study Instance UID'
 }, {
-    id: 'studyDate',
+    id: 'x00080020',
     text: '(x00080020) Study Date'
 }, {
-    id: 'studyTime',
+    id: 'x00080030',
     text: '(x00080030) Study Time'
 }, {
-    id: 'studyDescription',
+    id: 'x00081030',
     text: '(x00081030) Study Description'
 }, {
     id: 'abstractPriorValue',
@@ -32,19 +33,19 @@ HP.studyAttributes = [{
 }];
 
 HP.protocolAttributes = [{
-    id: 'patientId',
+    id: 'x00100020',
     text: '(x00100020) Patient ID'
 }, {
-    id: 'studyInstanceUid',
+    id: 'x0020000d',
     text: '(x0020000d) Study Instance UID'
 }, {
-    id: 'studyDate',
+    id: 'x00080020',
     text: '(x00080020) Study Date'
 }, {
-    id: 'studyTime',
+    id: 'x00080030',
     text: '(x00080030) Study Time'
 }, {
-    id: 'studyDescription',
+    id: 'x00081030',
     text: '(x00081030) Study Description'
 }, {
     id: 'anatomicRegion',
@@ -52,16 +53,16 @@ HP.protocolAttributes = [{
 }];
 
 HP.seriesAttributes = [{
-    id: 'seriesInstanceUid',
+    id: 'x0020000e',
     text: '(x0020000e) Series Instance UID'
 }, {
-    id: 'modality',
+    id: 'x00080060',
     text: '(x00080060) Modality'
 }, {
-    id: 'seriesNumber',
-    text: '(x00080060) Series Number'
+    id: 'x00200011',
+    text: '(x00200011) Series Number'
 }, {
-    id: 'seriesDescription',
+    id: 'x0008103e',
     text: '(x0008103e) Series Description'
 }, {
     id: 'numImages',
@@ -69,33 +70,33 @@ HP.seriesAttributes = [{
 }];
 
 HP.instanceAttributes = [{
-    id: 'sopClassUid',
-    text: 'SOP Class UID'
+    id: 'x00080016',
+    text: '(x00080016) SOP Class UID'
 }, {
-    id: 'sopInstanceUid',
-    text: 'SOP Instance UID'
+    id: 'x00080018',
+    text: '(x00080018) SOP Instance UID'
 }, {
-    id: 'viewPosition',
-    text: 'View Position'
+    id: 'x00185101',
+    text: '(x00185101) View Position'
 }, {
-    id: 'instanceNumber',
-    text: 'Instance Number'
+    id: 'x00200013',
+    text: '(x00200013) Instance Number'
 }, {
-    id: 'imageType',
-    text: 'Image Type'
+    id: 'x00080008',
+    text: '(x00080008) Image Type'
 }, {
-    id: 'frameTime',
-    text: 'Frame Time'
+    id: 'x00181063',
+    text: '(x00181063) Frame Time'
 }, {
-    id: 'laterality',
-    text: 'Laterality'
+    id: 'x00200060',
+    text: '(x00200060) Laterality'
 }, {
-    id: 'index',
-    text: 'Image Index'
+    id: 'x00541330',
+    text: '(x00541330) Image Index'
 }, {
-    id: 'photometricInterpretation',
-    text: 'Photometric Interpretation'
+    id: 'x00280004',
+    text: '(x00280004) Photometric Interpretation'
 }, {
-    id: 'sliceThickness',
-    text: 'Slice Thickness'
+    id: 'x00180050',
+    text: '(x00180050) Slice Thickness'
 }];
