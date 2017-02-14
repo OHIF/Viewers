@@ -18,6 +18,7 @@
     ]
   },
   "defaultServiceType": "dicomWeb",
+  "dropCollections": true,
   "public": {
     "verifyEmail": false,
     "ui": {

@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 
 TrialCriteriaTypes = new Meteor.Collection(null);
+TrialCriteriaTypes._debugName = 'TrialCriteriaTypes';
 
 TrialCriteriaTypes.insert({
     id: 'RECIST',

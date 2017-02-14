@@ -6,9 +6,11 @@ import { measurementTools } from 'meteor/ohif:lesiontracker/both/configuration/m
 let MeasurementCollections = {};
 measurementTools.forEach(tool => {
     MeasurementCollections[tool.id] = new Mongo.Collection(tool.id);
+    MeasurementCollections[tool.id]._debugName = tool.id;
 });
 
 const Timepoints = new Mongo.Collection('timepoints');
+Timepoints._debugName = 'Timepoints';
 
 Timepoints.find().observe({
     remove() {
@@ -18,10 +20,12 @@ Timepoints.find().observe({
 
 // Drop our collections for testing purposes
 Meteor.startup(() => {
-    Timepoints.remove({});
-    measurementTools.forEach(tool => {
-        MeasurementCollections[tool.id].remove({});
-    });
+    if (Meteor.settings.dropCollections) {
+        Timepoints.remove({});
+        measurementTools.forEach(tool => {
+            MeasurementCollections[tool.id].remove({});
+        });
+    }
 });
 
 // TODO: Make storage use update instead of clearing the entire collection and

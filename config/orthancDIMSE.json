@@ -27,6 +27,7 @@
     }]
   },
   "defaultServiceType": "dimse",
+  "dropCollections": true,
   "public": {
     "verifyEmail": false,
     "ui": {

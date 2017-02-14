@@ -1,6 +1,8 @@
 MatchedProtocols = new Meteor.Collection(null);
+MatchedProtocols._debugName = 'MatchedProtocols';
 
 Comparators = new Meteor.Collection(null);
+Comparators._debugName = 'Comparators';
 
 var comparators = [{
     id: 'equals',

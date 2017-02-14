@@ -11,6 +11,10 @@ Meteor.startup(function() {
     };
 
     createDemoUser = function() {
+        if (!Meteor.settings.public.demoUserEnabled) {
+            return;
+        }
+
         const user = Meteor.users.findOne({
             emails: {
                 $elemMatch: {
@@ -21,7 +25,8 @@ Meteor.startup(function() {
         if (user) {
             return;
         }
-        console.log('create user!');
+
+        console.log('Creating demo user');
 
         // Create user
         const userId = Accounts.createUser(options);

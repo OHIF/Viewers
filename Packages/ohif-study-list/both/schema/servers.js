@@ -167,6 +167,11 @@ export const PublicServerConfig = new SimpleSchema({
         label: 'Verify Email',
         defaultValue: false
     },
+    demoUserEnabled: {
+        type: Boolean,
+        label: 'Creates demo user on startup and show TestDrive button',
+        defaultValue: true
+    },
     ui: {
         type: UISettings,
         label: 'UI Settings'
@@ -195,6 +200,11 @@ export const ServerConfiguration = new SimpleSchema({
         type: String,
         label: 'Default Service Type',
         defaultValue: 'dicomWeb'
+    },
+    dropCollections: {
+        type: Boolean,
+        label: 'Drop database collections',
+        defaultValue: false
     },
     public: {
         type: PublicServerConfig,
