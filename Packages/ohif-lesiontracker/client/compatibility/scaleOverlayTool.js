@@ -3,19 +3,26 @@
 
     'use strict';
 
-    // Draw Intervals
-    function drawIntervals (context, config) {
-
-        var i = 0;
+    function drawLine(context, startPoint, endPoint, config) {
+        context.beginPath();
+        context.strokeStyle = config.color;
+        context.lineWidth = config.lineWidth;
+        context.moveTo(startPoint.x, startPoint.y);
+        context.lineTo(endPoint.x, endPoint.y);
+        context.stroke();
+    }
+    
+    function drawVerticalScalebarIntervals (context, config) {
+        let i = 0;
 
         while (config.verticalLine.start.y + i * config.verticalMinorTick <= config.vscaleBounds.bottomRight.y) {
 
-            var startPoint = {
+            const startPoint = {
                 x: config.verticalLine.start.x,
                 y: config.verticalLine.start.y + i * config.verticalMinorTick
             };
 
-            var endPoint = {
+            const endPoint = {
                 x: 0,
                 y: config.verticalLine.start.y + i * config.verticalMinorTick
             };
@@ -27,26 +34,23 @@
                 endPoint.x = config.verticalLine.start.x - config.minorTickLength;
             }
 
-            context.beginPath();
-            context.strokeStyle = config.color;
-            context.lineWidth = config.lineWidth;
-            context.moveTo(startPoint.x, startPoint.y);
-            context.lineTo(endPoint.x, endPoint.y);
-            context.stroke();
+            drawLine(context, startPoint, endPoint, config);
 
             i++;
         }
+    }
 
-        i = 0;
+    function drawHorizontalScalebarIntervals (context, config) {
+        let i = 0;
 
         while (config.horizontalLine.start.x + i * config.horizontalMinorTick <= config.hscaleBounds.bottomRight.x) {
 
-            startPoint = {
+            const startPoint = {
                 x: config.horizontalLine.start.x + i * config.horizontalMinorTick,
                 y: config.horizontalLine.start.y
             };
 
-            endPoint = {
+            const endPoint = {
                 x: config.horizontalLine.start.x + i * config.horizontalMinorTick,
                 y: 0
             };
@@ -57,73 +61,60 @@
                 endPoint.y = config.horizontalLine.start.y - config.minorTickLength;
             }
 
-            context.beginPath();
-            context.strokeStyle = config.color;
-            context.lineWidth = config.lineWidth;
-            context.moveTo(startPoint.x, startPoint.y);
-            context.lineTo(endPoint.x, endPoint.y);
-            context.stroke();
+            drawLine(context, startPoint, endPoint, config);
 
             i++;
-
         }
-
     }
 
-    // Draws long horizontal and vertical lines
-    function drawFrameLines(context, config){
-
-        // Vertical Line
-        var startPoint = {
+    function drawVerticalScalebar(context, config) {
+        const startPoint = {
             x: config.verticalLine.start.x,
             y: config.verticalLine.start.y
         };
-        var endPoint = {
+        const endPoint = {
             x: config.verticalLine.end.x,
             y: config.verticalLine.end.y
         };
 
-        context.beginPath();
-        context.strokeStyle = config.color;
-        context.lineWidth = config.lineWidth;
-        context.moveTo(startPoint.x, startPoint.y);
-        context.lineTo(endPoint.x, endPoint.y);
-        context.stroke();
+        drawLine(context, startPoint, endPoint, config);
+        drawVerticalScalebarIntervals(context, config);
+    }
 
-        // Horizontal line
-        startPoint = {
+    function drawHorizontalScalebar(context, config) {
+        const startPoint = {
             x: config.horizontalLine.start.x ,
             y: config.horizontalLine.start.y
         };
-        endPoint = {
+        const endPoint = {
             x: config.horizontalLine.end.x,
             y: config.horizontalLine.end.y
         };
 
-        context.beginPath();
-        context.strokeStyle = config.color;
-        context.lineWidth = config.lineWidth;
-        context.moveTo(startPoint.x, startPoint.y);
-        context.lineTo(endPoint.x, endPoint.y);
-        context.stroke();
+        drawLine(context, startPoint, endPoint, config);
+        drawHorizontalScalebarIntervals(context, config);
+    }
 
-        // Draw intervals
-        drawIntervals(context, config);
+    function drawScalebars(context, config){
+        context.shadowColor = config.shadowColor;
+        context.shadowBlur = config.shadowBlur;
 
+        drawVerticalScalebar(context, config);
+        drawHorizontalScalebar(context, config);
     }
 
     // Computes the max bound for scales on the image
     function computeScaleBounds(eventData, canvasSize, imageSize, horizontalReduction, verticalReduction) {
 
-        var canvasBounds = {
+        let canvasBounds = {
             left: 0,
             top: 0,
             width: canvasSize.width,
             height: canvasSize.height
         };
 
-        var hReduction = horizontalReduction * Math.min(1000, canvasSize.width);
-        var vReduction = verticalReduction * Math.min(1000, canvasSize.height);
+        const hReduction = horizontalReduction * Math.min(1000, canvasSize.width);
+        const vReduction = verticalReduction * Math.min(1000, canvasSize.height);
         canvasBounds = {
             left: canvasBounds.left + hReduction,
             top: canvasBounds.top + vReduction,
@@ -131,37 +122,16 @@
             height: canvasBounds.height - 2 * vReduction
         };
 
-        var startPoint = {
-            x: 0,
-            y: 0
+        return {
+            topLeft: {
+                x: canvasBounds.left,
+                y: canvasBounds.top
+            },
+            bottomRight: {
+                x: canvasBounds.left + canvasBounds.width,
+                y: canvasBounds.top + canvasBounds.height
+            }
         };
-        var startPointImageBounds = {
-            x: startPoint.x,
-            y: startPoint.y
-        };
-        var endPointImageBounds = {
-            x: startPoint.x + imageSize.width,
-            y: startPoint.y + imageSize.height
-        };
-
-        var startPointCanvasImageBounds = cornerstone.pixelToCanvas(eventData.element, startPointImageBounds);
-        var endPointCanvasImageBounds = cornerstone.pixelToCanvas(eventData.element, endPointImageBounds);
-
-        var imageBoundsWidth = Math.abs(startPointCanvasImageBounds.x - endPointCanvasImageBounds.x);
-        var imageBoundsHeight = Math.abs(startPointCanvasImageBounds.y - endPointCanvasImageBounds.y);
-
-        hReduction = horizontalReduction * imageBoundsWidth;
-        vReduction = verticalReduction * imageBoundsHeight;
-
-        var imageBounds = {
-            left: startPointCanvasImageBounds.x + hReduction,
-            top: startPointCanvasImageBounds.y + vReduction,
-            width: imageBoundsWidth - 2 * hReduction,
-            height: imageBoundsHeight - 2 * vReduction
-        };
-
-        return cornerstoneMath.rect.getIntersectionRect(canvasBounds, imageBounds);
-
     }
 
     function onImageRendered(e, eventData) {
@@ -171,33 +141,33 @@
             return;
         }
 
-        var viewport = cornerstone.getViewport(eventData.enabledElement.element);
+        const viewport = cornerstone.getViewport(eventData.enabledElement.element);
         if (!viewport) {
             return;
         }
 
-        var canvasSize = {
+        const canvasSize = {
             width: eventData.enabledElement.canvas.width,
             height: eventData.enabledElement.canvas.height
         };
-        var imageSize = {
+        const imageSize = {
             width: eventData.enabledElement.image.width ,
             height: eventData.enabledElement.image.height
         };
 
         // Distance between intervals is 10mm
-        var verticalIntervalScale = (10.0 / eventData.enabledElement.image.rowPixelSpacing) * eventData.viewport.scale;
-        var horizontalIntervalScale = (10.0 / eventData.enabledElement.image.rowPixelSpacing) * eventData.viewport.scale;
+        const verticalIntervalScale = (10.0 / eventData.enabledElement.image.rowPixelSpacing) * eventData.viewport.scale;
+        const horizontalIntervalScale = (10.0 / eventData.enabledElement.image.rowPixelSpacing) * eventData.viewport.scale;
 
         // 0.1 and 0.05 gives margin to horizontal and vertical lines
-        var hscaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.1, 0.05);
-        var vscaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.05, 0.1);
+        const hscaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.25, 0.05);
+        const vscaleBounds = computeScaleBounds(eventData, canvasSize, imageSize, 0.05, 0.15);
 
         if (!canvasSize.width || !canvasSize.height || !imageSize.width || !imageSize.height || !hscaleBounds || !vscaleBounds) {
             return;
         }
 
-        var config = {
+        const config = {
             hscaleBounds: hscaleBounds,
             vscaleBounds: vscaleBounds,
             verticalMinorTick: verticalIntervalScale,
@@ -225,18 +195,17 @@
                 }
             },
             color: 'white', // TODO: fix this later
-            lineWidth: cornerstoneTools.toolStyle.getToolWidth()
+            lineWidth: cornerstoneTools.toolStyle.getToolWidth(),
+            shadowColor: 'black',
+            shadowBlur: 4
         };
 
-        var context = eventData.enabledElement.canvas.getContext('2d');
+        const context = eventData.enabledElement.canvas.getContext('2d');
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.save();
 
-        // Draw frame lines
-        drawFrameLines(context, config);
-
+        drawScalebars(context, config);
         context.restore();
-
     }
 
     ///////// END IMAGE RENDERING ///////
