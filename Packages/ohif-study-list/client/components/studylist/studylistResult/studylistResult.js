@@ -234,9 +234,20 @@ Template.studylistResult.onRendered(() => {
     const today = moment();
     const lastWeek = moment().subtract(6, 'days');
     const lastMonth = moment().subtract(29, 'days');
-    const datePicker = instance.$('#studyDate').daterangepicker({
+    const $studyDate = instance.$('#studyDate');
+    const dateFilterNumDays = OHIF.uiSettings.studyListDateFilterNumDays;
+    let startDate, endDate;
+
+    if (dateFilterNumDays) {
+        startDate = moment().subtract(dateFilterNumDays - 1, 'days');
+        endDate = today;
+    }
+
+    const datePicker = $studyDate.daterangepicker({
         maxDate: today,
         autoUpdateInput: true,
+        startDate: startDate,
+        endDate: endDate,
         ranges: {
             Today: [today, today],
             'Last 7 Days': [lastWeek, today],
@@ -244,8 +255,13 @@ Template.studylistResult.onRendered(() => {
         }
     }).data('daterangepicker');
 
-    // Retrieve all studies
-    search();
+    if (startDate && endDate) {
+        datePicker.updateInputText();
+        $studyDate.trigger('change');
+    } else {
+        // Retrieve all studies
+        search();
+    }
 });
 
 function resetSortingColumns(instance, sortingColumn) {

@@ -158,7 +158,12 @@ export const UISettings = new SimpleSchema({
         type: String,
         label: 'Auto position text call-outs for measurements when creating them.',
         defaultValue: 'TRBL'
-    }
+    },
+    studyListDateFilterNumDays: {
+        type: Number,
+        label: 'Number of days to be used on Study List date filter',
+        min: 1
+    }    
 });
 
 export const PublicServerConfig = new SimpleSchema({
