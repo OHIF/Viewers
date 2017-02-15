@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.measurementTableHeaderRow.helpers({
     numberOfMeasurements() {
@@ -47,6 +48,6 @@ Template.measurementTableHeaderRow.helpers({
 Template.measurementTableHeaderRow.events({
     'click .js-setTool'(event, instance) {
         const { toolGroup } = instance.data;
-        toolManager.setActiveTool(toolGroup.childTools[0].cornerstoneToolType);
+        Viewerbase.toolManager.setActiveTool(toolGroup.childTools[0].cornerstoneToolType);
     }
 });

@@ -13,16 +13,13 @@
             {{/each}}
 
             {{#if config.newMeasurementTool}}
-                {{#let measurementType=(getNewMeasurementType config.newMeasurementTool)}}
-                {{#let newMeasure=(newMeasurements measurementType)}}
+                {{#let toolGroup=(getNewToolGroup config.newMeasurementTool)}}
+                {{#let newMeasure=(newMeasurements toolGroup)}}
                     {{#if newMeasure.length}}
                         {{#let collection=newMeasure}}
-                            {{>measurementTableHeaderRow
-                                measurementType=measurementType
-                                measurements=collection
-                                currentTimepointId=currentTimepointId
-                                timepointApi=timepointApi
-                                measurementApi=measurementApi}}
+                            {{>measurementTableHeaderRow (clone this
+                                toolGroup=toolGroup
+                                measurementRows=collection)}}
 
                             {{#each entry in collection}}
                                 {{>measurementTableRow (clone this rowItem=entry)}}

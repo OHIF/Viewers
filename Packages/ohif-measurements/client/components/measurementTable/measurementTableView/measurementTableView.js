@@ -31,18 +31,27 @@ Template.measurementTableView.helpers({
         return !!group.measurementRows.length;
     },
 
-    getNewMeasurementType(tool) {
-        // TODO: Check Conformance criteria here.
-        // RECIST should be nonTargets, irRC should be targets
+    getNewToolGroup(tool) {
+        const configuration = OHIF.measurements.MeasurementApi.getConfiguration();
+        const trialCriteriaType = TrialCriteriaTypes.findOne({ selected: true });
+        const trialCriteriaTypeId = trialCriteriaType.id.toLowerCase();
+        const trialToolGroupMap = {
+            recist: 'nonTargets',
+            irrc: 'targets'
+        };
+
+        const toolGroupId = trialToolGroupMap[trialCriteriaTypeId];
+        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
+
         return {
             id: tool.id,
             name: tool.name,
-            cornerstoneToolType: 'nonTarget',
-            measurementTypeId: 'nonTargets'
+            childTools: toolGroup.childTools,
+            measurementTypeId: toolGroup.id
         };
     },
 
-    newMeasurements(measurementType) {
+    newMeasurements(toolGroup) {
         const instance = Template.instance();
         const measurementApi = instance.data.measurementApi;
         const timepointApi = instance.data.timepointApi;
@@ -62,7 +71,7 @@ Template.measurementTableView.helpers({
 
         // Retrieve all the data for this Measurement type (e.g. 'targets')
         // which was recorded at baseline.
-        const measurementTypeId = measurementType.measurementTypeId;
+        const measurementTypeId = toolGroup.measurementTypeId;
         const atBaseline = measurementApi.fetch(measurementTypeId, {
             timepointId: baseline.timepointId
         });
