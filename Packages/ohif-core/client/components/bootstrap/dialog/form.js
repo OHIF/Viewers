@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.dialogForm.onCreated(() => {
     const instance = Template.instance();
@@ -14,7 +15,7 @@ Template.dialogForm.onCreated(() => {
             }
 
             // Hide the modal, removing the backdrop
-            instance.$('.modal').on('hidden.bs.modal', event => {
+            instance.$('.modal').one('hidden.bs.modal', event => {
                 // Get the form value and call the confirm callback or resolve the promise
                 const formData = form.value();
                 if (_.isFunction(instance.data.confirmCallback)) {
@@ -27,7 +28,7 @@ Template.dialogForm.onCreated(() => {
 
         cancel() {
             // Hide the modal, removing the backdrop
-            instance.$('.modal').on('hidden.bs.modal', event => {
+            instance.$('.modal').one('hidden.bs.modal', event => {
                 // Call the cancel callback or resolve the promise
                 if (_.isFunction(instance.data.cancelCallback)) {
                     instance.data.cancelCallback(instance.data.promiseReject);
@@ -61,21 +62,21 @@ Template.dialogForm.onRendered(() => {
 });
 
 Template.dialogForm.events({
-    'keydown'(event) {
+    keydown(event) {
         const instance = Template.instance(),
               keyCode = event.keyCode || event.which;
 
         let handled = false;
 
-        if(keyCode === 27) {
+        if (keyCode === 27) {
             instance.$('.btn.btn-cancel').click();
             handled = true;
-        } else if(keyCode === 13) {
+        } else if (keyCode === 13) {
             instance.$('.btn.btn-confirm').click();
             handled = true;
         }
 
-        if(handled) {
+        if (handled) {
             event.stopPropagation();
         }
     }

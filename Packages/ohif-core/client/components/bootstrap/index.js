@@ -1,10 +1,14 @@
 import './dialog/confirm.html';
-import './dialog/progress.html';
-import './dialog/progress.js';
 import './dialog/form.html';
 import './dialog/form.js';
+import './dialog/info.html';
+import './dialog/info.js';
+import './dialog/loading.html';
+import './dialog/loading.js';
 import './dialog/login.html';
 import './dialog/login.js';
+import './dialog/progress.html';
+import './dialog/progress.js';
 import './dialog/simple.html';
 import './dialog/simple.js';
 import './dialog/unsavedChangesDialog.html';

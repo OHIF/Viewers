@@ -1,0 +1,13 @@
+<template name="dialogInfo">
+  {{#dialogSimple (extend this
+    title=(choose this.title 'Error')
+  )}}
+    <div class="messages">
+      {{#each message in this.messages}}
+        <div class="message">{{{message}}}</div>
+      {{else}}
+        <div class="message">An error has ocurred.</div>
+      {{/each}}
+    </div>
+  {{/dialogSimple}}
+</template>

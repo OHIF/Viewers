@@ -250,7 +250,7 @@ class MeasurementApi {
         };
 
         OHIF.log.info('Saving Measurements for timepoints:', timepoints);
-        storeFn(measurementData, filter).then(() => {
+        return storeFn(measurementData, filter).then(() => {
             OHIF.log.info('Measurement storage completed');
         });
     }

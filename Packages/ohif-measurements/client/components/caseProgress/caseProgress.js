@@ -9,12 +9,27 @@ Template.caseProgress.onCreated(() => {
     instance.progressPercent = new ReactiveVar();
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar();
+    instance.path = 'viewer.studyViewer.measurements';
 
     instance.saveData = () => {
-        instance.data.measurementApi.storeMeasurements();
+        const api = instance.data.measurementApi;
 
         // Clear signaled unsaved changes...
-        OHIF.ui.unsavedChanges.clear('viewer.studyViewer.measurements.*');
+        const successHandler = () => {
+            OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
+        };
+
+        // Display the error messages
+        const errorHandler = data => OHIF.ui.showDialog('dialogInfo', data);
+
+        const promise = api.storeMeasurements();
+        promise.then(successHandler).catch(errorHandler);
+        OHIF.ui.showDialog('dialogLoading', {
+            promise,
+            text: 'Saving measurements data'
+        });
+
+        return promise;
     };
 
     instance.unsavedChangesHandler = () => {
@@ -25,14 +40,13 @@ Template.caseProgress.onCreated(() => {
     };
 
     // Attach handler for unsaved changes dialog...
-    OHIF.ui.unsavedChanges.attachHandler('viewer.studyViewer.measurements', 'save', instance.unsavedChangesHandler);
-
+    OHIF.ui.unsavedChanges.attachHandler(instance.path, 'save', instance.unsavedChangesHandler);
 });
 
 Template.caseProgress.onDestroyed(() => {
     const instance = Template.instance();
     // Remove unsaved changes handler after this view has been destroyed...
-    OHIF.ui.unsavedChanges.removeHandler('viewer.studyViewer.measurements', 'save', instance.unsavedChangesHandler);
+    OHIF.ui.unsavedChanges.removeHandler(instance.path, 'save', instance.unsavedChangesHandler);
 });
 
 Template.caseProgress.onRendered(() => {
@@ -169,8 +183,6 @@ Template.caseProgress.events({
             return;
         }
 
-        instance.saveData();
-        switchToTab('studylistTab');
-
+        instance.saveData().then(() => switchToTab('studylistTab'));
     }
 });
