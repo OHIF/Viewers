@@ -14,7 +14,7 @@ Template.dialogStudyAssociation.onCreated(() => {
         const Timepoints = StudyList.timepointApi.timepoints;
 
         // Find the rows of the study association table
-        const $tableRows = $('#studyAssociationTable table tbody tr');
+        const $tableRows = instance.$('#studyAssociationTable table tbody tr');
 
         // Create an empty object to group studies into
         const studies = {};
