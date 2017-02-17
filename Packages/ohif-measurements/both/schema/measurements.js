@@ -1,6 +1,13 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 const Measurement = new SimpleSchema({
+    additionalData: {
+        type: Object,
+        label: 'Additional Data',
+        defaultValue: {},
+        optional: true,
+        blackbox: true
+    },
     userId: {
         type: String,
         label: 'User ID'
