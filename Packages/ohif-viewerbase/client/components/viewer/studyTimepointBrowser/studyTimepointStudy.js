@@ -18,6 +18,10 @@ Template.studyTimepointStudy.onCreated(() => {
         return isGlobal ? $(selector) : instance.$browser.find(selector);
     };
 
+    instance.isQuickSwitch = () => {
+        return !_.isUndefined(instance.data.viewportIndex);
+    };
+
     // Set the current study as selected in the studies list
     instance.select = (isQuickSwitch=false) => {
         const studyInstanceUid = instance.data.study.studyInstanceUid;
@@ -36,7 +40,7 @@ Template.studyTimepointStudy.onCreated(() => {
 
     instance.initializeStudyWrapper = () => {
         // Stop here if it's a quick switch
-        if (instance.data.viewportIndex) {
+        if (instance.isQuickSwitch()) {
             return;
         }
 
@@ -95,8 +99,7 @@ Template.studyTimepointStudy.events({
     'click .studyModality'(event, instance) {
         const studyData = instance.data.study;
         const { studyInstanceUid, _id } = studyData;
-
-        const isQuickSwitch = !_.isUndefined(instance.data.viewportIndex);
+        const isQuickSwitch = instance.isQuickSwitch();
 
         // @TypeSafeStudies
         // Check if the study already has series data,
@@ -108,12 +111,15 @@ Template.studyTimepointStudy.events({
                 const $studies = instance.getStudyElement(true);
                 $studies.trigger('loadStarted');
                 getStudyMetadata(studyInstanceUid, study => {
-                    study.displaySets = sortingManager.getDisplaySets(study);
+                    const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+                    study.displaySets = sortingManager.getDisplaySets(studyMetadata);
                     instance.data.study = study;
                     OHIF.viewer.Studies.insert(study);
-                    // make sure studies are rendered in the DOM
-                    $studies.trigger('loadEnded');
-                    instance.select(isQuickSwitch);
+
+                    Meteor.setTimeout(() => { 
+                        $studies.trigger('loadEnded');
+                        instance.select(isQuickSwitch);
+                    }, 1);
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;
