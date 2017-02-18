@@ -7,8 +7,10 @@ import { OHIF } from 'meteor/ohif:core';
  * @returns {string} The imageId to be used by Cornerstone
  */
 
-export function getWADORSImageId(instanceMetada) {
-    const instance = instanceMetada.getData();
+export function getWADORSImageId(instance) {
+    const uri = Meteor.absoluteUrl(instance.wadorsuri);
+    const imageId = `wadors:${uri}`;
+
     let columnPixelSpacing = 1.0;
     let rowPixelSpacing = 1.0;
 
@@ -57,7 +59,7 @@ export function getWADORSImageId(instanceMetada) {
         instance: instance
     };
 
-    const imageId = cornerstoneWADOImageLoader.imageManager.add(image);
+    cornerstoneWADOImageLoader.wadors.metaDataManager.add(imageId, image);
 
     OHIF.log.info('WADO-RS ImageID: ' + imageId);
     return imageId;
