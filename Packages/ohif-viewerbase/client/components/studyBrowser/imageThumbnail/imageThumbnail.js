@@ -5,6 +5,7 @@ import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 // Local Modules
 import { getImageId } from '../../../lib/getImageId.js';
+import { getWADORSImageId } from '../../../lib/getWADORSImageId.js';
 
 Template.imageThumbnail.onCreated(() => {
     const instance = Template.instance();
