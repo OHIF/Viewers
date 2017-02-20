@@ -3,6 +3,7 @@ import { OHIF } from 'meteor/ohif:core';
 import { measurementTools } from './measurementTools';
 import { retrieveMeasurements, storeMeasurements, retrieveTimepoints, storeTimepoints, removeTimepoint, updateTimepoint, disassociateStudy } from './dataExchange';
 import { validateMeasurements } from './dataValidation';
+import { FieldLesionLocation, FieldLesionLocationResponse } from 'meteor/ohif:lesiontracker/both/schema/fields';
 
 console.log('OHIF-LesionTracker: Defining Configuration for Measurements');
 
@@ -20,6 +21,10 @@ OHIF.measurements.MeasurementApi.setConfiguration({
     },
     dataValidation: {
         validation: validateMeasurements
+    },
+    schema: {
+        nonTargetLocation: FieldLesionLocation,
+        nonTargetResponse: FieldLesionLocationResponse
     }
 });
 

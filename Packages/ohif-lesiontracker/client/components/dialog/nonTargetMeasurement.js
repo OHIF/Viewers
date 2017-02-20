@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { OHIF } from 'meteor/ohif:core';
-import { FieldLesionLocation, FieldLesionLocationResponse } from 'meteor/ohif:lesiontracker/both/schema/fields';
 
 Template.dialogNonTargetMeasurement.onCreated(() => {
     const instance = Template.instance();
@@ -10,9 +9,10 @@ Template.dialogNonTargetMeasurement.onCreated(() => {
     instance.measurementTypeId = 'nonTarget';
     const timepointApi = instance.data.timepointApi;
 
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
     instance.schema = new SimpleSchema({
-        location: FieldLesionLocation,
-        response: FieldLesionLocationResponse
+        location: config.schema.nonTargetLocation,
+        response: config.schema.nonTargetResponse
     });
 
     // Remove the measurement from the collection
