@@ -4,6 +4,9 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 OHIF.measurements.toggleLabelButton = options => {
+    const toolType = options.measurement.toolType;
+    const measurementId = options.measurement._id;
+
     const removeButtonView = () => {
         if (!options.instance.buttonView) {
             return;
@@ -18,8 +21,8 @@ OHIF.measurements.toggleLabelButton = options => {
     }
 
     const measurementApi = options.measurementApi;
-    const toolCollection = measurementApi.tools[options.toolType];
-    const measurement = toolCollection.findOne(options.measurementId);
+    const toolCollection = measurementApi.tools[toolType];
+    const measurement = toolCollection.findOne(measurementId);
 
     const data = {
         measurement,
@@ -30,7 +33,7 @@ OHIF.measurements.toggleLabelButton = options => {
         autoClick: options.autoClick,
         doneCallback: removeButtonView,
         updateCallback(location, description) {
-            const groupId = measurementApi.toolsGroupsMap[measurement.toolType];
+            const groupId = measurementApi.toolsGroupsMap[toolType];
             const config = OHIF.measurements.MeasurementApi.getConfiguration();
             const group = _.findWhere(config.measurementTools, { id: groupId });
             group.childTools.forEach(tool => {
@@ -46,6 +49,8 @@ OHIF.measurements.toggleLabelButton = options => {
                     multi: true
                 });
             });
+            options.measurement.location = location;
+            options.measurement.description = description;
         }
     };
     const view = Blaze.renderWithData(Template.measureFlow, data, options.element);

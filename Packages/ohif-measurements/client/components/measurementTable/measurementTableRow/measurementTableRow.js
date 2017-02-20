@@ -53,8 +53,7 @@ Template.measurementTableRow.events({
         // Show the measure flow for targets
         OHIF.measurements.toggleLabelButton({
             instance,
-            measurementId: entry._id,
-            toolType: entry.toolType,
+            measurement: entry,
             element: document.body,
             measurementApi: instance.data.measurementApi,
             position: {

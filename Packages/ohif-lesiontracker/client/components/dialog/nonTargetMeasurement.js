@@ -112,6 +112,9 @@ Template.dialogNonTargetMeasurement.onRendered(() => {
 
     // Update the location and response after confirming the dialog data
     instance.data.promise.then(formData => {
+        measurementData.response = formData.response;
+        measurementData.location = formData.location;
+
         // Update the response for current measurement
         collection.update({
             _id: measurementData._id,

@@ -21,8 +21,7 @@ Template.measurementLocationDialog.onCreated(() => {
 
         OHIF.measurements.toggleLabelButton({
             instance,
-            measurementId: measurementData._id,
-            toolType: measurementData.toolType,
+            measurement: measurementData,
             element: eventData.element,
             measurementApi,
             position: position,

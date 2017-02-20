@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 class MeasurementHandlers {
@@ -86,7 +87,10 @@ class MeasurementHandlers {
 
         let measurement = Collection.findOne(measurementData._id);
 
+        // Update the collection data with the cornerstone measurement data
+        const ignoredKeys = ['location', 'description', 'response'];
         Object.keys(measurementData).forEach(key => {
+            if (_.contains(ignoredKeys, key)) return;
             measurement[key] = measurementData[key];
         });
 
