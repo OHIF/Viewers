@@ -27,10 +27,18 @@ class ImageMetadataBuilder {
 
             const tag = this.tags[key];
             const multi = !!tag.multi;
-            const value = tag.value && multi ? tag.value.split('\\') : [tag.value];
+            let value = tag.value;
 
-            if((value.length === 1) && (value[0] == null)) {
+            if((value == null) || ((value.length === 1) && (value[0] == null))) {
                 return;
+            }
+
+            if((typeof value === 'string') && multi) {
+                value = value.split('\\');
+            }
+
+            if(!_.isArray(value)) {
+                value = [value];
             }
 
             json[key] = {
@@ -42,7 +50,7 @@ class ImageMetadataBuilder {
     }
 }
 
-formatWADORSImageUrl = function(wadorsuri, frame) {
+function formatWADORSImageUrl(wadorsuri, frame) {
     // We need to sum 1 because WADO-RS frame number is 1-based
     frame = (frame || 0) + 1;
 
@@ -91,11 +99,16 @@ export function getWADORSImageId(instance, frame) {
         .addTag('00281052', instance.rescaleIntercept)
         .addTag('00281053', instance.rescaleSlope)
         .addTag('00281054', instance.rescaleType)
+        .addTag('00281101', instance.redPaletteColorLookupTableDescriptor)
+        .addTag('00281102', instance.greenPaletteColorLookupTableDescriptor)
+        .addTag('00281103', instance.bluePaletteColorLookupTableDescriptor)
+        .addTag('00281201', instance.redPaletteColorLookupTableData)
+        .addTag('00281202', instance.greenPaletteColorLookupTableData)
+        .addTag('00281203', instance.bluePaletteColorLookupTableData)
         .toJSON();
 
     _.extend(imageMetadata, {
         uri: uri,
-        sizeInBytes: instance.rows * instance.columns * (instance.bitsAllocated / 8),
         instance: instance
     });
 

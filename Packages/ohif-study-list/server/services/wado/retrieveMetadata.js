@@ -97,6 +97,22 @@ function getSourceImageInstanceUid(instance) {
     }
 }
 
+function getPaletteColor(server, instance, tag, lutDescriptor) {
+    const lut = [];
+    const numLutEntries = lutDescriptor[0];
+    const bits = lutDescriptor[2];
+    const data = DICOMWeb.getBulkData(instance[tag].BulkDataURI, server.requestOptions);
+
+    for (var i = 0; i < numLutEntries; i++) {
+        if(bits === 16) {
+            lut[i] = data.readUInt16LE(i*2);
+        } else {
+            lut[i] = data.readUInt8(i);
+        }
+    }
+
+    return lut;
+}
 
 /**
  * Fetch palette colors for instances with "PALETTE COLOR" photometricInterpretation.
@@ -105,7 +121,7 @@ function getSourceImageInstanceUid(instance) {
  * @param instance {Object} The retrieved instance metadata;
  * @returns {String} The ReferenceSOPInstanceUID
  */
-function getPaletteColors(server, instance) {
+function getPaletteColors(server, instance, lutDescriptor) {
 
     let entry = null,
         paletteUID = DICOMWeb.getString(instance['00281199']);
@@ -120,9 +136,10 @@ function getPaletteColors(server, instance) {
         // no entry on cache... Fetch remote data.
         try {
             let r, g, b;
-            r = DICOMWeb.getBulkData(instance['00281201'].BulkDataURI, server.requestOptions);
-            g = DICOMWeb.getBulkData(instance['00281202'].BulkDataURI, server.requestOptions);
-            b = DICOMWeb.getBulkData(instance['00281203'].BulkDataURI, server.requestOptions);
+            r = getPaletteColor(server, instance, '00281201', lutDescriptor);
+            g = getPaletteColor(server, instance, '00281202', lutDescriptor);;
+            b = getPaletteColor(server, instance, '00281203', lutDescriptor);;
+
             entry = { red: r, green: g, blue: b };
             if (paletteUID !== null) {
                 // when paletteUID is present, the entry can be cached...
@@ -261,17 +278,21 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         // Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
         if (instanceSummary.photometricInterpretation === 'PALETTE COLOR') {
-            let palettes = getPaletteColors(server, instance);
+            const redPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281101']));
+            const greenPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281102']));
+            const bluePaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281103']));
+            const palettes = getPaletteColors(server, instance, redPaletteColorLookupTableDescriptor);
+
             if (palettes) {
                 if (palettes.uid) {
                     instanceSummary.paletteColorLookupTableUID = palettes.uid;
                 }
-                instanceSummary.redPaletteColorLookupTable = palettes.red;
-                instanceSummary.greenPaletteColorLookupTable = palettes.green;
-                instanceSummary.bluePaletteColorLookupTable = palettes.blue;
-                instanceSummary.redPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281101']));
-                instanceSummary.greenPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281102']));
-                instanceSummary.bluePaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281103']));
+                instanceSummary.redPaletteColorLookupTableData = palettes.red;
+                instanceSummary.greenPaletteColorLookupTableData = palettes.green;
+                instanceSummary.bluePaletteColorLookupTableData = palettes.blue;
+                instanceSummary.redPaletteColorLookupTableDescriptor = redPaletteColorLookupTableDescriptor;
+                instanceSummary.greenPaletteColorLookupTableDescriptor = greenPaletteColorLookupTableDescriptor;
+                instanceSummary.bluePaletteColorLookupTableDescriptor = bluePaletteColorLookupTableDescriptor;
             }
         }
 
