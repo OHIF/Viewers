@@ -7,7 +7,7 @@
         "qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
         "wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
         "qidoSupportsIncludeField": false,
-        "imageRendering": "wadors",
+        "imageRendering": "wadouri",
         "thumbnailRendering": "wadors",
         "requestOptions": {
           "auth": "admin:admin",
