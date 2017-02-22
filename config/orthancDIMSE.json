@@ -14,11 +14,12 @@
           "host": "localhost",
           "port": 4242,
           "aeTitle": "ORTHANC",
-          "default": true
+          "default": true,
+          "server": false
         },
         {
           "host": "0.0.0.0",
-          "port": 11119,
+          "port": 11112,
           "aeTitle": "OHIFDCM",
           "default": true,
           "server": true
@@ -31,7 +32,11 @@
   "public": {
     "verifyEmail": false,
     "ui": {
-        "studyListFunctionsEnabled": true
+        "studyListFunctionsEnabled": true,
+        "leftSidebarOpen": false,
+        "displaySetNavigationLoopOverSeries": false,
+        "displaySetNavigationMultipleViewports": true,
+        "autoPositionMeasurementsTextCallOuts": "TRLB"
     }
   }
 }
