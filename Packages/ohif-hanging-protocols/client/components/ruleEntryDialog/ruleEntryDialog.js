@@ -64,9 +64,8 @@ openRuleEntryDialog = function(attributes, level, rule) {
         attributeSelect.val(rule.attribute);
     }
 
-    // Trigger('change') is used to update the Select2 choice in the UI and so
-    // that the currentValue is updated based on the current attribute
-    attributeSelect.trigger('change');
+    // Event data to be passed to the event handler
+    let eventData;
 
     // If a rule has been provided, use its constraint to find the relevant Comparator
     if (rule && rule.constraint) {
@@ -81,6 +80,8 @@ openRuleEntryDialog = function(attributes, level, rule) {
         var currentValue = rule.constraint[validator][validatorOption];
         currentValueInput.val(currentValue);
 
+        eventData = currentValue;
+
         // If a Comparator was found, set the default value of the Comparators select2 box
         // to the comparatorId in the input rule
         if (comparator) {
@@ -89,6 +90,9 @@ openRuleEntryDialog = function(attributes, level, rule) {
         }
     }
 
+    // Trigger('change') is used to update the Select2 choice in the UI and so
+    // that the currentValue is updated based on the current attribute
+    attributeSelect.trigger('change', eventData);
 
     // Update the dialog's CSS so that it is visible on the page
     dialog.css('display', 'block');
@@ -348,9 +352,9 @@ Template.ruleEntryDialog.events({
      * @param event The Change event for the select box
      * @param template The current template context
      */
-    'change select.attributes': function(event, template) {
+    'change select.attributes'(event, template, currentValue) {
         // Obtain the user-specified attribute to test against
-        var attribute = $(event.currentTarget).val();
+        const attribute = $(event.currentTarget).val();
 
         // Store it in the ReactiveVar
         template.attribute.set(attribute);
@@ -361,8 +365,16 @@ Template.ruleEntryDialog.events({
         // // Get the level of this dialog
         // var level = Template.ruleEntryDialog.level;
 
-        // Retrieve the current value of the attribute for the active viewport model
-        var value = getCurrentTagOrPropertyValue(attribute);
+        let value;
+
+        // Preset currentValue, use it
+        if (currentValue) {
+            value = currentValue;
+        }
+        else {
+            // Retrieve the current value of the attribute for the active viewport model
+            value = getCurrentTagOrPropertyValue(attribute);
+        }
 
         // Update the ReactiveVar with the user-specified value
         template.currentValue.set(value);
