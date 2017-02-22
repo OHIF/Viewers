@@ -32,7 +32,7 @@ Meteor.startup(() => {
     };
 
     OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
-    
+
     // Create the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.updateImageSynchronizer);
 
@@ -77,8 +77,6 @@ Template.viewer.onCreated(() => {
     ViewerData[contentId].studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
-        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
-        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
         OHIF.viewer.Studies.insert(study);
         ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
     });

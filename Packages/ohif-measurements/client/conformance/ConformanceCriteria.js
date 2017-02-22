@@ -29,31 +29,36 @@ class ConformanceCriteria {
     }
 
     validate(trialCriteriaType) {
-        const baselineData = this.getData('baseline');
-        const followupData = this.getData('followup');
-        const mergedData = {
-            targets: [],
-            nonTargets: []
-        };
+        return new Promise((resolve, reject) => {
+            const baselinePromise = this.getData('baseline');
+            const followupPromise = this.getData('followup');
+            Promise.all([baselinePromise, followupPromise]).then(values => {
+                const [baselineData, followupData] = values;
+                const mergedData = {
+                    targets: [],
+                    nonTargets: []
+                };
 
-        mergedData.targets = mergedData.targets.concat(baselineData.targets);
-        mergedData.targets = mergedData.targets.concat(followupData.targets);
-        mergedData.nonTargets = mergedData.nonTargets.concat(baselineData.nonTargets);
-        mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
+                mergedData.targets = mergedData.targets.concat(baselineData.targets);
+                mergedData.targets = mergedData.targets.concat(followupData.targets);
+                mergedData.nonTargets = mergedData.nonTargets.concat(baselineData.nonTargets);
+                mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
 
-        this.maxTargets.set(null);
-        const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
-        const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
-        const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
-        const nonconformities = resultBaseline.concat(resultFollowup).concat(resultBoth);
-        const groupedNonConformities = this.groupNonConformities(nonconformities);
+                this.maxTargets.set(null);
+                const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
+                const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
+                const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
+                const nonconformities = resultBaseline.concat(resultFollowup).concat(resultBoth);
+                const groupedNonConformities = this.groupNonConformities(nonconformities);
 
-        // Keep both? Group the data only on viewer/measurementTable views?
-        // Work with not grouped data (worse lookup performance on measurementTableRow)?
-        this.nonconformities.set(nonconformities);
-        this.groupedNonConformities.set(groupedNonConformities);
+                // Keep both? Group the data only on viewer/measurementTable views?
+                // Work with not grouped data (worse lookup performance on measurementTableRow)?
+                this.nonconformities.set(nonconformities);
+                this.groupedNonConformities.set(groupedNonConformities);
 
-        return nonconformities;
+                resolve(nonconformities);
+            });
+        });
     }
 
     groupNonConformities(nonconformities) {
@@ -128,48 +133,47 @@ class ConformanceCriteria {
      * Build the data that will be used to do the conformance criteria checks
      */
     getData(timepointType) {
-        const data = {
-            targets: [],
-            nonTargets: []
-        };
+        return new Promise((resolve, reject) => {
+            const data = {
+                targets: [],
+                nonTargets: []
+            };
 
-        const fillData = measurementType => {
-            const measurements = this.measurementApi.fetch(measurementType);
+            const studyPromises = [];
 
-            measurements.forEach(measurement => {
-                const { studyInstanceUid, imageId } = measurement;
-                const metadata = this.getImageInstanceMetadata(studyInstanceUid, imageId);
-                const timepointId = measurement.timepointId;
-                const timepoint = timepointId && this.timepointApi.timepoints.findOne({ timepointId });
+            const fillData = measurementType => {
+                const measurements = this.measurementApi.fetch(measurementType);
 
-                if (!timepoint || ((timepointType !== 'both') && (timepoint.timepointType !== timepointType))) {
-                    return;
-                }
+                measurements.forEach(measurement => {
+                    const { studyInstanceUid, imageId } = measurement;
 
-                data[measurementType].push({
-                    measurement,
-                    metadata,
-                    timepoint
+                    const timepointId = measurement.timepointId;
+                    const timepoint = timepointId && this.timepointApi.timepoints.findOne({ timepointId });
+
+                    if (!timepoint || ((timepointType !== 'both') && (timepoint.timepointType !== timepointType))) {
+                        return;
+                    }
+
+                    const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
+                    promise.then(study => {
+                        const metadata = OHIF.viewer.metadataProvider.getMetadata(imageId);
+                        data[measurementType].push({
+                            measurement,
+                            metadata: metadata.instance,
+                            timepoint
+                        });
+                    });
+                    studyPromises.push(promise);
                 });
-            });
-        };
+            };
 
-        fillData('targets');
-        fillData('nonTargets');
+            fillData('targets');
+            fillData('nonTargets');
 
-        return data;
-    }
-
-    getImageInstanceMetadata(studyInstanceUid, imageId) {
-        const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
-
-        // Stop here if the study was not found
-        if (!study) {
-            return;
-        }
-
-        const metadata = OHIF.cornerstone.metadataProvider.getMetadata(imageId);
-        return metadata ? metadata.instance : undefined;
+            Promise.all(studyPromises).then(() => {
+                resolve(data);
+            }).catch(reject);
+        });
     }
 
 }

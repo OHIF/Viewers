@@ -5,31 +5,26 @@ import { OHIF } from 'meteor/ohif:core';
  * @param studiesToQuery Studies to query
  */
 queryStudies = function(studiesToQuery, options) {
-    const studiesQueried = [],
-          numberOfStudiesToQuery = studiesToQuery.length,
-          notify = (options || {}).notify || function() { /* noop */ }
+    let studiesQueried = 0;
+    const numberOfStudiesToQuery = studiesToQuery.length;
+    const notify = (options || {}).notify || function() { /* noop */ };
 
-    return new Promise((resolve, reject) => {
-        if (studiesToQuery.length < 1) {
-            return reject();
-        }
+    const promises = [];
 
-        studiesToQuery.forEach(function(studyToQuery) {
-            getStudyMetadata(studyToQuery.studyInstanceUid, function(study) {
-                studiesQueried.push(study);
-
-                notify({
-                    total: numberOfStudiesToQuery,
-                    processed: studiesQueried.length
-                });
-
-                if (studiesQueried.length === numberOfStudiesToQuery) {
-                    resolve(studiesQueried);
-                }
+    studiesToQuery.forEach(studyToQuery => {
+        const promise = OHIF.studylist.retrieveStudyMetadata(studyToQuery.studyInstanceUid);
+        promise.then(study => {
+            studiesQueried++;
+            notify({
+                total: numberOfStudiesToQuery,
+                processed: studiesQueried
             });
         });
+        promises.push(promise);
     });
-}
+
+    return Promise.all(promises);
+};
 
 queryStudiesWithProgress = function(studiesToQuery) {
     return OHIF.ui.showDialog('dialogProgress', {
@@ -60,7 +55,7 @@ queryStudiesWithProgress = function(studiesToQuery) {
  * @returns {number}
  */
 getNumberOfFilesInStudy = function(study) {
-    var numberOFFilesToExport = 0;
+    let numberOFFilesToExport = 0;
 
     study.seriesList.forEach(function(series) {
         series.instances.forEach(function(instance) {

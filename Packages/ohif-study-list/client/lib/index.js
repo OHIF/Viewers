@@ -7,5 +7,6 @@ import './getStudiesMetadata.js';
 import './importStudies.js';
 import './openNewTab.js';
 import './queryStudies.js';
+import './retrieveStudyMetadata.js';
 import './studylist.js';
 import './switchToTab.js';

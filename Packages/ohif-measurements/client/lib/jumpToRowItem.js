@@ -21,7 +21,7 @@ function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, s
         currentImageIdIndex: specificImageIndex
     };
 
-    // Add a renderedCallback to activate the measurements once it's 
+    // Add a renderedCallback to activate the measurements once it's
     if (renderedCallback) {
         displaySetData.renderedCallback = renderedCallback;
     }
@@ -45,20 +45,19 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
         const element = $viewports.get(viewportIndex);
         const startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
         startLoadingHandler(element);
-        getStudyMetadata(studyInstanceUid, loadedStudy => {
-            loadedStudy.displaySets = createStacks(loadedStudy);
+        OHIF.studylist.retrieveStudyMetadata(studyInstanceUid).then(study => {
             OHIF.log.warn('renderIntoViewport');
 
             // Double check to make sure this study wasn't already inserted
             // into OHIF.viewer.Studies, so we don't cause duplicate entry errors
             const loaded = OHIF.viewer.Studies.findBy({
-                studyInstanceUid: loadedStudy.studyInstanceUid
+                studyInstanceUid: study.studyInstanceUid
             });
             if (!loaded) {
-                OHIF.viewer.Studies.insert(loadedStudy);
+                OHIF.viewer.Studies.insert(study);
             }
 
-            findAndRenderDisplaySet(loadedStudy.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback)
+            findAndRenderDisplaySet(study.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback);
         });
     }
 }
@@ -93,16 +92,16 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     const $viewports = $('.imageViewerViewport');
     const numViewports = Math.max($viewports.length, 1);
 
-    /* 
+    /*
     Two Timepoints, Two measurements, load Followup (FU and BA), display FU in left and BA in right
     Two Timepoints, One measurement (BA), on 2x1 view: Display BA in right
     Two Timepoints, One measurement (FU), on 2x1 view: Display FU in left
 
-    Two Timepoints, Two measurements, load Baseline (FU and BA) on 1x1 view: Display whichever is clicked on? 
+    Two Timepoints, Two measurements, load Baseline (FU and BA) on 1x1 view: Display whichever is clicked on?
     One Timepoint, One measurement: Display clicked on in 1x1
     */
     const numViewportsToUpdate = Math.min(numTimepoints, numViewports);
-    
+
     for (var i=0; i < numViewportsToUpdate; i++) {
         const timepoint = timepoints[i];
         const timepointId = timepoint.timepointId;
@@ -123,7 +122,7 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
         // or maybe just remove the 'error' this throws?
         let enabledElement;
         try {
-            enabledElement = cornerstone.getEnabledElement(element)    
+            enabledElement = cornerstone.getEnabledElement(element)
         } catch(error) {
             OHIF.log.warn(error);
         }
@@ -135,7 +134,7 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
             if (series.seriesInstanceUid === measurementData.seriesInstanceUid &&
                 study.studyInstanceUid === measurementData.studyInstanceUid) {
-                
+
                 // If it is, activate the measurements in this viewport and stop here
                 activateMeasurements(element, measurementData);
                 continue;

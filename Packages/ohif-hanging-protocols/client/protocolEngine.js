@@ -407,9 +407,8 @@ HP.ProtocolEngine = class ProtocolEngine {
                 });
 
                 if (!alreadyLoaded) {
-                    getStudyMetadata(priorStudy.studyInstanceUid, study => {
+                    OHIF.studylist.retrieveStudyMetadata(priorStudy.studyInstanceUid).then(study => {
                         study.abstractPriorValue = abstractPriorValue;
-                        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
                         OHIF.viewer.Studies.insert(study);
                         this.studies.push(study);
                         this.matchImages(viewport);

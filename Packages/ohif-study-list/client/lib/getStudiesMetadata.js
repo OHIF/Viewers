@@ -1,10 +1,9 @@
-import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
  * Retrieves metaData for multiple studies at once.
  *
- * This function calls getStudyMetadata several times, asynchronously,
+ * This function calls retrieveStudyMetadata several times, asynchronously,
  * and waits for all of the results to be returned.
  *
  * @param studyInstanceUids The UIDs of the Studies to be retrieved
@@ -27,32 +26,21 @@ OHIF.studylist.getStudiesMetadata = (studyInstanceUids, doneCallback, failCallba
 
     // Loop through the array of studyInstanceUids
     studyInstanceUids.forEach(function(studyInstanceUid) {
-        // Create a new Deferred to monitor the progress of the asynchronous
-        // metaData retrieval
-        const deferred = new $.Deferred();
-
         // Send the call, and attach doneCallbacks and failCallbacks
         // which can resolve or reject the related promise based on its outcome
-        getStudyMetadata(studyInstanceUid, function(study) {
-            deferred.resolve(study);
-        }, function(error) {
-            deferred.reject(error);
-        });
+        const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
 
         // Add the current promise to the array of promises
-        promises.push(deferred.promise());
+        promises.push(promise);
     });
 
     // When all of the promises are complete, this callback runs
-    $.when.apply($, promises).done(function() {
-        // Convert the Arguments Array-like Object to an actual array
-        const studies = $.makeArray(arguments);
-
+    Promise.all(promises).then(studies => {
         // Pass the studies array to the doneCallback, if one exists
         if (doneCallback && typeof doneCallback === 'function') {
             doneCallback(studies);
         }
-    }).fail(function(error) {
+    }).catch(error => {
         OHIF.log.warn(error);
         if (failCallback && typeof failCallback === 'function') {
             failCallback(error);

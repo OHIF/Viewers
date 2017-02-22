@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
+// DEPRECATED - use OHIF.studylist.retrieveStudyMetadata instead
 // Define the StudyMetaData object. This is used as a cache
 // to store study meta data information to prevent unnecessary
 // calls to the server

@@ -1,3 +1,8 @@
+import { Template } from 'meteor/templating';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
+
 Template.seriesDetailsTable.onCreated(() => {
     const instance = Template.instance();
 
@@ -31,8 +36,7 @@ Template.seriesDetailsTable.onRendered(() => {
     // Get series list for the study
     _.map(studies, (selectedStudy, index) => {
         studies[index].seriesList = [];
-        getStudyMetadata(selectedStudy.studyInstanceUid, study => {
-
+        OHIF.studylist.retrieveStudyMetadata(study => {
             // Set series list
             studies[index].seriesList = study.seriesList;
             studies[index].displaySeriesLoadingText = false;

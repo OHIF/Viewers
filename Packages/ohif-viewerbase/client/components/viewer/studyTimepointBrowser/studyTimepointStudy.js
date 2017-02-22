@@ -110,13 +110,11 @@ Template.studyTimepointStudy.events({
             if (!alreadyLoaded) {
                 const $studies = instance.getStudyElement(true);
                 $studies.trigger('loadStarted');
-                getStudyMetadata(studyInstanceUid, study => {
-                    const studyMetadata = new OHIF.metadata.StudyMetadata(study);
-                    study.displaySets = sortingManager.getDisplaySets(studyMetadata);
+                OHIF.studylist.retrieveStudyMetadata(studyInstanceUid).then(study => {
                     instance.data.study = study;
                     OHIF.viewer.Studies.insert(study);
 
-                    Meteor.setTimeout(() => { 
+                    Meteor.setTimeout(() => {
                         $studies.trigger('loadEnded');
                         instance.select(isQuickSwitch);
                     }, 1);

@@ -3,7 +3,7 @@ import { parsingUtils } from '../parsingUtils';
 export class MetadataProvider {
 
     constructor() {
-        this.metadataLookup = {};
+        this.metadataLookup = new Map();
     }
 
     /**
@@ -58,7 +58,7 @@ export class MetadataProvider {
         metadata.imagePlane = this.getImagePlane(instanceMetadata);
 
         // Add the metadata to the imageId lookup object
-        this.metadataLookup[imageId] = metadata;
+        this.metadataLookup.set(imageId, metadata);
     }
 
     /**
@@ -67,7 +67,7 @@ export class MetadataProvider {
      * @returns image metadata
      */
     getMetadata(imageId) {
-        return this.metadataLookup[imageId];
+        return this.metadataLookup.get(imageId);
     }
 
     /**
@@ -82,7 +82,8 @@ export class MetadataProvider {
         const metadata = {};
         metadata[type] = data;
 
-        this.metadataLookup[imageId] = $.extend(this.metadataLookup[imageId], metadata);
+        const oldMetadata = this.metadataLookup.get(imageId);
+        this.metadataLookup.set(imageId, Object.assign(oldMetadata, metadata));
     }
 
     getFromDataSet(dataSet, type, tag) {
@@ -104,7 +105,7 @@ export class MetadataProvider {
      * @param image
      */
     updateMetadata(image) {
-        const imageMetadata = this.metadataLookup[image.imageId];
+        const imageMetadata = this.metadataLookup.get(image.imageId);
         if (!imageMetadata) {
             return;
         }
@@ -252,7 +253,7 @@ export class MetadataProvider {
      * @returns {Object} Relevant metadata of the specified type
      */
     provider(type, imageId) {
-        const imageMetadata = this.metadataLookup[imageId];
+        const imageMetadata = this.metadataLookup.get(imageId);
         if (!imageMetadata) {
             return;
         }
