@@ -1,4 +1,4 @@
-/*! cornerstone-wado-image-loader - v0.14.1 - 2017-02-11 | (c) 2016 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
+/*! cornerstone-wado-image-loader - v0.14.2 - 2017-02-22 | (c) 2016 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
 /*! CharLS.js - v2.0.1 - 2016-06-08 | (c) 2016 Chris Hafey | https://github.com/chafey/charls */
 var CharLS = function(Module) {
   Module = Module || {};

@@ -1,4 +1,4 @@
-/*! cornerstone-wado-image-loader - v0.14.1 - 2017-02-11 | (c) 2016 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
+/*! cornerstone-wado-image-loader - v0.14.2 - 2017-02-22 | (c) 2016 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
 //
 // This is a cornerstone image loader for WADO-URI requests.
 //
@@ -92,11 +92,11 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
     // if the dataset for this url is already loaded, use it
     if(cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.isLoaded(parsedImageId.url)) {
-      return loadDataSetFromPromise(cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(parsedImageId.url, loader), imageId, parsedImageId.frame, parsedImageId.url, options);
+      return loadDataSetFromPromise(cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(parsedImageId.url, loader, imageId), imageId, parsedImageId.frame, parsedImageId.url, options);
     }
 
     // load the dataSet via the dataSetCacheManager
-    return loadDataSetFromPromise(cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(parsedImageId.url, loader), imageId, parsedImageId.frame, parsedImageId.url, options);
+    return loadDataSetFromPromise(cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.load(parsedImageId.url, loader, imageId), imageId, parsedImageId.frame, parsedImageId.url, options);
   }
 
   // register dicomweb and wadouri image loader prefixes
@@ -1197,7 +1197,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
 
     // loads the dicom dataset from the wadouri sp
-  function load(uri, loadRequest) {
+  function load(uri, loadRequest, imageId) {
 
     loadRequest = loadRequest ||  cornerstoneWADOImageLoader.internal.xhrRequest;
 
@@ -1219,7 +1219,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     //console.log('loading ' + uri);
 
     // This uri is not loaded or being loaded, load it via an xhrRequest
-    var promise = loadRequest(uri);
+    var promise = loadRequest(uri, imageId);
     promises[uri] = promise;
 
     // handle success and failure of the XHR request load
