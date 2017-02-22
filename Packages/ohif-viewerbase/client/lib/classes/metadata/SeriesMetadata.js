@@ -161,6 +161,22 @@ export class SeriesMetadata extends Metadata {
     }
 
     /**
+     * Search the associated instances using the supplied callback as criteria. The callback is passed
+     * two arguments: instance (a InstanceMetadata instance) and index (the integer
+     * index of the instance within its series)
+     * @param {function} callback The callback function which will be invoked for each instance.
+     * @returns {InstanceMetadata|undefined} If an instance is found based on callback criteria it
+     *                                     returns a InstanceMetadata. "undefined" is returned otherwise
+     */
+    findInstance(callback) {
+        if (Metadata.isValidCallback(callback)) {
+            return this._instances.find((instance, index) => {
+                return callback.call(null, instance, index);
+            });
+        }
+    }
+
+    /**
      * Compares the current series with another one.
      * @param {SeriesMetadata} series An instance of the SeriesMetadata class.
      * @returns {boolean} Returns true if both instances refer to the same series.

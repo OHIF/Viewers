@@ -14,7 +14,7 @@ export class OHIFStudyMetadata extends Viewerbase.metadata.StudyMetadata {
     init() {
         const study = this.getData();
 
-        // define "_studyInstanceUID" protected property...
+        // define "_studyInstanceUID" protected property
         Object.defineProperty(this, '_studyInstanceUID', {
             configurable: false,
             enumerable: false,
@@ -22,7 +22,7 @@ export class OHIFStudyMetadata extends Viewerbase.metadata.StudyMetadata {
             value: study.studyInstanceUid
         });
 
-        // populate internal list of series...
+        // populate internal list of series
         study.seriesList.forEach(series => {
             this.addSeries(new OHIFSeriesMetadata(series, study));
         });

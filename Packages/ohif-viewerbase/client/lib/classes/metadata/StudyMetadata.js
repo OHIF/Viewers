@@ -338,4 +338,65 @@ export class StudyMetadata extends Metadata {
         return instance;
     }
 
+     /**
+     * Search the associated series to find an specific instance using the supplied callback as criteria.
+     * The callback is passed two arguments: instance (a InstanceMetadata instance) and index (the integer
+     * index of the instance within the current series)
+     * @param {function} callback The callback function which will be invoked for each instance instance.
+     * @returns {Object} Result object containing series (SeriesMetadata) and instance (InstanceMetadata) 
+     *                   objects or an empty object if not found.
+     */
+    findSeriesAndInstanceByInstance(callback) {
+        let result;
+
+        if (Metadata.isValidCallback(callback)) {
+            let instance;
+
+            const series = this._series.find(series => {
+                instance = series.findInstance(callback);
+                return instance instanceof InstanceMetadata;
+            });
+
+            // No series found
+            if (series instanceof SeriesMetadata) {
+                result = {
+                    series,
+                    instance
+                };
+            }
+        }
+
+        return result || {};
+    }
+
+    /**
+     * Find series by instance using the supplied callback as criteria. The callback is passed
+     * two arguments: instance (a InstanceMetadata instance) and index (the integer index of 
+     * the instance within its series)
+     * @param {function} callback The callback function which will be invoked for each instance.
+     * @returns {SeriesMetadata|undefined} If a series is found based on callback criteria it
+     *                                     returns a SeriesMetadata. "undefined" is returned otherwise
+     */
+    findSeriesByInstance(callback) {
+        const result = this.findSeriesAndInstanceByInstance(callback);
+
+        return result.series;
+    }
+
+    /**
+     * Find an instance using the supplied callback as criteria. The callback is passed
+     * two arguments: instance (a InstanceMetadata instance) and index (the integer index of 
+     * the instance within its series)
+     * @param {function} callback The callback function which will be invoked for each instance.
+     * @returns {InstanceMetadata|undefined} If an instance is found based on callback criteria it
+     *                                     returns a InstanceMetadata. "undefined" is returned otherwise
+     */
+    findInstance(callback) {
+        const result = this.findSeriesAndInstanceByInstance(callback);
+
+        return result.instance;
+    }
+
+   
+
 }

@@ -7,9 +7,44 @@ import { OHIF } from 'meteor/ohif:core';
 import { updateOrientationMarkers } from './updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from './instanceClassSpecificViewport';
 
+/**
+ * Get a cornerstone enabledElement for a DOM Element
+ * @param  {DOMElement} element Element to get the enabledElement from Cornerstone
+ * @return {Object}             Cornerstone's enabledElement object for the given
+ *                              element or undefined if the element is not enabled
+ */
+const getEnabledElement = element => {
+    let enabledElement;
+
+    try {
+        enabledElement = cornerstone.getEnabledElement(element);
+    } catch(error) {
+        OHIF.log.warn(error);
+    }
+
+    return enabledElement;
+};
+
+/**
+ * Get the active viewport element. It uses activeViewport Session Variable
+ * @return {DOMElement} DOMElement of the current active viewport
+ */
 const getActiveViewportElement = () => {
     const viewportIndex = Session.get('activeViewport') || 0;
     return $('.imageViewerViewport').get(viewportIndex);
+};
+
+/**
+ * Get a cornerstone enabledElement for the Active Viewport Element
+ * @return {Object}  Cornerstone's enabledElement object for the active
+ *                   viewport element or undefined if the element 
+ *                   is not enabled
+ */
+const getEnabledElementForActiveElement = () => {
+    const activeViewportElement = getActiveViewportElement();
+    const enabledElement = getEnabledElement(activeViewportElement);
+
+    return enabledElement;
 };
 
 const zoomIn = () => {
@@ -99,8 +134,7 @@ const flipH = () => {
 };
 
 const resetViewport = () => {
-    const element = getActiveViewportElement();
-    const enabledElement = cornerstone.getEnabledElement(element);
+    const enabledElement = getEnabledElementForActiveElement();
     if (enabledElement.fitToWindow === false) {
         const imageId = enabledElement.image.imageId;
         const instance = cornerstoneTools.metaData.get('instance', imageId);
@@ -272,6 +306,8 @@ $(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Rand
  */
 
 const viewportUtils = {
+    getEnabledElementForActiveElement,
+    getEnabledElement,
     getActiveViewportElement,
     zoomIn,
     zoomOut,

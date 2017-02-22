@@ -80,20 +80,21 @@ openRuleEntryDialog = function(attributes, level, rule) {
         // Set the current value input based on the rule constraint
         var currentValue = rule.constraint[validator][validatorOption];
         currentValueInput.val(currentValue);
+
+        // If a Comparator was found, set the default value of the Comparators select2 box
+        // to the comparatorId in the input rule
+        if (comparator) {
+            // Trigger('change') is used to update the Select2 choice in the UI
+            dialog.find('.comparators').val(comparator.id).trigger('change');
+        }
     }
 
-    // If a Comparator was found, set the default value of the Comparators select2 box
-    // to the comparatorId in the input rule
-    if (comparator) {
-        // Trigger('change') is used to update the Select2 choice in the UI
-        dialog.find('.comparators').val(comparator.id).trigger('change');
-    }
 
     // Update the dialog's CSS so that it is visible on the page
     dialog.css('display', 'block');
 
     // Show the backdrop
-    UI.render(Template.removableBackdrop, document.body);
+    Blaze.render(Template.removableBackdrop, document.body);
 
     // Make sure the context menu is closed when the user clicks away
     $('.removableBackdrop').one('mousedown touchstart', function() {
@@ -105,31 +106,12 @@ openRuleEntryDialog = function(attributes, level, rule) {
  * Retrieves the current active element's imageId using Cornerstone
  */
 function getActiveViewportImageId() {
-    // Retrieve the active viewport index from the Session
-    var activeViewport = Session.get('activeViewport');
-    if (activeViewport === undefined) {
+    const enabledElement = Viewerbase.viewportUtils.getEnabledElementForActiveElement();
+
+    if (!enabledElement) {
         return;
     }
 
-    // Obtain the list of all Viewports on the page
-    var viewports = $('.imageViewerViewport');
-
-    // Retrieve the active viewport element
-    var element = viewports.get(activeViewport);
-    if (!element) {
-        return;
-    }
-
-    // Obtain the enabled element from Cornerstone
-    try {
-        var enabledElement = cornerstone.getEnabledElement(element);
-        if (!enabledElement) {
-            return;
-        }
-    } catch(error) {
-        OHIF.log.warn(error);
-        return;
-    }
     // Return the enabled element's imageId
     return enabledElement.image.imageId;
 }
@@ -179,36 +161,50 @@ function getAbstractPriorValue(imageId) {
 }
 
 /**
- * Retrieve the current value of an attribute
- * @returns {*}
+ * Retrieve the current value of a metadata tag or property. It searches the value in different levels (study, series or instance)
+ * @param  {String} tagOrProperty DICOM Tag or Property name (Ex: 'x00100020', 'patientId')
+ * @return {Any}              The value of the DICOM tag or property name
  */
-function getCurrentAttributeValue(attribute, level) {
+const getCurrentTagOrPropertyValue = tagOrProperty => {
     // Retrieve the active viewport's imageId. If none exists, stop here
-    var imageId = getActiveViewportImageId();
+    const imageId = getActiveViewportImageId();
     if (!imageId) {
         return;
     }
 
-    // If the dialog level is specified as 'protocol', change it to
-    // 'study' for metaData retrieval
-    if (level === 'protocol') {
-        level = 'study';
-    }
-
-    if (attribute === 'abstractPriorValue') {
+    if (tagOrProperty === 'abstractPriorValue') {
         return getAbstractPriorValue(imageId);
     }
 
-    // Retrieve the metadata values for the specified level from
-    // the Cornerstone Tools metaData provider
-    var metadata = cornerstoneTools.metaData.get(level, imageId);
+    // Create the object for the instance metadata
+    let instance;
 
-    if (metadata[attribute] === undefined) {
-        return HP.attributeDefaults[attribute];
+    OHIF.viewer.StudyMetadataList.find(studyMetadata => {
+        // Search for the instance that has the current imageId
+        instance = studyMetadata.findInstance(instance => {
+            return instance.getImageId() === imageId;
+        });
+
+        // If instance if found stop the search
+        return !!instance;
+    });
+
+    // No instance found
+    if (!instance) {
+        return;
     }
 
-    return metadata[attribute];
-}
+    // Get the value for the given tag
+    // It searches the value in different levels (study, series or instance)
+    const tagOrPropertyValue = instance.getTagValue(tagOrProperty);
+
+    // If not found, is a custom Hanging Protocol attribute
+    if (tagOrPropertyValue === void 0) {
+        return HP.attributeDefaults[tagOrProperty];
+    }
+
+    return tagOrPropertyValue;
+};
 
 Template.ruleEntryDialog.onCreated(function() {
     // Define the ReactiveVars that will be used to link aspects of the UI
@@ -362,11 +358,11 @@ Template.ruleEntryDialog.events({
         // Store this attribute in the template data context
         Template.ruleEntryDialog.selectedAttribute = attribute;
 
-        // Get the level of this dialog
-        var level = Template.ruleEntryDialog.level;
+        // // Get the level of this dialog
+        // var level = Template.ruleEntryDialog.level;
 
         // Retrieve the current value of the attribute for the active viewport model
-        var value = getCurrentAttributeValue(attribute, level);
+        var value = getCurrentTagOrPropertyValue(attribute);
 
         // Update the ReactiveVar with the user-specified value
         template.currentValue.set(value);
