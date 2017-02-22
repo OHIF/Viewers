@@ -14,7 +14,7 @@
             <td>
                 <i class="fa fa-pencil editRule"></i>
                 <i class="fa fa-trash deleteRule"></i>
-                {{displayConstraint attribute constraint}}
+                {{displayConstraint attribute constraint ../attributes}}
                 {{ #unless rulePassed }}<small class="failWarning">Fail</small>{{ /unless }}
             </td>
             <td><input class="ruleWeight" type="number" value={{weight}} min="1" step="1" max="1000"/></td>

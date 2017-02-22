@@ -1,19 +1,22 @@
-UI.registerHelper('viewportSettingsTypes', function() {
+import { Blaze } from 'meteor/blaze';
+
+
+Blaze.registerHelper('viewportSettingsTypes', function() {
     return HP.viewportSettingsTypes;
 });
 
-UI.registerHelper('toolSettingsTypes', function() {
+Blaze.registerHelper('toolSettingsTypes', function() {
     return HP.toolSettingsTypes;
 });
 
-UI.registerHelper('studyAttributes', function() {
+Blaze.registerHelper('studyAttributes', function() {
     return HP.studyAttributes;
 });
 
-UI.registerHelper('seriesAttributes', function() {
+Blaze.registerHelper('seriesAttributes', function() {
     return HP.seriesAttributes;
 });
 
-UI.registerHelper('instanceAttributes', function() {
+Blaze.registerHelper('instanceAttributes', function() {
     return HP.instanceAttributes;
 });
