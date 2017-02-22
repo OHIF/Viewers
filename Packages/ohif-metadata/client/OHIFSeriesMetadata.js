@@ -6,8 +6,8 @@ export class OHIFSeriesMetadata extends Viewerbase.metadata.SeriesMetadata {
     /**
      * @param {Object} Series object.
      */
-    constructor(data, study) {
-        super(data);
+    constructor(data, study, uid) {
+        super(data, uid);
         this.init(study);
     }
 

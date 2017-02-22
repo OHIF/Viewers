@@ -43,9 +43,9 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
                 return;
             }
 
-            this.getByInstanceUID(study.getStudyInstanceUID()).then(studyInfo => {
+            this.getByInstanceUID(studyInstanceUID).then(studyInfo => {
                 // Create study metadata object
-                const studyMetadata = new OHIF.metadata.StudyMetadata(studyInfo);
+                const studyMetadata = new OHIF.metadata.StudyMetadata(studyInfo, studyInfo.studyInstanceUid);
 
                 // Get Study display sets
                 const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);

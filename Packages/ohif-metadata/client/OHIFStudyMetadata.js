@@ -6,8 +6,8 @@ export class OHIFStudyMetadata extends Viewerbase.metadata.StudyMetadata {
     /**
      * @param {Object} Study object.
      */
-    constructor(data) {
-        super(data);
+    constructor(data, uid) {
+        super(data, uid);
         this.init();
     }
 

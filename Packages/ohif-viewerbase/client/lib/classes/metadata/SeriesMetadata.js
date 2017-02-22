@@ -3,8 +3,8 @@ import { InstanceMetadata } from './InstanceMetadata';
 
 export class SeriesMetadata extends Metadata {
 
-    constructor(data) {
-        super(data);
+    constructor(data, uid) {
+        super(data, uid);
         // Initialize Private Properties
         Object.defineProperties(this, {
             _seriesInstanceUID: {
@@ -18,6 +18,12 @@ export class SeriesMetadata extends Metadata {
                 enumerable: false,
                 writable: false,
                 value: []
+            },
+            _firstInstance: {
+                configurable: false,
+                enumerable: false,
+                writable: true,
+                value: null
             }
         });
         // Initialize Public Properties
@@ -75,6 +81,23 @@ export class SeriesMetadata extends Metadata {
             result = true;
         }
         return result;
+    }
+
+    /**
+     * Get the first instance of the current series retaining a consistent result across multiple calls.
+     * @return {InstanceMetadata} An instance of the InstanceMetadata class or null if it does not exist.
+     */
+    getFirstInstance() {
+        let instance = this._firstInstance;
+        if (!(instance instanceof InstanceMetadata)) {
+            instance = null;
+            const found = this.getInstanceByIndex(0);
+            if (found instanceof InstanceMetadata) {
+                this._firstInstance = found;
+                instance = found;
+            }
+        }
+        return instance;
     }
 
     /**

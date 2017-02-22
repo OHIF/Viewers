@@ -1,14 +1,21 @@
 import { Metadata } from './Metadata';
 import { OHIFError } from '../OHIFError';
 
+/**
+ * ATTENTION! This class should never depend on StudyMetadata or SeriesMetadata classes as this could
+ * possibly cause circular dependency issues.
+ */
+
 const UNDEFINED = 'undefined';
 const NUMBER = 'number';
 const STRING = 'string';
+const STUDY_INSTANCE_UID = 'x0020000d';
+const SERIES_INSTANCE_UID = 'x0020000e';
 
 export class InstanceMetadata extends Metadata {
 
-    constructor(data) {
-        super(data);
+    constructor(data, uid) {
+        super(data, uid);
         // Initialize Private Properties
         Object.defineProperties(this, {
             _sopInstanceUID: {
@@ -61,6 +68,20 @@ export class InstanceMetadata extends Metadata {
      */
 
     /**
+     * Returns the StudyInstanceUID of the current instance. This method is basically a shorthand the full "getTagValue" method call.
+     */
+    getStudyInstanceUID() {
+        return this.getTagValue(STUDY_INSTANCE_UID, null);
+    }
+
+    /**
+     * Returns the SeriesInstanceUID of the current instance. This method is basically a shorthand the full "getTagValue" method call.
+     */
+    getSeriesInstanceUID() {
+        return this.getTagValue(SERIES_INSTANCE_UID, null);
+    }
+
+    /**
      * Returns the SOPInstanceUID of the current instance.
      */
     getSOPInstanceUID() {
@@ -69,7 +90,7 @@ export class InstanceMetadata extends Metadata {
 
     // @TODO: Improve this... (E.g.: blob data)
     getStringValue(tagOrProperty, index, defaultValue) {
-        let value = this.getRawValue(tagOrProperty, defaultValue);
+        let value = this.getTagValue(tagOrProperty, defaultValue);
 
         if (typeof value !== STRING && typeof value !== UNDEFINED) {
             value = value.toString(); 
@@ -80,7 +101,7 @@ export class InstanceMetadata extends Metadata {
 
     // @TODO: Improve this... (E.g.: blob data)
     getFloatValue(tagOrProperty, index, defaultValue) {
-        let value = this.getRawValue(tagOrProperty, defaultValue);
+        let value = this.getTagValue(tagOrProperty, defaultValue);
         value = InstanceMetadata.getIndexedValue(value, index, defaultValue);
 
         if(value instanceof Array) {
@@ -96,7 +117,7 @@ export class InstanceMetadata extends Metadata {
 
     // @TODO: Improve this... (E.g.: blob data)
     getIntValue(tagOrProperty, index, defaultValue) {
-        let value = this.getRawValue(tagOrProperty, defaultValue);
+        let value = this.getTagValue(tagOrProperty, defaultValue);
         value = InstanceMetadata.getIndexedValue(value, index, defaultValue);
 
         if(value instanceof Array) {
@@ -111,13 +132,20 @@ export class InstanceMetadata extends Metadata {
     }
 
     /**
-     * 
+     * @deprecated Please use getTagValue instead.
      */
     getRawValue(tagOrProperty, defaultValue) {
+        return this.getTagValue(tagOrProperty, defaultValue);
+    }
+
+    /**
+     * This function should be overriden by specialized classes in order to allow client libraries or viewers to take advantage of the Study Metadata API.
+     */
+    getTagValue(tagOrProperty, defaultValue) {
         /**
          * Please override this method on a specialized class.
          */
-        throw new OHIFError('InstanceMetadata::getRawValue is not overriden. Please, override it in a specialized class. See OHIFInstanceMetadata for example');
+        throw new OHIFError('InstanceMetadata::getTagValue is not overriden. Please, override it in a specialized class. See OHIFInstanceMetadata for example');
     }
 
     /**

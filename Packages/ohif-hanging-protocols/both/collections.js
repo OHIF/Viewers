@@ -12,3 +12,10 @@ HangingProtocols.allow({
         return true;
     }
 });
+
+// @TODO: Remove this after stabilizing ProtocolEngine
+if (Meteor.isDevelopment && Meteor.isServer) {
+    Meteor.startup(() => {
+        HangingProtocols.remove({});
+    });
+}

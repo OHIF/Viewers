@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
+
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
@@ -84,8 +85,8 @@ HP.addCustomViewportSetting = function(settingId, settingName, options, callback
 };
 
 Meteor.startup(function() {
-    HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.keys(OHIF.viewer.wlPresets), function(element, optionValue) {
-        if (OHIF.viewer.wlPresets.hasOwnProperty(optionValue)) {
+    HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.create(null), function(element, optionValue) {
+        if (optionValue in OHIF.viewer.wlPresets) {
             OHIF.viewerbase.wlPresets.applyWLPreset(optionValue, element);
         }
     });
@@ -93,14 +94,15 @@ Meteor.startup(function() {
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
- * @param  {StudyMetadata|SeriesMetadata|InstanceMetadata} metadataInstance Metadata instance object
+ * @param  {StudySummary|InstanceMetadata} metadataInstance Metadata instance object
  * @param  {Array} rules Array of MatchingRules instances (StudyMatchingRule|SeriesMatchingRule|ImageMatchingRule) for the match
  * @return {Object}      Matching Object with score and details (which rule passed or failed)
  */
 HP.match = function(metadataInstance, rules) {
 
-    if (!(metadataInstance instanceof StudyMetadata || metadataInstance instanceof SeriesMetadata || metadataInstance instanceof InstanceMetadata)) {
-        throw new OHIFError('HP::match metadataInstance must be an instance of StudyMetadata, SeriesMetadata or InstanceMetadata');
+    // Make sure the supplied data is valid.
+    if (!(metadataInstance instanceof StudySummary || metadataInstance instanceof InstanceMetadata)) {
+        throw new OHIFError('HP::match metadataInstance must be an instance of StudySummary or InstanceMetadata');
     }
 
     const options = {
@@ -111,18 +113,9 @@ HP.match = function(metadataInstance, rules) {
         passed: [],
         failed: []
     };
-    
+
     let requiredFailed = false;
     let score = 0;
-    let instance;
-
-    if (metadataInstance instanceof StudyMetadata) {
-        instance = metadataInstance.getFirstInstance();
-    } else if (metadataInstance instanceof SeriesMetadata) {
-        instance = metadataInstance.getInstanceByIndex(0);
-    } else {
-        instance = metadataInstance;
-    }
 
     rules.forEach(rule => {
         const attribute = rule.attribute;
@@ -144,13 +137,18 @@ HP.match = function(metadataInstance, rules) {
 
         // Create a single attribute object to be validated, since metadataInstance is an 
         // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-        const attributeValue = customAttributeExists ? metadataInstance.getCustomAttribute(attribute) : instance.getRawValue(attribute);
+        const attributeValue = customAttributeExists ? metadataInstance.getCustomAttribute(attribute) : metadataInstance.getTagValue(attribute);
         const attributeMap = {
-            [attribute]: attributeValue + ''
+            [attribute]: attributeValue
         };
 
         // Use Validate.js to evaluate the constraints on the specified metadataInstance
-        const errorMessages = validate(attributeMap, testConstraint, [options]);
+        let errorMessages;
+        try {
+            errorMessages = validate(attributeMap, testConstraint, [options]);
+        } catch (e) {
+            errorMessages = [ 'Something went wrong during validation.', e ];
+        }
 
         if (!errorMessages) {
             // If no errorMessages were returned, then validation passed.
@@ -260,6 +258,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         OHIF.log.info('ProtocolEngine::findMatchByStudy');
 
         const matched = [];
+        const studyInstance = study.getFirstInstance();
 
         HP.ProtocolStore.getProtocol().forEach(protocol => {
             // Clone the protocol's protocolMatchingRules array
@@ -271,18 +270,26 @@ HP.ProtocolEngine = class ProtocolEngine {
             }
 
             // Set custom attribute for study metadata 
-            const numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getStudyInstanceUID());
-            study.setCustomAttribute('numberOfPriorsReferenced', numberOfPriorsReferenced);
+            const numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getObjectID());
+            studyInstance.setCustomAttribute('numberOfPriorsReferenced', numberOfPriorsReferenced);
 
-            const rule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
+            const requiredPriorsRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
                 numericality: {
                     greaterThanOrEqualTo: protocol.numberOfPriorsReferenced
                 }
             });
 
-            rules.push(rule);
+            rules.push(requiredPriorsRule);
 
-            const matchedDetails = HP.match(study, rules);
+            const exactPriorsDesiredRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
+                numericality: {
+                    equalTo: protocol.numberOfPriorsReferenced
+                },
+            }, false, 1);
+
+            rules.push(exactPriorsDesiredRule);
+
+            const matchedDetails = HP.match(studyInstance, rules);
 
             if (matchedDetails.score > 0) {
                 matched.push({
@@ -366,23 +373,46 @@ HP.ProtocolEngine = class ProtocolEngine {
     /**
      * Get the number of prior studies supplied in the priorStudies map property.
      *
-     * @param {String} studyInstanceUID The StudyInstanceUID of the study whose priors are needed
+     * @param {String} studyObjectID The study object ID of the study whose priors are needed
      * @returns {number} The number of available prior studies with the same PatientID
      */
-    getNumberOfAvailablePriors(studyInstanceUID) {
-        const priors = this.getAvailableStudyPriors(studyInstanceUID);
+    getNumberOfAvailablePriors(studyObjectID) {
+        const priors = this.getAvailableStudyPriors(studyObjectID);
         return priors.length;
     }
 
     /**
-     * Get the array prior studies from a specific study.
+     * Get the array of prior studies from a specific study.
      *
-     * @param {String} studyInstanceUID The StudyInstanceUID of the study whose priors are needed
+     * @param {String} studyObjectID The study object ID of the study whose priors are needed
      * @returns {Array} The array of available priors or an empty array
      */
-    getAvailableStudyPriors(studyInstanceUID) {
-        const priors = this.priorStudies.get(studyInstanceUID);
+    getAvailableStudyPriors(studyObjectID) {
+        const priors = this.priorStudies.get(studyObjectID);
         return priors instanceof Array ? priors : [];
+    }
+
+    /**
+     * Get the array of prior studies based on current protocol matching rules.
+     *
+     * @param {String} studyObjectID The study object ID of the study whose priors are needed
+     * @returns {Array} The array of available priors that match the given rules or an empty array
+     */
+    getPriorsByProtocolMatchingRules(studyObjectID) {
+        const allPriors = this.getAvailableStudyPriors(studyObjectID);
+        const protocolMatchingRules = this.protocol.protocolMatchingRules;
+
+        if (protocolMatchingRules instanceof Array && protocolMatchingRules.length > 0) {
+            return allPriors.filter(prior => {
+                if (prior instanceof StudyMetadata) {
+                    prior = prior.getFirstInstance();
+                }
+                const matchDetails = HP.match(prior, protocolMatchingRules);
+                return matchDetails.score > 0;
+            });
+        }
+
+        return allPriors;
     }
 
     // Match images given a list of Studies and a Viewport's image matching reqs
@@ -393,14 +423,18 @@ HP.ProtocolEngine = class ProtocolEngine {
 
         const matchingScores = [];
         const currentStudy = this.studies[0];
+        const firstInstance = currentStudy.getFirstInstance();
 
         let highestStudyMatchingScore = 0;
         let highestSeriesMatchingScore = 0;
         let highestImageMatchingScore = 0;
         let bestMatch;
 
-        // Set custom attribute for study metadata
+        // Set custom attribute for study metadata and it's first instance
         currentStudy.setCustomAttribute('abstractPriorValue', 0);
+        if (firstInstance instanceof InstanceMetadata) {
+            firstInstance.setCustomAttribute('abstractPriorValue', 0);
+        }
 
         studyMatchingRules.forEach(rule => {
             if (rule.attribute === 'abstractPriorValue') {
@@ -411,7 +445,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 abstractPriorValue = parseInt(abstractPriorValue, 10);
                 // TODO: Restrict or clarify validators for abstractPriorValue?
 
-                const studies = this.getAvailableStudyPriors(currentStudy.getStudyInstanceUID());
+                const studies = this.getPriorsByProtocolMatchingRules(currentStudy.getObjectID());
 
                 // TODO: Revisit this later: What about two studies with the same
                 // study date?
@@ -429,10 +463,10 @@ HP.ProtocolEngine = class ProtocolEngine {
                     return;
                 }
 
-                const priorStudyInstanceUID = priorStudy.getStudyInstanceUID();
+                const priorStudyObjectID = priorStudy.getObjectID();
 
                 // Check if study metadata is already in studies list
-                if (this.studies.find(study => study.getStudyInstanceUID() === priorStudyInstanceUID)) {
+                if (this.studies.find(study => study.getObjectID() === priorStudyObjectID)) {
                     return;
                 }
 
@@ -441,6 +475,12 @@ HP.ProtocolEngine = class ProtocolEngine {
                     // Set the custom attribute abstractPriorValue for the study metadata
                     studyMetadata.setCustomAttribute('abstractPriorValue', abstractPriorValue);
 
+                    // Also add custom attribute 
+                    const firstInstance = studyMetadata.getFirstInstance();
+                    if (firstInstance instanceof InstanceMetadata) {
+                        firstInstance.setCustomAttribute('abstractPriorValue', abstractPriorValue);
+                    }
+
                     // Insert the new study metadata
                     this.studies.push(studyMetadata);
 
@@ -448,14 +488,14 @@ HP.ProtocolEngine = class ProtocolEngine {
                     this.updateViewports();
                 }, error => { 
                     OHIF.log.warn(error);
-                    throw new OHIFError(`ProtocolEngine::matchImages could not get study metadata for studyInstanceUID: ${priorStudyInstanceUID}`);
+                    throw new OHIFError(`ProtocolEngine::matchImages could not get study metadata for the Study with the following ObjectID: ${priorStudyObjectID}`);
                 });
             }
             // TODO: Add relative Date / time
         });
 
         this.studies.forEach(study => {
-            const studyMatchDetails = HP.match(study, studyMatchingRules);
+            const studyMatchDetails = HP.match(study.getFirstInstance(), studyMatchingRules);
             if ((studyMatchingRules.length && !studyMatchDetails.score) ||
                 studyMatchDetails.score < highestStudyMatchingScore) {
                 return;
@@ -464,7 +504,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             highestStudyMatchingScore = studyMatchDetails.score;
 
             study.forEachSeries(series => {
-                const seriesMatchDetails = HP.match(series, seriesMatchingRules);
+                const seriesMatchDetails = HP.match(series.getFirstInstance(), seriesMatchingRules);
                 if ((seriesMatchingRules.length && !seriesMatchDetails.score) ||
                     seriesMatchDetails.score < highestSeriesMatchingScore) {
                     return;
@@ -478,7 +518,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                     // See https://ohiforg.atlassian.net/browse/LT-227
                     // sopClassUid = x00080016
                     // rows = x00280010
-                    if (!OHIF.viewerbase.isImage(instance.getRawValue('x00080016')) && !instance.getRawValue('x00280010')) {
+                    if (!OHIF.viewerbase.isImage(instance.getTagValue('x00080016')) && !instance.getTagValue('x00280010')) {
                         return;
                     }
 
@@ -509,9 +549,9 @@ HP.ProtocolEngine = class ProtocolEngine {
                         matchDetails: matchDetails,
                         sortingInfo: {
                             score: totalMatchScore,
-                            study: instance.getRawValue('x00080020') + instance.getRawValue('x00080030'), // StudyDate = x00080020 StudyTime = x00080030
-                            series: parseInt(instance.getRawValue('x00200011')), // TODO: change for seriesDateTime SeriesNumber = x00200011
-                            instance: parseInt(instance.getRawValue('x00200013')) // TODO: change for acquisitionTime InstanceNumber = x00200013
+                            study: instance.getTagValue('x00080020') + instance.getTagValue('x00080030'), // StudyDate = x00080020 StudyTime = x00080030
+                            series: parseInt(instance.getTagValue('x00200011')), // TODO: change for seriesDateTime SeriesNumber = x00200011
+                            instance: parseInt(instance.getTagValue('x00200013')) // TODO: change for acquisitionTime InstanceNumber = x00200013
                         }
                     };
 

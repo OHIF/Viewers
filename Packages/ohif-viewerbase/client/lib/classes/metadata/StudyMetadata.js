@@ -1,12 +1,13 @@
 import { Metadata } from './Metadata';
 import { SeriesMetadata } from './SeriesMetadata';
+import { InstanceMetadata } from './InstanceMetadata';
 import { ImageSet } from '../ImageSet';
 import { OHIFError } from '../OHIFError';
 
 export class StudyMetadata extends Metadata {
 
-    constructor(data) {
-        super(data);
+    constructor(data, uid) {
+        super(data, uid);
         // Initialize Private Properties
         Object.defineProperties(this, {
             _studyInstanceUID: {
@@ -26,6 +27,18 @@ export class StudyMetadata extends Metadata {
                 enumerable: false,
                 writable: false,
                 value: []
+            },
+            _firstSeries: {
+                configurable: false,
+                enumerable: false,
+                writable: true,
+                value: null
+            },
+            _firstInstance: {
+                configurable: false,
+                enumerable: false,
+                writable: true,
+                value: null
             }
         });
         // Initialize Public Properties
@@ -232,23 +245,13 @@ export class StudyMetadata extends Metadata {
 
     /**
      * It sorts the series based on display sets order. Each series must be an instance 
-     * of SeriesMetadata and each display sets must be an instance of ImageSet. 
-     * Both array must have the same length, otherwise it throws an error.
+     * of SeriesMetadata and each display sets must be an instance of ImageSet.
      * Useful example of usage: 
      *     Study data provided by backend does not sort series at all and client-side 
      *     needs series sorted by the same criteria used for sorting display sets.
      */
     sortSeriesByDisplaySets() {
-        // Check if the study is multiframe. If it is, 
-        const firstInstance = this.getFirstInstance();
-        const isMultiframe = firstInstance.getRawValue('x00280008') > 1;
 
-        // @TODO: Check if is necessary to do a similar check for multiframe studies
-        // Check if both arrays have same length in case of non-multiframe studies
-        if (!isMultiframe && this.getSeriesCount() !== this.getDisplaySetCount()) {
-            throw new OHIFError('StudyMetadata::sortSeriesByDisplaySets series count and display set count does not match');
-        }
- 
         // Object for mapping display sets' index by seriesInstanceUid
         const displaySetsMapping = {};
 
@@ -299,18 +302,40 @@ export class StudyMetadata extends Metadata {
     }
 
     /**
-     * Get first instance of the first series
-     * @return {InstanceMetadata} InstanceMetadata class object or undefined if it doenst exist
+     * Get the first series of the current study retaining a consistent result across multiple calls.
+     * @return {SeriesMetadata} An instance of the SeriesMetadata class or null if it does not exist.
+     */
+    getFirstSeries() {
+        let series = this._firstSeries;
+        if (!(series instanceof SeriesMetadata)) {
+            series = null;
+            const found = this.getSeriesByIndex(0);
+            if (found instanceof SeriesMetadata) {
+                this._firstSeries = found;
+                series = found;
+            }
+        }
+        return series;
+    }
+
+    /**
+     * Get the first instance of the current study retaining a consistent result across multiple calls.
+     * @return {InstanceMetadata} An instance of the InstanceMetadata class or null if it does not exist.
      */
     getFirstInstance() {
-        let firstInstance;
-        const firstSeries = this.getSeriesByIndex(0);
-
-        if (firstSeries) {
-            firstInstance = firstSeries.getInstanceByIndex(0);
+        let instance = this._firstInstance;
+        if (!(instance instanceof InstanceMetadata)) {
+            instance = null;
+            const firstSeries = this.getFirstSeries();
+            if (firstSeries instanceof SeriesMetadata) {
+                const found = firstSeries.getFirstInstance();
+                if (found instanceof InstanceMetadata) {
+                    this._firstInstance = found;
+                    instance = found;
+                }
+            }
         }
-
-        return firstInstance;
+        return instance;
     }
 
 }

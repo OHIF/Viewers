@@ -8,13 +8,17 @@ const NUMBER = 'number';
 const FUNCTION = 'function';
 const OBJECT = 'object';
 
+/**
+ * Class Definition
+ */
+
 export class Metadata {
 
     /**
      * Constructor and Instance Methods
      */
 
-    constructor(data) {
+    constructor(data, uid) {
         // Define the main "_data" private property as an immutable property.
         // IMPORTANT: This property can only be set during instance construction.
         Object.defineProperty(this, '_data', {
@@ -24,7 +28,16 @@ export class Metadata {
             value: data
         });
 
-        // Define "_custom" properties as an immutable property
+        // Define the main "_uid" private property as an immutable property.
+        // IMPORTANT: This property can only be set during instance construction.
+        Object.defineProperty(this, '_uid', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: uid
+        });
+
+        // Define "_custom" properties as an immutable property.
         // IMPORTANT: This property can only be set during instance construction.
         Object.defineProperty(this, '_custom', {
             configurable: false,
@@ -45,6 +58,13 @@ export class Metadata {
             propertyValue = _data[propertyName];
         }
         return propertyValue;
+    }
+
+    /**
+     * Get unique object ID
+     */
+    getObjectID() {
+        return this._uid;
     }
 
     /**
@@ -72,6 +92,20 @@ export class Metadata {
      */
     customAttributeExists(attribute) {
         return attribute in this._custom;
+    }
+
+    /**
+     * Set custom attributes in batch mode.
+     * @param {Object} attributeMap An object whose own properties will be used as custom attributes.
+     */
+    setCustomAttributes(attributeMap) {
+        const _hasOwn = Object.prototype.hasOwnProperty;
+        const _custom = this._custom;
+        for (let attribute in attributeMap) {
+            if (_hasOwn.call(attributeMap, attribute)) {
+                _custom[attribute] = attributeMap[attribute];
+            }
+        }
     }
 
     /**

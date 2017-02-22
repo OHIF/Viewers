@@ -3,8 +3,7 @@ import 'meteor/ohif:viewerbase';
 // Local Dependencies
 import { getStudyPriors } from './getStudyPriors';
 
-const StudyMetadata = OHIF.viewerbase.metadata.StudyMetadata;
-const StudySummary = OHIF.viewerbase.metadata.StudySummary;
+const { StudyMetadata, StudySummary } = OHIF.viewerbase.metadata;
 
 /**
  * Create a Map of study priors where the key of each entry is the StudyInstanceUID and its value is an array of StudySummary instances.
@@ -17,10 +16,10 @@ const getStudyPriorsMap = studies => {
     if (studies instanceof Array) {
         studies.forEach(study => {
             if (study instanceof StudyMetadata || study instanceof StudySummary) {
-                const studyInstanceUID = study.getStudyInstanceUID();
-                if (studyInstanceUID) {
+                const studyObjectID = study.getObjectID();
+                if (studyObjectID) {
                     const priors = getStudyPriors(study);
-                    priorsMap.set(studyInstanceUID, priors);
+                    priorsMap.set(studyObjectID, priors);
                 }
             }
         });

@@ -3,27 +3,30 @@ import 'meteor/ohif:viewerbase';
 // Local Dependencies
 import { OHIFStudySummary } from './OHIFStudySummary';
 
-const StudyMetadata = OHIF.viewerbase.metadata.StudyMetadata;
-const StudySummary = OHIF.viewerbase.metadata.StudySummary;
-const PatientID = 'x00100020';
-const StudyDate = 'x00080020';
+const { StudyMetadata, StudySummary } = OHIF.viewerbase.metadata;
+const PATIENT_ID = 'x00100020';
+const STUDY_DATE = 'x00080020';
 
+/**
+ * Get the priors of a given study
+ * @param  {StudyMetadata|StudySummary} study An instance of StudyMetadata|StudySummary class to get it's priors
+ * @return {Array}       An Array of StudySummary objects representing the study priors for the given study or an empty array if none
+ */
 const getStudyPriors = study => {
 
-    const priorStudies = [];
-    let patientID;
-    let studyDate;
-
-    if (study instanceof StudyMetadata) {
-        const instance = study.getFirstInstance();
-        patientID = instance.getRawValue(PatientID); // PatientID
-        studyDate = instance.getRawValue(StudyDate); // StudyDate
-    } else if (study instanceof StudySummary) {
-        patientID = study.getTagValue(PatientID); // PatientID
-        studyDate = study.getTagValue(StudyDate); // StudyDate
+    if (!(study instanceof StudyMetadata) && !(study instanceof StudySummary)) {
+        throw new OHIF.viewerbase.OHIFError('getStudyPriors study must be an instance of StudySummary or StudyMetadata');
     }
 
-    // Find prior studies in global StudyListStudies Minimongo collection...
+    if (study instanceof StudyMetadata) {
+        study = study.getFirstInstance();
+    }
+
+    const priorStudies = [];
+    const patientID = study.getTagValue(PATIENT_ID); // PatientID
+    const studyDate = study.getTagValue(STUDY_DATE); // StudyDate
+
+    // Find prior studies in global StudyListStudies Minimongo collection
     const cursor = StudyListStudies.find({
         patientId: patientID,
         studyDate: {
@@ -35,10 +38,9 @@ const getStudyPriors = study => {
         }
     });
 
-    // Create an OHIFStudySummary object for each prior study found...
+    // Create an OHIFStudySummary object for each prior study found
     cursor.forEach(study => {
-        const summary = new OHIFStudySummary();
-        summary.addTags(study);
+        const summary = new OHIFStudySummary(study, null, study.studyInstanceUid);
         priorStudies.push(summary);
     });
 

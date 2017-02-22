@@ -106,5 +106,1248 @@ function getMRTwoByTwoTest() {
     return HP.testProtocol;
 }
 
+function getDemoProtocols() {
+
+    HP.demoProtocols = [];
+
+    /**
+     * Demo #1
+     */
+    HP.demoProtocols.push({
+        "id": "demoProtocol1",
+        "locked": false,
+        "name": "DFCI-CT-CHEST-COMPARE",
+        "createdDate": "2017-02-14T16:07:09.033Z",
+        "modifiedDate": "2017-02-14T16:18:43.930Z",
+        "availableTo": {},
+        "editableBy": {},
+        "protocolMatchingRules": [
+            {
+                "id": "7tmuq7KzDMCWFeapc",
+                "weight": 2,
+                "required": false,
+                "attribute": "x00081030",
+                "constraint": {
+                    "contains": {
+                        "value": "DFCI CT CHEST"
+                    }
+                }
+            }
+        ],
+        "stages": [
+            {
+                "id": "v5PfGt9F6mffZPif5",
+                "name": "oneByOne",
+                "viewportStructure": {
+                    "type": "grid",
+                    "properties": {
+                        "rows": 1,
+                        "columns": 2
+                    },
+                    "layoutTemplateName": "gridLayout"
+                },
+                "viewports": [
+                    {
+                        "viewportSettings": {},
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "mXnsCcNzZL56z7mTZ",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "2.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": []
+                    },
+                    {
+                        "viewportSettings": {},
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "ygz4nb28iJZcJhnYa",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "2.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": [
+                            {
+                                "id": "uDoEgLTvnXTByWnPz",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "abstractPriorValue",
+                                "constraint": {
+                                    "equals": {
+                                        "value": 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "createdDate": "2017-02-14T16:07:09.033Z"
+            },
+            {
+                "id": "XTzu8HB3feep3HYKs",
+                "viewportStructure": {
+                    "type": "grid",
+                    "properties": {
+                        "rows": 1,
+                        "columns": 2
+                    },
+                    "layoutTemplateName": "gridLayout"
+                },
+                "viewports": [
+                    {
+                        "viewportSettings": {},
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "mXnsCcNzZL56z7mTZ",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "3.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": []
+                    },
+                    {
+                        "viewportSettings": {},
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "ygz4nb28iJZcJhnYa",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "3.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": [
+                            {
+                                "id": "uDoEgLTvnXTByWnPz",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "abstractPriorValue",
+                                "constraint": {
+                                    "equals": {
+                                        "value": 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "createdDate": "2017-02-14T16:07:12.085Z"
+            },
+            {
+                "id": "3yPYNaeFtr76Qz3jq",
+                "viewportStructure": {
+                    "type": "grid",
+                    "properties": {
+                        "rows": 2,
+                        "columns": 2
+                    },
+                    "layoutTemplateName": "gridLayout"
+                },
+                "viewports": [
+                    {
+                        "viewportSettings": {},
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "mXnsCcNzZL56z7mTZ",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "Body 3.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": []
+                    },
+                    {
+                        "viewportSettings": {
+                            "wlPreset": "Lung"
+                        },
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "ygz4nb28iJZcJhnYa",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "Lung 3.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": []
+                    },
+                    {
+                        "viewportSettings": {},
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "6vdBRZYnqmmosipph",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "Body 3.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": [
+                            {
+                                "id": "SxfTyhGcMhr56PtPM",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "abstractPriorValue",
+                                "constraint": {
+                                    "equals": {
+                                        "value": 1
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "viewportSettings": {
+                            "wlPreset": "Lung"
+                        },
+                        "imageMatchingRules": [],
+                        "seriesMatchingRules": [
+                            {
+                                "id": "FTAyChZCPW68yJjXD",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "x0008103e",
+                                "constraint": {
+                                    "contains": {
+                                        "value": "Lung 3.0"
+                                    }
+                                }
+                            }
+                        ],
+                        "studyMatchingRules": [
+                            {
+                                "id": "gMJjfrbsqYNbErPx5",
+                                "weight": 1,
+                                "required": false,
+                                "attribute": "abstractPriorValue",
+                                "constraint": {
+                                    "equals": {
+                                        "value": 1
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "createdDate": "2017-02-14T16:11:40.489Z"
+            }
+        ],
+        "numberOfPriorsReferenced": 4
+    });
+
+    /**
+     * Demo #2
+     */
+
+    HP.demoProtocols.push({
+        "id": "demoProtocol2",
+        "locked": false,
+        "name": "DFCI-CT-CHEST-COMPARE-2",
+        "createdDate": "2017-02-14T16:07:09.033Z",
+        "modifiedDate": "2017-02-14T16:18:43.930Z",
+        "availableTo": {},
+        "editableBy": {},
+        "protocolMatchingRules": [{
+            "id": "7tmuq7KzDMCWFeapc",
+            "weight": 2,
+            "required": false,
+            "attribute": "x00081030",
+            "constraint": {
+                "contains": {
+                    "value": "DFCI CT CHEST"
+                }
+            }
+        }],
+        "stages": [{
+            "id": "v5PfGt9F6mffZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "2.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "ygz4nb28iJZcJhnYa",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "2.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }, {
+            "id": "XTzu8HB3feep3HYKs",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 3.0"
+                        }
+                    }
+                }, {
+                    "id": "mYnsCcNwZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 5.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "ygz4nb28iJZcJhnYa",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 3.0"
+                        }
+                    }
+                }, {
+                    "id": "ygz4nb29iJZcJhnYa",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 5.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:07:12.085Z"
+        }, {
+            "id": "3yPYNaeFtr76Qz3jq",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 2,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 3.0"
+                        }
+                    }
+                }, {
+                    "id": "jXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 5.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {
+                    "wlPreset": "Lung"
+                },
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "ygz4nb28iJZcJhnYa",
+                    "weight": 2,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Lung 3.0"
+                        }
+                    }
+                }, {
+                    "id": "ycz4nb28iJZcJhnYa",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Lung 5.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "6vdBRZYnqmmosipph",
+                    "weight": 2,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 3.0"
+                        }
+                    }
+                }, {
+                    "id": "6vdBRFYnqmmosipph",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 5.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "SxfTyhGcMhr56PtPM",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }, {
+                "viewportSettings": {
+                    "wlPreset": "Lung"
+                },
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "FTAyChZCPW68yJjXD",
+                    "weight": 2,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Lung 3.0"
+                        }
+                    }
+                }, {
+                    "id": "DTAyChZCPW68yJjXD",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Lung 5.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "gMJjfrbsqYNbErPx5",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:11:40.489Z"
+        }],
+        "numberOfPriorsReferenced": 1
+    });
+
+    /**
+     * Demo: screenCT
+     */
+
+    HP.demoProtocols.push({
+        "id": "screenCT",
+        "locked": false,
+        "name": "DFCI-CT-CHEST-SCREEN",
+        "createdDate": "2017-02-14T16:07:09.033Z",
+        "modifiedDate": "2017-02-14T16:18:43.930Z",
+        "availableTo": {},
+        "editableBy": {},
+        "protocolMatchingRules": [{
+            "id": "7tmuq7KzDMCWFeapc",
+            "weight": 2,
+            "required": false,
+            "attribute": "x00081030",
+            "constraint": {
+                "contains": {
+                    "value": "DFCI CT CHEST"
+                }
+            }
+        }],
+        "stages": [{
+            "id": "v5PfGt9F6mffZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 1
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "2.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        },
+        {
+            "id": "v5PfGt9F4mffZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 2,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 5.0"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 3.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Lung 5.0"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Lung 3.0"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 4.0"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Coronal"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Body 4.0"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Sagittal"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }],
+        "numberOfPriorsReferenced": 0
+    });
+
+    /**
+     * Demo: PETCTSCREEN
+     */
+
+    HP.demoProtocols.push({
+        "id": "PETCTSCREEN",
+        "locked": false,
+        "name": "PETCT-SCREEN",
+        "createdDate": "2017-02-14T16:07:09.033Z",
+        "modifiedDate": "2017-02-14T16:18:43.930Z",
+        "availableTo": {},
+        "editableBy": {},
+        "protocolMatchingRules": [{
+            "id": "7tmuqgKzDMCWFeapc",
+            "weight": 5,
+            "required": false,
+            "attribute": "x00081030",
+            "constraint": {
+                "contains": {
+                    "value": "PETCT"
+                }
+            }
+        }],
+        "stages": [{
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Topogram"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Topogram"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x00200011",
+                    "constraint": {
+                        "numericality": {
+                            "greaterThanOrEqualTo": 2
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }, {
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "PET WB Corrected"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "CT WB"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }, {
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {
+                    "invert": "YES"
+                },
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "PET WB Uncorrected"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "CT Nk"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }],
+        "numberOfPriorsReferenced": 0
+    });
+
+    /**
+     * Demo: PETCTCOMPARE
+     */
+
+    HP.demoProtocols.push({
+        "id": "PETCTCOMPARE",
+        "locked": false,
+        "name": "PETCT-COMPARE",
+        "createdDate": "2017-02-14T16:07:09.033Z",
+        "modifiedDate": "2017-02-14T16:18:43.930Z",
+        "availableTo": {},
+        "editableBy": {},
+        "protocolMatchingRules": [{
+            "id": "7tmuqgKzDMCWFeapc",
+            "weight": 5,
+            "required": false,
+            "attribute": "x00081030",
+            "constraint": {
+                "contains": {
+                    "value": "PETCT"
+                }
+            }
+        }],
+        "stages": [{
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Topogram"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Topogram"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }, {
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 1,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Topogram"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x00200011",
+                    "constraint": {
+                        "numericality": {
+                            "greaterThanOrEqualTo": 2
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "Topogram"
+                        }
+                    }
+                }, {
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x00200011",
+                    "constraint": {
+                        "numericality": {
+                            "greaterThanOrEqualTo": 2
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }, {
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 2,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "PET WB Corrected"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "CT WB"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "PET WB Corrected"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "CT WB"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }, {
+            "id": "v5PfGt9F6mFgZPif5",
+            "name": "oneByOne",
+            "viewportStructure": {
+                "type": "grid",
+                "properties": {
+                    "rows": 2,
+                    "columns": 2
+                },
+                "layoutTemplateName": "gridLayout"
+            },
+            "viewports": [{
+                "viewportSettings": {
+                    "invert": "YES"
+                },
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "PET WB Uncorrected"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "CT Nk"
+                        }
+                    }
+                }],
+                "studyMatchingRules": []
+            }, {
+                "viewportSettings": {
+                    "invert": "YES"
+                },
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "PET WB Uncorrected"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }, {
+                "viewportSettings": {},
+                "imageMatchingRules": [],
+                "seriesMatchingRules": [{
+                    "id": "mXnsCcNzZL56z7mTZ",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "x0008103e",
+                    "constraint": {
+                        "contains": {
+                            "value": "CT Nk"
+                        }
+                    }
+                }],
+                "studyMatchingRules": [{
+                    "id": "uDoEgLTvnXTByWnPz",
+                    "weight": 1,
+                    "required": false,
+                    "attribute": "abstractPriorValue",
+                    "constraint": {
+                        "equals": {
+                            "value": 1
+                        }
+                    }
+                }]
+            }],
+            "createdDate": "2017-02-14T16:07:09.033Z"
+        }],
+        "numberOfPriorsReferenced": 1
+    });
+
+}
+
 getDefaultProtocol();
 getMRTwoByTwoTest();
+getDemoProtocols();

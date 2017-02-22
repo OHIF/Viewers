@@ -130,7 +130,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         seriesInstanceUid,
         displaySetInstanceUid,
         currentImageIdIndex,
-        viewport,
+        viewport: viewport || data.viewport,
         viewportIndex
     };
 
@@ -235,7 +235,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
         // Call the handler function that represents the end of the image loading phase
         // (e.g. hide the progress text box)
-        endLoadingHandler(element);
+        endLoadingHandler(element, image);
 
         // Remove the 'empty' class from the viewport to hide any instruction text
         element.classList.remove('empty');

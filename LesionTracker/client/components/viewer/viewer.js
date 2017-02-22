@@ -89,7 +89,7 @@ Template.viewer.onCreated(() => {
     OHIF.viewer.StudyMetadataList.removeAll();
 
     instance.data.studies.forEach(study => {
-        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+        const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
         const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
 
         studyMetadata.setDisplaySets(displaySets);
@@ -125,6 +125,7 @@ Template.viewer.onCreated(() => {
                     return;
                 }
 
+                // @TODO: Maybe this should be a setCustomAttribute?
                 study.timepointType = timepoint.timepointType;
             });
         });

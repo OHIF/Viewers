@@ -8,8 +8,8 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     /**
      * @param {Object} Instance object.
      */
-    constructor(data, series, study) {
-        super(data);
+    constructor(data, series, study, uid) {
+        super(data, uid);
         this.init(series, study);
     }
 
@@ -52,7 +52,7 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
     }
 
     // Override
-    getRawValue(tagOrProperty, defaultValue, bypassCache) {
+    getTagValue(tagOrProperty, defaultValue, bypassCache) {
 
         // check if this property has been cached...
         if (tagOrProperty in this._cache && bypassCache !== true) {

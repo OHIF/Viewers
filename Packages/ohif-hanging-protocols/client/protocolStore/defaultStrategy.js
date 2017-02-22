@@ -147,10 +147,12 @@ var defaultStrategy = (function () {
 
 Meteor.startup(() => {
     HP.ProtocolStore.setStrategy(defaultStrategy);
-
     HP.ProtocolStore.onReady(() => {
         console.log('Inserting default protocols');
         HP.ProtocolStore.addProtocol(HP.defaultProtocol);
         //HP.ProtocolStore.addProtocol(HP.testProtocol);
+        HP.demoProtocols.forEach(protocol => {
+            HP.ProtocolStore.addProtocol(protocol);
+        });
     });
 });
