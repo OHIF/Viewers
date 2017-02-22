@@ -62,7 +62,6 @@ Template.toolbarSection.helpers({
             disabled: isToolDisabled
         });
 
-        // TODO: Get real icons for CR / UN / EX
         targetSubTools.push({
             id: 'targetCR',
             title: 'CR Target',

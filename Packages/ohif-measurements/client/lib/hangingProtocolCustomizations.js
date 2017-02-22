@@ -1,9 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 
-// TODO: [LT-refactor] move this to ohif:hanging-protocols package
-
 const getTimepointType = study => {
-    const timepointApi = Template.instance().timepointApi;
+    const instance = Template.instance();
+    const timepointApi = instance.timepointApi || instance.data.timepointApi;
     if (!timepointApi) {
         return;
     }
@@ -16,8 +16,10 @@ const getTimepointType = study => {
     return timepoint.timepointType;
 };
 
-HP = HP || false;
+Meteor.startup(() => {
+    HP = HP || false;
 
-if (HP) {
-    HP.addCustomAttribute('timepointType', 'Timepoint Type', getTimepointType);
-}
+    if (HP) {
+        HP.addCustomAttribute('timepointType', 'Timepoint Type', getTimepointType);
+    }
+});
