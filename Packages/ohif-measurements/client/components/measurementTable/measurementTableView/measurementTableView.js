@@ -28,7 +28,7 @@ Template.measurementTableView.helpers({
         const instance = Template.instance();
         const groups = instance.data.measurementGroups.get();
         const group = _.find(groups, item => item.toolGroup.id === toolGroupId);
-        return !!group.measurementRows.length;
+        return group && !!group.measurementRows.length;
     },
 
     getNewToolGroup(tool) {
@@ -58,9 +58,7 @@ Template.measurementTableView.helpers({
         const current = instance.data.timepointApi.current();
         const baseline = timepointApi.baseline();
 
-        if (!measurementApi || !timepointApi || !current) {
-            return;
-        }
+        if (!measurementApi || !timepointApi || !current || !baseline) return;
 
         // If this is a baseline, stop here since there are no new measurements to display
 

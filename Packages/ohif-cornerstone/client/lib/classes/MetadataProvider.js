@@ -27,6 +27,7 @@ export class MetadataProvider {
         const metadata = {};
 
         metadata.study = {
+            accessionNumber: studyMetadata.accessionNumber,
             patientId: studyMetadata.patientId,
             studyInstanceUid: studyMetadata.studyInstanceUid,
             studyDate: studyMetadata.studyDate,
