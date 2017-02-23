@@ -1,3 +1,5 @@
+import { Viewerbase } from 'meteor/ohif:viewerbase';
+
 (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     'use strict';
@@ -12,12 +14,16 @@
         "toolResponse": "EX"
     }];
 
+    const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
+    const textBoxConfig = toolDefaultStates.textBoxConfig;
+
     var configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,
         changeMeasurementLocationCallback: changeMeasurementLocationCallback,
         drawHandles: false,
         drawHandlesOnHover: false,
-        arrowFirst: true
+        arrowFirst: true,
+        textBox: textBoxConfig
     };
 
     // Used to cancel tool placement
@@ -290,7 +296,8 @@
                     context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                     context.stroke();
 
-                    var boundingBox = cornerstoneTools.drawTextBox(context, `Target ${data.measurementNumber}`, canvasTextLocation.x, canvasTextLocation.y, color);
+                    var textLine = `Target ${data.measurementNumber}`;
+                    var boundingBox = cornerstoneTools.drawTextBox(context, textLine, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
                     data.handles.textBox.boundingBox = boundingBox;
                 }
 

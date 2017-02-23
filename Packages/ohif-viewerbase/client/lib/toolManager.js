@@ -38,6 +38,12 @@ let toolDefaultStates = {
         shadowColor: '#000000',
         shadowOffsetX: 0,
         shadowOffsetY: 0
+    },
+    textBoxConfig: {
+        centering: {
+            x: true,
+            y: true
+        }
     }
 };
 

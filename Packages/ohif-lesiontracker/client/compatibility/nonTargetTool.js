@@ -7,7 +7,9 @@ import { Viewerbase } from 'meteor/ohif:viewerbase';
 
     const toolType = 'nonTarget';
 
-    const shadowConfig = Viewerbase.toolManager.getToolDefaultStates().shadowConfig;
+    const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
+    const shadowConfig = toolDefaultStates.shadowConfig;
+    const textBoxConfig = toolDefaultStates.textBoxConfig;
 
     const configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,
@@ -15,7 +17,9 @@ import { Viewerbase } from 'meteor/ohif:viewerbase';
         drawHandles: false,
         drawHandlesOnHover: true,
         arrowFirst: true,
-        ...shadowConfig
+        textBox: textBoxConfig,
+        ...shadowConfig,
+
     };
 
     // Used to cancel tool placement
@@ -253,10 +257,11 @@ import { Viewerbase } from 'meteor/ohif:viewerbase';
             // Draw the text
             if (data.measurementNumber) {
 
-                var boundingBox = cornerstoneTools.drawTextBox(context, `Non-Target ${data.measurementNumber}`, canvasTextLocation.x, canvasTextLocation.y, color);
+                var textLine = `Non-Target ${data.measurementNumber}`;
+                var boundingBox = cornerstoneTools.drawTextBox(context, textLine, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
                 data.handles.textBox.boundingBox = boundingBox;
 
-                OHIF.cornerstone.repositionTextBox(eventData, data);
+                OHIF.cornerstone.repositionTextBox(eventData, data, config.textBox);
 
                 // Draw linked line as dashed
                 var link = {

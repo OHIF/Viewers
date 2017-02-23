@@ -7,12 +7,15 @@ import { Viewerbase } from 'meteor/ohif:viewerbase';
 
     var toolType = 'bidirectional';
 
-    const shadowConfig = Viewerbase.toolManager.getToolDefaultStates().shadowConfig;
+    const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
+    const shadowConfig = toolDefaultStates.shadowConfig;
+    const textBoxConfig = toolDefaultStates.textBoxConfig;
 
     var configuration = {
         getMeasurementLocationCallback: getMeasurementLocationCallback,
         changeMeasurementLocationCallback: changeMeasurementLocationCallback,
-        ...shadowConfig
+        ...shadowConfig,
+        textBox: textBoxConfig
     };
 
     // Used to cancel tool placement
@@ -1018,11 +1021,11 @@ import { Viewerbase } from 'meteor/ohif:viewerbase';
 
                 var boundingBox = cornerstoneTools.drawTextBox(context,
                     textLines,
-                    canvasTextLocation.x, canvasTextLocation.y, color);
+                    canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
 
                 data.handles.textBox.boundingBox = boundingBox;
 
-                OHIF.cornerstone.repositionTextBox(eventData, data);
+                OHIF.cornerstone.repositionTextBox(eventData, data, config.textBox);
 
                 // Draw linked line as dashed
                 var link = {

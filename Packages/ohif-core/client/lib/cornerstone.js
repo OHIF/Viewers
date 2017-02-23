@@ -28,7 +28,7 @@ OHIF.cornerstone.pixelToPage = (element, position) => {
     return result;
 };
 
-OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
+OHIF.cornerstone.repositionTextBox = (eventData, measurementData, config) => {
     // Stop here if it's not a measurement creating
     if (!measurementData.isCreating) {
         return;
@@ -126,6 +126,37 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
         };
     };
 
+    function getTextBoxOffset(config, cornerAxis, toolAxis, boxSize) {
+        config = config || {};
+        const centering = config.centering || {};
+        const centerX = !!centering.x;
+        const centerY = !!centering.y;
+        const halfBoxSizeX = boxSize.x / 2;
+        const halfBoxSizeY = boxSize.y / 2;
+        const offset = {
+            x: [],
+            y: []
+        }
+
+        if(cornerAxis === 'x') {
+            const offsetY = centerY ? 0 : halfBoxSizeY;
+
+            offset.x[-1] = centerX ? halfBoxSizeX : 0;
+            offset.x[1] = centerX ? -halfBoxSizeX : -boxSize.x;
+            offset.y[-1] = offsetY;
+            offset.y[1] = offsetY;
+        } else {
+            const offsetX = centerX ? 0 : halfBoxSizeX;
+
+            offset.x[-1] = offsetX;
+            offset.x[1] = offsetX;
+            offset.y[-1] = centerY ? halfBoxSizeY : 0;
+            offset.y[1] = centerY ? -halfBoxSizeY : -boxSize.y;
+        }
+
+        return offset;
+    }
+
     const handles = measurementData.handles;
     const textBox = handles.textBox;
 
@@ -202,13 +233,11 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData) => {
     const boxSize = getTextBoxSizeInPixels(element, bounds);
 
     textBox[cornerAxis] = cornerAxisPosition;
-    textBox[toolAxis] = tool[toolAxis] - (boxSize[toolAxis] / 2);
+    textBox[toolAxis] = tool[toolAxis];
 
     // Adjust the text box position reducing its size from the corner axis
-    const isDirectionPositive = directions[cornerAxis] > 0;
-    if ((foundPlace && !isDirectionPositive) || (!foundPlace && isDirectionPositive)) {
-        textBox[cornerAxis] -= boxSize[cornerAxis];
-    }
+    const textBoxOffset = getTextBoxOffset(config, cornerAxis, toolAxis, boxSize);
+    textBox[cornerAxis] += textBoxOffset[cornerAxis][directions[cornerAxis]];
 
     // Preventing the text box from partially going outside the canvas area
     const topLeft = cornerstone.pixelToCanvas(element, textBox);
