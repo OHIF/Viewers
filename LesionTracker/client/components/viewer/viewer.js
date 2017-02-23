@@ -11,7 +11,6 @@ import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
 Meteor.startup(() => {
-    Session.set('ViewerMainReady', false);
     Session.set('TimepointsReady', false);
     Session.set('MeasurementsReady', false);
 
@@ -24,10 +23,13 @@ Meteor.startup(() => {
 
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
-    cornerstoneTools.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+    cornerstoneTools.metaData.addProvider(metadataProvider.getProvider());
 });
 
 Template.viewer.onCreated(() => {
+
+    Session.set('ViewerReady', false);
+
     const toolManager = OHIF.viewerbase.toolManager;
     ViewerData = window.ViewerData || ViewerData;
 
@@ -162,7 +164,7 @@ Template.viewer.onCreated(() => {
     instance.autorun(() => {
         if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||
-            !Session.get('ViewerMainReady') ||
+            !Session.get('ViewerReady') ||
             firstMeasurementActivated) {
             return;
         }
@@ -313,6 +315,8 @@ const initHangingProtocol = () => {
 
         // Sets up Hanging Protocol engine
         HP.setEngine(ProtocolEngine);
+
+        Session.set('ViewerReady', true);
 
     });
 };

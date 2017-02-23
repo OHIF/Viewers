@@ -37,6 +37,8 @@ const initHangingProtocol = () => {
         // Sets up Hanging Protocol engine
         HP.setEngine(ProtocolEngine);
 
+        Session.set('ViewerReady', true);
+
     });
 };
 
@@ -77,6 +79,9 @@ Meteor.startup(() => {
 
 
 Template.viewer.onCreated(() => {
+
+    Session.set('ViewerReady', false);
+
     const instance = Template.instance();
 
     instance.data.state = new ReactiveDict();

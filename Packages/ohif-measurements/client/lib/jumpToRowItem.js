@@ -90,7 +90,7 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
     // Retrieve the list of available viewports
     const $viewports = $('.imageViewerViewport');
-    const numViewports = Math.max($viewports.length, 1);
+    const numViewports = Math.max($viewports.length, 0);
 
     /*
     Two Timepoints, Two measurements, load Followup (FU and BA), display FU in left and BA in right

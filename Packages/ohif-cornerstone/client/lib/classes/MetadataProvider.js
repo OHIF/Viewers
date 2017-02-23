@@ -1,9 +1,27 @@
 import { parsingUtils } from '../parsingUtils';
 
+const FUNCTION = 'function';
+
 export class MetadataProvider {
 
     constructor() {
-        this.metadataLookup = new Map();
+
+        // Define the main "metadataLookup" private property as an immutable property.
+        Object.defineProperty(this, 'metadataLookup', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: new Map()
+        });
+
+        // Local reference to provider function bound to current instance.
+        Object.defineProperty(this, '_provider', {
+            configurable: false,
+            enumerable: false,
+            writable: true,
+            value: null
+        });
+
     }
 
     /**
@@ -242,6 +260,18 @@ export class MetadataProvider {
         }
 
         return imageInfo;
+    }
+
+    /**
+     * Get a bound reference to the privider function.
+     */
+    getProvider() {
+        let provider = this._provider;
+        if (typeof this._provider !== FUNCTION) {
+            provider = this.provider.bind(this);
+            this._provider = provider;
+        }
+        return provider;
     }
 
     /**
