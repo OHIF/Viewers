@@ -1,4 +1,4 @@
-/*! cornerstone - v0.10.1 - 2017-02-11 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstone */
+/*! cornerstone - v0.10.2 - 2017-02-21 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstone */
 if(typeof cornerstone === 'undefined'){
     cornerstone = {
         internal : {},
@@ -55,6 +55,7 @@ if(typeof cornerstone === 'undefined'){
 
                 // remove the child dom elements that we created (e.g.canvas)
                 enabledElements[i].element.removeChild(enabledElements[i].canvas);
+                enabledElements[i].canvas = undefined;
 
                 // remove this element from the list of enabled elements
                 enabledElements.splice(i, 1);
@@ -203,11 +204,45 @@ if(typeof cornerstone === 'undefined'){
             canvas: canvas,
             image : undefined, // will be set once image is loaded
             invalid: false, // true if image needs to be drawn, false if not
+            needsRedraw:true,
             data : {}
         };
         cornerstone.addEnabledElement(el);
 
         cornerstone.resize(element, true);
+
+
+        function draw() {
+            if (el.canvas === undefined){
+                return;
+            }
+            if (el.needsRedraw && el.image !== undefined){
+                var start = new Date();
+                el.image.render(el, el.invalid);
+
+                var context = el.canvas.getContext('2d');
+
+                var end = new Date();
+                var diff = end - start;
+
+                var eventData = {
+                    viewport: el.viewport,
+                    element: el.element,
+                    image: el.image,
+                    enabledElement: el,
+                    canvasContext: context,
+                    renderTimeInMs: diff
+                };
+
+                $(el.element).trigger("CornerstoneImageRendered", eventData);
+                el.invalid = false;
+                el.needsRedraw = false;
+            }
+
+            cornerstone.requestAnimationFrame(draw);
+        }
+
+        draw();
 
         return element;
     }
@@ -880,28 +915,11 @@ if(typeof cornerstone === 'undefined'){
      * @param invalidated - true if pixel data has been invalidated and cached rendering should not be used
      */
     function drawImage(enabledElement, invalidated) {
+        enabledElement.needsRedraw = true;
+        if (invalidated){
+            enabledElement.invalid = true;
+        }
 
-        var start = new Date();
-
-        enabledElement.image.render(enabledElement, invalidated);
-
-        var context = enabledElement.canvas.getContext('2d');
-
-        var end = new Date();
-        var diff = end - start;
-        //console.log(diff + ' ms');
-
-        var eventData = {
-            viewport : enabledElement.viewport,
-            element : enabledElement.element,
-            image : enabledElement.image,
-            enabledElement : enabledElement,
-            canvasContext: context,
-            renderTimeInMs : diff
-        };
-
-        $(enabledElement.element).trigger("CornerstoneImageRendered", eventData);
-        enabledElement.invalid = false;
     }
 
     // Module exports
@@ -1158,6 +1176,32 @@ if(typeof cornerstone === 'undefined'){
 
 }(cornerstone));
 
+/**
+ * This module polyfills requestAnimationFrame for older browsers.
+ */
+
+
+(function (cornerstone) {
+
+  'use strict';
+
+  function requestFrame(callback) {
+    window.setTimeout(callback, 1000 / 60);
+  }
+
+  function requestAnimationFrame(callback) {
+    return window.requestAnimationFrame(callback) ||
+      window.webkitRequestAnimationFrame(callback) ||
+      window.mozRequestAnimationFrame(callback) ||
+      window.oRequestAnimationFrame(callback) ||
+      window.msRequestAnimationFrame(callback) ||
+      requestFrame(callback);
+  }
+
+  // Module exports
+  cornerstone.requestAnimationFrame = requestAnimationFrame;
+
+})(cornerstone);
 /**
  * This module contains a function to convert stored pixel values to display pixel values using a LUT
  */

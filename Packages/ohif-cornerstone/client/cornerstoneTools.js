@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.8.1 - 2017-02-11 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.8.3 - 2017-02-21 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -2634,7 +2634,7 @@ if (typeof cornerstoneTools === 'undefined') {
                     stackData.currentImageIdIndex = newImageIdIndex;
                     cornerstone.displayImage(targetElement, image, viewport);
                     if (endLoadingHandler) {
-                        endLoadingHandler(targetElement);
+                        endLoadingHandler(targetElement, image);
                     }
                 }, function(error) {
                     var imageId = stackData.imageIds[newImageIdIndex];
@@ -8092,7 +8092,7 @@ if (typeof cornerstoneTools === 'undefined') {
         cornerstone.updateImage(enabledElement.element);
 
         // Request a new frame
-        cornerstoneTools.requestAnimFrame(function() {
+        cornerstone.requestAnimationFrame(function() {
             animate(time, handle, runAnimation, enabledElement, targetLocation);
         });
     }
@@ -8822,7 +8822,7 @@ if (typeof cornerstoneTools === 'undefined') {
                     stackData.currentImageIdIndex = newImageIdIndex;
                     cornerstone.displayImage(element, image, viewport);
                     if (endLoadingHandler) {
-                        endLoadingHandler(element);
+                        endLoadingHandler(element, image);
                     }
                 }, function(error) {
                     var imageId = stackData.imageIds[newImageIdIndex];
@@ -10236,7 +10236,7 @@ Display scroll progress bar across bottom of image.
             targetStackData.currentImageIdIndex = newImageIdIndex;
             synchronizer.displayImage(targetElement, image, viewport);
             if (endLoadingHandler) {
-                endLoadingHandler(targetElement);
+                endLoadingHandler(targetElement, image);
             }
         }, function(error) {
             var imageId = targetStackData.imageIds[newImageIdIndex];
@@ -10321,7 +10321,7 @@ Display scroll progress bar across bottom of image.
             stackData.currentImageIdIndex = newImageIdIndex;
             synchronizer.displayImage(targetElement, image, viewport);
             if (endLoadingHandler) {
-                endLoadingHandler(targetElement);
+                endLoadingHandler(targetElement, image);
             }
         }, function(error) {
             var imageId = stackData.imageIds[newImageIdIndex];
@@ -10398,7 +10398,7 @@ Display scroll progress bar across bottom of image.
                 stackData.currentImageIdIndex = newImageIdIndex;
                 synchronizer.displayImage(targetElement, image, viewport);
                 if (endLoadingHandler) {
-                    endLoadingHandler(targetElement);
+                    endLoadingHandler(targetElement, image);
                 }
             }, function(error) {
                 var imageId = stackData.imageIds[newImageIdIndex];
@@ -10469,7 +10469,7 @@ Display scroll progress bar across bottom of image.
             stackData.currentImageIdIndex = newImageIdIndex;
             synchronizer.displayImage(targetElement, image, viewport);
             if (endLoadingHandler) {
-                endLoadingHandler(targetElement);
+                endLoadingHandler(targetElement, image);
             }
         }, function(error) {
             var imageId = stackData.imageIds[newImageIdIndex];
@@ -10991,7 +10991,7 @@ Display scroll progress bar across bottom of image.
                     timeSeriesData.currentStackIndex = newStackIndex;
                     cornerstone.displayImage(element, image, viewport);
                     if (endLoadingHandler) {
-                        endLoadingHandler(element);
+                        endLoadingHandler(element, image);
                     }
                 }
             }, function(error) {
@@ -11181,23 +11181,6 @@ Display scroll progress bar across bottom of image.
 })($, cornerstone, cornerstoneTools);
  
 // End Source; src/timeSeriesTools/timeSeriesScroll.js
-
-// Begin Source: src/util/RoundToDecimal.js
-(function($, cornerstone, cornerstoneTools) {
-
-    'use strict';
-
-    function roundToDecimal(value, precision) {
-        var multiplier = Math.pow(10, precision);
-        return (Math.round(value * multiplier) / multiplier);
-    }
-
-    // module exports
-    cornerstoneTools.roundToDecimal = roundToDecimal;
-
-})($, cornerstone, cornerstoneTools);
- 
-// End Source; src/util/RoundToDecimal.js
 
 // Begin Source: src/util/calculateSUV.js
 (function(cornerstoneTools) {
@@ -11865,17 +11848,10 @@ Display scroll progress bar across bottom of image.
 
     'use strict';
 
-    function requestFrame(callback) {
-        window.setTimeout(callback, 1000 / 60);
-    }
-
     function requestAnimFrame(callback) {
-        return window.requestAnimationFrame(callback) ||
-               window.webkitRequestAnimationFrame(callback) ||
-               window.mozRequestAnimationFrame(callback) ||
-               window.oRequestAnimationFrame(callback) ||
-               window.msRequestAnimationFrame(callback) ||
-               requestFrame(callback);
+        // This functionality was moved to cornerstone.
+        console.warn('cornerstoneTools.requestAnimFrame() is deprecated, consider using cornerstone.requestAnimationFrame()');
+        cornerstone.requestAnimationFrame(callback);
     }
 
     // Module exports
@@ -11884,6 +11860,23 @@ Display scroll progress bar across bottom of image.
 })(cornerstoneTools);
  
 // End Source; src/util/requestAnimFrame.js
+
+// Begin Source: src/util/RoundToDecimal.js
+(function($, cornerstone, cornerstoneTools) {
+
+    'use strict';
+
+    function roundToDecimal(value, precision) {
+        var multiplier = Math.pow(10, precision);
+        return (Math.round(value * multiplier) / multiplier);
+    }
+
+    // module exports
+    cornerstoneTools.roundToDecimal = roundToDecimal;
+
+})($, cornerstone, cornerstoneTools);
+ 
+// End Source; src/util/RoundToDecimal.js
 
 // Begin Source: src/util/scroll.js
 (function(cornerstone, cornerstoneTools) {
@@ -11951,7 +11944,7 @@ Display scroll progress bar across bottom of image.
 
             cornerstone.displayImage(element, image, viewport);
             if (endLoadingHandler) {
-                endLoadingHandler(element);
+                endLoadingHandler(element, image);
             }
         }
 
