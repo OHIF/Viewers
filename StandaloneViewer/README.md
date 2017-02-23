@@ -9,7 +9,7 @@ meteor npm install
 Run the application:
 
 ```bash
-METEOR_PACKAGE_DIRS="../../Packages" meteor
+METEOR_PACKAGE_DIRS="../../Packages" ROOT_URL=http://localhost:3000 meteor
 ```
 
 Open your web browser and navigate to one of the following URLs to test the standalone viewer application:
