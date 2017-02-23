@@ -12,8 +12,8 @@ import { OHIF } from 'meteor/ohif:core';
 export class LayoutManager {
     /**
      * Constructor: initializes a Layout Manager object.
-     * @param  {DOM element}    parentNode DOM element representing the parent node, which wraps the Layout Manager content
-     * @param  {Array} studies  Array of studies objects that will be rendered in the Viewer. Each object will be rendered in a div.imageViewerViewport
+     * @param {DOM element}    parentNode DOM element representing the parent node, which wraps the Layout Manager content
+     * @param {Array} studies  Array of studies objects that will be rendered in the Viewer. Each object will be rendered in a div.imageViewerViewport
      */
     constructor(parentNode, studies) {
         OHIF.log.info('LayoutManager constructor');
@@ -80,9 +80,7 @@ export class LayoutManager {
         // Get all the display sets for the viewer studies
         let displaySets = [];
         this.studies.forEach(study => {
-            study.displaySets.forEach(displaySet => {
-                displaySet.images.length && displaySets.push(displaySet);
-            });
+            study.displaySets.forEach(dSet => dSet.images.length && displaySets.push(dSet));
         });
 
         // Get the display sets that will be appended to the current ones
@@ -143,7 +141,7 @@ export class LayoutManager {
      */
     updateLayoutClass() {
         const newLayoutClass = this.getLayoutClass();
-        
+
         // If layout has changed, change its class
         if (this.layoutClassName !== newLayoutClass) {
             this.parentNode.classList.remove(this.layoutClassName);
@@ -155,9 +153,9 @@ export class LayoutManager {
     }
 
     /**
-     * Updates the grid with the new layout props. 
+     * Updates the grid with the new layout props.
      * It iterates over all viewportData to render the studies
-     * in the viewports. 
+     * in the viewports.
      * If no viewportData or no viewports defined, it renders the default viewport data.
      */
     updateViewports() {
@@ -176,7 +174,7 @@ export class LayoutManager {
             viewportData: []
         }, layoutProps);
 
-        this.viewportData.forEach( viewportData => {
+        this.viewportData.forEach(viewportData => {
             const viewportDataAndLayoutProps = $.extend(viewportData, layoutProps);
             data.viewportData.push(viewportDataAndLayoutProps);
         });
@@ -266,7 +264,7 @@ export class LayoutManager {
             columns: 1
         };
 
-        const layoutTemplate = Template['gridLayout'];
+        const layoutTemplate = Template.gridLayout;
 
         $(this.parentNode).html('');
         Blaze.renderWithData(layoutTemplate, data, this.parentNode);
@@ -279,7 +277,7 @@ export class LayoutManager {
     }
 
     /**
-     * Resets to the previous layout configuration. 
+     * Resets to the previous layout configuration.
      * Useful after enlarging a single viewport.
      */
     resetPreviousLayout() {
@@ -305,8 +303,7 @@ export class LayoutManager {
 
         if (this.isZoomed) {
             this.resetPreviousLayout();
-        } 
-        else {
+        } else {
             // Don't enlarge the viewport if we only have one Viewport
             // to begin with
             if (this.getNumberOfViewports() > 1) {
@@ -416,7 +413,7 @@ export class LayoutManager {
 
         // Get the setting that defines if the display set navigation is multiple
         const isMultiple = OHIF.uiSettings.displaySetNavigationMultipleViewports;
-        
+
         // Get the setting that allow display set navigation looping over series
         const allowLooping = OHIF.uiSettings.displaySetNavigationLoopOverSeries;
 
@@ -446,7 +443,7 @@ export class LayoutManager {
                 const amount = study.displaySets.length;
                 const move = !isMultiple ? 1 : ((amount % layoutViewports) || layoutViewports);
                 const lastStepIndex = amount - move;
-                
+
                 // 9999 for index means empty viewport, see getDisplaySetSequenceMap function
                 if (viewportIndex !== 9999 && viewportIndex !== lastStepIndex) {
                     endReached = false;
@@ -464,7 +461,7 @@ export class LayoutManager {
             // Check if the begin was reached
             let beginReached = true;
 
-            if(activeViewportIndex >= 0) {
+            if (activeViewportIndex >= 0) {
                 sequenceMap.forEach((studyViewports, study) => {
                     // Get active viewport index if isMultiple is false ortherwise get first
                     const studyViewport = studyViewports[activeViewportIndex !== null ? activeViewportIndex : 0];
@@ -650,7 +647,7 @@ export class LayoutManager {
      */
     moveDisplaySets(isNext) {
         OHIF.log.info('LayoutManager moveDisplaySets');
-        
+
         //Check if navigation is on a single or multiple viewports
         if (OHIF.uiSettings.displaySetNavigationMultipleViewports) {
             // Move display sets on multiple viewports
@@ -682,4 +679,4 @@ export class LayoutManager {
         return this.layoutProps.row !== 1 && this.layoutProps.columns !== 1;
     }
 
-};
+}

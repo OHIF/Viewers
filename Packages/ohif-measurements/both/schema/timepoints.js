@@ -27,5 +27,10 @@ export const schema = new SimpleSchema({
     latestDate: {
         type: Date,
         label: 'Most recent Study Date from associated studies',
+    },
+    visitNumber: {
+        type: Number,
+        label: 'Number of patient\'s visit',
+        optional: true
     }
 });

@@ -642,7 +642,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             }
 
             if (!currentViewportData.displaySetInstanceUid) {
-                throw 'No matching display set found?';
+                throw new Meteor.Error('No matching display set found?');
             }
 
             viewportData.push(currentViewportData);

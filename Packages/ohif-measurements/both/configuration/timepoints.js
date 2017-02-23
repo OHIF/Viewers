@@ -220,6 +220,8 @@ class TimepointApi {
         // Check if this is a Baseline timepoint, if it is, return 'Baseline'
         if (timepoint.timepointType === 'baseline') {
             return 'Baseline';
+        } else if (timepoint.visitNumber) {
+            return 'Follow-up ' + timepoint.visitNumber;
         }
 
         // Retrieve all of the relevant follow-up timepoints for this patient
