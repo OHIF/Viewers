@@ -288,14 +288,19 @@ const stopAllClips = () => {
 
 
 const isStackScrollLinkingDisabled = () => {
+    let linkableViewportsCount = 0;
+
     // Its called everytime active viewport and/or layout change
     Session.get('viewportActivated');
     Session.get('LayoutManagerUpdated');
 
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
-    const linkableViewports = synchronizer.getLinkableViewports();
+    if (synchronizer) {
+        const linkableViewports = synchronizer.getLinkableViewports();
+        linkableViewportsCount = linkableViewports.length;
+    }
 
-    return linkableViewports.length <= 1;
+    return linkableViewportsCount <= 1;
 };
 
 // Create an event listener to update playing state when a clip stops playing

@@ -50,6 +50,10 @@ HP.Protocol = class Protocol {
         // default protocols.
         this.locked = false;
 
+        // Boolean value to indicate if the protocol has updated priors information
+        // it's set in "updateNumberOfPriorsReferenced" function
+        this.hasUpdatedPriorsInformation = false;
+
         // Apply the desired name
         this.name = name;
 
@@ -73,28 +77,42 @@ HP.Protocol = class Protocol {
         // and Stages
         this.protocolMatchingRules = [];
         this.stages = [];
+
+        // Define auxiliary values for priors
         this.numberOfPriorsReferenced = 0;
+        this.numberOfPriorsReferencedRequired = 0;
     }
 
     updateNumberOfPriorsReferenced() {
-        var numPriorsReferenced = 0;
+        let numPriorsReferenced = 0;
+        let numberOfPriorsReferencedRequired = 0;
 
-        this.stages.forEach(function(stage) {
+        this.stages.forEach(stage => {
             if (!stage.viewports) {
                 return;
             }
 
-            stage.viewports.forEach(function(viewport) {
+            stage.viewports.forEach(viewport => {
                 if (!viewport.studyMatchingRules) {
                     return;
                 }
 
-                viewport.studyMatchingRules.forEach(function(rule) {
+                viewport.studyMatchingRules.forEach(rule => {
                     if (rule.attribute === 'abstractPriorValue') {
+                        // If the rule is required
+                        if (rule.required) {
+                            numberOfPriorsReferencedRequired++;
+                        }
+                        
                         // TODO: Double check here that the abstractPriorValue is not
                         // set as zero
                         numPriorsReferenced++;
                     } else if (rule.attribute === 'relativeTime') {
+                        // If the rule is required
+                        if (rule.required) {
+                            numberOfPriorsReferencedRequired++;
+                        }
+
                         numPriorsReferenced++;
                     }
                 });
@@ -102,6 +120,10 @@ HP.Protocol = class Protocol {
         });
 
         this.numberOfPriorsReferenced = numPriorsReferenced;
+        this.numberOfPriorsReferencedRequired = numberOfPriorsReferencedRequired;
+
+        // To indicate that the priors informations were updated
+        this.hasUpdatedPriorsInformation = true;
     }
 
     /**
@@ -115,6 +137,11 @@ HP.Protocol = class Protocol {
             this.modifiedBy = Meteor.userId;
         }
 
+        // Protocol has been modified, so mark priors information
+        // as "outdated"
+        this.hasUpdatedPriorsInformation = false;
+
+        // Update number of priors referenced info
         this.updateNumberOfPriorsReferenced();
 
         // Update the modifiedDate with the current Date/Time

@@ -1,17 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
+import { Session } from 'meteor/session';
 
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
+// Hanging Protocol local imports
+import { HPMatcher } from './matcher/HPMatcher';
+import { sortByScore } from './lib/sortByScore';
+import './customViewportSettings';
+
 /**
  * Import Constants
  */
 
-const { OHIFError } = OHIF.viewerbase;
-const { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary } = OHIF.viewerbase.metadata;
+const { OHIFError, metadata: { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary } } = OHIF.viewerbase;
 
+// Useful constants
+const ABSTRACT_PRIOR_VALUE = 'abstractPriorValue';
 
 // Define a global variable that will be used to refer to the Protocol Engine
 // It must be populated by HP.setEngine when the Viewer is initialized and a ProtocolEngine
@@ -29,171 +36,17 @@ ProtocolEngine = undefined;
  * @param protocolEngine An instantiated ProtocolEngine linked to a LayoutManager from the
  *                       Viewerbase package
  */
-HP.setEngine = function(protocolEngine) {
+HP.setEngine = protocolEngine => {
     ProtocolEngine = protocolEngine;
 };
 
-// Define an empty object to store callbacks that are used to retrieve custom attributes
-// The simplest example for a custom attribute is the Timepoint type (i.e. baseline or follow-up)
-// used in the LesionTracker application.
-//
-// Timepoint type can be obtained given a studyId, and this is done through a custom callback.
-// Developers can define attributes (i.e. attributeId = timepointType) with a name ('Timepoint Type')
-// and a callback function that is used to calculate them.
-//
-// The input to the callback, which is called during viewport-image matching rule evaluation
-// is the set of attributes that contains the specified attribute. In our example, timepointType is
-// linked to the study attributes, and so the inputs to the callback is an object containing
-// the study attributes.
-HP.CustomAttributeRetrievalCallbacks = {};
-
-/**
- * Adds a custom attribute to be used in the HangingProtocol UI and matching rules, including a
- * callback that will be used to calculate the attribute value.
- *
- * @param attributeId The ID used to refer to the attribute (e.g. 'timepointType')
- * @param attributeName The name of the attribute to be displayed (e.g. 'Timepoint Type')
- * @param callback The function used to calculate the attribute value from the other attributes at its level (e.g. study/series/image)
- */
-HP.addCustomAttribute = function(attributeId, attributeName, callback) {
-    HP.CustomAttributeRetrievalCallbacks[attributeId] = {
-        name: attributeName,
-        callback: callback
-    };
-};
-
-
-// Define an empty object to store callbacks that are used to apply custom viewport settings
-// after a viewport is rendered.
-HP.CustomViewportSettings = {};
-
-/**
- * Adds a custom setting that can be chosen in the HangingProtocol UI and applied to a Viewport
- *
- * @param settingId The ID used to refer to the setting (e.g. 'displayCADMarkers')
- * @param settingName The name of the setting to be displayed (e.g. 'Display CAD Markers')
- * @param options
- * @param callback A function to be run after a viewport is rendered with a series
- */
-HP.addCustomViewportSetting = function(settingId, settingName, options, callback) {
-    HP.CustomViewportSettings[settingId] = {
-        id: settingId,
-        text: settingName,
-        options: options,
-        callback: callback
-    };
-};
-
-Meteor.startup(function() {
-    HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.create(null), function(element, optionValue) {
+Meteor.startup(() => {
+    HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.create(null), (element, optionValue) => {
         if (optionValue in OHIF.viewer.wlPresets) {
             OHIF.viewerbase.wlPresets.applyWLPreset(optionValue, element);
         }
     });
 });
-
-/**
- * Match a Metadata instance against rules using Validate.js for validation.
- * @param  {StudySummary|InstanceMetadata} metadataInstance Metadata instance object
- * @param  {Array} rules Array of MatchingRules instances (StudyMatchingRule|SeriesMatchingRule|ImageMatchingRule) for the match
- * @return {Object}      Matching Object with score and details (which rule passed or failed)
- */
-HP.match = function(metadataInstance, rules) {
-
-    // Make sure the supplied data is valid.
-    if (!(metadataInstance instanceof StudySummary || metadataInstance instanceof InstanceMetadata)) {
-        throw new OHIFError('HP::match metadataInstance must be an instance of StudySummary or InstanceMetadata');
-    }
-
-    const options = {
-        format: 'grouped'
-    };
-
-    const details = {
-        passed: [],
-        failed: []
-    };
-
-    let requiredFailed = false;
-    let score = 0;
-
-    rules.forEach(rule => {
-        const attribute = rule.attribute;
-        let customAttributeExists = metadataInstance.customAttributeExists(attribute);
-
-        // If the metadataInstance we are testing (e.g. study, series, or instance MetadataInstance) do
-        // not contain the attribute specified in the rule, check whether or not they have been
-        // defined in the CustomAttributeRetrievalCallbacks Object.
-        if (!customAttributeExists && HP.CustomAttributeRetrievalCallbacks.hasOwnProperty(attribute)) {
-            const customAttribute = HP.CustomAttributeRetrievalCallbacks[attribute];
-            metadataInstance.setCustomAttribute(attribute, customAttribute.callback(metadataInstance));
-            customAttributeExists = true;
-        }
-
-        // Format the constraint as required by Validate.js
-        const testConstraint = {
-            [attribute]: rule.constraint
-        };
-
-        // Create a single attribute object to be validated, since metadataInstance is an 
-        // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-        const attributeValue = customAttributeExists ? metadataInstance.getCustomAttribute(attribute) : metadataInstance.getTagValue(attribute);
-        const attributeMap = {
-            [attribute]: attributeValue
-        };
-
-        // Use Validate.js to evaluate the constraints on the specified metadataInstance
-        let errorMessages;
-        try {
-            errorMessages = validate(attributeMap, testConstraint, [options]);
-        } catch (e) {
-            errorMessages = [ 'Something went wrong during validation.', e ];
-        }
-
-        if (!errorMessages) {
-            // If no errorMessages were returned, then validation passed.
-
-            // Add the rule's weight to the total score
-            score += rule.weight;
-
-            // Log that this rule passed in the matching details object
-            details.passed.push({
-                rule
-            });
-        } else {
-            // If errorMessages were present, then validation failed
-
-            // If the rule that failed validation was Required, then
-            // mark that a required Rule has failed
-            if (rule.required) {
-                requiredFailed = true;
-            }
-
-            // Log that this rule failed in the matching details object
-            // and include any error messages
-            details.failed.push({
-                rule,
-                errorMessages
-            });
-        }
-    });
-
-    // If a required Rule has failed Validation, set the matching score to zero
-    if (requiredFailed) {
-        score = 0;
-    }
-
-    return {
-        score,
-        details
-    };
-};
-
-const sortByScore = arr => {
-    arr.sort((a, b) => {
-        return b.score - a.score;
-    });
-};
 
 HP.ProtocolEngine = class ProtocolEngine {
     /**
@@ -241,7 +94,8 @@ HP.ProtocolEngine = class ProtocolEngine {
      * Resets the ProtocolEngine to the best match
      */
     reset() {
-        const protocol = this.getBestMatch();
+        const protocol = this.getBestProtocolMatch();
+
         this.setHangingProtocol(protocol);
     }
 
@@ -254,51 +108,112 @@ HP.ProtocolEngine = class ProtocolEngine {
         return this.protocol.stages[this.stage];
     }
 
+    /**
+     * Get number of priors rules for a given protocol. This rules are for raising up the score when
+     * matching a protocol against study's number of priors. Protocols with same study/series/instance
+     * rules that references the exactly number of priors that a study will have highest score.
+     * @param  {Integer} numberOfPriorsReferenced Number of priors required by the protocol
+     * @return {Array} Returs an array of HP.ProtocolMatchingRule objects
+     */
+    getNumberOfPriorsRules(numberOfPriorsReferenced) {
+        const rules = [];
+
+        // If study at least the number of priors required by the protocol
+        const requiredPriorsRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
+            numericality: {
+                greaterThanOrEqualTo: numberOfPriorsReferenced
+            }
+        });
+
+        // If study has the same number of priors
+        const equalPriorsRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
+            numericality: {
+                equalTo: numberOfPriorsReferenced
+            }
+        });
+
+        rules.push(requiredPriorsRule, equalPriorsRule);
+
+        return rules;
+    }
+
+    /**
+     * Check if a given protocol requires a minimum number of priors.
+     * @param  {HP.Protocol} protocol HP.Protocol object that contains rules
+     * @return {Boolean} Returns true if the protocol requires priors or false otherwise
+     */
+    protocolRequiresPriors(protocol) {
+        return protocol.numberOfPriorsReferencedRequired > 0;
+    }
+
+    /**
+     * Finds the best protocols from Protocol Store, matching each protocol matching rules
+     * with the given study. The best protocol are orded by score and returned in an array
+     * @param  {Object} study StudyMetadata instance object
+     * @return {Array}       Array of match objects or an empty array if no match was found
+     *                       Each match object has the score of the matching and the matched 
+     *                       protocol
+     */
     findMatchByStudy(study) {
         OHIF.log.info('ProtocolEngine::findMatchByStudy');
 
         const matched = [];
         const studyInstance = study.getFirstInstance();
 
+        // Set custom attribute for study metadata 
+        const numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getObjectID());
+        studyInstance.setCustomAttribute('numberOfPriorsReferenced', numberOfPriorsReferenced);
+
         HP.ProtocolStore.getProtocol().forEach(protocol => {
             // Clone the protocol's protocolMatchingRules array
             // We clone it so that we don't accidentally add the
             // numberOfPriorsReferenced rule to the Protocol itself.
-            const rules = protocol.protocolMatchingRules.slice(0);
+            let rules = protocol.protocolMatchingRules.slice(0);
             if (!rules) {
                 return;
             }
 
-            // Set custom attribute for study metadata 
-            const numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getObjectID());
-            studyInstance.setCustomAttribute('numberOfPriorsReferenced', numberOfPriorsReferenced);
+            // To make sure the protocol has updated priors information. 
+            // This is reasonable for Viewers that use different APIs to 
+            // manage ProtocolStore or protocols.
+            if (!protocol.hasUpdatedPriorsInformation) {
 
-            const requiredPriorsRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
-                numericality: {
-                    greaterThanOrEqualTo: protocol.numberOfPriorsReferenced
+                // If protocol is not an instance of HP.Protocol
+                // make it be.
+                if (!(protocol instanceof HP.Protocol)) {
+                    const protocolObject = new HP.Protocol();
+                    protocolObject.fromObject(protocol);
+                    protocol = protocolObject;
                 }
-            });
 
-            rules.push(requiredPriorsRule);
+                protocol.updateNumberOfPriorsReferenced();
+            }
 
-            const exactPriorsDesiredRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
-                numericality: {
-                    equalTo: protocol.numberOfPriorsReferenced
-                },
-            }, false, 1);
+            // Skip protocols that require more priors than the study has 
+            const protocolRequiresPriors = this.protocolRequiresPriors(protocol);
+            if (protocolRequiresPriors && numberOfPriorsReferenced < protocol.numberOfPriorsReferenced) {
+                return;
+            }
 
-            rules.push(exactPriorsDesiredRule);
+            // Get additional rules for number of priors referenced
+            const priorsRules = this.getNumberOfPriorsRules(protocol.numberOfPriorsReferenced);
+            // Concatenate rules
+            rules = rules.concat(priorsRules);
 
-            const matchedDetails = HP.match(studyInstance, rules);
+            // Run the matcher and get matching details
+            const matchedDetails = HPMatcher.match(studyInstance, rules);
+            const score = matchedDetails.score;
 
-            if (matchedDetails.score > 0) {
+            // The protocol matched some rule, add it to the matched list
+            if (score > 0) {
                 matched.push({
-                    score: matchedDetails.score,
-                    protocol: protocol
+                    score,
+                    protocol
                 });
             }
         });
 
+        // If no matches were found, select the default protocol
         if (!matched.length) {
             const defaultProtocol = HP.ProtocolStore.getProtocol('defaultProtocol');
 
@@ -308,6 +223,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             }];
         }
 
+        // Sort the matched list by score
         sortByScore(matched);
 
         OHIF.log.info('ProtocolEngine::findMatchByStudy matched', matched);
@@ -318,8 +234,8 @@ HP.ProtocolEngine = class ProtocolEngine {
     /**
      * Populates the MatchedProtocols Collection by running the matching procedure
      */
-    updateMatches() {
-        OHIF.log.info('ProtocolEngine::updateMatches');
+    updateProtocolMatches() {
+        OHIF.log.info('ProtocolEngine::updateProtocolMatches');
 
         // Clear all data from the MatchedProtocols Collection
         MatchedProtocols.remove({});
@@ -341,6 +257,7 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                 // If it is not already in the MatchedProtocols Collection, insert it with its score
                 if (!protocolInCollection) {
+                    OHIF.log.info('ProtocolEngine::updateProtocolMatches inserting protocol match', matchedDetail);
                     MatchedProtocols.insert(matchedDetail);
                 }
             });
@@ -351,9 +268,9 @@ HP.ProtocolEngine = class ProtocolEngine {
      * Return the best matched Protocol to the current study or set of studies
      * @returns {*}
      */
-    getBestMatch() {
+    getBestProtocolMatch() {
         // Run the matching to populate the MatchedProtocols Collection
-        this.updateMatches();
+        this.updateProtocolMatches();
 
         // Retrieve the highest scoring Protocol
         const sorted = MatchedProtocols.find({}, {
@@ -366,7 +283,8 @@ HP.ProtocolEngine = class ProtocolEngine {
         // Highest scoring Protocol
         const bestMatch = sorted[0].protocol;
 
-        OHIF.log.info('ProtocolEngine::getBestMatch bestMatch', bestMatch);
+        OHIF.log.info('ProtocolEngine::getBestProtocolMatch bestMatch', bestMatch);
+
         return bestMatch;
     }
 
@@ -378,6 +296,7 @@ HP.ProtocolEngine = class ProtocolEngine {
      */
     getNumberOfAvailablePriors(studyObjectID) {
         const priors = this.getAvailableStudyPriors(studyObjectID);
+
         return priors.length;
     }
 
@@ -389,6 +308,7 @@ HP.ProtocolEngine = class ProtocolEngine {
      */
     getAvailableStudyPriors(studyObjectID) {
         const priors = this.priorStudies.get(studyObjectID);
+
         return priors instanceof Array ? priors : [];
     }
 
@@ -407,7 +327,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                 if (prior instanceof StudyMetadata) {
                     prior = prior.getFirstInstance();
                 }
-                const matchDetails = HP.match(prior, protocolMatchingRules);
+                const matchDetails = HPMatcher.match(prior, protocolMatchingRules);
                 return matchDetails.score > 0;
             });
         }
@@ -416,7 +336,7 @@ HP.ProtocolEngine = class ProtocolEngine {
     }
 
     // Match images given a list of Studies and a Viewport's image matching reqs
-    matchImages(viewport) {
+    matchImages(viewport, viewportIndex) {
         OHIF.log.info('ProtocolEngine::matchImages');
 
         const { studyMatchingRules, seriesMatchingRules, imageMatchingRules: instanceMatchingRules } = viewport;
@@ -431,13 +351,13 @@ HP.ProtocolEngine = class ProtocolEngine {
         let bestMatch;
 
         // Set custom attribute for study metadata and it's first instance
-        currentStudy.setCustomAttribute('abstractPriorValue', 0);
+        currentStudy.setCustomAttribute(ABSTRACT_PRIOR_VALUE, 0);
         if (firstInstance instanceof InstanceMetadata) {
-            firstInstance.setCustomAttribute('abstractPriorValue', 0);
+            firstInstance.setCustomAttribute(ABSTRACT_PRIOR_VALUE, 0);
         }
 
         studyMatchingRules.forEach(rule => {
-            if (rule.attribute === 'abstractPriorValue') {
+            if (rule.attribute === ABSTRACT_PRIOR_VALUE) {
                 const validatorType = Object.keys(rule.constraint)[0];
                 const validator = Object.keys(rule.constraint[validatorType])[0];
 
@@ -473,19 +393,19 @@ HP.ProtocolEngine = class ProtocolEngine {
                 // Get study metadata if necessary and load study in the viewer (each viewer should provide it's own load study method)
                 this.studyMetadataSource.loadStudy(priorStudy).then(studyMetadata => {
                     // Set the custom attribute abstractPriorValue for the study metadata
-                    studyMetadata.setCustomAttribute('abstractPriorValue', abstractPriorValue);
+                    studyMetadata.setCustomAttribute(ABSTRACT_PRIOR_VALUE, abstractPriorValue);
 
                     // Also add custom attribute 
                     const firstInstance = studyMetadata.getFirstInstance();
                     if (firstInstance instanceof InstanceMetadata) {
-                        firstInstance.setCustomAttribute('abstractPriorValue', abstractPriorValue);
+                        firstInstance.setCustomAttribute(ABSTRACT_PRIOR_VALUE, abstractPriorValue);
                     }
 
                     // Insert the new study metadata
                     this.studies.push(studyMetadata);
 
                     // Update the viewport to refresh layout manager with new study
-                    this.updateViewports();
+                    this.updateViewports(viewportIndex);
                 }, error => { 
                     OHIF.log.warn(error);
                     throw new OHIFError(`ProtocolEngine::matchImages could not get study metadata for the Study with the following ObjectID: ${priorStudyObjectID}`);
@@ -495,7 +415,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         });
 
         this.studies.forEach(study => {
-            const studyMatchDetails = HP.match(study.getFirstInstance(), studyMatchingRules);
+            const studyMatchDetails = HPMatcher.match(study.getFirstInstance(), studyMatchingRules);
             if ((studyMatchingRules.length && !studyMatchDetails.score) ||
                 studyMatchDetails.score < highestStudyMatchingScore) {
                 return;
@@ -504,7 +424,7 @@ HP.ProtocolEngine = class ProtocolEngine {
             highestStudyMatchingScore = studyMatchDetails.score;
 
             study.forEachSeries(series => {
-                const seriesMatchDetails = HP.match(series.getFirstInstance(), seriesMatchingRules);
+                const seriesMatchDetails = HPMatcher.match(series.getFirstInstance(), seriesMatchingRules);
                 if ((seriesMatchingRules.length && !seriesMatchDetails.score) ||
                     seriesMatchDetails.score < highestSeriesMatchingScore) {
                     return;
@@ -522,7 +442,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                         return;
                     }
 
-                    const instanceMatchDetails = HP.match(instance, instanceMatchingRules);
+                    const instanceMatchDetails = HPMatcher.match(instance, instanceMatchingRules);
 
                     const matchDetails = {
                         passed: [],
@@ -609,7 +529,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         OHIF.log.info(`ProtocolEngine::updateViewports viewportIndex: ${viewportIndex}`);
 
         // Make sure we have an active protocol with a non-empty array of display sets
-        if (!this.protocol || !this.protocol.stages || !this.protocol.stages.length) {
+        if (!this.getNumProtocolStages()) {
             return;
         }
 
@@ -649,7 +569,7 @@ HP.ProtocolEngine = class ProtocolEngine {
 
         // Loop through each viewport
         stageModel.viewports.forEach((viewport, viewportIndex) => {
-            const details = this.matchImages(viewport);
+            const details = this.matchImages(viewport, viewportIndex);
 
             this.matchDetails[viewportIndex] = details;
 
@@ -747,7 +667,7 @@ HP.ProtocolEngine = class ProtocolEngine {
      * @param newProtocol
      * @param updateViewports
      */
-    setHangingProtocol(newProtocol, updateViewports=true) {
+    setHangingProtocol(newProtocol, updateViewports = true) {
         OHIF.log.info('ProtocolEngine::setHangingProtocol newProtocol', newProtocol);
         OHIF.log.info(`ProtocolEngine::setHangingProtocol updateViewports = ${updateViewports}`);
 
@@ -783,30 +703,64 @@ HP.ProtocolEngine = class ProtocolEngine {
                 selected: true
             }
         });
+
+        Session.set('HangingProtocolName', this.protocol.name);
+        Session.set('HangingProtocolStage', this.stage);
     }
 
-    /**
-     * Changes the current stage to a new stage index in the display set sequence
-     *
-     * @param stage An integer value specifying the index of the desired Stage
+     /**
+     * Check if the next stage is available
+     * @return {Boolean} True if next stage is available or false otherwise
      */
-    setCurrentProtocolStage(stage) {
-        OHIF.log.info(`ProtocolEngine::setCurrentProtocolStage stage = ${stage}`);
+    isNextStageAvailable() {
+        const numberOfStages = this.getNumProtocolStages();
 
-        if (!this.protocol || !this.protocol.stages || !this.protocol.stages.length) {
-            return;
-        }
+        return this.stage + 1 < numberOfStages;
+    }
 
-        if (stage >= this.protocol.stages.length) {
-            return;
-        }
-
-        this.stage = stage;
-        this.updateViewports();
+     /**
+     * Check if the previous stage is available
+     * @return {Boolean} True if previous stage is available or false otherwise
+     */
+    isPreviousStageAvailable() {
+        return this.stage - 1 >= 0;
     }
 
     /**
-     * Retrieves the number of Stages in the current Protocol
+     * Changes the current stage to a new stage index in the display set sequence. 
+     * It checks if the next stage exists.
+     *
+     * @param {Integer} stageAction An integer value specifying wheater next (1) or previous (-1) stage
+     * @return {Boolean} True if new stage has set or false, otherwise
+     */
+    setCurrentProtocolStage(stageAction) {
+        // Check if previous or next stage is available
+        if (stageAction === -1 && !this.isPreviousStageAvailable()) {
+            return false;
+        } else if (stageAction === 1 && !this.isNextStageAvailable()) {
+            return false;
+        }
+
+        // Sets the new stage
+        this.stage += stageAction;
+
+        // Log the new stage
+        OHIF.log.info(`ProtocolEngine::setCurrentProtocolStage stage = ${this.stage}`);
+
+        // Set stage Session variable for reactivity
+        Session.set('HangingProtocolStage', this.stage);
+
+        // Since stage has changed, we need to update the viewports 
+        // and redo matchings
+        this.updateViewports();
+
+        // Everything went well
+        return true;
+    }
+
+    /**
+     * Retrieves the number of Stages in the current Protocol or 
+     * undefined if no protocol or stages are set
      */
     getNumProtocolStages() {
         if (!this.protocol || !this.protocol.stages || !this.protocol.stages.length) {
@@ -820,13 +774,23 @@ HP.ProtocolEngine = class ProtocolEngine {
      * Switches to the next protocol stage in the display set sequence
      */
     nextProtocolStage() {
-        this.setCurrentProtocolStage(++this.stage);
+        OHIF.log.info('ProtocolEngine::nextProtocolStage');
+
+        if (!this.setCurrentProtocolStage(1)) {
+            // Just for logging purpose
+            OHIF.log.info('ProtocolEngine::nextProtocolStage failed');
+        }
     }
 
     /**
      * Switches to the previous protocol stage in the display set sequence
      */
     previousProtocolStage() {
-        this.setCurrentProtocolStage(--this.stage);
+        OHIF.log.info('ProtocolEngine::previousProtocolStage');
+        
+        if (!this.setCurrentProtocolStage(-1)) {
+            // Just for logging purpose
+            OHIF.log.info('ProtocolEngine::previousProtocolStage failed');
+        }
     }
 };
