@@ -372,7 +372,7 @@ Template.protocolEditor.events({
             text: 'Are you sure you would like to remove this Protocol? This cannot be reversed.'
         };
 
-        OHIF.viewerbase.showConfirmDialog(() => {
+        OHIF.viewerbase.dialogUtils.showConfirmDialog(() => {
             // Remove the Protocol
             HP.ProtocolStore.removeProtocol(selectedProtocol.id);
 
