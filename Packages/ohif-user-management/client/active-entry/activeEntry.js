@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
     if (Meteor.isClient){
         ActiveEntry.configure({
             logo: {
-                url: Meteor.absoluteUrl('/images/logo.png'),
+                url: OHIF.utils.absoluteUrl('/images/logo.png'),
                 displayed: true
             },
             signIn: {

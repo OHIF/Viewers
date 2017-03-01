@@ -1,4 +1,4 @@
-import { Meteor } from "meteor/meteor";
+import { OHIF } from 'meteor/ohif:core';
 import { getWADORSImageId } from './getWADORSImageId';
 
 /**
@@ -18,7 +18,7 @@ export function getImageId(instance, frame) {
     }
 
     if (instance.wadouri) {
-        var imageId = 'dicomweb:' + Meteor.absoluteUrl(instance.wadouri);
+        var imageId = 'dicomweb:' + OHIF.utils.absoluteUrl(instance.wadouri);
         if (frame !== undefined) {
             imageId += '&frame=' + frame;
         }

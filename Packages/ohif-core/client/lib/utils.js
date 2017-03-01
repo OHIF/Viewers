@@ -1,5 +1,11 @@
 import { OHIF } from 'meteor/ohif:core';
 
+// Return an absolute URL with the given path by supporting the leading "/"
+OHIF.utils.absoluteUrl = function(path) {
+    path = path.replace(/^\//, '');
+    return Meteor.absoluteUrl(path);
+};
+
 // Return the array sorting function for its object's properties
 OHIF.utils.sortBy = function() {
     var fields = [].slice.call(arguments),

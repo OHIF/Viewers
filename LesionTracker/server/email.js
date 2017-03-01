@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 Meteor.startup(function () {
 
     // Mail server settings
@@ -33,7 +35,7 @@ Meteor.startup(function () {
         };
 
         Accounts.urls.resetPassword = function(token) {
-            return Meteor.absoluteUrl('resetPassword/' + token);
+            return OHIF.utils.absoluteUrl('resetPassword/' + token);
         };
 
         Accounts.emailTemplates.resetPassword.text = function(user, url) {

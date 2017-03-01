@@ -1,10 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
  * Obtain an imageId for Cornerstone based on the WADO-RS scheme
  *
- * @param {object} instance metadata object (InstanceMetadata)
+ * @param {object} instanceMetada metadata object (InstanceMetadata)
  * @returns {string} The imageId to be used by Cornerstone
  */
 
@@ -28,7 +27,7 @@ export function getWADORSImageId(instanceMetada) {
     }
 
     const image = {
-        uri: Meteor.absoluteUrl(instance.wadorsuri),
+        uri: OHIF.utils.absoluteUrl(instance.wadorsuri),
         //imageId : '',
         //minPixelValue : 0,
         //maxPixelValue : 255,
