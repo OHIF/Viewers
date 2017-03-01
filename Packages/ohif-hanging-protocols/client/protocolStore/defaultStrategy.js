@@ -60,7 +60,7 @@ var defaultStrategy = (function () {
         }
 
         // Otherwise, return all protocols
-        return HangingProtocols.find();
+        return HangingProtocols.find().fetch();
     }
 
     /**

@@ -27,6 +27,18 @@ HP.ProtocolStore = (function () {
     }
 
     /**
+     * Get a HP.Protocol instance for the given protocol object
+     * @param  {Object} protocolObject Protocol plain object
+     * @return {HP.Protocol}           HP.Protocol instance for the given protocol object
+     */
+    function getProtocolInstance(protocolObject) {
+        const protocolInstance = new HP.Protocol();
+        protocolInstance.fromObject(protocolObject);
+
+        return protocolInstance;
+    }
+
+    /**
      * Gets the hanging protocol by protocolId if defined, otherwise all stored hanging protocols
      *
      * NOTE: Strategies should implement this function
@@ -35,7 +47,23 @@ HP.ProtocolStore = (function () {
      * @returns {object|array} The hanging protocol by protocolId or array of the stored hanging protocols
      */
     function getProtocol(protocolId) {
-        return strategy.getProtocol(protocolId);
+        let result = strategy.getProtocol(protocolId);
+
+        // If result is an array of protocols objects
+        if (result instanceof Array) {
+            result.forEach( (protocol, index) => {
+                // Check if protocol is an instance of HP.Protocol
+                if (!(protocol instanceof HP.Protocol)) {
+                    result[index] = getProtocolInstance(protocol);
+                }
+            });
+        } else if (result !== void 0 && !(result instanceof HP.Protocol)) {
+            // Check if result exists and is not an instance of HP.Protocol
+            result = getProtocolInstance(result);
+        }
+
+
+        return result;
     }
 
     /**

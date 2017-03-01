@@ -71,7 +71,7 @@ const match = (metadataInstance, rules) => {
             // If no errorMessages were returned, then validation passed.
 
             // Add the rule's weight to the total score
-            score += rule.weight;
+            score += parseInt(rule.weight, 10);
 
             // Log that this rule passed in the matching details object
             details.passed.push({

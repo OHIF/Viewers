@@ -109,44 +109,6 @@ HP.ProtocolEngine = class ProtocolEngine {
     }
 
     /**
-     * Get number of priors rules for a given protocol. This rules are for raising up the score when
-     * matching a protocol against study's number of priors. Protocols with same study/series/instance
-     * rules that references the exactly number of priors that a study will have highest score.
-     * @param  {Integer} numberOfPriorsReferenced Number of priors required by the protocol
-     * @return {Array} Returs an array of HP.ProtocolMatchingRule objects
-     */
-    getNumberOfPriorsRules(numberOfPriorsReferenced) {
-        const rules = [];
-
-        // If study at least the number of priors required by the protocol
-        const requiredPriorsRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
-            numericality: {
-                greaterThanOrEqualTo: numberOfPriorsReferenced
-            }
-        });
-
-        // If study has the same number of priors
-        const equalPriorsRule = new HP.ProtocolMatchingRule('numberOfPriorsReferenced', {
-            numericality: {
-                equalTo: numberOfPriorsReferenced
-            }
-        });
-
-        rules.push(requiredPriorsRule, equalPriorsRule);
-
-        return rules;
-    }
-
-    /**
-     * Check if a given protocol requires a minimum number of priors.
-     * @param  {HP.Protocol} protocol HP.Protocol object that contains rules
-     * @return {Boolean} Returns true if the protocol requires priors or false otherwise
-     */
-    protocolRequiresPriors(protocol) {
-        return protocol.numberOfPriorsReferencedRequired > 0;
-    }
-
-    /**
      * Finds the best protocols from Protocol Store, matching each protocol matching rules
      * with the given study. The best protocol are orded by score and returned in an array
      * @param  {Object} study StudyMetadata instance object
@@ -161,44 +123,22 @@ HP.ProtocolEngine = class ProtocolEngine {
         const studyInstance = study.getFirstInstance();
 
         // Set custom attribute for study metadata 
-        const numberOfPriorsReferenced = this.getNumberOfAvailablePriors(study.getObjectID());
-        studyInstance.setCustomAttribute('numberOfPriorsReferenced', numberOfPriorsReferenced);
+        const numberOfAvailablePriors = this.getNumberOfAvailablePriors(study.getObjectID());
 
         HP.ProtocolStore.getProtocol().forEach(protocol => {
             // Clone the protocol's protocolMatchingRules array
             // We clone it so that we don't accidentally add the
             // numberOfPriorsReferenced rule to the Protocol itself.
-            let rules = protocol.protocolMatchingRules.slice(0);
+            let rules = protocol.protocolMatchingRules.slice();
             if (!rules) {
                 return;
             }
 
-            // To make sure the protocol has updated priors information. 
-            // This is reasonable for Viewers that use different APIs to 
-            // manage ProtocolStore or protocols.
-            if (!protocol.hasUpdatedPriorsInformation) {
-
-                // If protocol is not an instance of HP.Protocol
-                // make it be.
-                if (!(protocol instanceof HP.Protocol)) {
-                    const protocolObject = new HP.Protocol();
-                    protocolObject.fromObject(protocol);
-                    protocol = protocolObject;
-                }
-
-                protocol.updateNumberOfPriorsReferenced();
-            }
-
-            // Skip protocols that require more priors than the study has 
-            const protocolRequiresPriors = this.protocolRequiresPriors(protocol);
-            if (protocolRequiresPriors && numberOfPriorsReferenced < protocol.numberOfPriorsReferenced) {
+            // Check if the study has the minimun number of priors used by the protocol.
+            const numberOfPriorsReferenced = protocol.getNumberOfPriorsReferenced();
+            if (numberOfPriorsReferenced > numberOfAvailablePriors) {
                 return;
             }
-
-            // Get additional rules for number of priors referenced
-            const priorsRules = this.getNumberOfPriorsRules(protocol.numberOfPriorsReferenced);
-            // Concatenate rules
-            rules = rules.concat(priorsRules);
 
             // Run the matcher and get matching details
             const matchedDetails = HPMatcher.match(studyInstance, rules);
@@ -312,29 +252,6 @@ HP.ProtocolEngine = class ProtocolEngine {
         return priors instanceof Array ? priors : [];
     }
 
-    /**
-     * Get the array of prior studies based on current protocol matching rules.
-     *
-     * @param {String} studyObjectID The study object ID of the study whose priors are needed
-     * @returns {Array} The array of available priors that match the given rules or an empty array
-     */
-    getPriorsByProtocolMatchingRules(studyObjectID) {
-        const allPriors = this.getAvailableStudyPriors(studyObjectID);
-        const protocolMatchingRules = this.protocol.protocolMatchingRules;
-
-        if (protocolMatchingRules instanceof Array && protocolMatchingRules.length > 0) {
-            return allPriors.filter(prior => {
-                if (prior instanceof StudyMetadata) {
-                    prior = prior.getFirstInstance();
-                }
-                const matchDetails = HPMatcher.match(prior, protocolMatchingRules);
-                return matchDetails.score > 0;
-            });
-        }
-
-        return allPriors;
-    }
-
     // Match images given a list of Studies and a Viewport's image matching reqs
     matchImages(viewport, viewportIndex) {
         OHIF.log.info('ProtocolEngine::matchImages');
@@ -342,7 +259,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         const { studyMatchingRules, seriesMatchingRules, imageMatchingRules: instanceMatchingRules } = viewport;
 
         const matchingScores = [];
-        const currentStudy = this.studies[0];
+        const currentStudy = this.studies[0]; // @TODO: Should this be: this.studies[this.currentStudy] ???
         const firstInstance = currentStudy.getFirstInstance();
 
         let highestStudyMatchingScore = 0;
@@ -356,6 +273,9 @@ HP.ProtocolEngine = class ProtocolEngine {
             firstInstance.setCustomAttribute(ABSTRACT_PRIOR_VALUE, 0);
         }
 
+        // Only used if study matching rules has abstract prior values defined...
+        let priorStudies;
+
         studyMatchingRules.forEach(rule => {
             if (rule.attribute === ABSTRACT_PRIOR_VALUE) {
                 const validatorType = Object.keys(rule.constraint)[0];
@@ -365,17 +285,20 @@ HP.ProtocolEngine = class ProtocolEngine {
                 abstractPriorValue = parseInt(abstractPriorValue, 10);
                 // TODO: Restrict or clarify validators for abstractPriorValue?
 
-                const studies = this.getPriorsByProtocolMatchingRules(currentStudy.getObjectID());
+                // No need to call it more than once...
+                if (!priorStudies) {
+                    priorStudies = this.getAvailableStudyPriors(currentStudy.getObjectID());
+                }
 
                 // TODO: Revisit this later: What about two studies with the same
                 // study date?
 
                 let priorStudy;
                 if (abstractPriorValue === -1) {
-                    priorStudy = studies[studies.length - 1];
+                    priorStudy = priorStudies[priorStudies.length - 1];
                 } else {
                     const studyIndex = Math.max(abstractPriorValue - 1, 0);
-                    priorStudy = studies[studyIndex];
+                    priorStudy = priorStudies[studyIndex];
                 }
 
                 // Invalid data

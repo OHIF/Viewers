@@ -416,7 +416,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7mac",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -431,7 +431,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "ygz4nb28iJZcJhnYa",
+                    "id": "ygz4nb28iJZcJhnYc",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -442,7 +442,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgLTvnXTByWnPt",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
@@ -540,7 +540,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7mtr",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -567,7 +567,7 @@ function getDemoProtocols() {
                 },
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "ygz4nb28iJZcJhnYa",
+                    "id": "ygz4nb28iJZcJhnYb",
                     "weight": 2,
                     "required": false,
                     "attribute": "x0008103e",
@@ -704,7 +704,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL55z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -733,7 +733,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7nTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -743,7 +743,7 @@ function getDemoProtocols() {
                         }
                     }
                 }, {
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7rTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -758,7 +758,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56r7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -768,7 +768,7 @@ function getDemoProtocols() {
                         }
                     }
                 }, {
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56a7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -783,7 +783,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcRzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -793,7 +793,7 @@ function getDemoProtocols() {
                         }
                     }
                 }, {
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzTL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -808,7 +808,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcMzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -818,7 +818,7 @@ function getDemoProtocols() {
                         }
                     }
                 }, {
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcAzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -873,7 +873,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcAzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -888,7 +888,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZR56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -898,7 +898,7 @@ function getDemoProtocols() {
                         }
                     }
                 }, {
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mRnsCcNzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x00200011",
@@ -926,7 +926,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsGcNzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -941,7 +941,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsHcNzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -971,7 +971,7 @@ function getDemoProtocols() {
                 },
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXneCcNzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -986,7 +986,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCuNzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1041,7 +1041,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL59z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1056,7 +1056,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7lTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1067,7 +1067,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgLTbnXTByWnPz",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
@@ -1094,7 +1094,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNjZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1104,7 +1104,7 @@ function getDemoProtocols() {
                         }
                     }
                 }, {
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7gTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x00200011",
@@ -1119,7 +1119,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcCzZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1140,7 +1140,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgLTvn1TByWnPz",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
@@ -1167,7 +1167,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL26z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1182,7 +1182,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL46z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1197,7 +1197,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL57z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1208,7 +1208,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgLTvnYTByWnPz",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
@@ -1222,7 +1222,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZQ56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1233,7 +1233,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgLTvnKTByWnPz",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
@@ -1262,7 +1262,7 @@ function getDemoProtocols() {
                 },
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZL56z7nTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1277,7 +1277,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNxZL56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1294,7 +1294,7 @@ function getDemoProtocols() {
                 },
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZA56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1305,7 +1305,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgHTvnXTByWnPz",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
@@ -1319,7 +1319,7 @@ function getDemoProtocols() {
                 "viewportSettings": {},
                 "imageMatchingRules": [],
                 "seriesMatchingRules": [{
-                    "id": "mXnsCcNzZL56z7mTZ",
+                    "id": "mXnsCcNzZP56z7mTZ",
                     "weight": 1,
                     "required": false,
                     "attribute": "x0008103e",
@@ -1330,7 +1330,7 @@ function getDemoProtocols() {
                     }
                 }],
                 "studyMatchingRules": [{
-                    "id": "uDoEgLTvnXTByWnPz",
+                    "id": "uDoEgITvnXTByWnPz",
                     "weight": 1,
                     "required": false,
                     "attribute": "abstractPriorValue",
