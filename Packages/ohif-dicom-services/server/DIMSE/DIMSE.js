@@ -39,7 +39,7 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00280004: '', // photometricInterpretation
         0x0008002A: '', // acquisitionDatetime
         0x00280008: '', // numFrames
-        0x00280009: '', // frameIncrementPointer
+        //0x00280009: '', // frameIncrementPointer // This appears to be breaking Orthanc DIMSE connections
         0x00181063: '', // frameTime
         0x00181065: '', // frameTimeVector
         0x00281052: '', // rescaleIntercept
@@ -47,7 +47,7 @@ var getInstanceRetrievalParams = function(studyInstanceUID, seriesInstanceUID) {
         0x00280002: '', // samplesPerPixel
         0x00180050: '', // sliceThickness
         0x00201041: '', // sliceLocation
-        0x00189327: '', // tablePosition
+        //0x00189327: '', // tablePosition // This appears to be breaking Orthanc DIMSE connections
         0x00281050: '', // windowCenter
         0x00281051: '', // windowWidth
         0x00280030: '', // pixelSpacing
