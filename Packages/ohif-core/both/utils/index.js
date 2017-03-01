@@ -1,1 +1,2 @@
+import './absoluteUrl';
 import './objectPath';
