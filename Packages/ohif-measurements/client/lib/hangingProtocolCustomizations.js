@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { OHIF } from 'meteor/ohif:core';
 
 const { InstanceMetadata, StudySummary } = Viewerbase.metadata;
 
@@ -11,9 +11,9 @@ const { InstanceMetadata, StudySummary } = Viewerbase.metadata;
  * @return {String|undefined}    Timepoint type if found or undefined if not found or any error/missing information
  */
 const getTimepointType = study => {
-    const timepointApi = OHIF.viewer.timepointApi;
+    const { timepointApi } = OHIF.viewer;
 
-    if (!timepointApi || !(study instanceof InstanceMetadata || study instanceof StudySummary) ) {
+    if (!timepointApi || !(study instanceof InstanceMetadata || study instanceof StudySummary)) {
         return;
     }
 

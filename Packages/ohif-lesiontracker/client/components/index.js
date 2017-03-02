@@ -7,7 +7,3 @@ import './optionsModal/optionsModal.js';
 
 import './optionsModal/recistDescription/recistDescription.html';
 import './optionsModal/irRCDescription/irRCDescription.html';
-
-import './measurementLocationDialog/measurementLocationDialog.html';
-import './measurementLocationDialog/measurementLocationDialog.js';
-import './measurementLocationDialog/measurementLocationDialog.styl';

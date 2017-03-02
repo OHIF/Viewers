@@ -2,7 +2,6 @@
     {{#if and Template.subscriptionsReady dataSourcesReady}}
         <div class="viewerDialogs">
             {{>confirmDeleteDialog}}
-            {{>measurementLocationDialog (clone this)}}
             {{>measurementTableHUD (clone this)}}
             {{>cineDialog}}
         </div>

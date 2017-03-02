@@ -146,22 +146,23 @@ Template.studyTimepointBrowser.helpers({
         // Get the current study
         const currentStudy = instance.getCurrentStudy();
         // Declare the timepoints
+        const { timepointApi } = instance.data;
         let timepoints;
         if (currentStudy && !instance.showAdditionalTimepoints.get()) {
             // Show only the current study's timepoint
-            timepoints = instance.data.timepointApi.study(currentStudy.studyInstanceUid);
+            timepoints = timepointApi.study(currentStudy.studyInstanceUid);
         } else {
-            if (!instance.data.timepointApi) {
+            if (!timepointApi) {
                 // If there is no timepoint API defined whatsoever, this means that there is no
                 // current timepoint ID, so we can just display all of the currently loaded studies
                 // in the study sidebar
                 timepoints = [];
             } else if (instance.timepointViewType.get() === 'all') {
                 // Show all timepoints
-                timepoints = instance.data.timepointApi.all();
+                timepoints = timepointApi.all();
             } else {
                 // Show only key timepoints
-                timepoints = instance.data.timepointApi.key();
+                timepoints = timepointApi.key();
             }
         }
         // Returns the timepoints

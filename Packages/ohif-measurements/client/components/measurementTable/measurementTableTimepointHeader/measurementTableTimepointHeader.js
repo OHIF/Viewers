@@ -1,8 +1,7 @@
+import { Template } from 'meteor/templating';
+
 Template.measurementTableTimepointHeader.helpers({
-    'timepointName': function() {
-        const timepoint = this;
-        const instance = Template.instance();
-        const timepointApi = instance.data.timepointApi;
-        return timepointApi.name(timepoint);
+    timepointName(timepoint) {
+        return Template.instance().data.timepointApi.name(timepoint);
     }
 });

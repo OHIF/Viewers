@@ -12,8 +12,6 @@ Template.caseProgress.onCreated(() => {
     instance.path = 'viewer.studyViewer.measurements';
 
     instance.saveData = () => {
-        const api = instance.data.measurementApi;
-
         // Clear signaled unsaved changes...
         const successHandler = () => {
             OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
@@ -22,7 +20,7 @@ Template.caseProgress.onCreated(() => {
         // Display the error messages
         const errorHandler = data => OHIF.ui.showDialog('dialogInfo', data);
 
-        const promise = api.storeMeasurements();
+        const promise = instance.data.measurementApi.storeMeasurements();
         promise.then(successHandler).catch(errorHandler);
         OHIF.ui.showDialog('dialogLoading', {
             promise,
@@ -51,16 +49,17 @@ Template.caseProgress.onDestroyed(() => {
 
 Template.caseProgress.onRendered(() => {
     const instance = Template.instance();
+    const { timepointApi, measurementApi } = instance.data;
 
     // Stop here if we have no current timepoint ID (and therefore no defined timepointAPI)
-    if (!instance.data.timepointApi) {
+    if (!timepointApi) {
         instance.progressPercent.set(100);
         return;
     }
 
     // Get the current timepoint
-    const current = instance.data.timepointApi.current();
-    const prior = instance.data.timepointApi.prior();
+    const current = timepointApi.current();
+    const prior = timepointApi.prior();
     if (!current || !prior || !current.timepointId) {
         instance.progressPercent.set(100);
         return;
@@ -72,7 +71,6 @@ Template.caseProgress.onRendered(() => {
     // follow-up. Note that this is done outside of the reactive function
     // below so that new lesions don't change the initial target count.
 
-    const api = instance.data.measurementApi;
     const config = OHIF.measurements.MeasurementApi.getConfiguration();
     const toolGroups = config.measurementTools;
 
@@ -95,7 +93,7 @@ Template.caseProgress.onRendered(() => {
 
         let count = 0;
         toolGroups.forEach(toolGroup => {
-            count += api.fetch(toolGroup.id, filter).length;
+            count += measurementApi.fetch(toolGroup.id, filter).length;
         });
 
         return count;
@@ -108,8 +106,8 @@ Template.caseProgress.onRendered(() => {
         let totalRemaining = 0;
         toolGroups.forEach(toolGroup => {
             const toolGroupId = toolGroup.id;
-            const numCurrent = api.fetch(toolGroupId, currentFilter).length;
-            const numPrior = api.fetch(toolGroupId, priorFilter).length;
+            const numCurrent = measurementApi.fetch(toolGroupId, currentFilter).length;
+            const numPrior = measurementApi.fetch(toolGroupId, priorFilter).length;
             const remaining = Math.max(numPrior - numCurrent, 0);
             totalRemaining += remaining;
         });
@@ -125,7 +123,7 @@ Template.caseProgress.onRendered(() => {
         // Setup a reactive function to update the progress whenever
         // a measurement is made
         instance.autorun(() => {
-            api.changeObserver.depend();
+            measurementApi.changeObserver.depend();
             // Obtain the number of Measurements for which the current Timepoint has
             // no Measurement data
             const totalMeasurements = getNumMeasurementsAtTimepoint(prior.timepointId);

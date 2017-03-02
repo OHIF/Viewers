@@ -1,4 +1,3 @@
-import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 
 // Define the Trial Criteria Structure
@@ -21,9 +20,9 @@ OHIF.lesiontracker.TrialCriteriaConstraints = {
  * - Time Point Measurement Total = Sum of long axis measurements for extranodal target lesion + short axis measurements for nodal lesions
  */
 function RECIST(image) {
-    var acquisitionSliceThickness;
+    let acquisitionSliceThickness;
 
-    var isChestXray;
+    let isChestXray;
     if (image) {
         acquisitionSliceThickness = image.acquisitionSliceThickness;
 
@@ -32,7 +31,7 @@ function RECIST(image) {
     }
 
     // Define the RECIST 1.1 structure
-    var criteria = {
+    const criteria = {
         baseline: {
             target: {},
             nonTarget: {},
@@ -160,13 +159,13 @@ function RECIST(image) {
  * - Target lesions must have measurements (cannot be assessed as CR, UN/NE, EX)
  */
 function irRC(image) {
-    var acquisitionSliceThickness;
+    let acquisitionSliceThickness;
     if (image) {
         acquisitionSliceThickness = image.acquisitionSliceThickness;
     }
 
     // Define the irRC structure
-    var criteria = {
+    const criteria = {
         baseline: {
             target: {},
             nonTarget: {}
@@ -372,7 +371,7 @@ OHIF.lesiontracker.getTrialCriteriaConstraints = (criteriaTypes, imageId) => {
         }
 
         // Find the related Timepoint document
-        const timepointApi = Template.instance().timepointApi;
+        const { timepointApi } = OHIF.viewer;
         if (!timepointApi) {
             return;
         }

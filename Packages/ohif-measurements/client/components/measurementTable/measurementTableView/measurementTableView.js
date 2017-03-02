@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -31,7 +32,7 @@ Template.measurementTableView.helpers({
         if (!groups) {
             return false;
         }
-        
+
         const group = _.find(groups, item => item.toolGroup.id === toolGroupId);
         return group && !!group.measurementRows.length;
     },
@@ -57,10 +58,8 @@ Template.measurementTableView.helpers({
     },
 
     newMeasurements(toolGroup) {
-        const instance = Template.instance();
-        const measurementApi = instance.data.measurementApi;
-        const timepointApi = instance.data.timepointApi;
-        const current = instance.data.timepointApi.current();
+        const { measurementApi, timepointApi } = Template.instance().data;
+        const current = timepointApi.current();
         const baseline = timepointApi.baseline();
 
         if (!measurementApi || !timepointApi || !current || !baseline) return;

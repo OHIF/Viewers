@@ -9,5 +9,4 @@ import './pixelSpacingAutorunCheck.js';
 import './removeMeasurementIfInvalid.js';
 import './toggleLesionTrackerTools.js';
 import './clearMeasurementTimepointData.js';
-import './convertToNonTarget.js';
-import './convertNonTarget.js';
+import './configureTargetToolsHandles.js';

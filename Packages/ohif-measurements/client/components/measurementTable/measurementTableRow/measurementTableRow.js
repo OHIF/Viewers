@@ -52,7 +52,6 @@ Template.measurementTableRow.events({
 
         // Show the measure flow for targets
         OHIF.measurements.toggleLabelButton({
-            instance,
             measurement: entry,
             element: document.body,
             measurementApi: instance.data.measurementApi,
@@ -78,8 +77,7 @@ Template.measurementTableRow.events({
             const measurementTypeId = instance.data.rowItem.measurementTypeId;
             const measurement = instance.data.rowItem.entries[0];
             const measurementNumber = measurement.measurementNumber;
-            const measurementApi = instance.data.measurementApi;
-            const timepointApi = instance.data.timepointApi;
+            const { timepointApi, measurementApi } = instance.data;
 
             // Remove all the measurements with the given type and number
             measurementApi.deleteMeasurements(measurementTypeId, { measurementNumber });

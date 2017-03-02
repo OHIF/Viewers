@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { _ } from 'meteor/underscore';
@@ -24,6 +25,9 @@ Meteor.startup(() => {
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
     cornerstoneTools.metaData.addProvider(metadataProvider.getProvider());
+
+    // Target tools configuration
+    OHIF.lesiontracker.configureTargetToolsHandles();
 });
 
 Template.viewer.onCreated(() => {
@@ -34,6 +38,20 @@ Template.viewer.onCreated(() => {
     ViewerData = window.ViewerData || ViewerData;
 
     const instance = Template.instance();
+
+    const { TimepointApi, MeasurementApi, ConformanceCriteria } = OHIF.measurements;
+    const currentTimepointId = instance.data.currentTimepointId;
+    const timepointApi = new TimepointApi(currentTimepointId);
+    const measurementApi = new MeasurementApi(timepointApi);
+    const conformanceCriteria = new ConformanceCriteria(measurementApi, timepointApi);
+    const apis = {
+        timepointApi,
+        measurementApi,
+        conformanceCriteria
+    };
+
+    Object.assign(OHIF.viewer, apis);
+    Object.assign(instance.data, apis);
 
     ValidationErrors.remove({});
 
@@ -102,20 +120,15 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.StudyMetadataList.insert(studyMetadata);
     });
 
-    instance.data.timepointApi = new OHIF.measurements.TimepointApi(instance.data.currentTimepointId);
-
-    // TODO: Find a better way to pass this to the ViewportOverlay
-    OHIF.viewer.timepointApi = instance.data.timepointApi;
-
     const patientId = instance.data.studies[0].patientId;
 
     // LT-382: Preventing HP to keep identifying studies in timepoints that might be removed
     instance.data.studies.forEach(study => (delete study.timepointType));
 
     // TODO: Consider combining the retrieval calls into one?
-    const timepointsPromise = instance.data.timepointApi.retrieveTimepoints(patientId);
+    const timepointsPromise = timepointApi.retrieveTimepoints(patientId);
     timepointsPromise.then(() => {
-        const timepoints = instance.data.timepointApi.all();
+        const timepoints = timepointApi.all();
 
         //  Set timepointType in studies to be used in hanging protocol engine
         timepoints.forEach(timepoint => {
@@ -135,21 +148,19 @@ Template.viewer.onCreated(() => {
         Session.set('TimepointsReady', true);
 
         const timepointIds = timepoints.map(t => t.timepointId);
-        instance.data.measurementApi = new OHIF.measurements.MeasurementApi(instance.data.timepointApi);
-        instance.data.conformanceCriteria = new OHIF.measurements.ConformanceCriteria(instance.data.measurementApi, instance.data.timepointApi);
 
-        const measurementsPromise = instance.data.measurementApi.retrieveMeasurements(patientId, timepointIds);
+        const measurementsPromise = measurementApi.retrieveMeasurements(patientId, timepointIds);
         measurementsPromise.then(() => {
             Session.set('MeasurementsReady', true);
 
-            instance.data.measurementApi.syncMeasurementsAndToolData();
+            measurementApi.syncMeasurementsAndToolData();
         });
     });
 
     // Provide the necessary data to the Measurement API and Timepoint API
-    const prior = instance.data.timepointApi.prior();
+    const prior = timepointApi.prior();
     if (prior) {
-        instance.data.measurementApi.priorTimepointId = prior.timepointId;
+        measurementApi.priorTimepointId = prior.timepointId;
     }
 
     if (instance.data.currentTimepointId) {
@@ -177,8 +188,6 @@ Template.viewer.onCreated(() => {
         const tools = config.measurementTools[0].childTools;
         const firstTool = tools[Object.keys(tools)[0]];
         const measurementTypeId = firstTool.id;
-        const measurementApi = instance.data.measurementApi;
-        const timepointApi = instance.data.timepointApi;
 
         const collection = measurementApi.tools[measurementTypeId];
         const sorting = {
@@ -230,44 +239,45 @@ const setActiveToolAndSidebar = () => {
     const { studies, currentTimepointId, measurementApi, timepointIds } = instance.data;
 
     // Default actions for Associated Studies
-    if(currentTimepointId) {
+    if (currentTimepointId) {
         // Follow-up studies: same as the first measurement in the table
         // Baseline studies: target-tool
-        if(studies[0]) {
+        if (studies[0]) {
             let activeTool;
             // In follow-ups, get the baseline timepointId
             const timepointId = timepointIds.find(id => id !== currentTimepointId);
 
             // Follow-up studies
-            if(studies[0].timepointType === 'followup' && timepointId) {
+            if (studies[0].timepointType === 'followup' && timepointId) {
                 const measurementTools = OHIF.measurements.MeasurementApi.getConfiguration().measurementTools;
 
                 // Create list of measurement tools
-                const measurementTypes = measurementTools.map( 
+                const measurementTypes = measurementTools.map(
                     tool => {
                         const { id, cornerstoneToolType } = tool;
                         return {
                             id,
                             cornerstoneToolType
-                        }
+                        };
                     }
                 );
 
                 // Iterate over each measurement tool to find the first baseline
                 // measurement. If so, stops the loop and prevent fetching from all
                 // collections
-                measurementTypes.every(({id, cornerstoneToolType}) => {
+                measurementTypes.every(({ id, cornerstoneToolType }) => {
                     // Get measurement
-                    if(measurementApi[id]) {
+                    if (measurementApi[id]) {
                         const measurement = measurementApi[id].findOne({ timepointId });
 
                         // Found a measurement, save tool and stop loop
-                        if(measurement) {
+                        if (measurement) {
                             activeTool = cornerstoneToolType;
 
                             return false;
                         }
                     }
+
                     return true;
                 });
             }
@@ -276,14 +286,14 @@ const setActiveToolAndSidebar = () => {
             OHIF.viewerbase.toolManager.setActiveTool(activeTool || 'bidirectional');
         }
 
-        // Toggle Measurement Table 
-        if(instance.data.state) {
+        // Toggle Measurement Table
+        if (instance.data.state) {
             instance.data.state.set('rightSidebar', 'measurements');
         }
     }
     // Hide as default for single study
     else {
-        if(instance.data.state) {
+        if (instance.data.state) {
             instance.data.state.set('rightSidebar', null);
         }
     }

@@ -1,9 +1,14 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
+
 Template.measurementTableHUD.onCreated(() => {
     const instance = Template.instance();
+    const timepointApi = instance.data.timepointApi;
 
     instance.isRemoved = true;
-    if (instance.data.timepointApi) {
-        instance.data.timepoints = new ReactiveVar(instance.data.timepointApi.currentAndPrior());    
+    if (timepointApi) {
+        instance.data.timepoints = new ReactiveVar(timepointApi.currentAndPrior());
     }
 });
 
@@ -37,6 +42,7 @@ Template.measurementTableHUD.helpers({
 
         return instance.isRemoved !== true ? 'dialog-animated dialog-closed' : 'hidden';
     },
+
     toolbarButtons() {
         let buttonData = [];
 
