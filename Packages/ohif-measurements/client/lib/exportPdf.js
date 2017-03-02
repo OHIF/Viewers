@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { MeasurementReport } from 'meteor/ohif:measurements/client/reports/measurement';
+import { $ } from 'meteor/jquery';
 
 OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
     const currentTimepoint = timepointApi.current();
@@ -45,8 +46,10 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
 
         const measurement = current.value;
         cornerstone.loadImage(measurement.imageId).then(image => {
+            const state = Object.assign({}, measurement, { active: true });
+            cornerstoneTools.clearToolState(element, measurement.toolType);
             cornerstone.displayImage(element, image);
-            cornerstoneTools.addToolState(element, measurement.toolType, measurement);
+            cornerstoneTools.addToolState(element, measurement.toolType, state);
             cornerstoneTools[measurement.toolType].enable(element);
 
             const series = cornerstoneTools.metaData.get('series', measurement.imageId);
@@ -66,16 +69,17 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
             let type = measurementApi.toolsGroupsMap[measurement.toolType];
             type = type === 'targets' ? 'Target' : 'Non-target';
 
-            report.printMeasurement({
-                type,
-                number: measurement.measurementNumber,
-                location: OHIF.measurements.getLocationLabel(measurement.location) || '',
-                info,
-                image: enabledElement.canvas.toDataURL('image/jpeg', 0.85)
+            $element.one('CornerstoneImageRendered', () => {
+                report.printMeasurement({
+                    type,
+                    number: measurement.measurementNumber,
+                    location: OHIF.measurements.getLocationLabel(measurement.location) || '',
+                    info,
+                    image: enabledElement.canvas.toDataURL('image/jpeg', 0.85)
+                });
             });
-            cornerstoneTools.clearToolState(element, measurement.toolType);
 
-            printMeasurements(callback);
+            setTimeout(() => printMeasurements(callback));
         });
     };
 
