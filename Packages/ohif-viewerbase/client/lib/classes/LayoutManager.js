@@ -557,7 +557,7 @@ export class LayoutManager {
         const allowLooping = OHIF.uiSettings.displaySetNavigationLoopOverSeries;
 
         // Create a map to control the display set sequence
-        const sequenceMap = new this.getDisplaySetSequenceMap();
+        const sequenceMap = this.getDisplaySetSequenceMap();
 
         // Check if the display sets are sequenced
         const isSequenced = this.isDisplaySetsSequenced(sequenceMap);
