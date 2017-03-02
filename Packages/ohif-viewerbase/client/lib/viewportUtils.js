@@ -134,7 +134,8 @@ const flipH = () => {
 };
 
 const resetViewport = () => {
-    const enabledElement = getEnabledElementForActiveElement();
+    const element = getActiveViewportElement();
+    const enabledElement = cornerstone.getEnabledElement(element);
     if (enabledElement.fitToWindow === false) {
         const imageId = enabledElement.image.imageId;
         const instance = cornerstoneTools.metaData.get('instance', imageId);
