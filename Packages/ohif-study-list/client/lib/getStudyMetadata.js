@@ -59,6 +59,9 @@ getStudyMetadata = function(studyInstanceUid, doneCallback, failCallback) {
         // and instance number in ascending order
         OHIF.viewerbase.sortStudy(study);
 
+        // Updates WADO-RS metaDataManager
+        OHIF.viewerbase.updateMetaDataManager(study);
+
         // Add additional metadata to our study from the studylist
         var studylistStudy = StudyListStudies.findOne({
             studyInstanceUid: study.studyInstanceUid

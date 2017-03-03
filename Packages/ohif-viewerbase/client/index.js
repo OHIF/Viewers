@@ -59,6 +59,10 @@ Viewerbase.updateAllViewports = updateAllViewports;
 import { sortStudy } from './lib/sortStudy';
 Viewerbase.sortStudy = sortStudy;
 
+// updateMetaDataManager
+import { updateMetaDataManager } from './lib/updateMetaDataManager';
+Viewerbase.updateMetaDataManager = updateMetaDataManager;
+
 // updateOrientationMarkers
 import { updateOrientationMarkers } from './lib/updateOrientationMarkers';
 Viewerbase.updateOrientationMarkers = updateOrientationMarkers;

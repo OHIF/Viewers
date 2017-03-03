@@ -169,6 +169,26 @@ function getFrameIncrementPointer(element) {
     return frameIncrementPointerNames[value];
 }
 
+function getRadiopharmaceuticalInfo(instance) {
+    const modality = DICOMWeb.getString(instance['00080060']);
+
+    if (modality !== 'PT') {
+        return;
+    }
+
+    const radiopharmaceuticalInfo = instance['00540016'];
+    if ((radiopharmaceuticalInfo === undefined) || !radiopharmaceuticalInfo.Value || !radiopharmaceuticalInfo.Value.length) {
+        return;
+    }
+
+    const firstPetRadiopharmaceuticalInfo = radiopharmaceuticalInfo.Value[0];
+    return {
+        radiopharmaceuticalStartTime: DICOMWeb.getString(firstPetRadiopharmaceuticalInfo['00181072']),
+        radionuclideTotalDose: DICOMWeb.getNumber(firstPetRadiopharmaceuticalInfo['00181074']),
+        radionuclideHalfLife: DICOMWeb.getNumber(firstPetRadiopharmaceuticalInfo['00181075'])
+    };
+}
+
 /**
  * Parses result data from a WADO search into Study MetaData
  * Returns an object populated with study metadata, including the
@@ -196,6 +216,9 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         seriesList: seriesList,
         patientName: DICOMWeb.getName(anInstance['00100010']),
         patientId: DICOMWeb.getString(anInstance['00100020']),
+        patientAge: DICOMWeb.getNumber(anInstance['00101010']),
+        patientSize: DICOMWeb.getNumber(anInstance['00101020']),
+        patientWeight: DICOMWeb.getNumber(anInstance['00101030']),
         accessionNumber: DICOMWeb.getString(anInstance['00080050']),
         studyDate: DICOMWeb.getString(anInstance['00080020']),
         modalities: DICOMWeb.getString(anInstance['00080061']),
@@ -214,6 +237,8 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                 modality: DICOMWeb.getString(instance['00080060']),
                 seriesInstanceUid: seriesInstanceUid,
                 seriesNumber: DICOMWeb.getNumber(instance['00200011']),
+                seriesDate: DICOMWeb.getString(instance['00080021']),
+                seriesTime: DICOMWeb.getString(instance['00080031']),
                 instances: []
             };
             seriesMap[seriesInstanceUid] = series;
@@ -269,11 +294,12 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
             echoNumber: DICOMWeb.getString(instance['00180086']),
             contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
+            radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
             baseWadoRsUri: baseWadoRsUri,
             wadouri: WADOProxy.convertURL(wadouri, server.requestOptions),
             wadorsuri: WADOProxy.convertURL(wadorsuri),
             imageRendering: server.imageRendering,
-            thumbnailRendering: server.thumbnailRendering,
+            thumbnailRendering: server.thumbnailRendering
         };
 
         // Get additional information if the instance uses "PALETTE COLOR" photometric interpretation

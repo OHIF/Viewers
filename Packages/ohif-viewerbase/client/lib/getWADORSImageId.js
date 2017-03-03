@@ -1,66 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
-import { _ } from 'meteor/underscore';
 
-class ImageMetadataBuilder {
-    constructor() {
-        this.tags = {};
-    }
-
-    addTag(tag, value, multi) {
-        this.tags[tag] = {
-            tag,
-            value,
-            multi
-        }
-
-        return this;
-    }
-
-    toJSON() {
-        const json = {};
-        const keys = Object.keys(this.tags);
-
-        keys.forEach(key => {
-            if(!this.tags.hasOwnProperty(key)) {
-                return;
-            }
-
-            const tag = this.tags[key];
-            const multi = !!tag.multi;
-            let value = tag.value;
-
-            if((value == null) || ((value.length === 1) && (value[0] == null))) {
-                return;
-            }
-
-            if((typeof value === 'string') && multi) {
-                value = value.split('\\');
-            }
-
-            if(!_.isArray(value)) {
-                value = [value];
-            }
-
-            json[key] = {
-                Value: value
-            };
-        });
-
-        return json;
-    }
-}
-
-function formatWADORSImageUrl(wadorsuri, frame) {
-    // We need to sum 1 because WADO-RS frame number is 1-based
-    frame = (frame || 0) + 1;
-
-    // Replaces /frame/1 by /frame/{frame}
-    // TODO: Maybe should be better to export the WADOProxy to be able to use it on client
-    //       Example: WADOProxy.convertURL(baseWadoRsUri + '/frame/' + frame)
-    wadorsuri = wadorsuri.replace(/(%2Fframes%2F)(\d+)/, `$1${frame}`);
-
-    return Meteor.absoluteUrl(wadorsuri);
-}
+import { getWADORSImageUrl } from './getWADORSImageUrl';
 
 /**
  * Obtain an imageId for Cornerstone based on the WADO-RS scheme
@@ -69,51 +9,14 @@ function formatWADORSImageUrl(wadorsuri, frame) {
  * @returns {string} The imageId to be used by Cornerstone
  */
 export function getWADORSImageId(instance, frame) {
-    const uri = formatWADORSImageUrl(instance.wadorsuri, frame);
+    const uri = getWADORSImageUrl(instance, frame);
+
+    if (!uri) {
+        return;
+    }
+
     const imageId = `wadors:${uri}`;
-
-    const imageMetadata = new ImageMetadataBuilder()
-        .addTag('00080016', instance.sopClassUid)
-        .addTag('00080018', instance.sopInstanceUid)
-        .addTag('00180050', instance.sliceThickness)
-        .addTag('00200013', instance.instanceNumber)
-        .addTag('00200032', instance.imagePositionPatient, true)
-        .addTag('00200037', instance.imageOrientationPatient, true)
-        .addTag('00200052', instance.frameOfReferenceUID)
-        .addTag('00201041', instance.sliceLocation)
-        .addTag('00280002', instance.samplesPerPixel)
-        .addTag('00280004', instance.photometricInterpretation)
-        .addTag('00280006', instance.planarConfiguration)
-        .addTag('00280010', instance.rows)
-        .addTag('00280011', instance.columns)
-        .addTag('00280030', instance.pixelSpacing, true)
-        .addTag('00280034', instance.pixelAspectRatio, true)
-        .addTag('00280100', instance.bitsAllocated)
-        .addTag('00280101', instance.bitsStored)
-        .addTag('00280102', instance.highBit)
-        .addTag('00280103', instance.pixelRepresentation)
-        .addTag('00280106', instance.smallestPixelValue)
-        .addTag('00280107', instance.largestPixelValue)
-        .addTag('00281050', instance.windowCenter, true)
-        .addTag('00281051', instance.windowWidth, true)
-        .addTag('00281052', instance.rescaleIntercept)
-        .addTag('00281053', instance.rescaleSlope)
-        .addTag('00281054', instance.rescaleType)
-        .addTag('00281101', instance.redPaletteColorLookupTableDescriptor)
-        .addTag('00281102', instance.greenPaletteColorLookupTableDescriptor)
-        .addTag('00281103', instance.bluePaletteColorLookupTableDescriptor)
-        .addTag('00281201', instance.redPaletteColorLookupTableData)
-        .addTag('00281202', instance.greenPaletteColorLookupTableData)
-        .addTag('00281203', instance.bluePaletteColorLookupTableData)
-        .toJSON();
-
-    _.extend(imageMetadata, {
-        uri: uri,
-        instance: instance
-    });
-
-    cornerstoneWADOImageLoader.wadors.metaDataManager.add(imageId, imageMetadata);
-
     OHIF.log.info('WADO-RS ImageID: ' + imageId);
+
     return imageId;
 };
