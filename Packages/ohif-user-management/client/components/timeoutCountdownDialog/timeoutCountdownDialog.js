@@ -1,39 +1,63 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
+import { OHIF } from 'meteor/ohif:core';
+
+Meteor.startup(() => {
+    const closeObserver = new Tracker.Dependency();
+    $.event.add(window, 'TriggerCloseTimeoutCountdownDialog', () => closeObserver.changed());
+    $.event.add(window, 'TriggerOpenTimeoutCountdownDialog', (event, timeLeft) => {
+        OHIF.ui.showDialog('timeoutCountdownDialog', {
+            timeLeft,
+            closeObserver
+        });
+    });
+});
+
 Template.timeoutCountdownDialog.helpers({
-    timeLeft: function() {
-        var timeLeft = Session.get('countdownDialogLeftTime');
-        var suffix = timeLeft > 1 ? 'seconds': 'second';
-        return timeLeft + suffix;
+    timeLeft() {
+        const timeLeft = Session.get('countdownDialogTimeLeft');
+        const suffix = timeLeft > 1 ? 'seconds': 'second';
+        return `${timeLeft} ${suffix}`;
     }
 });
 
-Template.timeoutCountdownDialog.onRendered(function() {
-    // Show countdown dialog
-    var timeoutCountdownInterval;
-    $(document).on('TriggerOpenTimeoutCountdownDialog', function(e, leftTime) {
-        // Show modal dialog
-        timeoutCountdownInterval = setInterval(function() {
-            // Set countdownDialogLeftTime session
-            Session.set('countdownDialogLeftTime', --leftTime);
+Template.timeoutCountdownDialog.onCreated(() => {
+    const instance = Template.instance();
+    const { timeLeft, closeObserver } = instance.data;
 
-            var dialog = $('#timeoutCountdownDialog');
+    instance.close = callback => {
+        const $modal = instance.$('.modal');
+        $modal.on('hidden.bs.modal', () => callback()).modal('hide');
+    };
 
-            // Show dialog
-            dialog.css('display', 'block');
-        }, 1000);
-
+    instance.autorun(computation => {
+        closeObserver.depend();
+        if (computation.firstRun) return;
+        instance.close(instance.data.promiseResolve);
     });
 
-    $(document).on('TriggerCloseTimeoutCountdownDialog', function() {
-        var dialog = $('#timeoutCountdownDialog');
+    Session.set('countdownDialogTimeLeft', timeLeft);
+});
 
-        // Close the dialog
-        dialog.css('display', 'none');
+Template.timeoutCountdownDialog.onRendered(() => {
+    const instance = Template.instance();
+    let timeLeft = instance.data.timeLeft;
 
-        if (timeoutCountdownInterval) {
-            clearInterval(timeoutCountdownInterval);
-
+    // Update countdownDialogTimeLeft session every second
+    instance.interval = setInterval(() => {
+        Session.set('countdownDialogTimeLeft', --timeLeft);
+        if (!timeLeft) {
             // Remove reviewer info for the user
             Meteor.call('removeUserFromReviewers', Meteor.userId());
+            instance.close(instance.data.promiseReject);
         }
-    });
+    }, 1000);
+});
+
+Template.timeoutCountdownDialog.onDestroyed(() => {
+    const instance = Template.instance();
+    clearInterval(instance.interval);
+    Session.delete('countdownDialogTimeLeft');
 });

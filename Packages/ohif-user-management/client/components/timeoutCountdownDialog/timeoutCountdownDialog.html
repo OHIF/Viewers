@@ -1,10 +1,5 @@
 <template name="timeoutCountdownDialog">
-    <div id="timeoutCountdownDialog">
-        <div class="dialogHeader">
-            <h5>Your session is about to expire.</h5>
-        </div>
-        <div class="dialogContent">
-            <p>You will be logged out in {{timeLeft}}.</p>
-        </div>
-    </div>
+    {{#dialogSimple title='Your session is about to expire'}}
+        <div>You will be logged out in {{timeLeft}}.</div>
+    {{/dialogSimple}}
 </template>

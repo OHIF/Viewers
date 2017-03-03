@@ -6,7 +6,9 @@
       {{#each message in this.messages}}
         <div class="message">{{{message}}}</div>
       {{else}}
-        <div class="message">An error has ocurred.</div>
+        {{#let message=(choose this.message 'An error has ocurred.')}}
+            <div class="message">{{message}}</div>
+        {{/let}}
       {{/each}}
     </div>
   {{/dialogSimple}}
