@@ -1,9 +1,9 @@
 import './dialog/nonTargetMeasurement.html';
 import './dialog/nonTargetMeasurement.js';
 
-import './optionsModal/optionsModal.html';
-import './optionsModal/optionsModal.styl';
-import './optionsModal/optionsModal.js';
+import './trialOptionsModal/irRCDescription.html';
+import './trialOptionsModal/recistDescription.html';
 
-import './optionsModal/recistDescription/recistDescription.html';
-import './optionsModal/irRCDescription/irRCDescription.html';
+import './trialOptionsModal/trialOptionsModal.html';
+import './trialOptionsModal/trialOptionsModal.styl';
+import './trialOptionsModal/trialOptionsModal.js';

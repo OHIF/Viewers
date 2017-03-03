@@ -1,5 +1,6 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/measurements';
+// import { OHIF } from 'meteor/ohif:core';
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
@@ -68,7 +69,7 @@ const displayFunction = data => {
     // const nodalType = data.isNodal ? 'nodal' : 'extraNodal';
 
     // Get criteria types
-    // const criteriaTypes = TrialCriteriaTypes.find({
+    // const criteriaTypes = OHIF.lesiontracker.TrialCriteriaTypes.find({
     //     selected: true
     // }).map(criteria => {
     //     return criteria.id;

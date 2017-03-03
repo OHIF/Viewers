@@ -39,7 +39,7 @@ Template.measurementTableView.helpers({
 
     getNewToolGroup(tool) {
         const configuration = OHIF.measurements.MeasurementApi.getConfiguration();
-        const trialCriteriaType = TrialCriteriaTypes.findOne({ selected: true });
+        const trialCriteriaType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
         const trialCriteriaTypeId = trialCriteriaType.id.toLowerCase();
         const trialToolGroupMap = {
             recist: 'nonTargets',

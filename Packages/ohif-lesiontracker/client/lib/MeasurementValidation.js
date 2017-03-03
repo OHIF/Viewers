@@ -218,7 +218,7 @@ function assessSingleMeasurement(constraints, measurementData) {
 function validateSingleMeasurement(measurementData) {
     // Obtain the name of the current TrialResponseAssessmentCriteria that
     // we are using.
-    var criteriaTypes = TrialCriteriaTypes.find({
+    var criteriaTypes = OHIF.lesiontracker.TrialCriteriaTypes.find({
         selected: true
     }).map(function(criteria) {
         return criteria.id;
@@ -268,7 +268,7 @@ function validateGroups() {
 
     // Obtain the names of the current TrialResponseAssessmentCriteria that
     // we are using.
-    var criteriaTypes = TrialCriteriaTypes.find({
+    var criteriaTypes = OHIF.lesiontracker.TrialCriteriaTypes.find({
         selected: true
     }).map(function(criteria) {
         return criteria.id;
@@ -305,7 +305,7 @@ function validateGroups() {
 function validateAll() {
     // Obtain the names of the current TrialResponseAssessmentCriteria that
     // we are using.
-    var criteriaTypes = TrialCriteriaTypes.find({
+    var criteriaTypes = OHIF.lesiontracker.TrialCriteriaTypes.find({
         selected: true
     }).map(function(criteria) {
         return criteria.id;

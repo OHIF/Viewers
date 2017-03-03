@@ -22,9 +22,9 @@ class ConformanceCriteria {
         }, 300);
 
         Tracker.autorun(() => {
-            const trialCriteriaType = TrialCriteriaTypes.findOne({ selected: true });
+            const selectedType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
             this.measurementApi.changeObserver.depend();
-            validate(trialCriteriaType);
+            validate(selectedType);
         });
     }
 

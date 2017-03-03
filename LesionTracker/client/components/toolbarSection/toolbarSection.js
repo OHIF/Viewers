@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.toolbarSection.helpers({
@@ -233,14 +234,9 @@ Template.toolbarSection.events({
     },
 
     'click #toggleTrial'(event) {
-        const $this = $(event.currentTarget);
-
-        // Stop here if the tool is disabled
-        if ($this.hasClass('disabled')) {
-            return;
+        if (!$(event.currentTarget).hasClass('disabled')) {
+            OHIF.ui.showDialog('trialOptionsModal');
         }
-
-        $('#optionsModal').modal();
     }
 });
 

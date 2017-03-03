@@ -38,7 +38,6 @@ Package.onUse(function(api) {
     api.export('ValidationErrors', 'client');
     api.export('LesionLocations', 'client');
     api.export('LocationResponses', 'client');
-    api.export('TrialCriteriaTypes', 'client');
 
     // Export collections spanning both client and server
     api.export('Configuration', ['client', 'server']);
