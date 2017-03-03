@@ -1,6 +1,9 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { Router } from 'meteor/iron:router';
+import { OHIF } from 'meteor/ohif:core';
 
 // Display the last login modal as default
 Session.setDefault('displayLastLoginModal', true);
@@ -32,13 +35,15 @@ Template.userAccountMenu.helpers({
 });
 
 Template.userAccountMenu.events({
-    'click #serverInformation': function() {
+    'click #serverInformation'() {
         $('#serverInformationModal').modal('show');
     },
-    'click #themeSelector': function() {
-        $('#themeSelectorModal').modal('show');
+
+    'click #themeSelector'() {
+        OHIF.ui.showDialog('themeSelectorModal');
     },
-    'click #logoutButton': function() {
+
+    'click #logoutButton'() {
         Meteor.logout(function() {
             Router.go('/entrySignIn');
         });

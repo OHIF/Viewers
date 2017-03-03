@@ -1,28 +1,17 @@
 <template name="themeSelectorModal">
-    <div class="modal" id="themeSelectorModal" tabindex="-1" role="dialog" aria-labelledby="themeSelectorModalLabel">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="themeSelectorModalLabel"><i class="fa fa-sliders"></i> Themes</h4>
-                </div>
-                <div class="modal-body">
-                    <ul class="theme-list text-center">
-                        {{#each theme in themes}}
-                            <li class="text-center preview-theme {{addClassIfSelected theme}}" data-theme="{{theme}}">
-                                <div class="icon-wrapper">
-                                    <span class="theme-icon-{{theme}}"></span>
-                                </div>
-                                <h4 class="theme-title">{{ucFirst theme}}</h4>
-                            </li>
-                        {{/each}}
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default js-cancel" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary js-apply" data-dismiss="modal">Apply theme</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    {{#dialogForm (extend this
+        id='themeSelectorModal' dialogClass='modal-lg' confirmLabel='Apply theme'
+        title='Themes' titleIcon='fa fa-sliders'
+    )}}
+        <ul class="theme-list text-center">
+            {{#each theme in themes}}
+                <li class="text-center preview-theme {{printClassIfSelected theme}}" data-theme="{{theme}}">
+                    <div class="icon-wrapper">
+                        <span class="theme-icon-{{theme}}"></span>
+                    </div>
+                    <h4 class="theme-title">{{ucFirst theme}}</h4>
+                </li>
+            {{/each}}
+        </ul>
+    {{/dialogForm}}
 </template>

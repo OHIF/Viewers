@@ -4,7 +4,7 @@ import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
-OHIF.ui.showDialog = (templateName, dialogData) => {
+OHIF.ui.showDialog = (templateName, dialogData={}) => {
     // Check if the given template exists
     const template = Template[templateName];
     if (!template) {
