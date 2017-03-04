@@ -17,8 +17,11 @@ function makeRequest(geturl, options, callback) {
     }
 
     var req = http.request(requestOpt, function(resp) {
-        if (jsonHeaders.indexOf(resp.headers['content-type']) == -1) {
-            callback('We only support json', null);
+        const contentType = resp.headers['content-type'].split(';')[0];
+
+        if (jsonHeaders.indexOf(contentType) == -1) {
+            const errorMessage = `We only support json but "${contentType}" was sent by the server`;
+            callback(new Error(errorMessage), null);
             return;
         }
 
