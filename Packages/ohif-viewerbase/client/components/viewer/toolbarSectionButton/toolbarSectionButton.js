@@ -76,11 +76,7 @@ Template.toolbarSectionButton.events({
         const elements = instance.$('.imageViewerViewport');
 
         const activeTool = toolManager.getActiveTool();
-        if (tool === activeTool) {
-            const defaultTool = toolManager.getDefaultTool();
-            OHIF.log.info('Setting active tool to: ' + defaultTool);
-            toolManager.setActiveTool(defaultTool, elements);
-        } else {
+        if (tool !== activeTool) {
             OHIF.log.info('Setting active tool to: ' + tool);
             toolManager.setActiveTool(tool, elements);
         }
