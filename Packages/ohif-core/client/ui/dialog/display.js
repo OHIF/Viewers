@@ -51,7 +51,7 @@ OHIF.ui.showDialog = (templateName, dialogData) => {
 
     // Destroy the created dialog view when the promise is either resolved or rejected
     const dismissModal = () => {
-        if (dialogData.promise && $modal) {
+        if (dialogData && dialogData.promise && $modal) {
             $modal.one('hidden.bs.modal', () => Blaze.remove(view)).modal('hide');
         } else {
             Blaze.remove(view);
