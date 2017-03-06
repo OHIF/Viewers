@@ -4,21 +4,12 @@
             {{#form class='modal-content' hideValidationBox=true
                 api=(extend instance.api instance.data.api) schema=this.schema
             }}
-                <div class="modal-header">
-                    {{#button class='close' action='cancel'
-                        tagAttributes=(extend this.tagAttributes
-                            data-dismiss='modal' aria-label='Close'
-                        )
-                    }}<span aria-hidden="true">&times;</span>{{/button}}
-                    <h4 class="modal-title">
-                        {{#if this.titleIcon}}<i class="{{this.titleIcon}}"></i>{{/if}}
-                        <span>{{this.title}}</span>
-                    </h4>
-                </div>
+                {{>dialogHeader this}}
                 <div class="modal-body">
                     {{>UI.contentBlock}}
                 </div>
                 <div class="modal-footer">
+                    {{>section 'dialogFooter'}}
                     {{#button action='cancel'
                         class=(concat 'btn btn-cancel ' (choose this.cancelClass 'btn-default'))
                         tagAttributes=(extend this.tagAttributes data-dismiss='modal')

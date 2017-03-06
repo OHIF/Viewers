@@ -46,6 +46,7 @@ OHIF.blaze.getParentTemplateView = view => {
     let currentView = view;
     while (currentView) {
         currentView = currentView.originalParentView || currentView.parentView;
+        if (!currentView || !currentView.name) return;
         if (currentView.name.indexOf('Template.') > -1) {
             return currentView;
         }

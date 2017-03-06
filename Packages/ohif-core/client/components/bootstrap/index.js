@@ -1,6 +1,7 @@
 import './dialog/confirm.html';
 import './dialog/form.html';
 import './dialog/form.js';
+import './dialog/header.html';
 import './dialog/info.html';
 import './dialog/info.js';
 import './dialog/loading.html';

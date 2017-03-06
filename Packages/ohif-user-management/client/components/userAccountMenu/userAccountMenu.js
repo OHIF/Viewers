@@ -111,16 +111,11 @@ Template.userAccountMenu.onCreated(function userAccountMenuCreated() {
             return;
         }
 
-        // Displaye the modal
-        Modal.show('lastLoginModal', {
-            lastLoginDate: lastLoginDate
-        });
-
-        // Hide the modal after 5sec
-        Meteor.setTimeout(() => {
-            Modal.hide('lastLoginModal');
-            Session.setPersistent('displayLastLoginModal', false);
-        }, 5000);
+        // Display the modal and hide it after 5 seconds
+        OHIF.ui.showDialog('lastLoginModal', {
+            lastLoginDate,
+            timeout: 5000
+        }).then(() => Session.setPersistent('displayLastLoginModal', false));
 
         // Log signin
         HipaaLogger.logEvent({

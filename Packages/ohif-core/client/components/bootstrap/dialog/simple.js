@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
@@ -9,6 +10,11 @@ Template.dialogSimple.onCreated(() => {
         const $modal = instance.$('.modal');
         $modal.on('hidden.bs.modal', () => instance.data.promiseResolve()).modal('hide');
     };
+
+    // Automatically close the modal if a timeout value was given
+    if (instance.data.timeout) {
+        Meteor.setTimeout(instance.close, instance.data.timeout);
+    }
 });
 
 Template.dialogSimple.onRendered(() => {

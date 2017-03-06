@@ -17,7 +17,6 @@ Router.onBeforeAction('loading');
 
 const data = {
     additionalTemplates: [
-        'lastLoginModal',
         'viewSeriesDetailsModal'
     ]
 };
