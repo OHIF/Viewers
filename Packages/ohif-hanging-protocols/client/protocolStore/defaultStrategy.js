@@ -5,6 +5,17 @@ var defaultStrategy = (function () {
 
     var hangingProtocolSubs;
 
+    function addDefaultProtocols() {
+        console.log('Inserting default protocols');
+
+        addProtocol(HP.defaultProtocol);
+
+        //addProtocol(HP.testProtocol);
+        HP.demoProtocols.forEach(protocol => {
+            addProtocol(protocol);
+        });
+    }
+
     function getDatabaseIdByProtocolId(protocolId) {
         const filteredProtocol = HangingProtocols.findOne({
             id: protocolId
@@ -39,6 +50,7 @@ var defaultStrategy = (function () {
             Tracker.autorun((computation) => {
                 if (hangingProtocolSubs.ready()) {
                     computation.stop();
+                    addDefaultProtocols();
                     callback();
                 }
             });
@@ -145,14 +157,4 @@ var defaultStrategy = (function () {
 
 })();
 
-Meteor.startup(() => {
-    HP.ProtocolStore.setStrategy(defaultStrategy);
-    HP.ProtocolStore.onReady(() => {
-        console.log('Inserting default protocols');
-        HP.ProtocolStore.addProtocol(HP.defaultProtocol);
-        //HP.ProtocolStore.addProtocol(HP.testProtocol);
-        HP.demoProtocols.forEach(protocol => {
-            HP.ProtocolStore.addProtocol(protocol);
-        });
-    });
-});
+HP.ProtocolStore.setStrategy(defaultStrategy);
