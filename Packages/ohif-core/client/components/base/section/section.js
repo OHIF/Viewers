@@ -3,23 +3,8 @@ import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
-// Get the view that contains the desired section's content and return it
-const getSection = (view, sectionName) => {
-    let currentView = view;
-    while (!currentView._sectionMap || !currentView._sectionMap.get(sectionName)) {
-        currentView = OHIF.blaze.getParentTemplateView(currentView);
-        if (!currentView) return;
-    }
-
-    return currentView._sectionMap.get(sectionName);
-};
-
 Template.section.onCreated(() => {
     const instance = Template.instance();
-
-    if (instance.data === 'dialogFooter') {
-        console.warn('>>>>instance', instance);
-    }
 
     // Create the render function and section data as reactive objects
     instance.renderFunction = new ReactiveVar(null);
@@ -55,7 +40,7 @@ Template.section.onCreated(() => {
         // Wait for re-rendering and print the section content
         Tracker.afterFlush(() => {
             // Get the defined section's content
-            const section = getSection(currentView, sectionName);
+            const section = OHIF.blaze.getSectionContent(currentView, sectionName);
 
             // Stop here if the section content is not defined
             if (!section) {

@@ -34,7 +34,7 @@ Template.serverInformationForm.onCreated(() => {
 Template.serverInformationForm.onRendered(() => {
     const instance = Template.instance();
 
-    instance.data.$form = instance.$('form:first');
+    instance.data.$form = instance.$('form').first();
     instance.data.form = instance.data.$form.data('component');
 
     // Handle the server type

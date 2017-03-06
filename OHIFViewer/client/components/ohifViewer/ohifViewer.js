@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { OHIF } from 'meteor/ohif:core';
 
 const studylistContentId = 'studylistTab';
 let lastContentId;
@@ -20,6 +21,10 @@ Template.ohifViewer.events({
         } else {
             switchToTab(lastContentId);
         }
+    },
+
+    'click #serverInformation'() {
+        OHIF.ui.showDialog('serverInformationModal');
     }
 });
 

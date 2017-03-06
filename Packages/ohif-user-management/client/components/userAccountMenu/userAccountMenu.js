@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
+import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
 // Display the last login modal as default
@@ -10,13 +11,14 @@ Session.setDefault('displayLastLoginModal', true);
 
 Template.userAccountMenu.helpers({
     name: function() {
-        var nameSplit = Meteor.user().profile.fullName.split(' ');
-        var lastName = nameSplit[nameSplit.length - 1];
+        const nameSplit = Meteor.user().profile.fullName.split(' ');
+        const lastName = nameSplit[nameSplit.length - 1];
         nameSplit[nameSplit.length - 1] = lastName.substr(0, 1) + '.';
         return nameSplit.join(' ');
     },
+
     currentUser: function() {
-        var verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
+        const verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
 
         if (!Meteor.user() || !Meteor.userId()) {
             return;
@@ -36,7 +38,7 @@ Template.userAccountMenu.helpers({
 
 Template.userAccountMenu.events({
     'click #serverInformation'() {
-        $('#serverInformationModal').modal('show');
+        OHIF.ui.showDialog('serverInformationModal');
     },
 
     'click #themeSelector'() {
@@ -51,7 +53,7 @@ Template.userAccountMenu.events({
 });
 
 Template.userAccountMenu.onCreated(function userAccountMenuCreated() {
-    const instance =  Template.instance();
+    const instance = Template.instance();
 
     // Create reactive last login date
     instance.lastLoginDate = new ReactiveVar();
@@ -60,14 +62,14 @@ Template.userAccountMenu.onCreated(function userAccountMenuCreated() {
     let oldUser;
 
     // Get last login date
-    Meteor.call('getPriorLoginDate', function(error, lastLoginDate){
+    Meteor.call('getPriorLoginDate', function(error, lastLoginDate) {
         if (error) {
-            console.log(error);
+            OHIF.log.error(error);
             return;
         }
 
         // Format the last login date
-        const formattedLastLoginDate = moment(lastLoginDate).format("MMMM Do YYYY, HH:mm:ss A");
+        const formattedLastLoginDate = moment(lastLoginDate).format('MMMM Do YYYY, HH:mm:ss A');
 
         instance.lastLoginDate.set(formattedLastLoginDate);
 
@@ -80,7 +82,7 @@ Template.userAccountMenu.onCreated(function userAccountMenuCreated() {
         }
 
         // Hook login/logout
-        var user = Meteor.user();
+        const user = Meteor.user();
         if (!user) {
             // Display last login modal for the next login
             Session.setPersistent('displayLastLoginModal', true);
@@ -97,6 +99,7 @@ Template.userAccountMenu.onCreated(function userAccountMenuCreated() {
                 // Remove the user by oldUserId from Reviewers
                 Meteor.call('removeUserFromReviewers', oldUser._id);
             }
+
             return;
         }
 

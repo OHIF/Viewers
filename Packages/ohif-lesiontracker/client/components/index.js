@@ -5,5 +5,4 @@ import './trialOptionsModal/irRCDescription.html';
 import './trialOptionsModal/recistDescription.html';
 
 import './trialOptionsModal/trialOptionsModal.html';
-import './trialOptionsModal/trialOptionsModal.styl';
 import './trialOptionsModal/trialOptionsModal.js';

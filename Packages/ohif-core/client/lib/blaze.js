@@ -51,3 +51,14 @@ OHIF.blaze.getParentTemplateView = view => {
         }
     }
 };
+
+// Get the view that contains the desired section's content and return it
+OHIF.blaze.getSectionContent = (view, sectionName) => {
+    let currentView = view;
+    while (!currentView._sectionMap || !currentView._sectionMap.get(sectionName)) {
+        currentView = OHIF.blaze.getParentTemplateView(currentView);
+        if (!currentView) return;
+    }
+
+    return currentView._sectionMap.get(sectionName);
+};
