@@ -1,82 +1,87 @@
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 
 Template.dialogProgress.onCreated(() => {
-  const instance = Template.instance();
+    const instance = Template.instance();
 
-  Session.set('progressDialogState', {
-    processed: 0,
-    total: instance.data.total,
-    message: instance.data.message
-  });
-})
+    instance.state = new ReactiveVar({
+        processed: 0,
+        total: instance.data.total,
+        message: instance.data.message
+    });
+});
 
 Template.dialogProgress.onRendered(() => {
-  const instance = Template.instance();
-  const task = instance.data.task;
-  const state = Session.get('progressDialogState');
+    const instance = Template.instance();
+    const task = instance.data.task;
 
-  const progressDialog = {
-    promise: instance.data.promise,
+    const progressDialog = {
+        promise: instance.data.promise,
 
-    done: value => {
-      // Hide the modal, removing the backdrop
-      instance.$('.modal').on('hidden.bs.modal', event => {
-        instance.data.promiseResolve(value);
-      }).modal('hide');
-    },
+        done: value => {
+            // Hide the modal, removing the backdrop
+            instance.$('.modal').on('hidden.bs.modal', event => {
+                instance.data.promiseResolve(value);
+            }).modal('hide');
+        },
 
-    cancel: () => {
-      // Hide the modal, removing the backdrop
-      instance.$('.modal').on('hidden.bs.modal', event => {
-        instance.data.promiseReject();
-      }).modal('hide');
-    },
+        cancel: () => {
+            // Hide the modal, removing the backdrop
+            instance.$('.modal').on('hidden.bs.modal', event => {
+                instance.data.promiseReject();
+            }).modal('hide');
+        },
 
-    update: _.throttle(processed => {
-      const state = Session.get('progressDialogState');
-      state.processed = Math.max(0, processed);
+        update: _.throttle(processed => {
+            const state = instance.state.get();
+            state.processed = Math.max(0, processed);
 
-      Session.set('progressDialogState', state);
-    }, 100),
+            instance.state.set(state);
+        }, 100),
 
-    setTotal: _.throttle(total => {
-      const state = Session.get('progressDialogState');
-      state.total = total;
+        setTotal: _.throttle(total => {
+            const state = instance.state.get();
+            state.total = total;
 
-      Session.set('progressDialogState', state);
-    }, 100),
+            instance.state.set(state);
+        }, 100),
 
-    setMessage: _.throttle(message => {
-      const state = Session.get('progressDialogState');
-      state.message = message;
+        setMessage: _.throttle(message => {
+            const state = instance.state.get();
+            state.message = message;
 
-      Session.set('progressDialogState', state);
-    }, 100)
-  }
+            instance.state.set(state);
+        }, 100)
+    };
 
-  task.run(progressDialog);
+    task.run(progressDialog);
 });
 
 Template.dialogProgress.helpers({
-  progress() {
-    const state = Session.get('progressDialogState');
+    progress() {
+        const instance = Template.instance();
+        const state = instance.state.get();
 
-    if (!state || !state.total) {
-      return 0;
+        if (!state || !state.total) {
+            return 0;
+        }
+
+        return Math.min(1, state.processed / state.total) * 100;
+    },
+
+    message() {
+        const instance = Template.instance();
+        const state = instance.state.get();
+
+        if (!state) {
+            return;
+        }
+
+        if (typeof state.message === 'function') {
+            return state.message(state);
+        }
+
+        return state.message;
     }
-
-    return Math.min(1, state.processed / state.total) * 100;
-  },
-
-  message() {
-    const state = Session.get('progressDialogState');
-  
-    if (!state) {
-      return;
-    }
-
-    return state.message;
-  }
-})
+});

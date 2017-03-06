@@ -1,4 +1,3 @@
-import './progressDialog';
 import './seriesDetailsModal';
 import './serverInformation';
 import './studyContextMenu';

@@ -19,7 +19,7 @@ Template.studylistToolbar.events({
         //  Get selected files located in the client machine
         const selectedFiles = $.map(event.currentTarget.files, value => value);
 
-        importStudies(selectedFiles);
+        OHIF.studylist.importStudies(selectedFiles);
     },
 
     'click .js-import-files'(event) {

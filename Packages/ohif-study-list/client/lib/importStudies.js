@@ -1,133 +1,126 @@
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
  * Imports selected studies from local into studylist
  * @param filesToImport Files located in the client machine to import
  */
-importStudies = function(filesToImport, importCallback) {
-    if (filesToImport.length < 1) {
-        return;
+OHIF.studylist.importStudies = filesToImport => {
+    const numberOfFiles = filesToImport && filesToImport.length;
+    if (!numberOfFiles) {
+        return new Promise((resolve, reject) => reject('No files to upload'));
     }
-    var fileUploadStatus = {
-        numberOfFilesUploaded: 0,
-        numberOfFilesFailed: 0
+
+    const uploadMessage = ({ processed, total }) => `Uploaded files: ${processed} / ${total}`;
+
+    const taskRunHandler = dialog => {
+        const uploadErrorHandler = fileNames => {
+            const names = fileNames.join('; ');
+            dialog.setMessage(`Failed to upload files: ${names}`);
+        };
+
+        const uploadSuccessHandler = studiesToImport => {
+            importStudiesInternal(studiesToImport, dialog).then(() => {
+                dialog.done();
+            }).catch(errorMessage => {
+                dialog.setMessage(errorMessage);
+            });
+        };
+
+        uploadFiles(filesToImport, dialog).then(uploadSuccessHandler).catch(uploadErrorHandler);
     };
-    var numberOfFilesToUpload = filesToImport.length;
-    var studiesToImport = [];
-    OHIF.studylist.progressDialog.show({
-        title: "Uploading Files...",
-        numberOfCompleted: 0,
-        numberOfTotal: numberOfFilesToUpload
-    });
 
-    //  Upload files to the server
-    filesToImport.forEach(function(fileToUpload) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', "/uploadFilesToImport", true);
-        xhr.setRequestHeader("filename", fileToUpload.name);
-
-        xhr.onload = function() {
-            //  Failed to upload a file
-            if (xhr.readyState === 4 && xhr.status !== 200) {
-                updateFileUploadStatus(fileUploadStatus, false);
-                return;
-            }
-
-            studiesToImport.push(xhr.responseText);
-
-            updateFileUploadStatus(fileUploadStatus, true);
-
-            var numberOfFilesProcessedToUpload = fileUploadStatus.numberOfFilesUploaded + fileUploadStatus.numberOfFilesFailed;
-            OHIF.studylist.progressDialog.update(numberOfFilesProcessedToUpload);
-
-            if (numberOfFilesToUpload === numberOfFilesProcessedToUpload) {
-                //  The upload is completed, so import files
-                importStudiesInternal(studiesToImport, importCallback);
-
-                if (fileUploadStatus.numberOfFilesFailed > 0) {
-                    //TODO: Some files failed to upload, so let user know
-                    OHIF.log.info("Failed to upload " + fileUploadStatus.numberOfFilesFailed + " of " + numberOfFilesToUpload + " files");
-                }
-            }
-        };
-
-        //  Failed to upload a file
-        xhr.onerror = function() {
-            updateFileUploadStatus(fileUploadStatus, false);
-        };
-
-        xhr.send(fileToUpload);
+    return OHIF.ui.showDialog('dialogProgress', {
+        title: 'Importing Studies...',
+        message: uploadMessage,
+        total: numberOfFiles,
+        task: { run: taskRunHandler }
     });
 };
 
-function updateFileUploadStatus(fileUploadStatus, isSuccess) {
-    if (!isSuccess) {
-        fileUploadStatus.numberOfFilesFailed++;
-    } else {
-        fileUploadStatus.numberOfFilesUploaded++;
-    }
-}
-function importStudiesInternal(studiesToImport, importCallback) {
-    if (!studiesToImport) {
-        return;
-    }
+const uploadFiles = (files, dialog) => {
+    let processed = 0;
 
-    var numberOfStudiesToImport = studiesToImport.length;
+    const promise = new Promise((resolve, reject) => {
+        const promises = [];
 
-    OHIF.studylist.progressDialog.show({
-        title: "Importing Studies...",
-        numberOfCompleted: 0,
-        numberOfTotal: numberOfStudiesToImport
-    });
-
-    //  Create/Insert a new study import status item
-    Meteor.call("createStudyImportStatus", function(err, studyImportStatusId) {
-        if (err) {
-            // Hide dialog
-            OHIF.studylist.progressDialog.close();
-            console.log(err.message);
-            return;
-        }
-
-        //  Handle when StudyImportStatus collection is updated
-        OHIF.studylist.collections.StudyImportStatus.find(studyImportStatusId).observe({
-            changed: function(studyImportStatus) {
-                if (!studyImportStatus) {
-                    return;
-                }
-
-                var numberOfStudiesProcessedToImport = studyImportStatus.numberOfStudiesImported + studyImportStatus.numberOfStudiesFailed;
-
-                // Show number of imported files
-                var successMessage = 'Imported '+studyImportStatus.numberOfStudiesImported+' of '+numberOfStudiesToImport;
-                OHIF.studylist.progressDialog.setMessage({
-                    message: successMessage,
-                    messageType: 'success'
-                });
-                OHIF.studylist.progressDialog.update(numberOfStudiesProcessedToImport);
-
-                // Show number of failed files if there is at least one failed file
-                if (studyImportStatus.numberOfStudiesFailed > 0) {
-                    var successMessage = 'Failed '+studyImportStatus.numberOfStudiesFailed+' of '+numberOfStudiesToImport;
-                    OHIF.studylist.progressDialog.setMessage({
-                        message: successMessage,
-                        messageType: 'warning'
-                    });
-                }
-
-                if (numberOfStudiesProcessedToImport == numberOfStudiesToImport) {
-                    //  The entire import operation is completed, so remove the study import status item
-                    Meteor.call("removeStudyImportStatus", studyImportStatus._id);
-
-                    //  Let the caller know that import operation is completed
-                    if (importCallback) {
-                        importCallback();
-                    }
-                }
-            }
+        //  Upload files to the server
+        files.forEach(file => {
+            const filePromise = uploadFile(file, dialog);
+            filePromise.then(() => dialog.update(++processed));
+            promises.push(filePromise);
         });
 
-        //  Import studies with study import status id to get callbacks
-        Meteor.call("importStudies", studiesToImport, studyImportStatusId);
+        Promise.all(promises).then(resolve).catch(reject);
     });
-}
+
+    return promise;
+};
+
+const uploadFile = file => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/uploadFilesToImport', true);
+        xhr.setRequestHeader('filename', file.name);
+
+        xhr.onload = () => {
+            if (xhr.readyState === 4 && xhr.status !== 200) {
+                // Failed to upload the file
+                reject(file.name);
+            } else {
+                // Success uploading the file
+                resolve(xhr.responseText);
+            }
+        };
+
+        // Failed to upload the file
+        xhr.onerror = () => reject(file.name);
+
+        xhr.send(file);
+    });
+};
+
+const importStudiesInternal = (studiesToImport, dialog) => {
+    const numberOfStudies = studiesToImport && studiesToImport.length;
+    if (!numberOfStudies) {
+        return new Promise((resolve, reject) => reject('No studies to import'));
+    }
+
+    let processed = 0;
+    dialog.update(processed);
+    dialog.setTotal(numberOfStudies);
+    dialog.setMessage(({ processed, total }) => `Imported: ${processed} / ${total}`);
+
+    return new Promise((resolve, reject) => {
+        //  Create/Insert a new study import status item
+        Meteor.call('createStudyImportStatus', (error, studyImportStatusId) => {
+            if (error) {
+                return reject(error.message);
+            }
+
+            //  Handle when StudyImportStatus collection is updated
+            OHIF.studylist.collections.StudyImportStatus.find(studyImportStatusId).observe({
+                changed(studyImportStatus) {
+                    const { numberOfStudiesImported, numberOfStudiesFailed } = studyImportStatus;
+                    dialog.update(numberOfStudiesImported);
+
+                    if (numberOfStudiesImported === numberOfStudies) {
+                        //  The entire import operation is completed, so remove the study import status item
+                        Meteor.call('removeStudyImportStatus', studyImportStatus._id);
+
+                        // Show number of failed files if there is at least one failed file
+                        if (studyImportStatus.numberOfStudiesFailed > 0) {
+                            const failed = numberOfStudiesFailed;
+                            reject(`Failed to import ${failed} of ${numberOfStudies} studies`);
+                        } else {
+                            resolve();
+                        }
+                    }
+                }
+            });
+
+            //  Import studies with study import status id to get callbacks
+            Meteor.call('importStudies', studiesToImport, studyImportStatusId);
+        });
+    });
+};

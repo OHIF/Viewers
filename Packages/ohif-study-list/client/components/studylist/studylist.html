@@ -2,7 +2,7 @@
     <div id="studylistTabs" class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="studylistTab">
             <div class="studylistContainer">
-                {{> studylistResult (clone this)}}
+                {{>studylistResult (clone this)}}
             </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="viewerTab">
@@ -11,7 +11,6 @@
         </div>
     </div>
     {{#each templateName in additionalTemplates}}
-        {{> UI.dynamic template=templateName}}
+        {{>Template.dynamic template=templateName}}
     {{/each}}
-    {{>progressDialog}}
 </template>
