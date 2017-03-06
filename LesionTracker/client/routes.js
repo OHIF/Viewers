@@ -16,9 +16,7 @@ Router.configure({
 Router.onBeforeAction('loading');
 
 const data = {
-    additionalTemplates: [
-        'viewSeriesDetailsModal'
-    ]
+    additionalTemplates: []
 };
 
 const routerOptions = { data };

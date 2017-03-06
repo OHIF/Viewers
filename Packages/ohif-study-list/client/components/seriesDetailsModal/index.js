@@ -1,4 +1,4 @@
-import './viewSeriesDetailsModal.html';
+import './seriesDetailsModal.html';
 
 import './seriesDetailsTable/seriesDetailsTable.html';
 import './seriesDetailsTable/seriesDetailsTable.styl';

@@ -67,9 +67,7 @@ function viewSeriesDetails() {
         return;
     }
 
-    Modal.show('viewSeriesDetailsModal', {
-        selectedStudies: selectedStudies
-    });
+    OHIF.ui.showDialog('seriesDetailsModal', { selectedStudies });
 }
 
 Template.studyContextMenu.events({
