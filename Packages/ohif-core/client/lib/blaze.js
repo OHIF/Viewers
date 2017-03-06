@@ -40,3 +40,14 @@ OHIF.blaze.getParentComponent = (view, property='_component') => {
         }
     }
 };
+
+// Search for the parent template of the given view
+OHIF.blaze.getParentTemplateView = view => {
+    let currentView = view;
+    while (currentView) {
+        currentView = currentView.originalParentView || currentView.parentView;
+        if (currentView.name.indexOf('Template.') > -1) {
+            return currentView;
+        }
+    }
+};

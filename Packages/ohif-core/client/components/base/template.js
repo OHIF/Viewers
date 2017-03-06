@@ -65,7 +65,6 @@ Template.baseComponent.constructView = function(contentFunc, elseFunc) {
 
             // Iterate over all wrappers and assign the component to them
             wrapperInstances.forEach(wrapperInstance => {
-                wrapperInstance.view._wrapperComponent = instance.component;
                 wrapperInstance.component = instance.component;
             });
         });
