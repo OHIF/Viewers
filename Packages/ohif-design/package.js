@@ -5,12 +5,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.3.5.1');
+    api.versionsFrom('1.4.2.3');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
+
+    api.use('ohif:themes');
 
     api.addAssets('assets/theme-icons.png', 'client');
 
@@ -21,14 +23,7 @@ Package.onUse(function(api) {
         'styles/imports/spacings.styl',
         'styles/imports/variables.styl',
         'styles/imports/theming.styl',
-        'styles/imports/theme-icons.styl',
-        'styles/imports/themes/theme-tide.styl',
-        'styles/imports/themes/theme-tigerlily.styl',
-        'styles/imports/themes/theme-crickets.styl',
-        'styles/imports/themes/theme-honeycomb.styl',
-        'styles/imports/themes/theme-mint.styl',
-        'styles/imports/themes/theme-overcast.styl',
-        'styles/imports/themes/theme-quartz.styl'
+        'styles/imports/theme-icons.styl'
     ], 'client', {
         isImport: true
     });

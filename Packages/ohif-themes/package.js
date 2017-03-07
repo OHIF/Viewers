@@ -1,0 +1,16 @@
+Package.describe({
+    name: 'ohif:themes',
+    summary: 'OHIF Themes overridable package',
+    version: '0.0.1'
+});
+
+Package.onUse(function(api) {
+    api.versionsFrom('1.4.2.3');
+
+    api.use('stylus');
+
+    api.use('ohif:themes-common');
+
+    // Importable themes related variables
+    api.addFiles('themes.styl', 'client', { isImport: true });
+});
