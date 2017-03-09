@@ -1,6 +1,8 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Setup a Route using Iron Router to avoid Cross-origin resource sharing
 // (CORS) errors. We only handle this route on the Server.
-Router.route(Settings.uri, function() {
+Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
     const request = this.request;
     const response = this.response;
     const params = this.params;

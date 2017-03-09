@@ -11,6 +11,8 @@ Package.onUse(function(api) {
     api.use('standard-app-packages');
     api.use('iron:router@1.0.13');
 
+    api.use('ohif:core');
+
     api.addFiles('server/namespace.js');
     
     // Server-only

@@ -27,7 +27,7 @@ export function getWADORSImageId(instanceMetada) {
     }
 
     const image = {
-        uri: OHIF.utils.absoluteUrl(instance.wadorsuri),
+        uri: instance.wadorsuri,
         //imageId : '',
         //minPixelValue : 0,
         //maxPixelValue : 255,
