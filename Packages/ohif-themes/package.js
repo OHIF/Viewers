@@ -9,7 +9,7 @@ Package.onUse(function(api) {
 
     api.use('stylus');
 
-    api.use('ohif:themes-common');
+    api.use('ohif:themes-common', 'client');
 
     // Importable themes related variables
     api.addFiles('themes.styl', 'client', { isImport: true });

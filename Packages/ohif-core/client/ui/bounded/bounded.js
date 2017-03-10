@@ -1,3 +1,5 @@
+import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 // Allow attaching to jQuery selectors
@@ -60,6 +62,19 @@ class Bounded {
 
         // Add the bounded class to the element
         this.$element.addClass('bounded');
+
+        // Handle the positioning on window resize
+        const $window = $(window);
+        const windowResizeHandler = () => {
+            // Check if the element is still in DOM and remove the handler if it is not
+            if (!this.$element.closest(document.documentElement).length) {
+                $window.off('resize', windowResizeHandler);
+            }
+
+            this.$element.trigger('spatialChanged');
+        };
+
+        $window.on('resize', windowResizeHandler);
 
         // Trigger the bounding check for the first timepoint
         setTimeout(() => this.$element.trigger('spatialChanged'));

@@ -97,6 +97,8 @@ ohif:log@0.0.1
 ohif:measurements@0.0.1
 ohif:metadata@0.0.1
 ohif:study-list@0.0.1
+ohif:themes@0.0.1
+ohif:themes-common@0.0.1
 ohif:user-management@0.0.1
 ohif:viewerbase@0.0.1
 ohif:wadoproxy@0.0.1

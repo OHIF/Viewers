@@ -76,6 +76,9 @@ class Mixin {
     static initData(data) {
         // Split the mixins by space
         const mixinsArray = data.mixins.split(' ');
+
+        // Control and ignore the mixins that have already been applied
+        const appliedOnData = [];
         _.each(mixinsArray, mixinName => {
             // Ignore blank strings
             if (!mixinName) {
@@ -86,7 +89,7 @@ class Mixin {
             const mixin = Mixin.getMixin(mixinName);
 
             // Initialize the data manipulation composition
-            mixin.init(null, data, [], ['onData']);
+            mixin.init(null, data, appliedOnData, ['onData']);
         });
     }
 
@@ -94,6 +97,10 @@ class Mixin {
     static initAll(template, data) {
         // Split the mixins by space
         const mixinsArray = data.mixins.split(' ');
+
+        // Control and ignore the mixins that have already been applied
+        const appliedCommon = [];
+        const appliedOnMixins = [];
         _.each(mixinsArray, mixinName => {
             // Ignore blank strings
             if (!mixinName) {
@@ -104,10 +111,10 @@ class Mixin {
             const mixin = Mixin.getMixin(mixinName);
 
             // Initialize blaze default compositions
-            mixin.init(template, data, [], ['onCreated', 'onRendered', 'onDestroyed', 'events', 'helpers']);
+            mixin.init(template, data, appliedCommon, ['onCreated', 'onRendered', 'onDestroyed', 'events', 'helpers']);
 
             // Execute some behaviors after all mixins are applied
-            mixin.init(template, data, [], ['onMixins']);
+            mixin.init(template, data, appliedOnMixins, ['onMixins']);
         });
     }
 

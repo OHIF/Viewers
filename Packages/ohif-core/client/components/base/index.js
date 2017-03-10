@@ -12,6 +12,7 @@ import './mixins/action.js';
 import './mixins/button.js';
 import './mixins/checkbox.js';
 import './mixins/component.js';
+import './mixins/dropdown.js';
 import './mixins/form.js';
 import './mixins/formItem.js';
 import './mixins/group.js';

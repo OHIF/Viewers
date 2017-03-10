@@ -1,8 +1,29 @@
 <template name="dropdownForm">
-    {{#form class='dropdown' api=this.api hideValidationBox=true}}
+    {{#form (extend this mixins='dropdown' class='dropdown' hideValidationBox=true)}}
         {{>dropdownBackdrop}}
-        <ul class="dropdown-menu">
-            {{>UI.contentBlock}}
+        <ul class="dropdown-menu {{this.options.menuClasses}}">
+            {{#if UI.contentBlock}}
+                {{>UI.contentBlock}}
+            {{else}}
+                {{#each item in this.items}}
+                    {{#if item.separatorBefore}}
+                        <li role="separator" class="divider"></li>
+                    {{/if}}
+                    <li class="{{#if item.disabled}}disabled{{/if}}">
+                        {{#link item}}
+                            {{#if item.iconClasses}}
+                                <i class="{{item.iconClasses}}"></i>
+                            {{/if}}
+                            {{#if item.text}}
+                                <span>{{item.text}}</span>
+                            {{/if}}
+                        {{/link}}
+                    </li>
+                    {{#if item.separatorAfter}}
+                        <li role="separator" class="divider"></li>
+                    {{/if}}
+                {{/each}}
+            {{/if}}
         </ul>
     {{/form}}
 </template>
