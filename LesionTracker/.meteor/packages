@@ -28,6 +28,7 @@ aldeed:simple-schema          # Third party package to deal with schemas
 # OHIF Packages
 ohif:design
 ohif:core
+ohif:header
 ohif:cornerstone
 ohif:viewerbase
 ohif:study-list

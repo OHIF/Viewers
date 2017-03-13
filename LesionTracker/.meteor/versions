@@ -92,6 +92,7 @@ ohif:cornerstone@0.0.1
 ohif:design@0.0.1
 ohif:dicom-services@0.0.1
 ohif:hanging-protocols@0.0.1
+ohif:header@0.0.1
 ohif:lesiontracker@0.0.1
 ohif:log@0.0.1
 ohif:measurements@0.0.1

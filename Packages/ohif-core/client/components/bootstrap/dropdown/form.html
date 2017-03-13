@@ -1,6 +1,5 @@
 <template name="dropdownForm">
     {{#form (extend this mixins='dropdown' class='dropdown' hideValidationBox=true)}}
-        {{>dropdownBackdrop}}
         <ul class="dropdown-menu {{this.options.menuClasses}}">
             {{#if UI.contentBlock}}
                 {{>UI.contentBlock}}
@@ -11,8 +10,13 @@
                     {{/if}}
                     <li class="{{#if item.disabled}}disabled{{/if}}">
                         {{#link item}}
-                            {{#if item.iconClasses}}
-                                <i class="{{item.iconClasses}}"></i>
+                            {{#if item.icon}}
+                                <i class="{{item.icon}} {{item.iconClasses}}"></i>
+                            {{/if}}
+                            {{#if item.iconSvgUse}}
+                                <svg class="{{item.iconClasses}}">
+                                    <use xlink:href={{absoluteUrl item.iconSvgUse}}></use>
+                                </svg>
                             {{/if}}
                             {{#if item.text}}
                                 <span>{{item.text}}</span>

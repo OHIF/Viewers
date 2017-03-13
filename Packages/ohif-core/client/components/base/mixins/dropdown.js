@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
+import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 /*
@@ -11,7 +12,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
     composition: {
         onRendered() {
             const instance = Template.instance();
-            const { event, centered } = instance.data.options;
+            const { event, centered, marginTop } = instance.data.options;
 
             // Destroy the Blaze created view (either created with template calls or with renderWithData)
             instance.destroyView = () => {
@@ -22,6 +23,12 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 }
             };
 
+            // Stop here and destroy the view if no items was given
+            if (!instance.data.items.length) {
+                instance.data.promiseReject();
+                return instance.destroyView();
+            }
+
             // Get the dropdown element to enable position manipulation
             const $dropdown = instance.$('.dropdown');
             const dropdown = $dropdown[0];
@@ -29,20 +36,22 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
 
             dropdown.oncontextmenu = () => false;
 
-            const cssBefore = {
-                'z-index': 10000
-            };
+            const cssBefore = { 'z-index': 10000 };
             if (event) {
                 cssBefore.position = 'fixed';
                 $dropdownMenu.bounded();
             }
 
-            $dropdownMenu.css(cssBefore).focus();
+            if (marginTop) {
+                cssBefore['margin-top'] = marginTop;
+            }
+
+            $dropdownMenu.css(cssBefore);
 
             // Postpone visibility change to allow CSS transitions
             Meteor.defer(() => {
-                // Show the dropdown
-                $dropdown.addClass('open');
+                // Show the dropdown and focus the first option
+                $dropdown.addClass('open').find('a:first').focus();
 
                 // Change the dropdown position if mouse event was given
                 if (event) {
@@ -62,9 +71,18 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
         },
 
         events: {
-            'click .form-action.disabled'(event, instance) {
-                event.preventDefault();
+            'click .form-action'(event, instance) {
                 event.stopPropagation();
+                const $target = $(event.currentTarget);
+                const isDisabled = $target.hasClass('disabled');
+                if (isDisabled) {
+                    instance.data.promiseReject();
+                } else {
+                    const component = $target.data('component');
+                    instance.data.promiseResolve(component.actionResult);
+                }
+
+                instance.destroyView();
             },
 
             'click .dropdown'(event, instance) {
@@ -73,8 +91,19 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                     event.preventDefault();
                     event.stopPropagation();
                 } else {
+                    instance.data.promiseReject();
                     instance.destroyView();
                 }
+            },
+
+            'blur .dropdown'(event, instance) {
+                Meteor.defer(() => {
+                    const $focus = $(':focus');
+                    if (!$focus.length || !$.contains(event.currentTarget, $focus[0])) {
+                        instance.data.promiseReject();
+                        instance.destroyView();
+                    }
+                });
             }
         }
     }

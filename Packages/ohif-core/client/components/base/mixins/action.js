@@ -31,14 +31,17 @@ OHIF.mixins.action = new OHIF.Mixin({
 
                 // Stop here calling the action if it's a function
                 if (typeof action === 'function') {
-                    return action.call(this, params);
+                    component.actionResult = action.call(this, params);
+                    return component.actionResult;
                 }
 
                 // Stop here if no API or action was defined
                 if (!api || !action || typeof api[action] !== 'function') return;
 
                 // Call the defined action function
-                api[action].call(this, params);
+                component.actionResult = api[action].call(this, params);
+
+                return component.actionResult;
             }
         }
     }

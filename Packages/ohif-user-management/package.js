@@ -25,33 +25,17 @@ Package.onUse(function(api) {
     api.use('ohif:core');
     api.use('ohif:study-list');
 
+    // Main module
+    api.mainModule('main.js', ['client', 'server']);
+
     // Load icons
     api.addAssets('assets/user-menu-icons.svg', 'client');
 
     api.addFiles('both/collections.js', ['client', 'server']);
     //api.addFiles('both/schema/reviewers.js', ['client', 'server']);
 
-    api.addFiles('client/components/userAccountMenu/userAccountMenu.html', 'client');
-    api.addFiles('client/components/userAccountMenu/userAccountMenu.styl', 'client');
-    api.addFiles('client/components/userAccountMenu/userAccountMenu.js', 'client');
-
-    api.addFiles('client/active-entry/activeEntry.styl', 'client');
-    api.addFiles('client/active-entry/activeEntry.js', 'client');
-    api.addFiles('client/active-entry/activeEntrySignIn.js', 'client');
-
-    api.addFiles('client/subscriptions.js', 'client');
-
-    api.addFiles('client/components/emailVerification/emailVerification.html', 'client');
-    api.addFiles('client/components/emailVerification/emailVerification.styl', 'client');
-    api.addFiles('client/components/emailVerification/emailVerification.js', 'client');
-
-    api.addFiles('client/components/hipaaLogPage/hipaaLogPage.styl', 'client');
-    api.addFiles('client/components/hipaaLogPage/hipaaLogPage.js', 'client');
-
-    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.html', 'client');
-    api.addFiles('client/components/timeoutCountdownDialog/timeoutCountdownDialog.js', 'client');
-
-    api.addFiles('client/components/lastLoginModal/lastLoginModal.html', 'client');
+    // Client imports
+    api.addFiles('client/index.js', 'client');
 
     api.addFiles('server/createDemoUser.js', [ 'server' ]);
     api.addFiles('server/reviewers.js', [ 'server' ]);

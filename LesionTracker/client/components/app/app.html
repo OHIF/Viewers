@@ -1,24 +1,26 @@
 <template name="app">
-    <div class="topBar noselect {{#if onStudyList}}studyList{{/if}}">
-        <div class="clearfix">
-            <a target='_blank'
-               class="brandSection pull-left"
-               href="http://ohif.org">
-                <svg class="logoImage">
-                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
-                </svg>
-                <div class="logoText">Open Health Imaging Foundation</div>
-            </a>
+    {{#header brandHref='http://ohif.org' headerClasses=instance.headerClasses}}
+        {{#section 'brand'}}
+            <svg class="logo-image">
+                <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
+            </svg>
+            <div class="logo-text">Open Health Imaging Foundation</div>
+        {{/section}}
+        {{#section 'headerAfterBrand'}}
             {{#if studyListToggleText}}
                 <a class="btn studyListLinkSection pull-left js-toggle-studyList" id="{{dasherize studyListToggleText}}-btn">
                     {{studyListToggleText}}
                 </a>
             {{/if}}
-            <div class="userAccountSection pull-right">
-                {{>userAccountMenu}}
+        {{/section}}
+        {{#section 'headerMenu'}}
+            <span class="user-name pull-left m-r-1">{{userName}}</span>
+            <div class="menu-toggle pull-right">
+                <i class="fa fa-cog"></i>
+                <span class="caret-down"></span>
             </div>
-        </div>
-    </div>
+        {{/section}}
+    {{/header}}
     <div id="studylistTabs" class="tab-content">
         <div class="tab-pane active" id="studylistTab">
             <div class="studylistContainer">

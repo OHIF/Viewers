@@ -15,7 +15,6 @@ import './dialog/simple.js';
 import './dialog/unsavedChangesDialog.html';
 import './dialog/unsavedChangesDialog.js';
 
-import './dropdown/backdrop.html';
 import './dropdown/form.html';
 
 import './form/button.html';

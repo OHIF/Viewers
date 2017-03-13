@@ -1,0 +1,23 @@
+@import "{ohif:design}/app"
+
+body>.header
+  height: $topBarHeight
+  padding: 10px 10px 0
+  theme('color', '$textPrimaryColor')
+  theme('background-color', '$primaryBackgroundColor')
+  transition(all 0.5s ease)
+
+  &>.clearfix
+    position: relative
+
+  .header-menu
+    padding: 4px 0
+    font-size: 13px
+    font-weight: 400
+    line-height: 18px
+    text-decoration: none
+    theme('color', '$defaultColor')
+
+  &.header-big
+    height: $topBarExpandedHeight
+    background-color: rgba(21, 25, 30, 0.7)

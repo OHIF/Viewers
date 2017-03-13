@@ -9,11 +9,16 @@ Package.onUse(function(api) {
 
     // Meteor packages
     api.use('ecmascript');
+    api.use('templating');
+    api.use('underscore');
     api.use('stylus');
 
     // OHIF dependencies
     api.use('ohif:core', 'client');
 
+    // Main module
+    api.mainModule('main.js', 'client');
+
     // Client imports
-    api.addFiles('index.js', 'client');
+    api.addFiles('client/index.js', 'client');
 });
