@@ -13,26 +13,42 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
         onRendered() {
             const instance = Template.instance();
             const { event, centered, marginTop } = instance.data.options;
-
-            // Destroy the Blaze created view (either created with template calls or with renderWithData)
-            instance.destroyView = () => {
-                if (typeof instance.data.destroyView === 'function') {
-                    instance.data.destroyView();
-                } else {
-                    Blaze.remove(instance.view);
-                }
-            };
-
-            // Stop here and destroy the view if no items was given
-            if (!instance.data.items.length) {
-                instance.data.promiseReject();
-                return instance.destroyView();
-            }
-
             // Get the dropdown element to enable position manipulation
             const $dropdown = instance.$('.dropdown');
             const dropdown = $dropdown[0];
             const $dropdownMenu = $dropdown.children('.dropdown-menu');
+
+            // Destroy the Blaze created view (either created with template calls or with renderWithData)
+            instance.destroyView = () => {
+                const destroyHandle = () => {
+                    if (typeof instance.data.destroyView === 'function') {
+                        instance.data.destroyView();
+                    } else {
+                        Blaze.remove(instance.view);
+                    }
+                };
+
+                const timeout = setTimeout(destroyHandle, 500);
+                $dropdownMenu.one('transitionend', () => {
+                    destroyHandle();
+                    clearTimeout(timeout);
+                });
+                $dropdown.removeClass('open');
+            };
+
+            // Destroy the view when the promise is fullfilled
+            instance.data.promise.then(instance.destroyView, instance.destroyView);
+
+            // Close the dropdown resolving or rejecting the promise
+            instance.close = (isResolve, result) => {
+                const method = instance.data[isResolve ? 'promiseResolve' : 'promiseReject'];
+                method(result);
+            };
+
+            // Stop here and destroy the view if no items was given
+            if (!instance.data.items.length) {
+                return instance.close(false);
+            }
 
             dropdown.oncontextmenu = () => false;
 
@@ -76,13 +92,11 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 const $target = $(event.currentTarget);
                 const isDisabled = $target.hasClass('disabled');
                 if (isDisabled) {
-                    instance.data.promiseReject();
+                    instance.close(false);
                 } else {
                     const component = $target.data('component');
-                    instance.data.promiseResolve(component.actionResult);
+                    instance.close(true, component.actionResult);
                 }
-
-                instance.destroyView();
             },
 
             'click .dropdown'(event, instance) {
@@ -91,8 +105,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                     event.preventDefault();
                     event.stopPropagation();
                 } else {
-                    instance.data.promiseReject();
-                    instance.destroyView();
+                    instance.close(false);
                 }
             },
 
@@ -100,8 +113,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 Meteor.defer(() => {
                     const $focus = $(':focus');
                     if (!$focus.length || !$.contains(event.currentTarget, $focus[0])) {
-                        instance.data.promiseReject();
-                        instance.destroyView();
+                        instance.close(false);
                     }
                 });
             }

@@ -1,9 +1,16 @@
 @import "{ohif:design}/app"
 
 .dropdown
+  cursor: default
   outline: none
 
   ul.dropdown-menu
+    display: block
+    transform(scale(0))
+    transition(transform 0.3s ease)
+
+    &.dropdown-menu-right
+      transform-origin(100% 0%)
 
     li.divider
       margin: 4px 0
@@ -17,3 +24,6 @@
         max-width: 18px
         max-height: 18px
         vertical-align: middle
+
+  &.open ul.dropdown-menu
+    transform(scale(1))
