@@ -7,8 +7,8 @@ Template.header.onCreated(() => {
 
     instance.dropdownItems = [];
     instance.autorun(() => {
-        OHIF.header.dropdownObserver.depend();
-        instance.dropdownItems = OHIF.header.getDropdownItems();
+        OHIF.header.dropdown.observer.depend();
+        instance.dropdownItems = OHIF.header.dropdown.getItems();
     });
 });
 

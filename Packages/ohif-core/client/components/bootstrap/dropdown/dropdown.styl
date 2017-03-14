@@ -6,8 +6,12 @@
 
   ul.dropdown-menu
     display: block
+    z-index: 1000
     transform(scale(0))
     transition(transform 0.3s ease)
+
+    &.dropdown-menu-left
+      transform-origin(0% 0%)
 
     &.dropdown-menu-right
       transform-origin(100% 0%)

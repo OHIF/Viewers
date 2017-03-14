@@ -1,10 +1,10 @@
 import { OHIF } from 'meteor/ohif:core';
-import { Header } from './client/lib/header';
 
 /*
  * Defines the base OHIF header object
  */
-const header = new Header();
+const dropdown = new OHIF.ui.Dropdown();
+const header = { dropdown };
 
 OHIF.header = header;
 

@@ -42,7 +42,8 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
             // Close the dropdown resolving or rejecting the promise
             instance.close = (isResolve, result) => {
                 const method = instance.data[isResolve ? 'promiseResolve' : 'promiseReject'];
-                method(result);
+                const param = result instanceof Promise ? null : result;
+                method(param);
             };
 
             // Stop here and destroy the view if no items was given
@@ -52,7 +53,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
 
             dropdown.oncontextmenu = () => false;
 
-            const cssBefore = { 'z-index': 10000 };
+            const cssBefore = {};
             if (event) {
                 cssBefore.position = 'fixed';
                 $dropdownMenu.bounded();

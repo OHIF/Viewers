@@ -20,11 +20,12 @@ OHIF.mixins.action = new OHIF.Mixin({
                 event.preventDefault();
                 const component = instance.component;
 
-                // Extract action, params and disabled state
-                const { action, params, disabled } = instance.data;
+                // Extract action, disabled state and params
+                const { action } = instance.data;
+                const params = instance.data.params ? instance.data.params : event;
 
                 // Stop here if the component is disabled
-                if (disabled) return;
+                if (component.$element.hasClass('disabled')) return;
 
                 // Get the current component's API
                 const api = component.getApi();

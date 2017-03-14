@@ -15,7 +15,7 @@ Template.app.onCreated(() => {
 
     ViewerData = Session.get('ViewerData') || {};
 
-    OHIF.header.setDropdownItems([{
+    OHIF.header.dropdown.setItems([{
         action: OHIF.user.audit,
         text: 'View Audit Log',
         iconClasses: 'log',

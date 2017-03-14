@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { Blaze } from 'meteor/blaze';
 import { OHIF } from 'meteor/ohif:core';
 
 // Maybe we should use regular StudyList collection?
@@ -45,7 +48,7 @@ function doUnselectRow(studyRow, data) {
     studyRow.removeClass('active');
 }
 
-function handleShiftClick(studyRow, data) {
+function handleShiftClick($studyRow, data) {
     //OHIF.log.info('shiftKey');
 
     let study, previous = StudyList.previouslySelected ? $(StudyList.previouslySelected) : null;
@@ -59,49 +62,49 @@ function handleShiftClick(studyRow, data) {
 
     // Select all rows in between these two rows
     if (previous) {
-        let rowsInBetween;
-        if (previous.index() < studyRow.index()) {
+        let $rowsInBetween;
+        if (previous.index() < $studyRow.index()) {
             // The previously selected row is above (lower index) the
             // currently selected row.
 
             // Fill in the rows upwards from the previously selected row
-            rowsInBetween = previous.nextAll('tr');
-        } else if (previous.index() > studyRow.index()) {
+            $rowsInBetween = previous.nextAll('tr');
+        } else if (previous.index() > $studyRow.index()) {
             // The previously selected row is below the currently
             // selected row.
 
             // Fill in the rows upwards from the previously selected row
-            rowsInBetween = previous.prevAll('tr');
+            $rowsInBetween = previous.prevAll('tr');
         } else {
-            // nothing to do since previous.index() === studyRow.index()
+            // nothing to do since previous.index() === $studyRow.index()
             // the user is shift-clicking the same row...
             return;
         }
 
         // Loop through the rows in between current and previous selected studies
-        rowsInBetween.each(function() {
-            let row = $(this);
+        $rowsInBetween.forEach(row => {
+            const $row = $(row);
 
-            if (row.hasClass('active')) {
+            if ($row.hasClass('active')) {
                 // If we find one that is already selected, do nothing
                 return;
             }
 
             // Get the relevant studyInstanceUid
-            let studyInstanceUid = row.attr('studyInstanceUid');
+            let studyInstanceUid = $row.attr('studyInstanceUid');
 
             // Retrieve the data context through Blaze
             let data = Blaze.getData(this);
 
             // Set the current study as selected
-            doSelectRow(row, data);
+            doSelectRow($row, data);
 
-            // When we reach the currently clicked-on row, stop the loop
-            return !row.is(studyRow);
+            // When we reach the currently clicked-on $row, stop the loop
+            return !$row.is($studyRow);
         });
     } else {
         // Set the current study as selected
-        doSelectSingleRow(studyRow, data);
+        doSelectSingleRow($studyRow, data);
     }
 }
 
@@ -139,59 +142,58 @@ Template.studylistStudy.onRendered(function() {
 });
 
 Template.studylistStudy.events({
-    'click tr.studylistStudy': function(e) {
-        var studyRow = $(e.currentTarget);
-        var data = this;
+    'click tr.studylistStudy'(event, instance) {
+        const $studyRow = $(event.currentTarget);
+        const data = instance.data;
 
         // Remove the ID so we can directly insert this into our client-side collection
         delete data._id;
 
-        if (e.shiftKey) {
-            handleShiftClick(studyRow, data);
-        } else if (e.ctrlKey || e.metaKey) {
-            handleCtrlClick(studyRow, data);
+        if (event.shiftKey) {
+            handleShiftClick($studyRow, data);
+        } else if (event.ctrlKey || event.metaKey) {
+            handleCtrlClick($studyRow, data);
         } else {
-            doSelectSingleRow(studyRow, data);
+            doSelectSingleRow($studyRow, data);
         }
     },
-    'mousedown tr.studylistStudy': function(e) {
+
+    'mousedown tr.studylistStudy'(event, instance) {
         // This event handler is meant to handle middle-click on a study
-        if (e.which !== 2) {
+        if (event.which !== 2) {
             return;
         }
 
-        var data = this;
-        var middleClickOnStudy = StudyList.callbacks.middleClickOnStudy;
+        const middleClickOnStudy = StudyList.callbacks.middleClickOnStudy;
         if (middleClickOnStudy && typeof middleClickOnStudy === 'function') {
-            middleClickOnStudy(data);
+            middleClickOnStudy(instance.data);
         }
     },
-    'dblclick tr.studylistStudy, doubletap tr.studylistStudy': function(e) {
-        if (e.which !== undefined && e.which !== 1) {
+
+    'dblclick tr.studylistStudy, doubletap tr.studylistStudy'(event, instance) {
+        if (event.which !== undefined && event.which !== 1) {
             return;
         }
 
-        var data = this;
-        var dblClickOnStudy = StudyList.callbacks.dblClickOnStudy;
+        const dblClickOnStudy = StudyList.callbacks.dblClickOnStudy;
 
         if (dblClickOnStudy && typeof dblClickOnStudy === 'function') {
-            dblClickOnStudy(data);
+            dblClickOnStudy(instance.data);
         }
     },
-    'contextmenu tr.studylistStudy, press tr.studylistStudy': function(e, template) {
 
-        var studyRow = $(e.currentTarget),
-            data = this;
+    'contextmenu tr.studylistStudy, press tr.studylistStudy'(event, instance) {
+        const $studyRow = $(event.currentTarget);
 
-        if (!isStudySelected(data)) {
-            doSelectSingleRow(studyRow, data);
+        if (!isStudySelected(instance.data)) {
+            doSelectSingleRow($studyRow, instance.data);
         }
 
-        if (typeof openStudyContextMenu === 'function') {
-            e.preventDefault();
-            openStudyContextMenu(e, template);
-            return false;
-        }
+        event.preventDefault();
+        OHIF.ui.showDropdown(OHIF.studylist.dropdown.getItems(), {
+            event,
+            menuClasses: 'dropdown-menu-left'
+        });
+        return false;
     }
-
 });
