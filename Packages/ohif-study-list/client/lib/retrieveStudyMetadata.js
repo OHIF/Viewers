@@ -58,6 +58,9 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
             // Once the data was retrieved, the series are sorted by series and instance number
             OHIF.viewerbase.sortStudy(study);
 
+            // Updates WADO-RS metaDataManager
+            OHIF.viewerbase.updateMetaDataManager(study);
+
             // Add additional metadata to our study from the studylist
             const studylistStudy = StudyListStudies.findOne({
                 studyInstanceUid: study.studyInstanceUid

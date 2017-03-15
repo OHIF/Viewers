@@ -13,5 +13,5 @@ export function getWADORSImageUrl(instance, frame) {
     //       Example: WADOProxy.convertURL(baseWadoRsUri + '/frame/' + frame)
     wadorsuri = wadorsuri.replace(/(%2Fframes%2F)(\d+)/, `$1${frame}`);
 
-    return Meteor.absoluteUrl(wadorsuri);
+    return wadorsuri;
 }
