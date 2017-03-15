@@ -1,100 +1,82 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { OHIF } from 'meteor/ohif:core';
 
-// Maybe we should use regular StudyList collection?
-StudyListSelectedStudies = new Meteor.Collection(null);
-StudyListSelectedStudies._debugName = 'StudyListSelectedStudies';
-
-function isStudySelected(study) {
-    // Search StudyListSelectedStudies for given study and return true if found
-    let count = StudyListSelectedStudies.find({
-        studyInstanceUid: study.studyInstanceUid
-    }).count();
-    return count > 0;
-}
-
+// Clear all selected studies
 function doClearStudySelections() {
-    // Clear all selected studies
-    StudyListSelectedStudies.remove({});
-    $('tr.studylistStudy').removeClass('active');
+    OHIF.studylist.collections.Studies.update({}, {
+        $set: { selected: false }
+    }, { multi: true });
 }
 
-function doSelectRow(studyRow, data) {
-    // Insert current study into selection list if it's not there already...
-    if (!isStudySelected(data)) {
-        StudyListSelectedStudies.insert(data);
+function doSelectRow($studyRow, data) {
+    // Mark the current study as selected if it's not marked yet
+    if (!data.selected) {
+        const filter = { studyInstanceUid: data.studyInstanceUid };
+        const modifiers = { $set: { selected: true } };
+        OHIF.studylist.collections.Studies.update(filter, modifiers);
     }
-    // Make sure the study row has "active" class
-    studyRow.addClass('active');
-    // Set this as the previously selected row, so the user can
-    // use Shift to select from this point onwards
-    StudyList.previouslySelected = studyRow;
+
+    // Set it as the previously selected row, so the user can use Shift to select from this point on
+    OHIF.studylist.$lastSelectedRow = $studyRow;
 }
 
-function doSelectSingleRow(studyRow, data) {
+function doSelectSingleRow($studyRow, data) {
     // Clear all selected studies
     doClearStudySelections();
-    // ... And add selected row to selection list
-    doSelectRow(studyRow, data);
+
+    // Add selected row to selection list
+    doSelectRow($studyRow, data);
 }
 
-function doUnselectRow(studyRow, data) {
-    // Find the current studyInstanceUid in the stored list and remove it
-    StudyListSelectedStudies.remove({
-        studyInstanceUid: data.studyInstanceUid
-    });
-    studyRow.removeClass('active');
+function doUnselectRow($studyRow, data) {
+    // Find the current studyInstanceUid in the stored list and mark as unselected
+    const filter = { studyInstanceUid: data.studyInstanceUid };
+    const modifiers = { $set: { selected: false } };
+    OHIF.studylist.collections.Studies.update(filter, modifiers);
 }
 
 function handleShiftClick($studyRow, data) {
-    //OHIF.log.info('shiftKey');
-
-    let study, previous = StudyList.previouslySelected ? $(StudyList.previouslySelected) : null;
-    if (previous && previous.length > 0) {
-        study = Blaze.getData(previous.get(0));
-        if (!isStudySelected(study)) {
-            previous = void 0; // undefined
-            StudyList.previouslySelected = previous;
+    let study;
+    let $previousRow = OHIF.studylist.$lastSelectedRow;
+    if ($previousRow && $previousRow.length > 0) {
+        study = Blaze.getData($previousRow.get(0));
+        if (!study.selected) {
+            $previousRow = $(); // undefined
+            OHIF.studylist.$lastSelectedRow = $previousRow;
         }
     }
 
     // Select all rows in between these two rows
-    if (previous) {
+    if ($previousRow.length) {
         let $rowsInBetween;
-        if (previous.index() < $studyRow.index()) {
+        if ($previousRow.index() < $studyRow.index()) {
             // The previously selected row is above (lower index) the
             // currently selected row.
 
             // Fill in the rows upwards from the previously selected row
-            $rowsInBetween = previous.nextAll('tr');
-        } else if (previous.index() > $studyRow.index()) {
+            $rowsInBetween = $previousRow.nextAll('tr');
+        } else if ($previousRow.index() > $studyRow.index()) {
             // The previously selected row is below the currently
             // selected row.
 
             // Fill in the rows upwards from the previously selected row
-            $rowsInBetween = previous.prevAll('tr');
+            $rowsInBetween = $previousRow.prevAll('tr');
         } else {
-            // nothing to do since previous.index() === $studyRow.index()
+            // nothing to do since $previousRow.index() === $studyRow.index()
             // the user is shift-clicking the same row...
             return;
         }
 
         // Loop through the rows in between current and previous selected studies
-        $rowsInBetween.forEach(row => {
+        $rowsInBetween.each((index, row) => {
             const $row = $(row);
 
-            if ($row.hasClass('active')) {
-                // If we find one that is already selected, do nothing
-                return;
-            }
-
-            // Get the relevant studyInstanceUid
-            let studyInstanceUid = $row.attr('studyInstanceUid');
-
             // Retrieve the data context through Blaze
-            let data = Blaze.getData(this);
+            const data = Blaze.getData(row);
+
+            // If we find one that is already selected, do nothing
+            if (data.selected) return;
 
             // Set the current study as selected
             doSelectRow($row, data);
@@ -108,37 +90,31 @@ function handleShiftClick($studyRow, data) {
     }
 }
 
-function handleCtrlClick(studyRow, data) {
-    //OHIF.log.info('ctrlKey');
-    if (isStudySelected(data)) {
-        doUnselectRow(studyRow, data);
-    } else {
-        doSelectRow(studyRow, data);
-        OHIF.log.info('StudyList PreviouslySelected set: ' + studyRow.index());
-    }
+function handleCtrlClick($studyRow, data) {
+    const handler = data.selected ? doUnselectRow : doSelectRow;
+    handler($studyRow, data);
 }
 
-Template.studylistStudy.onRendered(function() {
-    let instance = this,
-        data = instance.data,
-        row = instance.$('tr.studylistStudy').first();
+Template.studylistStudy.onRendered(() => {
+    const instance = Template.instance();
+    const data = instance.data;
+    const $row = instance.$('tr.studylistStudy').first();
 
     // Enable HammerJS to allow touch support
-    let mc = new Hammer.Manager(row.get(0)),
-        doubleTapRecognizer = new Hammer.Tap({
-            event: 'doubletap',
-            taps: 2,
-            interval: 500,
-            threshold: 30,
-            posThreshold: 30
-        });
+    const mc = new Hammer.Manager($row.get(0));
+    const doubleTapRecognizer = new Hammer.Tap({
+        event: 'doubletap',
+        taps: 2,
+        interval: 500,
+        threshold: 30,
+        posThreshold: 30
+    });
     mc.add(doubleTapRecognizer);
 
     // Check if current row has been previously selected
-    if (isStudySelected(data)) {
-        doSelectRow(row, data);
+    if (data.selected) {
+        doSelectRow($row, data);
     }
-
 });
 
 Template.studylistStudy.events({
@@ -164,7 +140,7 @@ Template.studylistStudy.events({
             return;
         }
 
-        const middleClickOnStudy = StudyList.callbacks.middleClickOnStudy;
+        const middleClickOnStudy = OHIF.studylist.callbacks.middleClickOnStudy;
         if (middleClickOnStudy && typeof middleClickOnStudy === 'function') {
             middleClickOnStudy(instance.data);
         }
@@ -175,7 +151,7 @@ Template.studylistStudy.events({
             return;
         }
 
-        const dblClickOnStudy = StudyList.callbacks.dblClickOnStudy;
+        const dblClickOnStudy = OHIF.studylist.callbacks.dblClickOnStudy;
 
         if (dblClickOnStudy && typeof dblClickOnStudy === 'function') {
             dblClickOnStudy(instance.data);
@@ -185,7 +161,7 @@ Template.studylistStudy.events({
     'contextmenu tr.studylistStudy, press tr.studylistStudy'(event, instance) {
         const $studyRow = $(event.currentTarget);
 
-        if (!isStudySelected(instance.data)) {
+        if (!instance.data.selected) {
             doSelectSingleRow($studyRow, instance.data);
         }
 

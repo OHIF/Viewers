@@ -11,7 +11,7 @@ Template.dialogStudyAssociation.onCreated(() => {
 
     instance.data.confirmCallback = (formData, resolve) => {
         OHIF.log.info('Saving associations');
-        const Timepoints = StudyList.timepointApi.timepoints;
+        const Timepoints = OHIF.studylist.timepointApi.timepoints;
 
         // Find the rows of the study association table
         const $tableRows = instance.$('#studyAssociationTable table tbody tr');
@@ -138,7 +138,7 @@ Template.dialogStudyAssociation.onCreated(() => {
             };
         });
 
-        StudyList.timepointApi.storeTimepoints();
+        OHIF.studylist.timepointApi.storeTimepoints();
 
         resolve();
     };

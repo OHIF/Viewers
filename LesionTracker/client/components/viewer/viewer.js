@@ -31,11 +31,7 @@ Meteor.startup(() => {
 });
 
 Template.viewer.onCreated(() => {
-
     Session.set('ViewerReady', false);
-
-    const toolManager = OHIF.viewerbase.toolManager;
-    ViewerData = window.ViewerData || ViewerData;
 
     const instance = Template.instance();
 
@@ -59,7 +55,6 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
-    const contentId = instance.data.contentId;
     const viewportUtils = OHIF.viewerbase.viewportUtils;
 
     OHIF.viewer.functionList = $.extend(OHIF.viewer.functionList, {
@@ -84,18 +79,16 @@ Template.viewer.onCreated(() => {
         linkStackScroll: viewportUtils.linkStackScroll
     });
 
-    if (ViewerData[contentId].loadedSeriesData) {
+    if (OHIF.viewer.data.loadedSeriesData) {
         OHIF.log.info('Reloading previous loadedSeriesData');
-        OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
-
+        OHIF.viewer.loadedSeriesData = OHIF.viewer.data.loadedSeriesData;
     } else {
-        OHIF.log.info('Setting default ViewerData');
+        OHIF.log.info('Setting default viewer data');
         OHIF.viewer.loadedSeriesData = {};
-        ViewerData[contentId].loadedSeriesData = {};
-        Session.setPersistent('ViewerData', ViewerData);
+        OHIF.viewer.data.loadedSeriesData = {};
     }
 
-    Session.set('activeViewport', ViewerData[contentId].activeViewport || false);
+    Session.set('activeViewport', OHIF.viewer.data.activeViewport || false);
 
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element
     instance.autorun(OHIF.lesiontracker.pixelSpacingAutorunCheck);

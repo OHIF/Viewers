@@ -1,13 +1,5 @@
 <template name="studylist">
-    <div id="studylistTabs" class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="studylistTab">
-            <div class="studylistContainer">
-                {{>studylistResult (clone this)}}
-            </div>
-        </div>
-        <div role="tabpanel" class="tab-pane" id="viewerTab">
-            <div class="viewerContainer">
-            </div>
-        </div>
+    <div class="study-list-wrapper">
+        {{>studylistResult (clone this)}}
     </div>
 </template>

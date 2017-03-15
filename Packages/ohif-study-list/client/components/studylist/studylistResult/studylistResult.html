@@ -1,14 +1,8 @@
 <template name="studylistResult">
     <div class="studyListToolbar clearfix">
-        <div class="header pull-left">
-            Study List
-        </div>
-        <div class="studyCount pull-right">
-            {{numberOfStudies}}
-        </div>
-        <div class="pull-right">
-            {{>studylistToolbar}}
-        </div>
+        <div class="header pull-left">Study List</div>
+        <div class="studyCount pull-right">{{numberOfStudies}}</div>
+        <div class="pull-right">{{>studylistToolbar}}</div>
     </div>
     <div class="theadBackground">
     </div>
@@ -74,18 +68,18 @@
                 </tr>
             </thead>
             <tbody id="studyListData">
-            {{#each study in studies}}
-                {{>studylistStudy (clone study this)}}
-            {{/each}}
+                {{#each study in studies}}
+                    {{>studylistStudy (clone study this)}}
+                {{/each}}
             </tbody>
         </table>
 
         <!-- Pagination -->
-        {{> studylistPagination }}
+        {{>studylistPagination}}
 
         {{#if session "showLoadingText"}}
             {{>loadingText}}
-        {{ else }}
+        {{else}}
             {{#unless numberOfStudies}}
                 <div class="notFound">No matching results</div>
             {{/unless}}

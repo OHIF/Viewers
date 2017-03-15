@@ -26,8 +26,8 @@ const getStudyPriors = study => {
     const patientID = study.getTagValue(PATIENT_ID); // PatientID
     const studyDate = study.getTagValue(STUDY_DATE); // StudyDate
 
-    // Find prior studies in global StudyListStudies Minimongo collection
-    const cursor = StudyListStudies.find({
+    // Find prior studies in global Studies Minimongo collection
+    const cursor = OHIF.studylist.collections.Studies.find({
         patientId: patientID,
         studyDate: {
             $lt: studyDate

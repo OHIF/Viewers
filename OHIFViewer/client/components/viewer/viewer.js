@@ -2,13 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { Tracker } from 'meteor/tracker'
-
+import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
+
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
-
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -47,7 +46,6 @@ Meteor.startup(() => {
     Session.setDefault('leftSidebar', false);
     Session.setDefault('rightSidebar', false);
 
-    OHIF.viewer = OHIF.viewer || {};
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.cine = {
@@ -77,9 +75,7 @@ Meteor.startup(() => {
     cornerstoneTools.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 });
 
-
 Template.viewer.onCreated(() => {
-
     Session.set('ViewerReady', false);
 
     const instance = Template.instance();
@@ -88,24 +84,22 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
-    const contentId = instance.data.contentId;
-
-    if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {
+    if (OHIF.viewer.data && OHIF.viewer.data.loadedSeriesData) {
         OHIF.log.info('Reloading previous loadedSeriesData');
-        OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
+        OHIF.viewer.loadedSeriesData = OHIF.viewer.data.loadedSeriesData;
     } else {
-        OHIF.log.info('Setting default ViewerData');
+        OHIF.log.info('Setting default viewer data');
         OHIF.viewer.loadedSeriesData = {};
-        ViewerData[contentId] = {};
-        ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
+        OHIF.viewer.data = {};
+        OHIF.viewer.data.loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
-        ViewerData[contentId].viewportColumns = 1;
-        ViewerData[contentId].viewportRows = 1;
-        ViewerData[contentId].activeViewport = 0;
+        OHIF.viewer.data.viewportColumns = 1;
+        OHIF.viewer.data.viewportRows = 1;
+        OHIF.viewer.data.activeViewport = 0;
     }
 
-    Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
+    Session.set('activeViewport', OHIF.viewer.data.activeViewport || 0);
 
     // @TypeSafeStudies
     // Clears OHIF.viewer.Studies collection
@@ -115,7 +109,7 @@ Template.viewer.onCreated(() => {
     // Clears OHIF.viewer.StudyMetadataList collection
     OHIF.viewer.StudyMetadataList.removeAll();
 
-    ViewerData[contentId].studyInstanceUids = [];
+    OHIF.viewer.data.studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
         const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
@@ -126,10 +120,8 @@ Template.viewer.onCreated(() => {
         study.displaySets = displaySets;
         OHIF.viewer.Studies.insert(study);
         OHIF.viewer.StudyMetadataList.insert(studyMetadata);
-        ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
+        OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
     });
-
-    Session.set('ViewerData', ViewerData);
 });
 
 Template.viewer.onRendered(function() {
@@ -154,6 +146,7 @@ Template.viewer.events({
         const current = instance.data.state.get('leftSidebar');
         instance.data.state.set('leftSidebar', !current);
     },
+
     'click .js-toggle-protocol-editor'() {
         const instance = Template.instance();
         const current = instance.data.state.get('rightSidebar');

@@ -1,5 +1,5 @@
 <template name="longitudinalStudyListStudy">
-    <tr class="studylistStudy noselect">
+    <tr class="studylistStudy noselect {{#if this.selected}}active{{/if}}">
         <td>
             {{#if reviewerTip}}
                 <i class="fa fa-exclamation-circle reviewerTip" data-toggle="tooltip" data-placement="bottom" title="{{reviewerTip}}"></i>

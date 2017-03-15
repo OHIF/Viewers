@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
-    StudyList.callbacks.dblClickOnStudy = dblClickOnStudy;
-    StudyList.callbacks.middleClickOnStudy = dblClickOnStudy;
+    OHIF.studylist.callbacks.dblClickOnStudy = dblClickOnStudy;
+    OHIF.studylist.callbacks.middleClickOnStudy = dblClickOnStudy;
 
-    StudyList.timepointApi = new OHIF.measurements.TimepointApi();
-    StudyList.timepointApi.retrieveTimepoints();
+    OHIF.studylist.timepointApi = new OHIF.measurements.TimepointApi();
+    OHIF.studylist.timepointApi.retrieveTimepoints();
 });
 
 /**
@@ -14,7 +14,7 @@ Meteor.startup(function() {
  */
 const dblClickOnStudy = data => {
     // Find the relevant timepoint given the clicked-on study
-    const timepointApi = StudyList.timepointApi;
+    const timepointApi = OHIF.studylist.timepointApi;
     if (!timepointApi) {
         OHIF.log.warn('No timepoint api on dbl-clicked study?');
         return;
@@ -37,10 +37,8 @@ const dblClickOnStudy = data => {
 const openTab = studyInstanceUid => {
     const contentId = 'viewerTab';
 
-    ViewerData = window.ViewerData || ViewerData;
-
-    // Update the ViewerData global object
-    ViewerData[contentId] = {
+    // Update the OHIF.viewer.data global object
+    OHIF.viewer.data = {
         contentId: contentId,
         isUnassociatedStudy: true,
         studyInstanceUids: [studyInstanceUid]

@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { OHIF } from 'meteor/ohif:core';
+
 // Use Aldeed's meteor-template-extension package to replace the
 // default StudyListStudy template.
 // See https://github.com/aldeed/meteor-template-extension
@@ -9,7 +13,7 @@ Template.longitudinalStudyListStudy.replaces(defaultTemplate);
 Template[defaultTemplate].helpers({
     timepointName: function() {
         const instance = Template.instance();
-        const timepointApi = StudyList.timepointApi;
+        const timepointApi = OHIF.studylist.timepointApi;
         if (!timepointApi) {
             return;
         }
@@ -21,9 +25,10 @@ Template[defaultTemplate].helpers({
 
         return timepointApi.name(timepoint);
     },
+
     reviewerTip: function() {
         const instance = Template.instance();
-        const timepointApi = StudyList.timepointApi;
+        const timepointApi = OHIF.studylist.timepointApi;
         if (!timepointApi) {
             return;
         }
@@ -33,10 +38,7 @@ Template[defaultTemplate].helpers({
             return;
         }
 
-        var timepointReviewers = Reviewers.findOne({
-            timepointId: timepoint.timepointId
-        });
-        
+        const timepointReviewers = Reviewers.findOne({ timepointId: timepoint.timepointId });
         if (!timepointReviewers) {
             return;
         }
@@ -50,7 +52,7 @@ function getReviewerTipText(reviewers) {
         return;
     }
 
-    var newReviewers = reviewers.filter(function(reviewer) {
+    const newReviewers = reviewers.filter(function(reviewer) {
         return reviewer.userId !== Meteor.userId();
     });
 
@@ -58,7 +60,7 @@ function getReviewerTipText(reviewers) {
         return;
     }
 
-    var tipText = 'The study is being reviewed by ';
+    let tipText = 'The study is being reviewed by ';
     newReviewers.forEach(function(reviewer, index) {
         if (reviewer.userId === Meteor.userId()) {
             return;

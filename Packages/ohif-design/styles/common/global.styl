@@ -1,7 +1,15 @@
 @import "{ohif:design}/app"
 
 html body
+  theme('background-color', '$primaryBackgroundColor')
   font-family: 'Roboto', 'OpenSans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif
+
+html body.stretch
+  height: 100%
+  minWidth: 0
+  overflow: hidden
+  position: fixed
+  width: 100%
 
 html hr
   theme('border-top', '1px solid $uiBorderColor')

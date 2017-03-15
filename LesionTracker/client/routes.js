@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 
-Session.setDefault('ViewerData', {});
+// TODO: remove the line below
+window.Router = Router;
 
 // verifyEmail controls whether emailVerification template will be rendered or not
 const verifyEmail = Meteor.settings && Meteor.settings.public && Meteor.settings.public.verifyEmail || false;
@@ -19,32 +19,67 @@ const data = {};
 
 const routerOptions = { data };
 
-Router.route('/', function() {
-    // Check user is logged in
-    if (Meteor.user() && Meteor.userId()) {
+Router.route('/', {
+    name: 'home',
+    onBeforeAction: function() {
+        // Check if user needs to verify its email
         if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
             this.render('emailVerification', routerOptions);
         } else {
-            const contentId = Session.get('activeContentId');
-            if (!contentId) {
-                Session.setPersistent('activeContentId', 'studylistTab');
-            }
-
             this.render('app', routerOptions);
         }
-    } else {
-        this.render('entrySignIn', routerOptions);
     }
 });
 
 Router.route('/viewer/timepoints/:_id', {
     layoutTemplate: 'layout',
-    name: 'viewer',
+    name: 'viewerTimepoint',
     onBeforeAction: function() {
         const timepointId = this.params._id;
 
         this.render('app', routerOptions);
         OHIF.lesiontracker.openNewTabWithTimepoint(timepointId);
+    }
+});
+
+OHIF.viewer.prepare = ({ studyInstanceUids, timepointId }) => {
+    // Clear the cornerstone tool data to sync the measurements with the measurements API
+    cornerstoneTools.globalImageIdSpecificToolStateManager = cornerstoneTools.newImageIdSpecificToolStateManager();
+
+    return new Promise((resolve, reject) => {
+        OHIF.studylist.retrieveStudiesMetadata(studyInstanceUids).then(studies => {
+            // Add additional metadata to our study from the studylist
+            studies.forEach(study => {
+                const studylistStudy = OHIF.studylist.collections.Studies.findOne({
+                    studyInstanceUid: study.studyInstanceUid
+                });
+
+                if (!studylistStudy) {
+                    return;
+                }
+
+                Object.assign(study, studylistStudy);
+            });
+
+            resolve(studies);
+        }).catch(reject);
+    });
+};
+
+Router.route('/viewer/studies/:studyInstanceUids', {
+    name: 'viewerStudies',
+    onBeforeAction: function() {
+        this.render('app', { data: { template: 'loadingText' } });
+
+        const studyInstanceUids = this.params.studyInstanceUids.split(';');
+        OHIF.viewer.prepare({ studyInstanceUids }).then(studies => {
+            this.render('app', {
+                data: {
+                    template: 'viewer',
+                    studies
+                }
+            });
+        });
     }
 });
 

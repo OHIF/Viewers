@@ -10,7 +10,7 @@ import { OHIF } from 'meteor/ohif:core';
 OHIF.lesiontracker.openNewTabWithTimepoint = timepointId => {
     const contentId = 'viewerTab';
 
-    const Timepoints = StudyList.timepointApi.timepoints;
+    const Timepoints = OHIF.studylist.timepointApi.timepoints;
     const timepoint = Timepoints.findOne({
         timepointId: timepointId
     });
@@ -25,10 +25,8 @@ OHIF.lesiontracker.openNewTabWithTimepoint = timepointId => {
         throw 'No studies found that are related to this timepoint';
     }
 
-    ViewerData = window.ViewerData || ViewerData;
-
-    // Update the ViewerData global object
-    ViewerData[contentId] = {
+    // Update the OHIF.viewer.data global object
+    OHIF.viewer.data = {
         contentId: contentId,
         studyInstanceUids: data.studyInstanceUids,
         timepointIds: data.timepointIds,
@@ -59,7 +57,7 @@ function getDataFromTimepoint(timepoint) {
     // Otherwise, this is a follow-up exam, so we should also find the baseline timepoint,
     // and all studies related to it. We also enforce that the Baseline should have a studyDate
     // prior to the latest studyDate in the current (Follow-up) Timepoint.
-    const Timepoints = StudyList.timepointApi.timepoints;
+    const Timepoints = OHIF.studylist.timepointApi.timepoints;
     const baseline = Timepoints.findOne({
         timepointType: 'baseline',
         patientId: timepoint.patientId,

@@ -54,15 +54,8 @@ Package.onUse(function(api) {
     api.export('Services', 'server');
 
     // Export StudyList helper functions for usage in Routes
-    api.export('getStudyMetadata', 'client');
-    api.export('openNewTab', 'client');
-    api.export('switchToTab', 'client');
     api.export('StudyList');
 
-    // Export the global ViewerData object
-    api.export('ViewerData', 'client');
-
     // Export the Collections
-    api.export('StudyListStudies', 'client');
     api.export('StudyListSelectedStudies', 'client');
 });

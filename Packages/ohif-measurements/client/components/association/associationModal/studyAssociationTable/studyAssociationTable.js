@@ -52,7 +52,7 @@ function autoSelectStudies(selectedStudies) {
     // Fetch autoselected studies based on the date range
     // Note that we used MongoDB's fetch here so we have a mutable array,
     // rather than a Cursor
-    const autoselected = StudyListStudies.find({
+    const autoselected = OHIF.studylist.collections.Studies.find({
         studyDate: {
             $gte: range.earliestDate.format('YYYYMMDD'),
             $lte: range.latestDate.format('YYYYMMDD')

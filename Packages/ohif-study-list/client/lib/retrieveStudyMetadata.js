@@ -62,13 +62,11 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
             OHIF.viewerbase.updateMetaDataManager(study);
 
             // Add additional metadata to our study from the studylist
-            const studylistStudy = StudyListStudies.findOne({
+            const studylistStudy = OHIF.studylist.collections.Studies.findOne({
                 studyInstanceUid: study.studyInstanceUid
             });
 
-            if (!studylistStudy) {
-                // return;
-            } else {
+            if (studylistStudy) {
                 Object.assign(study, studylistStudy);
             }
 

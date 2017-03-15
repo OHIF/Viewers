@@ -1,19 +1,18 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { Router } from 'meteor/iron:router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
 const studylistContentId = 'studylistTab';
 const viewerContentId = 'viewerTab';
 
-// Define the ViewerData global object
-// If there is currently any Session data for this object,
-// use this to repopulate the variable
+// Define the OHIF.viewer.data global object
 Template.app.onCreated(() => {
     const instance = Template.instance();
     instance.headerClasses = new ReactiveVar('');
 
-    ViewerData = Session.get('ViewerData') || {};
+    OHIF.viewer.data = instance.data.viewerData || {};
 
     OHIF.header.dropdown.setItems([{
         action: OHIF.user.audit,
@@ -46,24 +45,25 @@ Template.app.onCreated(() => {
     }]);
 
     instance.autorun(() => {
-        const contentId = Session.get('activeContentId');
-        instance.headerClasses.set(contentId === viewerContentId ? '' : 'header-big');
-    });
-});
+        const currentRoute = Router.current();
+        if (!currentRoute) return;
+        const routeName = currentRoute.route.getName();
+        const isViewer = routeName.indexOf('viewer') === 0;
 
-Template.app.onRendered(() => {
-    const contentId = Session.get('activeContentId');
-    if (contentId === viewerContentId) {
-        switchToTab(contentId);
-    }
+        // Add or remove the strech class from body
+        $(document.body)[isViewer ? 'addClass' : 'removeClass']('stretch');
+
+        // Set the header on its bigger version if the viewer is not opened
+        instance.headerClasses.set(isViewer ? '' : 'header-big');
+
+        // Set the viewer open state on session
+        Session.set('ViewerOpened', isViewer);
+    });
 });
 
 Template.app.events({
     'click .js-toggle-studyList'(event) {
-        const contentId = Session.get('activeContentId');
-
         OHIF.ui.unsavedChanges.presentProactiveDialog('viewer.*', (hasChanges, userChoice) => {
-
             if (hasChanges) {
 
                 switch (userChoice) {
@@ -79,20 +79,12 @@ Template.app.events({
                 }
 
             }
-
-            if (contentId !== studylistContentId) {
-                switchToTab(studylistContentId);
-            } else {
-                switchToTab(viewerContentId);
-            }
-
         }, {
             position: {
                 x: event.clientX + 15,
                 y: event.clientY + 15
             }
         });
-
     }
 });
 
@@ -104,7 +96,7 @@ Template.app.helpers({
 
         // If the Viewer has not been opened yet, 'Back to viewer' should
         // not be displayed
-        const viewerContentExists = !!Object.keys(ViewerData).length;
+        const viewerContentExists = !!Object.keys(OHIF.viewer.data).length;
         if (!viewerContentExists) {
             return;
         }

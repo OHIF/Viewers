@@ -21,13 +21,6 @@
             </div>
         {{/section}}
     {{/header}}
-    <div id="studylistTabs" class="tab-content">
-        <div class="tab-pane active" id="studylistTab">
-            <div class="studylistContainer">
-                {{>studylistResult}}
-            </div>
-        </div>
-        <div class="tab-pane" id="viewerTab">
-        </div>
-    </div>
+
+    {{>Template.dynamic template=(choose this.template 'studylist') data=this}}
 </template>

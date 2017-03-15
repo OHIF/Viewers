@@ -38,7 +38,7 @@ Template.studyTimepointBrowser.onCreated(() => {
                 return loadedStudy;
             }
 
-            const notYetLoaded = StudyListStudies.findOne(query);
+            const notYetLoaded = OHIF.studylist.collections.Studies.findOne(query);
             if (!notYetLoaded) {
                 throw new OHIFError(`No study data available for Study: ${studyInstanceUid}`);
             }

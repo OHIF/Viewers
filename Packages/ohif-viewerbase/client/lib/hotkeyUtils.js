@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 import { toolManager } from './toolManager';
-import { setActiveViewport } from './setActiveViewport';
 import { switchToImageRelative } from './switchToImageRelative';
 import { switchToImageByIndex } from './switchToImageByIndex';
 import { viewportUtils } from './viewportUtils';
@@ -11,10 +10,6 @@ import { WLPresets } from './WLPresets';
 
 // TODO: add this to namespace definitions
 Meteor.startup(function() {
-    if (!OHIF.viewer) {
-        OHIF.viewer = {};
-    }
-
     OHIF.viewer.loadIndicatorDelay = 200;
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
@@ -56,149 +51,134 @@ Meteor.startup(function() {
     OHIF.viewer.hotkeys = OHIF.viewer.defaultHotkeys;
 
     OHIF.viewer.hotkeyFunctions = {
-        wwwc() {
-            toolManager.setActiveTool('wwwc');
-        },
-        zoom() {
-            toolManager.setActiveTool('zoom');
-        },
-        angle() {
-            toolManager.setActiveTool('angle');
-        },
-        dragProbe() {
-            toolManager.setActiveTool('dragProbe');
-        },
-        ellipticalRoi() {
-            toolManager.setActiveTool('ellipticalRoi');
-        },
-        magnify() {
-            toolManager.setActiveTool('magnify');
-        },
-        annotate() {
-            toolManager.setActiveTool('annotate');
-        },
-        stackScroll() {
-            toolManager.setActiveTool('stackScroll');
-        },
-        pan() {
-            toolManager.setActiveTool('pan');
-        },
-        length() {
-            toolManager.setActiveTool('length');
-        },
-        spine() {
-            toolManager.setActiveTool('spine');
-        },
-        wwwcRegion() {
-            toolManager.setActiveTool('wwwcRegion');
-        },
+        wwwc: () => toolManager.setActiveTool('wwwc'),
+        zoom: () => toolManager.setActiveTool('zoom'),
+        angle: () => toolManager.setActiveTool('angle'),
+        dragProbe: () => toolManager.setActiveTool('dragProbe'),
+        ellipticalRoi: () => toolManager.setActiveTool('ellipticalRoi'),
+        magnify: () => toolManager.setActiveTool('magnify'),
+        annotate: () => toolManager.setActiveTool('annotate'),
+        stackScroll: () => toolManager.setActiveTool('stackScroll'),
+        pan: () => toolManager.setActiveTool('pan'),
+        length: () => toolManager.setActiveTool('length'),
+        spine: () => toolManager.setActiveTool('spine'),
+        wwwcRegion: () => toolManager.setActiveTool('wwwcRegion'),
+
         zoomIn() {
             const button = document.getElementById('zoomIn');
             flashButton(button);
             viewportUtils.zoomIn();
         },
+
         zoomOut() {
             const button = document.getElementById('zoomOut');
             flashButton(button);
             viewportUtils.zoomOut();
         },
+
         zoomToFit() {
             const button = document.getElementById('zoomToFit');
             flashButton(button);
             viewportUtils.zoomToFit();
         },
-        scrollDown() {
-            const container = $('.viewportContainer.active');
-            const button = container.find('#nextImage').get(0);
 
-            if (!container.find('.imageViewerViewport').hasClass('empty')) {
+        scrollDown() {
+            const $container = $('.viewportContainer.active');
+            const button = $container.find('#nextImage').get(0);
+
+            if (!$container.find('.imageViewerViewport').hasClass('empty')) {
                 flashButton(button);
                 switchToImageRelative(1);
             }
         },
+
         scrollFirstImage() {
-            const container = $('.viewportContainer.active');
-            if (!container.find('.imageViewerViewport').hasClass('empty')) {
+            const $container = $('.viewportContainer.active');
+            if (!$container.find('.imageViewerViewport').hasClass('empty')) {
                 switchToImageByIndex(0);
             }
         },
+
         scrollLastImage() {
-            const container = $('.viewportContainer.active');
-            if (!container.find('.imageViewerViewport').hasClass('empty')) {
+            const $container = $('.viewportContainer.active');
+            if (!$container.find('.imageViewerViewport').hasClass('empty')) {
                 switchToImageByIndex(-1);
             }
         },
+
         scrollUp() {
-            const container = $('.viewportContainer.active');
-            if (!container.find('.imageViewerViewport').hasClass('empty')) {
-                const button = container.find('#prevImage').get(0);
+            const $container = $('.viewportContainer.active');
+            if (!$container.find('.imageViewerViewport').hasClass('empty')) {
+                const button = $container.find('#prevImage').get(0);
                 flashButton(button);
                 switchToImageRelative(-1);
             }
         },
-        previousDisplaySet() {
-            OHIF.viewerbase.layoutManager.moveDisplaySets(false);
-        },
-        nextDisplaySet() {
-            OHIF.viewerbase.layoutManager.moveDisplaySets(true);
-        },
-        nextPanel() {
-            panelNavigation.loadNextActivePanel();
-        },
-        previousPanel() {
-            panelNavigation.loadPreviousActivePanel();
-        },
+
+        previousDisplaySet: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
+        nextDisplaySet: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
+        nextPanel: () => panelNavigation.loadNextActivePanel(),
+        previousPanel: () => panelNavigation.loadPreviousActivePanel(),
+
         invert() {
             const button = document.getElementById('invert');
             flashButton(button);
             viewportUtils.invert();
         },
+
         flipV() {
             const button = document.getElementById('flipV');
             flashButton(button);
             viewportUtils.flipV();
         },
+
         flipH() {
             const button = document.getElementById('flipH');
             flashButton(button);
             viewportUtils.flipH();
         },
+
         rotateR() {
             const button = document.getElementById('rotateR');
             flashButton(button);
             viewportUtils.rotateR();
         },
+
         rotateL() {
             const button = document.getElementById('rotateL');
             flashButton(button);
             viewportUtils.rotateL();
         },
-        cinePlay() {
-            viewportUtils.toggleCinePlay();
-        },
+
+        cinePlay: () => viewportUtils.toggleCinePlay(),
+
         defaultTool() {
             const tool = toolManager.getDefaultTool();
             toolManager.setActiveTool(tool);
         },
+
         toggleOverlayTags() {
-            const dicomTags = $('.imageViewerViewportOverlay .dicomTag');
-            if (dicomTags.eq(0).css('display') === 'none') {
-                dicomTags.show();
+            const $dicomTags = $('.imageViewerViewportOverlay .dicomTag');
+            if ($dicomTags.eq(0).css('display') === 'none') {
+                $dicomTags.show();
             } else {
-                dicomTags.hide();
+                $dicomTags.hide();
             }
         },
+
         resetStack() {
             const button = document.getElementById('resetStack');
             flashButton(button);
             resetStack();
         },
+
         clearImageAnnotations() {
             const button = document.getElementById('clearImageAnnotations');
             flashButton(button);
             clearImageAnnotations();
         },
-        cineDialog () {
+
+        cineDialog() {
             /**
              * TODO: This won't work in OHIF's, since this element
              * doesn't exist
@@ -233,21 +213,18 @@ function setOHIFHotkeys(hotkeys) {
 }
 
 /**
- * Global function to merge different hotkeys configurations 
+ * Global function to merge different hotkeys configurations
  * but avoiding conflicts between different keys with same action
  * When this occurs, it will delete the action from OHIF's configuration
  * So if you want to keep all OHIF's actions, use an unused-ohif-key
  * Used for compatibility with others systems only
- * 
+ *
  * @param hotkeysActions {object} Object with actions map
  * @return {object}
  */
 function mergeHotkeys(hotkeysActions) {
     // Merge hotkeys, overriding OHIF's settings
-    let mergedHotkeys = {
-        ...OHIF.viewer.defaultHotkeys,
-        ...hotkeysActions
-    };
+    const mergedHotkeys = Object.assign({}, OHIF.viewer.defaultHotkeys, hotkeysActions);
 
     const defaultHotkeys = OHIF.viewer.defaultHotkeys;
     const hotkeysKeys = Object.keys(hotkeysActions);
@@ -258,7 +235,7 @@ function mergeHotkeys(hotkeysActions) {
             // Different action but same key:
             // Remove action from merge if is not in "hotkeysActions"
             // If it is, it's already merged so nothing to do
-            if(ohifAction !== definedAction && hotkeysActions[definedAction] === defaultHotkeys[ohifAction] && !hotkeysActions[ohifAction]) {
+            if (ohifAction !== definedAction && hotkeysActions[definedAction] === defaultHotkeys[ohifAction] && !hotkeysActions[ohifAction]) {
                 delete mergedHotkeys[ohifAction];
             }
         });
@@ -272,7 +249,7 @@ function mergeHotkeys(hotkeysActions) {
  * to give the impressiont the button was pressed.
  * This is for tools that don't keep the button "pressed"
  * all the time the tool is active.
- * 
+ *
  * @param  button DOM Element for the button to be "flashed"
  */
 function flashButton(button) {
@@ -292,16 +269,16 @@ function flashButton(button) {
  * @param  {String} task   task function name
  */
 function bindHotkey(hotkey, task) {
-    var hotkeyFunctions = OHIF.viewer.hotkeyFunctions;
+    const hotkeyFunctions = OHIF.viewer.hotkeyFunctions;
 
     // Only bind defined, non-empty HotKeys
     if (!hotkey || hotkey === '') {
         return;
     }
 
-    var fn;
+    let fn;
     if (task.indexOf('WLPreset') > -1) {
-        var presetName = task.replace('WLPreset', '');
+        const presetName = task.replace('WLPreset', '');
         fn = function() {
             WLPresets.applyWLPresetToActiveElement(presetName);
         };
@@ -319,7 +296,7 @@ function bindHotkey(hotkey, task) {
         return;
     }
 
-    var hotKeyForBinding = hotkey.toLowerCase();
+    const hotKeyForBinding = hotkey.toLowerCase();
 
     $(document).bind('keydown', hotKeyForBinding, fn);
 }
@@ -341,9 +318,7 @@ function enableHotkeys(hotkeys) {
         }
 
         if (taskHotkeys instanceof Array) {
-            taskHotkeys.forEach(function(hotkey) {
-                bindHotkey(hotkey, task);
-            });
+            taskHotkeys.forEach(hotkey => bindHotkey(hotkey, task));
         } else {
             // taskHotkeys represents a single key
             bindHotkey(taskHotkeys, task);

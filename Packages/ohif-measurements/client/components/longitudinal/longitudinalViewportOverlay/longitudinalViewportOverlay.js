@@ -1,7 +1,11 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { OHIF } from 'meteor/ohif:core';
+
 // Use Aldeed's meteor-template-extension package to replace the
 // default viewportOverlay template.
 // See https://github.com/aldeed/meteor-template-extension
-var defaultTemplate = 'viewportOverlay';
+const defaultTemplate = 'viewportOverlay';
 Template.longitudinalViewportOverlay.replaces(defaultTemplate);
 
 // Add the TimepointName helper to the default template. The
@@ -12,10 +16,8 @@ Template[defaultTemplate].helpers({
         const studyInstanceUid = instance.data.studyInstanceUid;
 
         // TODO: Find a better way to obtain the timepointApi from the viewer.js template
-        const timepointApi = StudyList.timepointApi;
-        if (!timepointApi) {
-        	return;
-        }
+        const timepointApi = OHIF.studylist.timepointApi;
+        if (!timepointApi) return;
 
         const timepoints = timepointApi.study(studyInstanceUid);
         if (!timepoints || !timepoints.length) {

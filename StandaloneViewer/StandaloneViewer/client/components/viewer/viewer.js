@@ -2,7 +2,6 @@ import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
-OHIF.viewer = OHIF.viewer || {};
 const viewportUtils = OHIF.viewerbase.viewportUtils;
 
 OHIF.viewer.functionList = {

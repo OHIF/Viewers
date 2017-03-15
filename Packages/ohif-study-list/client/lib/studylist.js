@@ -1,3 +1,4 @@
+import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 // Classes
 import { OHIFStudyMetadataSource } from './OHIFStudyMetadataSource';
@@ -11,15 +12,14 @@ StudyList = {
         getStudyPriors,
         getStudyPriorsMap
     },
-    callbacks: {},
     classes: {
         OHIFStudyMetadataSource,
         OHIFStudySummary
     }
 };
 
-StudyList.callbacks.dblClickOnStudy = dblClickOnStudy;
-StudyList.callbacks.middleClickOnStudy = dblClickOnStudy;
+OHIF.studylist.callbacks.dblClickOnStudy = dblClickOnStudy;
+OHIF.studylist.callbacks.middleClickOnStudy = dblClickOnStudy;
 
 function dblClickOnStudy(data) {
     openNewTab(data.studyInstanceUid);

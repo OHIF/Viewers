@@ -76,6 +76,9 @@ $bodyCellHeight = 40px
     text-align: center
 
   table#tblStudyList
+    tr
+      height: 20px
+
     thead
       white-space: nowrap
 
@@ -172,10 +175,10 @@ $bodyCellHeight = 40px
 
 @media only screen and (max-width: 1362px)
   $tablePadding = 5%
-  
+
   #studyListContainer
     padding: 0 $tablePadding
-    
+
     table#tblStudyList
       thead,
       tbody
@@ -190,10 +193,10 @@ $bodyCellHeight = 40px
 
 @media only screen and (max-width: 1161px)
   $tablePadding = 3%
-  
+
   #studyListContainer
     padding: 0 $tablePadding
-    
+
     table#tblStudyList
       thead,
       tbody
@@ -208,31 +211,31 @@ $bodyCellHeight = 40px
 
 @media only screen and (max-width: 1069px)
   $tablePaddingMediumScreen = 5px
-  
+
   .theadBackground
     height: 101px
 
   .studyListToolbar
     padding: 0 $tablePaddingMediumScreen
-    
+
   #studyListContainer
     padding: 0
 
     table#tblStudyList
       thead > tr > th
-        
+
         &:first-child
           padding-left: $tablePaddingMediumScreen
 
         &:last-child
           padding-right: $tablePaddingMediumScreen
-          
+
         input.worklist-search
           padding: 10px
-          
+
         div.sortingCell
           padding: 10px 5px
-          
+
           i
             width: auto
 
@@ -242,7 +245,7 @@ $bodyCellHeight = 40px
 
         &:last-child
           padding-right: $tablePaddingMediumScreen
-    
+
     .worklistPagination
       .row
         margin-left: 0

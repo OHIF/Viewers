@@ -54,11 +54,11 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     // This data will be saved so that the tab can be reloaded to the same state after tabs
     // are switched
     if (contentId) {
-        if (!ViewerData[contentId]) {
+        if (!OHIF.viewer.data) {
             return;
         }
 
-        ViewerData[contentId].loadedSeriesData[viewportIndex] = {};
+        OHIF.viewer.data.loadedSeriesData[viewportIndex] = {};
     }
 
     // Create shortcut to displaySet
@@ -154,7 +154,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     // Additional tasks for metadata provider. If using your own
     // metadata provider, this may not be necessary.
     // updateMetadata is important, though, to update image metadata that
-    // for any reason was missing some information such as rows, columns, 
+    // for any reason was missing some information such as rows, columns,
     // sliceThickness, etc (See MetadataProvider class from ohif-cornerstone package)
     const metadataProvider = OHIF.viewer.metadataProvider;
     const isUpdateMetadataDefined = metadataProvider && typeof metadataProvider.updateMetadata === 'function';
@@ -173,7 +173,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         let enabledElement;
         try {
             enabledElement = cornerstone.getEnabledElement(element);
-        } 
+        }
         catch (error) {
             OHIF.log.warn('Viewport destroyed before loaded image could be displayed');
             return;
@@ -305,15 +305,13 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // This lets the viewport overlay always display correct window / zoom values
             Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
 
-            // Save the current viewport into the ViewerData global variable, as well as the
-            // Meteor Session. This lets the viewport be saved/reloaded on a hot-code reload
+            // Save the current viewport into the OHIF.viewer.data global variable
             const viewport = cornerstone.getViewport(element);
             layoutManager.viewportData[viewportIndex].viewport = viewport;
-            ViewerData[contentId].loadedSeriesData[viewportIndex].viewport = viewport;
-            Session.set('ViewerData', ViewerData);
+            OHIF.viewer.data.loadedSeriesData[viewportIndex].viewport = viewport;
 
             // Check if it has onImageRendered loadAndCacheImage callback
-            if(typeof callbacks.onImageRendered === 'function') {
+            if (typeof callbacks.onImageRendered === 'function') {
                 callbacks.onImageRendered(event, eventData, viewportIndex, templateData);
             }
         };
@@ -332,7 +330,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
 
-            if(isUpdateMetadataDefined) {
+            if (isUpdateMetadataDefined) {
                 // Update the metaData for missing fields
                 metadataProvider.updateMetadata(eventData.enabledElement.image);
             }
@@ -355,17 +353,16 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             updateOrientationMarkers(element);
 
             // If this viewport is displaying a stack of images, save the current image
-            // index in the stack to the global ViewerData object, as well as the Meteor Session.
+            // index in the stack to the global OHIF.viewer.data object.
             const stack = cornerstoneTools.getToolState(element, 'stack');
             if (stack && stack.data.length && stack.data[0].imageIds.length > 1) {
                 const imageIdIndex = stack.data[0].imageIds.indexOf(templateData.imageId);
                 layoutManager.viewportData[viewportIndex].currentImageIdIndex = imageIdIndex;
-                ViewerData[contentId].loadedSeriesData[viewportIndex].currentImageIdIndex = imageIdIndex;
-                Session.set('ViewerData', ViewerData);
+                OHIF.viewer.data.loadedSeriesData[viewportIndex].currentImageIdIndex = imageIdIndex;
             }
 
             // Check if it has onNewImage loadAndCacheImage callback
-            if(typeof callbacks.onNewImage === 'function') {
+            if (typeof callbacks.onNewImage === 'function') {
                 callbacks.onNewImage(event, eventData, viewportIndex, templateData);
             }
         };
@@ -429,7 +426,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         $element.off(allCornerstoneEvents, sendActivationTrigger);
         $element.on(allCornerstoneEvents, sendActivationTrigger);
 
-        ViewerData[contentId].loadedSeriesData = layoutManager.viewportData;
+        OHIF.viewer.data.loadedSeriesData = layoutManager.viewportData;
 
         // Check if image plane (orientation / location) data is present for the current image
         const imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);

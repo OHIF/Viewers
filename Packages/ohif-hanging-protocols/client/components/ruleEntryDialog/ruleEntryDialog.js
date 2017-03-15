@@ -138,7 +138,7 @@ function getAbstractPriorValue(imageId) {
         return;
     }
 
-    const studies = StudyListStudies.find({
+    const studies = OHIF.studylist.collections.Studies.find({
         patientId: currentStudy.patientId,
         studyDate: {
             $lt: currentStudy.studyDate

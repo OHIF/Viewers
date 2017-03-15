@@ -1,34 +1,13 @@
 @import "{ohif:design}/app"
 
-body
-  theme('background-color', '$primaryBackgroundColor')
-
-#tblStudyList
-  tr
-    height: 20px
-
-#studylistTab
-  theme('background-color', '$primaryBackgroundColor')
-
-.studylistContainer
+.study-list-wrapper
   theme('background-color', '$primaryBackgroundColor')
   color: white
   margin: 2px auto 0
+  height: calc(100% - 91px)
   position: relative
   width: 100%
-
-.tab-content
-  width: 100%
-  height: calc(100% - 91px)
 
   .loadingTextDiv
     theme('color', '$textSecondaryColor')
     font-size: 30px
-
-  .tab-pane
-    width: 100%
-    height: 100%
-
-    .viewerContainer
-      height: 100%
-      width: 100%

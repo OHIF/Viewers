@@ -12,7 +12,7 @@ const getAssociationAssessment = () => {
     };
 
     // check if timepointApi is available
-    const timepointApi = StudyList.timepointApi;
+    const timepointApi = OHIF.studylist.timepointApi;
     if (timepointApi) {
         // Get a Cursor pointing to the selected Studies from the StudyList
         const selectedStudies = OHIF.studylist.getSelectedStudies();
@@ -46,10 +46,8 @@ const viewStudies = () => {
     const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid);
     const contentId = 'viewerTab';
 
-    ViewerData = window.ViewerData || ViewerData;
-
-    // Update the ViewerData global object
-    ViewerData[contentId] = {
+    // Update the OHIF.viewer.data global object
+    OHIF.viewer.data = {
         contentId: contentId,
         studyInstanceUids: studyInstanceUids
     };
@@ -77,7 +75,7 @@ const removeTimepointAssociations = event => {
         const selectedStudies = OHIF.studylist.getSelectedStudies();
 
         // Find the Timepoint that was previously referenced
-        const timepointApi = StudyList.timepointApi;
+        const timepointApi = OHIF.studylist.timepointApi;
         if (!timepointApi) {
             OHIF.log.error('Remove Study/Timepoint Association: No Timepoint API found.');
             return;

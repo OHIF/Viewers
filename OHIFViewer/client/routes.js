@@ -1,8 +1,6 @@
 import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
 
-Session.setDefault('ViewerData', {});
-
 Router.configure({
     layoutTemplate: 'layout',
     loadingTemplate: 'layout'

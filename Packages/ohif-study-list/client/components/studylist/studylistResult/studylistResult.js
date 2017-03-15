@@ -1,11 +1,16 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
 Session.setDefault('showLoadingText', true);
 
 Template.studylistResult.helpers({
     /**
-     * Returns a sorted instance of the StudyListStudies Collection
-     * by Patient name and Study Date in Ascending order.
+     * Returns a ascending sorted instance of the Studies Collection by Patient name and Study Date
      */
     studies() {
         const instance = Template.instance();
@@ -26,7 +31,7 @@ Template.studylistResult.helpers({
         const offset = rowsPerPage * currentPage;
         const limit = offset + rowsPerPage;
 
-        studies = StudyListStudies.find({}, {
+        studies = OHIF.studylist.collections.Studies.find({}, {
             sort: sortOption
         }).fetch();
 
@@ -42,7 +47,7 @@ Template.studylistResult.helpers({
     },
 
     numberOfStudies() {
-        return StudyListStudies.find().count();
+        return OHIF.studylist.collections.Studies.find().count();
     },
 
     sortingColumnsIcons() {
@@ -65,9 +70,9 @@ Template.studylistResult.helpers({
     }
 });
 
-var studyDateFrom;
-var studyDateTo;
-var filter;
+let studyDateFrom;
+let studyDateTo;
+let filter;
 
 /**
  * Transforms an input string into a search filter for
@@ -107,9 +112,6 @@ function replaceUndefinedColumnValue(text) {
 }
 
 /**
-
-
-/**
  * Convert string to study date
  */
 function convertStringToStudyDate(dateStr) {
@@ -122,10 +124,10 @@ function convertStringToStudyDate(dateStr) {
 
 /**
  * Runs a search for studies matching the studylist query parameters
- * Inserts the identified studies into the StudyListStudies Collection
+ * Inserts the identified studies into the Studies Collection
  */
 function search() {
-    console.log('search()');
+    OHIF.log.info('search()');
 
     // Show loading message
     Session.set('showLoadingText', true);
@@ -138,7 +140,7 @@ function search() {
         studyDescription: getFilter($('input#studyDescription').val()),
         studyDateFrom: studyDateFrom,
         studyDateTo: studyDateTo,
-        modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : ""
+        modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : ''
     };
 
     // Make sure that modality has a reasonable value, since it is occasionally
@@ -146,10 +148,10 @@ function search() {
     const modality = replaceUndefinedColumnValue($('input#modality').val());
 
     // Clear all current studies
-    StudyListStudies.remove({});
+    OHIF.studylist.collections.Studies.remove({});
 
     Meteor.call('StudyListSearch', filter, (error, studies) => {
-        console.log('StudyListSearch');
+        OHIF.log.info('StudyListSearch');
         if (error) {
             OHIF.log.warn(error);
             return;
@@ -172,8 +174,8 @@ function search() {
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : undefined;
 
-                // Insert any matching studies into the StudyListStudies Collection
-                StudyListStudies.insert(study);
+                // Insert any matching studies into the Studies Collection
+                OHIF.studylist.collections.Studies.insert(study);
             }
         });
     });
@@ -181,7 +183,7 @@ function search() {
 
 const getRowsPerPage = () => sessionStorage.getItem('rowsPerPage');
 
-// Wraps ReactiveVar equalsFunc function. Whenever ReactiveVar is 
+// Wraps ReactiveVar equalsFunc function. Whenever ReactiveVar is
 // set to a new value, it will save it in the Session Storage.
 // The return is the default ReactiveVar equalsFunc if available
 // or values are === compared
@@ -200,9 +202,10 @@ Template.studylistResult.onCreated(() => {
     // Rows per page
     // Check session storage or set 25 as default
     const cachedRowsPerPage = getRowsPerPage();
-    if(!cachedRowsPerPage) {
+    if (!cachedRowsPerPage) {
         setRowsPerPage(0, 25);
     }
+
     const rowsPerPage = getRowsPerPage();
     instance.rowsPerPage = new ReactiveVar(parseInt(rowsPerPage, 10), setRowsPerPage);
 
@@ -214,8 +217,7 @@ Template.studylistResult.onCreated(() => {
     const sortOptionSession = Session.get('sortOption');
     if (sortOptionSession) {
         instance.sortingColumns.set(sortOptionSession);
-    } 
-    else {
+    } else {
         instance.sortingColumns.set({
             patientName: 1,
             studyDate: 1,
