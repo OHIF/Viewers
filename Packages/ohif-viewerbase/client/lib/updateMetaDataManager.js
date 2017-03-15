@@ -68,7 +68,6 @@ export function updateMetaDataManager(study) {
         series.instances.forEach(instance => {
             // Cache just images that are going to be loaded via WADO-RS
             if ((instance.imageRendering !== 'wadors') && (instance.thumbnailRendering !== 'wadors')) {
-                OHIF.log.info(`Skiping cornerstone metaDataManager update (${imageId})`);
                 return;
             }
 
