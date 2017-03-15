@@ -43,7 +43,6 @@ const viewStudies = () => {
         return;
     }
 
-    const title = selectedStudies[0].patientName;
     const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid);
     const contentId = 'viewerTab';
 
@@ -51,7 +50,6 @@ const viewStudies = () => {
 
     // Update the ViewerData global object
     ViewerData[contentId] = {
-        title: title,
         contentId: contentId,
         studyInstanceUids: studyInstanceUids
     };

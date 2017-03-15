@@ -15,9 +15,7 @@ Router.configure({
 
 Router.onBeforeAction('loading');
 
-const data = {
-    additionalTemplates: []
-};
+const data = {};
 
 const routerOptions = { data };
 
@@ -29,7 +27,7 @@ Router.route('/', function() {
         } else {
             const contentId = Session.get('activeContentId');
             if (!contentId) {
-                Session.set('activeContentId', 'studylistTab');
+                Session.setPersistent('activeContentId', 'studylistTab');
             }
 
             this.render('app', routerOptions);

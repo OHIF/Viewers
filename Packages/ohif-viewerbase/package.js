@@ -14,6 +14,7 @@ Package.onUse(function(api) {
     api.use('stylus');
     api.use('momentjs:moment');
     api.use('validatejs');
+    api.use('u2622:persistent-session');
 
     // Our custom packages
     api.use('ohif:design');

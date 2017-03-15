@@ -31,7 +31,7 @@ Template.studylist.onRendered(() => {
     const instance = Template.instance();
     if (instance.data && instance.data.studyInstanceUid) {
         const studyInstanceUid = instance.data.studyInstanceUid;
-        openNewTab(studyInstanceUid, studyInstanceUid);
+        openNewTab(studyInstanceUid);
     } else {
         // If there is a tab set as active in the Session,
         // switch to that now.

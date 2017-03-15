@@ -92,7 +92,7 @@ Template.viewer.onCreated(() => {
         OHIF.log.info('Setting default ViewerData');
         OHIF.viewer.loadedSeriesData = {};
         ViewerData[contentId].loadedSeriesData = {};
-        Session.set('ViewerData', ViewerData);
+        Session.setPersistent('ViewerData', ViewerData);
     }
 
     Session.set('activeViewport', ViewerData[contentId].activeViewport || false);

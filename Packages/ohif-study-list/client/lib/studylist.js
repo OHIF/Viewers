@@ -22,9 +22,7 @@ StudyList.callbacks.dblClickOnStudy = dblClickOnStudy;
 StudyList.callbacks.middleClickOnStudy = dblClickOnStudy;
 
 function dblClickOnStudy(data) {
-    // Use the formatPN template helper to clean up the patient name
-    var title = Viewerbase.helpers.formatPN(data.patientName);
-    openNewTab(data.studyInstanceUid, title);
+    openNewTab(data.studyInstanceUid);
 }
 
 let currentServerChangeHandlerFirstRun = true;
