@@ -36,11 +36,11 @@ export const storeMeasurements = (measurementData, timepointIds) => {
     });
 };
 
-export const retrieveTimepoints = (patientId) => {
+export const retrieveTimepoints = filter => {
     console.log('retrieveTimepoints');
 
     return new Promise((resolve, reject) => {
-        Meteor.call('retrieveTimepoints', patientId, (error, response) => {
+        Meteor.call('retrieveTimepoints', filter, (error, response) => {
             if (error) {
                 reject(error);
             } else {

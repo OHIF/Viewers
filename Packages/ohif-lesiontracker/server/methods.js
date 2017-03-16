@@ -44,11 +44,11 @@ Meteor.methods({
     disassociateStudy(timepointIds, studyInstanceUid) {
         OHIF.log.info('Disassociating Study from Timepoints');
         timepointIds.forEach(timepointId => {
-            const timepoint = Timepoints.findOne({timepointId});
+            const timepoint = Timepoints.findOne({ timepointId });
             if (!timepoint) {
                 return;
             }
-            
+
             // Find the index of the current studyInstanceUid in the array
             // of reference studyInstanceUids
             const index = timepoint.studyInstanceUids.indexOf(studyInstanceUid);
@@ -59,8 +59,6 @@ Meteor.methods({
             // Remove the specified studyInstanceUid from the array of associated studyInstanceUids
             timepoint.studyInstanceUids.splice(index, 1);
 
-            let updated = [];
-            let removed = [];
             if (timepoint.studyInstanceUids.length) {
                 Timepoints.update(timepoint._id, {
                     $set: {
@@ -78,14 +76,14 @@ Meteor.methods({
                     timepointId: timepointId
                 };
 
-                MeasurementCollections[tool.id].remove(filter)
+                MeasurementCollections[tool.id].remove(filter);
             });
         });
     },
 
     removeTimepoint(timepointId) {
         OHIF.log.info('Removing Timepoint from the Server');
-        Timepoints.remove({timepointId});
+        Timepoints.remove({ timepointId });
     },
 
     updateTimepoint(timepointData, query) {
@@ -95,14 +93,8 @@ Meteor.methods({
         Timepoints.update(timepointData, query);
     },
 
-    retrieveTimepoints(patientId) {
+    retrieveTimepoints(filter={}) {
         OHIF.log.info('Retrieving Timepoints from the Server');
-
-        const filter = {}
-        if (patientId) {
-            filter.patientId = patientId;
-        };
-
         return Timepoints.find(filter).fetch();
     },
 
@@ -128,7 +120,7 @@ Meteor.methods({
         OHIF.log.info('Retrieving Measurements from the Server');
         let measurementData = {};
 
-        const filter = {}
+        const filter = {};
         if (patientId) {
             filter.patientId = patientId;
         }

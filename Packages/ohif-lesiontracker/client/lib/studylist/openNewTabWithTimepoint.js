@@ -8,8 +8,6 @@ import { OHIF } from 'meteor/ohif:core';
  * @param title The title to be used for the tab heading
  */
 OHIF.lesiontracker.openNewTabWithTimepoint = timepointId => {
-    const contentId = 'viewerTab';
-
     const Timepoints = OHIF.studylist.timepointApi.timepoints;
     const timepoint = Timepoints.findOne({
         timepointId: timepointId
@@ -27,7 +25,6 @@ OHIF.lesiontracker.openNewTabWithTimepoint = timepointId => {
 
     // Update the OHIF.viewer.data global object
     OHIF.viewer.data = {
-        contentId: contentId,
         studyInstanceUids: data.studyInstanceUids,
         timepointIds: data.timepointIds,
         currentTimepointId: timepointId

@@ -119,7 +119,7 @@ Template.viewer.onCreated(() => {
     instance.data.studies.forEach(study => (delete study.timepointType));
 
     // TODO: Consider combining the retrieval calls into one?
-    const timepointsPromise = timepointApi.retrieveTimepoints(patientId);
+    const timepointsPromise = timepointApi.retrieveTimepoints({ patientId });
     timepointsPromise.then(() => {
         const timepoints = timepointApi.all();
 

@@ -92,6 +92,14 @@ Viewerbase.imageViewerViewportData = imageViewerViewportData;
 import { panelNavigation } from './lib/panelNavigation';
 Viewerbase.panelNavigation = panelNavigation;
 
+// prepareViewerData
+import { prepareViewerData } from './lib/prepareViewerData';
+Viewerbase.prepareViewerData = prepareViewerData;
+
+// renderViewer
+import { renderViewer } from './lib/renderViewer';
+Viewerbase.renderViewer = renderViewer;
+
 // WLPresets.*
 import { WLPresets } from './lib/WLPresets';
 Viewerbase.wlPresets = WLPresets;
