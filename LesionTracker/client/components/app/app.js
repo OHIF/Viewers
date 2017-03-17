@@ -44,9 +44,6 @@ Template.app.onCreated(() => {
         const routeName = currentRoute.route.getName();
         const isViewer = routeName.indexOf('viewer') === 0;
 
-        // Define the OHIF.viewer.data global object
-        OHIF.viewer.data = OHIF.viewer.data || Session.get('ViewerData') || {};
-
         // Add or remove the strech class from body
         $(document.body)[isViewer ? 'addClass' : 'removeClass']('stretch');
 

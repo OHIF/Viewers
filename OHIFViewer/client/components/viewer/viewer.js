@@ -80,6 +80,9 @@ Template.viewer.onCreated(() => {
 
     const instance = Template.instance();
 
+    // Define the OHIF.viewer.data global object
+    OHIF.viewer.data = OHIF.viewer.data || Session.get('ViewerData') || {};
+
     instance.data.state = new ReactiveDict();
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
@@ -98,6 +101,9 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.data.viewportRows = 1;
         OHIF.viewer.data.activeViewport = 0;
     }
+
+    // Store the viewer data in session for further user
+    Session.setPersistent('ViewerData', OHIF.viewer.data);
 
     Session.set('activeViewport', OHIF.viewer.data.activeViewport || 0);
 

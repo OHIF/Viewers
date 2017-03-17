@@ -35,6 +35,9 @@ Template.viewer.onCreated(() => {
 
     const instance = Template.instance();
 
+    // Define the OHIF.viewer.data global object
+    OHIF.viewer.data = OHIF.viewer.data || Session.get('ViewerData') || {};
+
     const { TimepointApi, MeasurementApi, ConformanceCriteria } = OHIF.measurements;
 
     const currentTimepointId = OHIF.viewer.data.currentTimepointId;

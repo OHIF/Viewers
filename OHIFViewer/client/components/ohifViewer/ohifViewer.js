@@ -8,9 +8,6 @@ Template.ohifViewer.onCreated(() => {
     const instance = Template.instance();
     instance.headerClasses = new ReactiveVar('');
 
-    // Define the OHIF.viewer.data global object
-    OHIF.viewer.data = instance.data.viewerData || {};
-
     OHIF.header.dropdown.setItems([{
         action: () => OHIF.ui.showDialog('serverInformationModal'),
         text: 'Server Information',
