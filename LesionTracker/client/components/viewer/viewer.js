@@ -36,7 +36,8 @@ Template.viewer.onCreated(() => {
     const instance = Template.instance();
 
     const { TimepointApi, MeasurementApi, ConformanceCriteria } = OHIF.measurements;
-    const currentTimepointId = instance.data.currentTimepointId;
+
+    const currentTimepointId = OHIF.viewer.data.currentTimepointId;
     const timepointApi = new TimepointApi(currentTimepointId);
     const measurementApi = new MeasurementApi(timepointApi);
     const conformanceCriteria = new ConformanceCriteria(measurementApi, timepointApi);
@@ -87,6 +88,9 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.loadedSeriesData = {};
         OHIF.viewer.data.loadedSeriesData = {};
     }
+
+    // Store the viewer data in session for further user
+    Session.setPersistent('ViewerData', OHIF.viewer.data);
 
     Session.set('activeViewport', OHIF.viewer.data.activeViewport || false);
 
@@ -156,13 +160,8 @@ Template.viewer.onCreated(() => {
         measurementApi.priorTimepointId = prior.timepointId;
     }
 
-    if (instance.data.currentTimepointId) {
-        //  Enable Lesion Tracker Tools if the opened study is associated
-        OHIF.lesiontracker.toggleLesionTrackerToolsButtons(true);
-    } else {
-        //  Disable Lesion Tracker Tools if the opened study is not associated
-        OHIF.lesiontracker.toggleLesionTrackerToolsButtons(false);
-    }
+    //  Enable/Disable Lesion Tracker Tools if the opened study is associated or not
+    OHIF.lesiontracker.toggleLesionTrackerToolsButtons(!!currentTimepointId);
 
     let firstMeasurementActivated = false;
     instance.autorun(() => {
@@ -311,7 +310,7 @@ const initHangingProtocol = () => {
         const layoutManager = OHIF.viewerbase.layoutManager;
 
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new StudyList.classes.OHIFStudyMetadataSource();
+        const studyMetadataSource = new OHIF.studylist.classes.OHIFStudyMetadataSource();
 
         // Creates Protocol Engine object with required arguments
         const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);

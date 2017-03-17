@@ -14,65 +14,65 @@ export class ResizeViewportManager {
     repositionStudySeriesQuickSwitch() {
         OHIF.log.info('ResizeViewportManager repositionStudySeriesQuickSwitch');
 
-        const activeTab = Session.get('activeContentId');
-        if(activeTab === 'viewerTab') {
-            const nViewports = OHIF.viewerbase.layoutManager.viewportData.length;
+        // Stop here if viewer is not displayed
+        const isViewer = Session.get('ViewerOpened');
+        if (!isViewer) return;
 
-            if(nViewports && nViewports > 1) {
-                const viewer = $('#viewer');
-                const leftSidebar = viewer.find('.sidebar-left.sidebar-open');
-                const rightSidebar = viewer.find('.sidebar-right.sidebar-open');
+        // Stop here if there is no one or only one viewport
+        const nViewports = OHIF.viewerbase.layoutManager.viewportData.length;
+        if (!nViewports || nViewports <= 1) return;
 
-                const leftQuickSwitch = $('.quickSwitchWrapper.left');
-                const rightQuickSwitch = $('.quickSwitchWrapper.right');
+        const $viewer = $('#viewer');
+        const leftSidebar = $viewer.find('.sidebar-left.sidebar-open');
+        const rightSidebar = $viewer.find('.sidebar-right.sidebar-open');
 
-                const hasLeftSidebar = leftSidebar.length > 0;
-                const hasRightSidebar = rightSidebar.length > 0;
+        const $leftQuickSwitch = $('.quickSwitchWrapper.left');
+        const $rightQuickSwitch = $('.quickSwitchWrapper.right');
 
-                rightQuickSwitch.removeClass('left-sidebar-only');
-                leftQuickSwitch.removeClass('right-sidebar-only');
+        const hasLeftSidebar = leftSidebar.length > 0;
+        const hasRightSidebar = rightSidebar.length > 0;
 
-                let leftOffset = 0;
+        $rightQuickSwitch.removeClass('left-sidebar-only');
+        $leftQuickSwitch.removeClass('right-sidebar-only');
 
-                if(hasLeftSidebar) {
-                    leftOffset = ( leftSidebar.width()/$(window).width() ) * 100;
+        let leftOffset = 0;
 
-                    if(!hasRightSidebar) {
-                        rightQuickSwitch.addClass('left-sidebar-only');
-                    }
-                }
+        if (hasLeftSidebar) {
+            leftOffset = (leftSidebar.width() / $(window).width()) * 100;
 
-                if(hasRightSidebar && !hasLeftSidebar) {
-                    leftQuickSwitch.addClass('right-sidebar-only');
-                }
-
-                const leftPosition = ( ($('#imageViewerViewports').width() / nViewports) / $(window).width() ) * 100 + leftOffset;
-                const rightPosition = 100 - leftPosition;
-
-                leftQuickSwitch.css('right', rightPosition + '%');
-                rightQuickSwitch.css('left', leftPosition + '%');
+            if (!hasRightSidebar) {
+                $rightQuickSwitch.addClass('left-sidebar-only');
             }
-            
         }
+
+        if (hasRightSidebar && !hasLeftSidebar) {
+            $leftQuickSwitch.addClass('right-sidebar-only');
+        }
+
+        const leftPosition = (($('#imageViewerViewports').width() / nViewports) / $(window).width()) * 100 + leftOffset;
+        const rightPosition = 100 - leftPosition;
+
+        $leftQuickSwitch.css('right', rightPosition + '%');
+        $rightQuickSwitch.css('left', leftPosition + '%');
     }
 
     // Relocate dialogs positions
     relocateDialogs(){
         OHIF.log.info('ResizeViewportManager relocateDialogs');
 
-        const bottomRightDialogs = $('#cineDialog, #annotationDialog, #textMarkerOptionsDialog');
-        bottomRightDialogs.css({
+        const $bottomRightDialogs = $('#cineDialog, #annotationDialog, #textMarkerOptionsDialog');
+        $bottomRightDialogs.css({
             top: '', // This removes the CSS property completely
             left: '',
             bottom: 0,
             right: 0
         });
 
-        const centerDialogs = $('.draggableDialog').not(bottomRightDialogs);
+        const centerDialogs = $('.draggableDialog').not($bottomRightDialogs);
 
         centerDialogs.css({
             top: 0,
-            left:0,
+            left: 0,
             bottom: 0,
             right: 0
         });
@@ -83,7 +83,6 @@ export class ResizeViewportManager {
         OHIF.log.info('ResizeViewportManager resizeScrollbars');
 
         const currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
-        const imageControls = currentOverlay.find('.imageControls');
         currentOverlay.find('.imageControls').height($(element).height());
 
         // Set it's width to its parent's height
@@ -125,7 +124,7 @@ export class ResizeViewportManager {
     resizeViewportElements() {
         this.relocateDialogs();
 
-        const viewportResizeTimer = setTimeout(() => {
+        setTimeout(() => {
             this.repositionStudySeriesQuickSwitch();
 
             const elements = $('.imageViewerViewport').not('.empty');
@@ -162,6 +161,7 @@ export class ResizeViewportManager {
             resizeHandler = this.handleResize.bind(this);
             this._resizeHandler = resizeHandler;
         }
+
         return resizeHandler;
     }
 }

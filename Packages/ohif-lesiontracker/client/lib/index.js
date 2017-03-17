@@ -1,5 +1,4 @@
 // StudyList-related functions
-import './studylist/openNewTabWithTimepoint.js';
 import './studylist/studylistModification.js';
 
 // Library functions

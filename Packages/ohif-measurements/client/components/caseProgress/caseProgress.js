@@ -181,6 +181,6 @@ Template.caseProgress.events({
             return;
         }
 
-        instance.saveData().then(() => switchToTab('studylistTab'));
+        instance.saveData();
     }
 });

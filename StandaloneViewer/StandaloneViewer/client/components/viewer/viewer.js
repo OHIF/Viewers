@@ -1,3 +1,7 @@
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveDict } from 'meteor/reactive-dict';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
@@ -11,8 +15,6 @@ OHIF.viewer.functionList = {
     resetViewport: viewportUtils.resetViewport,
     invert: viewportUtils.invert
 };
-
-Session.set('activeContentId', 'standalone');
 
 Session.setDefault('activeViewport', false);
 Session.setDefault('leftSidebar', false);
@@ -34,7 +36,7 @@ const initHangingProtocol = () => {
         const layoutManager = OHIF.viewerbase.layoutManager;
 
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new StudyList.classes.OHIFStudyMetadataSource();
+        const studyMetadataSource = new OHIF.studylist.classes.OHIFStudyMetadataSource();
 
         // Creates Protocol Engine object with required arguments
         const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
@@ -52,39 +54,35 @@ Template.viewer.onCreated(() => {
     instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
 
-    const contentId = instance.data.contentId;
-
-    if (ViewerData[contentId] && ViewerData[contentId].loadedSeriesData) {
+    if (OHIF.viewer.data && OHIF.viewer.data.loadedSeriesData) {
         OHIF.log.info('Reloading previous loadedSeriesData');
-        OHIF.viewer.loadedSeriesData = ViewerData[contentId].loadedSeriesData;
+        OHIF.viewer.loadedSeriesData = OHIF.viewer.data.loadedSeriesData;
     } else {
-        OHIF.log.info('Setting default ViewerData');
+        OHIF.log.info('Setting default viewer data');
         OHIF.viewer.loadedSeriesData = {};
-        ViewerData[contentId] = {};
-        ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
+        OHIF.viewer.data = {};
+        OHIF.viewer.data.loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
-        ViewerData[contentId].viewportColumns = 1;
-        ViewerData[contentId].viewportRows = 1;
-        ViewerData[contentId].activeViewport = 0;
+        OHIF.viewer.data.viewportColumns = 1;
+        OHIF.viewer.data.viewportRows = 1;
+        OHIF.viewer.data.activeViewport = 0;
     }
 
-    Session.set('activeViewport', ViewerData[contentId].activeViewport || 0);
+    Session.set('activeViewport', OHIF.viewer.data.activeViewport || 0);
 
     // @TypeSafeStudies
     // Update the OHIF.viewer.Studies collection with the loaded studies
     OHIF.viewer.Studies.removeAll();
 
-    ViewerData[contentId].studyInstanceUids = [];
+    OHIF.viewer.data.studyInstanceUids = [];
     instance.data.studies.forEach(study => {
         study.selected = true;
         const studyMetadata = new OHIF.metadata.StudyMetadata(study);
         study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
         OHIF.viewer.Studies.insert(study);
-        ViewerData[contentId].studyInstanceUids.push(study.studyInstanceUid);
+        OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
     });
-
-    Session.set('ViewerData', ViewerData);
 });
 
 Template.viewer.onRendered(function() {

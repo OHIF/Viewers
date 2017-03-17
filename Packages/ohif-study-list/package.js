@@ -52,10 +52,4 @@ Package.onUse(function(api) {
     api.export('getCurrentServer', ['client', 'server']);
 
     api.export('Services', 'server');
-
-    // Export StudyList helper functions for usage in Routes
-    api.export('StudyList');
-
-    // Export the Collections
-    api.export('StudyListSelectedStudies', 'client');
 });

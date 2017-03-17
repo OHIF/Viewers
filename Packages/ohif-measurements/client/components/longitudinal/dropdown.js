@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -43,17 +44,9 @@ const viewStudies = () => {
         return;
     }
 
-    const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid);
-    const contentId = 'viewerTab';
+    const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid).join(';');
 
-    // Update the OHIF.viewer.data global object
-    OHIF.viewer.data = {
-        contentId: contentId,
-        studyInstanceUids: studyInstanceUids
-    };
-
-    // Switch to the new tab
-    switchToTab(contentId);
+    Router.go('viewerStudies', { studyInstanceUids });
 };
 
 /**

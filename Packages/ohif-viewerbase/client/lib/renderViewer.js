@@ -15,11 +15,11 @@ export const renderViewer = (context, params) => {
 
     // Render the viewer when the data is ready
     promise.then(({ studies, viewerData }) => {
+        OHIF.viewer.data = viewerData;
         context.render('app', {
             data: {
                 template: 'viewer',
-                studies,
-                viewerData
+                studies
             }
         });
     });

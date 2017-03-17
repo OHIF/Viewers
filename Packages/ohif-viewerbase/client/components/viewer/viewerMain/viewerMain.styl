@@ -1,5 +1,14 @@
 @import "{ohif:design}/app"
 
+#viewer
+  height: "calc(100% - %s)" % $topBarHeight
+
+  &>.loadingTextDiv
+    theme('color', '$textSecondaryColor')
+    font-size: 30px
+    height: 100%
+    line-height: "calc(100vh - %s)" % $topBarHeight
+
 .viewerMain
   width: 100%
   height: 100%

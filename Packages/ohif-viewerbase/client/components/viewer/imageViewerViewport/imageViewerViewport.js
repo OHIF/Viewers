@@ -46,20 +46,11 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     layoutManager.viewportData[viewportIndex] = layoutManager.viewportData[viewportIndex] || {};
     layoutManager.viewportData[viewportIndex].viewportIndex = viewportIndex;
 
-    // Get the contentID of the current study list tab, if the viewport is running
-    // alongside the study list package
-    const contentId = Session.get('activeContentId');
+    // Stop here if no data was defined for the viewer
+    if (!OHIF.viewer.data) return;
 
-    // If the viewer is inside a tab, create an object related to the specified viewport
-    // This data will be saved so that the tab can be reloaded to the same state after tabs
-    // are switched
-    if (contentId) {
-        if (!OHIF.viewer.data) {
-            return;
-        }
-
-        OHIF.viewer.data.loadedSeriesData[viewportIndex] = {};
-    }
+    // This data will be saved so that the viewport can be reloaded to the same state  later
+    OHIF.viewer.data.loadedSeriesData[viewportIndex] = {};
 
     // Create shortcut to displaySet
     const displaySet = data.displaySet;
@@ -67,7 +58,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     // Get stack from Stack Manager
     let stack = StackManager.findStack(displaySet.displaySetInstanceUid);
     // Make sure if the stack is already loaded in the stack manager, otherwise create it
-    if(!stack || !stack.imageIds) {
+    if (!stack || !stack.imageIds) {
         stack = StackManager.makeAndAddStack(data.study, displaySet);
     }
 
@@ -144,7 +135,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     try {
         imagePromise = cornerstone.loadAndCacheImage(imageId);
     } catch (error) {
-        console.log(error);
+        OHIF.log.info(error);
         if (!imagePromise) {
             errorLoadingHandler(element, imageId, error);
             return;
@@ -163,7 +154,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     const callbacks = imageViewerViewportData.callbacks;
 
     // Check if it has before loadAndCacheImage callback
-    if(typeof callbacks.before === 'function') {
+    if (typeof callbacks.before === 'function') {
         OHIF.log.info('imageViewerViewport before loadAndCacheImage callback');
         callbacks.before(imagePromise, templateData);
     }
@@ -262,8 +253,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         let fps;
         if (multiframeMetadata && multiframeMetadata.averageFrameRate > 0) {
             fps = multiframeMetadata.averageFrameRate;
-        }
-        else {
+        } else {
             fps = OHIF.viewer.cine.framesPerSecond;
         }
 
@@ -431,7 +421,6 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Check if image plane (orientation / location) data is present for the current image
         const imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
         if (imagePlane && imagePlane.frameOfReferenceUID) {
-
             // If it is, add this element to the global synchronizer...
             OHIF.viewer.updateImageSynchronizer.add(element);
 
@@ -449,7 +438,6 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             }
         }
 
-
         // Set the active viewport based on the Session variable
         // This is done to ensure that the active element has the current
         // focus, so that keyboard events are triggered.
@@ -465,8 +453,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Update the LayoutManagerUpdated session key
         layoutManager.updateSession();
 
-         // Check if it has after loadAndCacheImage callback
-        if(typeof callbacks.after === 'function') {
+        // Check if it has after loadAndCacheImage callback
+        if (typeof callbacks.after === 'function') {
             OHIF.log.info('imageViewerViewport after callback');
             callbacks.after(image, templateData, element);
         }
@@ -531,7 +519,7 @@ Template.imageViewerViewport.onRendered(function() {
     let { currentImageIdIndex } = templateData;
     const { viewport, studyInstanceUid, seriesInstanceUid, renderedCallback, displaySetInstanceUid } = templateData;
 
-    if(!currentImageIdIndex) {
+    if (!currentImageIdIndex) {
         currentImageIdIndex = 0;
     }
 
@@ -570,8 +558,9 @@ Template.imageViewerViewport.onDestroyed(function() {
     OHIF.log.info('imageViewerViewport onDestroyed');
 
     // When a viewport element is being destroyed
-    var element = this.find('.imageViewerViewport');
-    if (!element || $(element).hasClass('empty') || !$(element).find('canvas').length) {
+    const element = this.find('.imageViewerViewport');
+    const $element = $(element);
+    if (!element || $element.hasClass('empty') || !$element.find('canvas').length) {
         return;
     }
 
@@ -600,7 +589,7 @@ Template.imageViewerViewport.onDestroyed(function() {
 
     // Trigger custom Destroy Viewport event
     // for compatibility with other systems
-    $(element).trigger('OHIFDestroyedViewport');
+    $element.trigger('OHIFDestroyedViewport');
 
     // Disable the viewport element with Cornerstone
     // This also triggers the removal of the element from all available

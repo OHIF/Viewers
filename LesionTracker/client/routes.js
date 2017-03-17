@@ -2,9 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 
-// TODO: remove the line below
-window.Router = Router;
-
 Router.configure({
     layoutTemplate: 'layout',
     loadingTemplate: 'layout'
@@ -30,11 +27,17 @@ Router.onBeforeAction(function() {
 });
 
 Router.route('/', function() {
-    this.redirect('/studylist');
+    Router.go('studylist', {}, { replaceState: true });
 }, { name: 'home' });
 
 Router.route('/studylist', function() {
-    this.render('app', { data: { template: 'studylist' } });
+    // Retrieve the timepoints data to display in studylist
+    const promise = OHIF.studylist.timepointApi.retrieveTimepoints({}).then(() => {
+        this.render('app', { data: { template: 'studylist' } });
+    });
+
+    // Show loading state while preparing the studylist data
+    OHIF.ui.showDialog('dialogLoading', { promise });
 }, { name: 'studylist' });
 
 Router.route('/viewer/timepoints/:timepointId', function() {

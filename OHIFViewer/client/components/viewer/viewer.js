@@ -25,10 +25,10 @@ const initHangingProtocol = () => {
         const layoutManager = OHIF.viewerbase.layoutManager;
 
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new StudyList.classes.OHIFStudyMetadataSource();
+        const studyMetadataSource = new OHIF.studylist.classes.OHIFStudyMetadataSource();
 
         // Get prior studies map
-        const studyPriorsMap = StudyList.functions.getStudyPriorsMap(studyMetadataList);
+        const studyPriorsMap = OHIF.studylist.functions.getStudyPriorsMap(studyMetadataList);
 
         // Creates Protocol Engine object with required arguments
         const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, studyPriorsMap, studyMetadataSource);

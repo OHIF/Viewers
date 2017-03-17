@@ -245,7 +245,7 @@ Template.studylistResult.onRendered(() => {
         endDate = today;
     }
 
-    const datePicker = $studyDate.daterangepicker({
+    instance.datePicker = $studyDate.daterangepicker({
         maxDate: today,
         autoUpdateInput: true,
         startDate: startDate,
@@ -258,12 +258,19 @@ Template.studylistResult.onRendered(() => {
     }).data('daterangepicker');
 
     if (startDate && endDate) {
-        datePicker.updateInputText();
+        instance.datePicker.updateInputText();
         $studyDate.trigger('change');
     } else {
         // Retrieve all studies
         search();
     }
+});
+
+Template.studylistResult.onDestroyed(() => {
+    const instance = Template.instance();
+
+    // Destroy the daterangepicker to prevent residual elements on DOM
+    instance.datePicker.remove();
 });
 
 function resetSortingColumns(instance, sortingColumn) {

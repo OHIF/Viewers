@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
@@ -22,28 +23,8 @@ const dblClickOnStudy = data => {
 
     const timepoint = timepointApi.study(data.studyInstanceUid)[0];
     if (timepoint) {
-        OHIF.lesiontracker.openNewTabWithTimepoint(timepoint.timepointId);
+        Router.go('viewerTimepoint', { timepointId: timepoint.timepointId });
     } else {
-        openTab(data.studyInstanceUid);
+        Router.go('viewerStudies', { studyInstanceUids: data.studyInstanceUid });
     }
-};
-
-/**
- * Opens a study
- *
- * @param studyInstanceUid The UID of the Study to be opened
- * @param title The title to be used for the tab heading
- */
-const openTab = studyInstanceUid => {
-    const contentId = 'viewerTab';
-
-    // Update the OHIF.viewer.data global object
-    OHIF.viewer.data = {
-        contentId: contentId,
-        isUnassociatedStudy: true,
-        studyInstanceUids: [studyInstanceUid]
-    };
-
-    // Switch to the new tab
-    switchToTab(contentId);
 };

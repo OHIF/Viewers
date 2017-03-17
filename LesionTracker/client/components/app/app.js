@@ -4,15 +4,9 @@ import { Router } from 'meteor/iron:router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
-const studylistContentId = 'studylistTab';
-const viewerContentId = 'viewerTab';
-
-// Define the OHIF.viewer.data global object
 Template.app.onCreated(() => {
     const instance = Template.instance();
     instance.headerClasses = new ReactiveVar('');
-
-    OHIF.viewer.data = instance.data.viewerData || {};
 
     OHIF.header.dropdown.setItems([{
         action: OHIF.user.audit,
@@ -50,6 +44,9 @@ Template.app.onCreated(() => {
         const routeName = currentRoute.route.getName();
         const isViewer = routeName.indexOf('viewer') === 0;
 
+        // Define the OHIF.viewer.data global object
+        OHIF.viewer.data = OHIF.viewer.data || Session.get('ViewerData') || {};
+
         // Add or remove the strech class from body
         $(document.body)[isViewer ? 'addClass' : 'removeClass']('stretch');
 
@@ -62,23 +59,41 @@ Template.app.onCreated(() => {
 });
 
 Template.app.events({
-    'click .js-toggle-studyList'(event) {
-        OHIF.ui.unsavedChanges.presentProactiveDialog('viewer.*', (hasChanges, userChoice) => {
-            if (hasChanges) {
+    'click .js-toggle-studyList'(event, instance) {
+        event.preventDefault();
+        event.stopPropagation();
+        const isViewer = Session.get('ViewerOpened');
 
-                switch (userChoice) {
-                    case 'abort-action':
-                        return;
-                    case 'save-changes':
-                        OHIF.ui.unsavedChanges.trigger('viewer', 'save', false);
-                        OHIF.ui.unsavedChanges.clear('viewer.*');
-                        break;
-                    case 'abandon-changes':
-                        OHIF.ui.unsavedChanges.clear('viewer.*');
-                        break;
-                }
-
+        if (!isViewer) {
+            const timepointId = OHIF.viewer.data.currentTimepointId;
+            if (timepointId) {
+                Router.go('viewerTimepoint', { timepointId });
+            } else {
+                const { studyInstanceUids } = OHIF.viewer.data;
+                Router.go('viewerStudies', { studyInstanceUids });
             }
+
+            return;
+        }
+
+        OHIF.ui.unsavedChanges.presentProactiveDialog('viewer.*', (hasChanges, userChoice) => {
+            if (!hasChanges) {
+                return Router.go('studylist');
+            }
+
+            switch (userChoice) {
+                case 'abort-action':
+                    return;
+                case 'save-changes':
+                    OHIF.ui.unsavedChanges.trigger('viewer', 'save', false);
+                    OHIF.ui.unsavedChanges.clear('viewer.*');
+                    break;
+                case 'abandon-changes':
+                    OHIF.ui.unsavedChanges.clear('viewer.*');
+                    break;
+            }
+
+            Router.go('studylist');
         }, {
             position: {
                 x: event.clientX + 15,
@@ -92,24 +107,12 @@ Template.app.helpers({
     userName: OHIF.user.getName,
 
     studyListToggleText() {
-        const contentId = Session.get('activeContentId');
+        const isViewer = Session.get('ViewerOpened');
 
-        // If the Viewer has not been opened yet, 'Back to viewer' should
-        // not be displayed
-        const viewerContentExists = !!Object.keys(OHIF.viewer.data).length;
-        if (!viewerContentExists) {
-            return;
-        }
+        // Return empty if viewer was not opened yet
+        if (!OHIF.viewer.data.studyInstanceUids) return;
 
-        if (contentId === studylistContentId) {
-            return 'Back to viewer';
-        } else if (contentId === viewerContentId) {
-            return 'Study list';
-        }
-    },
-
-    onStudyList() {
-        return (Session.get('activeContentId') === 'studylistTab');
+        return isViewer ? 'Study list' : 'Back to viewer';
     },
 
     dasherize(text) {

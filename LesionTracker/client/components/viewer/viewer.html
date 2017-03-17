@@ -1,15 +1,17 @@
 <template name="viewer">
-    {{#if and Template.subscriptionsReady dataSourcesReady}}
-        <div class="viewerDialogs">
+    <div class="viewerDialogs">
+        {{#if and Template.subscriptionsReady dataSourcesReady}}
             {{>confirmDeleteDialog}}
             {{>measurementTableHUD (clone this)}}
             {{>cineDialog}}
-        </div>
-        <div id="viewer">
+        {{/if}}
+    </div>
+    <div id="viewer">
+        {{#if and Template.subscriptionsReady dataSourcesReady}}
             {{>toolbarSection (clone this)}}
             {{>viewerSection (clone this)}}
-        </div>
-    {{else}}
-        {{>loadingText}}
-    {{/if}}
+        {{else}}
+            {{>loadingText}}
+        {{/if}}
+    </div>
 </template>
