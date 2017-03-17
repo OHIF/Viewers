@@ -1,9 +1,10 @@
-import { OHIF } from 'meteor/ohif:core';
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { StackManager } from '../StackManager.js';
-import { OHIFError } from './OHIFError';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
+import { OHIFError } from './OHIFError';
+import { StackManager } from '../StackManager.js';
 
 export class StudyPrefetcher {
 
@@ -11,7 +12,7 @@ export class StudyPrefetcher {
         this.studies = [];
         this.prefetchDisplaySetsTimeout = 300;
         this.lastActiveViewportElement = null;
-        
+
         $(cornerstone).on('CornerstoneImageCacheFull.StudyPrefetcher', _.bind(this.cacheFullHandler, this));
     }
 
@@ -84,8 +85,7 @@ export class StudyPrefetcher {
         if (this.hasStack(element)) {
             // Check if this is a clip or not
             const activeViewportIndex = Session.get('activeViewport');
-            const contentId = Session.get('activeContentId');
-            const displaySetInstanceUid = ViewerData[contentId].loadedSeriesData[activeViewportIndex].displaySetInstanceUid;
+            const displaySetInstanceUid = OHIF.viewer.data.loadedSeriesData[activeViewportIndex].displaySetInstanceUid;
 
             const stack = StackManager.findStack(displaySetInstanceUid);
 
@@ -178,7 +178,7 @@ export class StudyPrefetcher {
     getActiveDisplaySet(displaySets, instance) {
         return _.find(displaySets, displaySet => {
             return _.some(displaySet.images, displaySetImage => {
-                return displaySetImage.sopInstanceUid == instance.sopInstanceUid;
+                return displaySetImage.sopInstanceUid === instance.sopInstanceUid;
             });
         });
     }
@@ -308,5 +308,5 @@ export class StudyPrefetcher {
         OHIF.log.warn('Cache full');
         this.stopPrefetching();
     }
-    
-};
+
+}
