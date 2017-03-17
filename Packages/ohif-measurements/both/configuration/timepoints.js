@@ -65,7 +65,7 @@ class TimepointApi {
             OHIF.log.info('Disassociation completed');
 
             this.timepoints.remove({});
-            this.retrieveTimepoints();
+            this.retrieveTimepoints({});
         });
     }
 

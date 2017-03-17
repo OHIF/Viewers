@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.caseProgress.onCreated(() => {
@@ -10,11 +11,13 @@ Template.caseProgress.onCreated(() => {
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar();
     instance.path = 'viewer.studyViewer.measurements';
+    instance.saveObserver = new Tracker.Dependency();
 
     instance.saveData = () => {
         // Clear signaled unsaved changes...
         const successHandler = () => {
             OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
+            instance.saveObserver.changed();
         };
 
         // Display the error messages
@@ -165,7 +168,10 @@ Template.caseProgress.helpers({
     },
 
     isFinishDisabled() {
-        // Run this computation every time any measurement / timepoint suffer changes
+        const instance = Template.instance();
+
+        // Run this computation on save or every time any measurement / timepoint suffer changes
+        instance.saveObserver.depend();
         Session.get('LayoutManagerUpdated');
 
         return OHIF.ui.unsavedChanges.probe('viewer.*') === 0;
