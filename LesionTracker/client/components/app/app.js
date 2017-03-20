@@ -107,7 +107,7 @@ Template.app.helpers({
         const isViewer = Session.get('ViewerOpened');
 
         // Return empty if viewer was not opened yet
-        if (!OHIF.viewer.data.studyInstanceUids) return;
+        if (!OHIF.utils.ObjectPath.get(OHIF, 'viewer.data.studyInstanceUids')) return;
 
         return isViewer ? 'Study list' : 'Back to viewer';
     },

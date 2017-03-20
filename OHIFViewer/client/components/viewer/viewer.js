@@ -93,7 +93,6 @@ Template.viewer.onCreated(() => {
     } else {
         OHIF.log.info('Setting default viewer data');
         OHIF.viewer.loadedSeriesData = {};
-        OHIF.viewer.data = {};
         OHIF.viewer.data.loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object

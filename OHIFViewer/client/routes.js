@@ -1,5 +1,5 @@
-import { Session } from 'meteor/session';
 import { Router } from 'meteor/iron:router';
+import { OHIF } from 'meteor/ohif:core';
 
 Router.configure({
     layoutTemplate: 'layout',
@@ -7,26 +7,16 @@ Router.configure({
 });
 
 Router.onBeforeAction('loading');
-Router.onBeforeAction(function() {
-    this.next();
-});
 
 Router.route('/', function() {
-    this.render('ohifViewer');
-});
+    Router.go('studylist', {}, { replaceState: true });
+}, { name: 'home' });
 
-Router.route('/viewer/:_id', {
-    layoutTemplate: 'layout',
-    name: 'viewer',
-    onBeforeAction: function() {
-        var studyInstanceUid = this.params._id;
+Router.route('/studylist', function() {
+    this.render('ohifViewer', { data: { template: 'studylist' } });
+}, { name: 'studylist' });
 
-        this.render('ohifViewer', {
-            data: function() {
-                return {
-                    studyInstanceUid: studyInstanceUid
-                };
-            }
-        });
-    }
-});
+Router.route('/viewer/:studyInstanceUids', function() {
+    const studyInstanceUids = this.params.studyInstanceUids.split(';');
+    OHIF.viewerbase.renderViewer(this, { studyInstanceUids }, 'ohifViewer');
+}, { name: 'viewerStudies' });

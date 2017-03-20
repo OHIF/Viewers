@@ -1,42 +1,37 @@
 @import "{ohif:design}/app"
 
-$expandedHeight = 160px
+body>.header
 
-.logoImage
-  display: inline-block
-  height: 100%
-  float: left
-
-.topBar
-  height: $topBarHeight
-  padding: 10px 10px 0
-  theme('color', '$textPrimaryColor')
-  theme('background-color', '$primaryBackgroundColor')
-  transition(all 0.5s ease)
-
-  &>.clearfix
-    position: relative
-
-  .brandSection
+  .brand
     height: 30px
     display: inline-block
     text-decoration: none
 
-    .logoImage
+    .logo-image
+      display: inline-block
+      fill: transparent
+      float: left
+      height: 100%
       margin: 0 8px 0 0
       width: 30px
 
-    .logoText
+    .logo-text
       display: inline-block
       font-family: $logoFontFamily
+      font-size: 14px
       font-weight: $logoFontWeight
       theme('color', '$textPrimaryColor')
       line-height: 30px
 
-  .studyListLinkSection
-    theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
-    margin: 3px 0 0 10px
-    padding: 0 0 0 10px
+  a.header-menu
+    theme('color', '$textPrimaryColor')
+
+    .header-options
+      font-size: 13px
+
+    .menu-toggle
+      display: inline-block
+      height: 18px
 
   .btn
     theme('color', '$textSecondaryColor')
@@ -51,22 +46,25 @@ $expandedHeight = 160px
     &:active
       theme('color', '$activeColor')
 
-  &.studyList
-    background-color: rgba(21, 25, 30, 0.7)
-    height: $expandedHeight
+  .studyListLinkSection
+    theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+    margin: 3px 0 0 10px
+    padding: 0 0 0 10px
+
+  &.header-big
     padding-left: $studyListPadding
     padding-right: $studyListPadding
 
-    .brandSection
+    .brand
       height: 100%
       width: 80%
-      line-height: $expandedHeight - 10px
+      line-height: $topBarExpandedHeight - 10px
 
-      .logoImage
-        width: 50px
+      .logo-image
         margin: 0 20px 0 0
+        width: 50px
 
-      .logoText
+      .logo-text
         font-size: 30px
 
     .studyListLinkSection

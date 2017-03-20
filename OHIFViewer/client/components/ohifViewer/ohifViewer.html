@@ -1,44 +1,25 @@
 <template name="ohifViewer">
-    <div class="topBar noselect {{#if onStudyList}}studyList{{/if}}">
-        <div class="clearfix">
-            <a target='_blank'
-               class="brandSection pull-left"
-               href="http://ohif.org">
-                <svg class="logoImage">
-                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
-                </svg>
-                <div class="logoText">
-                    Open Health Imaging Foundation
-                </div>
-            </a>
+    {{#header brandHref='http://ohif.org' headerClasses=instance.headerClasses}}
+        {{#section 'brand'}}
+            <svg class="logo-image">
+                <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
+            </svg>
+            <div class="logo-text">Open Health Imaging Foundation</div>
+        {{/section}}
+        {{#section 'headerAfterBrand'}}
             {{#if studyListToggleText}}
-                <a class="btn studyListLinkSection pull-left js-toggle-studyList">
+                <a href="#" class="btn studyListLinkSection pull-left js-toggle-studyList">
                     {{studyListToggleText}}
                 </a>
             {{/if}}
-            <span class="pull-right">
-                <div class="dropdown">
-                    <div class="dropdown-toggle noselect clearfix" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="pull-left m-r-1">Options</span>
-                        <div class="menuButton pull-right"><span class="caret-down"></span></div>
-                    </div>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                        <li>
-                            <a id="serverInformation">
-                                <i class="fa fa-server fa-lg"></i> Server Information
-                            </a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li>
-                            <a data-toggle="modal" data-target="#aboutModal">
-                                <i class="fa fa-info"></i> About
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </span>
-        </div>
-    </div>
-    {{>studylist}}
-    {{>aboutModal}}
+        {{/section}}
+        {{#section 'headerMenu'}}
+            <span class="header-options pull-left m-r-1">Options</span>
+            <div class="menu-toggle pull-right">
+                <span class="caret-down"></span>
+            </div>
+        {{/section}}
+    {{/header}}
+
+    {{>Template.dynamic template=(choose this.template 'studylist') data=this}}
 </template>

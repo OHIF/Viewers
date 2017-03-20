@@ -5,8 +5,8 @@ import { Session } from 'meteor/session';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
-
 import { OHIF } from 'meteor/ohif:core';
+
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';

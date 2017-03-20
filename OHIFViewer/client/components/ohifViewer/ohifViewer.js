@@ -14,7 +14,7 @@ Template.ohifViewer.onCreated(() => {
         icon: 'fa fa-server fa-lg',
         separatorAfter: true
     }, {
-        action: () => $('#aboutModal').show(),
+        action: () => OHIF.ui.showDialog('aboutModal'),
         text: 'About',
         icon: 'fa fa-info'
     }]);
@@ -55,7 +55,7 @@ Template.ohifViewer.helpers({
         const isViewer = Session.get('ViewerOpened');
 
         // Return empty if viewer was not opened yet
-        if (!OHIF.viewer.data.studyInstanceUids) return;
+        if (!OHIF.utils.ObjectPath.get(OHIF, 'viewer.data.studyInstanceUids')) return;
 
         return isViewer ? 'Study list' : 'Back to viewer';
     }

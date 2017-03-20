@@ -6,7 +6,7 @@ import { OHIF } from 'meteor/ohif:core';
  * @param {Context} context Context of the router
  * @param {Object} params Parameters that will be used to prepare the viewer data
  */
-export const renderViewer = (context, params) => {
+export const renderViewer = (context, params, layoutTemplate='app') => {
     // Wait until the viewer data is ready to render it
     const promise = OHIF.viewerbase.prepareViewerData(params);
 
@@ -16,7 +16,7 @@ export const renderViewer = (context, params) => {
     // Render the viewer when the data is ready
     promise.then(({ studies, viewerData }) => {
         OHIF.viewer.data = viewerData;
-        context.render('app', {
+        context.render(layoutTemplate, {
             data: {
                 template: 'viewer',
                 studies
