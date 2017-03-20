@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 

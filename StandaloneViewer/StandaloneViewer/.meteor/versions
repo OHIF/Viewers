@@ -6,6 +6,7 @@ aldeed:schema-index@1.1.1
 aldeed:simple-schema@1.5.3
 aldeed:template-extension@4.0.0
 allow-deny@1.0.5
+amplify@1.0.0
 autoupdate@1.3.12
 babel-compiler@6.13.0
 babel-runtime@1.0.1
@@ -76,9 +77,12 @@ ohif:cornerstone@0.0.1
 ohif:design@0.0.1
 ohif:dicom-services@0.0.1
 ohif:hanging-protocols@0.0.1
+ohif:header@0.0.1
 ohif:log@0.0.1
 ohif:metadata@0.0.1
 ohif:study-list@0.0.1
+ohif:themes@0.0.1
+ohif:themes-common@0.0.1
 ohif:viewerbase@0.0.1
 ohif:wadoproxy@0.0.1
 ordered-dict@1.0.9
@@ -110,6 +114,7 @@ templating-runtime@1.2.15
 templating-tools@1.0.5
 tracker@1.1.1
 twbs:bootstrap@3.3.6
+u2622:persistent-session@0.4.4
 ui@1.0.12
 underscore@1.0.10
 url@1.0.11

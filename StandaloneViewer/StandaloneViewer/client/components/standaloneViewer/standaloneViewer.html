@@ -1,17 +1,11 @@
 <template name="standaloneViewer">
-    <div class="topBar noselect">
-        <div class="clearfix">
-            <a target='_blank'
-               class="brandSection pull-left"
-               href="http://ohif.org">
-                <svg class="logoImage">
-                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
-                </svg>
-                <div class="logoText">
-                    Open Health Imaging Foundation
-                </div>
-            </a>
-        </div>
-    </div>
-    {{> viewer }}
+    {{#header}}
+        {{#section 'brand'}}
+            <svg class="logo-image">
+                <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
+            </svg>
+            <div class="logo-text">Open Health Imaging Foundation</div>
+        {{/section}}
+    {{/header}}
+    {{>viewer}}
 </template>

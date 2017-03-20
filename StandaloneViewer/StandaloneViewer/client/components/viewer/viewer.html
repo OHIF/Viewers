@@ -1,15 +1,15 @@
 <template name="viewer">
     {{#if Template.subscriptionsReady}}
-    <div class="viewerDialogs">
-        {{> cineDialog}}
-        {{> layoutChooser }}
-        {{> annotationDialogs }}
-    </div>
-    <div id="viewer">
-        {{> toolbarSection (clone this)}}
-        {{> flexboxLayout (clone this)}}
-    </div>
+        <div class="viewerDialogs">
+            {{>cineDialog}}
+            {{>layoutChooser}}
+            {{>annotationDialogs}}
+        </div>
+        <div id="viewer">
+            {{>toolbarSection (clone this)}}
+            {{>flexboxLayout (clone this)}}
+        </div>
     {{else}}
-        {{> loadingText}}
+        {{>loadingText}}
     {{/if}}
 </template>

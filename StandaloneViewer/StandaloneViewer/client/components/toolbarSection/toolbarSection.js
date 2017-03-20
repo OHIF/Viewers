@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
@@ -85,7 +86,7 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-trash'
         });
 
-        var buttonData = [];
+        const buttonData = [];
 
         buttonData.push({
             id: 'zoom',
@@ -220,7 +221,7 @@ Template.toolbarSection.onRendered(function() {
     const disabledToolButtons = states.disabledToolButtons;
     const allToolbarButtons = $('#toolbar').find('button');
     if (disabledToolButtons && disabledToolButtons.length > 0) {
-        for (var i = 0; i < allToolbarButtons.length; i++) {
+        for (let i = 0; i < allToolbarButtons.length; i++) {
             const toolbarButton = allToolbarButtons[i];
             $(toolbarButton).prop('disabled', false);
 

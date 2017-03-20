@@ -18,6 +18,9 @@ body>.header
     text-decoration: none
     theme('color', '$defaultColor')
 
+    &:empty
+      display: none
+
   &.header-big
     height: $topBarExpandedHeight
     background-color: rgba(21, 25, 30, 0.7)

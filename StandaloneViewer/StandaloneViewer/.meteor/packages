@@ -20,6 +20,7 @@ shell-server@0.2.1            # Server-side component of the `meteor shell` comm
 
 # OHIF Packages
 ohif:core
+ohif:header
 ohif:design
 ohif:cornerstone
 ohif:viewerbase
@@ -34,6 +35,7 @@ aldeed:simple-schema@1.5.3
 stylus@2.513.8
 iron:router
 session@1.1.7
+u2622:persistent-session@0.4.4
 practicalmeteor:loglevel
 reactive-dict@1.1.8
 twbs:bootstrap
