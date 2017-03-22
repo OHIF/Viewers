@@ -1,31 +1,47 @@
-var http = Npm.require('http'), url = Npm.require('url');
+const http = Npm.require('http');
+const https = Npm.require('https');
+const url = Npm.require('url');
 
 function makeRequest(geturl, options, callback) {
-    var parsed = url.parse(geturl), jsonHeaders = ['application/json', 'application/dicom+json'];
-    
-    var requestOpt = {
+    const parsed = url.parse(geturl);
+    const jsonHeaders = ['application/json', 'application/dicom+json'];
+
+    let requestOpt = {
         hostname: parsed.hostname,
-        port: parsed.port,
         headers: {
             Accept: 'application/json'
         },
         path: parsed.path,
         method: 'GET'
     };
+
+    let requester;
+    if (parsed.protocol === 'https:') {
+        requester = https.request;
+
+        const allowUnauthorizedAgent = new https.Agent({ rejectUnauthorized: false });
+        requestOpt.agent = allowUnauthorizedAgent
+    } else {
+        requester = http.request;
+    }
+
+    if (parsed.port) {
+        requestOpt.port = parsed.port;
+    }
+
     if (options.auth) {
         requestOpt.auth = options.auth;
     }
 
-    var req = http.request(requestOpt, function(resp) {
+    const req = requester(requestOpt, function(resp) {
         const contentType = (resp.headers['content-type'] || '').split(';')[0];
-
         if (jsonHeaders.indexOf(contentType) == -1) {
             const errorMessage = `We only support json but "${contentType}" was sent by the server`;
             callback(new Error(errorMessage), null);
             return;
         }
 
-        var output = '';
+        let output = '';
         resp.setEncoding('utf8');
         resp.on('data', function(chunk){
           output += chunk;
@@ -36,7 +52,7 @@ function makeRequest(geturl, options, callback) {
     });
     req.end();
 }
-var makeRequestSync = Meteor.wrapAsync(makeRequest);
+const makeRequestSync = Meteor.wrapAsync(makeRequest);
 
 DICOMWeb.getJSON = function(geturl, options) {
     if (options.logRequests) {
@@ -47,7 +63,7 @@ DICOMWeb.getJSON = function(geturl, options) {
         console.time(geturl);
     }
 
-    var result = makeRequestSync(geturl, options);
+    const result = makeRequestSync(geturl, options);
 
     if (options.logTiming) {
         console.timeEnd(geturl);

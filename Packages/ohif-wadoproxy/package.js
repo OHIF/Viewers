@@ -13,11 +13,10 @@ Package.onUse(function(api) {
 
     api.use('ohif:core');
 
-    api.addFiles('server/namespace.js');
-    
-    // Server-only
+    api.addFiles('server/namespace.js', 'server');
     api.addFiles('server/initialize.js', 'server');
     api.addFiles('server/routes.js', 'server');
+    api.addFiles('server/convertURL.js', 'server');
 
     // Global exports
     api.export('WADOProxy');

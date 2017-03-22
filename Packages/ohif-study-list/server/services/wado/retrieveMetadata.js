@@ -101,7 +101,8 @@ function getPaletteColor(server, instance, tag, lutDescriptor) {
     const lut = [];
     const numLutEntries = lutDescriptor[0];
     const bits = lutDescriptor[2];
-    const data = DICOMWeb.getBulkData(instance[tag].BulkDataURI, server.requestOptions);
+    const uri = WADOProxy.convertURL(instance[tag].BulkDataURI, server)
+    const data = DICOMWeb.getBulkData(uri);
 
     for (var i = 0; i < numLutEntries; i++) {
         if(bits === 16) {
@@ -296,8 +297,8 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
             radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
             baseWadoRsUri: baseWadoRsUri,
-            wadouri: WADOProxy.convertURL(wadouri, server.requestOptions),
-            wadorsuri: WADOProxy.convertURL(wadorsuri),
+            wadouri: WADOProxy.convertURL(wadouri, server),
+            wadorsuri: WADOProxy.convertURL(wadorsuri, server),
             imageRendering: server.imageRendering,
             thumbnailRendering: server.thumbnailRendering
         };

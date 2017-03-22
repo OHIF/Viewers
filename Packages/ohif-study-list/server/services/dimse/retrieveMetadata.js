@@ -135,7 +135,8 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
 
         // Retrieve the actual data over WADO-URI
         var server = getCurrentServer();
-        instanceSummary.wadouri = WADOProxy.convertURL(server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom', server.requestOptions);
+        const wadouri = `${server.wadoUriRoot}?requestType=WADO&studyUID=${studyInstanceUid}&seriesUID=${seriesInstanceUid}&objectUID=${sopInstanceUid}&contentType=application%2Fdicom`;
+        instanceSummary.wadouri = WADOProxy.convertURL(wadouri, server);
 
         series.instances.push(instanceSummary);
     });

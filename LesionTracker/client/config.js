@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstoneWADOImageLoader } from 'meteor/ohif:cornerstone';
 
@@ -19,4 +20,15 @@ Meteor.startup(function() {
     };
 
     cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+
+    cornerstoneWADOImageLoader.configure({
+        beforeSend: function(xhr) {
+            const userId = Meteor.userId();
+            const loginToken = Accounts._storedLoginToken();
+            if (userId && loginToken) {
+                xhr.setRequestHeader("x-user-id", userId);
+                xhr.setRequestHeader("x-auth-token", loginToken);
+            }
+        }
+    });
 });

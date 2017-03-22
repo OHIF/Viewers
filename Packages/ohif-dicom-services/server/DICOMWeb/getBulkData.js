@@ -1,6 +1,6 @@
-
 const ASCII = 'ascii';
-const http = Npm.require('http'), url = Npm.require('url');
+const http = Npm.require('http')
+const url = Npm.require('url');
 
 function getMultipartContentInfo(headers) {
 
@@ -120,24 +120,37 @@ function parseResponse(headers, data) {
 }
 
 function makeRequest(geturl, options, callback) {
-
-    let parsedUrl = url.parse(geturl);
+    const headers = 'multipart/related; type=application/octet-stream';
+    const parsed = url.parse(geturl);
 
     let requestOpt = {
-        hostname: parsedUrl.hostname,
-        port: parsedUrl.port,
+        hostname: parsed.hostname,
         headers: {
-            Accept: 'multipart/related; type=application/octet-stream'
+            Accept: headers
         },
-        path: parsedUrl.path,
-        method: 'GET'
+        path: parsed.path,
+        method: 'GET',
     };
+
+    let requester;
+    if (parsed.protocol === 'https:') {
+        requester = https.request;
+
+        const allowUnauthorizedAgent = new https.Agent({ rejectUnauthorized: false });
+        requestOpt.agent = allowUnauthorizedAgent
+    } else {
+        requester = http.request;
+    }
+
+    if (parsed.port) {
+        requestOpt.port = parsed.port;
+    }
 
     if (options.auth) {
         requestOpt.auth = options.auth;
     }
 
-    let req = http.request(requestOpt, function(resp) {
+    let req = requester(requestOpt, function(resp) {
 
         let data = [];
 
@@ -168,6 +181,7 @@ function makeRequest(geturl, options, callback) {
 
 const makeRequestSync = Meteor.wrapAsync(makeRequest);
 
+// TODO: Unify this stuff with the getJSON code
 DICOMWeb.getBulkData = function(geturl, options) {
 
     if (options.logRequests) {

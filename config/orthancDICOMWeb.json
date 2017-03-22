@@ -29,5 +29,8 @@
         "displaySetNavigationMultipleViewports": true,
         "autoPositionMeasurementsTextCallOuts": "TRLB"
     }
+  },
+  "proxy": {
+    "enabled": true
   }
 }
