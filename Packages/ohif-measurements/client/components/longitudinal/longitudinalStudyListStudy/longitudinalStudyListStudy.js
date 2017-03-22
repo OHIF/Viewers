@@ -11,7 +11,7 @@ Template.longitudinalStudyListStudy.replaces(defaultTemplate);
 // Add the TimepointName helper to the default template. The
 // HTML of this template is replaced with that of longitudinalStudyListStudy
 Template[defaultTemplate].helpers({
-    timepointName: function() {
+    timepointName() {
         const instance = Template.instance();
         const timepointApi = OHIF.studylist.timepointApi;
         if (!timepointApi) {
@@ -26,10 +26,10 @@ Template[defaultTemplate].helpers({
         return timepointApi.name(timepoint);
     },
 
-    reviewerTip: function() {
+    reviewerTip() {
         const instance = Template.instance();
         const timepointApi = OHIF.studylist.timepointApi;
-        if (!timepointApi) {
+        if (!timepointApi || !window.Reviewers) {
             return;
         }
 
@@ -38,7 +38,7 @@ Template[defaultTemplate].helpers({
             return;
         }
 
-        const timepointReviewers = Reviewers.findOne({ timepointId: timepoint.timepointId });
+        const timepointReviewers = window.Reviewers.findOne({ timepointId: timepoint.timepointId });
         if (!timepointReviewers) {
             return;
         }

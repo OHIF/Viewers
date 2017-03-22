@@ -1,6 +1,10 @@
 @import "{ohif:design}/app"
 
-.state-error
+.form-themed .state-error, .state-error
+
+    &.wrapperLabel input + .wrapperText
+        theme('color', '$uiStateErrorText')
+
     &+.tooltip
 
         .tooltip-inner
@@ -21,9 +25,7 @@
         &.form-control, .form-control
             theme('background-color', '$uiStateError')
             theme('border-color', '$uiStateErrorBorder')
-            theme('color', '$uiStateErrorText')
 
         .select2-selection
             theme('background-color', '$uiStateError')
             theme('border-color', '$uiStateErrorBorder')
-            theme('color', '$uiStateErrorText')

@@ -33,6 +33,7 @@ Package.onUse(function(api) {
         'styles/common/webfonts.styl',
         'styles/common/keyframes.styl',
         'styles/common/global.styl',
+        'styles/common/form.styl',
         'styles/common/spacings.styl'
     ], 'client');
 

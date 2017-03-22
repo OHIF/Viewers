@@ -1,7 +1,7 @@
 <template name="wrapperLabel">
     {{#unless this.labelAsDiv}}
         <label class="wrapperLabel {{this.labelClass}}" {{clone this.labelTagAttributes}}>
-            {{#wrapperLabelContent}}
+            {{#wrapperLabelContent (extend this labelAfter=true)}}
                 {{>UI.contentBlock}}
             {{/wrapperLabelContent}}
         </label>

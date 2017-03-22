@@ -1,0 +1,39 @@
+@import "{ohif:design}/app"
+
+label.wrapperLabel
+  cursor: pointer
+  display: flex
+  flex-direction: column
+
+  .wrapperText
+    display: block
+    order: -1
+    transition(color 0.3s ease)
+
+.form-themed
+
+  input[type=text], input[type=password]
+    theme('background-color', '$uiGray')
+    theme('border-color', '$uiBorderColor')
+    theme('color', '$textPrimaryColor')
+    font-weight: normal
+    transition(background-color 0.3s ease\, border-color 0.3s ease)
+
+    &:active, &:focus
+      theme('background-color', '$uiGrayDark')
+      theme('border-color', '$activeColor')
+      box-shadow: none
+
+      & + .wrapperText
+        theme('color', '$activeColor')
+
+  .btn-primary
+    theme('background-color', '$activeColor')
+    theme('border-color', '$uiBorderColorActive')
+    theme('color', '$textColorActive')
+    transition(background-color 0.3s ease\, border-color 0.3s ease)
+
+    &:hover, &:active, &:focus, &:focus:active
+      theme('background-color', '$activeColor', 0.8)
+      theme('border-color', '$uiBorderColorActive', 0.8)
+      theme('color', '$textColorActive')
