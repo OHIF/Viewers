@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 $lesionsSidebarMenuWidth = 450px
 
@@ -7,7 +7,7 @@ $lesionsSidebarMenuWidth = 450px
   flex: 1
   flex-flow: row nowrap
   align-items: stretch
-  height: 'calc(100% - %s)' % $toolbarHeight;
+  height: 'calc(100% - %s)' % ($toolbarHeight + $topBarHeight)
   width: 100%
 
   .sidebarMenu
