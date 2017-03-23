@@ -4,7 +4,7 @@
   cursor: default
   outline: none
 
-  ul.dropdown-menu
+  &>ul.dropdown-menu
     display: block
     z-index: 1000
     transform(scale(0))
@@ -35,3 +35,37 @@
 
   &.open ul.dropdown-menu
     transform(scale(1))
+
+
+.dropdown-submenu
+  position: relative
+
+  &>.dropdown-menu
+    top: 0
+    left: 100%
+    margin-top: -6px
+    margin-left: -1px
+    -webkit-border-radius: 0 6px 6px 6px
+    -moz-border-radius: 0 6px 6px 6px
+    border-radius: 0 6px 6px 6px
+
+  &:hover
+
+    &>.dropdown-menu
+      display: block
+
+    &>a:after
+      border-left-color:#FFFFFF
+
+  &>a:after
+    display: block
+    float: right
+    content: " "
+    width: 0
+    height: 0
+    border-color: transparent
+    border-style: solid
+    border-width: 5px 0 5px 5px
+    border-left-color: #CCCCCC
+    margin-top: 5px
+    margin-right: -10px

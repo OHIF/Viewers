@@ -1,33 +1,40 @@
 <template name="dropdownForm">
     {{#form (extend this mixins='dropdown' class='dropdown' hideValidationBox=true)}}
-        <ul class="dropdown-menu {{this.options.menuClasses}}">
-            {{#if UI.contentBlock}}
-                {{>UI.contentBlock}}
-            {{else}}
-                {{#each item in this.items}}
-                    {{#if item.separatorBefore}}
-                        <li role="separator" class="divider"></li>
-                    {{/if}}
-                    <li class="{{#if item.disabled}}disabled{{/if}}">
-                        {{#link item}}
-                            {{#if item.icon}}
-                                <i class="{{item.icon}} {{item.iconClasses}}"></i>
-                            {{/if}}
-                            {{#if item.iconSvgUse}}
-                                <svg class="{{item.iconClasses}}">
-                                    <use xlink:href={{absoluteUrl item.iconSvgUse}}></use>
-                                </svg>
-                            {{/if}}
-                            {{#if item.text}}
-                                <span>{{item.text}}</span>
-                            {{/if}}
-                        {{/link}}
-                    </li>
-                    {{#if item.separatorAfter}}
-                        <li role="separator" class="divider"></li>
-                    {{/if}}
-                {{/each}}
-            {{/if}}
-        </ul>
+        {{>dropdownFormMenu items=this.items classes=this.options.menuClasses}}
     {{/form}}
+</template>
+
+<template name="dropdownFormMenu">
+    <ul class="dropdown-menu {{this.classes}}">
+        {{#if UI.contentBlock}}
+            {{>UI.contentBlock}}
+        {{else}}
+            {{#each item in this.items}}
+                {{#if item.separatorBefore}}
+                    <li role="separator" class="divider"></li>
+                {{/if}}
+                <li class="{{#if item.disabled}}disabled{{/if}} {{#if item.items}}dropdown-submenu{{/if}}">
+                    {{#link item}}
+                        {{#if item.icon}}
+                            <i class="{{item.icon}} {{item.iconClasses}}"></i>
+                        {{/if}}
+                        {{#if item.iconSvgUse}}
+                            <svg class="{{item.iconClasses}}">
+                                <use xlink:href={{absoluteUrl item.iconSvgUse}}></use>
+                            </svg>
+                        {{/if}}
+                        {{#if item.text}}
+                            <span>{{item.text}}</span>
+                        {{/if}}
+                    {{/link}}
+                    {{#if item.items}}
+                        {{>dropdownFormMenu items=item.items}}
+                    {{/if}}
+                </li>
+                {{#if item.separatorAfter}}
+                    <li role="separator" class="divider"></li>
+                {{/if}}
+            {{/each}}
+        {{/if}}
+    </ul>
 </template>
