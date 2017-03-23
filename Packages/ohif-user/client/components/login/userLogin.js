@@ -1,5 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Router } from 'meteor/iron:router';
 
 Template.userLogin.onCreated(() => {
     const instance = Template.instance();
@@ -14,7 +16,22 @@ Template.userLogin.onCreated(() => {
 
             // Get the form data
             const formData = form.value();
-            console.warn('>>>>Logged in!', formData);
+
+            // Call the Meteor's login method
+            Meteor.loginWithPassword(formData.username, formData.password, error => {
+                if (!error) {
+                    const currentRoute = Router.current();
+                    const redirect = currentRoute.params.query.redirect;
+                    const path = redirect ? decodeURI(redirect) : '/';
+                    return Router.go(path);
+                }
+
+                const { reason } = error;
+                const isPassword = reason && reason.toLowerCase().indexOf('password') > -1;
+                const displayComponent = form.item(isPassword ? 'password' : 'username');
+                displayComponent.error(reason);
+                displayComponent.$element.focus();
+            });
         }
     };
 

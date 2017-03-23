@@ -8,7 +8,10 @@ Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
     // Meteor client and server packages
-    api.use('ecmascript');
+    api.use([
+        'ecmascript',
+        'accounts-base'
+    ]);
 
     // Meteor client-only packages
     api.use([
@@ -21,5 +24,6 @@ Package.onUse(function(api) {
     api.use('ohif:design');
     api.use('ohif:core');
 
+    // Client imports
     api.addFiles('client/index.js', 'client');
 });

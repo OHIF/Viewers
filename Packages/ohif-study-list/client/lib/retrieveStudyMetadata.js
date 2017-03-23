@@ -33,8 +33,8 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
         Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
             console.timeEnd('retrieveStudyMetadata');
 
-            if (Meteor.user && Meteor.user()) {
-                HipaaLogger.logEvent({
+            if (window.HipaaLogger && Meteor.user && Meteor.user()) {
+                window.HipaaLogger.logEvent({
                     eventType: 'viewed',
                     userId: Meteor.userId(),
                     userName: Meteor.user().profile.fullName,
