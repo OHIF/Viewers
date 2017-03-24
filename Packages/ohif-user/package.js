@@ -10,7 +10,8 @@ Package.onUse(function(api) {
     // Meteor client and server packages
     api.use([
         'ecmascript',
-        'accounts-base'
+        'accounts-base',
+        'accounts-password'
     ]);
 
     // Meteor client-only packages
