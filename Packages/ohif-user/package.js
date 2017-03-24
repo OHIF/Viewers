@@ -24,6 +24,9 @@ Package.onUse(function(api) {
     api.use('ohif:design');
     api.use('ohif:core');
 
+    // Main module
+    api.mainModule('main.js', ['client', 'server']);
+
     // Client imports
     api.addFiles('client/index.js', 'client');
 });

@@ -23,10 +23,8 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('ohif:design');
     api.use('ohif:core');
+    api.use('ohif:user');
     api.use('ohif:study-list');
-
-    // Main module
-    api.mainModule('main.js', ['client', 'server']);
 
     // Load icons
     api.addAssets('assets/user-menu-icons.svg', 'client');
