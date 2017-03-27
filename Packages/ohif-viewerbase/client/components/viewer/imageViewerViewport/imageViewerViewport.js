@@ -489,7 +489,8 @@ const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
 
     // If we didn't find anything, stop here
     if (!data.displaySet) {
-        throw new OHIFError('Display set not found in specified study!');
+        data.displaySet = study.displaySets[0];
+        // throw new OHIFError('Display set not found in specified study!');
     }
 
     // Otherwise, load pass the data object into loadSeriesIntoViewport

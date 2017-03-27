@@ -9,3 +9,4 @@ import './retrieveStudiesMetadata.js';
 import './retrieveStudyMetadata.js';
 import './studylist.js';
 import './viewSeriesDetails.js';
+import './viewStudies.js';
