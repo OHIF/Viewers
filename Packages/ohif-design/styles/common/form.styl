@@ -12,6 +12,18 @@ label.wrapperLabel
 
 .form-themed
 
+  .btn, input[type=text], input[type=password]
+
+    &[disabled], &.disabled
+
+      &, &:hover, &:active
+        theme('background-color', '$uiGrayDarker')
+        theme('border-color', '$uiGrayLight')
+        theme('color', '$textPrimaryColor')
+
+        & + .wrapperText
+          theme('color', '$textPrimaryColor')
+
   input[type=text], input[type=password]
     theme('background-color', '$uiGray')
     theme('border-color', '$uiBorderColor')

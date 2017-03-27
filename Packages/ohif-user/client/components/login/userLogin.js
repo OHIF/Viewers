@@ -36,13 +36,7 @@ Template.userLogin.onCreated(() => {
             };
 
             // Call the login method
-            const promise = OHIF.user.login(formData).then(successHandler).catch(errorHandler);
-
-            // Display loading state
-            OHIF.ui.showDialog('dialogLoading', {
-                text: 'Signing in...',
-                promise
-            });
+            return OHIF.user.login(formData).then(successHandler).catch(errorHandler);
         }
     };
 

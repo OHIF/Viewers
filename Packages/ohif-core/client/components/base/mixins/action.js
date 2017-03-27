@@ -42,6 +42,20 @@ OHIF.mixins.action = new OHIF.Mixin({
                 // Call the defined action function
                 component.actionResult = api[action].call(this, params);
 
+                // Prepend a spinner into the action element content if it's a promise
+                if (component.actionResult instanceof Promise) {
+                    const form = component.getForm();
+                    form.disable(true);
+                    const $spinner = $('<i class="fa fa-spin fa-circle-o-notch fa-fw m-r"></i>');
+                    component.$element.prepend($spinner);
+                    const dismissSpinner = () => {
+                        $spinner.remove();
+                        form.disable(false);
+                    };
+
+                    component.actionResult.then(dismissSpinner).catch(dismissSpinner);
+                }
+
                 return component.actionResult;
             }
         }
