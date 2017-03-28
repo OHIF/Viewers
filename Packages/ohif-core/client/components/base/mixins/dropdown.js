@@ -117,10 +117,10 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                     } else if ($parentLi) {
                         // Change the dropdown menu position based on the parent menu item
                         const $parentDm = $parentLi.closest('.dropdown-menu');
-                        const pdmOffset = $parentDm.offset();
-                        const pdmWidth = $parentDm.outerWidth();
-                        const pliOffset = $parentLi.offset();
                         const dmWidth = $dropdownMenu.outerWidth();
+                        const pdmWidth = $parentDm.outerWidth();
+                        const pdmOffset = $parentDm.offset();
+                        const pliOffset = OHIF.ui.getOffset($parentLi[0]);
                         Object.assign(position, {
                             left: pdmWidth + pdmOffset.left,
                             top: pliOffset.top
@@ -155,7 +155,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 }
             },
 
-            'mouseenter .form-action'(event, instance) {
+            'mouseenter .form-action, openByKey .form-action'(event, instance) {
                 // Postpone the submenu opening if it's still being animated
                 if (instance.opening) {
                     instance.$('.dropdown-menu').one('transitionend', event => {
@@ -204,13 +204,18 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                     parentInstance.closeSubmenu(true);
                 }
 
+                // Close the dropdown if there's no submenu open and ESC key was pressed
+                if (!parentInstance && key === 27) {
+                    instance.close(false);
+                }
+
                 // Stop here if it's not a submenu trigger
                 if (!this.items) return;
 
                 // Open the submenu if RIGHT, ENTER or SPACE key was pressed
                 if (key === 39 || key === 13 || key === 32) {
+                    $(event.currentTarget).trigger('openByKey');
                     event.preventDefault();
-                    $(event.currentTarget).trigger('mouseenter');
                 }
             },
 
@@ -236,6 +241,9 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                             break;
                         } else {
                             currentInstance = currentInstance.data.options.parentInstance;
+
+                            // Close the current instance's submenu as it has no focus
+                            currentInstance.closeSubmenu(false);
                         }
                     } while (currentInstance);
 
