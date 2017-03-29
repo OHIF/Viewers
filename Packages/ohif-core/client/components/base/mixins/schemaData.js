@@ -2,22 +2,25 @@ import { OHIF } from 'meteor/ohif:core';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 
 // Helper function to get the component's current schema
-const getCurrentSchema = (parentComponent, key) => {
+const getCurrentSchemaDefs = (parentComponent, key) => {
     // Get the parent component schema
     let schema = parentComponent && parentComponent.schema;
+    let schemaComponentHolder = parentComponent;
 
     // Try to get the form schema if it was not found
     if (parentComponent && !schema) {
         const form = parentComponent.getForm();
         schema = form && form.schema;
+        schemaComponentHolder = form;
     }
 
     // Stop here if there's no key or schema defined
     if (!key || !schema) {
-        return;
+        return { schemaComponentHolder };
     }
 
     // Get the current schema data using component's key
@@ -25,7 +28,7 @@ const getCurrentSchema = (parentComponent, key) => {
 
     // Stop here if no schema was found for the given key
     if (!currentSchema) {
-        return;
+        return { schemaComponentHolder };
     }
 
     // Merge the sub-schema properties if it's an array
@@ -34,7 +37,10 @@ const getCurrentSchema = (parentComponent, key) => {
     }
 
     // Return the component's schema definitions
-    return currentSchema;
+    return {
+        currentSchema,
+        schemaComponentHolder
+    };
 };
 
 /*
@@ -65,7 +71,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             }
 
             // Get the current schema data using component's key
-            const currentSchema = getCurrentSchema(parent, data.pathKey);
+            const { currentSchema } = getCurrentSchemaDefs(parent, data.pathKey);
 
             // Stop here if there's no schema data for current key
             if (!currentSchema) {
@@ -94,24 +100,36 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
 
             // Fill the items if it's an array schema
             if (!data.items && Array.isArray(currentSchema.allowedValues)) {
-                // Initialize the items array
-                const items = [];
+                data.items = new ReactiveVar();
 
-                // Get the values and labels arrays from schema
-                const values = currentSchema.allowedValues;
-                const labels = currentSchema.valuesLabels || [];
+                Tracker.autorun(() => {
+                    const schemaDefs = getCurrentSchemaDefs(parent, data.pathKey);
 
-                // Iterate the allowed values array
-                for (let i = 0; i < values.length; i++) {
-                    // Push the current item to the items array
-                    items.push({
-                        value: values[i],
-                        label: labels[i] || values[i]
-                    });
-                }
+                    // Check if schema is reactive and add reactivity to this function if so
+                    const componentHolder = schemaDefs.schemaComponentHolder;
+                    if (componentHolder.templateInstance.data.schema instanceof ReactiveVar) {
+                        componentHolder.templateInstance.data.schema.dep.depend();
+                    }
 
-                // Add the items to a reactive instance
-                data.items = new ReactiveVar(items);
+                    // Get the values and labels arrays from schema
+                    const values = schemaDefs.currentSchema.allowedValues;
+                    const labels = schemaDefs.currentSchema.valuesLabels || [];
+
+                    // Initialize the items array
+                    const items = [];
+
+                    // Iterate the allowed values array
+                    for (let i = 0; i < values.length; i++) {
+                        // Push the current item to the items array
+                        items.push({
+                            value: values[i],
+                            label: labels[i] || values[i]
+                        });
+                    }
+
+                    // Add the items to a reactive instance
+                    data.items.set(items);
+                });
             }
         },
 
@@ -122,7 +140,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             // Create a data parser according to current schema key
             component.parseData = value => {
                 // Get the current schema data using component's key
-                const currentSchema = getCurrentSchema(component.parent, instance.data.pathKey);
+                const { currentSchema } = getCurrentSchemaDefs(component.parent, instance.data.pathKey);
 
                 // Stop here if there's no schema data for current key
                 if (!currentSchema) {
@@ -149,7 +167,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             const component = instance.component;
 
             // Get the current schema data using component's key
-            const currentSchema = getCurrentSchema(component.parent, instance.data.pathKey);
+            const { currentSchema } = getCurrentSchemaDefs(component.parent, instance.data.pathKey);
 
             // Stop here if there's no schema data for current key
             if (!currentSchema) {
