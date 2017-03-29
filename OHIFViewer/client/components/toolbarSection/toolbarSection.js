@@ -233,7 +233,7 @@ Template.toolbarSection.onRendered(function() {
     instance.$('#layout').dropdown();
 
     if (OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
-        toggleCineDialog();
+        OHIF.viewerbase.viewportUtils.toggleCineDialog();
     }
 
     // Set disabled/enabled tool buttons that are set in toolManager
@@ -241,7 +241,7 @@ Template.toolbarSection.onRendered(function() {
     const disabledToolButtons = states.disabledToolButtons;
     const allToolbarButtons = $('#toolbar').find('button');
     if (disabledToolButtons && disabledToolButtons.length > 0) {
-        for (var i = 0; i < allToolbarButtons.length; i++) {
+        for (let i = 0; i < allToolbarButtons.length; i++) {
             const toolbarButton = allToolbarButtons[i];
             $(toolbarButton).prop('disabled', false);
 

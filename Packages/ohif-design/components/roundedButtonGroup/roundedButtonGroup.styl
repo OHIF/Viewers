@@ -8,7 +8,7 @@ $height = 25px
     cursor: pointer
     display: inline-block
     float: left
-    margin-left: -1px
+    margin-left: -2px
     text-decoration: none
     text-align: center
 
@@ -28,8 +28,10 @@ $height = 25px
       height: $height
       line-height: $height
       padding: 0 22px
+      position: relative
       text-transform: uppercase
       transition: transition($sidebarTransition)
+      z-index: 1
 
       svg
         theme('fill', '$defaultColor')
@@ -68,6 +70,7 @@ $height = 25px
       theme('background-color', '$activeColor')
       theme('border-color', '$uiBorderColorActive')
       theme('color', '$uiGrayDark')
+      z-index: 2
 
     &:hover .roundedButton
     &.active .roundedButton
