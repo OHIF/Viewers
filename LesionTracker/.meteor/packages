@@ -30,6 +30,7 @@ ohif:design
 ohif:core
 ohif:user
 ohif:header
+ohif:select-tree
 ohif:cornerstone
 ohif:viewerbase
 ohif:study-list

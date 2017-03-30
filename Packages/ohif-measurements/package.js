@@ -33,6 +33,7 @@ Package.onUse(function(api) {
     api.use('ohif:cornerstone');
     api.use('ohif:design');
     api.use('ohif:core');
+    api.use('ohif:select-tree');
     api.use('ohif:log');
     api.use('ohif:study-list');
     api.use('ohif:hanging-protocols');
