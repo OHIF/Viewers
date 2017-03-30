@@ -19,31 +19,33 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             // Check if this select will include a placeholder
             const placeholder = instance.data.options && instance.data.options.placeholder;
             if (placeholder) {
-                // Get the option items
-                let items = instance.data.items;
+                instance.autorun(() => {
+                    // Get the option items
+                    let items = instance.data.items;
 
-                // Check if the items are reactive and get them if true
-                const isReactive = items instanceof ReactiveVar;
-                if (isReactive) {
-                    items = items.get();
-                }
-
-                // Check if there is already an empty option on items list
-                if (!_.findWhere(items, { value: '' })) {
-                    // Clone the current items
-                    const newItems = _.clone(items) || [];
-                    newItems.unshift({
-                        label: placeholder,
-                        value: ''
-                    });
-
-                    // Set the new items list including the empty option
+                    // Check if the items are reactive and get them if true
+                    const isReactive = items instanceof ReactiveVar;
                     if (isReactive) {
-                        instance.data.items.set(newItems);
-                    } else {
-                        instance.data.items = newItems;
+                        items = items.get();
                     }
-                }
+
+                    // Check if there is already an empty option on items list
+                    if (!_.findWhere(items, { value: '' })) {
+                        // Clone the current items
+                        const newItems = _.clone(items) || [];
+                        newItems.unshift({
+                            label: placeholder,
+                            value: ''
+                        });
+
+                        // Set the new items list including the empty option
+                        if (isReactive) {
+                            instance.data.items.set(newItems);
+                        } else {
+                            instance.data.items = newItems;
+                        }
+                    }
+                });
             }
         },
 
