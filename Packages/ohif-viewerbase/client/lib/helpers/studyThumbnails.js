@@ -16,10 +16,10 @@ Template.registerHelper('studyThumbnails', study => {
     const thumbnails = [];
 
     // Iterate over the stacks and add one by one with its index
-    _.each(stacks, (stack, index) => {
+    _.each(stacks, (stack, thumbnailIndex) => {
         thumbnails.push({
-            thumbnailIndex: index,
-            stack: stack
+            thumbnailIndex,
+            stack
         });
     });
 

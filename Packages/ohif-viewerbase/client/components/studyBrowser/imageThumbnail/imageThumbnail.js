@@ -1,11 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-// OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
-// Local Modules
-import { getImageId } from '../../../lib/getImageId.js';
-import { getWADORSImageId } from '../../../lib/getWADORSImageId.js';
 
 Template.imageThumbnail.onCreated(() => {
     const instance = Template.instance();
@@ -17,7 +13,7 @@ Template.imageThumbnail.onCreated(() => {
         let imageIndex = Math.floor(lastIndex / 2);
         let imageInstance;
 
-        if(stack.isMultiFrame) {
+        if (stack.isMultiFrame) {
             imageInstance = stack.images[0];
         } else {
             imageInstance = stack.images[imageIndex];
@@ -78,6 +74,9 @@ Template.imageThumbnail.onRendered(() => {
             // Register a dependency from this computation on current study
             instance.data.currentStudy.dep.depend();
         }
+
+        // Depend on external data and re-run this computation when it changes
+        Template.currentData();
 
         // Wait for the new data and refresh the image thumbnail
         Tracker.afterFlush(() => instance.refreshImage());
