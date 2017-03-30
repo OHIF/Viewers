@@ -55,7 +55,17 @@ Template.dialogForm.onRendered(() => {
     // Create the bootstrap modal
     $modal.modal(modalOptions);
 
-    const position = instance.data.position;
+    // Check if dialog will be repositioned
+    let position = instance.data.position;
+    const event = instance.data.event;
+    if (!position && event && event.clientX) {
+        position = {
+            x: event.clientX,
+            y: event.clientY
+        };
+    }
+
+    // Reposition dialog if position object was filled
     if (position) {
         OHIF.ui.repositionDialog($modal, position.x, position.y);
     }
