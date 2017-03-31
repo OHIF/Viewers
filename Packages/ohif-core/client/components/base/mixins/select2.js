@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
@@ -53,27 +54,54 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             const instance = Template.instance();
             const component = instance.component;
 
-            // Apply the select2 to the component
-            component.$element.select2(instance.data.options);
-
-            // Store the select2 instance to allow its further destruction
-            component.select2Instance = component.$element.data('select2');
-
-            // Get the focusable elements
-            const elements = [];
-            elements.push(component.$element[0]);
-            elements.push(component.$element.nextAll('.select2:first').find('.select2-selection')[0]);
-
-            // Attach focus and blur handlers to focusable elements
-            $(elements).on('focus', event => {
-                if (event.target === event.currentTarget) {
-                    // Show the state message on elements focus
-                    component.toggleMessage(true);
+            // Destroy and re-create the select2 instance
+            const rebuildSelect2 = () => {
+                // Destroy the select2 instance if exists and re-create it
+                if (component.select2Instance) {
+                    component.select2Instance.destroy();
                 }
-            }).on('blur', event => {
-                if (event.target === event.currentTarget) {
-                    // Hide the state message on elements blur
-                    component.toggleMessage(false);
+
+                // Apply the select2 to the component
+                component.$element.select2(instance.data.options);
+
+                // Store the select2 instance to allow its further destruction
+                component.select2Instance = component.$element.data('select2');
+
+                // Get the focusable elements
+                const elements = [];
+                elements.push(component.$element[0]);
+                elements.push(component.$element.nextAll('.select2:first').find('.select2-selection')[0]);
+
+                // Attach focus and blur handlers to focusable elements
+                $(elements).on('focus', event => {
+                    if (event.target === event.currentTarget) {
+                        // Show the state message on elements focus
+                        component.toggleMessage(true);
+                    }
+                }).on('blur', event => {
+                    if (event.target === event.currentTarget) {
+                        // Hide the state message on elements blur
+                        component.toggleMessage(false);
+                    }
+                });
+            };
+
+            instance.autorun(() => {
+                // Run this computation every time the reactive items suffer any changes
+                const isReactive = instance.data.items instanceof ReactiveVar;
+                if (isReactive) {
+                    instance.data.items.dep.depend();
+                }
+
+                if (isReactive) {
+                    // Keep the current value of the component
+                    const currentValue = component.value();
+                    Tracker.afterFlush(() => {
+                        rebuildSelect2();
+                        component.value(currentValue);
+                    });
+                } else {
+                    rebuildSelect2();
                 }
             });
         },

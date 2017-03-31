@@ -100,7 +100,7 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
 
             // Fill the items if it's an array schema
             if (!data.items && Array.isArray(currentSchema.allowedValues)) {
-                data.items = new ReactiveVar();
+                data.items = data.items instanceof ReactiveVar ? data.items : new ReactiveVar();
 
                 Tracker.autorun(() => {
                     const schemaDefs = getCurrentSchemaDefs(parent, data.pathKey);
