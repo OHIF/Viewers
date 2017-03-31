@@ -1161,7 +1161,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
       return {
         radiopharmaceuticalInfo: {
-          radiopharmaceuticalStartTime: dicomParser.parseTM(getValue(radiopharmaceuticalInfo['00181072'])),
+          radiopharmaceuticalStartTime: dicomParser.parseTM(getValue(radiopharmaceuticalInfo['00181072'], 0, '')),
           radionuclideTotalDose: getNumberValue(radiopharmaceuticalInfo['00181074']),
           radionuclideHalfLife: getNumberValue(radiopharmaceuticalInfo['00181075'])
         }
@@ -1685,7 +1685,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         studyInstanceUID: dataSet.string('x0020000d'),
         seriesInstanceUID: dataSet.string('x0020000e'),
         seriesDate: dicomParser.parseDA(dataSet.string('x00080021')),
-        seriesTime: dicomParser.parseTM(dataSet.string('x00080031'))
+        seriesTime: dicomParser.parseTM(dataSet.string('x00080031') || '')
       };
     }
 
@@ -1746,7 +1746,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
       var firstRadiopharmaceuticalInfoDataSet = radiopharmaceuticalInfo.items[0].dataSet;
       return {
         radiopharmaceuticalInfo: {
-          radiopharmaceuticalStartTime: dicomParser.parseTM(firstRadiopharmaceuticalInfoDataSet.string('x00181072')),
+          radiopharmaceuticalStartTime: dicomParser.parseTM(firstRadiopharmaceuticalInfoDataSet.string('x00181072') || ''),
           radionuclideTotalDose: firstRadiopharmaceuticalInfoDataSet.floatString('x00181074'),
           radionuclideHalfLife: firstRadiopharmaceuticalInfoDataSet.floatString('x00181075')
         }
