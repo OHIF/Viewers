@@ -137,7 +137,17 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                         $dropdownMenu.addClass(menuClass);
                     }
 
+                    // Fix dropdown position if it is going outside the window boundaries
                     $dropdownMenu.css(position).trigger('spatialChanged');
+
+                    // Check if scrolling will be needed
+                    const isFixed = $dropdownMenu.css('position') === 'fixed';
+                    if (isFixed && $dropdownMenu.outerHeight() > window.innerHeight) {
+                        $dropdownMenu.css({
+                            'overflow-y': 'scroll',
+                            'max-height': window.innerHeight
+                        });
+                    }
                 }
             });
         },
@@ -155,11 +165,11 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 }
             },
 
-            'mouseenter .form-action, openByKey .form-action'(event, instance) {
+            'mouseenter .form-action, openSubmenu .form-action'(event, instance) {
                 // Postpone the submenu opening if it's still being animated
                 if (instance.opening) {
                     instance.$('.dropdown-menu').one('transitionend', event => {
-                        $(event.currentTarget).trigger('mouseenter');
+                        $(event.currentTarget).trigger('openSubmenu');
                     });
 
                     return;
@@ -170,14 +180,14 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
 
                 // Close the submenu if a sibling element was hovered
                 if (instance.lastSubmenu && instance.lastSubmenu !== event.currentTarget) {
-                    instance.closeSubmenu(true);
+                    instance.closeSubmenu(!this.items);
                 }
 
                 // Stop here if submenu is already opened for the current menu item
                 if (!this.items || instance.lastSubmenu === event.currentTarget) return;
 
                 // Close the current opened submenu (if exists) in order to open another one
-                instance.closeSubmenu(true);
+                instance.closeSubmenu(!this.items);
 
                 // Set the reactive closing elementcontroller and the last submenu element trigger
                 const reactiveClose = new ReactiveVar(false);
@@ -195,18 +205,49 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
             },
 
             'keydown .form-action'(event, instance) {
+                event.stopPropagation();
                 const key = event.which;
+                const $target = $(event.currentTarget);
+
+                // Allow navigation using DOWN and UP arrow keys
+                if (key === 38 || key === 40) {
+                    const $parentLi = $target.closest('li');
+                    const $liList = $parentLi.parent().children();
+                    const index = $parentLi.index();
+
+                    let $newLi;
+                    if (key === 38) {
+                        // Control the UP key
+                        if (index === 0) {
+                            $newLi = $liList.eq($liList.length - 1);
+                        } else {
+                            $newLi = $parentLi.prev();
+                        }
+                    } else {
+                        // Control the DOWN key
+                        if (index === $liList.length - 1) {
+                            $newLi = $liList.eq(0);
+                        } else {
+                            $newLi = $parentLi.next();
+                        }
+                    }
+
+                    // Focus the link inside the new li element
+                    event.preventDefault();
+                    $newLi.find('a:first').focus();
+                    return;
+                }
 
                 // Close the submenu if LEFT, BACKSPACE or ESC key was pressed
                 const { parentInstance } = instance.data.options;
                 if (parentInstance && (key === 37 || key === 8 || key === 27)) {
                     event.preventDefault();
-                    parentInstance.closeSubmenu(true);
+                    return parentInstance.closeSubmenu(true);
                 }
 
                 // Close the dropdown if there's no submenu open and ESC key was pressed
                 if (!parentInstance && key === 27) {
-                    instance.close(false);
+                    return instance.close(false);
                 }
 
                 // Stop here if it's not a submenu trigger
@@ -214,7 +255,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
 
                 // Open the submenu if RIGHT, ENTER or SPACE key was pressed
                 if (key === 39 || key === 13 || key === 32) {
-                    $(event.currentTarget).trigger('openByKey');
+                    $target.trigger('openSubmenu');
                     event.preventDefault();
                 }
             },
