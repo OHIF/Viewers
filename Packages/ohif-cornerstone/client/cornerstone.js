@@ -532,8 +532,6 @@ if(typeof cornerstone === 'undefined'){
 
     // dictionary of imageId to cachedImage objects
     var imageCache = {};
-    // dictionary of sharedCacheKeys to number of imageId's in cache with this shared cache key
-    var sharedCacheKeys = {};
     // array of cachedImage objects
     var cachedImages = [];
 
@@ -574,10 +572,10 @@ if(typeof cornerstone === 'undefined'){
         // remove images as necessary
         while(cacheSizeInBytes > maximumSizeInBytes) {
             var lastCachedImage = cachedImages[cachedImages.length - 1];
-            cacheSizeInBytes -= lastCachedImage.sizeInBytes;
-            delete imageCache[lastCachedImage.imageId];
-            lastCachedImage.imagePromise.reject();
-            cachedImages.pop();
+            var imageId = lastCachedImage.imageId;
+
+            removeImagePromise(imageId);
+
             $(cornerstone).trigger('CornerstoneImageCachePromiseRemoved', {imageId: lastCachedImage.imageId});
         }
 
@@ -600,7 +598,6 @@ if(typeof cornerstone === 'undefined'){
         var cachedImage = {
             loaded : false,
             imageId : imageId,
-            sharedCacheKey: undefined, // the sharedCacheKey for this imageId.  undefined by default
             imagePromise : imagePromise,
             timeStamp : new Date(),
             sizeInBytes: 0
@@ -620,22 +617,9 @@ if(typeof cornerstone === 'undefined'){
                 throw "putImagePromise: image.sizeInBytes is not a number";
             }
 
-            // If this image has a shared cache key, reference count it and only
-            // count the image size for the first one added with this sharedCacheKey
-            if(image.sharedCacheKey) {
-              cachedImage.sizeInBytes = image.sizeInBytes;
-              cachedImage.sharedCacheKey = image.sharedCacheKey;
-              if(sharedCacheKeys[image.sharedCacheKey]) {
-                sharedCacheKeys[image.sharedCacheKey]++;
-              } else {
-                sharedCacheKeys[image.sharedCacheKey] = 1;
-                cacheSizeInBytes += cachedImage.sizeInBytes;
-              }
-            }
-            else {
-              cachedImage.sizeInBytes = image.sizeInBytes;
-              cacheSizeInBytes += cachedImage.sizeInBytes;
-            }
+            cachedImage.sizeInBytes = image.sizeInBytes;
+            cacheSizeInBytes += cachedImage.sizeInBytes;
+
             purgeCacheIfNecessary();
         });
     }
@@ -662,23 +646,13 @@ if(typeof cornerstone === 'undefined'){
         if (cachedImage === undefined) {
             throw "removeImagePromise: imageId must not be undefined";
         }
+
+        cachedImage.imagePromise.reject();
         cachedImages.splice( cachedImages.indexOf(cachedImage), 1);
-
-        // If this is using a sharedCacheKey, decrement the cache size only
-        // if it is the last imageId in the cache with this sharedCacheKey
-        if(cachedImage.sharedCacheKey) {
-          if(sharedCacheKeys[cachedImage.sharedCacheKey] === 1) {
-            cacheSizeInBytes -= cachedImage.sizeInBytes;
-            delete sharedCacheKeys[cachedImage.sharedCacheKey];
-          } else {
-            sharedCacheKeys[cachedImage.sharedCacheKey]--;
-          }
-        } else {
-          cacheSizeInBytes -= cachedImage.sizeInBytes;
-        }
-        delete imageCache[imageId];
-
+        cacheSizeInBytes -= cachedImage.sizeInBytes;
         decache(cachedImage.imagePromise, cachedImage.imageId);
+
+        delete imageCache[imageId];
 
         return cachedImage.imagePromise;
     }
@@ -692,23 +666,20 @@ if(typeof cornerstone === 'undefined'){
     }
 
     function decache(imagePromise, imageId) {
-      imagePromise.then(function(image) {
-        if(image.decache) {
-          image.decache();
-        }
-        imagePromise.reject();
-        delete imageCache[imageId];
-      }).always(function() {
-        delete imageCache[imageId];
-      });
+        imagePromise.then(function(image) {
+            if(image.decache) {
+                image.decache();
+            }
+        }).always(function() {
+            delete imageCache[imageId];
+        });
     }
 
     function purgeCache() {
         while (cachedImages.length > 0) {
-          var removedCachedImage = cachedImages.pop();
-          decache(removedCachedImage.imagePromise, removedCachedImage.imageId);
+            var removedCachedImage = cachedImages[0];
+            removeImagePromise(removedCachedImage.imageId);
         }
-        cacheSizeInBytes = 0;
     }
 
     function changeImageIdCacheSize(imageId, newCacheSize) {
