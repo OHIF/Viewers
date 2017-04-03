@@ -73,7 +73,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     }, function(error) {
       deferred.reject(error);
     });
-    return deferred.promise();
+    return deferred;
   }
 
   function getLoaderForScheme(scheme) {
