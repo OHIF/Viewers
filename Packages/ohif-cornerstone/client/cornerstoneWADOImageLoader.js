@@ -1,4 +1,4 @@
-/*! cornerstone-wado-image-loader - v0.14.2 - 2017-02-22 | (c) 2016 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
+/*! cornerstone-wado-image-loader - v0.14.3 - 2017-04-04 | (c) 2016 Chris Hafey | https://github.com/chafey/cornerstoneWADOImageLoader */
 //
 // This is a cornerstone image loader for WADO-URI requests.
 //
@@ -323,7 +323,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     }
     else if(imageFrame.photometricInterpretation === "YBR_FULL" )
     {
-      convertRGB(imageFrame, rgbaBuffer);
+      convertYBRFull(imageFrame, rgbaBuffer);
     }
     else
     {
@@ -447,12 +447,10 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         image.render = cornerstone.renderGrayscaleImage;
       }
 
-      // calculate min/max if not supplied
-      if(image.minPixelValue === undefined || image.maxPixelValue === undefined) {
-        var minMax = cornerstoneWADOImageLoader.getMinMax(imageFrame.pixelData);
-        image.minPixelValue = minMax.min;
-        image.maxPixelValue = minMax.max;
-      }
+      // Calculate min/max pixel values (do not trust DICOM Headers)
+      var minMax = cornerstoneWADOImageLoader.getMinMax(imageFrame.pixelData);
+      image.minPixelValue = minMax.min;
+      image.maxPixelValue = minMax.max;
 
       // Modality LUT
       if(modalityLutModule.modalityLUTSequence &&
@@ -929,7 +927,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
     // TODO: load bulk data items that we might need
 
-    var mediaType = 'multipart/related; type=application/octet-stream'; // 'image/dicom+jp2';
+    var mediaType = 'multipart/related; type="application/octet-stream"'; // 'image/dicom+jp2';
 
     // get the pixel data from the server
     cornerstoneWADOImageLoader.wadors.getPixelData(uri, imageId, mediaType).then(function(result) {
@@ -1268,7 +1266,15 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     var loadDeferred = $.Deferred();
     promise.then(function(dicomPart10AsArrayBuffer/*, xhr*/) {
       var byteArray = new Uint8Array(dicomPart10AsArrayBuffer);
-      var dataSet = dicomParser.parseDicom(byteArray);
+
+      // Reject the promise if parsing the dicom file fails
+      var dataSet;
+      try {
+        dataSet = dicomParser.parseDicom(byteArray);
+      } catch(error) {
+        loadDeferred.reject(error);
+        return;
+      }
 
       loadedDataSets[uri] = {
         dataSet: dataSet,
@@ -1415,6 +1421,12 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         throw 'frame exceeds size of pixelData';
       }
       return new Uint8Array(dataSet.byteArray.buffer, frameOffset,pixelsPerFrame * 2);
+    } else if (bitsAllocated === 1) {
+      frameOffset = pixelDataOffset + frameIndex * pixelsPerFrame * 0.125;
+      if(frameOffset >= dataSet.byteArray.length) {
+        throw 'frame exceeds size of pixelData';
+      }
+      return cornerstoneWADOImageLoader.wadouri.unpackBinaryFrame(dataSet.byteArray, frameOffset, pixelsPerFrame);
     }
 
     throw 'unsupported pixel format';
@@ -1788,6 +1800,40 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
   cornerstoneWADOImageLoader.wadouri.parseImageId = parseImageId;
   
 }(cornerstoneWADOImageLoader));
+/**
+ * Function to deal with unpacking a binary frame
+ */
+(function ($, cornerstone, cornerstoneWADOImageLoader) {
+
+  "use strict";
+
+  function isBitSet(byte, bitPos) {
+    return byte & (1 << bitPos);
+  }
+
+  function unpackBinaryFrame(byteArray, frameOffset, pixelsPerFrame) {
+    // Create a new pixel array given the image size
+    var pixelData = new Uint8Array(pixelsPerFrame);
+
+    for (var i = 0; i < pixelsPerFrame; i++) {
+      // Compute byte position
+      var bytePos = Math.floor(i / 8);
+      
+      // Get the current byte
+      var byte = byteArray[bytePos + frameOffset];
+
+      // Bit position (0-7) within byte
+      var bitPos = (i % 8);
+
+      // Check whether bit at bitpos is set
+      pixelData[i] = isBitSet(byte, bitPos) ? 1 : 0;
+    }
+
+    return pixelData;
+  }
+
+  cornerstoneWADOImageLoader.wadouri.unpackBinaryFrame = unpackBinaryFrame;
+}($, cornerstone, cornerstoneWADOImageLoader));
 (function ($, cornerstoneWADOImageLoader) {
 
   "use strict";
