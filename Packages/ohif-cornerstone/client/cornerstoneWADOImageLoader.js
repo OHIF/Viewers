@@ -383,7 +383,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
       // JPEGBaseline (8 bits) is already returning the pixel data in the right format (rgba)
       // because it's using a canvas to load and decode images.
-      if(!cornerstoneWADOImageLoader.isJPEGBaseline8Bit(imageFrame, transferSyntax)) {
+      if(!cornerstoneWADOImageLoader.isJPEGBaseline8BitColor(imageFrame, transferSyntax)) {
         setPixelDataType(imageFrame);
 
         // convert color space
@@ -447,10 +447,12 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         image.render = cornerstone.renderGrayscaleImage;
       }
 
-      // Calculate min/max pixel values (do not trust DICOM Headers)
-      var minMax = cornerstoneWADOImageLoader.getMinMax(imageFrame.pixelData);
-      image.minPixelValue = minMax.min;
-      image.maxPixelValue = minMax.max;
+      // calculate min/max if not supplied
+      if(image.minPixelValue === undefined || image.maxPixelValue === undefined) {
+        var minMax = cornerstoneWADOImageLoader.getMinMax(imageFrame.pixelData);
+        image.minPixelValue = minMax.min;
+        image.maxPixelValue = minMax.max;
+      }
 
       // Modality LUT
       if(modalityLutModule.modalityLUTSequence &&
@@ -531,9 +533,12 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     // JPEG Baseline lossy process 1 (8 bit)
     else if (transferSyntax === "1.2.840.10008.1.2.4.50")
     {
-      if(imageFrame.bitsAllocated === 8)
+      // Handle 8-bit JPEG Baseline color images using the browser's built-in
+      // JPEG decoding
+      if(imageFrame.bitsAllocated === 8 &&
+         (imageFrame.samplesPerPixel === 3 || imageFrame.samplesPerPixel === 4))
       {
-        return cornerstoneWADOImageLoader.decodeJPEGBaseline8Bit(imageFrame, pixelData, canvas);
+        return cornerstoneWADOImageLoader.decodeJPEGBaseline8BitColor(imageFrame, pixelData, canvas);
       } else {
         return addDecodeTask(imageFrame, transferSyntax, pixelData, options);
       }
@@ -622,7 +627,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     }
   }
 
-  function decodeJPEGBaseline8Bit(imageFrame, pixelData, canvas) {
+  function decodeJPEGBaseline8BitColor(imageFrame, pixelData, canvas) {
     var start = new Date().getTime();
     var deferred = $.Deferred();
 
@@ -666,18 +671,20 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     return deferred.promise();
   }
 
-  function isJPEGBaseline8Bit(imageFrame, transferSyntax) {
+  function isJPEGBaseline8BitColor(imageFrame, transferSyntax) {
     transferSyntax = transferSyntax || imageFrame.transferSyntax;
 
-    if((imageFrame.bitsAllocated === 8) && (transferSyntax === "1.2.840.10008.1.2.4.50")) {
+    if(imageFrame.bitsAllocated === 8 &&
+       transferSyntax === "1.2.840.10008.1.2.4.50" &&
+       (imageFrame.samplesPerPixel === 3 || imageFrame.samplesPerPixel === 4)) {
       return true;
     }
 
   }
 
   // module exports
-  cornerstoneWADOImageLoader.decodeJPEGBaseline8Bit = decodeJPEGBaseline8Bit;
-  cornerstoneWADOImageLoader.isJPEGBaseline8Bit = isJPEGBaseline8Bit;
+  cornerstoneWADOImageLoader.decodeJPEGBaseline8BitColor = decodeJPEGBaseline8BitColor;
+  cornerstoneWADOImageLoader.isJPEGBaseline8BitColor = isJPEGBaseline8BitColor;
 
 }($, cornerstoneWADOImageLoader));
 /**
