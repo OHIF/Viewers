@@ -33,6 +33,13 @@ function makeRequest(geturl, options, callback) {
         requestOpt.auth = options.auth;
     }
 
+    if (options.headers) {
+        Object.keys(options.headers).forEach(key => {
+            const value = options.headers[key];
+            requestOpt.headers[key] = value;
+        });
+    }
+
     const req = requester(requestOpt, function(resp) {
         const contentType = (resp.headers['content-type'] || '').split(';')[0];
         if (jsonHeaders.indexOf(contentType) == -1) {
