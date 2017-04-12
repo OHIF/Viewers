@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 
 OHIF.blaze = {};
@@ -47,7 +48,7 @@ OHIF.blaze.getParentTemplateView = view => {
     while (currentView) {
         currentView = currentView.originalParentView || currentView.parentView;
         if (!currentView || !currentView.name) return;
-        if (currentView.name.indexOf('Template.') > -1) {
+        if (currentView.name.indexOf('Template.') > -1 && currentView.name.indexOf('Template.__dynamic') === -1) {
             return currentView;
         }
     }

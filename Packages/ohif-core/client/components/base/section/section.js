@@ -33,7 +33,7 @@ Template.section.onCreated(() => {
 
         // Define the content
         currentView._sectionMap.set(sectionName, {
-            data: currentView._templateInstance.data,
+            data: Object.assign({}, currentView._templateInstance.data),
             renderFunction: templateContentBlock.renderFunction
         });
     } else {

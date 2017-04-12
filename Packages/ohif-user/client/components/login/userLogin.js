@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -40,14 +39,5 @@ Template.userLogin.onCreated(() => {
         }
     };
 
-    instance.schema = new SimpleSchema({
-        username: {
-            type: String,
-            label: 'Username'
-        },
-        password: {
-            type: String,
-            label: 'Password'
-        }
-    });
+    instance.schema = OHIF.user.schema;
 });

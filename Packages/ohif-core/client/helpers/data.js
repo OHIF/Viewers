@@ -11,7 +11,8 @@ const extend = (...argsArray) => {
     const result = argsArray[0] || {};
 
     // Extract the Spacebars kw hash
-    const kwHash = _.last(argsArray).hash;
+    const lastArg = _.last(argsArray);
+    const kwHash = lastArg ? lastArg.hash : null;
 
     // Extract the given objects
     const objects = _.initial(argsArray);
