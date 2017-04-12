@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 
 /*
@@ -110,6 +111,9 @@ OHIF.mixins.group = new OHIF.Mixin({
                 if (component.isForm && !component.schema) {
                     return result;
                 }
+
+                // Reset the validation
+                component.schema.resetValidation();
 
                 // Validate the component itself if it has a key
                 if (instance.data.pathKey && !validateSelf()) {

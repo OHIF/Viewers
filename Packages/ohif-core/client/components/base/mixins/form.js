@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
+import { Spacebars } from 'meteor/spacebars';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -26,7 +27,7 @@ OHIF.mixins.form = new OHIF.Mixin({
             instance.data.pathKey = '';
 
             // Debound the observer call to prevent tons of re-rendering
-            component.validationRan = _.debounce(() => {
+            component.validationRan = _.throttle(() => {
                 // Enable reactivity by changing a Tracker.Dependency observer
                 component.validationObserver.changed();
             }, 200);
@@ -42,7 +43,7 @@ OHIF.mixins.form = new OHIF.Mixin({
 
                 // Focus the first error field if some validation failed
                 if (component.schema && component.schema._invalidKeys.length) {
-                    instance.$('.state-error :input:first').focus();
+                    Tracker.afterFlush(() => instance.$('.state-error :input:first').focus());
                 }
 
                 return validationResult;

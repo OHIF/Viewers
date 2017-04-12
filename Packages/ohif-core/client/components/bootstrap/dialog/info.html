@@ -6,7 +6,7 @@
       {{#each message in this.messages}}
         <div class="message">{{{message}}}</div>
       {{else}}
-        {{#let message=(choose this.message 'An error has ocurred.')}}
+        {{#let message=(choose this.reason this.message 'An error has ocurred.')}}
             <div class="message">{{message}}</div>
         {{/let}}
       {{/each}}

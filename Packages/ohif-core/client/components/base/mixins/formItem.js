@@ -75,7 +75,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             // Set the component in error state and display the error message
             component.error = errorMessage => {
                 // Set the component error state
-                component.state('error', errorMessage);
+                component.state('error', !!errorMessage);
 
                 // Set or remove the error message
                 if (errorMessage) {
@@ -93,8 +93,8 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                         return;
                     }
 
-                    // Create the tooltip
-                    component.$wrapper.tooltip({
+                    // Destroy the tooltip if created and create again
+                    component.$wrapper.tooltip('destroy').tooltip({
                         trigger: 'manual',
                         title: message
                     }).tooltip('show');
@@ -127,7 +127,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                     // Show the tooltip with the error message
                     component.toggleTooltip(true, errorMessage);
                 }
-            },
+            };
 
             // Search for the parent form component
             component.getForm = () => {
@@ -227,13 +227,42 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             // Add the pathKey to the wrapper element
             component.$wrapper.attr('data-key', instance.data.pathKey);
+
+            // Get the component's form
+            const form = component.getForm();
+
+            // Observer for changes and revalidate the component
+            instance.autorun(computation => {
+                component.changeObserver.depend();
+
+                // Stop here if it is the first run
+                if (computation.firstRun) return;
+
+                // Revalidate the component if form is already validated
+                if (form && form.isValidatedAlready) {
+                    component.validate();
+                }
+            });
         },
 
         onDestroyed() {
             const instance = Template.instance();
+            const component = instance.component;
 
-            // Register the component in the parent component
-            instance.component.unregisterSelf();
+            // Get the component's form for further use
+            const form = component.getForm();
+
+            // Unregister the component in the parent component
+            component.unregisterSelf();
+
+            // Remove the component tooltip, error state and message
+            component.error(false);
+            component.toggleTooltip(false);
+
+            // Revalidate the form to remove this component from validation results
+            if (form && form.isValidatedAlready) {
+                form.validate();
+            }
         },
 
         onMixins() {
@@ -260,12 +289,6 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 if (event.currentTarget === component.$element[0]) {
                     // Enable reactivity by changing a Tracker.Dependency observer
                     component.changeObserver.changed();
-
-                    const form = component.getForm();
-                    if (form && form.isValidatedAlready) {
-                        // Revalidate the component if form is already validated
-                        component.validate();
-                    }
                 }
             },
 
