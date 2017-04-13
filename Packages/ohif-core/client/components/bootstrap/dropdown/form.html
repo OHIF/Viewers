@@ -10,26 +10,28 @@
             {{>UI.contentBlock}}
         {{else}}
             {{#each item in this.items}}
-                {{#if item.separatorBefore}}
-                    <li role="separator" class="divider"></li>
-                {{/if}}
-                <li class="{{#if item.disabled}}disabled{{/if}} {{#if item.items}}dropdown-submenu{{/if}}">
-                    {{#link item}}
-                        {{#if item.icon}}
-                            <i class="{{item.icon}} {{item.iconClasses}}"></i>
-                        {{/if}}
-                        {{#if item.iconSvgUse}}
-                            <svg class="{{item.iconClasses}}">
-                                <use xlink:href={{absoluteUrl item.iconSvgUse}}></use>
-                            </svg>
-                        {{/if}}
-                        {{#if item.text}}
-                            <span>{{item.text}}</span>
-                        {{/if}}
-                    {{/link}}
-                </li>
-                {{#if item.separatorAfter}}
-                    <li role="separator" class="divider"></li>
+                {{#if isVisible item}}
+                    {{#if item.separatorBefore}}
+                        <li role="separator" class="divider"></li>
+                    {{/if}}
+                    <li class="{{#if item.disabled}}disabled{{/if}} {{#if item.items}}dropdown-submenu{{/if}}">
+                        {{#link item}}
+                            {{#if item.icon}}
+                                <i class="{{item.icon}} {{item.iconClasses}}"></i>
+                            {{/if}}
+                            {{#if item.iconSvgUse}}
+                                <svg class="{{item.iconClasses}}">
+                                    <use xlink:href={{absoluteUrl item.iconSvgUse}}></use>
+                                </svg>
+                            {{/if}}
+                            {{#if item.text}}
+                                <span>{{item.text}}</span>
+                            {{/if}}
+                        {{/link}}
+                    </li>
+                    {{#if item.separatorAfter}}
+                        <li role="separator" class="divider"></li>
+                    {{/if}}
                 {{/if}}
             {{/each}}
         {{/if}}
