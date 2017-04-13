@@ -1,6 +1,5 @@
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
-
-OHIF.user = {};
 
 // Throw error if there is no user logged in
 OHIF.user.validate = () => {
@@ -31,5 +30,5 @@ OHIF.user.setData = (key, value) => {
     OHIF.user.validate();
 
     // Call the update method on server-side
-    Meteor.call('userDataSet', key, value);
+    Meteor.call('ohif.user.data.set', key, value);
 };

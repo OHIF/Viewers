@@ -1,5 +1,6 @@
-import { OHIF } from 'meteor/ohif:core';
 import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { OHIF } from 'meteor/ohif:core';
 
 // Manipulate user's persistent data
 class UserData {
@@ -24,19 +25,13 @@ class UserData {
         OHIF.MongoUtils.validateUser();
 
         // Build the query to update only the current user's data
-        var query = {
-            _id: Meteor.userId()
-        };
+        const query = { _id: Meteor.userId() };
 
         // Build the path to the persistent data with the given key
         const persistentPath = `profile.persistent.${key}`;
 
         // Build the data to be updated
-        var data = {
-            $set: {
-                [persistentPath]: value
-            }
-        };
+        const data = { $set: { [persistentPath]: value } };
 
         // Update the user's profile data with the persistent information
         Accounts.users.update(query, data, OHIF.MongoUtils.writeCallback);
@@ -46,9 +41,6 @@ class UserData {
 
 // Register the methods
 Meteor.methods({
-    userDataGet: key => UserData.get(key),
-    userDataSet: (key, value) => UserData.set(key, value)
+    'ohif.user.data.get': key => UserData.get(key),
+    'ohif.user.data.set': (key, value) => UserData.set(key, value)
 });
-
-// Expose the class in the OHIF object
-OHIF.UserData = UserData;
