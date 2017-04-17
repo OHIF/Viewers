@@ -133,44 +133,44 @@ export class MetadataProvider {
     getFrameIncrementPointer(image) {
         const dataSet = image.data;
         let frameInstancePointer = '';
-    
+
         if (parsingUtils.isValidDataSet(dataSet)) {
             const frameInstancePointerNames = {
                 'x00181063': 'frameTime',
                 'x00181065': 'frameTimeVector'
             }
-    
+
             // (0028,0009) = Frame Increment Pointer
             const frameInstancePointerTag = parsingUtils.attributeTag(dataSet, 'x00280009');
             frameInstancePointer = frameInstancePointerNames[frameInstancePointerTag];
         } else {
             frameInstancePointer = image.instance['frameIncrementPointer'];
         }
-    
+
         return frameInstancePointer || '';
     }
-    
+
     getFrameTimeVector(image) {
         const dataSet = image.data;
-    
+
         if (parsingUtils.isValidDataSet(dataSet)) {
             // Frame Increment Pointer points to Frame Time Vector (0018,1065) field
             return parsingUtils.floatArray(dataSet, 'x00181065');
         }
-    
+
         return image.instance['frameTimeVector'];
     }
-    
+
     getFrameTime(image) {
         const dataSet = image.data;
-    
+
         if (parsingUtils.isValidDataSet(dataSet)) {
             // Frame Increment Pointer points to Frame Time (0018,1063) field or is not defined (for addtional flexibility).
             // Yet another value is possible for this field (5200,9230 for Multi-frame Functional Groups)
             // but that case is currently not supported.
             return dataSet.floatString('x00181063', -1);
         }
-    
+
         return image.instance['frameTime'];
     }
 

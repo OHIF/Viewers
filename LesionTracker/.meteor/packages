@@ -26,6 +26,7 @@ clinical:hipaa-logger
 aldeed:simple-schema          # Third party package to deal with schemas
 
 # OHIF Packages
+ohif:compatibility
 ohif:design
 ohif:core
 ohif:user

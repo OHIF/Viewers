@@ -12,7 +12,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
     },
     wadors: {
-      
+
     },
     internal: {
       options : {
@@ -373,7 +373,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     var deferred = $.Deferred();
     var imageFrame = cornerstoneWADOImageLoader.getImageFrame(imageId);
     var decodePromise = cornerstoneWADOImageLoader.decodeImageFrame(imageFrame, transferSyntax, pixelData, canvas, options);
-    decodePromise.then(function(imageFrame) {      
+    decodePromise.then(function(imageFrame) {
       //var imagePixelModule = metaDataProvider('imagePixelModule', imageId);
       var imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId);
       var voiLutModule = cornerstone.metaData.get('voiLutModule', imageId);
@@ -905,7 +905,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         }
       });
     });
-    return deferred.promise();    
+    return deferred.promise();
 
   };
 }(cornerstoneWADOImageLoader));
@@ -922,9 +922,9 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     var start = new Date().getTime();
 
     var deferred = $.Deferred();
-    
+
     var uri = imageId.substring(7);
-    
+
     // check to make sure we have metadata for this imageId
     var metaData = cornerstoneWADOImageLoader.wadors.metaDataManager.get(imageId);
     if(metaData === undefined) {
@@ -1450,7 +1450,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     var parsedImageId = cornerstoneWADOImageLoader.wadouri.parseImageId(uri);
     var fileIndex = parseInt(parsedImageId.url);
     var file = cornerstoneWADOImageLoader.wadouri.fileManager.get(fileIndex);
-    
+
     // create a deferred object
     var deferred = $.Deferred();
 
@@ -1702,7 +1702,6 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
         seriesInstanceUID: dataSet.string('x0020000e'),
         seriesNumber: dataSet.intString('x00200011'),
         studyInstanceUID: dataSet.string('x0020000d'),
-        seriesInstanceUID: dataSet.string('x0020000e'),
         seriesDate: dicomParser.parseDA(dataSet.string('x00080021')),
         seriesTime: dicomParser.parseTM(dataSet.string('x00080031') || '')
       };
@@ -1805,7 +1804,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
   // module exports
   cornerstoneWADOImageLoader.wadouri.parseImageId = parseImageId;
-  
+
 }(cornerstoneWADOImageLoader));
 /**
  * Function to deal with unpacking a binary frame
@@ -1825,7 +1824,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     for (var i = 0; i < pixelsPerFrame; i++) {
       // Compute byte position
       var bytePos = Math.floor(i / 8);
-      
+
       // Get the current byte
       var byte = byteArray[bytePos + frameOffset];
 
@@ -2144,7 +2143,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
 
   function xhrRequest(url, imageId, headers) {
     headers = headers || {};
-    
+
     var deferred = $.Deferred();
 
     // Make the request for the DICOM P10 SOP Instance
@@ -2155,7 +2154,7 @@ if(typeof cornerstoneWADOImageLoader === 'undefined'){
     Object.keys(headers).forEach(function (key) {
       xhr.setRequestHeader(key, headers[key]);
     });
-    
+
     // handle response data
     xhr.onreadystatechange = function () {
       // TODO: consider sending out progress messages here as we receive the pixel data

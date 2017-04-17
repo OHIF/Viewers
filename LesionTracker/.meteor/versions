@@ -87,6 +87,7 @@ natestrauser:select2@4.0.3
 npm-bcrypt@0.9.2
 npm-mongo@2.2.11_2
 observe-sequence@1.0.14
+ohif:compatibility@0.0.1
 ohif:core@0.0.1
 ohif:cornerstone@0.0.1
 ohif:design@0.0.1
