@@ -9,6 +9,7 @@ Package.onUse(function(api) {
 
     // Meteor packages
     api.use('ecmascript');
+    api.use('jquery');
 
     // Assets to be imported dynamically
     api.addAssets('public/js/svgxuse.min.js', 'client');
