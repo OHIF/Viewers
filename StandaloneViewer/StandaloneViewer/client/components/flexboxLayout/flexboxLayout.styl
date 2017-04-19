@@ -7,7 +7,7 @@ $lesionsSidebarMenuWidth = 450px
   flex: 1
   flex-flow: row nowrap
   align-items: stretch
-  height: 'calc(100% - %s)' % ($toolbarHeight + $topBarHeight)
+  height: 'calc(100vh - %s)' % ($toolbarHeight + $topBarHeight)
   width: 100%
 
   .sidebarMenu
@@ -38,11 +38,11 @@ $lesionsSidebarMenuWidth = 450px
 
   .mainContent
     flex: 1
-    order: 2
-    width: 100%
     height: 100%
+    order: 2
     overflow: hidden
     transition($sidebarTransition)
+    width: 100%
 
   .sidebar-right
     flex: 1

@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 $timepointButtonHeight = 55px
 
@@ -80,25 +80,9 @@ $timepointButtonHeight = 55px
     height: 100%
     overflow-x: hidden
     overflow-y: auto
-    margin-right: -22px
+    margin-right: -36px
     padding-bottom: 20px
-    padding-right: 16px
+    padding-right: 36px
 
     &::-webkit-scrollbar
       display: none
-
-    hr, .timepointHeader, .studyItem, .studyModality.additional
-      margin-right: 16px
-
-  .studySidebarTimepoint .thumbnailEntry.active:before
-    theme('background-color', '$activeColor')
-    border-top-right-radius: 7px
-    border-bottom-right-radius: 7px
-    content: ''
-    display: block
-    height: 91px
-    pointer-events: none
-    position: fixed
-    right: 0
-    top: 0
-    width: 5px
