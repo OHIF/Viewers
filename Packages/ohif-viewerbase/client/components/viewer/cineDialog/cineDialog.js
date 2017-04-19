@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
+import { Random } from 'meteor/random';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
@@ -132,7 +134,7 @@ Template.cineDialog.onCreated(() => {
      * ... Further investigation is necessary.
      *
      * This happens because when an event is attached using jQuery's
-     * you can't get it using vanilla JavaScript, it returns null. 
+     * you can't get it using vanilla JavaScript, it returns null.
      * You need to use jQuery for that. So, either you use vanilla JS or jQuery
      * to get an element's event handler. See viewerMain for more details.
      */
@@ -141,10 +143,11 @@ Template.cineDialog.onCreated(() => {
         if (typeof handler === 'function') {
             const origHandler = window.onresize;
             instance.origWindowResizeHandler = typeof origHandler === 'function' ? origHandler : null;
-            window.onresize = function (event) {
+            window.onresize = event => {
                 if (typeof origHandler === 'function') {
                     origHandler.call(window, event);
                 }
+
                 handler.call(window, event);
             };
         } else {
@@ -158,36 +161,37 @@ Template.cineDialog.onCreated(() => {
      */
 
     instance.setOptimalPosition = (event, options) => {
-        const viewer = $('#viewer');
+        const $viewer = $('#viewer');
+        const $toolbarElement = $('.toolbarSection .toolbarSectionTools:first');
+        const $cineDialog = $('#cineDialog');
 
-        let toolbarElement = $('.toolbarSection .toolbarSectionTools:first'),
-            cineDialog = $('#cineDialog'),
-            cineDialogSize,
-            cineDialogCoords,
-            toolbarRect;
-
-        if (toolbarElement.length < 1 || cineDialog.length < 1) {
+        if ($toolbarElement.length < 1 || $cineDialog.length < 1) {
             return;
         }
 
-        if (cineDialog.data('wasDragged') || cineDialog.data('wasBounded')) {
+        if ($cineDialog.data('wasDragged') || $cineDialog.data('wasBounded')) {
             // restore original handler...
             instance.setResizeHandler(null);
             return;
         }
 
-        cineDialogSize = {
-            width: cineDialog.outerWidth() || 0,
-            height: cineDialog.outerHeight() || 0
+        const cineDialogSize = {
+            width: $cineDialog.outerWidth() || 0,
+            height: $cineDialog.outerHeight() || 0
         };
 
-        toolbarRect = {
-            offset: toolbarElement.offset() || { top: 0, left: 0 },
-            width: toolbarElement.outerWidth() || 0,
-            height: toolbarElement.outerHeight() || 0
+        const topLeftCoords = {
+            top: 0,
+            left: 0
         };
 
-        cineDialogCoords = {
+        const toolbarRect = {
+            offset: $toolbarElement.offset() || topLeftCoords,
+            width: $toolbarElement.outerWidth() || 0,
+            height: $toolbarElement.outerHeight() || 0
+        };
+
+        const cineDialogCoords = {
             left: toolbarRect.offset.left + toolbarRect.width + 20,
             top: toolbarRect.offset.top + toolbarRect.height - cineDialogSize.height
         };
@@ -196,6 +200,7 @@ Template.cineDialog.onCreated(() => {
             if (options.left) {
                 cineDialogCoords.left = options.left;
             }
+
             if (options.top) {
                 cineDialogCoords.top = options.top;
             }
@@ -204,34 +209,28 @@ Template.cineDialog.onCreated(() => {
         // Check if it is out of screen
         if (cineDialogCoords.top < 0) {
             cineDialogCoords.top = 0;
-        }
-        else if (cineDialogCoords.top + cineDialogSize.height > viewer.height()) {
-            cineDialogCoords.top -= (cineDialogCoords.top + cineDialogSize.height) - viewer.height();
+        } else if (cineDialogCoords.top + cineDialogSize.height > $viewer.height()) {
+            cineDialogCoords.top -= (cineDialogCoords.top + cineDialogSize.height) - $viewer.height();
         }
 
         if (cineDialogCoords.left < 0) {
             cineDialogCoords.left = 0;
-        }
-        else if (cineDialogCoords.left + cineDialogSize.width > viewer.width()) {
-            cineDialogCoords.left -= (cineDialogCoords.left + cineDialogSize.width) - viewer.width();
+        } else if (cineDialogCoords.left + cineDialogSize.width > $viewer.width()) {
+            cineDialogCoords.left -= (cineDialogCoords.left + cineDialogSize.width) - $viewer.width();
         }
 
-        cineDialog.css(cineDialogCoords);
-
+        $cineDialog.css(cineDialogCoords);
     };
-
 });
 
 Template.cineDialog.onRendered(() => {
     const instance = Template.instance();
-    const dialog = instance.$('#cineDialog');
+    const $dialog = instance.$('#cineDialog');
     const singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
 
     // set dialog in optimal position and make sure it continues in a optimal position...
     // ... when the window has been resized
-    instance.setOptimalPosition(null, {
-        top: singleRowLayout ? 47 : 26
-    });
+    instance.setOptimalPosition(null, { top: singleRowLayout ? 47 : 26 });
 
     // The jQuery method does not seem to be working...
     // ... $(window).resize(instance.setOptimalPosition)
@@ -239,16 +238,14 @@ Template.cineDialog.onRendered(() => {
     instance.setResizeHandler(instance.setOptimalPosition);
 
     // Make the CINE dialog bounded and draggable
-    dialog.draggable({ defaultElementCursor: 'move' });
+    $dialog.draggable({ defaultElementCursor: 'move' });
 
     // Polyfill for older browsers
-    dialogPolyfill.registerDialog(dialog.get(0));
+    dialogPolyfill.registerDialog($dialog.get(0));
 
     // Prevent dialog from being dragged when user clicks any button
-    dialog.find('.cine-navigation, .cine-controls, .cine-options').on('mousedown touchstart', function (e) {
-        e.stopPropagation();
-    });
-
+    const $controls = $dialog.find('.cine-navigation, .cine-controls, .cine-options');
+    $controls.on('mousedown touchstart', event => event.stopPropagation());
 });
 
 Template.cineDialog.onDestroyed(() => {
@@ -300,8 +297,9 @@ Template.cineDialog.helpers({
         return viewportUtils.hasMultipleFrames();
     },
 
-    getClassNames(baseCls) {
-        return baseCls + ' ' + (OHIF.uiSettings.displayEchoUltrasoundWorkflow ? 'single' : 'double') + '-row-style'
+    getClassNames(baseClass) {
+        const style = OHIF.uiSettings.displayEchoUltrasoundWorkflow ? 'single' : 'double';
+        return `${baseClass} ${style}-row-style`;
     }
 
 });
