@@ -11,6 +11,13 @@
       theme('background-color', '$primaryBackgroundColor')
       color: white
 
+  .rows-per-page label.wrapperLabel
+    display: inline-table !important
+    margin: 0 4px
+
+    select
+      width: 42px
+
   .page-number
     margin: 0
     text-align: right
@@ -18,7 +25,7 @@
     label
       font-weight: normal
 
-      ul#pagination
+      ul.pagination-control
         margin: 0
 
         li
@@ -38,7 +45,7 @@
             theme('background-color', '$uiGray')
             border-color: #ddd
             color: white
-            
+
         .disabled
           a:hover
             color: inherit

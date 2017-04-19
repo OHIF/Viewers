@@ -1,29 +1,20 @@
 <template name="studylistPagination">
-        <div class="studylistPagination">
-            <div class="row">
-                <div class="col-xs-4 col-sm-3 col-md-3">
-                    {{#with recordCount}}
-                         <div class="form-inline form-group rows-per-page">
-                            <label>
-                                <span>Show</span>
-                                <select class="js-select-rows-per-page">
-                                    {{#each pageSize in pageSizes}}
-                                        <option value={{pageSize}} selected={{#if (isRowsPerPageSelected pageSize)}}selected{{/if}}>{{pageSize}}</option>
-                                    {{/each}}
-                                </select>
-
-                                <span class="rows-per-page-label">rows per page</span>
-                            </label>
-                        </div>
-                    {{/with}}
+    {{#form class='studylistPagination' schema=instance.schema}}
+        <div class="row">
+            <div class="col-xs-4 col-sm-3 col-md-3">
+                 <div class="form-inline form-group rows-per-page">
+                    <span>Show</span>
+                    {{>inputSelect class='select-small js-select-rows-per-page' key='rowsPerPage' hideSearch=true}}
+                    <span>rows per page</span>
                 </div>
-                <div class="col-xs-8 col-sm-9 col-md-9">
-                    <div class="form-inline form-group page-number">
-                        <label>
-                            <ul id="pagination" class="no-margins"></ul>
-                        </label>
-                    </div>
+            </div>
+            <div class="col-xs-8 col-sm-9 col-md-9">
+                <div class="form-inline form-group page-number">
+                    <label>
+                        <ul class="pagination-control no-margins"></ul>
+                    </label>
                 </div>
             </div>
         </div>
+    {{/form}}
 </template>

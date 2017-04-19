@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 import './studylistPagination.html';
 
@@ -8,11 +9,18 @@ Template.studylistPagination.onCreated(function() {
     const instance = Template.instance();
     // replace parentVariable with the name of the instance variable
     instance.parent = this.parent(1);
+    instance.schema = new SimpleSchema({
+        rowsPerPage: {
+            type: Number,
+            allowedValues: [25, 50, 100],
+            defaultValue: 25
+        }
+    });
 });
 
 Template.studylistPagination.onRendered(() => {
     const instance = Template.instance();
-    const $paginationControl = instance.$('#pagination');
+    const $paginationControl = instance.$('.pagination-control');
 
     // Track changes on recordCount and rowsPerPage
     instance.autorun(() => {
@@ -43,13 +51,11 @@ Template.studylistPagination.onRendered(() => {
 });
 
 Template.studylistPagination.helpers({
-    pageSizes() {
-        return [ 25, 50, 100 ];
-    },
     recordCount() {
         const instance = Template.instance();
         return instance.parent.recordCount.get();
     },
+
     isRowsPerPageSelected(rowsPerPage) {
         const instance = Template.instance();
         return rowsPerPage === instance.parent.rowsPerPage.get();
