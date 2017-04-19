@@ -98,7 +98,7 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                     const currentValue = component.value();
                     Tracker.afterFlush(() => {
                         rebuildSelect2();
-                        component.value(currentValue);
+                        component.$element.val(currentValue);
                     });
                 } else {
                     rebuildSelect2();

@@ -7,11 +7,9 @@
             this.wrappers
         )
         options=(clone this.options
-            multiple=(valueIf this.multiple true false)
-            placeholder=this.placeholder
-            minimumResultsForSearch=(valueIf this.hideSearch
-                -1 this.minimumResultsForSearch
-            )
+            multiple=(choose this.options.multiple this.multiple false)
+            placeholder=(choose this.options.placeholder this.placeholder)
+            minimumResultsForSearch=(valueIf this.hideSearch -1 this.options.minimumResultsForSearch)
         )
     )}}
         {{>UI.contentBlock}}
