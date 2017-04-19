@@ -9,20 +9,24 @@ $imageSliderWidth = 12px
 $imageSliderHeight = 39px
 
 .imageControls
-  position: absolute
-  top: 0
-  right: 0
   height: 100%
   padding: 5px
+  position: absolute
+  right: 0
+  top: 0
 
   .scrollbar
-    height: calc(100% - 20px);
+    height: calc(100% - 20px)
     margin-top: 5px
-    width: 31px
+    position: relative
+    width: 12px
 
     .imageSlider
+      height: $imageSliderWidth
+      left: 12px
+      padding: 0
       position: absolute
-      left: 20px
+      top: 0
 
       vendorize(transform, rotate(90deg))
       vendorize(transform-origin, top left)
@@ -41,28 +45,28 @@ $imageSliderHeight = 39px
 
       // --- Style the range track --- //
       &::-webkit-slider-runnable-track
-        height: 5px
+        background-color: $imageSliderTrackColor
         border: none
         cursor: pointer
-        background-color: $imageSliderTrackColor
+        height: 5px
         z-index: 6
 
       &::-moz-range-track
-        height: 2px
+        background-color: $imageSliderTrackColor
         border: none
         cursor: pointer
-        background-color: $imageSliderTrackColor
+        height: 2px
         z-index: 6
 
       &::-ms-track
-        width: 100%
-        height: $imageSliderWidth
-        border: none
-        cursor: pointer
         animate: 0.2s
         background: transparent
+        border: none
         border-width: 15px 0
         color: $imageSliderTrackColor
+        cursor: pointer
+        height: $imageSliderWidth
+        width: 100%
 
       // Hide any fill IE tries to add
       &::-ms-fill-lower
@@ -75,12 +79,12 @@ $imageSliderHeight = 39px
       &::-webkit-slider-thumb
         -webkit-appearance: none !important
         theme('background-color', '$imageSliderColor')
-        border-radius: $imageSliderBorderRadius
         border: $imageSliderBorder
-        height: $imageSliderWidth
-        width: $imageSliderHeight
+        border-radius: $imageSliderBorderRadius
         cursor: -webkit-grab
-        margin-top: -7px
+        height: $imageSliderWidth
+        margin-top: -4px
+        width: $imageSliderHeight
 
         &:active
           theme('background-color', '$activeColor')
@@ -88,11 +92,11 @@ $imageSliderHeight = 39px
 
       &::-moz-range-thumb
         theme('background-color', '$imageSliderColor')
-        border-radius: $imageSliderBorderRadius
         border: $imageSliderBorder
+        border-radius: $imageSliderBorderRadius
+        cursor: -moz-grab
         height: $imageSliderWidth
         width: $imageSliderHeight
-        cursor: -moz-grab
         z-index: 7
 
         &:active
@@ -101,11 +105,11 @@ $imageSliderHeight = 39px
 
       &::-ms-thumb
         theme('background-color', '$imageSliderColor')
-        border-radius: $imageSliderBorderRadius
         border: $imageSliderBorder
+        border-radius: $imageSliderBorderRadius
+        cursor: ns-resize
         height: $imageSliderWidth
         width: $imageSliderHeight
-        cursor: ns-resize
 
         &:active
           theme('background-color', '$activeColor')
