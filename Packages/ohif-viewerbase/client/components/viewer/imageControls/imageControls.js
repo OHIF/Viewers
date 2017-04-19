@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
+import { OHIF } from 'meteor/ohif:core';
 import { setActiveViewport } from '../../../lib/setActiveViewport';
 import { switchToImageByIndex } from '../../../lib/switchToImageByIndex';
 
@@ -11,12 +12,12 @@ Template.imageControls.onRendered(() => {
 
     // Set the current imageSlider width to its parent's height
     // (because webkit is stupid and can't style vertical sliders)
-    const $slider = instance.$('#imageSlider');
+    const $slider = instance.$('.imageSlider');
     const $element = $slider.parents().eq(2).siblings('.imageViewerViewport');
     const viewportHeight = $element.height();
 
     $slider.width(viewportHeight - 20);
-})
+});
 
 Template.imageControls.events({
     'keydown input[type=range]'(event) {
@@ -37,6 +38,7 @@ Template.imageControls.events({
             event.preventDefault();
         }
     },
+
     'input input[type=range], change input[type=range]'(event) {
         // Note that we throttle requests to prevent the
         // user's ultrafast scrolling from firing requests too quickly.
@@ -44,13 +46,13 @@ Template.imageControls.events({
         slideTimeout = setTimeout(() => {
             // Using the slider in an inactive viewport
             // should cause that viewport to become active
-            const slider = $(event.currentTarget);
-            const newActiveElement = slider.parents('.viewportContainer').find('.imageViewerViewport');
+            const $slider = $(event.currentTarget);
+            const newActiveElement = $slider.parents('.viewportContainer').find('.imageViewerViewport');
             setActiveViewport(newActiveElement);
 
             // Subtract 1 here since the slider goes from 1 to N images
             // But the stack indexing starts at 0
-            const newImageIdIndex = parseInt(slider.val(), 10) - 1;
+            const newImageIdIndex = parseInt($slider.val(), 10) - 1;
             switchToImageByIndex(newImageIdIndex);
         }, slideTimeoutTime);
 

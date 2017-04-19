@@ -7,7 +7,6 @@ $imageSliderBorder = none
 // Note that these are backwards due to the magic needed to make a cross-browser vertical slider
 $imageSliderWidth = 12px
 $imageSliderHeight = 39px
-$imageSliderCursor = grab
 
 .imageControls
   position: absolute
@@ -16,12 +15,12 @@ $imageSliderCursor = grab
   height: 100%
   padding: 5px
 
-  #scrollbar
+  .scrollbar
     height: calc(100% - 20px);
     margin-top: 5px
     width: 31px
 
-    #imageSlider
+    .imageSlider
       position: absolute
       left: 20px
 
@@ -57,7 +56,7 @@ $imageSliderCursor = grab
 
       &::-ms-track
         width: 100%
-        height: 2px
+        height: $imageSliderWidth
         border: none
         cursor: pointer
         animate: 0.2s
@@ -80,11 +79,12 @@ $imageSliderCursor = grab
         border: $imageSliderBorder
         height: $imageSliderWidth
         width: $imageSliderHeight
-        cursor: $imageSliderCursor
+        cursor: -webkit-grab
         margin-top: -7px
 
         &:active
           theme('background-color', '$activeColor')
+          cursor: -webkit-grabbing
 
       &::-moz-range-thumb
         theme('background-color', '$imageSliderColor')
@@ -92,11 +92,12 @@ $imageSliderCursor = grab
         border: $imageSliderBorder
         height: $imageSliderWidth
         width: $imageSliderHeight
-        cursor: $imageSliderCursor
+        cursor: -moz-grab
         z-index: 7
 
         &:active
           theme('background-color', '$activeColor')
+          cursor: -moz-grabbing
 
       &::-ms-thumb
         theme('background-color', '$imageSliderColor')
@@ -104,12 +105,15 @@ $imageSliderCursor = grab
         border: $imageSliderBorder
         height: $imageSliderWidth
         width: $imageSliderHeight
-        cursor: $imageSliderCursor
+        cursor: ns-resize
 
         &:active
           theme('background-color', '$activeColor')
 
+      &::-ms-tooltip
+        display: none
+
 // Set left position in IE, border-width attribute breaks left position of imageSlider
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none)
-  #imageSlider
+  .imageSlider
     left: 50px

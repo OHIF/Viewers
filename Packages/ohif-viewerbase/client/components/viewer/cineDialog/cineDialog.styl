@@ -28,7 +28,7 @@
 
     &:active, &.active
       theme('color', '$activeColor')
-      
+
     &[disabled]
       &:hover
         color: inherit
@@ -37,12 +37,15 @@
 
   .cine-navigation, .cine-controls, .cine-options
     cursor: default
-    
+
   .fps-section
     input[type="range"]
       background-color: transparent
       border: 0 none
       outline: 0 none
+
+      &::-ms-tooltip
+        display: none
 
   .double-row-style
     box-sizing: border-box
