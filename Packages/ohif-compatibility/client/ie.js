@@ -10,6 +10,7 @@ if (navigator && /MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
 
     writeScript('svgxuse.min.js');
     writeScript('typedarray.js');
+    writeScript('flexibility.min.js');
 
     window.addEventListener('click', event => {
         if (!window.SVGElementInstance || !(event.target instanceof SVGElementInstance)) return;
