@@ -9,7 +9,7 @@ if (navigator && /MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
     };
 
     writeScript('svgxuse.min.js');
-    writeScript('typedarray.js');
+    writeScript('typedarray.min.js');
     writeScript('flexibility.min.js');
 
     window.addEventListener('click', event => {
