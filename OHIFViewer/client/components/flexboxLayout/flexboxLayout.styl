@@ -18,7 +18,8 @@ $lesionsSidebarMenuWidth = 450px
 
     .sidebar-option
       height: 100%
-      position: fixed
+      max-width: inherit
+      position: absolute
       transform(translateX(100%))
       transition($sidebarTransition)
       width: 100%
@@ -58,16 +59,6 @@ $lesionsSidebarMenuWidth = 450px
     &[data-timepoints="4"]
       margin-right: - ($lesionsSidebarMenuWidth + 270px)
       max-width: $lesionsSidebarMenuWidth + 270px
-
-    &:before
-      theme('background-color', '$uiBorderColor')
-      content: ''
-      display: block
-      height: 100%
-      left: 5px
-      position: absolute
-      top: 0
-      width: $uiBorderThickness
 
     &.sidebar-open
       margin-right: 0
