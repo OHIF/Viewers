@@ -51,6 +51,7 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+  LDAP_DEFAULTS = {};
   LDAP_DEFAULTS.url = Meteor.settings.ldap && Meteor.settings.ldap.url;
   LDAP_DEFAULTS.port = Meteor.settings.ldap && Meteor.settings.ldap.port;
 }
