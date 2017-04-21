@@ -7,19 +7,23 @@ Package.describe({
 Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
-    api.use('ecmascript');
-    api.use('standard-app-packages');
-    api.use('http');
-    api.use('jquery');
-    api.use('stylus');
-    api.use('momentjs:moment');
-    api.use('validatejs');
-    api.use('u2622:persistent-session');
+    api.use(['ecmascript',
+        'standard-app-packages',
+        'http',
+        'jquery',
+        'stylus',
+        'momentjs:moment',
+        'validatejs',
+        'u2622:persistent-session'
+    ]);
 
-    // Our custom packages
-    api.use('ohif:design');
-    api.use('ohif:core');
-    api.use('ohif:log');
+    // OHIF dependencies
+    api.use([
+        'ohif:design',
+        'ohif:core',
+        'ohif:hotkeys',
+        'ohif:log'
+    ]);
 
     const assets = [
         'assets/icons.svg',
