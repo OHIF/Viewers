@@ -1,6 +1,6 @@
 Package.describe({
-    name: 'ohif:compatibility',
-    summary: 'OHIF assets to keep compatibility with older browsers',
+    name: 'ohif:polyfill',
+    summary: 'OHIF polyfills to keep compatibility with older browsers',
     version: '0.0.1'
 });
 

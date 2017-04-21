@@ -19,7 +19,7 @@ ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
 shell-server@0.2.1            # Server-side component of the `meteor shell` command
 
 # OHIF Packages
-ohif:compatibility
+ohif:polyfill
 ohif:core
 ohif:header
 ohif:design
