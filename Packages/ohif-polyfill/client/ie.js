@@ -1,10 +1,11 @@
 import { $ } from 'meteor/jquery';
+import { absoluteUrl } from './lib/absoluteUrl';
 
 /* jshint -W060 */
 // Check if browser is IE and add the polyfill scripts
 if (navigator && /MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
     const writeScript = fileName => {
-        const src = `/packages/ohif_polyfill/public/js/${fileName}`;
+        const src = absoluteUrl(`/packages/ohif_polyfill/public/js/${fileName}`);
         document.write(`<script src="${src}"><\/script>`);
     };
 
