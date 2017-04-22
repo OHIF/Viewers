@@ -1,5 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
-import { HotkeysContext } from 'meteor/ohif:hotkeys/client/HotkeysContext';
+import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContext';
 
 export class HotkeysManager {
     constructor() {

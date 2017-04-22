@@ -63,6 +63,11 @@ Meteor.startup(function() {
         length: () => toolManager.setActiveTool('length'),
         spine: () => toolManager.setActiveTool('spine'),
         wwwcRegion: () => toolManager.setActiveTool('wwwcRegion'),
+        WLPresetSoftTissue: () => WLPresets.applyWLPresetToActiveElement('SoftTissue'),
+        WLPresetLung: () => WLPresets.applyWLPresetToActiveElement('Lung'),
+        WLPresetLiver: () => WLPresets.applyWLPresetToActiveElement('Liver'),
+        WLPresetBone: () => WLPresets.applyWLPresetToActiveElement('Bone'),
+        WLPresetBrain: () => WLPresets.applyWLPresetToActiveElement('Brain'),
 
         zoomIn() {
             const button = document.getElementById('zoomIn');
@@ -213,38 +218,6 @@ function setOHIFHotkeys(hotkeys) {
 }
 
 /**
- * Global function to merge different hotkeys configurations
- * but avoiding conflicts between different keys with same action
- * When this occurs, it will delete the action from OHIF's configuration
- * So if you want to keep all OHIF's actions, use an unused-ohif-key
- * Used for compatibility with others systems only
- *
- * @param hotkeysActions {object} Object with actions map
- * @return {object}
- */
-function mergeHotkeys(hotkeysActions) {
-    // Merge hotkeys, overriding OHIF's settings
-    const mergedHotkeys = Object.assign({}, OHIF.viewer.defaultHotkeys, hotkeysActions);
-
-    const defaultHotkeys = OHIF.viewer.defaultHotkeys;
-    const hotkeysKeys = Object.keys(hotkeysActions);
-
-    // Check for conflicts with same keys but different actions
-    Object.keys(defaultHotkeys).forEach(ohifAction => {
-        hotkeysKeys.forEach(definedAction => {
-            // Different action but same key:
-            // Remove action from merge if is not in "hotkeysActions"
-            // If it is, it's already merged so nothing to do
-            if (ohifAction !== definedAction && hotkeysActions[definedAction] === defaultHotkeys[ohifAction] && !hotkeysActions[ohifAction]) {
-                delete mergedHotkeys[ohifAction];
-            }
-        });
-    });
-
-    return mergedHotkeys;
-}
-
-/**
  * Add an active class to a button for 100ms only
  * to give the impressiont the button was pressed.
  * This is for tools that don't keep the button "pressed"
@@ -264,44 +237,6 @@ function flashButton(button) {
 }
 
 /**
- * Binds a task to a hotkey keydown event
- * @param  {String} hotkey keyboard key
- * @param  {String} task   task function name
- */
-function bindHotkey(hotkey, task) {
-    const hotkeyFunctions = OHIF.viewer.hotkeyFunctions;
-
-    // Only bind defined, non-empty HotKeys
-    if (!hotkey || hotkey === '') {
-        return;
-    }
-
-    let fn;
-    if (task.indexOf('WLPreset') > -1) {
-        const presetName = task.replace('WLPreset', '');
-        fn = function() {
-            WLPresets.applyWLPresetToActiveElement(presetName);
-        };
-    } else {
-        fn = hotkeyFunctions[task];
-
-        // If the function doesn't exist in the
-        // hotkey function list, try the viewer-specific function list
-        if (!fn && OHIF.viewer && OHIF.viewer.functionList) {
-            fn = OHIF.viewer.functionList[task];
-        }
-    }
-
-    if (!fn) {
-        return;
-    }
-
-    const hotKeyForBinding = hotkey.toLowerCase();
-
-    $(document).bind('keydown', hotKeyForBinding, fn);
-}
-
-/**
  * Binds all hotkeys keydown events to the tasks defined in
  * OHIF.viewer.hotkeys or a given param
  * @param  {Object} hotkeys hotkey and task mapping (not required). If not given, uses OHIF.viewer.hotkeys
@@ -309,21 +244,18 @@ function bindHotkey(hotkey, task) {
 function enableHotkeys(hotkeys) {
     const viewerHotkeys = hotkeys || OHIF.viewer.hotkeys;
 
-    $(document).unbind('keydown');
-
-    Object.keys(viewerHotkeys).forEach(function(task) {
-        const taskHotkeys = viewerHotkeys[task];
-        if (!taskHotkeys || !taskHotkeys.length) {
-            return;
-        }
-
-        if (taskHotkeys instanceof Array) {
-            taskHotkeys.forEach(hotkey => bindHotkey(hotkey, task));
-        } else {
-            // taskHotkeys represents a single key
-            bindHotkey(taskHotkeys, task);
-        }
+    const definitions = {};
+    Object.keys(viewerHotkeys).forEach(definition => {
+        const hotkey = viewerHotkeys[definition];
+        const action = OHIF.viewer.hotkeyFunctions[definition];
+        definitions[definition] = {
+            hotkey,
+            action
+        };
     });
+
+    OHIF.hotkeys.setContext('viewer', definitions);
+    OHIF.hotkeys.switchToContext('viewer');
 }
 
 /**
@@ -333,7 +265,6 @@ function enableHotkeys(hotkeys) {
 const hotkeyUtils = {
     setOHIFRefLines, /* @TODO: find a better place for this...  */
     setOHIFHotkeys,
-    mergeHotkeys,
     enableHotkeys
 };
 

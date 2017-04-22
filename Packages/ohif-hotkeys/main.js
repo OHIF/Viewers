@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { HotkeysManager } from 'meteor/ohif:hotkeys/client/HotkeysManager';
+import { HotkeysManager } from 'meteor/ohif:hotkeys/client/classes/HotkeysManager';
 
 /**
  * Create hotkeys namespace using a HotkeysManager class instance

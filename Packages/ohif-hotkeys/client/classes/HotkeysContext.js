@@ -28,7 +28,7 @@ export class HotkeysContext {
                 return OHIF.log.warn(message);
             }
 
-            $(document).bind(`keydown.hotkey.${this.name}`, hotkey, event => {
+            const bindHotkey = hotkey => $(document).bind(`keydown.hotkey.${this.name}`, hotkey, event => {
                 if (!this.enabled.get()) return;
                 if (typeof disabled !== undefined) {
                     if ((typeof disabled === 'function' && disabled()) || disabled) return;
@@ -36,6 +36,12 @@ export class HotkeysContext {
 
                 action(event);
             });
+
+            if (hotkey instanceof Array) {
+                hotkey.forEach(hotkey => bindHotkey(hotkey));
+            } else {
+                bindHotkey(hotkey);
+            }
         });
     }
 
