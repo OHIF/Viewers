@@ -1,4 +1,4 @@
-/*! cornerstoneTools - v0.8.4 - 2017-04-05 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
+/*! cornerstoneTools - v0.8.4 - 2017-04-23 | (c) 2014 Chris Hafey | https://github.com/chafey/cornerstoneTools */
 // Begin Source: src/header.js
 if (typeof cornerstone === 'undefined') {
     cornerstone = {};
@@ -5024,7 +5024,10 @@ if (typeof cornerstoneTools === 'undefined') {
         var config = cornerstoneTools.rectangleRoi.getConfiguration();
         var context = eventData.canvasContext.canvas.getContext('2d');
         var seriesModule = cornerstone.metaData.get('generalSeriesModule', image.imageId);
-        var modality = seriesModule.modality;
+        var modality;
+        if (seriesModule) {
+            modality = seriesModule.modality;
+        }
 
         context.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -9873,13 +9876,17 @@ Display scroll progress bar across bottom of image.
 
     var stackStateManagers = [];
 
-    function addStackStateManager(element) {
+    function addStackStateManager(element, otherTools) {
         var oldStateManager = cornerstoneTools.getElementToolStateManager(element);
         if (!oldStateManager) {
             oldStateManager = cornerstoneTools.globalImageIdSpecificToolStateManager;
         }
 
         var stackTools = [ 'stack', 'stackPrefetch', 'playClip', 'volume', 'slab', 'referenceLines', 'crosshairs' ];
+        if (otherTools) {
+            stackTools = stackTools.concat(otherTools);
+        }
+
         var stackSpecificStateManager = cornerstoneTools.newStackSpecificToolStateManager(stackTools, oldStateManager);
         stackStateManagers.push(stackSpecificStateManager);
         cornerstoneTools.setElementToolStateManager(element, stackSpecificStateManager);
