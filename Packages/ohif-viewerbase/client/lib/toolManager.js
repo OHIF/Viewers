@@ -132,6 +132,7 @@ export const toolManager = {
         this.configureTools();
         initialized = true;
     },
+
     configureTools() {
         // Get Cornerstone Tools
         const { panMultiTouch, textStyle, toolStyle, toolColors,
@@ -171,29 +172,22 @@ export const toolManager = {
         const ellipticalRoiConfig = ellipticalRoi.getConfiguration();
 
         // Add shadow to length tool
-        length.setConfiguration({
-            ...lengthConfig,
-            ...shadowConfig,
-            drawHandlesOnHover: true
-        });
+        length.setConfiguration(Object.assign({}, lengthConfig, shadowConfig, { drawHandlesOnHover: true }));
 
         // Add shadow to length tool
-        ellipticalRoi.setConfiguration({
-            ...ellipticalRoiConfig,
-            ...shadowConfig
-        });
+        ellipticalRoi.setConfiguration(Object.assign({}, ellipticalRoiConfig, shadowConfig));
 
         // Set the configuration values for the Text Marker (Spine Labelling) tool
-        const startFrom = $('#startFrom');
-        const ascending = $('#ascending');
+        const $startFrom = $('#startFrom');
+        const $ascending = $('#ascending');
         const textMarkerConfig = {
             markers: [ 'L5', 'L4', 'L3', 'L2', 'L1', // Lumbar spine
                          'T12', 'T11', 'T10', 'T9', 'T8', 'T7', // Thoracic spine
                          'T6', 'T5', 'T4', 'T3', 'T2', 'T1',
                          'C7', 'C6', 'C5', 'C4', 'C3', 'C2', 'C1', // Cervical spine
             ],
-            current: startFrom.val(),
-            ascending: ascending.is(':checked'),
+            current: $startFrom.val(),
+            ascending: $ascending.is(':checked'),
             loop: true,
             changeTextCallback: textMarkerUtils.changeTextCallback,
             shadow: shadowConfig.shadow,
@@ -236,12 +230,13 @@ export const toolManager = {
         // http://stackoverflow.com/questions/9907419/javascript-object-get-key-by-value
         return Object.keys(object).filter(key => object[key] === value);
     },
+
     configureLoadProcess() {
         // Whenever the CornerstoneImageLoadProgress is fired, identify which viewports
         // the "in-progress" image is to be displayed in. Then pass the percent complete
         // via the Meteor Session to the other templates to be displayed in the relevant viewports.
         $(cornerstone).on('CornerstoneImageLoadProgress', (e, eventData) => {
-            viewportIndices = this.getKeysByValue(window.ViewportLoading, eventData.imageId);
+            const viewportIndices = this.getKeysByValue(window.ViewportLoading, eventData.imageId);
             viewportIndices.forEach(viewportIndex => {
                 Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
             });
@@ -250,24 +245,31 @@ export const toolManager = {
             Session.set('CornerstoneThumbnailLoadProgress' + encodedId, eventData.percentComplete);
         });
     },
+
     setGestures(newGestures) {
         gestures = newGestures;
     },
+
     getGestures() {
         return gestures;
     },
+
     addTool(name, base) {
         tools[name] = base;
     },
+
     getTools() {
         return tools;
     },
+
     setToolDefaultStates(states) {
         toolDefaultStates = states;
     },
+
     getToolDefaultStates() {
         return toolDefaultStates;
     },
+
     setActiveToolForElement(tool, element) {
         const canvases = $(element).find('canvas');
         if (element.classList.contains('empty') || !canvases.length) {
@@ -276,22 +278,19 @@ export const toolManager = {
 
         // First, deactivate the current active tool
         tools[activeTool].mouse.deactivate(element, 1);
- 
+
         if (tools[activeTool].touch) {
             tools[activeTool].touch.deactivate(element);
         }
 
         // Enable tools based on their default states
-        Object.keys(toolDefaultStates).forEach( action => {
+        Object.keys(toolDefaultStates).forEach(action => {
             const relevantTools = toolDefaultStates[action];
-            if (!relevantTools || !relevantTools.length || action === 'disabledToolButtons') {
-                return;
-            }
-            relevantTools.forEach( toolType => {
+            if (!relevantTools || !relevantTools.length || action === 'disabledToolButtons') return;
+            relevantTools.forEach(toolType => {
                 // the currently active tool has already been deactivated and can be skipped
-                if (action === 'deactivate' && toolType === activeTool) {
-                    return;
-                }
+                if (action === 'deactivate' && toolType === activeTool) return;
+
                 tools[toolType].mouse[action](
                     element,
                     (action === 'activate' || action === 'deactivate' ? 1 : void 0)
@@ -334,7 +333,7 @@ export const toolManager = {
             // scroll is the default tool for middle mouse wheel for stacks
             cornerstoneTools.stackScrollWheel.activate(element);
 
-            if (gestures['stackScrollMultiTouch'].enabled === true) {
+            if (gestures.stackScrollMultiTouch.enabled === true) {
                 cornerstoneTools.stackScrollMultiTouch.activate(element); // Three finger scroll
             }
 
@@ -385,37 +384,41 @@ export const toolManager = {
             tools[tool].touch.activate(element);
         }
 
-        if (gestures['zoomTouchPinch'].enabled === true) {
+        if (gestures.zoomTouchPinch.enabled === true) {
             cornerstoneTools.zoomTouchPinch.activate(element); // Two finger pinch
         }
 
-        if (gestures['panMultiTouch'].enabled === true) {
+        if (gestures.panMultiTouch.enabled === true) {
             cornerstoneTools.panMultiTouch.activate(element); // Two or >= Two finger pan
         }
 
-        if (gestures['doubleTapZoom'].enabled === true) {
+        if (gestures.doubleTapZoom.enabled === true) {
             cornerstoneTools.doubleTapZoom.activate(element);
         }
     },
+
     setActiveTool(tool, elements) {
         if (!initialized) {
             toolManager.init();
         }
 
+        // Prevent changing if tool is already active
+        if (tool === toolManager.getActiveTool()) return;
+
         /**
          * TODO: Add textMarkerDialogs template to OHIF's
          */
         const dialog = document.getElementById('textMarkerOptionsDialog');
-        if(dialog) {
+        if (dialog) {
             if (tool === 'spine' && activeTool !== 'spine' && dialog.getAttribute('open') !== 'open') {
                 dialog.show();
-            } else if(activeTool !== 'spine' && dialog.getAttribute("open") === "open") {
+            } else if (activeTool !== 'spine' && dialog.getAttribute('open') === 'open') {
                 dialog.close();
             }
         }
-        
-        /** 
-         * TODO: Use Session variables to activate a button and use Helpers like in toolbarSectionButton.js from OHIF’s. 
+
+        /**
+         * TODO: Use Session variables to activate a button and use Helpers like in toolbarSectionButton.js from OHIF’s.
          */
         // Set the div to active for the tool
         $('.imageViewerButton').removeClass('active');
@@ -428,19 +431,24 @@ export const toolManager = {
             tool = defaultTool;
         }
 
+        let $elements;
         if (!elements || !elements.length) {
-            elements = $('.imageViewerViewport');
+            $elements = $('.imageViewerViewport');
+        } else {
+            $elements = $(elements);
         }
 
         // Otherwise, set the active tool for all viewport elements
-        $(elements).each((index, element) => {
+        $elements.each((index, element) => {
             toolManager.setActiveToolForElement(tool, element);
         });
+
         activeTool = tool;
 
         // Store the active tool in the session in order to enable reactivity
         Session.set('ToolManagerActiveTool', tool);
     },
+
     getActiveTool() {
         if (!initialized) {
             toolManager.init();
@@ -453,30 +461,35 @@ export const toolManager = {
 
         return activeTool;
     },
+
     setDefaultTool(tool) {
         defaultTool = tool;
     },
+
     getDefaultTool() {
         return defaultTool;
     },
+
     setConfigureTools(configureTools) {
-        if(typeof configureTools === 'function') {
+        if (typeof configureTools === 'function') {
             this.configureTools = configureTools;
         }
     },
+
     activateCommandButton(button) {
         const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
 
-        if(activeCommandButtons.indexOf(button) === -1) {
+        if (activeCommandButtons.indexOf(button) === -1) {
             activeCommandButtons.push(button);
             Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
         }
     },
+
     deactivateCommandButton(button) {
         const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
         const index = activeCommandButtons.indexOf(button);
 
-        if(index !== -1) {
+        if (index !== -1) {
             activeCommandButtons.splice(index, 1);
             Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
         }

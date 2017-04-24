@@ -2,7 +2,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContext';
 
 export class HotkeysManager {
-    constructor() {
+    constructor(retrieveFunction, storeFunction) {
         this.contexts = {};
         this.currentContextName = null;
         this.enabled = new ReactiveVar(true);

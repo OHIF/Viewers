@@ -1,0 +1,22 @@
+Package.describe({
+    name: 'ohif:commands',
+    summary: 'OHIF commands management',
+    version: '0.0.1'
+});
+
+Package.onUse(function(api) {
+    api.versionsFrom('1.4');
+
+    // Meteor packages
+    api.use([
+        'ecmascript',
+        'reactive-var',
+        'reactive-dict'
+    ]);
+
+    // OHIF dependencies
+    api.use('ohif:core');
+
+    // Main module definition
+    api.mainModule('main.js', 'client');
+});
