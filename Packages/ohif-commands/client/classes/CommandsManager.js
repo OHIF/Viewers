@@ -1,5 +1,4 @@
-import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -7,11 +6,8 @@ export class CommandsManager {
     constructor() {
         this.contexts = {};
 
-        Tracker.autorun(() => {
-            const currentContextName = OHIF.context.get();
-            OHIF.log.info(currentContextName);
-            // TODO: initialize hotkeys context
-        });
+        // Enable reactivity by storing the last executed command
+        this.last = new ReactiveVar('');
     }
 
     getContext(contextName) {
@@ -80,7 +76,12 @@ export class CommandsManager {
             return OHIF.log.warn(`No action was defined for command "${command}"`);
         } else {
             const result = action(params);
-            Session.set('lastCommand', command);
+            if (this.last.get() === command) {
+                this.last.dep.changed();
+            } else {
+                this.last.set(command);
+            }
+
             return result;
         }
     }

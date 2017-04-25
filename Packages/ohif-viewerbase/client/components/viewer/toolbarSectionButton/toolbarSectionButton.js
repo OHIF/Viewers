@@ -7,7 +7,7 @@ Template.toolbarSectionButton.onCreated(() => {
     const instance = Template.instance();
 
     instance.isActive = activeToolId => {
-        // TODO: Find a way to prevent the 'flash' after a click, but before this helper runs
+        OHIF.commands.last.dep.depend();
         const instance = Template.instance();
         const subTools = instance.data.subTools;
         const currentId = instance.data.id;
@@ -15,9 +15,10 @@ Template.toolbarSectionButton.onCreated(() => {
         const isSubTool = subTools && _.findWhere(subTools, { id: activeToolId });
         const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
         const isActiveCommandButton = activeCommandButtons.indexOf(instance.data.id) !== -1;
+        const isActive = typeof instance.data.active === 'function' && instance.data.active();
 
         // Check if the current tool, a sub tool or a command button is active
-        return isCurrentTool || isSubTool || isActiveCommandButton;
+        return isActive || isCurrentTool || isSubTool || isActiveCommandButton;
     };
 
     instance.getActiveToolSubProperty = (propertyName, activeToolId) => {
@@ -36,19 +37,34 @@ Template.toolbarSectionButton.onCreated(() => {
 
     instance.autorun(computation => {
         // Get the last executed command
-        const lastCommand = Session.get('lastCommand');
+        const lastCommand = OHIF.commands.last.get();
 
         // Prevent running this computation on its first run
         if (computation.firstRun) return;
 
         // Stop here if it's not the last command or if it's already an active tool
         const { id } = instance.data;
-        if (lastCommand !== id || instance.isActive(id)) return;
+        const activeToolId = OHIF.viewerbase.toolManager.getActiveTool();
+        if (lastCommand !== id || instance.isActive(activeToolId)) return;
 
         // Add an active class to a button for 100ms to give the impression the button was pressed
-        const $button = instance.$('.toolbarSectionButton:first');
-        $button.addClass('active');
-        setTimeout(() => $button.removeClass('active'), 100);
+        const flashButton = $element => {
+            $element.addClass('active');
+            setTimeout(() => {
+                if ($element.hasClass('expandable') && $element.find('.toolbarSectionButton.active').length) return;
+                $element.removeClass('active');
+            }, 100);
+        };
+
+        // Flash the active button
+        const $button = instance.$('.toolbarSectionButton').first();
+        flashButton($button);
+
+        // Flash the parent button as well in case of this button is inside a drawer
+        const $parentButton = $button.closest('.toolbarSectionButton.expandable');
+        if ($parentButton.length) {
+            flashButton($parentButton);
+        }
     });
 });
 

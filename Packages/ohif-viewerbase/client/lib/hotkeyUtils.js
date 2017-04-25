@@ -37,7 +37,7 @@ Meteor.startup(function() {
         flipH: 'H',
         wwwc: 'W',
         zoom: 'Z',
-        cinePlay: 'SPACE',
+        toggleCinePlay: 'SPACE',
         rotateR: 'R',
         rotateL: 'L',
         toggleOverlayTags: 'SHIFT',
@@ -71,6 +71,7 @@ Meteor.startup(function() {
         angle: 'Angle',
         dragProbe: 'Probe',
         ellipticalRoi: 'Ellipse',
+        rectangleRoi: 'Rectangle',
         magnify: 'Magnify',
         annotate: 'Annotate',
         stackScroll: 'Stack Scroll',
@@ -98,7 +99,10 @@ Meteor.startup(function() {
         flipV: 'Flip vertically',
         rotateR: 'Rotate right',
         rotateL: 'Rotate left',
-        toggleCinePlay: 'Play/Pause'
+        toggleCinePlay: 'Play/Pause',
+        toggleCineDialog: 'CINE dialog',
+        resetViewport: 'Reset',
+        clearTools: 'Clear'
     });
 
     // Functions to register the preset switching commands
@@ -172,10 +176,6 @@ Meteor.startup(function() {
                 const $dicomTags = $('.imageViewerViewportOverlay .dicomTag');
                 $dicomTags.toggle($dicomTags.eq(0).css('display') === 'none');
             }
-        },
-        cineDialog: {
-            name: 'Toggle CINE',
-            action: viewportUtils.toggleCineDialog()
         }
     }, true);
 
@@ -204,44 +204,13 @@ function setOHIFHotkeys(hotkeys) {
 }
 
 /**
- * Add an active class to a button for 100ms only
- * to give the impressiont the button was pressed.
- * This is for tools that don't keep the button "pressed"
- * all the time the tool is active.
- *
- * @param  button DOM Element for the button to be "flashed"
- */
-function flashButton(button) {
-    if (!button) {
-        return;
-    }
-
-    button.classList.add('active');
-    setTimeout(() => {
-        button.classList.remove('active');
-    }, 100);
-}
-
-/**
  * Binds all hotkeys keydown events to the tasks defined in
  * OHIF.viewer.hotkeys or a given param
  * @param  {Object} hotkeys hotkey and task mapping (not required). If not given, uses OHIF.viewer.hotkeys
  */
 function enableHotkeys(hotkeys) {
-    const viewerHotkeys = hotkeys || OHIF.viewer.hotkeys;
-
-    const definitions = {};
-    Object.keys(viewerHotkeys).forEach(definition => {
-        const hotkey = viewerHotkeys[definition];
-        const action = OHIF.viewer.hotkeyFunctions[definition];
-        definitions[definition] = {
-            hotkey,
-            action
-        };
-    });
-
-    OHIF.hotkeys.setContext('viewer', definitions);
-    OHIF.hotkeys.switchToContext('viewer');
+    const definitions = hotkeys || OHIF.viewer.hotkeys;
+    OHIF.hotkeys.set('viewer', definitions);
     OHIF.context.set('viewer');
 }
 

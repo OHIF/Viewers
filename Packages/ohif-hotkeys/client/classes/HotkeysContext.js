@@ -9,39 +9,48 @@ export class HotkeysContext {
 
     extend(definitions={}) {
         if (typeof definitions !== 'object') return;
-        this.destroy();
-        Object.assign(this.definitions, definitions);
-        this.initialize();
+        Object.keys(definitions).forEach(command => {
+            const hotkey = definitions[command];
+            this.unregister(command);
+            this.register(command, hotkey);
+            this.definitions[command] = hotkey;
+        });
+    }
+
+    register(command, hotkey) {
+        if (!hotkey) {
+            return OHIF.log.warn(`No hotkey was defined for "${command}"`);
+        }
+
+        if (!command) {
+            return OHIF.log.warn(`No command was defined for hotkey "${hotkey}"`);
+        }
+
+        const bindingKey = `keydown.hotkey.${this.name}.${command}`;
+        const bind = hotkey => $(document).bind(bindingKey, hotkey, event => {
+            if (!this.enabled.get()) return;
+            OHIF.commands.run(command);
+        });
+
+        if (hotkey instanceof Array) {
+            hotkey.forEach(hotkey => bind(hotkey));
+        } else {
+            bind(hotkey);
+        }
+    }
+
+    unregister(command) {
+        const bindingKey = `keydown.hotkey.${this.name}.${command}`;
+        if (this.definitions[command]) {
+            $(document).unbind(bindingKey);
+            delete this.definitions[command];
+        }
     }
 
     initialize() {
-        Object.keys(this.definitions).forEach(definitionKey => {
-            const { hotkey, action, disabled } = this.definitions[definitionKey];
-            let message;
-            if (!hotkey) {
-                message = `No hotkey was defined for "${definitionKey}"`;
-            } else if (!action) {
-                message = `No action was defined for "${definitionKey}" using "${hotkey}" hotkey`;
-            }
-
-            if (message) {
-                return OHIF.log.warn(message);
-            }
-
-            const bindHotkey = hotkey => $(document).bind(`keydown.hotkey.${this.name}`, hotkey, event => {
-                if (!this.enabled.get()) return;
-                if (typeof disabled !== undefined) {
-                    if ((typeof disabled === 'function' && disabled()) || disabled) return;
-                }
-
-                action(event);
-            });
-
-            if (hotkey instanceof Array) {
-                hotkey.forEach(hotkey => bindHotkey(hotkey));
-            } else {
-                bindHotkey(hotkey);
-            }
+        Object.keys(this.definitions).forEach(command => {
+            const hotkey = this.definitions[command];
+            this.register(command, hotkey);
         });
     }
 

@@ -102,7 +102,7 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-trash'
         });
 
-        var buttonData = [];
+        const buttonData = [];
 
         buttonData.push({
             id: 'zoom',
@@ -175,7 +175,8 @@ Template.toolbarSection.helpers({
                 id: 'toggleCinePlay',
                 title: 'Toggle CINE Play',
                 classes: 'imageViewerCommand',
-                buttonTemplateName: 'playClipButton'
+                buttonTemplateName: 'playClipButton',
+                active: OHIF.viewerbase.viewportUtils.isPlaying
             });
 
             buttonData.push({
@@ -183,7 +184,8 @@ Template.toolbarSection.helpers({
                 title: 'CINE',
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-youtube-play',
-                disableFunction: OHIF.viewerbase.viewportUtils.hasMultipleFrames
+                disableFunction: OHIF.viewerbase.viewportUtils.hasMultipleFrames,
+                active: () => $('#cineDialog').is(':visible')
             });
         }
 

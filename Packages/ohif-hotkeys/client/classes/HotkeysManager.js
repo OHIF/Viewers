@@ -1,4 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { OHIF } from 'meteor/ohif:core';
 import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContext';
 
 export class HotkeysManager {
@@ -6,6 +8,11 @@ export class HotkeysManager {
         this.contexts = {};
         this.currentContextName = null;
         this.enabled = new ReactiveVar(true);
+
+        Tracker.autorun(() => {
+            const contextName = OHIF.context.get();
+            this.switchToContext(contextName);
+        });
     }
 
     disable() {
@@ -24,7 +31,7 @@ export class HotkeysManager {
         return this.getContext(this.currentContextName);
     }
 
-    setContext(contextName, contextDefinitions) {
+    set(contextName, contextDefinitions, extend=false) {
         const enabled = this.enabled;
         const context = new HotkeysContext(contextName, contextDefinitions, enabled);
         const currentContext = this.getCurrentContext();
@@ -34,6 +41,16 @@ export class HotkeysManager {
         }
 
         this.contexts[contextName] = context;
+    }
+
+    register(contextName, command, hotkey) {
+        if (!command || !hotkey) return;
+        const context = this.getContext(contextName);
+        if (!context) {
+            this.set(contextName, {});
+        }
+
+        context.register(command, hotkey);
     }
 
     unsetContext(contextName) {
