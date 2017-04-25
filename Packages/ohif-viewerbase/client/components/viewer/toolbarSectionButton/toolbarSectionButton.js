@@ -2,7 +2,6 @@ import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
-import { toolManager } from '../../../lib/toolManager';
 
 Template.toolbarSectionButton.onCreated(() => {
     const instance = Template.instance();
@@ -34,6 +33,23 @@ Template.toolbarSectionButton.onCreated(() => {
             return defaultProperty;
         }
     };
+
+    instance.autorun(computation => {
+        // Get the last executed command
+        const lastCommand = Session.get('lastCommand');
+
+        // Prevent running this computation on its first run
+        if (computation.firstRun) return;
+
+        // Stop here if it's not the last command or if it's already an active tool
+        const { id } = instance.data;
+        if (lastCommand !== id || instance.isActive(id)) return;
+
+        // Add an active class to a button for 100ms to give the impression the button was pressed
+        const $button = instance.$('.toolbarSectionButton:first');
+        $button.addClass('active');
+        setTimeout(() => $button.removeClass('active'), 100);
+    });
 });
 
 Template.toolbarSectionButton.helpers({
@@ -63,41 +79,14 @@ Template.toolbarSectionButton.helpers({
 });
 
 Template.toolbarSectionButton.events({
-    'click .imageViewerTool'(event, instance) {
+    'click .toolbarSectionButton:not(.expandable)'(event, instance) {
         // Prevent the event from bubbling to parent tools
         event.stopPropagation();
 
-        // Stop here if the tool is disabled
-        if ($(event.currentTarget).hasClass('disabled')) {
-            return;
-        }
+        // Stop here if the button is disabled
+        if ($(event.currentTarget).hasClass('disabled')) return;
 
-        const tool = event.currentTarget.id;
-        const elements = instance.$('.imageViewerViewport');
-
-        const activeTool = toolManager.getActiveTool();
-        if (tool !== activeTool) {
-            OHIF.log.info('Setting active tool to: ' + tool);
-            toolManager.setActiveTool(tool, elements);
-        }
-    },
-
-    'click .imageViewerCommand'(event, instance) {
-        // Prevent the event from bubbling to parent tools
-        event.stopPropagation();
-
-        // Stop here if the tool is disabled
-        if ($(event.currentTarget).hasClass('disabled')) {
-            return;
-        }
-
-        const command = event.currentTarget.id;
-        if (!OHIF.viewer.functionList || !OHIF.viewer.functionList.hasOwnProperty(command)) {
-            return;
-        }
-
-        const activeViewport = Session.get('activeViewport');
-        const element = $('.imageViewerViewport').get(activeViewport);
-        OHIF.viewer.functionList[command](element);
+        // Run the command attached to the button
+        OHIF.commands.run(instance.data.id);
     }
 });
