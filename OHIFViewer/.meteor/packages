@@ -8,6 +8,7 @@
 ohif:polyfill
 ohif:design
 ohif:core
+ohif:commands
 ohif:hotkeys
 ohif:header
 ohif:cornerstone

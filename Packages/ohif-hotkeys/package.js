@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 
     // OHIF dependencies
     api.use('ohif:core');
+    api.use('ohif:commands');
 
     // Main module definition
     api.mainModule('main.js', 'client');

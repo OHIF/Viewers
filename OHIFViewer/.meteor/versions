@@ -72,6 +72,7 @@ mongo-id@1.0.6
 natestrauser:select2@4.0.3
 npm-mongo@2.2.11_2
 observe-sequence@1.0.14
+ohif:commands@0.0.1
 ohif:core@0.0.1
 ohif:cornerstone@0.0.1
 ohif:design@0.0.1

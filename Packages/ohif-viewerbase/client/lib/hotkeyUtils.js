@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { toolManager } from './toolManager';
 import { switchToImageRelative } from './switchToImageRelative';
@@ -49,6 +50,33 @@ Meteor.startup(function() {
 
     // For now
     OHIF.viewer.hotkeys = OHIF.viewer.defaultHotkeys;
+
+    const contextName = 'viewer';
+    OHIF.commands.createContext(contextName);
+    const registerToolCommand = (commandName, toolId) => {
+        OHIF.commands.registerCommand(contextName, toolId, {
+            name: commandName,
+            action: toolManager.setActiveTool,
+            params: toolId
+        });
+    };
+
+    const registerToolCommands = map => _.each(map, registerToolCommand);
+
+    registerToolCommands({
+        wwwc: 'Levels',
+        zoom: 'Zoom',
+        angle: 'Angle',
+        dragProbe: 'Probe',
+        ellipticalRoi: 'Ellipse',
+        magnify: 'Magnify',
+        annotate: 'Annotate',
+        stackScroll: 'Stack Scroll',
+        pan: 'Pan',
+        length: 'Length',
+        spine: 'Spine',
+        wwwcRegion: 'ROI Window'
+    });
 
     OHIF.viewer.hotkeyFunctions = {
         wwwc: () => toolManager.setActiveTool('wwwc'),
@@ -256,6 +284,7 @@ function enableHotkeys(hotkeys) {
 
     OHIF.hotkeys.setContext('viewer', definitions);
     OHIF.hotkeys.switchToContext('viewer');
+    OHIF.context.set('viewer');
 }
 
 /**

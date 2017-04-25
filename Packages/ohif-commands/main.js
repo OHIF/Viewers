@@ -5,11 +5,14 @@ import { CommandsManager } from 'meteor/ohif:commands/client/classes/CommandsMan
 // Create context namespace using a ReactiveVar
 const context = new ReactiveVar(null);
 
+// Append context namespace to OHIF namespace
+OHIF.context = context;
+
 // Create commands namespace using a CommandsManager class instance
 const commands = new CommandsManager(context);
 
-// Append context namespace to OHIF namespace
-OHIF.context = context;
+// Append commands namespace to OHIF namespace
+OHIF.commands = commands;
 
 // Export relevant objects
 export { context, commands };

@@ -10,12 +10,12 @@ Package.onUse(function(api) {
     // Meteor packages
     api.use([
         'ecmascript',
-        'reactive-var',
-        'reactive-dict'
+        'reactive-var'
     ]);
 
     // OHIF dependencies
     api.use('ohif:core');
+    api.use('ohif:log');
 
     // Main module definition
     api.mainModule('main.js', 'client');
