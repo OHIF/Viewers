@@ -1,4 +1,5 @@
 import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -34,22 +35,25 @@ export class CommandsManager {
     createContext(contextName) {
         if (!contextName) return;
         if (this.contexts[contextName]) {
-            return this.unsetCommands(contextName);
+            return this.clear(contextName);
         }
 
         this.contexts[contextName] = {};
     }
 
-    setCommands(contextName, definitions) {
+    set(contextName, definitions, extend=false) {
         if (typeof definitions !== 'object') return;
         const context = this.getContext(contextName);
         if (!context) return;
 
-        this.unsetCommands(contextName);
+        if (!extend) {
+            this.clear(contextName);
+        }
+
         Object.keys(definitions).forEach(command => (context[command] = definitions[command]));
     }
 
-    registerCommand(contextName, command, definition) {
+    register(contextName, command, definition) {
         if (typeof definition !== 'object') return;
         const context = this.getContext(contextName);
         if (!context) return;
@@ -57,7 +61,7 @@ export class CommandsManager {
         context[command] = definition;
     }
 
-    unsetCommands(contextName) {
+    clear(contextName) {
         if (!contextName) return;
         this.contexts[contextName] = {};
     }
@@ -75,7 +79,9 @@ export class CommandsManager {
         if (typeof action !== 'function') {
             return OHIF.log.warn(`No action was defined for command "${command}"`);
         } else {
-            return action(params);
+            const result = action(params);
+            Session.set('lastCommand', command);
+            return result;
         }
     }
 }

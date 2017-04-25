@@ -31,10 +31,10 @@ Template.imageControls.events({
         };
 
         if (event.which === keys.DOWN) {
-            OHIF.viewer.hotkeyFunctions.scrollDown();
+            OHIF.commands.run('scrollDown');
             event.preventDefault();
         } else if (event.which === keys.UP) {
-            OHIF.viewer.hotkeyFunctions.scrollUp();
+            OHIF.commands.run('scrollUp');
             event.preventDefault();
         }
     },
