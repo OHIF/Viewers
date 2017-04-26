@@ -37,6 +37,9 @@ Template.viewerMain.onRendered(() => {
     const parentElement = instance.$('#layoutManagerTarget').get(0);
     const studyPrefetcher = StudyPrefetcher.getInstance();
 
+    OHIF.viewerbase.studyLoadingListener.clear();
+    OHIF.viewerbase.studyLoadingListener.addStudies(studies);
+
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);
 

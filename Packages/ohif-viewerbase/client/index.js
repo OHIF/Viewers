@@ -157,6 +157,10 @@ Viewerbase.createStacks = createStacks;
 import { StackManager } from './lib/StackManager';
 Viewerbase.stackManager = StackManager;
 
+// studyLoadingListener
+import { studyLoadingListener } from './lib/studyLoadingListener';
+Viewerbase.studyLoadingListener = studyLoadingListener;
+
 // toolManager
 import { toolManager } from './lib/toolManager';
 Viewerbase.toolManager = toolManager;

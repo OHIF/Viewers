@@ -94,6 +94,21 @@ const StackManager = {
         return stackMap[displaySetInstanceUid];
     },
     /**
+     * Find a stack or reate one if it has not been created yet
+     * @param study The study who's metadata will be added
+     * @param displaySet The set of images to make the stack from
+     * @return {Array} Array with image IDs
+     */
+    findOrCreateStack(study, displaySet) {
+        let stack = this.findStack(displaySet.displaySetInstanceUid);
+
+        if (!stack || !stack.imageIds) {
+            stack = this.makeAndAddStack(study, displaySet);
+        }
+
+        return stack;
+    },
+    /**
      * Gets the underlying map of displaySetInstanceUid to stack object.
      * WARNING: Do not change this object. It directly affects the manager.
      * @returns {{}} map of displaySetInstanceUid -> stack.

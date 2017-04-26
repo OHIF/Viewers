@@ -111,5 +111,16 @@ Template.imageThumbnail.helpers({
         if (percentComplete && percentComplete !== 100) {
             return percentComplete + '%';
         }
+    },
+
+    // Return how much the displaySet has already been loaded (%)
+    stackPercentComplete() {
+        const instance = Template.instance();
+        const stack = instance.data.thumbnail.stack;
+        const displaySetInstanceUid = stack.displaySetInstanceUid;
+        const progress = Session.get('DisplaySetProgress:' + displaySetInstanceUid);
+        const percentComplete = parseFloat(progress ? progress.percentComplete : 0) * 100;
+
+        return percentComplete.toFixed(2);
     }
 });
