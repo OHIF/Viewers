@@ -171,9 +171,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.js', 'client');
     api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.styl', 'client');
 
-    api.addFiles('client/components/viewer/playClipButton/playClipButton.html', 'client');
-    api.addFiles('client/components/viewer/playClipButton/playClipButton.js', 'client');
-
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
@@ -181,9 +178,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.html', 'client');
     api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.js', 'client');
     api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.styl', 'client');
-
-    api.addFiles('client/components/viewer/displaySetNavigation/displaySetNavigation.html', 'client');
-    api.addFiles('client/components/viewer/displaySetNavigation/displaySetNavigation.js', 'client');
 
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.html', 'client');
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.styl', 'client');

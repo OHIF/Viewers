@@ -79,18 +79,24 @@ Template.toolbarSectionButton.helpers({
     svgLink() {
         const instance = Template.instance();
         const activeToolId = Session.get('ToolManagerActiveTool');
-        return instance.getActiveToolSubProperty('svgLink', activeToolId);
+        const svgLink = instance.getActiveToolSubProperty('svgLink', activeToolId);
+        return _.isFunction(svgLink) ? svgLink() : svgLink;
     },
 
     iconClasses() {
         const instance = Template.instance();
         const activeToolId = Session.get('ToolManagerActiveTool');
-        return instance.getActiveToolSubProperty('iconClasses', activeToolId);
+        const iconClasses = instance.getActiveToolSubProperty('iconClasses', activeToolId);
+        return _.isFunction(iconClasses) ? iconClasses() : iconClasses;
     },
 
     disableButton() {
+        Session.get('activeViewport');
+        Session.get('LayoutManagerUpdated');
         const instance = Template.instance();
-        return instance.data.disableFunction && instance.data.disableFunction();
+        const isCommandDisabled = OHIF.commands.isDisabled(instance.data.id);
+        const isFunctionDisabled = instance.data.disableFunction && instance.data.disableFunction();
+        return isCommandDisabled || isFunctionDisabled;
     }
 });
 

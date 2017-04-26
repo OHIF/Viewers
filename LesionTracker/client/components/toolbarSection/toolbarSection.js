@@ -141,8 +141,8 @@ Template.toolbarSection.helpers({
             id: 'toggleCineDialog',
             title: 'CINE',
             classes: 'imageViewerCommand',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-cineplay-toggle',
-            disableFunction: Viewerbase.viewportUtils.hasMultipleFrames
+            iconClasses: 'fa fa-youtube-play',
+            active: () => $('#cineDialog').is(':visible')
         });
 
         const buttonData = [];

@@ -143,23 +143,23 @@ Template.toolbarSection.helpers({
                 id: 'previousDisplaySet',
                 title: 'Previous',
                 classes: 'imageViewerCommand',
-                buttonTemplateName: 'displaySetNavigation',
-                isNext: false
+                iconClasses: 'fa fa-toggle-up fa-fw'
             });
 
             buttonData.push({
                 id: 'nextDisplaySet',
                 title: 'Next',
                 classes: 'imageViewerCommand',
-                buttonTemplateName: 'displaySetNavigation',
-                isNext: true
+                iconClasses: 'fa fa-toggle-down fa-fw'
             });
 
+            const { isPlaying } = OHIF.viewerbase.viewportUtils;
             buttonData.push({
                 id: 'toggleCinePlay',
-                title: 'Toggle CINE Play',
+                title: () => isPlaying() ? 'Stop' : 'Play',
                 classes: 'imageViewerCommand',
-                buttonTemplateName: 'playClipButton'
+                iconClasses: () => ('fa fa-fw ' + (isPlaying() ? 'fa-stop' : 'fa-play')),
+                active: isPlaying
             });
 
             buttonData.push({
@@ -167,7 +167,7 @@ Template.toolbarSection.helpers({
                 title: 'CINE',
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-youtube-play',
-                disableFunction: OHIF.viewerbase.viewportUtils.hasMultipleFrames
+                active: () => $('#cineDialog').is(':visible')
             });
         }
 

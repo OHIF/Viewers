@@ -12,7 +12,8 @@ Package.onUse(function(api) {
         'ecmascript',
         'reactive-var',
         'session',
-        'iron:router'
+        'iron:router',
+        'u2622:persistent-session'
     ]);
 
     // OHIF dependencies

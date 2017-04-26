@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
@@ -55,6 +56,12 @@ Meteor.startup(function() {
     const contextName = 'viewer';
     OHIF.commands.createContext(contextName);
 
+    // Create a function that returns true if the active viewport is empty
+    const isActiveViewportEmpty = () => {
+        const activeViewport = Session.get('activeViewport') || 0;
+        return $('.imageViewerViewport').eq(activeViewport).hasClass('empty');
+    };
+
     // Functions to register the tool switching commands
     const registerToolCommands = map => _.each(map, (commandName, toolId) => {
         OHIF.commands.register(contextName, toolId, {
@@ -85,7 +92,8 @@ Meteor.startup(function() {
     const registerViewportCommands = map => _.each(map, (commandName, commandId) => {
         OHIF.commands.register(contextName, commandId, {
             name: commandName,
-            action: viewportUtils[commandId]
+            action: viewportUtils[commandId],
+            disabled: isActiveViewportEmpty
         });
     });
 
@@ -99,8 +107,6 @@ Meteor.startup(function() {
         flipV: 'Flip vertically',
         rotateR: 'Rotate right',
         rotateL: 'Rotate left',
-        toggleCinePlay: 'Play/Pause',
-        toggleCineDialog: 'CINE dialog',
         resetViewport: 'Reset',
         clearTools: 'Clear'
     });
@@ -124,7 +130,6 @@ Meteor.startup(function() {
     });
 
     // Register scrolling commands
-    const isActiveViewportEmpty = () => $('.viewportContainer.active .imageViewerViewport').hasClass('empty');
     OHIF.commands.set(contextName, {
         scrollDown: {
             name: 'Scroll down',
@@ -147,19 +152,21 @@ Meteor.startup(function() {
     // Register viewport navigation commands
     OHIF.commands.set(contextName, {
         previousDisplaySet: {
-            name: 'Scroll down',
-            action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false)
+            name: 'Previous display set',
+            action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
+            disabled: () => !OHIF.viewerbase.layoutManager.canMoveDisplaySets(false)
         },
         nextDisplaySet: {
-            name: 'Scroll up',
-            action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true)
+            name: 'Next display set',
+            action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
+            disabled: () => !OHIF.viewerbase.layoutManager.canMoveDisplaySets(true)
         },
         nextPanel: {
-            name: 'Scroll to first image',
+            name: 'Next panel',
             action: () => panelNavigation.loadNextActivePanel()
         },
         previousPanel: {
-            name: 'Scroll to last image',
+            name: 'Previous panel',
             action: () => panelNavigation.loadPreviousActivePanel()
         }
     }, true);
@@ -176,6 +183,16 @@ Meteor.startup(function() {
                 const $dicomTags = $('.imageViewerViewportOverlay .dicomTag');
                 $dicomTags.toggle($dicomTags.eq(0).css('display') === 'none');
             }
+        },
+        toggleCinePlay: {
+            name: 'Play/Pause',
+            action: viewportUtils.toggleCinePlay,
+            disabled: OHIF.viewerbase.viewportUtils.hasMultipleFrames
+        },
+        toggleCineDialog: {
+            name: 'CINE dialog',
+            action: viewportUtils.toggleCineDialog,
+            disabled: OHIF.viewerbase.viewportUtils.hasMultipleFrames
         }
     }, true);
 

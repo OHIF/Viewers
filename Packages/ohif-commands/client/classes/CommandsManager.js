@@ -57,21 +57,46 @@ export class CommandsManager {
         context[command] = definition;
     }
 
+    setDisabledFunction(contextName, command, func) {
+        if (!command || typeof func !== 'function') return;
+        const context = this.getContext(contextName);
+        if (!context) return;
+        const definition = context[command];
+        if (!definition) {
+            return OHIF.log.warn(`Trying to set a disabled function to a command "${command}" that was not yet defined`);
+        }
+
+        definition.disabled = func;
+    }
+
     clear(contextName) {
         if (!contextName) return;
         this.contexts[contextName] = {};
     }
 
-    run(command) {
+    getDefinition(command) {
         const context = this.getCurrentContext();
         if (!context) return;
-        const definition = context[command];
+        return context[command];
+    }
+
+    isDisabled(command) {
+        const definition = this.getDefinition(command);
+        if (!definition) return false;
+        const { disabled } = definition;
+        if (_.isFunction(disabled) && disabled()) return true;
+        if (!_.isFunction(disabled) && disabled) return true;
+        return false;
+    }
+
+    run(command) {
+        const definition = this.getDefinition(command);
         if (!definition) {
             return OHIF.log.warn(`Command "${command}" not found in current context`);
         }
 
-        const { action, disabled, params } = definition;
-        if ((_.isFunction(disabled) && disabled()) || (!_.isUndefined(disabled) && disabled)) return;
+        const { action, params } = definition;
+        if (this.isDisabled(command)) return;
         if (typeof action !== 'function') {
             return OHIF.log.warn(`No action was defined for command "${command}"`);
         } else {
