@@ -1,5 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContext';
 
@@ -8,11 +10,35 @@ export class HotkeysManager {
         this.contexts = {};
         this.currentContextName = null;
         this.enabled = new ReactiveVar(true);
+        this.retrieveFunction = retrieveFunction;
+        this.storeFunction = storeFunction;
 
         Tracker.autorun(() => {
             const contextName = OHIF.context.get();
             this.switchToContext(contextName);
         });
+    }
+
+    store(contextName, definitions) {
+        const storageKey = `hotkeysDefinitions.${contextName}`;
+        if (this.storeFunction) {
+            this.storeFunction(contextName, definitions);
+        } else if (Meteor.userId()) {
+            OHIF.user.setData(storageKey, definitions);
+        } else {
+            Session.setPersistent(storageKey, definitions);
+        }
+    }
+
+    retrieve(contextName) {
+        const storageKey = `hotkeysDefinitions.${contextName}`;
+        if (this.retrieveFunction) {
+            return this.retrieveFunction(contextName);
+        } else if (Meteor.userId()) {
+            return OHIF.user.getData(storageKey);
+        } else {
+            return Session.get(storageKey);
+        }
     }
 
     disable() {
@@ -31,7 +57,13 @@ export class HotkeysManager {
         return this.getContext(this.currentContextName);
     }
 
-    set(contextName, contextDefinitions, extend=false) {
+    load(contextName) {
+        const definitions = this.retrieve(contextName);
+        if (!definitions) return;
+        this.set(contextName, definitions);
+    }
+
+    set(contextName, contextDefinitions) {
         const enabled = this.enabled;
         const context = new HotkeysContext(contextName, contextDefinitions, enabled);
         const currentContext = this.getCurrentContext();
@@ -72,5 +104,6 @@ export class HotkeysManager {
 
         this.currentContextName = contextName;
         newContext.initialize();
+        this.load(contextName);
     }
 }
