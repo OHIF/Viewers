@@ -4,12 +4,17 @@ Package.describe({
     version: '0.0.1'
 });
 
+Npm.depends({
+    'jquery.hotkeys': '0.1.0'
+});
+
 Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
     // Meteor packages
     api.use([
         'ecmascript',
+        'templating',
         'reactive-var',
         'session',
         'iron:router',

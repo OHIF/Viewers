@@ -58,9 +58,11 @@ export class HotkeysManager {
     }
 
     load(contextName) {
+        const context = this.getContext(contextName);
+        if (!context) return;
         const definitions = this.retrieve(contextName);
         if (!definitions) return;
-        this.set(contextName, definitions);
+        context.extend(definitions);
     }
 
     set(contextName, contextDefinitions) {

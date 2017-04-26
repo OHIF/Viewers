@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { HotkeysManager } from 'meteor/ohif:hotkeys/client/classes/HotkeysManager';
+import 'jquery.hotkeys';
 
 // Create hotkeys namespace using a HotkeysManager class instance
 const hotkeys = new HotkeysManager();

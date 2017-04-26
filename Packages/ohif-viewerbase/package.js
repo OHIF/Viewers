@@ -83,10 +83,6 @@ Package.onUse(function(api) {
 
     api.addAssets(assets, 'client');
 
-    // TODO: Use NPM depends for these
-    api.addFiles('client/compatibility/jquery.hotkeys.js', 'client', {
-        bare: true
-    });
     api.addFiles('client/compatibility/dialogPolyfill.js', 'client', {
         bare: true
     });
