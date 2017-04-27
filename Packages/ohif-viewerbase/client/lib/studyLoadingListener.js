@@ -52,12 +52,11 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
 
     startListening() {
         const imageLoadProgressEventName = this._getImageLoadProgressEventName();
+        const imageLoadProgressEventHandle = this._imageLoadProgressEventHandle.bind(this);
 
         this.stopListening();
 
-        $(cornerstone).on(imageLoadProgressEventName, (e, eventData) => {
-            this._imageLoadProgressEventHandle(e, eventData);
-        });
+        $(cornerstone).on(imageLoadProgressEventName, imageLoadProgressEventHandle);
     }
 
     stopListening() {
@@ -127,16 +126,13 @@ class StackLoadingListener extends BaseLoadingListener {
     startListening() {
         const imageLoadedEventName = this._getImageLoadedEventName();
         const imageCachePromiseRemovedEventName = this._getImageCachePromiseRemoveEventName();
+        const imageLoadedEventHandle = this._imageLoadedEventHandle.bind(this);
+        const imageCachePromiseRemovedEventHandle = this._imageCachePromiseRemovedEventHandle.bind(this);
 
         this.stopListening();
 
-        $(cornerstone).on(imageLoadedEventName, (e, eventData) => {
-            this._imageLoadedEventHandle(e, eventData);
-        });
-
-        $(cornerstone).on(imageCachePromiseRemovedEventName, (e, eventData) => {
-            this._imageCachePromiseRemovedEventHandle(e, eventData);
-        });
+        $(cornerstone).on(imageLoadedEventName, imageLoadedEventHandle);
+        $(cornerstone).on(imageCachePromiseRemovedEventName, imageCachePromiseRemovedEventHandle);
     }
 
     stopListening() {
