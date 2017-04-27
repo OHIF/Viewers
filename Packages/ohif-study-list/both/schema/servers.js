@@ -163,6 +163,11 @@ export const UISettings = new SimpleSchema({
         type: Number,
         label: 'Number of days to be used on Study List date filter',
         min: 1
+    },
+    showStackLoadingProgressBar: {
+        type: Boolean,
+        label: 'Show a progress bar closest to the thumbnail showing how much the stack has loaded',
+        defaultValue: true
     }
 });
 

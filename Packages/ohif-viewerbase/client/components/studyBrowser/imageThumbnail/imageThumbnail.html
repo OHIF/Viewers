@@ -7,5 +7,10 @@
         <div class="imageThumbnailErrorLoadingIndicator thumbnailLoadingIndicator">
             <p>Error</p>
         </div>
+        {{#if showStackLoadingProgressBar}}
+            <div class="imageThumbnailProgressBar">
+                <div class="imageThumbnailProgressBarInner" style="width:{{stackPercentComplete}}%"></div>
+            </div>
+        {{/if}}
     </div>
 </template>

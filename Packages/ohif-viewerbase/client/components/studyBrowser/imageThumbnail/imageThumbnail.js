@@ -97,7 +97,7 @@ Template.imageThumbnail.onDestroyed(() => {
 });
 
 Template.imageThumbnail.helpers({
-    // Executed every time the image loading progress is changed
+    // Executed every time the thumbnail image loading progress is changed
     percentComplete() {
         const instance = Template.instance();
 
@@ -113,14 +113,18 @@ Template.imageThumbnail.helpers({
         }
     },
 
-    // Return how much the displaySet has already been loaded (%)
+    // Return how much the stack has already loaded
     stackPercentComplete() {
         const instance = Template.instance();
         const stack = instance.data.thumbnail.stack;
         const displaySetInstanceUid = stack.displaySetInstanceUid;
         const progress = Session.get('DisplaySetProgress:' + displaySetInstanceUid);
-        const percentComplete = parseFloat(progress ? progress.percentComplete : 0) * 100;
+        const percentComplete = progress && progress.percentComplete;
 
-        return percentComplete.toFixed(2);
+        return percentComplete;
+    },
+
+    showStackLoadingProgressBar() {
+        return OHIF.uiSettings.showStackLoadingProgressBar;
     }
 });
