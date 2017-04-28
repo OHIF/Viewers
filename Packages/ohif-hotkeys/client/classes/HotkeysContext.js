@@ -12,7 +12,10 @@ export class HotkeysContext {
         Object.keys(definitions).forEach(command => {
             const hotkey = definitions[command];
             this.unregister(command);
-            this.register(command, hotkey);
+            if (hotkey) {
+                this.register(command, hotkey);
+            }
+
             this.definitions[command] = hotkey;
         });
     }

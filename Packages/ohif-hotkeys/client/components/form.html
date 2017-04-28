@@ -1,5 +1,7 @@
 <template name="hotkeysForm">
-    {{#form class='form-themed'}}
-        {{>inputText class='hotkey' label='Window W/L'}}
+    {{#form (extend this class='form-themed')}}
+        {{#each hotkeyInputInformation in getHotkeyInputInformationList}}
+            {{>inputText (extend hotkeyInputInformation class='hotkey')}}
+        {{/each}}
     {{/form}}
 </template>

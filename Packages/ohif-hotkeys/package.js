@@ -15,6 +15,7 @@ Package.onUse(function(api) {
     api.use([
         'ecmascript',
         'templating',
+        'stylus',
         'reactive-var',
         'session',
         'iron:router',

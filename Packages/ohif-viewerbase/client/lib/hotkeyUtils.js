@@ -22,31 +22,54 @@ Meteor.startup(function() {
     };
 
     OHIF.viewer.defaultHotkeys = {
+        // Tool hotkeys
         defaultTool: 'ESC',
+        zoom: 'Z',
+        wwwc: 'W',
+        pan: 'P',
         angle: 'A',
         stackScroll: 'S',
-        pan: 'P',
         magnify: 'M',
-        scrollDown: 'DOWN',
-        scrollUp: 'UP',
-        nextDisplaySet: 'PAGEDOWN',
-        previousDisplaySet: 'PAGEUP',
-        nextPanel: 'RIGHT',
-        previousPanel: 'LEFT',
-        invert: 'I',
-        flipV: 'V',
+        length: '',
+        annotate: '',
+        dragProbe: '',
+        ellipticalRoi: '',
+        rectangleRoi: '',
+        spine: '',
+
+        // Viewport hotkeys
         flipH: 'H',
-        wwwc: 'W',
-        zoom: 'Z',
-        toggleCinePlay: 'SPACE',
+        flipV: 'V',
         rotateR: 'R',
         rotateL: 'L',
+        invert: 'I',
+        zoomIn: '',
+        zoomOut: '',
+        zoomToFit: '',
+        resetViewport: '',
+        clearTools: '',
+
+        // Viewport navigation hotkeys
+        scrollDown: 'DOWN',
+        scrollUp: 'UP',
+        scrollLastImage: '',
+        scrollFirstImage: '',
+        previousDisplaySet: 'PAGEUP',
+        nextDisplaySet: 'PAGEDOWN',
+        nextPanel: 'RIGHT',
+        previousPanel: 'LEFT',
+
+        // Miscellaneous hotkeys
         toggleOverlayTags: 'SHIFT',
-        WLPresetSoftTissue: ['NUMPAD1', '1'],
-        WLPresetLung: ['NUMPAD2', '2'],
-        WLPresetLiver: ['NUMPAD3', '3'],
-        WLPresetBone: ['NUMPAD4', '4'],
-        WLPresetBrain: ['NUMPAD5', '5']
+        toggleCinePlay: 'SPACE',
+        toggleCineDialog: '',
+
+        // Preset hotkeys
+        WLPresetSoftTissue: '1',
+        WLPresetLung: '2',
+        WLPresetLiver: '3',
+        WLPresetBone: '4',
+        WLPresetBrain: '5'
     };
 
     // For now
@@ -71,21 +94,27 @@ Meteor.startup(function() {
         });
     });
 
+    // Register the default tool command
+    OHIF.commands.register(contextName, 'defaultTool', {
+        name: 'Default Tool',
+        action: () => toolManager.setActiveTool(toolManager.getDefaultTool())
+    });
+
     // Register the tool switching commands
     registerToolCommands({
-        wwwc: 'Levels',
+        wwwc: 'Window W/L',
         zoom: 'Zoom',
-        angle: 'Angle',
-        dragProbe: 'Probe',
-        ellipticalRoi: 'Ellipse',
+        angle: 'Angle Measurement',
+        dragProbe: 'Pixel Probe',
+        ellipticalRoi: 'Elliptical Probe',
         rectangleRoi: 'Rectangle',
         magnify: 'Magnify',
         annotate: 'Annotate',
-        stackScroll: 'Stack Scroll',
+        stackScroll: 'Scroll Stack',
         pan: 'Pan',
-        length: 'Length',
-        spine: 'Spine',
-        wwwcRegion: 'ROI Window'
+        length: 'Length Measurement',
+        spine: 'Spine Labels',
+        wwwcRegion: 'W/L by Region'
     });
 
     // Functions to register the viewport commands
@@ -99,16 +128,16 @@ Meteor.startup(function() {
 
     // Register the viewport commands
     registerViewportCommands({
-        zoomIn: 'Zoom in',
-        zoomOut: 'Zoom out',
-        zoomToFit: 'Zoom to fit',
+        zoomIn: 'Zoom In',
+        zoomOut: 'Zoom Out',
+        zoomToFit: 'Zoom to Fit',
         invert: 'Invert',
-        flipH: 'Flip horizontally',
-        flipV: 'Flip vertically',
-        rotateR: 'Rotate right',
-        rotateL: 'Rotate left',
+        flipH: 'Flip Horizontally',
+        flipV: 'Flip Vertically',
+        rotateR: 'Rotate Right',
+        rotateL: 'Rotate Left',
         resetViewport: 'Reset',
-        clearTools: 'Clear'
+        clearTools: 'Clear Tools'
     });
 
     // Functions to register the preset switching commands
@@ -122,75 +151,67 @@ Meteor.startup(function() {
 
     // Register the preset switching commands
     registerWLPresetCommands({
-        WLPresetSoftTissue: 'SoftTissue',
-        WLPresetLung: 'Lung',
-        WLPresetLiver: 'Liver',
-        WLPresetBone: 'Bone',
-        WLPresetBrain: 'Brain'
+        WLPresetSoftTissue: 'W/L Preset: Soft Tissue',
+        WLPresetLung: 'W/L Preset: Lung',
+        WLPresetLiver: 'W/L Preset: Liver',
+        WLPresetBone: 'W/L Preset: Bone',
+        WLPresetBrain: 'W/L Preset: Brain'
     });
-
-    // Register scrolling commands
-    OHIF.commands.set(contextName, {
-        scrollDown: {
-            name: 'Scroll down',
-            action: () => !isActiveViewportEmpty() && switchToImageRelative(1)
-        },
-        scrollUp: {
-            name: 'Scroll up',
-            action: () => !isActiveViewportEmpty() && switchToImageRelative(-1)
-        },
-        scrollFirstImage: {
-            name: 'Scroll to first image',
-            action: () => !isActiveViewportEmpty() && switchToImageByIndex(0)
-        },
-        scrollLastImage: {
-            name: 'Scroll to last image',
-            action: () => !isActiveViewportEmpty() && switchToImageByIndex(-1)
-        }
-    }, true);
 
     // Register viewport navigation commands
     OHIF.commands.set(contextName, {
+        scrollDown: {
+            name: 'Scroll Down',
+            action: () => !isActiveViewportEmpty() && switchToImageRelative(1)
+        },
+        scrollUp: {
+            name: 'Scroll Up',
+            action: () => !isActiveViewportEmpty() && switchToImageRelative(-1)
+        },
+        scrollFirstImage: {
+            name: 'Scroll to First Image',
+            action: () => !isActiveViewportEmpty() && switchToImageByIndex(0)
+        },
+        scrollLastImage: {
+            name: 'Scroll to Last Image',
+            action: () => !isActiveViewportEmpty() && switchToImageByIndex(-1)
+        },
         previousDisplaySet: {
-            name: 'Previous display set',
+            name: 'Previous Series',
             action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
             disabled: () => !OHIF.viewerbase.layoutManager.canMoveDisplaySets(false)
         },
         nextDisplaySet: {
-            name: 'Next display set',
+            name: 'Next Series',
             action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
             disabled: () => !OHIF.viewerbase.layoutManager.canMoveDisplaySets(true)
         },
         nextPanel: {
-            name: 'Next panel',
+            name: 'Next Panel',
             action: () => panelNavigation.loadNextActivePanel()
         },
         previousPanel: {
-            name: 'Previous panel',
+            name: 'Previous Panel',
             action: () => panelNavigation.loadPreviousActivePanel()
         }
     }, true);
 
     // Register miscellaneous commands
     OHIF.commands.set(contextName, {
-        defaultTool: {
-            name: 'Default tool',
-            action: () => toolManager.setActiveTool(toolManager.getDefaultTool())
-        },
         toggleOverlayTags: {
-            name: 'Toggle overlay tags',
+            name: 'Toggle Image Annotations',
             action() {
                 const $dicomTags = $('.imageViewerViewportOverlay .dicomTag');
                 $dicomTags.toggle($dicomTags.eq(0).css('display') === 'none');
             }
         },
         toggleCinePlay: {
-            name: 'Play/Pause',
+            name: 'Play/Pause Cine',
             action: viewportUtils.toggleCinePlay,
             disabled: OHIF.viewerbase.viewportUtils.hasMultipleFrames
         },
         toggleCineDialog: {
-            name: 'CINE dialog',
+            name: 'Show/Hide Cine Controls',
             action: viewportUtils.toggleCineDialog,
             disabled: OHIF.viewerbase.viewportUtils.hasMultipleFrames
         }

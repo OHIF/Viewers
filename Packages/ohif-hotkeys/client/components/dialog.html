@@ -1,5 +1,5 @@
 <template name="hotkeysDialog">
-    {{#dialogSimple title='Keyboard Shortcuts'}}
-        {{>hotkeysForm}}
+    {{#dialogSimple (extend this dialogClass='dialog-hotkeys' title='Keyboard Shortcuts')}}
+        {{>hotkeysForm this}}
     {{/dialogSimple}}
 </template>
