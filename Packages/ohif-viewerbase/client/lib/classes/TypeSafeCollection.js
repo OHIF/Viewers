@@ -20,6 +20,7 @@ export class TypeSafeCollection {
     constructor() {
         this._operationCount = new ReactiveVar(MIN_COUNT);
         this._elementList = [];
+        this._handlers = Object.create(null);
     }
 
     /**
@@ -44,9 +45,36 @@ export class TypeSafeCollection {
         return this._elements(silent).find(item => item.id === id);
     }
 
+    _trigger(event, data) {
+        let handlers = this._handlers;
+        if (event in handlers) {
+            handlers = handlers[event];
+            if (!(handlers instanceof Array)) {
+                return;
+            }
+            for (let i = 0, limit = handlers.length; i < limit; ++i) {
+                let handler = handlers[i];
+                if (_isFunction(handler)) {
+                    handler.call(null, data);
+                }
+            }
+        }
+    }
+
     /**
      * Public Methods
      */
+
+    onInsert(callback) {
+        if (_isFunction(callback)) {
+            let handlers = this._handlers.insert;
+            if (!(handlers instanceof Array)) {
+                handlers = [];
+                this._handlers.insert = handlers;
+            }
+            handlers.push(callback);
+        }
+    }
 
     /**
      * Update the payload associated with the given ID to be the new supplied payload.
@@ -105,6 +133,7 @@ export class TypeSafeCollection {
             id = Random.id();
             this._elements(true).push({ id, payload });
             this._invalidate();
+            this._trigger('insert', { id, data: payload });
         }
         return id;
     }
