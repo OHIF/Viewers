@@ -7,6 +7,15 @@ import { OHIF } from 'meteor/ohif:core';
 Template.hotkeysForm.onCreated(() => {
     const instance = Template.instance();
 
+    instance.api = {
+        save() {
+            const { contextName } = instance.data;
+            const form = instance.$('form').first().data('component');
+            const definitions = form.value();
+            OHIF.hotkeys.store(contextName, definitions);
+        }
+    };
+
     const rg = (start, end) => _.range(start, end + 1);
     instance.allowedKeys = _.union(rg(32, 40), rg(48, 57), rg(65, 90), rg(112, 121), [123]);
 

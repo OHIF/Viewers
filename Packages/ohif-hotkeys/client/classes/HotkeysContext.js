@@ -22,7 +22,7 @@ export class HotkeysContext {
 
     register(command, hotkey) {
         if (!hotkey) {
-            return OHIF.log.warn(`No hotkey was defined for "${command}"`);
+            return;
         }
 
         if (!command) {

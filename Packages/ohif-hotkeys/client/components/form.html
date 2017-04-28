@@ -1,7 +1,9 @@
 <template name="hotkeysForm">
-    {{#form (extend this class='form-themed')}}
+    {{#form (extend this class='form-themed' api=instance.api)}}
         {{#each hotkeyInputInformation in getHotkeyInputInformationList}}
             {{>inputText (extend hotkeyInputInformation class='hotkey')}}
         {{/each}}
+        <hr>
+        {{#button class='btn btn-primary' action='save'}}Save{{/button}}
     {{/form}}
 </template>
