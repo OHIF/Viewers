@@ -8,10 +8,12 @@ import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContex
 export class HotkeysManager {
     constructor(retrieveFunction, storeFunction) {
         this.contexts = {};
+        this.defaults = {};
         this.currentContextName = null;
         this.enabled = new ReactiveVar(true);
         this.retrieveFunction = retrieveFunction;
         this.storeFunction = storeFunction;
+        this.changeObserver = new Tracker.Dependency();
 
         Tracker.autorun(() => {
             const contextName = OHIF.context.get();
@@ -21,24 +23,33 @@ export class HotkeysManager {
 
     store(contextName, definitions) {
         const storageKey = `hotkeysDefinitions.${contextName}`;
-        if (this.storeFunction) {
-            this.storeFunction(contextName, definitions);
-        } else if (Meteor.userId()) {
-            OHIF.user.setData(storageKey, definitions);
-        } else {
-            Session.setPersistent(storageKey, definitions);
-        }
+        return new Promise((resolve, reject) => {
+            if (this.storeFunction) {
+                this.storeFunction(contextName, definitions).then(resolve).catch(reject);
+            } else if (Meteor.userId()) {
+                OHIF.user.setData(storageKey, definitions).then(resolve).catch(reject);
+            } else {
+                Session.setPersistent(storageKey, definitions);
+                resolve();
+            }
+        });
     }
 
     retrieve(contextName) {
         const storageKey = `hotkeysDefinitions.${contextName}`;
-        if (this.retrieveFunction) {
-            return this.retrieveFunction(contextName);
-        } else if (Meteor.userId()) {
-            return OHIF.user.getData(storageKey);
-        } else {
-            return Session.get(storageKey);
-        }
+        return new Promise((resolve, reject) => {
+            if (this.retrieveFunction) {
+                this.retrieveFunction(contextName).then(resolve).catch(reject);
+            } else if (Meteor.userId()) {
+                try {
+                    resolve(OHIF.user.getData(storageKey));
+                } catch(error) {
+                    reject(error);
+                }
+            } else {
+                resolve(Session.get(storageKey));
+            }
+        });
     }
 
     disable() {
@@ -58,14 +69,19 @@ export class HotkeysManager {
     }
 
     load(contextName) {
-        const context = this.getContext(contextName);
-        if (!context) return;
-        const definitions = this.retrieve(contextName);
-        if (!definitions) return;
-        context.extend(definitions);
+        return new Promise((resolve, reject) => {
+            const context = this.getContext(contextName);
+            if (!context) return;
+            this.retrieve(contextName).then(definitions => {
+                if (!definitions) return reject();
+                context.extend(definitions);
+                this.changeObserver.changed();
+                resolve(definitions);
+            }).catch(reject);
+        });
     }
 
-    set(contextName, contextDefinitions) {
+    set(contextName, contextDefinitions, isDefaultDefinitions=false) {
         const enabled = this.enabled;
         const context = new HotkeysContext(contextName, contextDefinitions, enabled);
         const currentContext = this.getCurrentContext();
@@ -75,6 +91,9 @@ export class HotkeysManager {
         }
 
         this.contexts[contextName] = context;
+        if (isDefaultDefinitions) {
+            this.defaults[contextName] = contextDefinitions;
+        }
     }
 
     register(contextName, command, hotkey) {
@@ -93,6 +112,15 @@ export class HotkeysManager {
         }
 
         delete this.contexts[contextName];
+        delete this.defaults[contextName];
+    }
+
+    resetDefauls(contextName) {
+        const context = this.getContext(contextName);
+        const definitions = this.defaults[contextName];
+        if (!context || !definitions) return;
+        context.extend(definitions);
+        return this.store(contextName, definitions).then(this.changeObserver.changed);
     }
 
     switchToContext(contextName) {

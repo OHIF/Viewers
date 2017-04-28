@@ -3,12 +3,13 @@ import { OHIF } from 'meteor/ohif:core';
 export class HotkeysContext {
     constructor(name, definitions, enabled) {
         this.name = name;
-        this.definitions = definitions;
+        this.definitions = Object.assign({}, definitions);
         this.enabled = enabled;
     }
 
     extend(definitions={}) {
         if (typeof definitions !== 'object') return;
+        this.definitions = Object.assign({}, definitions);
         Object.keys(definitions).forEach(command => {
             const hotkey = definitions[command];
             this.unregister(command);

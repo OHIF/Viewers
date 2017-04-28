@@ -248,7 +248,7 @@ function setOHIFHotkeys(hotkeys) {
  */
 function enableHotkeys(hotkeys) {
     const definitions = hotkeys || OHIF.viewer.hotkeys;
-    OHIF.hotkeys.set('viewer', definitions);
+    OHIF.hotkeys.set('viewer', definitions, true);
     OHIF.context.set('viewer');
 }
 

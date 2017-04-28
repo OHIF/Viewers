@@ -26,9 +26,21 @@ OHIF.user.getData = key => {
 
 // Store the persistent data by giving a key and a value to store
 OHIF.user.setData = (key, value) => {
-    // Check if there is an user logged in
-    OHIF.user.validate();
+    return new Promise((resolve, reject) => {
+        try {
+            // Check if there is an user logged in
+            OHIF.user.validate();
+        } catch(error) {
+            reject(error);
+        }
 
-    // Call the update method on server-side
-    Meteor.call('ohif.user.data.set', key, value);
+        // Call the update method on server-side
+        Meteor.call('ohif.user.data.set', key, value, error => {
+            if (error) {
+                reject(error);
+            }
+
+            resolve();
+        });
+    });
 };

@@ -12,7 +12,19 @@ Template.hotkeysForm.onCreated(() => {
             const { contextName } = instance.data;
             const form = instance.$('form').first().data('component');
             const definitions = form.value();
-            OHIF.hotkeys.store(contextName, definitions);
+            return OHIF.hotkeys.store(contextName, definitions);
+        },
+
+        resetDefaults() {
+            const { contextName } = instance.data;
+            const dialogOptions = {
+                title: 'Reset Shortcuts to Default',
+                message: 'Are you sure you want to reset all the shortcuts to their defaults?'
+            };
+
+            return OHIF.ui.showDialog('dialogConfirm', dialogOptions).then(() => {
+                return OHIF.hotkeys.resetDefauls(contextName);
+            });
         }
     };
 
@@ -100,7 +112,7 @@ Template.hotkeysForm.events({
 
 Template.hotkeysForm.helpers({
     getHotkeyInputInformationList() {
-        OHIF.context.dep.depend();
+        OHIF.hotkeys.changeObserver.depend();
         const instance = Template.instance();
         const { contextName } = instance.data;
         const hotkeysInputInformation = [];
