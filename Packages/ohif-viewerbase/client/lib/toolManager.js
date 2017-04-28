@@ -402,9 +402,6 @@ export const toolManager = {
             toolManager.init();
         }
 
-        // Prevent changing if tool is already active
-        if (tool === toolManager.getActiveTool()) return;
-
         /**
          * TODO: Add textMarkerDialogs template to OHIF's
          */

@@ -1,0 +1,10 @@
+<template name="windowLevelPresetsForm">
+    {{#form (extend this class='form-themed' api=instance.api)}}
+        {{>inputText label='W/L Preset 1' key='WLPreset1'}}
+        <hr>
+        <div class="clearfix">
+            {{#button class='btn btn-primary pull-right' action='save'}}Save{{/button}}
+            {{#button class='btn btn-secondary pull-right m-r-1' action='resetDefaults'}}Reset to Defaults{{/button}}
+        </div>
+    {{/form}}
+</template>

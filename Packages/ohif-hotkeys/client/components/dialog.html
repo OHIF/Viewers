@@ -1,5 +1,7 @@
 <template name="hotkeysDialog">
     {{#dialogSimple (extend this dialogClass='dialog-hotkeys' title='Keyboard Shortcuts')}}
         {{>hotkeysForm this}}
+        <hr>
+        {{>windowLevelPresetsForm this}}
     {{/dialogSimple}}
 </template>

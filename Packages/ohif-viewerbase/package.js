@@ -191,6 +191,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.js', 'client');
 
+    api.addFiles('client/components/viewer/windowLevelPresets/form.html', 'client');
+    api.addFiles('client/components/viewer/windowLevelPresets/form.js', 'client');
+
     api.export('dialogPolyfill', 'client');
 
     api.mainModule('main.js', 'client');

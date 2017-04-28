@@ -120,13 +120,14 @@ Template.hotkeysForm.helpers({
         const commandsContext = OHIF.commands.getContext(contextName);
         if (!hotkeysContext || !commandsContext) return hotkeysInputInformation;
         const hotkeyDefinitions = hotkeysContext.definitions;
-        _.each(hotkeyDefinitions, (keyCombination, commandName) => {
+        const commands = Object.keys(OHIF.hotkeys.defaults[contextName] || {});
+        commands.forEach(commandName => {
             const commandDefinitions = commandsContext[commandName];
             if (!commandDefinitions) return;
             hotkeysInputInformation.push({
                 key: commandName,
                 label: commandDefinitions.name,
-                value: keyCombination
+                value: hotkeyDefinitions[commandName] || ''
             });
         });
         return hotkeysInputInformation;
