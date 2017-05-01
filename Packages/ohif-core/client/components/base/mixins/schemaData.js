@@ -141,19 +141,23 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             component.parseData = value => {
                 // Get the current schema data using component's key
                 const { currentSchema } = getCurrentSchemaDefs(component.parent, instance.data.pathKey);
+                const { dataType } = instance.data;
 
-                // Stop here if there's no schema data for current key
-                if (!currentSchema) {
+                // Stop here if there's no schema data for current key or no dataType defined
+                if (!currentSchema && !dataType) {
                     return value;
                 }
 
-                // Check if the schema is a Number
-                if (currentSchema.type === Number) {
+                // Get the schema type
+                const schemaType = currentSchema && currentSchema.type;
+
+                // Check if the type is Number
+                if (schemaType === Number || dataType === 'Number') {
                     return parseFloat(value);
                 }
 
-                // Check if the schema is a Boolean
-                if (currentSchema.type === Boolean) {
+                // Check if the type is Boolean
+                if (schemaType === Boolean || dataType === 'Boolean') {
                     return !!value;
                 }
 

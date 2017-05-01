@@ -31,6 +31,7 @@ import './templates/form.html';
 import './templates/input.html';
 import './templates/link.html';
 import './templates/select.html';
+import './templates/tr.html';
 
 // wrappers
 import './wrappers/label.html';

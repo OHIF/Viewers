@@ -11,7 +11,7 @@ Template.registerHelper('concat', (...args) => {
     const values = _.initial(args, 1);
     let result = '';
     _.each(values, value => {
-        result += value || '';
+        result += typeof value !== 'undefined' ? value : '';
     });
     return result;
 });

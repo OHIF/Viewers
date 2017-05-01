@@ -15,3 +15,7 @@ Template.registerHelper('sum', (...values) => {
 Template.registerHelper('isValidNumber', value => {
     return typeof value === 'number' && !isNaN(value);
 });
+
+Template.registerHelper('filterNaN', value => {
+    return isNaN(value) ? '' : value;
+});

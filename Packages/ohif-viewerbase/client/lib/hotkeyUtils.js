@@ -65,11 +65,16 @@ Meteor.startup(function() {
         toggleCineDialog: '',
 
         // Preset hotkeys
-        WLPresetSoftTissue: '1',
-        WLPresetLung: '2',
-        WLPresetLiver: '3',
-        WLPresetBone: '4',
-        WLPresetBrain: '5'
+        WLPreset0: '1',
+        WLPreset1: '2',
+        WLPreset2: '3',
+        WLPreset3: '4',
+        WLPreset4: '5',
+        WLPreset5: '6',
+        WLPreset6: '7',
+        WLPreset7: '8',
+        WLPreset8: '9',
+        WLPreset9: '0'
     };
 
     // For now
@@ -140,23 +145,15 @@ Meteor.startup(function() {
         clearTools: 'Clear Tools'
     });
 
-    // Functions to register the preset switching commands
-    const registerWLPresetCommands = map => _.each(map, (commandName, presetName) => {
-        OHIF.commands.register(contextName, presetName, {
-            name: commandName,
-            action: WLPresets.applyWLPresetToActiveElement,
-            params: presetName.replace('WLPreset', '')
-        });
-    });
-
     // Register the preset switching commands
-    registerWLPresetCommands({
-        WLPresetSoftTissue: 'W/L Preset: Soft Tissue',
-        WLPresetLung: 'W/L Preset: Lung',
-        WLPresetLiver: 'W/L Preset: Liver',
-        WLPresetBone: 'W/L Preset: Bone',
-        WLPresetBrain: 'W/L Preset: Brain'
-    });
+    const applyPreset = presetName => WLPresets.applyWLPresetToActiveElement(presetName);
+    for (let i = 0; i < 10; i++) {
+        OHIF.commands.register(contextName, `WLPreset${i}`, {
+            name: `W/L Preset ${i + 1}`,
+            action: applyPreset,
+            params: i
+        });
+    }
 
     // Register viewport navigation commands
     OHIF.commands.set(contextName, {

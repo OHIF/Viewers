@@ -1,6 +1,25 @@
 <template name="windowLevelPresetsForm">
     {{#form (extend this class='form-themed' api=instance.api)}}
-        {{>inputText label='W/L Preset 1' key='WLPreset1'}}
+        <table>
+            <thead>
+                <tr>
+                    <th>Preset</th>
+                    <th>Name</th>
+                    <th>Window Level (WL)</th>
+                    <th>Window Width (WW)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each presetInputInformation in getPresetsInputInformationList}}
+                    {{#group base='baseTr' key=(concat @index)}}
+                        <td>{{sum @index 1}}</td>
+                        <td>{{>inputText key='id' value=presetInputInformation.id}}</td>
+                        <td>{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
+                        <td>{{>inputText key='ww' value=(filterNaN presetInputInformation.ww) dataType='Number'}}</td>
+                    {{/group}}
+                {{/each}}
+            </tbody>
+        </table>
         <hr>
         <div class="clearfix">
             {{#button class='btn btn-primary pull-right' action='save'}}Save{{/button}}

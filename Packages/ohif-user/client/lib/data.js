@@ -19,9 +19,14 @@ OHIF.user.getData = key => {
     // Get the user persistent data
     const data = profile && profile.persistent;
 
-    if (data) {
-        return data[key];
-    }
+    let result = data;
+    const keys = key.split('.');
+    keys.forEach(key => {
+        if (typeof result !== 'object') return;
+        result = result[key];
+    });
+
+    return result;
 };
 
 // Store the persistent data by giving a key and a value to store

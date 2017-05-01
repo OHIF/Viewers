@@ -1,7 +1,7 @@
 <template name="group">
     {{#baseComponent (extend this
         class=(concat 'component-group ' this.class)
-        base='baseDiv'
+        base=(choose this.base 'baseDiv')
         mixins=(concat 'group ' this.mixins)
     )}}
       {{>UI.contentBlock}}

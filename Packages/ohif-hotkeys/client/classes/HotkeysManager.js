@@ -6,19 +6,27 @@ import { OHIF } from 'meteor/ohif:core';
 import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContext';
 
 export class HotkeysManager {
-    constructor(retrieveFunction, storeFunction) {
+    constructor() {
         this.contexts = {};
         this.defaults = {};
         this.currentContextName = null;
         this.enabled = new ReactiveVar(true);
-        this.retrieveFunction = retrieveFunction;
-        this.storeFunction = storeFunction;
+        this.retrieveFunction = null;
+        this.storeFunction = null;
         this.changeObserver = new Tracker.Dependency();
 
         Tracker.autorun(() => {
             const contextName = OHIF.context.get();
             this.switchToContext(contextName);
         });
+    }
+
+    setRetrieveFunction(retrieveFunction) {
+        this.retrieveFunction = retrieveFunction;
+    }
+
+    setStoreFunction(storeFunction) {
+        this.storeFunction = storeFunction;
     }
 
     store(contextName, definitions) {
@@ -73,7 +81,11 @@ export class HotkeysManager {
             const context = this.getContext(contextName);
             if (!context) return;
             this.retrieve(contextName).then(definitions => {
-                if (!definitions) return reject();
+                if (!definitions) {
+                    this.changeObserver.changed();
+                    return reject();
+                }
+
                 context.extend(definitions);
                 this.changeObserver.changed();
                 resolve(definitions);

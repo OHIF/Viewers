@@ -42,7 +42,7 @@ HP.setEngine = protocolEngine => {
 
 Meteor.startup(() => {
     HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.create(null), (element, optionValue) => {
-        if (optionValue in OHIF.viewer.wlPresets) {
+        if (_.findWhere(OHIF.viewer.wlPresets, { id: optionValue })) {
             OHIF.viewerbase.wlPresets.applyWLPreset(optionValue, element);
         }
     });
@@ -113,7 +113,7 @@ HP.ProtocolEngine = class ProtocolEngine {
      * with the given study. The best protocol are orded by score and returned in an array
      * @param  {Object} study StudyMetadata instance object
      * @return {Array}       Array of match objects or an empty array if no match was found
-     *                       Each match object has the score of the matching and the matched 
+     *                       Each match object has the score of the matching and the matched
      *                       protocol
      */
     findMatchByStudy(study) {
@@ -122,7 +122,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         const matched = [];
         const studyInstance = study.getFirstInstance();
 
-        // Set custom attribute for study metadata 
+        // Set custom attribute for study metadata
         const numberOfAvailablePriors = this.getNumberOfAvailablePriors(study.getObjectID());
 
         HP.ProtocolStore.getProtocol().forEach(protocol => {
@@ -318,7 +318,7 @@ HP.ProtocolEngine = class ProtocolEngine {
                     // Set the custom attribute abstractPriorValue for the study metadata
                     studyMetadata.setCustomAttribute(ABSTRACT_PRIOR_VALUE, abstractPriorValue);
 
-                    // Also add custom attribute 
+                    // Also add custom attribute
                     const firstInstance = studyMetadata.getFirstInstance();
                     if (firstInstance instanceof InstanceMetadata) {
                         firstInstance.setCustomAttribute(ABSTRACT_PRIOR_VALUE, abstractPriorValue);
@@ -329,7 +329,7 @@ HP.ProtocolEngine = class ProtocolEngine {
 
                     // Update the viewport to refresh layout manager with new study
                     this.updateViewports(viewportIndex);
-                }, error => { 
+                }, error => {
                     OHIF.log.warn(error);
                     throw new OHIFError(`ProtocolEngine::matchImages could not get study metadata for the Study with the following ObjectID: ${priorStudyObjectID}`);
                 });
@@ -650,7 +650,7 @@ HP.ProtocolEngine = class ProtocolEngine {
     }
 
     /**
-     * Changes the current stage to a new stage index in the display set sequence. 
+     * Changes the current stage to a new stage index in the display set sequence.
      * It checks if the next stage exists.
      *
      * @param {Integer} stageAction An integer value specifying wheater next (1) or previous (-1) stage
@@ -673,7 +673,7 @@ HP.ProtocolEngine = class ProtocolEngine {
         // Set stage Session variable for reactivity
         Session.set('HangingProtocolStage', this.stage);
 
-        // Since stage has changed, we need to update the viewports 
+        // Since stage has changed, we need to update the viewports
         // and redo matchings
         this.updateViewports();
 
@@ -682,7 +682,7 @@ HP.ProtocolEngine = class ProtocolEngine {
     }
 
     /**
-     * Retrieves the number of Stages in the current Protocol or 
+     * Retrieves the number of Stages in the current Protocol or
      * undefined if no protocol or stages are set
      */
     getNumProtocolStages() {
@@ -710,7 +710,7 @@ HP.ProtocolEngine = class ProtocolEngine {
      */
     previousProtocolStage() {
         OHIF.log.info('ProtocolEngine::previousProtocolStage');
-        
+
         if (!this.setCurrentProtocolStage(-1)) {
             // Just for logging purpose
             OHIF.log.info('ProtocolEngine::previousProtocolStage failed');
