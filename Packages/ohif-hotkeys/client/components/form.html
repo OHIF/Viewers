@@ -3,8 +3,7 @@
         {{#each hotkeyInputInformation in getHotkeyInputInformationList}}
             {{>inputText (extend hotkeyInputInformation class='hotkey')}}
         {{/each}}
-        <hr>
-        <div class="clearfix">
+        <div class="clearfix form-buttons">
             {{#button class='btn btn-primary pull-right' action='save'}}Save{{/button}}
             {{#button class='btn btn-secondary pull-right m-r-1' action='resetDefaults'}}Reset to Defaults{{/button}}
         </div>

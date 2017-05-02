@@ -121,22 +121,24 @@ class WindowLevelPresetsManager {
     }
 
     store(wlPresets) {
+        const self = this;
         return new Promise((resolve, reject) => {
-            if (this.storeFunction) {
-                this.storeFunction(wlPresets).then(resolve).catch(reject);
+            if (self.storeFunction) {
+                self.storeFunction(wlPresets).then(resolve).catch(reject);
             } else if (Meteor.userId()) {
                 OHIF.user.setData(WL_STORAGE_KEY, wlPresets).then(resolve).catch(reject);
             } else {
                 Session.setPersistent(WL_STORAGE_KEY, wlPresets);
                 resolve();
             }
-        }).then(() => this.setOHIFWLPresets(wlPresets));
+        }).then(() => self.setOHIFWLPresets(wlPresets));
     }
 
     retrieve() {
+        const self = this;
         return new Promise((resolve, reject) => {
-            if (this.retrieveFunction) {
-                this.retrieveFunction().then(resolve).catch(reject);
+            if (self.retrieveFunction) {
+                self.retrieveFunction().then(resolve).catch(reject);
             } else if (Meteor.userId()) {
                 try {
                     resolve(OHIF.user.getData(WL_STORAGE_KEY));
@@ -150,14 +152,15 @@ class WindowLevelPresetsManager {
     }
 
     load() {
+        const self = this;
         return new Promise((resolve, reject) => {
-            this.retrieve().then(wlPresets => {
+            self.retrieve().then(wlPresets => {
                 if (wlPresets) {
-                    this.setOHIFWLPresets(wlPresets);
+                    self.setOHIFWLPresets(wlPresets);
                 } else {
-                    this.loadDefauls();
+                    self.loadDefaults();
                 }
-            }).catch(this.loadDefauls);
+            }).catch(self.loadDefaults);
         });
     }
 
@@ -187,7 +190,7 @@ class WindowLevelPresetsManager {
         this.changeObserver.changed();
     }
 
-    loadDefauls() {
+    loadDefaults() {
         this.setOHIFWLPresets(OHIF.viewer.defaultWLPresets);
     }
 
@@ -195,11 +198,6 @@ class WindowLevelPresetsManager {
         return this.store(OHIF.viewer.defaultWLPresets);
     }
 }
-
-// TODO: add this to a namespace definition
-Meteor.startup(function() {
-
-});
 
 /**
  * Export functions inside WLPresets namespace.

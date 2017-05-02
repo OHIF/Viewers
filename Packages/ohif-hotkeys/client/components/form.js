@@ -71,11 +71,6 @@ Template.hotkeysForm.onCreated(() => {
     };
 });
 
-// >>>> REMOVE ME
-Meteor.startup(() => {
-    OHIF.ui.showDialog('hotkeysDialog', { contextName: 'viewer' });
-});
-
 Template.hotkeysForm.events({
     'keydown .hotkey'(event, instance) {
         if (instance.allowedKeys.indexOf(event.keyCode) > -1) {

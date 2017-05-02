@@ -217,6 +217,9 @@ Meteor.startup(function() {
     OHIF.viewer.hotkeyFunctions = {};
 
     OHIF.viewer.loadedSeriesData = {};
+
+    // Enable hotkeys
+    hotkeyUtils.enableHotkeys();
 });
 
 // Define a jQuery reverse function

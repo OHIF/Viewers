@@ -47,9 +47,6 @@ Template.viewerMain.onRendered(() => {
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);
 
-    // Enable hotkeys
-    hotkeyUtils.enableHotkeys();
-
     Session.set('OHIFViewerMainRendered', Random.id());
 });
 
