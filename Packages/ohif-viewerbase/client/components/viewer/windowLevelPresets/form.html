@@ -1,28 +1,30 @@
 <template name="windowLevelPresetsForm">
-    {{#form (extend this class='form-themed' api=instance.api)}}
-        <table>
-            <thead>
-                <tr>
-                    <th>Preset</th>
-                    <th>Description</th>
-                    <th>Window Level (WL)</th>
-                    <th>Window Width (WW)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each presetInputInformation in getPresetsInputInformationList}}
-                    {{#group base='baseTr' key=(concat @index)}}
-                        <td>{{sum @index 1}}</td>
-                        <td>{{>inputText key='id' value=presetInputInformation.id}}</td>
-                        <td>{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
-                        <td>{{>inputText key='ww' value=(filterNaN presetInputInformation.ww) dataType='Number'}}</td>
-                    {{/group}}
-                {{/each}}
-            </tbody>
-        </table>
-        <div class="clearfix form-buttons">
+    {{#form (extend this api=instance.api)}}
+        <div class="form-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Preset</th>
+                        <th>Description</th>
+                        <th>Window Level (WL)</th>
+                        <th>Window Width (WW)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each presetInputInformation in getPresetsInputInformationList}}
+                        {{#group base='baseTr' key=(concat @index)}}
+                            <td>{{sum @index 1}}</td>
+                            <td>{{>inputText key='id' value=presetInputInformation.id}}</td>
+                            <td>{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
+                            <td>{{>inputText key='ww' value=(filterNaN presetInputInformation.ww) dataType='Number'}}</td>
+                        {{/group}}
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-buttons clearfix">
+            {{#button class='btn btn-danger pull-left m-r-1' action='resetDefaults'}}Reset to Defaults{{/button}}
             {{#button class='btn btn-primary pull-right' action='save'}}Save{{/button}}
-            {{#button class='btn btn-secondary pull-right m-r-1' action='resetDefaults'}}Reset to Defaults{{/button}}
         </div>
     {{/form}}
 </template>

@@ -11,39 +11,25 @@ vendorize(property, value)
   {property} value
 
 animation(a)
-  -webkit-animation: a
-  -moz-animation: a
-  -ms-animation: a
-  -o-animation: a
-  animation: a
+  vendorize(animation, a)
 
-transition(t)
-  transition: t
-  -webkit-transition: t
-  -ms-transition: t
-  -o-transition: t
-  -moz-transition: t
+border-radius(r)
+  vendorize(border-radius, r)
 
-transition-delay(d)
-  transition-delay: d
-  -webkit-transition-delay: d
-  -ms-transition-delay: d
-  -o-transition-delay: d
-  -moz-transition-delay: d
+box-shadow(s)
+  vendorize(box-shadow, s)
 
 transform(t)
-  transform: t
-  -webkit-transform: t
-  -ms-transform: t
-  -o-transform: t
-  -moz-transform: t
+  vendorize(transform, t)
 
 transform-origin(o)
-  transform-origin: o
-  -webkit-transform-origin: o
-  -ms-transform-origin: o
-  -o-transform-origin: o
-  -moz-transform-origin: o
+  vendorize(transform-origin, o)
+
+transition(t)
+  vendorize(transition, t)
+
+transition-delay(d)
+  vendorize(transition-delay, d)
 
 placeholder-color(c)
   &::-webkit-input-placeholder

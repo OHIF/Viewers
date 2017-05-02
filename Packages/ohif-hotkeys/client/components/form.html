@@ -1,11 +1,13 @@
 <template name="hotkeysForm">
-    {{#form (extend this class='form-themed' api=instance.api)}}
-        {{#each hotkeyInputInformation in getHotkeyInputInformationList}}
-            {{>inputText (extend hotkeyInputInformation class='hotkey')}}
-        {{/each}}
-        <div class="clearfix form-buttons">
+    {{#form (extend this api=instance.api)}}
+        <div class="form-content">
+            {{#each hotkeyInputInformation in getHotkeyInputInformationList}}
+                {{>inputText (extend hotkeyInputInformation class='hotkey')}}
+            {{/each}}
+        </div>
+        <div class="form-buttons clearfix">
+            {{#button class='btn btn-danger pull-left m-r-1' action='resetDefaults'}}Reset to Defaults{{/button}}
             {{#button class='btn btn-primary pull-right' action='save'}}Save{{/button}}
-            {{#button class='btn btn-secondary pull-right m-r-1' action='resetDefaults'}}Reset to Defaults{{/button}}
         </div>
     {{/form}}
 </template>
