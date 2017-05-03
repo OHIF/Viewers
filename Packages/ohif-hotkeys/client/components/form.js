@@ -106,25 +106,35 @@ Template.hotkeysForm.events({
 });
 
 Template.hotkeysForm.helpers({
-    getHotkeyInputInformationList() {
+    getHotkeyInputInformationLists() {
         OHIF.hotkeys.changeObserver.depend();
+
         const instance = Template.instance();
         const { contextName } = instance.data;
-        const hotkeysInputInformation = [];
+
         const hotkeysContext = OHIF.hotkeys.getContext(contextName);
         const commandsContext = OHIF.commands.getContext(contextName);
-        if (!hotkeysContext || !commandsContext) return hotkeysInputInformation;
+        if (!hotkeysContext || !commandsContext) return {};
+
         const hotkeyDefinitions = hotkeysContext.definitions;
         const commands = Object.keys(OHIF.hotkeys.defaults[contextName] || {});
+        const list = [];
         commands.forEach(commandName => {
             const commandDefinitions = commandsContext[commandName];
             if (!commandDefinitions) return;
-            hotkeysInputInformation.push({
+            list.push({
                 key: commandName,
                 label: commandDefinitions.name,
                 value: hotkeyDefinitions[commandName] || ''
             });
         });
-        return hotkeysInputInformation;
+
+        const left = list.splice(0, Math.ceil(list.length / 2));
+        const right = list;
+
+        return {
+          left,
+          right
+        };
     }
 });
