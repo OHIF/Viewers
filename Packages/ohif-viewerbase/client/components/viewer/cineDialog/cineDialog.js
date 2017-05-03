@@ -274,6 +274,7 @@ Template.cineDialog.events({
 
 Template.cineDialog.helpers({
     isPlaying() {
+        Session.get('UpdateCINE');
         return viewportUtils.isPlaying();
     },
 

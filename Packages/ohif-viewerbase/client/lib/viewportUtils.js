@@ -6,6 +6,7 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { updateOrientationMarkers } from './updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from './instanceClassSpecificViewport';
+import { PlayClipManager } from './classes/PlayClipManager';
 
 /**
  * Get a cornerstone enabledElement for a DOM Element
@@ -195,16 +196,12 @@ const toggleDialog = element => {
 const toggleCinePlay = () => {
     // Get the active viewport element
     const element = getActiveViewportElement();
+    const playClipManager = PlayClipManager.getInstance();
+    const playClipController = playClipManager.get(element);
 
-    // Check if it's playing the clip to toggle it
-    if (isPlaying()) {
-        cornerstoneTools.stopClip(element);
-    } else {
-        cornerstoneTools.playClip(element);
+    if (playClipController) {
+        playClipController.togglePlay();
     }
-
-    // Update the UpdateCINE session property
-    Session.set('UpdateCINE', Random.id());
 };
 
 // Show/hide the CINE dialog
@@ -219,29 +216,11 @@ const isPlaying = () => {
     Session.get('UpdateCINE');
     Session.get('LayoutManagerUpdated');
 
-    // Get the viewport element and its current playClip tool state
     const element = getActiveViewportElement();
-    // Empty Elements throws cornerstore exception
-    if (!element || !$(element).find('canvas').length) {
-        return;
-    }
+    const playClipManager = PlayClipManager.getInstance();
+    const playClipController = playClipManager.get(element);
 
-    const toolState = cornerstoneTools.getToolState(element, 'playClip');
-
-    // Stop here if the tool state is not defined yet
-    if (!toolState) {
-        return false;
-    }
-
-    // Get the clip state
-    const clipState = toolState.data[0];
-    
-    if(clipState) {
-        // Return true if the clip is playing
-        return !_.isUndefined(clipState.intervalId);
-    }
-
-    return false;
+    return playClipController && playClipController.isPlaying();
 };
 
 // Check if a study has multiple frames

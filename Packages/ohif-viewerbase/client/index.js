@@ -157,10 +157,6 @@ Viewerbase.createStacks = createStacks;
 import { StackManager } from './lib/StackManager';
 Viewerbase.stackManager = StackManager;
 
-// studyLoadingListener
-import { studyLoadingListener } from './lib/studyLoadingListener';
-Viewerbase.studyLoadingListener = studyLoadingListener;
-
 // toolManager
 import { toolManager } from './lib/toolManager';
 Viewerbase.toolManager = toolManager;
@@ -203,6 +199,14 @@ Viewerbase.StudyPrefetcher = StudyPrefetcher;
 // ResizeViewportManager
 import { ResizeViewportManager } from './lib/classes/ResizeViewportManager';
 Viewerbase.ResizeViewportManager = ResizeViewportManager;
+
+// StudyLoadingListener
+import { StudyLoadingListener } from './lib/classes/StudyLoadingListener';
+Viewerbase.StudyLoadingListener = StudyLoadingListener;
+
+// PlayClipManager
+import { PlayClipManager } from './lib/classes/PlayClipManager';
+Viewerbase.PlayClipManager = PlayClipManager;
 
 // StudyMetadata, SeriesMetadata, InstanceMetadata
 import { StudyMetadata } from './lib/classes/metadata/StudyMetadata';

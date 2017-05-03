@@ -14,6 +14,7 @@ import { updateCrosshairsSynchronizer } from '../../../lib/updateCrosshairsSynch
 import { toolManager } from '../../../lib/toolManager';
 import { updateOrientationMarkers } from '../../../lib/updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from '../../../lib/instanceClassSpecificViewport';
+import { PlayClipManager } from '../../../lib/classes/PlayClipManager';
 import { OHIFError } from '../../../lib/classes/OHIFError';
 
 const allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
@@ -259,9 +260,12 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
         cornerstoneTools.addToolState(element, 'playClip', cineToolData);
 
+        const playClipManager = PlayClipManager.getInstance();
+        const playClipController = playClipManager.add(element, displaySet);
+
         // Autoplay datasets that have framerates set
         if (multiframeMetadata && multiframeMetadata.isMultiframeImage && multiframeMetadata.averageFrameRate > 0) {
-            cornerstoneTools.playClip(element);
+            playClipController.play();
         }
 
         // Enable mouse, mouseWheel, touch, and keyboard input on the element
@@ -586,6 +590,9 @@ Template.imageViewerViewport.onDestroyed(function() {
     // Trigger custom Destroy Viewport event
     // for compatibility with other systems
     $element.trigger('OHIFDestroyedViewport');
+
+    // Disable the PlayClipController for the current element
+    PlayClipManager.getInstance().remove(element);
 
     // Disable the viewport element with Cornerstone
     // This also triggers the removal of the element from all available

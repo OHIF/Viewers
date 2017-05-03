@@ -76,6 +76,10 @@ export class MetadataProvider {
         // the imagePlane object for easier use in the Viewer
         metadata.imagePlane = this.getImagePlane(instanceMetadata);
 
+        if (metadata.instance && !metadata.instance.multiframeMetadata) {
+            metadata.instance.multiframeMetadata = this.getMultiframeModuleMetadata(data);
+        }
+
         // Add the metadata to the imageId lookup object
         this.metadataLookup.set(imageId, metadata);
     }
@@ -110,8 +114,10 @@ export class MetadataProvider {
 
         if(image.data) {
             value = this.getFromDataSet(image.data, type, tag);
-        } else {
+        } else if(image.instance) {
             value = image.instance[attrName];
+        } else {
+            value = image[attrName];
         }
 
         return value == null ? defaultValue : value;
@@ -208,7 +214,7 @@ export class MetadataProvider {
         imageMetadata.instance.frameTime = imageMetadata.instance.frameTime || this.getFromDataSet(image.data, 'string', 'x00181063');
         imageMetadata.instance.frameTimeVector = imageMetadata.instance.frameTimeVector || this.getFromDataSet(image.data, 'string', 'x00181065');
 
-        if ((image.data || image.instance) && !imageMetadata.instance.multiframeMetadata) {
+        if (!imageMetadata.instance.multiframeMetadata) {
             imageMetadata.instance.multiframeMetadata = this.getMultiframeModuleMetadata(image);
         }
 

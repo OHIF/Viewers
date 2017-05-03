@@ -9,6 +9,8 @@ import { hotkeyUtils } from '../../../lib/hotkeyUtils';
 import { ResizeViewportManager } from '../../../lib/classes/ResizeViewportManager';
 import { LayoutManager } from '../../../lib/classes/LayoutManager';
 import { StudyPrefetcher } from '../../../lib/classes/StudyPrefetcher';
+import { StudyLoadingListener } from '../../../lib/classes/StudyLoadingListener';
+import { PlayClipManager } from '../../../lib/classes/PlayClipManager';
 
 Meteor.startup(() => {
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
@@ -36,9 +38,13 @@ Template.viewerMain.onRendered(() => {
     const { studies } = instance.data;
     const parentElement = instance.$('#layoutManagerTarget').get(0);
     const studyPrefetcher = StudyPrefetcher.getInstance();
+    const studyLoadingListener = StudyLoadingListener.getInstance();
 
-    OHIF.viewerbase.studyLoadingListener.clear();
-    OHIF.viewerbase.studyLoadingListener.addStudies(studies);
+    studyLoadingListener.clear();
+    studyLoadingListener.addStudies(studies);
+
+    // Remove all PlayClipControllers from PlayClipManager
+    PlayClipManager.getInstance().clear();
 
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);

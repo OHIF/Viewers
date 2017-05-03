@@ -118,7 +118,7 @@ Template.imageThumbnail.helpers({
         const instance = Template.instance();
         const stack = instance.data.thumbnail.stack;
         const displaySetInstanceUid = stack.displaySetInstanceUid;
-        const progress = Session.get('DisplaySetProgress:' + displaySetInstanceUid);
+        const progress = Session.get('StackProgress:' + displaySetInstanceUid);
         const percentComplete = progress && progress.percentComplete;
 
         return percentComplete;
