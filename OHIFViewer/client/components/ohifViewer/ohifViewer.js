@@ -45,18 +45,23 @@ Template.ohifViewer.events({
             Router.go('studylist');
         } else {
             const { studyInstanceUids } = OHIF.viewer.data;
-            Router.go('viewerStudies', { studyInstanceUids });
+            if (studyInstanceUids) {
+                Router.go('viewerStudies', { studyInstanceUids });
+            }
         }
     }
 });
 
 Template.ohifViewer.helpers({
     studyListToggleText() {
+        const instance = Template.instance();
         const isViewer = Session.get('ViewerOpened');
 
-        // Return empty if viewer was not opened yet
-        if (!OHIF.utils.ObjectPath.get(OHIF, 'viewer.data.studyInstanceUids')) return;
+        if (isViewer) {
+            instance.hasViewerData = true;
+            return 'Study list';
+        }
 
-        return isViewer ? 'Study list' : 'Back to viewer';
+        return instance.hasViewerData ? 'Back to viewer' : '';
     }
 });
