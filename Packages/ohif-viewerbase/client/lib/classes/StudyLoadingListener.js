@@ -87,8 +87,25 @@ class BaseLoadingListener {
 class DICOMFileLoadingListener extends BaseLoadingListener {
     constructor(stack) {
         super(stack);
-        this.dataSetUrls = this._getDataSetUrls(stack);
+        this._dataSetUrl = this._getDataSetUrl(stack);
         this._lastLoaded = 0;
+
+        // Check how many instances has already been download (cached)
+        this._checkCachedData();
+    }
+
+    _checkCachedData() {
+        const dataSet = cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.get(this._dataSetUrl);
+
+        if (dataSet) {
+            const dataSetLength = dataSet.byteArray.length;
+
+            this._updateProgress({
+                percentComplete: 100,
+                loaded: dataSetLength,
+                total: dataSetLength
+            });
+        }
     }
 
     _getImageLoadProgressEventName() {
@@ -110,10 +127,10 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
     }
 
     _imageLoadProgressEventHandle(e, eventData) {
-        const dataSetUrl = this._getDataSetUrl(eventData.imageId);
+        const dataSetUrl = this._convertImageIdToDataSetUrl(eventData.imageId);
         const bytesDiff = eventData.loaded - this._lastLoaded;
 
-        if (!this.dataSetUrls.has(dataSetUrl)) {
+        if (!this._dataSetUrl === dataSetUrl) {
             return;
         }
 
@@ -140,27 +157,22 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
         });
     }
 
-    _getDataSetUrl(imageId) {
+    _convertImageIdToDataSetUrl(imageId) {
+        // Remove the prefix ("dicomweb:" or "wadouri:"")
+        imageId = imageId.replace(/^(dicomweb:|wadouri:)/i, '');
+
         // Remove "frame=999&" from the imageId
         imageId = imageId.replace(/frame=\d+&?/i, '');
 
-        // Remove the last "&" like in "dicomweb:...&serverId=GQGpJcb4CnYDdu53q&"
+        // Remove the last "&" like in "http://...?foo=1&bar=2&"
         imageId = imageId.replace(/&$/, '');
 
         return imageId;
     }
 
-    _getDataSetUrls(stack) {
-        const dataSetUrls = new Set();
-        const imageIds = stack.imageIds;
-        const length = stack.imageIds.length;
-
-        for (let i = 0; i < length; i++) {
-            const dataSetUrl = this._getDataSetUrl(imageIds[i]);
-            dataSetUrls.add(dataSetUrl);
-        }
-
-        return dataSetUrls;
+    _getDataSetUrl(stack) {
+        const imageId = stack.imageIds[0];
+        return this._convertImageIdToDataSetUrl(imageId);
     }
 }
 
@@ -170,6 +182,9 @@ class StackLoadingListener extends BaseLoadingListener {
         this.imageDataMap = this._convertImageIdsArrayToMap(stack.imageIds);
         this.framesStatus = this._createArray(stack.imageIds.length, false);
         this.loadedCount = 0;
+
+        // Check how many instances has already been download (cached)
+        this._checkCachedData();
     }
 
     _convertImageIdsArrayToMap(imageIds) {
@@ -195,6 +210,19 @@ class StackLoadingListener extends BaseLoadingListener {
         }
 
         return array;
+    }
+
+    _checkCachedData() {
+        const imageIds = this.stack.imageIds;
+
+        for(let i = 0; i < imageIds.length; i++) {
+            const imageId = imageIds[i];
+            const imagePromise = cornerstone.imageCache.getImagePromise(imageId);
+
+            if (imagePromise && (imagePromise.state() === 'resolved')) {
+                this._updateFrameStatus(imageId, true);
+            }
+        }
     }
 
     _getImageLoadedEventName() {
@@ -225,7 +253,7 @@ class StackLoadingListener extends BaseLoadingListener {
         $(cornerstone).off(imageCachePromiseRemovedEventName);
     }
 
-    _updateImageStatus(imageId, loaded) {
+    _updateFrameStatus(imageId, loaded) {
         const imageData = this.imageDataMap.get(imageId);
 
         if (!imageData || (imageData.loaded === loaded)) {
@@ -245,12 +273,12 @@ class StackLoadingListener extends BaseLoadingListener {
 
     _imageLoadedEventHandle(e, eventData) {
         const imageId = eventData.image.imageId;
-        this._updateImageStatus(imageId, true);
+        this._updateFrameStatus(imageId, true);
     }
 
     _imageCachePromiseRemovedEventHandle(e, eventData) {
         const imageId = eventData.imageId;
-        this._updateImageStatus(imageId, false);
+        this._updateFrameStatus(imageId, false);
     }
 
     _updateProgress() {
@@ -291,11 +319,11 @@ class StudyLoadingListener {
         this.listeners = {};
     }
 
-    addStack(stack, options) {
+    addStack(stack, stackMetaData) {
         const displaySetInstanceUid = stack.displaySetInstanceUid;
 
         if (!this.listeners[displaySetInstanceUid]) {
-            listener = this._createListener(stack, options);
+            listener = this._createListener(stack, stackMetaData);
             if (listener) {
                 this.listeners[displaySetInstanceUid] = listener;
             }
@@ -335,10 +363,15 @@ class StudyLoadingListener {
         this.listeners = {};
     }
 
-    _createListener(stack, options) {
+    _createListener(stack, stackMetaData) {
         const schema = this._getSchema(stack);
 
-        if ((schema === 'wadors') || !options.isMultiFrame) {
+        // A StackLoadingListener can be created if it's wadors or not a multiframe
+        // wadouri instance (single file) that means "N" files will have to be
+        // downloaded where "N" is the number of frames. DICOMFileLoadingListener
+        // is created only if it's a single DICOM file and there's no way to know
+        // how many frames has already been loaded (bytes/s instead of frames/s).
+        if ((schema === 'wadors') || !stackMetaData.isMultiFrame) {
             return new StackLoadingListener(stack);
         } else if ((schema === 'dicomweb') || (schema === 'wadouri')) {
             return new DICOMFileLoadingListener(stack);
