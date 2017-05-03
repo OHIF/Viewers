@@ -1,22 +1,22 @@
 <template name="windowLevelPresetsForm">
     {{#form (extend this api=instance.api)}}
         <div class="form-content">
-            <table>
+            <table class="full-width">
                 <thead>
                     <tr>
-                        <th>Preset</th>
-                        <th>Description</th>
-                        <th>Window Level (WL)</th>
-                        <th>Window Width (WW)</th>
+                        <th class="p-x-1 text-center">Preset</th>
+                        <th class="p-x-1">Description</th>
+                        <th class="p-x-1">Window Level (WL)</th>
+                        <th class="p-x-1">Window Width (WW)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each presetInputInformation in getPresetsInputInformationList}}
                         {{#group base='baseTr' key=(concat @index)}}
-                            <td>{{sum @index 1}}</td>
-                            <td>{{>inputText key='id' value=presetInputInformation.id}}</td>
-                            <td>{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
-                            <td>{{>inputText key='ww' value=(filterNaN presetInputInformation.ww) dataType='Number'}}</td>
+                            <td class="p-x-1 text-center">{{sum @index 1}}</td>
+                            <td class="p-x-1">{{>inputText key='id' value=presetInputInformation.id}}</td>
+                            <td class="p-x-1">{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
+                            <td class="p-x-1">{{>inputText key='ww' value=(filterNaN presetInputInformation.ww) dataType='Number'}}</td>
                         {{/group}}
                     {{/each}}
                 </tbody>
