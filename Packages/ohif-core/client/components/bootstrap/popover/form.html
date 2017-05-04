@@ -1,0 +1,17 @@
+<template name="popoverForm">
+    {{#form (extend this mixins='popover' hideValidationBox=true)}}
+        {{#if this.message}}
+            <p>{{this.message}}</p>
+        {{/if}}
+        {{>UI.contentBlock}}
+        <div class="popover-form-buttons {{#if eq this.placement 'left'}}text-right{{/if}}">
+            {{#button action='cancel'
+                class=(concat 'btn btn-cancel ' (choose this.cancelClass 'btn-secondary'))
+                tagAttributes=(extend this.tagAttributes data-dismiss='modal')
+            }}{{choose this.cancelLabel 'Cancel'}}{{/button}}
+            {{#button action='confirm'
+                class=(concat 'btn btn-confirm ' (choose this.confirmClass 'btn-primary'))
+            }}{{choose this.confirmLabel 'Confirm'}}{{/button}}
+        </div>
+    {{/form}}
+</template>

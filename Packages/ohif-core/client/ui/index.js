@@ -6,5 +6,6 @@ import './dialog/unsavedChangesDialog.js';
 import './draggable/draggable.js';
 import './dropdown/class.js';
 import './dropdown/display.js';
+import './popover/display.js';
 import './resizable/resizable.js';
 import './unsavedChanges/unsavedChanges.js';
