@@ -61,6 +61,20 @@ Template.hotkeysForm.onCreated(() => {
         return keysPressedArray;
     };
 
+    instance.getConflictingCommand = (currentCommand, currentCombination) => {
+        const form = instance.$('form').first().data('component');
+        const hotkeys = form.value();
+
+        let conflict = '';
+        _.each(hotkeys, (combination, command) => {
+            if (combination && combination === currentCombination && command !== currentCommand) {
+                conflict = command;
+            }
+        });
+
+        return conflict;
+    };
+
     instance.disallowedCombinations = {
         '': [],
         ALT: ['SPACE'],
@@ -74,7 +88,7 @@ Template.hotkeysForm.events({
     'keydown .hotkey'(event, instance) {
         if (instance.allowedKeys.indexOf(event.keyCode) > -1) {
             instance.updateInputText(event, true);
-            $(event.currentTarget).blur();
+            $(event.currentTarget).trigger('hotkeyChange');
         } else {
             instance.updateInputText(event);
         }
@@ -82,25 +96,82 @@ Template.hotkeysForm.events({
         event.preventDefault();
     },
 
-    'blur .hotkey'(event, instance) {
+    'hotkeyChange .hotkey'(event, instance, data={}) {
         const $target = $(event.currentTarget);
         const combination = $target.val();
         const keys = combination.split('+');
         const lastKey = keys.pop();
         const modifierCombination = keys.join('+');
         const isModifier = ['CTRL', 'ALT', 'SHIFT'].indexOf(lastKey) > -1;
-        // Clean the input if left with only a modifier key or browser specific command
+
+        const formItem = $target.data('component');
+        const conflictedCommand = instance.getConflictingCommand(this.key, combination);
         if (isModifier) {
-            $target.val('');
+            // Clean the input if left with only a modifier key or browser specific command
+            formItem.error(`It's not possible to define only modifier keys (CTRL, ALT and SHIFT) as a shortcut`);
+            $target.val('').focus();
         } else if (instance.disallowedCombinations[modifierCombination].indexOf(lastKey) > -1) {
-            $target.val('');
-            // TODO: show warning
-            $target.focus();
+            // Clean the input and show error if combination is not allowed
+            formItem.error(`The "${combination}" shortcut combination is not allowed`);
+            $target.val('').focus();
+        } else if (conflictedCommand) {
+            if (data.blurTrigger) return;
+
+            // Remove the error message
+            formItem.error(false);
+            formItem.toggleTooltip(false);
+
+            const placement = $target.closest('.hotkeys-left').length ? 'right' : 'left';
+            const commandsContext = OHIF.commands.getContext(instance.data.contextName);
+            const popoverData = {
+                conflictedFunctionName: commandsContext[conflictedCommand].name,
+                newFunctionName: commandsContext[this.key].name,
+                hotkeyCombination: combination,
+            };
+
+            const popoverOptions = {
+                event,
+                placement
+            };
+
+            const conflictedFormItem = instance.$('form').first().data('component').item(conflictedCommand);
+            formItem.state('error', true);
+            conflictedFormItem.state('error', true);
+
+            const cleanup = () => {
+                instance.popoverVisible = false;
+                formItem.state('error', false);
+                conflictedFormItem.state('error', false);
+            };
+
+            const popoverTemplate = 'hotkeysConfirmReplacementPopover';
+            instance.popoverVisible = true;
+            OHIF.ui.showPopover(popoverTemplate, popoverData, popoverOptions).then(() => {
+                cleanup();
+                formItem.value(combination);
+                conflictedFormItem.value('');
+                $target.blur();
+            }).catch(() => {
+                cleanup();
+                $target.val('').focus();
+            });
+        } else {
+            // Remove the error message and blur the component if everything is fine
+            formItem.error(false);
+            if (!data.blurTrigger) {
+                $target.blur();
+            }
         }
     },
 
+    'blur .hotkey'(event, instance, data={}) {
+        $(event.currentTarget).trigger('hotkeyChange', { blurTrigger: true });
+    },
+
     'keyup .hotkey'(event, instance) {
-        instance.updateInputText(event);
+        if (!instance.popoverVisible) {
+            instance.updateInputText(event);
+        }
     }
 });
 

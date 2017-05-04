@@ -3,10 +3,10 @@
         <div class="form-content">
             {{#let lists=getHotkeyInputInformationLists}}
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 hotkeys-left">
                         {{>hotkeysFormTable inputs=lists.left}}
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 hotkeys-right">
                         {{>hotkeysFormTable inputs=lists.right}}
                     </div>
                 </div>

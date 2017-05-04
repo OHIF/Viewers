@@ -94,16 +94,18 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             // Toggle the tooltip over the component
             component.toggleTooltip = (isShow, message) => {
                 if (isShow && message) {
-                    // Stop here if the tooltip is already created
-                    if (component.$wrapper.next('.tooltip').length) {
-                        return;
+                    const tooltipId = component.$wrapper.attr('aria-describedby');
+                    const $tooltip = $(document.getElementById(tooltipId));
+                    if ($tooltip.length) {
+                        // Change the message if the tooltip is already created
+                        $tooltip.find('.tooltip-inner').text(message);
+                    } else {
+                        // Destroy the tooltip if already created, creating it again
+                        component.$wrapper.tooltip('destroy').tooltip({
+                            trigger: 'manual',
+                            title: message
+                        }).tooltip('show');
                     }
-
-                    // Destroy the tooltip if created and create again
-                    component.$wrapper.tooltip('destroy').tooltip({
-                        trigger: 'manual',
-                        title: message
-                    }).tooltip('show');
                 } else {
                     // Destroy the tooltip
                     component.$wrapper.tooltip('destroy');

@@ -66,9 +66,7 @@ OHIF.ui.showPopover = (templateName, popoverData, options={}) => {
         const view = Blaze.renderWithData(template, templateData, $popoverContent[0]);
         $element.one('hidden.bs.popover', () => {
             Blaze.remove(view);
-            if (popoverOptions.trigger !== 'manual') {
-                $element.popover('destroy');
-            }
+            $element.popover('destroy');
         });
 
         promise.then(dismissPopover).catch(dismissPopover);
