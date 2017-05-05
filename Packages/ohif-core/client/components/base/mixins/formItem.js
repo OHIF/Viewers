@@ -35,7 +35,13 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                     return component.parseData(component.$element.val());
                 }
 
-                component.$element.val(value).trigger('change');
+                // Deferring the `change` event because it was being triggered before
+                // formItem.onMixins execution when a defaultValue was specified. In
+                // this case $elem.data('component') code from the event handler was
+                // returning `undefined` and breaking the app
+                Meteor.defer(() => {
+                    component.$element.val(value).trigger('change');
+                })
             };
 
             // Disable or enable the component
