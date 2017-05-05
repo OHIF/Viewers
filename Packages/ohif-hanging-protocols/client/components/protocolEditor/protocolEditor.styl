@@ -10,42 +10,46 @@ $height = 20px
   position: absolute
   top: 0
 
-  .navigationButtons
-    ul
-      margin: 0 auto
-      width: 300px
+  .navigationButtonsContainer
+    margin-left: 0
+    margin-right: 0
 
-    li
-      text-align: center
-      width: 150px
-      margin: 0
+    .navigationButtons
+      ul
+        margin: 0 auto
+        width: 300px
 
-      &:first-child:not(:last-child)
+      li
+        text-align: center
+        width: 150px
+        margin: 0
+
+        &:first-child:not(:last-child)
+          a
+            border-top-right-radius: 0
+            border-bottom-right-radius: 0
+
+        &:last-child:not(:first-child)
+          a
+            border-top-left-radius: 0
+            border-bottom-left-radius: 0
+
         a
-          border-top-right-radius: 0
-          border-bottom-right-radius: 0
+          padding: 3px 9px
+          cursor: pointer
+          text-decoration: none
+          outline: none
+          theme('background-color', '$uiGrayDark')
+          theme('border', '2px solid $uiBorderColorDark')
+          theme('color', '$textSecondaryColor')
+          transition: transition($sidebarTransition)
+          border-radius: $height
 
-      &:last-child:not(:first-child)
-        a
-          border-top-left-radius: 0
-          border-bottom-left-radius: 0
-
-      a
-        padding: 3px 9px
-        cursor: pointer
-        text-decoration: none
-        outline: none
-        theme('background-color', '$uiGrayDark')
-        theme('border', '2px solid $uiBorderColorDark')
-        theme('color', '$textSecondaryColor')
-        transition: transition($sidebarTransition)
-        border-radius: $height
-
-      &.active a
-        theme('background-color', '$activeColor')
-        theme('border-color', '$uiBorderColorActive')
-        theme('color', '$textColorActive')
-        transition: transition($sidebarTransition)
+        &.active a
+          theme('background-color', '$activeColor')
+          theme('border-color', '$uiBorderColorActive')
+          theme('color', '$textColorActive')
+          transition: transition($sidebarTransition)
 
   p
   h2
