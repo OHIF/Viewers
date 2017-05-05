@@ -260,6 +260,12 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 }
             },
 
+            'mousedown .dropdown'(event) {
+                // This is required to stop blur event which is fired before click event
+                // when a dropdown item is clicked, otherwise click event is not fired
+                event.stopPropagation();
+            },
+
             'blur .dropdown'(event, instance) {
                 // Stop here if it's closed or if it's a submenu not being closed
                 if (instance.closed) return;
