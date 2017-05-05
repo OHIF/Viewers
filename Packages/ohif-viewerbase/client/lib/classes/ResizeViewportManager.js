@@ -60,7 +60,7 @@ export class ResizeViewportManager {
     relocateDialogs(){
         OHIF.log.info('ResizeViewportManager relocateDialogs');
 
-        const $bottomRightDialogs = $('#cineDialog, #annotationDialog, #textMarkerOptionsDialog');
+        const $bottomRightDialogs = $('#annotationDialog, #textMarkerOptionsDialog');
         $bottomRightDialogs.css({
             top: '', // This removes the CSS property completely
             left: '',
