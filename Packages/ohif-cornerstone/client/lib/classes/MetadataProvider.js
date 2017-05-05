@@ -58,6 +58,8 @@ export class MetadataProvider {
         metadata.series = {
             seriesDescription: seriesMetadata.seriesDescription,
             seriesNumber: seriesMetadata.seriesNumber,
+            seriesDate: seriesMetadata.seriesDate,
+            seriesTime: seriesMetadata.seriesTime,
             modality: seriesMetadata.modality,
             seriesInstanceUid: seriesMetadata.seriesInstanceUid,
             numImages: numImages
