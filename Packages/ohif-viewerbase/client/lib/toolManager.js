@@ -9,6 +9,7 @@ import { textMarkerUtils } from './textMarkerUtils';
 
 let defaultTool = 'wwwc';
 let activeTool;
+let defaultMouseButtonTools;
 
 let tools = {};
 
@@ -121,8 +122,12 @@ export const toolManager = {
         // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
             defaultTool = OHIF.viewer.defaultTool;
-            activeTool = defaultTool;
         }
+
+        defaultMouseButtonTools = Meteor.settings && Meteor.settings.public && Meteor.settings.public.defaultMouseButtonTools;
+
+        // Override default tool if defined in settings
+        defaultTool = (defaultMouseButtonTools && defaultMouseButtonTools.left) || "wwwc";
 
         this.configureTools();
         initialized = true;
@@ -304,9 +309,15 @@ export const toolManager = {
         // Get the imageIds for this element
         const imageIds = toolData.data[0].imageIds;
 
+        const defaultMouseButtonToolNameMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || "pan";
+        const defaultMouseButtonToolMiddle = cornerstoneTools[defaultMouseButtonToolNameMiddle];
+
+        const defaultMouseButtonToolNameRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || "zoom";
+        const defaultMouseButtonToolRight = cornerstoneTools[defaultMouseButtonToolNameRight];
+
         // Deactivate all the middle mouse, right click, and scroll wheel tools
-        cornerstoneTools.pan.deactivate(element);
-        cornerstoneTools.zoom.deactivate(element);
+        defaultMouseButtonToolMiddle.deactivate(element);
+        defaultMouseButtonToolRight.deactivate(element);
         cornerstoneTools.zoomWheel.deactivate(element);
         cornerstoneTools.stackScrollWheel.deactivate(element);
         cornerstoneTools.panMultiTouch.disable(element);
@@ -315,7 +326,7 @@ export const toolManager = {
         cornerstoneTools.doubleTapZoom.disable(element);
 
         // Reactivate the middle mouse and right click tools
-        cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+        defaultMouseButtonToolRight.activate(element, 4); // zoom is the default tool for right mouse button
 
         // Reactivate the relevant scrollwheel tool for this element
         let multiTouchPanConfig;
@@ -347,10 +358,10 @@ export const toolManager = {
         }
 
         // This block ensures that the middle mouse and scroll tools keep working
-        if (tool === 'pan') {
-            cornerstoneTools.pan.activate(element, 3); // 3 means left mouse button and middle mouse button
+        if (tool === defaultMouseButtonToolNameMiddle) {
+            defaultMouseButtonToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
         } else if (tool === 'crosshairs') {
-            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+            defaultMouseButtonToolMiddle.activate(element, 2); // pan is the default tool for middle mouse button
             const currentFrameOfReferenceUID = getFrameOfReferenceUID(element);
             if (currentFrameOfReferenceUID) {
                 updateCrosshairsSynchronizer(currentFrameOfReferenceUID);
@@ -359,12 +370,12 @@ export const toolManager = {
                 // Activate the chosen tool
                 tools[tool].mouse.activate(element, 1, synchronizer);
             }
-        } else if (tool === 'zoom') {
-            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-            cornerstoneTools.zoom.activate(element, 5); // 5 means left mouse button and right mouse button
+        } else if (tool === defaultMouseButtonToolNameRight) {
+            defaultMouseButtonToolMiddle.activate(element, 2); // pan is the default tool for middle mouse button
+            defaultMouseButtonToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
         } else {
             // Reactivate the middle mouse and right click tools
-            cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+            defaultMouseButtonToolMiddle.activate(element, 2); // pan is the default tool for middle mouse button
 
             // Activate the chosen tool
             tools[tool].mouse.activate(element, 1);
@@ -431,8 +442,12 @@ export const toolManager = {
         Session.set('ToolManagerActiveTool', tool);
     },
     getActiveTool() {
-        // If toolManager is not initialized, we should set as defaultTool
         if (!initialized) {
+            toolManager.init();
+        }
+
+        // If activeTool is not defined, we should set as defaultTool
+        if (!activeTool) {
             activeTool = defaultTool;
         }
 

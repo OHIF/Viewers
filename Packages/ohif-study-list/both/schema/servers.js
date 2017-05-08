@@ -20,6 +20,8 @@ const wadoUriRootDefinitions = {
     max: 1000
 };
 
+const availableMouseButtonTools = ['wwwc', 'zoom', 'pan', 'stackScroll'];
+
 export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
@@ -186,6 +188,27 @@ export const PrefetchSchema = new SimpleSchema({
     }
 });
 
+export const MouseButtonToolSchema = new SimpleSchema({
+    left: {
+        type: String,
+        label: 'Left Mouse Button',
+        allowedValues: availableMouseButtonTools,
+        optional: true
+    },
+    right: {
+        type: String,
+        label: 'Right Mouse Button',
+        allowedValues: availableMouseButtonTools,
+        optional: true
+    },
+    middle: {
+        type: String,
+        label: 'Middle Mouse Button',
+        allowedValues: availableMouseButtonTools,
+        optional: true
+    }
+});
+
 export const PublicServerConfig = new SimpleSchema({
     verifyEmail: {
         type: Boolean,
@@ -204,6 +227,10 @@ export const PublicServerConfig = new SimpleSchema({
     prefetch: {
         type: PrefetchSchema,
         label: 'Prefetch settings'
+    },
+    defaultMouseButtonTools: {
+        type: MouseButtonToolSchema,
+        label: 'Default Mouse Button Tools'
     }
 });
 
