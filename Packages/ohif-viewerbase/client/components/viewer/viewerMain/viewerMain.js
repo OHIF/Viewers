@@ -10,7 +10,6 @@ import { ResizeViewportManager } from '../../../lib/classes/ResizeViewportManage
 import { LayoutManager } from '../../../lib/classes/LayoutManager';
 import { StudyPrefetcher } from '../../../lib/classes/StudyPrefetcher';
 import { StudyLoadingListener } from '../../../lib/classes/StudyLoadingListener';
-import { PlayClipManager } from '../../../lib/classes/PlayClipManager';
 
 Meteor.startup(() => {
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
@@ -42,9 +41,6 @@ Template.viewerMain.onRendered(() => {
 
     studyLoadingListener.clear();
     studyLoadingListener.addStudies(studies);
-
-    // Remove all PlayClipControllers from PlayClipManager
-    PlayClipManager.getInstance().clear();
 
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);

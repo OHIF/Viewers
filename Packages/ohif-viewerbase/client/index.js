@@ -204,10 +204,6 @@ Viewerbase.ResizeViewportManager = ResizeViewportManager;
 import { StudyLoadingListener } from './lib/classes/StudyLoadingListener';
 Viewerbase.StudyLoadingListener = StudyLoadingListener;
 
-// PlayClipManager
-import { PlayClipManager } from './lib/classes/PlayClipManager';
-Viewerbase.PlayClipManager = PlayClipManager;
-
 // StudyMetadata, SeriesMetadata, InstanceMetadata
 import { StudyMetadata } from './lib/classes/metadata/StudyMetadata';
 import { SeriesMetadata } from './lib/classes/metadata/SeriesMetadata';
