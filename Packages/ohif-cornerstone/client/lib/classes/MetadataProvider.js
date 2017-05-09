@@ -71,7 +71,8 @@ export class MetadataProvider {
             name: studyMetadata.patientName,
             id: studyMetadata.patientId,
             birthDate: studyMetadata.patientBirthDate,
-            sex: studyMetadata.patientSex
+            sex: studyMetadata.patientSex,
+            age: studyMetadata.patientAge
         };
 
         // If there is sufficient information, populate
@@ -192,6 +193,8 @@ export class MetadataProvider {
         if (!imageMetadata) {
             return;
         }
+
+        imageMetadata.patient.age = imageMetadata.patient.age || this.getFromDataSet(image.data, 'string', 'x00101010');
 
         imageMetadata.instance.rows = imageMetadata.instance.rows || image.rows;
         imageMetadata.instance.columns = imageMetadata.instance.columns || image.columns;
