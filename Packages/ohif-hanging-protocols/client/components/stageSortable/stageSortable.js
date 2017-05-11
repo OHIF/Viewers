@@ -155,7 +155,7 @@ Template.stageSortable.events({
         var stageIndex = getStageIndex(ProtocolEngine.protocol, this.id);
 
         // Display the selected stage
-        ProtocolEngine.setCurrentProtocolStage(stageIndex);
+        ProtocolEngine.setCurrentProtocolStage(stageIndex - ProtocolEngine.stage);
     },
     /**
      * Creates a new stage and adds it to the currently loaded Protocol at
@@ -177,11 +177,8 @@ Template.stageSortable.events({
         // Append the new stage the list of new stage IDs, so we can label it properly
         ProtocolEngine.newStageIds.push(newStage.id);
 
-        // Calculate the index of the last stage in the display set sequence
-        var stageIndex = ProtocolEngine.protocol.stages.length - 1;
-
-        // Switch to the last stage in the display set sequence
-        ProtocolEngine.setCurrentProtocolStage(stageIndex);
+        // Switch to the next stage in the display set sequence
+        ProtocolEngine.setCurrentProtocolStage(1);
     },
     /**
      * Deletes a stage from the currently loaded Protocol by removing it from
@@ -201,7 +198,7 @@ Template.stageSortable.events({
             text: 'Are you sure you would like to remove this Protocol Stage? This cannot be reversed.'
         };
 
-        showConfirmDialog(function() {
+        OHIF.viewerbase.dialogUtils.showConfirmDialog(function() {
             // Retrieve the index of this stage in the display set sequences
             var stageIndex = getStageIndex(ProtocolEngine.protocol, stageId);
 
@@ -210,11 +207,8 @@ Template.stageSortable.events({
 
             // If we have removed the currently active stage, switch to the one before it
             if (ProtocolEngine.stage === stageIndex) {
-                // Make sure we don't try to switch to a stage index below zero
-                var newStageIndex = Math.max(stageIndex - 1, 0);
-
-                // Display the new stage
-                ProtocolEngine.setCurrentProtocolStage(newStageIndex);
+                // Display the previous stage
+                ProtocolEngine.setCurrentProtocolStage(-1);
             }
 
             // Update the Session variable to the UI re-renders
