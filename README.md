@@ -11,7 +11,7 @@ Documentation is available here: https://github.com/OHIF/Viewers/wiki
 Community
 ---------
 
-Have questions?  Try posting in the [OHIF forum](http://forum.ohif.org/).
+Have questions?  Try posting on our [google groups forum](https://groups.google.com/forum/#!forum/cornerstone-platform).
 
 ### Docker usage
 Following the instructions below, the docker image will listen for DICOM connections on port 4242, and for web traffic on port 8042. The default username for the web interface is `orthanc`, and the password is `orthanc`.
