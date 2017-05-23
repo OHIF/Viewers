@@ -394,4 +394,4 @@ class StudyLoadingListener {
     }
 }
 
-export { StudyLoadingListener };
+export { StudyLoadingListener, StackLoadingListener, DICOMFileLoadingListener };

@@ -204,6 +204,14 @@ Viewerbase.ResizeViewportManager = ResizeViewportManager;
 import { StudyLoadingListener } from './lib/classes/StudyLoadingListener';
 Viewerbase.StudyLoadingListener = StudyLoadingListener;
 
+// StackLoadingListener
+import { StackLoadingListener } from './lib/classes/StudyLoadingListener';
+Viewerbase.StackLoadingListener = StackLoadingListener;
+
+// DICOMFileLoadingListener
+import { DICOMFileLoadingListener } from './lib/classes/StudyLoadingListener';
+Viewerbase.DICOMFileLoadingListener = DICOMFileLoadingListener;
+
 // StudyMetadata, SeriesMetadata, InstanceMetadata
 import { StudyMetadata } from './lib/classes/metadata/StudyMetadata';
 import { SeriesMetadata } from './lib/classes/metadata/SeriesMetadata';
