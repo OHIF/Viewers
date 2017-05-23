@@ -1,5 +1,17 @@
 import { getWADORSImageId } from './getWADORSImageId';
 
+// https://stackoverflow.com/a/6021027/3895126
+function updateQueryStringParameter(uri, key, value) {
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+        return uri + separator + key + "=" + value;
+    }
+}
+
 /**
  * Obtain an imageId for Cornerstone from an image instance
  *
@@ -14,7 +26,11 @@ export function getImageId(instance, frame, thumbnail) {
     }
 
     if (instance.url) {
-        return instance.url; 
+        if (frame !== undefined) {
+            instance.url = updateQueryStringParameter(instance.url, 'frame', frame);
+        }
+
+        return instance.url;
     }
 
     const renderingAttr = thumbnail ? 'thumbnailRendering' : 'imageRendering';

@@ -373,7 +373,7 @@ class StudyLoadingListener {
         // how many frames has already been loaded (bytes/s instead of frames/s).
         if ((schema === 'wadors') || !stackMetaData.isMultiFrame) {
             return new StackLoadingListener(stack);
-        } else if ((schema === 'dicomweb') || (schema === 'wadouri')) {
+        } else {
             return new DICOMFileLoadingListener(stack);
         }
     }
