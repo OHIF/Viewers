@@ -1,0 +1,11 @@
+version: '2'
+services:
+  viewer:
+    build: .
+    volumes:
+      - ../orthanc-backup:/var/lib/orthanc/db
+      - ..:/opt/OHIF
+    ports:
+      - "4242:4242"
+      - "8080:8080"
+      - "3000:3000"
