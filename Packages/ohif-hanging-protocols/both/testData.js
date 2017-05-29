@@ -1349,5 +1349,5 @@ function getDemoProtocols() {
 }
 
 getDefaultProtocol();
-getMRTwoByTwoTest();
-getDemoProtocols();
+//getMRTwoByTwoTest();
+//getDemoProtocols();
