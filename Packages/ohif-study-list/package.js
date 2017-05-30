@@ -25,7 +25,7 @@ Package.onUse(function(api) {
     // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
     api.use('momentjs:moment');
 
-    api.use('gilbertwat:bootstrap3-daterangepicker');
+    api.use('dangrossman:bootstrap-daterangepicker@2.1.13');
 
     // Our custom packages
     api.use('ohif:design');

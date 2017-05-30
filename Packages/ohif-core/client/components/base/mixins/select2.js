@@ -17,6 +17,13 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             // Set the custom focus flag
             instance.component.isCustomFocus = true;
 
+            // Utility function to get the dropdown jQuery element
+            instance.getDropdownContainerElement = () => {
+                const $select2 = instance.component.$element.nextAll('.select2:first');
+                const containerId = $select2.find('.select2-selection').attr('aria-owns');
+                return $(`#${containerId}`).closest('.select2-container');
+            };
+
             // Check if this select will include a placeholder
             const placeholder = instance.data.options && instance.data.options.placeholder;
             if (placeholder) {
@@ -69,8 +76,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
                 // Get the focusable elements
                 const elements = [];
+                const $select2 = component.$element.nextAll('.select2:first');
                 elements.push(component.$element[0]);
-                elements.push(component.$element.nextAll('.select2:first').find('.select2-selection')[0]);
+                elements.push($select2.find('.select2-selection')[0]);
 
                 // Attach focus and blur handlers to focusable elements
                 $(elements).on('focus', event => {
@@ -82,6 +90,19 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                     if (event.target === event.currentTarget) {
                         // Hide the state message on elements blur
                         component.toggleMessage(false);
+                    }
+                });
+
+                // Redirect keydown events from input to the select2 selection handler
+                component.$element.on('keydown ', event => {
+                    event.preventDefault();
+                    $select2.find('.select2-selection').trigger(event);
+                });
+
+                // Keep focus on element if ESC was pressed
+                $select2.on('keydown ', event => {
+                    if (event.which === 27) {
+                        instance.component.$element.focus();
                     }
                 });
             };
@@ -104,6 +125,27 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                     rebuildSelect2();
                 }
             });
+        },
+
+        events: {
+            // Focus element when selecting a value
+            'select2:select'(event, instance) {
+                instance.component.$element.focus();
+            },
+
+            // Focus the element when closing the dropdown container using ESC key
+            'select2:open'(event, instance) {
+                const { minimumResultsForSearch } = instance.data.options;
+                if (minimumResultsForSearch === Infinity || minimumResultsForSearch === -1) return;
+                const $container = instance.getDropdownContainerElement();
+                const $searchInput = $container.find('.select2-search__field');
+                $searchInput.on('keydown.focusOnEsc', event => {
+                    if (event.which === 27) {
+                        $searchInput.off('keydown.focusOnEsc');
+                        instance.component.$element.focus();
+                    }
+                });
+            }
         },
 
         onDestroyed() {

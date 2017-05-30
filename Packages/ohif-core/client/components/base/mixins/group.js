@@ -113,7 +113,8 @@ OHIF.mixins.group = new OHIF.Mixin({
                 }
 
                 // Reset the validation
-                component.schema.resetValidation();
+                const schema = component.isForm ? component.schema : component.getForm().schema;
+                schema.resetValidation();
 
                 // Validate the component itself if it has a key
                 if (instance.data.pathKey && !validateSelf()) {
