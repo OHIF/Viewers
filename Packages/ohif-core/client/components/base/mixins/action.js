@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 /*
@@ -24,23 +25,30 @@ OHIF.mixins.action = new OHIF.Mixin({
                 const { action } = instance.data;
                 const params = instance.data.params ? instance.data.params : event;
 
+                // Set the focus back to the input that triggered the click with Enter key
+                const $focused = $(':focus');
+                const applyFocus = () => {
+                    if ($focused[0] && event.currentTarget !== $focused[0]) {
+                        setTimeout(() => $focused.focus());
+                    }
+                };
+
                 // Stop here if the component is disabled
                 if (component.$element.hasClass('disabled')) return;
 
                 // Get the current component's API
                 const api = component.getApi();
 
-                // Stop here calling the action if it's a function
-                if (typeof action === 'function') {
+                if (!api || !action || typeof api[action] !== 'function') {
+                    // Stop here if no API or action was defined
+                    return true;
+                } else if (typeof action === 'function') {
+                    // Call the action if it's a function
                     component.actionResult = action.call(event.currentTarget, params);
-                    return component.actionResult;
+                } else {
+                    // Call the defined action function
+                    component.actionResult = api[action].call(event.currentTarget, params);
                 }
-
-                // Stop here if no API or action was defined
-                if (!api || !action || typeof api[action] !== 'function') return;
-
-                // Call the defined action function
-                component.actionResult = api[action].call(event.currentTarget, params);
 
                 // Prepend a spinner into the action element content if it's a promise
                 if (component.actionResult instanceof Promise) {
@@ -48,15 +56,16 @@ OHIF.mixins.action = new OHIF.Mixin({
                     form.disable(true);
                     const $spinner = $('<i class="fa fa-spin fa-circle-o-notch fa-fw m-r"></i>');
                     component.$element.prepend($spinner);
-                    const dismissSpinner = () => {
+                    const finishAction = () => {
                         $spinner.remove();
                         form.disable(false);
+                        applyFocus();
                     };
 
-                    component.actionResult.then(dismissSpinner).catch(dismissSpinner);
+                    component.actionResult.then(finishAction).catch(finishAction);
+                } else {
+                    applyFocus();
                 }
-
-                return component.actionResult;
             }
         }
     }
