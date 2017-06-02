@@ -39,12 +39,12 @@ OHIF.mixins.action = new OHIF.Mixin({
                 // Get the current component's API
                 const api = component.getApi();
 
-                if (!api || !action || typeof api[action] !== 'function') {
-                    // Stop here if no API or action was defined
-                    return true;
-                } else if (typeof action === 'function') {
+                if (typeof action === 'function') {
                     // Call the action if it's a function
                     component.actionResult = action.call(event.currentTarget, params);
+                } else if (!api || !action || typeof api[action] !== 'function') {
+                    // Stop here if no API or action was defined
+                    return true;
                 } else {
                     // Call the defined action function
                     component.actionResult = api[action].call(event.currentTarget, params);
