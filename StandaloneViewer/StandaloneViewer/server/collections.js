@@ -53,11 +53,11 @@ RequestStudies.insert({
                 {
                     sopInstanceUid: '1.2.3.2.32.18.8',
                     rows: 1, // TODO: Remove all requirement for this
-                    url: 'dicomweb://cornerstonetech.org/images/ClearCanvas/MRStudy/1.2.840.113619.2.5.1762583153.215519.978957063.80.dcm'
+                    url: 'dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.80.dcm'
                 }, {
                     sopInstanceUid: '1.2.3.2.32.18.9',
                     rows: 1,
-                    url: 'dicomweb://cornerstonetech.org/images/ClearCanvas/MRStudy/1.2.840.113619.2.5.1762583153.215519.978957063.81.dcm'
+                    url: 'dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.81.dcm'
                 }
             ]
         }, {
@@ -67,7 +67,7 @@ RequestStudies.insert({
                 {
                     sopInstanceUid: '1.2.3.2.32.18.10',
                     rows: 1,
-                    url: 'dicomweb://cornerstonetech.org/images/ClearCanvas/MRStudy/1.2.840.113619.2.5.1762583153.215519.978957063.136.dcm'
+                    url: 'dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.136.dcm'
                 }
             ]
         }]
