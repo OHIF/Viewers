@@ -11,9 +11,9 @@ var defaultStrategy = (function () {
         addProtocol(HP.defaultProtocol);
 
         //addProtocol(HP.testProtocol);
-        HP.demoProtocols.forEach(protocol => {
+        /* HP.demoProtocols.forEach(protocol => {
             addProtocol(protocol);
-        });
+        });*/
     }
 
     function getDatabaseIdByProtocolId(protocolId) {
