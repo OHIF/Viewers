@@ -4,12 +4,8 @@
     'use strict';
 
     function drawLine(context, startPoint, endPoint, config) {
-        context.beginPath();
-        context.strokeStyle = config.color;
-        context.lineWidth = config.lineWidth;
         context.moveTo(startPoint.x, startPoint.y);
         context.lineTo(endPoint.x, endPoint.y);
-        context.stroke();
     }
     
     function drawVerticalScalebarIntervals (context, config) {
@@ -26,7 +22,7 @@
                 x: 0,
                 y: config.verticalLine.start.y + i * config.verticalMinorTick
             };
-            if (i% 5 === 0) {
+            if (i % 5 === 0) {
 
                 endPoint.x = config.verticalLine.start.x - config.majorTickLength;
             } else {
@@ -55,7 +51,7 @@
                 y: 0
             };
 
-            if (i% 5 === 0) {
+            if (i % 5 === 0) {
                 endPoint.y = config.horizontalLine.start.y - config.majorTickLength;
             } else {
                 endPoint.y = config.horizontalLine.start.y - config.minorTickLength;
@@ -77,13 +73,19 @@
             y: config.verticalLine.end.y
         };
 
+        context.beginPath();
+        context.strokeStyle = config.color;
+        context.lineWidth = config.lineWidth;
+
         drawLine(context, startPoint, endPoint, config);
         drawVerticalScalebarIntervals(context, config);
+
+        context.stroke();
     }
 
     function drawHorizontalScalebar(context, config) {
         const startPoint = {
-            x: config.horizontalLine.start.x ,
+            x: config.horizontalLine.start.x,
             y: config.horizontalLine.start.y
         };
         const endPoint = {
@@ -98,9 +100,13 @@
     function drawScalebars(context, config){
         context.shadowColor = config.shadowColor;
         context.shadowBlur = config.shadowBlur;
+        context.strokeStyle = config.color;
+        context.lineWidth = config.lineWidth;
 
+        context.beginPath();
         drawVerticalScalebar(context, config);
         drawHorizontalScalebar(context, config);
+        context.stroke();
     }
 
     // Computes the max bound for scales on the image
