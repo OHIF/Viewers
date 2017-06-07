@@ -87,6 +87,11 @@ Template.studySeriesQuickSwitch.events({
         instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
         instance.$('.quickSwitchWrapper').removeClass('overlay');
     },
+    'click .thumbnailEntry'(event, instance) {
+        // Close the quick switch if we have selected a series
+        instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
+        instance.$('.quickSwitchWrapper').removeClass('overlay');
+    },
     'click .studyTimepointStudy'(event, instance) {
         instance.$('.switchSectionSeries').addClass('hover');
     },
