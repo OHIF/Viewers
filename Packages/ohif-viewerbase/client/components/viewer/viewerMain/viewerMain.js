@@ -37,6 +37,8 @@ Template.viewerMain.onRendered(() => {
     const { studies } = instance.data;
     const parentElement = instance.$('#layoutManagerTarget').get(0);
     const studyPrefetcher = StudyPrefetcher.getInstance();
+    instance.studyPrefetcher = studyPrefetcher;
+
     const studyLoadingListener = StudyLoadingListener.getInstance();
 
     studyLoadingListener.clear();
@@ -52,6 +54,8 @@ Template.viewerMain.onRendered(() => {
 });
 
 Template.viewerMain.onDestroyed(() => {
+    const instance = Template.instance();
+
     OHIF.log.info('viewerMain onDestroyed');
 
     // Remove the Window resize listener
@@ -67,4 +71,7 @@ Template.viewerMain.onDestroyed(() => {
     ProtocolEngine = null;
 
     Session.set('OHIFViewerMainRendered', false);
+    
+    // Stop prefetching when we close the viewer
+    instance.studyPrefetcher.destroy();
 });
