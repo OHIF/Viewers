@@ -38,6 +38,7 @@ const initHangingProtocol = () => {
 
         Session.set('ViewerReady', true);
 
+        Session.set('activeViewport', 0);
     });
 };
 
