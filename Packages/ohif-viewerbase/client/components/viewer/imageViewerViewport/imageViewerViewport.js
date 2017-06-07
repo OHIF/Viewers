@@ -16,7 +16,7 @@ import { updateOrientationMarkers } from '../../../lib/updateOrientationMarkers'
 import { getInstanceClassDefaultViewport } from '../../../lib/instanceClassSpecificViewport';
 import { OHIFError } from '../../../lib/classes/OHIFError';
 
-const allCornerstoneEvents = 'CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
+const allCornerstoneEvents = 'click CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
     'CornerstoneToolsMouseClick CornerstoneToolsMouseDrag CornerstoneToolsMouseUp ' +
     'CornerstoneToolsMouseWheel CornerstoneToolsTap CornerstoneToolsTouchPress ' +
     'CornerstoneToolsTouchStart CornerstoneToolsTouchStartActive ' +
@@ -384,16 +384,14 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
-            const element = eventData.element;
             const activeViewportIndex = Session.get('activeViewport');
-            const viewportIndex = $('.imageViewerViewport').index(element);
-
-            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
-            $(element).focus();
-
             if (viewportIndex === activeViewportIndex) {
                 return;
             }
+
+            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
+            const element = eventData.element;
+            $(element).focus();
 
             OHIF.log.info('imageViewerViewport sendActivationTrigger');
 
@@ -596,10 +594,6 @@ Template.imageViewerViewport.onDestroyed(function() {
 Template.imageViewerViewport.events({
     'OHIFActivateViewport .imageViewerViewport'(event) {
         OHIF.log.info('imageViewerViewport OHIFActivateViewport');
-        setActiveViewport(event.currentTarget);
-    },
-
-    'click .imageViewerViewport'(event) {
         setActiveViewport(event.currentTarget);
     },
 
