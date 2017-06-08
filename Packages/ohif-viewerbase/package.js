@@ -95,6 +95,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/basic/layout/layout.styl', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.html', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.styl', 'client');
+    api.addFiles('client/components/basic/errorText/errorText.html', 'client');
+    api.addFiles('client/components/basic/errorText/errorText.styl', 'client');
 
     api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.html', 'client');
     api.addFiles('client/components/basic/removableBackdrop/removableBackdrop.styl', 'client');

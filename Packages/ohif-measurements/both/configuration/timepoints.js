@@ -5,7 +5,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 import { schema as TimepointSchema } from 'meteor/ohif:measurements/both/schema/timepoints';
 
-let configuration = {};
+const configuration = {};
 
 class TimepointApi {
     static setConfiguration(config) {
@@ -29,19 +29,30 @@ class TimepointApi {
     retrieveTimepoints(filter) {
         const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
+            OHIF.log.error('Timepoint retrieval function has not been configured.')
             return;
         }
 
         return new Promise((resolve, reject) => {
             retrievalFn(filter).then(timepointData => {
                 OHIF.log.info('Timepoint data retrieval');
-                OHIF.log.info(timepointData);
+
                 _.each(timepointData, timepoint => {
                     delete timepoint._id;
-                    this.timepoints.insert(timepoint);
+                    const query = {
+                        timepointId: timepoint.timepointId
+                    };
+
+                    this.timepoints.update(query, {
+                        $set: timepoint
+                    }, {
+                        upsert: true
+                    });
                 });
 
                 resolve();
+            }).catch(reason => {
+                OHIF.log.error(`Timepoint retrieval function failed: ${reason}`);
             });
         });
     }

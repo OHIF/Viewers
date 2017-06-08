@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
-import * as Hammer from 'hammerjs';
+import Hammer from 'hammerjs';
 import { OHIF } from 'meteor/ohif:core';
 
 // Clear all selected studies

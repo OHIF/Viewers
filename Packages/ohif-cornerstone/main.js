@@ -2,7 +2,7 @@
  * Import namespace...
  */
 
-import { OHIF, Cornerstone } from  './namespace.js';
+import { OHIF } from  './namespace.js';
 
 /**
  * Import scripts that will populate the Cornerstone namespace as a side effect only import. This is effectively the public API...
@@ -10,4 +10,20 @@ import { OHIF, Cornerstone } from  './namespace.js';
 
 import './client/'; // which is actually: import './client/index.js';
 
-export { OHIF, Cornerstone };
+import * as cornerstone from 'cornerstone-core';
+import * as cornerstoneTools from 'cornerstone-tools';
+import * as cornerstoneMath from 'cornerstone-math';
+import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import * as dicomParser from 'dicom-parser';
+
+debugger;
+
+export {
+    cornerstone,
+    cornerstoneTools,
+    cornerstoneMath,
+    cornerstoneWADOImageLoader,
+    dicomParser
+};
+
+export { OHIF };

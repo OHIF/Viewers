@@ -4,6 +4,30 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
+http@1.2.12
+promise@0.8.9
+stylus@2.513.9
+meteor-base@1.1.0
+mobile-experience@1.0.4
+mongo@1.1.18
+blaze-html-templates@1.0.4
+session@1.1.7
+jquery@1.11.10
+tracker@1.1.3
+logging@1.1.17
+reload@1.1.11
+random@1.0.10
+ejson@1.0.13
+spacebars@1.0.12
+check@1.2.5
+ecmascript@0.8.0
+es5-shim@4.6.15               # ECMAScript 5 compatibility for older browsers.
+reactive-var@1.0.11
+reactive-dict@1.1.9
+standard-minifier-css@1.3.4
+standard-minifier-js@2.1.0
+
+
 # OHIF Packages
 ohif:polyfill
 ohif:design
@@ -16,39 +40,14 @@ ohif:viewerbase
 ohif:study-list
 ohif:dicom-services
 ohif:hanging-protocols
-# ohif:user-management
 ohif:metadata
 
 twbs:bootstrap
-http@1.2.10
-arsnebula:reactive-promise
-promise@0.8.8
-stylus@2.513.8
 fortawesome:fontawesome
-meteor-base@1.0.4
-mobile-experience@1.0.4
-mongo@1.1.14
-blaze-html-templates@1.0.4
-session@1.1.7
-jquery@1.11.10
-tracker@1.1.1
-logging@1.1.16
-reload@1.1.11
-random@1.0.10
-ejson@1.0.13
-spacebars@1.0.12
-check@1.2.4
+momentjs:moment@2.15.1
 aldeed:simple-schema          # Third party package to deal with schemas
-ecmascript@0.6.1
-reactive-var@1.0.11
-
-practicalmeteor:loglevel
-reactive-dict@1.1.8
-fastclick@1.0.13
-standard-minifier-css@1.3.2
-standard-minifier-js@1.2.1
+aldeed:template-extension
+gilbertwat:bootstrap3-daterangepicker
 johdirr:meteor-git-rev
 u2622:persistent-session@0.4.4
-aldeed:template-extension
-peppelg:bootstrap-3-modal
-shell-server@0.2.1
+shell-server@0.2.3

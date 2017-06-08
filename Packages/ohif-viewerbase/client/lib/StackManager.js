@@ -26,8 +26,8 @@ function createAndAddStack(stackMap, study, displaySet) {
         const metaData = {
             instance: image, // in this context, instance will be the data of the InstanceMetadata object...
             series: displaySet, // TODO: Check this
-            study: study,
-            numImages: numImages,
+            study,
+            numImages,
             imageIndex: imageIndex + 1
         };
 
@@ -40,8 +40,7 @@ function createAndAddStack(stackMap, study, displaySet) {
                 imageIds.push(imageId);
                 metadataProvider.addMetadata(imageId, metaData);
             }
-        } 
-        else {
+        } else {
             imageId = getImageId(image);
             imageIds.push(imageId);
             metadataProvider.addMetadata(imageId, metaData);
@@ -50,7 +49,7 @@ function createAndAddStack(stackMap, study, displaySet) {
 
     const stack = {
         displaySetInstanceUid: displaySet.displaySetInstanceUid,
-        imageIds: imageIds,
+        imageIds,
         frameRate: displaySet.frameRate,
         isClip: displaySet.isClip
     };
@@ -61,7 +60,7 @@ function createAndAddStack(stackMap, study, displaySet) {
 }
 
 configuration = {
-    createAndAddStack: createAndAddStack
+    createAndAddStack
 };
 
 /**

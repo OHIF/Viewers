@@ -33,6 +33,17 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
         Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
             console.timeEnd('retrieveStudyMetadata');
 
+            if (error) {
+                OHIF.log.error(error);
+                reject(error);
+                return;
+            }
+
+            if (!study) {
+                reject(`GetStudyMetadata: No study data returned from server: ${studyInstanceUid}`);
+                return;
+            }
+
             if (window.HipaaLogger && Meteor.user && Meteor.user()) {
                 window.HipaaLogger.logEvent({
                     eventType: 'viewed',
@@ -43,16 +54,6 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
                     patientId: study.patientId,
                     patientName: study.patientName
                 });
-            }
-
-            if (error) {
-                OHIF.log.warn(error);
-                reject(error);
-                return;
-            }
-
-            if (!study) {
-                throw new Meteor.Error('GetStudyMetadata', 'No study data returned from server');
             }
 
             // Once the data was retrieved, the series are sorted by series and instance number

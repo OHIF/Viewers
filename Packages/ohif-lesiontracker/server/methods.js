@@ -13,8 +13,13 @@ const Timepoints = new Mongo.Collection('timepoints');
 Timepoints._debugName = 'Timepoints';
 
 Timepoints.find().observe({
-    remove() {
-        console.warn('REMOVED');
+    added(document) {
+        console.warn('TIMEPOINT ADDED')
+        console.warn(document);
+    },
+    remove(docId) {
+        console.warn('TIMEPOINT REMOVED');
+        console.warn(docId);
     }
 });
 

@@ -6,16 +6,25 @@
 
 npm-bcrypt@0.9.2
 
-meteor-base@1.0.4             # Packages every Meteor app needs to have
+meteor-base@1.1.0             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.1.14                  # The database Meteor supports right now
+mongo@1.1.18                  # The database Meteor supports right now
 blaze-html-templates@1.0.4    # Compile .html files into Meteor Blaze views
 session@1.1.7                 # Client-side reactive dictionary for your app
 jquery@1.11.10                 # Helpful client-side library
-tracker@1.1.1                 # Meteor's client-side reactive programming library
-
+tracker@1.1.3                 # Meteor's client-side reactive programming library
+standard-minifier-css
+standard-minifier-js
+http@1.2.12
+promise@0.8.9
+stylus@2.513.9
+random@1.0.10
+reactive-var@1.0.11
+reactive-dict@1.1.9
+check@1.2.5
+email@1.2.1
 es5-shim@4.6.15               # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.6.1              # Enable ECMAScript2015+ syntax in app code
+ecmascript@0.8.0              # Enable ECMAScript2015+ syntax in app code
 
 clinical:active-entry
 clinical:theming
@@ -23,50 +32,44 @@ clinical:fonts
 clinical:hipaa-audit-log
 clinical:hipaa-logger
 
-aldeed:simple-schema          # Third party package to deal with schemas
-
 # OHIF Packages
 ohif:polyfill
 ohif:design
 ohif:core
-ohif:user
 ohif:header
-ohif:select-tree
 ohif:cornerstone
 ohif:viewerbase
 ohif:study-list
 ohif:dicom-services
 ohif:hanging-protocols
-ohif:user-management
-ohif:lesiontracker
 ohif:metadata
 
-accounts-base@1.2.14
-accounts-password@1.3.3
-ian:accounts-ui-bootstrap-3
-twbs:bootstrap
-http@1.2.10
-arsnebula:reactive-promise
-promise@0.8.8
-stylus@2.513.8
-fortawesome:fontawesome
-random@1.0.10
-reactive-var@1.0.11
-reactive-dict@1.1.8
-practicalmeteor:loglevel
-momentjs:moment@2.15.1
+# Necessary for Lesion Trakcer
+ohif:lesiontracker
+ohif:user
+ohif:user-management
+ohif:select-tree
 
-anti:gagarin@=0.4.11
-check@1.2.4
+accounts-base@1.3.0
+accounts-password@1.3.6
+
+twbs:bootstrap
+fortawesome:fontawesome
+momentjs:moment@2.15.1
+aldeed:simple-schema          # Third party package to deal with schemas
 aldeed:template-extension@4.0.0
+aldeed:collection2
 zuuk:stale-session
+<<<<<<< 3d081fe297551d37cd9691a7c60be1f743b9e600
 email@1.1.18
 peppelg:bootstrap-3-modal
 simple:reactive-method
 fastclick@1.0.13
 standard-minifier-css@1.3.2
 standard-minifier-js@1.2.1
+=======
+gilbertwat:bootstrap3-daterangepicker
+>>>>>>> Move towards NPM for Cornerstone dependencies
 johdirr:meteor-git-rev
 u2622:persistent-session@0.4.4
-shell-server@0.2.1
-aldeed:collection2
+shell-server@0.2.3

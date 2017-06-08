@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Npm.depends({
-    hammerjs: '2.0.6'
+    hammerjs: '2.0.8'
 });
 
 Package.onUse(function(api) {

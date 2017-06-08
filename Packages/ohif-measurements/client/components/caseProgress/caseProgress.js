@@ -27,7 +27,7 @@ Template.caseProgress.onCreated(() => {
         promise.then(successHandler).catch(errorHandler);
         OHIF.ui.showDialog('dialogLoading', {
             promise,
-            text: 'Saving measurements data'
+            text: 'Saving measurement data'
         });
 
         return promise;

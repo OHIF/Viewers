@@ -138,8 +138,8 @@ function search() {
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
         studyDescription: getFilter($('input#studyDescription').val()),
-        studyDateFrom: studyDateFrom,
-        studyDateTo: studyDateTo,
+        studyDateFrom,
+        studyDateTo,
         modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : ''
     };
 
@@ -161,6 +161,7 @@ function search() {
         Session.set('showLoadingText', false);
 
         if (!studies) {
+            OHIF.log.warn('No studies found');
             return;
         }
 

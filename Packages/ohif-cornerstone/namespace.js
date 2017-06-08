@@ -22,4 +22,4 @@ OHIF.cornerstone = Cornerstone;
  * Export relevant objects
  */
 
-export { OHIF, Cornerstone };
+export { OHIF };

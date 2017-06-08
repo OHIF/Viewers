@@ -7,7 +7,6 @@ Meteor.startup(function() {
     OHIF.studylist.callbacks.middleClickOnStudy = dblClickOnStudy;
 
     OHIF.studylist.timepointApi = new OHIF.measurements.TimepointApi();
-    OHIF.studylist.timepointApi.retrieveTimepoints({});
 });
 
 /**

@@ -1,4 +1,4 @@
-import { Cornerstone } from '../namespace';
+import { OHIF } from '../namespace';
 
 import { MetadataProvider } from './lib/classes/MetadataProvider';
-Cornerstone.metadataProvider = new MetadataProvider();
+OHIF.cornerstone.metadataProvider = new MetadataProvider();

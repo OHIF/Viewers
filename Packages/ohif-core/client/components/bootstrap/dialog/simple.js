@@ -8,7 +8,7 @@ Template.dialogSimple.onCreated(() => {
 
     instance.close = () => {
         const $modal = instance.$('.modal');
-        $modal.on('hidden.bs.modal', () => instance.data.promiseResolve()).modal('hide');
+        $modal.one('hidden.bs.modal', () => instance.data.promiseResolve()).modal('hide');
     };
 
     // Automatically close the modal if a timeout value was given

@@ -118,12 +118,12 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
 
         this.stopListening();
 
-        $(cornerstone).on(imageLoadProgressEventName, imageLoadProgressEventHandle);
+        $(cornerstone.events).on(imageLoadProgressEventName, imageLoadProgressEventHandle);
     }
 
     stopListening() {
         const imageLoadProgressEventName = this._getImageLoadProgressEventName();
-        $(cornerstone).off(imageLoadProgressEventName);
+        $(cornerstone.events).off(imageLoadProgressEventName);
     }
 
     _imageLoadProgressEventHandle(e, eventData) {
@@ -241,16 +241,16 @@ class StackLoadingListener extends BaseLoadingListener {
 
         this.stopListening();
 
-        $(cornerstone).on(imageLoadedEventName, imageLoadedEventHandle);
-        $(cornerstone).on(imageCachePromiseRemovedEventName, imageCachePromiseRemovedEventHandle);
+        $(cornerstone.events).on(imageLoadedEventName, imageLoadedEventHandle);
+        $(cornerstone.events).on(imageCachePromiseRemovedEventName, imageCachePromiseRemovedEventHandle);
     }
 
     stopListening() {
         const imageLoadedEventName = this._getImageLoadedEventName();
         const imageCachePromiseRemovedEventName = this._getImageCachePromiseRemoveEventName();
 
-        $(cornerstone).off(imageLoadedEventName);
-        $(cornerstone).off(imageCachePromiseRemovedEventName);
+        $(cornerstone.events).off(imageLoadedEventName);
+        $(cornerstone.events).off(imageCachePromiseRemovedEventName);
     }
 
     _updateFrameStatus(imageId, loaded) {

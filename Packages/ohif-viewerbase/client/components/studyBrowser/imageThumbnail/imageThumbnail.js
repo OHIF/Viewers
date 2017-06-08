@@ -35,6 +35,7 @@ Template.imageThumbnail.onRendered(() => {
     const element = $element.get(0);
 
     instance.refreshImage = () => {
+        console.log('imageThumbnail refreshImage');
         if (!element) {
             return;
         }
@@ -84,16 +85,14 @@ Template.imageThumbnail.onRendered(() => {
 });
 
 Template.imageThumbnail.onDestroyed(() => {
+    console.log('imagethumbnail onDestroyed');
     const instance = Template.instance();
 
     // Declare DOM and jQuery objects
     const $parent = instance.$('.imageThumbnail');
     const $element = $parent.find('.imageThumbnailCanvas');
     const element = $element.get(0);
-
-    if (element) {
-        cornerstone.disable(element);
-    }
+    cornerstone.disable(element);
 });
 
 Template.imageThumbnail.helpers({

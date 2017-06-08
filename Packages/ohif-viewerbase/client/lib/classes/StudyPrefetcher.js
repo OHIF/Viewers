@@ -13,12 +13,12 @@ export class StudyPrefetcher {
         this.prefetchDisplaySetsTimeout = 300;
         this.lastActiveViewportElement = null;
 
-        $(cornerstone).on('CornerstoneImageCacheFull.StudyPrefetcher', _.bind(this.cacheFullHandler, this));
+        $(cornerstone.events).on('CornerstoneImageCacheFull.StudyPrefetcher', _.bind(this.cacheFullHandler, this));
     }
 
     destroy() {
         this.stopPrefetching();
-        $(cornerstone).off('CornerstoneImageCacheFull.StudyPrefetcher');
+        $(cornerstone.events).off('CornerstoneImageCacheFull.StudyPrefetcher');
     }
 
     static getInstance() {
@@ -162,7 +162,7 @@ export class StudyPrefetcher {
 
     getStudy(image) {
         const studyMetadata = cornerstoneTools.metaData.get('study', image.imageId);
-        return _.find(this.studies, study => study.studyInstanceUid === studyMetadata.studyInstanceUid);
+        return OHIF.viewer.Studies.find(study => study.studyInstanceUid === studyMetadata.studyInstanceUid);
     }
 
     getSeries(study, image) {
@@ -191,6 +191,10 @@ export class StudyPrefetcher {
         }
 
         const study = this.getStudy(image);
+        if (!study.seriesList || !study.seriesList.length) {
+            console.error(study);
+        }
+
         const series = this.getSeries(study, image);
         const instance = this.getInstance(series, image);
         const displaySets = study.displaySets;

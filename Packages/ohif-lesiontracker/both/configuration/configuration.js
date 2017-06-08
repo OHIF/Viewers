@@ -5,8 +5,6 @@ import { retrieveMeasurements, storeMeasurements, retrieveTimepoints, storeTimep
 import { validateMeasurements } from './dataValidation';
 import { FieldLesionLocation, FieldLesionLocationResponse } from 'meteor/ohif:lesiontracker/both/schema/fields';
 
-console.log('OHIF-LesionTracker: Defining Configuration for Measurements');
-
 const newMeasurementTool = {
     id: 'newLesions',
     name: 'New Lesions'

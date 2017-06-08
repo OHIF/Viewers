@@ -30,15 +30,21 @@ Router.route('/', function() {
     Router.go('studylist', {}, { replaceState: true });
 }, { name: 'home' });
 
-Router.route('/studylist', function() {
-    // Retrieve the timepoints data to display in studylist
-    const promise = OHIF.studylist.timepointApi.retrieveTimepoints({}).then(() => {
-        this.render('app', { data: { template: 'studylist' } });
-    });
+Router.route('/studylist', {
+    name: 'studylist',
+    onBeforeAction: function() {
+        const next = this.next;
 
-    // Show loading state while preparing the studylist data
-    OHIF.ui.showDialog('dialogLoading', { promise });
-}, { name: 'studylist' });
+        // Retrieve the timepoints data to display in studylist
+        const promise = OHIF.studylist.timepointApi.retrieveTimepoints({});
+        promise.then(() => {
+            next()
+        });
+    },
+    render: function() {
+        this.render('app', { data: { template: 'studylist' } });
+    }
+});
 
 Router.route('/viewer/timepoints/:timepointId', function() {
     const timepointId = this.params.timepointId;

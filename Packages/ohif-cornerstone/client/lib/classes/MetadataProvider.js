@@ -1,3 +1,4 @@
+import * as cornerstoneMath from 'cornerstone-math';
 import { parsingUtils } from '../parsingUtils';
 
 const FUNCTION = 'function';
@@ -245,22 +246,17 @@ export class MetadataProvider {
         }
 
         return {
-            frameOfReferenceUID:
-                instance.frameOfReferenceUID,
-            rows:
-                instance.rows,
-            columns:
-                instance.columns,
+            frameOfReferenceUID: instance.frameOfReferenceUID,
+            rows: instance.rows,
+            columns: instance.columns,
             rowCosines:
                 new cornerstoneMath.Vector3(parseFloat(imageOrientation[0]), parseFloat(imageOrientation[1]), parseFloat(imageOrientation[2])),
             columnCosines:
                 new cornerstoneMath.Vector3(parseFloat(imageOrientation[3]), parseFloat(imageOrientation[4]), parseFloat(imageOrientation[5])),
             imagePositionPatient:
                 new cornerstoneMath.Vector3(parseFloat(imagePosition[0]), parseFloat(imagePosition[1]), parseFloat(imagePosition[2])),
-            rowPixelSpacing:
-                rowPixelSpacing,
-            columnPixelSpacing:
-                columnPixelSpacing,
+            rowPixelSpacing,
+            columnPixelSpacing,
         };
     }
 
@@ -318,7 +314,7 @@ export class MetadataProvider {
     }
 
     /**
-     * Get a bound reference to the privider function.
+     * Get a bound reference to the provider function.
      */
     getProvider() {
         let provider = this._provider;

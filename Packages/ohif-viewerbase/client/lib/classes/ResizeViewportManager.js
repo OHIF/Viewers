@@ -7,7 +7,6 @@ import { getInstanceClassDefaultViewport } from '../instanceClassSpecificViewpor
 export class ResizeViewportManager {
     constructor() {
         this._resizeHandler = null;
-        OHIF.log.info('ResizeViewportManager');
     }
 
     // Reposition Study Series Quick Switch based whether side bars are opened or not

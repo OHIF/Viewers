@@ -9,6 +9,6 @@ Template.dialogLoading.onRendered(() => {
     $modal.modal({
         backdrop: 'static',
         keyboard: false,
-        modal: true
+        show: true
     });
 });

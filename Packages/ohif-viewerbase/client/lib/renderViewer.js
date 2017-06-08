@@ -22,5 +22,12 @@ export const renderViewer = (context, params, layoutTemplate='app') => {
                 studies
             }
         });
+    }).catch(error => {
+        context.render(layoutTemplate, {
+            data: {
+                template: 'errorText',
+                error
+            }
+        });
     });
 };

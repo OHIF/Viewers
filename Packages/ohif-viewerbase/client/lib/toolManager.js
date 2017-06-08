@@ -235,8 +235,8 @@ export const toolManager = {
         // Whenever the CornerstoneImageLoadProgress is fired, identify which viewports
         // the "in-progress" image is to be displayed in. Then pass the percent complete
         // via the Meteor Session to the other templates to be displayed in the relevant viewports.
-        $(cornerstone).on('CornerstoneImageLoadProgress', (e, eventData) => {
-            const viewportIndices = this.getKeysByValue(window.ViewportLoading, eventData.imageId);
+        $(cornerstone.events).on('CornerstoneImageLoadProgress', (e, eventData) => {
+            viewportIndices = this.getKeysByValue(window.ViewportLoading, eventData.imageId);
             viewportIndices.forEach(viewportIndex => {
                 Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
             });

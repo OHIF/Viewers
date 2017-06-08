@@ -1,7 +1,8 @@
 import { OHIF } from 'meteor/ohif:core';
-import { loglevel } from 'meteor/practicalmeteor:loglevel';
+import loglevel from 'loglevel';
 
-const defaultLevel = Meteor.isProduction ? 'error' : 'trace';
+const defaultLevel = Meteor.isProduction ? 'ERROR' : 'TRACE';
 
 // Create package logger using loglevel
-OHIF.log = loglevel.createLogger('', defaultLevel);
+OHIF.log = loglevel.getLogger('OHIF');
+OHIF.log.setLevel(defaultLevel);

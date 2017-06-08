@@ -1,6 +1,4 @@
-/**
- * Globals: dicomParser
- */
+import * as dicomParser from 'dicom-parser';
 
 /**
  * A small set of utilities to help parsing DICOM element values.

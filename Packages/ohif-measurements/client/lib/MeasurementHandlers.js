@@ -107,6 +107,7 @@ class MeasurementHandlers {
         Collection._c2._simpleSchema.clean(measurement);
 
         // Insert the new measurement into the collection
+        console.log(measurement);
         Collection.update(measurementId, {
             $set: measurement
         });
