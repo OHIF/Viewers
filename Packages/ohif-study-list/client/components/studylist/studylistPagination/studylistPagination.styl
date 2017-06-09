@@ -47,8 +47,10 @@
             color: white
 
         .disabled
-          a:hover
-            color: inherit
+          a, a:hover, a:focus, a:active
+            theme('background-color', '$uiGrayDarkest')
+            theme('border-color', '$uiGray')
+            theme('color', '$uiGrayLight')
 
           &:not(.disabled):hover a
             theme('background-color', '$uiGrayDark')
@@ -57,9 +59,6 @@
           &.active a
             theme('background-color', '$uiGrayDark')
             theme('color', '$activeColor')
-
-          &.disabled a
-            theme('color', '$uiGrayLight')
 
 @media only screen and (max-width: 1069px)
   .studylistPagination > .row

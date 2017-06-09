@@ -6,17 +6,22 @@
             }}
                 {{>dialogHeader this}}
                 <div class="modal-body">
+                    {{this.bodyText}}
                     {{>UI.contentBlock}}
                 </div>
                 <div class="modal-footer">
                     {{>section 'dialogFooter'}}
-                    {{#button action='cancel'
-                        class=(concat 'btn btn-cancel ' (choose this.cancelClass 'btn-default'))
-                        tagAttributes=(extend this.tagAttributes data-dismiss='modal')
-                    }}{{choose this.cancelLabel 'Cancel'}}{{/button}}
-                    {{#button action='confirm'
-                        class=(concat 'btn btn-confirm ' (choose this.confirmClass 'btn-primary'))
-                    }}{{choose this.confirmLabel 'Confirm'}}{{/button}}
+                    {{#unless this.hideCancel}}
+                        {{#button action='cancel'
+                            class=(concat 'btn btn-cancel ' (choose this.cancelClass 'btn-default'))
+                            tagAttributes=(extend this.tagAttributes data-dismiss='modal')
+                        }}{{choose this.cancelLabel 'Cancel'}}{{/button}}
+                    {{/unless}}
+                    {{#unless this.hideConfirm}}
+                        {{#button action='confirm'
+                            class=(concat 'btn btn-confirm ' (choose this.confirmClass 'btn-primary'))
+                        }}{{choose this.confirmLabel 'Confirm'}}{{/button}}
+                    {{/unless}}
                 </div>
             {{/form}}
         </div>
