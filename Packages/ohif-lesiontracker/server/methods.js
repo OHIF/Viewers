@@ -12,27 +12,6 @@ measurementTools.forEach(tool => {
 const Timepoints = new Mongo.Collection('timepoints');
 Timepoints._debugName = 'Timepoints';
 
-Timepoints.find().observe({
-    added(document) {
-        console.warn('TIMEPOINT ADDED')
-        console.warn(document);
-    },
-    remove(docId) {
-        console.warn('TIMEPOINT REMOVED');
-        console.warn(docId);
-    }
-});
-
-// Drop our collections for testing purposes
-Meteor.startup(() => {
-    if (Meteor.settings.dropCollections) {
-        Timepoints.remove({});
-        measurementTools.forEach(tool => {
-            MeasurementCollections[tool.id].remove({});
-        });
-    }
-});
-
 // TODO: Make storage use update instead of clearing the entire collection and
 // re-inserting everything.
 Meteor.methods({
