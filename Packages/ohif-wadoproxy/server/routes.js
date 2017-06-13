@@ -7,7 +7,7 @@ import { OHIF } from 'meteor/ohif:core';
 const url = require("url");
 const http = require("http");
 const https = require("https");
-const querystring = require("querystring");
+const now = require("performance-now")
 
 const doAuth = Meteor.users.find().count() ? true : false;
 
@@ -34,6 +34,7 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
     const response = this.response;
     const params = this.params;
 
+    let start = now();
     let user;
     if (doAuth) {
         user = authenticateUser(request);
@@ -43,6 +44,10 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
             return;
         }
     }
+    let end = now();
+    const authenticationTime = end - start;
+
+    start = now();
 
     // TODO: Merge this with ohif-study-list? There is a circular dependency now...
     const server = Servers.findOne(params.query.serverId);
@@ -67,6 +72,7 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
         console.log(request.url);
     }
 
+    start = now();
     if (requestOpt.logTiming) {
         console.time(request.url);
     }
@@ -109,12 +115,28 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
     if (requestOpt.auth) {
         options.auth = requestOpt.auth;
     }
+    
+    end = now();
+    const prepRequestTime = end - start;
 
     // Use Node's HTTP API to send a request to the PACS
     const proxyRequest = requester(options, proxyResponse => {
+        console.log(JSON.stringify(proxyResponse, null, 2));
         // When we receive data from the PACS, stream it as the
         // response to the original request.
         // console.log(`Got response: ${proxyResponse.statusCode}`);
+        end = now();
+        const proxyReqTime = end - start;
+        const totalProxyTime = authenticationTime + prepRequestTime + proxyReqTime;
+        const serverTimingHeaders = `
+            auth=${authenticationTime}; "Authenticate User",
+            prep-req=${prepRequestTime}; "Prepare Request Headers",
+            proxy-req=${proxyReqTime}; "Request to WADO URI",
+            total-proxy=${totalProxyTime}; "Total",
+        `.replace(/\n/g, '');
+        
+        proxyResponse.headers['Server-Timing'] = serverTimingHeaders;
+
         response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
 
         if (requestOpt.logTiming) {
@@ -126,7 +148,20 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
 
     // If our request to the PACS fails, log the error message
     proxyRequest.on('error', error => {
-        response.writeHead(500);
+        end = now();
+        const proxyReqTime = end - start;
+        const totalProxyTime = authenticationTime + prepRequestTime + proxyReqTime;
+        console.timeEnd(request.url);
+        const serverTimingHeaders = {
+            'Server-Timing': `
+                auth=${authenticationTime}; "Authenticate User",
+                prep-req=${prepRequestTime}; "Prepare Request Headers",
+                proxy-req=${proxyReqTime}; "Request to WADO URI",
+                total-proxy=${totalProxyTime}; "Total",
+            `.replace(/\n/g, '')
+        };
+
+        response.writeHead(500, serverTimingHeaders);
         response.end(`Error: Problem with request to PACS: ${error.message}\n`);
     });
 

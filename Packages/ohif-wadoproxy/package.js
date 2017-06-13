@@ -4,6 +4,10 @@ Package.describe({
     version: '0.0.1'
 });
 
+Npm.depends({
+    'performance-now': '2.1.0'
+});
+
 Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
