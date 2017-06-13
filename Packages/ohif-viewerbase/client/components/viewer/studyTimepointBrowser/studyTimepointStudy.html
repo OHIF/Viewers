@@ -2,7 +2,9 @@
     {{#let isSidebar=(isUndefined viewportIndex)}}
         <div class="studyTimepointStudy {{#if isSidebar}}studySidebarTimepoint{{else}}studyQuickSwitchTimepoint{{/if}} {{#if this.active}}active{{/if}} {{#if isLoading}}loading{{/if}}" data-uid="{{this.study.studyInstanceUid}}">
             <div class="studyItem">
-                {{>loadingText}}
+                {{#if isLoading}}
+                    {{>loadingText}}
+                {{/if}}
                 <div class="studyModality">
                     <div class="studyModalityBox">
                         <div class="studyModalityText" style="{{modalityStyle}}">
