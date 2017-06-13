@@ -30,7 +30,7 @@ Template.studyTimepointBrowser.onCreated(() => {
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
             const query = {
                 patientId: timepoint.patientId,
-                studyInstanceUid: studyInstanceUid
+                studyInstanceUid
             };
 
             const loadedStudy = OHIF.viewer.Studies.findBy(query);
@@ -40,7 +40,7 @@ Template.studyTimepointBrowser.onCreated(() => {
 
             const notYetLoaded = OHIF.studylist.collections.Studies.findOne(query);
             if (!notYetLoaded) {
-                throw new OHIFError(`No study data available for Study: ${studyInstanceUid}`);
+                OHIF.log.info(`No study data available for Study: ${studyInstanceUid}`);
             }
 
             return notYetLoaded;

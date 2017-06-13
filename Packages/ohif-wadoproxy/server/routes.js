@@ -121,7 +121,6 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
 
     // Use Node's HTTP API to send a request to the PACS
     const proxyRequest = requester(options, proxyResponse => {
-        console.log(JSON.stringify(proxyResponse, null, 2));
         // When we receive data from the PACS, stream it as the
         // response to the original request.
         // console.log(`Got response: ${proxyResponse.statusCode}`);
