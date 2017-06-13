@@ -78,12 +78,23 @@ Template.viewer.onCreated(() => {
     // Update the OHIF.viewer.Studies collection with the loaded studies
     OHIF.viewer.Studies.removeAll();
 
+    // @TypeSafeStudies
+    // Clears OHIF.viewer.StudyMetadataList collection
+    OHIF.viewer.StudyMetadataList.removeAll();
+
     OHIF.viewer.data.studyInstanceUids = [];
     instance.data.studies.forEach(study => {
+        const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
+        let displaySets = study.displaySets;
+
+        if(!study.displaySets) {
+            displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
+            study.displaySets = displaySets;
+        }
+        
         study.selected = true;
-        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
-        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
         OHIF.viewer.Studies.insert(study);
+        OHIF.viewer.StudyMetadataList.insert(studyMetadata);
         OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
     });
 });

@@ -104,7 +104,7 @@ Template.dialogStudyAssociation.onCreated(() => {
                 // this Timepoint instead of creating a new one
                 Timepoints.update(existingTimepoint._id, {
                     $set: {
-                        studyInstanceUids: studyInstanceUids
+                        studyInstanceUids
                     }
                 });
                 timepointId = existingTimepoint.timepointId;
