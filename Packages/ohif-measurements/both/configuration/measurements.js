@@ -315,7 +315,8 @@ class MeasurementApi {
         const measurementNumber = filter.measurementNumber || entries[0].measurementNumber;
 
         // Synchronize the new data with cornerstone tools
-        const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+        const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+
         _.each(entries, entry => {
             if (toolState[entry.imageId]) {
                 const toolData = toolState[entry.imageId][entry.toolType];
@@ -330,6 +331,8 @@ class MeasurementApi {
                 }
             }
         });
+
+        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);
 
         // Synchronize the updated measurements with Cornerstone Tools
         // toolData to make sure the displayed measurements show 'Target X' correctly

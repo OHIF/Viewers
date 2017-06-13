@@ -16,8 +16,6 @@ import * as cornerstoneMath from 'cornerstone-math';
 import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import * as dicomParser from 'dicom-parser';
 
-debugger;
-
 export {
     cornerstone,
     cornerstoneTools,

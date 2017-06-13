@@ -10,7 +10,8 @@ import { OHIF } from 'meteor/ohif:core';
 function activateTool(measurementData) {
     const toolType = measurementData.toolType;
     const imageId = measurementData.imageId;
-    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+
     const toolData = toolState[imageId][toolType];
     if (!toolData || !toolData.data || !toolData.data.length) {
         return;
@@ -19,7 +20,11 @@ function activateTool(measurementData) {
     // When a measurement is selected, it will be activated in Cornerstone's
     // tool data
     const tool = toolData.data.find(data => data._id === measurementData._id);
-    tool.active = true;
+    if (tool) {
+        tool.active = true;
+    }
+
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);
 };
 
 

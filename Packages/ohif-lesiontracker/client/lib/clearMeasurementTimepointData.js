@@ -2,7 +2,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 const removeToolDataWithMeasurementId = (imageId, toolType, measurementId) => {
     OHIF.log.info('removeToolDataWithMeasurementId');
-    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
     // Find any related toolData
     if (!toolState[imageId] || !toolState[imageId][toolType]) {
@@ -32,6 +32,8 @@ const removeToolDataWithMeasurementId = (imageId, toolType, measurementId) => {
     toRemove.forEach(function(index) {
         toolData.splice(index, 1);
     });
+
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);
 };
 
 OHIF.lesiontracker.clearMeasurementTimepointData = (measurementId, timepointId) => {

@@ -4,7 +4,7 @@ import { OHIF } from 'meteor/ohif:core';
 OHIF.measurements.syncMeasurementAndToolData = measurement => {
     OHIF.log.info('syncMeasurementAndToolData');
 
-    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
+    const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
     const imageId = measurement.imageId;
     const toolType = measurement.toolType;
 
@@ -55,4 +55,6 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
 
     // Add the MeasurementData into the toolData for this imageId
     toolState[imageId][toolType].data.push(measurement);
+
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);
 };

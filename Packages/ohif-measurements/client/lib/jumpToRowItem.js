@@ -82,8 +82,6 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     // Deactivate stack synchronizer because it will be re-activated later
     OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
 
-    console.log('jumpToRowItem');
-
     // Retrieve the timepoints that are currently being displayed in the
     // Measurement Table
     const numTimepoints = Math.max(timepoints.length, 1);
@@ -124,7 +122,7 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
         try {
             enabledElement = cornerstone.getEnabledElement(element)
         } catch(error) {
-            OHIF.log.warn(error);
+            continue;
         }
 
         if (enabledElement && enabledElement.image) {

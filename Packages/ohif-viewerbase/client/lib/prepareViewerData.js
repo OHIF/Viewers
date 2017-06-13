@@ -10,7 +10,7 @@ import { OHIF } from 'meteor/ohif:core';
  */
 export const prepareViewerData = ({ studyInstanceUids, timepointId, timepointsFilter={} }) => {
     // Clear the cornerstone tool data to sync the measurements with the measurements API
-    cornerstoneTools.globalImageIdSpecificToolStateManager = cornerstoneTools.newImageIdSpecificToolStateManager();
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
 
     // Retrieve the studies metadata
     const promise = new Promise((resolve, reject) => {
@@ -109,7 +109,7 @@ const getDataFromTimepoint = timepoint => {
 
     return {
         studyInstanceUids: relatedStudies,
-        timepointIds: timepointIds
+        timepointIds
     };
 };
 

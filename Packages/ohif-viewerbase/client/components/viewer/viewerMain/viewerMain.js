@@ -71,4 +71,7 @@ Template.viewerMain.onDestroyed(() => {
     
     // Stop prefetching when we close the viewer
     instance.studyPrefetcher.destroy();
+
+    // Clear references to all stacks in the StackManager
+    OHIF.viewerbase.stackManager.clearStacks();
 });
