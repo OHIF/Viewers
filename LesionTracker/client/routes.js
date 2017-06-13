@@ -41,7 +41,7 @@ Router.route('/studylist', {
             next()
         });
     },
-    render: function() {
+    action: function() {
         this.render('app', { data: { template: 'studylist' } });
     }
 });
