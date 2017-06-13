@@ -39,10 +39,9 @@ Template.viewerMain.onRendered(() => {
     const studyPrefetcher = StudyPrefetcher.getInstance();
     instance.studyPrefetcher = studyPrefetcher;
 
-    const studyLoadingListener = StudyLoadingListener.getInstance();
-
-    studyLoadingListener.clear();
-    studyLoadingListener.addStudies(studies);
+    instance.studyLoadingListener = StudyLoadingListener.getInstance();
+    instance.studyLoadingListener.clear();
+    instance.studyLoadingListener.addStudies(studies);
 
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);
@@ -68,10 +67,21 @@ Template.viewerMain.onDestroyed(() => {
     ProtocolEngine = null;
 
     Session.set('OHIFViewerMainRendered', false);
-    
+
     // Stop prefetching when we close the viewer
     instance.studyPrefetcher.destroy();
 
+    // Destroy stack loading listeners when we close the viewer
+    instance.studyLoadingListener.clear();
+
     // Clear references to all stacks in the StackManager
     OHIF.viewerbase.stackManager.clearStacks();
+
+    // @TypeSafeStudies
+    // Clears OHIF.viewer.Studies collection
+    OHIF.viewer.Studies.removeAll();
+
+    // @TypeSafeStudies
+    // Clears OHIF.viewer.StudyMetadataList collection
+    OHIF.viewer.StudyMetadataList.removeAll();
 });
