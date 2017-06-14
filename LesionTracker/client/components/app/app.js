@@ -27,6 +27,11 @@ Template.app.onCreated(() => {
         iconSvgUse: 'packages/ohif_user-management/assets/user-menu-icons.svg#server',
         separatorAfter: true
     }, {
+        action: () => OHIF.ui.showDialog('userPreferencesDialog'),
+        text: 'Preferences',
+        icon: 'fa fa-user',
+        separatorAfter: true
+    }, {
         action: OHIF.user.changePassword,
         text: 'Change Password',
         iconClasses: 'password',

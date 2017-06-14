@@ -86,7 +86,9 @@ export class HotkeysManager {
                     return reject();
                 }
 
-                context.extend(definitions);
+                context.destroy();
+                context.definitions = definitions;
+                context.initialize();
                 this.changeObserver.changed();
                 resolve(definitions);
             }).catch(reject);

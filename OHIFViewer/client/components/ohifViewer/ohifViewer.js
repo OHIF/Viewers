@@ -14,6 +14,11 @@ Template.ohifViewer.onCreated(() => {
         icon: 'fa fa-server fa-lg',
         separatorAfter: true
     }, {
+        action: () => OHIF.ui.showDialog('userPreferencesDialog'),
+        text: 'Preferences',
+        icon: 'fa fa-user',
+        separatorAfter: true
+    }, {
         action: () => OHIF.ui.showDialog('aboutModal'),
         text: 'About',
         icon: 'fa fa-info'
