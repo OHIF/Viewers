@@ -139,7 +139,7 @@ class WindowLevelPresetsManager {
         return new Promise((resolve, reject) => {
             if (self.retrieveFunction) {
                 self.retrieveFunction().then(resolve).catch(reject);
-            } else if (Meteor.userId()) {
+            } else if (OHIF.user) {
                 try {
                     resolve(OHIF.user.getData(WL_STORAGE_KEY));
                 } catch(error) {

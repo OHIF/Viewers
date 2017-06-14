@@ -48,7 +48,7 @@ export class HotkeysManager {
         return new Promise((resolve, reject) => {
             if (this.retrieveFunction) {
                 this.retrieveFunction(contextName).then(resolve).catch(reject);
-            } else if (Meteor.userId()) {
+            } else if (OHIF.user) {
                 try {
                     resolve(OHIF.user.getData(storageKey));
                 } catch(error) {
