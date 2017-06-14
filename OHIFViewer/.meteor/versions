@@ -19,13 +19,8 @@ boilerplate-generator@1.1.0
 caching-compiler@1.1.9
 caching-html-compiler@1.1.2
 callback-hook@1.0.10
-<<<<<<< 3d081fe297551d37cd9691a7c60be1f743b9e600
-check@1.2.4
-coffeescript@1.11.1_4
-dangrossman:bootstrap-daterangepicker@2.1.13
-=======
 check@1.2.5
->>>>>>> Move towards NPM for Cornerstone dependencies
+dangrossman:bootstrap-daterangepicker@2.1.13
 ddp@1.2.5
 ddp-client@1.3.4
 ddp-common@1.2.8
@@ -43,6 +38,7 @@ es5-shim@4.6.15
 fastclick@1.0.13
 fortawesome:fontawesome@4.7.0
 geojson-utils@1.0.10
+gilbertwat:bootstrap3-daterangepicker@1.3.21_1
 hot-code-push@1.0.4
 html-tools@1.0.11
 htmljs@1.0.11
@@ -77,14 +73,9 @@ momentjs:moment@2.16.0
 mongo@1.1.18
 mongo-id@1.0.6
 natestrauser:select2@4.0.3
-<<<<<<< 3d081fe297551d37cd9691a7c60be1f743b9e600
-npm-mongo@2.2.11_2
-observe-sequence@1.0.14
-ohif:commands@0.0.1
-=======
 npm-mongo@2.2.24
 observe-sequence@1.0.16
->>>>>>> Move towards NPM for Cornerstone dependencies
+ohif:commands@0.0.1
 ohif:core@0.0.1
 ohif:cornerstone@0.0.1
 ohif:design@0.0.1
