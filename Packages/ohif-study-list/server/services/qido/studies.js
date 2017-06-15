@@ -42,7 +42,7 @@ function filterToQIDOURL(server, filter) {
     };
 
     // build the StudyDate range parameter
-    if (filter.studyDateFrom || filter.sutydDateTo) {
+    if (filter.studyDateFrom || filter.studyDateTo) {
         var date = "".concat(dateToString(new Date(filter.studyDateFrom)), "-", dateToString(new Date(filter.studyDateTo)));
         parameters.StudyDate = date;
     }
