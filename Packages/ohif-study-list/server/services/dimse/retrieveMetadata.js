@@ -28,7 +28,7 @@ function getSourceImageInstanceUid(instance) {
     // TODO= Parse the whole Source Image Sequence
     // This is a really poor workaround for now.
     // Later we should probably parse the whole sequence.
-    var SourceImageSequence = instance[0x00082112];
+    const SourceImageSequence = instance[0x00082112];
     if (SourceImageSequence && SourceImageSequence.length) {
         return SourceImageSequence[0][0x00081155];
     }
@@ -45,19 +45,19 @@ function getSourceImageInstanceUid(instance) {
  */
 function resultDataToStudyMetadata(studyInstanceUid, resultData) {
     OHIF.log.info('resultDataToStudyMetadata');
-    var seriesMap = {};
-    var seriesList = [];
+    const seriesMap = {};
+    const seriesList = [];
 
     if (!resultData.length) {
         return;
     }
 
-    var anInstance = resultData[0].toObject();
+    const anInstance = resultData[0].toObject();
     if (!anInstance) {
         return;
     }
 
-    var studyData = {
+    const studyData = {
         seriesList: seriesList,
         patientName: anInstance[0x00100010],
         patientId: anInstance[0x00100020],
@@ -73,9 +73,9 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
     };
 
     resultData.forEach(function(instanceRaw) {
-        var instance = instanceRaw.toObject();
-        var seriesInstanceUid = instance[0x0020000E];
-        var series = seriesMap[seriesInstanceUid];
+        const instance = instanceRaw.toObject();
+        const seriesInstanceUid = instance[0x0020000E];
+        let series = seriesMap[seriesInstanceUid];
         if (!series) {
             series = {
                 seriesDescription: instance[0x0008103E],
@@ -88,9 +88,9 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
             seriesList.push(series);
         }
 
-        var sopInstanceUid = instance[0x00080018];
+        const sopInstanceUid = instance[0x00080018];
 
-        var instanceSummary = {
+        const instanceSummary = {
             imageType: instance[0x00080008],
             sopClassUid: instance[0x00080016],
             modality: instance[0x00080060],
@@ -134,7 +134,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
         };
 
         // Retrieve the actual data over WADO-URI
-        var server = getCurrentServer();
+        const server = OHIF.servers.getCurrentServer();
         const wadouri = `${server.wadoUriRoot}?requestType=WADO&studyUID=${studyInstanceUid}&seriesUID=${seriesInstanceUid}&objectUID=${sopInstanceUid}&contentType=application%2Fdicom`;
         instanceSummary.wadouri = WADOProxy.convertURL(wadouri, server);
 
@@ -153,7 +153,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
  */
 Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
     // TODO: Check which peer it should point to
-    const activeServer = getCurrentServer().peers[0];
+    const activeServer = OHIF.servers.getCurrentServer().peers[0];
     const supportsInstanceRetrievalByStudyUid = activeServer.supportsInstanceRetrievalByStudyUid;
     let results;
 

@@ -7,7 +7,12 @@ Package.describe({
 Package.onUse(function(api) {
     api.versionsFrom('1.4.2.3');
 
+    api.use('ecmascript');
+    api.use('templating');
     api.use('stylus');
+
+    // Client imports
+    api.addFiles('client/index.js', 'client');
 
     // Importable themes
     api.addFiles([

@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { DICOMWebServer as dicomSchema } from 'meteor/ohif:study-list/both/schema/servers.js';
-import { DIMSEServer as dimseSchema } from 'meteor/ohif:study-list/both/schema/servers.js';
+import { OHIF } from 'meteor/ohif:core';
+import { DICOMWebServer as dicomSchema } from 'meteor/ohif:servers/both/schema/servers.js';
+import { DIMSEServer as dimseSchema } from 'meteor/ohif:servers/both/schema/servers.js';
 
 Template.serverInformationForm.onCreated(() => {
     const instance = Template.instance();
@@ -21,6 +22,7 @@ Template.serverInformationForm.onCreated(() => {
             Meteor.call('serverSave', formData, function(error) {
                 if (error) {
                     // TODO: check for errors: not-authorized, data-write
+                    OHIF.log.error(error);
                 }
 
                 instance.data.resetState();

@@ -30,7 +30,7 @@ Template.studyTimepointBrowser.onCreated(() => {
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
             const query = {
                 patientId: timepoint.patientId,
-                studyInstanceUid
+                studyInstanceUid: studyInstanceUid
             };
 
             const loadedStudy = OHIF.viewer.Studies.findBy(query);
@@ -40,7 +40,7 @@ Template.studyTimepointBrowser.onCreated(() => {
 
             const notYetLoaded = OHIF.studylist.collections.Studies.findOne(query);
             if (!notYetLoaded) {
-                OHIF.log.info(`No study data available for Study: ${studyInstanceUid}`);
+                throw new OHIFError(`No study data available for Study: ${studyInstanceUid}`);
             }
 
             return notYetLoaded;
@@ -165,8 +165,20 @@ Template.studyTimepointBrowser.helpers({
                 timepoints = timepointApi.key();
             }
         }
+
+        // Filter timepoints and show only the current timepoint and previous ones
+        let result = [];
+        const currentTimepoint = timepointApi.current();
+        if (currentTimepoint) {
+            timepoints.forEach(timepoint => {
+                if (timepoint.latestDate.getTime() <= currentTimepoint.latestDate.getTime()) {
+                    result.push(timepoint);
+                }
+            });
+        }
+
         // Returns the timepoints
-        return timepoints;
+        return result;
     },
 
     // Get the studies for a specific timepoint

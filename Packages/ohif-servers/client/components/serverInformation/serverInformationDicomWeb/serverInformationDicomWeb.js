@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.serverInformationDicomWeb.onRendered(() => {
     const instance = Template.instance();
     instance.autorun(function() {

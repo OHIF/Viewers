@@ -37,9 +37,7 @@ Router.route('/studylist', {
 
         // Retrieve the timepoints data to display in studylist
         const promise = OHIF.studylist.timepointApi.retrieveTimepoints({});
-        promise.then(() => {
-            next()
-        });
+        promise.then(() => next());
     },
     action: function() {
         this.render('app', { data: { template: 'studylist' } });

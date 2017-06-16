@@ -1,7 +1,8 @@
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
-var fs = Npm.require('fs');
-var fiber = Npm.require('fibers');
+const fs = Npm.require('fs');
+const fiber = Npm.require('fibers');
 
 WebApp.connectHandlers.use('/uploadFilesToImport', function(req, res) {
     if (!req.headers.filename) {
@@ -11,21 +12,21 @@ WebApp.connectHandlers.use('/uploadFilesToImport', function(req, res) {
     }
 
     //  Store files in temp location (they will be deleted when their import operations are completed)
-    var dicomDir = '/tmp/dicomDir';
+    const dicomDir = '/tmp/dicomDir';
     createFolderIfNotExist(dicomDir);
 
-    var fullFileName = dicomDir + '/' + req.headers.filename;
-    var file = fs.createWriteStream(fullFileName);
+    const fullFileName = dicomDir + '/' + req.headers.filename;
+    const file = fs.createWriteStream(fullFileName);
 
-    file.on('error',function(error){
-        console.log(error);
+    file.on('error', function(error) {
+        OHIF.log.warn(error);
         //  Response: INTERNAL SERVER ERROR (500)
         res.statusCode = 400;
         res.end();
     });
-    file.on('finish',function(){
+    file.on('finish', function() {
         //  Response: SUCCESS (200)
-        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
         res.end(fullFileName);
     });
 
@@ -39,7 +40,7 @@ Meteor.methods({
      * @returns {boolean}
      */
     importSupported: function() {
-        const server = getCurrentServer();
+        const server = OHIF.servers.getCurrentServer();
         if (server && server.type === 'dimse') {
             return true;
         }
@@ -54,7 +55,7 @@ Meteor.methods({
             return;
         }
 
-        const server = getCurrentServer();
+        const server = OHIF.servers.getCurrentServer();
 
         if (!server) {
             throw 'No properly configured server was available over DICOMWeb or DIMSE.';
@@ -62,7 +63,7 @@ Meteor.methods({
 
         if (server.type === 'dicomWeb') {
             //TODO: Support importing studies into dicomWeb
-            console.log('Importing studies into dicomWeb is currently not supported.');
+            OHIF.log.warn('Importing studies into dicomWeb is currently not supported.');
         } else if (server.type === 'dimse') {
             importStudiesDIMSE(studiesToImport, studyImportStatusId);
         }
@@ -72,7 +73,10 @@ Meteor.methods({
      * @returns {studyImportStatusId: string}
      */
     createStudyImportStatus: function() {
-        var studyImportStatus = { numberOfStudiesImported: 0, numberOfStudiesFailed: 0 };
+        const studyImportStatus = {
+            numberOfStudiesImported: 0,
+            numberOfStudiesFailed: 0
+        };
         return OHIF.studylist.collections.StudyImportStatus.insert(studyImportStatus);
     },
     /**
@@ -96,17 +100,25 @@ function importStudiesDIMSE(studiesToImport, studyImportStatusId) {
                 try {
                     //  Update the import status
                     if (err) {
-                        OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
-                        console.log("Failed to import study via DIMSE: ", file, err);
+                        OHIF.studylist.collections.StudyImportStatus.update(
+                            { _id: studyImportStatusId },
+                            { $inc: { numberOfStudiesFailed: 1 } }
+                        );
+                        OHIF.log.warn('Failed to import study via DIMSE: ', file, err);
                     } else {
-                        OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesImported': 1}});
-                        console.log("Study successfully imported via DIMSE: ", file);
+                        OHIF.studylist.collections.StudyImportStatus.update(
+                            { _id: studyImportStatusId },
+                            { $inc: { numberOfStudiesImported: 1 } }
+                        );
+                        OHIF.log.info('Study successfully imported via DIMSE: ', file);
                     }
 
                 } catch(error) {
-
-                    OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
-                    console.log("Failed to import study via DIMSE: ", file, error);
+                    OHIF.studylist.collections.StudyImportStatus.update(
+                        { _id: studyImportStatusId },
+                        { $inc: { numberOfStudiesFailed: 1 } }
+                    );
+                    OHIF.log.warn('Failed to import study via DIMSE: ', file, error);
                 } finally {
                     //  The import operation of this file is completed, so delete it if still exists
                     if (fileExists(file)) {
@@ -116,17 +128,20 @@ function importStudiesDIMSE(studiesToImport, studyImportStatusId) {
 
             }).run();
         } catch(error) {
-            OHIF.studylist.collections.StudyImportStatus.update({_id: studyImportStatusId}, {$inc: {'numberOfStudiesFailed': 1}});
-            console.log("Failed to import study via DIMSE: ", file, error);
+            OHIF.studylist.collections.StudyImportStatus.update(
+                { _id: studyImportStatusId },
+                { $inc: { numberOfStudiesFailed: 1 } }
+            );
+            OHIF.log.warn('Failed to import study via DIMSE: ', file, error);
         }
 
     });
 }
 
 function createFolderIfNotExist(folder) {
-    var folderParts = folder.split('/');
-    var folderPart = folderParts[0];
-    for (var i = 1; i < folderParts.length; i++) {
+    const folderParts = folder.split('/');
+    let folderPart = folderParts[0];
+    for (let i = 1; i < folderParts.length; i++) {
         folderPart += '/' + folderParts[i];
         if (!folderExists(folderPart)) {
             fs.mkdirSync(folderPart);

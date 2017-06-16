@@ -29,7 +29,7 @@ class TimepointApi {
     retrieveTimepoints(filter) {
         const retrievalFn = configuration.dataExchange.retrieve;
         if (!_.isFunction(retrievalFn)) {
-            OHIF.log.error('Timepoint retrieval function has not been configured.')
+            OHIF.log.error('Timepoint retrieval function has not been configured.');
             return;
         }
 

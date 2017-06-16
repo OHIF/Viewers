@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
 Meteor.methods({
@@ -10,7 +11,7 @@ Meteor.methods({
 
         // Get the server data. This is user-defined in the config.json files or through servers
         // configuration modal
-        const server = getCurrentServer();
+        const server = OHIF.servers.getCurrentServer();
 
         if (!server) {
             throw 'No properly configured server was available over DICOMWeb or DIMSE.';

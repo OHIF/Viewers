@@ -1,3 +1,8 @@
+import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
+import { _ } from 'meteor/underscore';
+
 Template.serverInformationDimse.onCreated(() => {
     const instance = Template.instance();
     instance.peers = new ReactiveVar([]);
@@ -14,6 +19,7 @@ Template.serverInformationDimse.onCreated(() => {
             peers.push({});
             instance.peers.set(peers);
         },
+
         removePeer(peerIndex) {
             const peers = instance.peers.get();
             peers.splice(peerIndex, 1);

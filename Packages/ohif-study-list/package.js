@@ -31,6 +31,7 @@ Package.onUse(function(api) {
     api.use('ohif:design');
     api.use('ohif:core');
     api.use('ohif:log');
+    api.use('ohif:servers');
     api.use('ohif:dicom-services');
     api.use('ohif:viewerbase');
     api.use('ohif:wadoproxy');
@@ -43,13 +44,6 @@ Package.onUse(function(api) {
 
     // Client imports
     api.addFiles('client/index.js', 'client');
-
-    // Export Servers and CurrentServer Collections
-    api.export('Servers', ['client', 'server']);
-    api.export('CurrentServer', ['client', 'server']);
-
-    // Export shared lib functions
-    api.export('getCurrentServer', ['client', 'server']);
 
     api.export('Services', 'server');
 });

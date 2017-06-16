@@ -16,6 +16,7 @@ Package.onUse(function(api) {
     api.use('iron:router@1.0.13');
 
     api.use('ohif:core');
+    api.use('ohif:servers');
 
     api.addFiles('server/namespace.js', 'server');
     api.addFiles('server/initialize.js', 'server');
