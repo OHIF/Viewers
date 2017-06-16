@@ -88,6 +88,9 @@ Template.measurementTableRow.events({
 
             // Repaint the images on all viewports without the removed measurements
             _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
+
+            // Notify that viewer suffered changes
+            OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.deleted');
         });
     }
 });

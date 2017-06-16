@@ -1,3 +1,4 @@
+import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
 
@@ -315,13 +316,24 @@ export const unsavedChanges = {
 
     rootNode: rootNode,
 
+    observer: new Tracker.Dependency(),
+
+    /**
+     * Register a reactive dependency on every change any path suffers
+     */
+    depend: function() {
+        return this.observer.depend();
+    },
+
     /**
      * Signal an unsaved change for a given namespace.
      * @param {String} path A string (e.g., "viewer.studyViewer.measurements.targets") that identifies the namespace of the signaled changes.
      * @return {Boolean} Returns false if the signal could not be saved or the supplied namespace is invalid. Otherwise, true is returned.
      */
     set: function(path) {
-        return rootNode.appendPath(path, 1);
+        const result = rootNode.appendPath(path, 1);
+        this.observer.changed();
+        return result;
     },
 
     /**
@@ -334,7 +346,9 @@ export const unsavedChanges = {
      * @return {Boolean} Returns false if the signal could not be removed or the supplied namespace is invalid. Otherwise, true is returned.
      */
     clear: function(path, recursively) {
-        return rootNode.clearPath(path, typeof recursively === UNDEFINED ? true : recursively);
+        const result = rootNode.clearPath(path, typeof recursively === UNDEFINED ? true : recursively);
+        this.observer.changed();
+        return result;
     },
 
     /**

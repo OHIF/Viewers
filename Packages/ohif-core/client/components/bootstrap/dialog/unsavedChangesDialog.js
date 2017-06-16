@@ -1,6 +1,5 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 

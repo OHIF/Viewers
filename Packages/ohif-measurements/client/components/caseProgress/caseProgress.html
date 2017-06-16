@@ -1,5 +1,5 @@
 <template name="caseProgress">
-    <div class="caseProgress">
+    {{#form (extend class='caseProgress' api=instance.api)}}
         {{#unless progressComplete}}
             {{>radialProgressBar isLocked=isLocked progressPercent=progressPercent progressText=progressText}}
         {{/unless}}
@@ -10,8 +10,8 @@
         {{/if}}
         {{#if progressComplete}}
             <div class="caseProgressStatus">
-                <button class="btn js-finish-case {{valueIf isFinishDisabled 'disabled' ''}}">Save</button>
+                {{#button class='btn' action='save' disabled=(isFinishDisabled)}}Save{{/button}}
             </div>
         {{/if}}
-    </div>
+    {{/form}}
 </template>

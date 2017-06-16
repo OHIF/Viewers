@@ -13,30 +13,32 @@ Template.caseProgress.onCreated(() => {
     instance.path = 'viewer.studyViewer.measurements';
     instance.saveObserver = new Tracker.Dependency();
 
-    instance.saveData = () => {
-        // Clear signaled unsaved changes...
-        const successHandler = () => {
-            OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
-            instance.saveObserver.changed();
-        };
+    instance.api = {
+        save() {
+            // Clear signaled unsaved changes...
+            const successHandler = () => {
+                OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
+                instance.saveObserver.changed();
+            };
 
-        // Display the error messages
-        const errorHandler = data => OHIF.ui.showDialog('dialogInfo', data);
+            // Display the error messages
+            const errorHandler = data => OHIF.ui.showDialog('dialogInfo', data);
 
-        const promise = instance.data.measurementApi.storeMeasurements();
-        promise.then(successHandler).catch(errorHandler);
-        OHIF.ui.showDialog('dialogLoading', {
-            promise,
-            text: 'Saving measurement data'
-        });
+            const promise = instance.data.measurementApi.storeMeasurements();
+            promise.then(successHandler).catch(errorHandler);
+            OHIF.ui.showDialog('dialogLoading', {
+                promise,
+                text: 'Saving measurement data'
+            });
 
-        return promise;
+            return promise;
+        }
     };
 
     instance.unsavedChangesHandler = () => {
         const isNotDisabled = !instance.$('.js-finish-case').hasClass('disabled');
         if (isNotDisabled && instance.progressPercent.get() === 100) {
-            instance.saveData();
+            instance.api.save();
         }
     };
 
@@ -171,22 +173,10 @@ Template.caseProgress.helpers({
         const instance = Template.instance();
 
         // Run this computation on save or every time any measurement / timepoint suffer changes
+        OHIF.ui.unsavedChanges.depend();
         instance.saveObserver.depend();
         Session.get('LayoutManagerUpdated');
 
         return OHIF.ui.unsavedChanges.probe('viewer.*') === 0;
-    }
-});
-
-Template.caseProgress.events({
-    'click .js-finish-case'(event, instance) {
-        const $this = $(event.currentTarget);
-
-        // Stop here if the tool is disabled
-        if ($this.hasClass('disabled')) {
-            return;
-        }
-
-        instance.saveData();
     }
 });
