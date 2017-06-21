@@ -156,9 +156,6 @@ class ConformanceCriteria {
 
                     const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
                     promise.then(study => {
-                        cornerstone.loadImage(imageId).then(image => {
-                            console.warn('>>>>LOADED', image);
-                        });
                         const metadata = OHIF.viewer.metadataProvider.getMetadata(imageId);
                         data[measurementType].push({
                             measurement,
@@ -177,6 +174,10 @@ class ConformanceCriteria {
                 resolve(data);
             }).catch(reject);
         });
+    }
+
+    static setEvaluationDefinitions(evaluationKey, evaluationDefinitions) {
+        evaluations[evaluationKey] = evaluationDefinitions;
     }
 
 }

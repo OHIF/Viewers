@@ -79,4 +79,8 @@ export class CriteriaEvaluator {
         return nonconformities;
     }
 
+    static setCriterion(criterionKey, criterionDefinitions) {
+        Criteria[criterionKey] = criterionDefinitions;
+    }
+
 }

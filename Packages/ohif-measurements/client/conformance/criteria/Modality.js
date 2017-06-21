@@ -80,4 +80,4 @@ export class ModalityCriterion extends BaseCriterion {
         return this.generateResponse(message, measurements);
     }
 
-};
+}
