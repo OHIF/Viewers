@@ -67,6 +67,7 @@ Template.trialOptionsModal.helpers({
 Template.trialOptionsModal.events({
     'change .js-trial'(event, instance) {
         const form = instance.$('form').first().data('component');
+        if (!form) return;
         instance.selectedTrial.set(form.value().trialCriteria);
     }
 });

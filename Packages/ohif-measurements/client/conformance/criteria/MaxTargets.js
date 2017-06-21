@@ -1,5 +1,5 @@
-import { BaseCriterion } from './BaseCriterion';
 import { _ } from 'meteor/underscore';
+import { BaseCriterion } from './BaseCriterion';
 
 export const MaxTargetsSchema = {
     type: 'object',
@@ -8,25 +8,29 @@ export const MaxTargetsSchema = {
             label: 'Max targets allowed in study',
             type: 'integer',
             minimum: 1
+        },
+        newTarget: {
+            label: 'Flag to evaluate only new targets',
+            type: 'boolean'
+        },
+        locationIn: {
+            label: 'Filter to evaluate only measurements with the specified locations',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
+        },
+        locationNotIn: {
+            label: 'Filter to evaluate only measurements without the specified locations',
+            type: 'array',
+            items: {
+                type: 'string'
+            },
+            minItems: 1,
+            uniqueItems: true
         }
-    },
-    locationIn: {
-        label: 'Filter to evaluate only measurements with the specified locations',
-        type: 'array',
-        items: {
-            type: 'string'
-        },
-        minItems: 1,
-        uniqueItems: true
-    },
-    locationNotIn: {
-        label: 'Filter to evaluate only measurements without the specified locations',
-        type: 'array',
-        items: {
-            type: 'string'
-        },
-        minItems: 1,
-        uniqueItems: true
     },
     required: ['limit']
 };
@@ -35,6 +39,7 @@ export const MaxTargetsSchema = {
  *   Check if the number of target measurements exceeded the limit allowed
  * Options:
  *   limit: Max targets allowed in study
+ *   newTarget: Flag to evaluate only new targets (must be evaluated on both)
  *   locationIn: Filter to evaluate only measurements with the specified locations
  *   locationNotIn: Filter to evaluate only measurements without the specified locations
  *   message: Message to be displayed in case of nonconformity
@@ -47,17 +52,21 @@ export class MaxTargetsCriterion extends BaseCriterion {
 
     evaluate(data) {
         const { options } = this;
+
+        const newTargetNumbers = this.getNewTargetNumbers(data);
         const measurementNumbers = [];
         _.each(data.targets, target => {
-            const { location } = target.measurement;
+            const { location, measurementNumber } = target.measurement;
+            if (options.newTarget && !newTargetNumbers.has(measurementNumber)) return;
             if (options.locationIn && options.locationIn.indexOf(location) === -1) return;
             if (options.locationNotIn && options.locationNotIn.indexOf(location) > -1) return;
-            measurementNumbers.push(target.measurement.measurementNumber);
+            measurementNumbers.push(measurementNumber);
         });
 
-        let message = options.message;
-        if (!message && measurementNumbers.length > this.options.limit) {
-            message = `The study should not have more than ${this.options.limit} targets.`;
+        let message;
+        if (measurementNumbers.length > this.options.limit) {
+            const increment = options.newTarget ? 'new ' : '';
+            message = options.message || `The study should not have more than ${this.options.limit} ${increment}targets.`;
         }
 
         return this.generateResponse(message);

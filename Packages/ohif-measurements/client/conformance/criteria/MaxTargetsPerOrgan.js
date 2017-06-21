@@ -1,3 +1,4 @@
+import { _ } from 'meteor/underscore';
 import { BaseCriterion } from './BaseCriterion';
 
 export const MaxTargetsPerOrganSchema = {
@@ -7,6 +8,10 @@ export const MaxTargetsPerOrganSchema = {
             label: 'Max targets allowed per organ',
             type: 'integer',
             minimum: 1
+        },
+        newTarget: {
+            label: 'Flag to evaluate only new targets',
+            type: 'boolean'
         }
     },
     required: ['limit']
@@ -17,6 +22,7 @@ export const MaxTargetsPerOrganSchema = {
  *   Check if the number of target measurements per organ exceeded the limit allowed
  * Options:
  *   limit: Max targets allowed in study
+ *   newTarget: Flag to evaluate only new targets (must be evaluated on both)
  */
 export class MaxTargetsPerOrganCriterion extends BaseCriterion {
 
@@ -25,25 +31,31 @@ export class MaxTargetsPerOrganCriterion extends BaseCriterion {
     }
 
     evaluate(data) {
+        const { options } = this;
         const targetsPerOrgan = {};
-        let message;
         let measurements = [];
 
-        for (let i = 0; i < data.targets.length; i++) {
-            const measurement = data.targets[i].measurement;
+        const newTargetNumbers = this.getNewTargetNumbers(data);
+        _.each(data.targets, target => {
+            const { measurement } = target;
             const { location, measurementNumber } = measurement;
             if (!targetsPerOrgan[location]) {
                 targetsPerOrgan[location] = new Set();
             }
 
-            targetsPerOrgan[location].add(measurementNumber);
-            if (targetsPerOrgan[location].size > this.options.limit) {
+            if (!options.newTarget || newTargetNumbers.has(measurementNumber)) {
+                targetsPerOrgan[location].add(measurementNumber);
+            }
+
+            if (targetsPerOrgan[location].size > options.limit) {
                 measurements.push(measurement);
             }
-        }
+        });
 
+        let message;
         if (measurements.length) {
-            message = `Each organ should not have more than ${this.options.limit} targets.`;
+            const increment = options.newTarget ? 'new ' : '';
+            message = options.message || `Each organ should not have more than ${options.limit} ${increment}targets.`;
         }
 
         return this.generateResponse(message, measurements);

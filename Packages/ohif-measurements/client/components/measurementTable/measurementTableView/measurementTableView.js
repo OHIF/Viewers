@@ -41,12 +41,7 @@ Template.measurementTableView.helpers({
         const configuration = OHIF.measurements.MeasurementApi.getConfiguration();
         const trialCriteriaType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
         const trialCriteriaTypeId = trialCriteriaType.id.toLowerCase();
-        const trialToolGroupMap = {
-            recist: 'nonTargets',
-            irrc: 'targets'
-        };
-
-        const toolGroupId = trialToolGroupMap[trialCriteriaTypeId];
+        const toolGroupId = trialCriteriaTypeId === 'recist' ? 'nonTargets' : 'targets';
         const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
 
         return {
