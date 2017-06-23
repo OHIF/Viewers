@@ -1,5 +1,6 @@
 <template name="userLogin">
     <div class="user-login">
+        {{>section 'userLoginBefore'}}
         <div class="user-login-box">
             <div class="user-login-logo">{{>section 'userLoginLogo'}}</div>
             {{#form class='user-login-form form-themed p-a-2' schema=instance.schema api=instance.api hideValidationBox=true}}
@@ -13,5 +14,6 @@
                 {{#button action='login' class='form-control btn btn-primary'}}Enter{{/button}}
             {{/form}}
         </div>
+        {{>section 'userLoginAfter'}}
     </div>
 </template>
