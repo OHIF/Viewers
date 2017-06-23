@@ -44,7 +44,6 @@ export const prepareViewerData = ({ studyInstanceUids, timepointId, timepointsFi
             // Find the timepoint by ID and load the studies from it
             OHIF.studylist.timepointApi.retrieveTimepoints(timepointsFilter).then(() => {
                 const viewerData = buildViewerDataFromTimepointId(timepointId);
-                console.warn('>>>>', viewerData);
                 processData(viewerData);
             }).catch(reject);
         }

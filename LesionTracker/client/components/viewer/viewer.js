@@ -32,7 +32,6 @@ Meteor.startup(() => {
 
 Template.viewer.onCreated(() => {
     Session.set('ViewerReady', false);
-    console.warn('>>>>viewer.data', Template.instance().data);
 
     const instance = Template.instance();
 

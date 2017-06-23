@@ -25,10 +25,13 @@ export class CriteriaEvaluator {
     }
 
     getMaxTargets() {
-        let result;
+        let result = 0;
         _.each(this.criteria, criterion => {
             if (criterion instanceof Criteria.MaxTargetsCriterion) {
-                result = criterion.options.limit;
+                const { limit } = criterion.options;
+                if (limit > result) {
+                    result = limit;
+                }
             }
         });
         return result;
