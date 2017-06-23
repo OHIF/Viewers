@@ -9,7 +9,7 @@ Template.caseProgress.onCreated(() => {
 
     instance.progressPercent = new ReactiveVar();
     instance.progressText = new ReactiveVar();
-    instance.isLocked = new ReactiveVar();
+    instance.isLocked = new ReactiveVar(false);
     instance.path = 'viewer.studyViewer.measurements';
     instance.saveObserver = new Tracker.Dependency();
 
@@ -62,15 +62,21 @@ Template.caseProgress.onRendered(() => {
         return;
     }
 
-    // Get the current timepoint
+    // Get the current and prior timepoints
     const current = timepointApi.current();
     const prior = timepointApi.prior();
-    if (!current || !prior || !current.timepointId) {
-        instance.progressPercent.set(100);
-        return;
+
+    // Stop here if timepoint is locked
+    if (current && current.isLocked) {
+        return instance.isLocked.set(true);
+    } else {
+        instance.isLocked.set(false);
     }
 
-    instance.isLocked.set(current.isLocked);
+    // Stop here if no current or prior timepoint was found
+    if (!current || !prior || !current.timepointId) {
+        return instance.progressPercent.set(100);
+    }
 
     // Retrieve the initial number of targets left to measure at this
     // follow-up. Note that this is done outside of the reactive function

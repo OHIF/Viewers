@@ -15,6 +15,10 @@ export const schema = new SimpleSchema({
         allowedValues: ['baseline', 'followup'],
         defaultValue: 'baseline',
     },
+    isLocked: {
+        type: Boolean,
+        label: 'Timepoint Locked'
+    },
     studyInstanceUids: {
         type: [String],
         label: 'Study Instance Uids',
