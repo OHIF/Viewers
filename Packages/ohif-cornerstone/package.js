@@ -5,11 +5,11 @@ Package.describe({
 });
 
 Npm.depends({
-    'hammerjs': '2.0.8',
-    'jquery-hammerjs': '2.0.0',
-    'cornerstone-core': '0.11.0',
-    'cornerstone-tools': '0.8.9',
+    hammerjs: '2.0.8',
     'cornerstone-math': '0.1.6',
+    'jquery-hammerjs': '2.0.0',
+    'cornerstone-core': '0.12.0',
+    'cornerstone-tools': '0.8.9',
     'dicom-parser': '1.7.5',
     'cornerstone-wado-image-loader': '0.14.6'
 });

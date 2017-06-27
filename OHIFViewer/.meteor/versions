@@ -86,6 +86,7 @@ ohif:hotkeys@0.0.1
 ohif:log@0.0.1
 ohif:metadata@0.0.1
 ohif:polyfill@0.0.1
+ohif:servers@0.0.1
 ohif:study-list@0.0.1
 ohif:themes@0.0.1
 ohif:themes-common@0.0.1
