@@ -1,0 +1,36 @@
+{
+  "servers": {
+    "dicomWeb": [
+      {
+        "name": "Orthanc",
+        "wadoUriRoot": "http://dicomweb.ohif.org/wado",
+        "qidoRoot": "http://dicomweb.ohif.org/dicom-web",
+        "wadoRoot": "http://dicomweb.ohif.org/dicom-web",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadouri",
+        "thumbnailRendering": "wadouri",
+        "requestOptions": {
+          "auth": "orthanc:orthanc",
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+        }
+      }
+    ]
+  },
+  "defaultServiceType": "dicomWeb",
+  "dropCollections": true,
+  "public": {
+    "verifyEmail": false,
+    "ui": {
+        "studyListFunctionsEnabled": true,
+        "leftSidebarOpen": false,
+        "displaySetNavigationLoopOverSeries": false,
+        "displaySetNavigationMultipleViewports": true,
+        "autoPositionMeasurementsTextCallOuts": "TRLB"
+    }
+  },
+  "proxy": {
+    "enabled": true
+  }
+}
