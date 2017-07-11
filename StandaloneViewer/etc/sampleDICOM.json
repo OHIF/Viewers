@@ -11,7 +11,7 @@
                     "sopInstanceUid": "1.2.3.2.32.18.8",
                     "columns": 256,
                     "rows": 256,
-                    "url": "dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.80.dcm",
+                    "url": "dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.80.dcm"
                 }, {
                     "sopInstanceUid": "1.2.3.2.32.18.9",
                     "rows": 256,
@@ -31,7 +31,7 @@
                     "sopInstanceUid": "1.2.3.2.32.18.10",
                     "rows": 256,
                     "columns": 256,
-                    "url": "dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.136.dcm",
+                    "url": "dicomweb://rawgit.com/chafey/byozfwv/master/sampleData/1.2.840.113619.2.5.1762583153.215519.978957063.136.dcm"
                 }
             ]
         }]
