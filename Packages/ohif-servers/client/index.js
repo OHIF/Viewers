@@ -1,1 +1,2 @@
 import './collections';
+import './components';
