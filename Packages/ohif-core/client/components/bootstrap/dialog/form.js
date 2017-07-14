@@ -5,6 +5,14 @@ import { OHIF } from 'meteor/ohif:core';
 Template.dialogForm.onCreated(() => {
     const instance = Template.instance();
 
+    const dismissModal = (promiseFunction, param) => {
+        // Hide the modal, removing the backdrop
+        instance.$('.modal').one('hidden.bs.modal', event => {
+            // Resolve or reject the promise with the given parameter
+            promiseFunction(param);
+        }).modal('hide');
+    };
+
     instance.api = {
 
         confirm() {
@@ -14,28 +22,34 @@ Template.dialogForm.onCreated(() => {
                 return;
             }
 
-            // Hide the modal, removing the backdrop
-            instance.$('.modal').one('hidden.bs.modal', event => {
-                // Get the form value and call the confirm callback or resolve the promise
-                const formData = form.value();
-                if (_.isFunction(instance.data.confirmCallback)) {
-                    instance.data.confirmCallback(formData, instance.data.promiseResolve);
+            const formData = form.value();
+            const dismiss = param => dismissModal(instance.data.promiseResolve, param);
+
+            if (_.isFunction(instance.data.confirmCallback)) {
+                const result = instance.data.confirmCallback(formData);
+                if (result instanceof Promise) {
+                    return result.then(dismiss);
                 } else {
-                    instance.data.promiseResolve(formData);
+                    return dismiss(result);
                 }
-            }).modal('hide');
+            }
+
+            dismiss(formData);
         },
 
         cancel() {
-            // Hide the modal, removing the backdrop
-            instance.$('.modal').one('hidden.bs.modal', event => {
-                // Call the cancel callback or resolve the promise
-                if (_.isFunction(instance.data.cancelCallback)) {
-                    instance.data.cancelCallback(instance.data.promiseReject);
+            const dismiss = param => dismissModal(instance.data.promiseReject, param);
+
+            if (_.isFunction(instance.data.cancelCallback)) {
+                const result = instance.data.cancelCallback();
+                if (result instanceof Promise) {
+                    return result.then(dismiss);
                 } else {
-                    instance.data.promiseReject();
+                    return dismiss(result);
                 }
-            }).modal('hide');
+            }
+
+            dismiss();
         }
 
     };

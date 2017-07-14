@@ -9,7 +9,7 @@ import { _ } from 'meteor/underscore';
 Template.dialogStudyAssociation.onCreated(() => {
     const instance = Template.instance();
 
-    instance.data.confirmCallback = (formData, resolve) => {
+    instance.data.confirmCallback = formData => {
         OHIF.log.info('Saving associations');
         const Timepoints = OHIF.studylist.timepointApi.timepoints;
 
@@ -140,6 +140,6 @@ Template.dialogStudyAssociation.onCreated(() => {
 
         OHIF.studylist.timepointApi.storeTimepoints();
 
-        resolve();
+        return formData;
     };
 });

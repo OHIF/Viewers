@@ -41,7 +41,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 // returning `undefined` and breaking the app
                 Meteor.defer(() => {
                     component.$element.val(value).trigger('change');
-                })
+                });
             };
 
             // Disable or enable the component
@@ -219,6 +219,17 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             component.depend = () => {
                 return component.changeObserver.depend();
+            };
+
+            // Click the first submit (or first button if submit not found) button on closest form
+            component.triggerFormMainButton = () => {
+                const $form = component.$element.closest('form');
+                let $formButton = $form.find('button[type=submit]:first');
+                if (!$formButton.length) {
+                    $formButton = $form.find('button:first');
+                }
+
+                $formButton.click();
             };
 
         },
