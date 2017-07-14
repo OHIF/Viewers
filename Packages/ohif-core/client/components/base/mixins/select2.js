@@ -13,23 +13,24 @@ OHIF.mixins.select2 = new OHIF.Mixin({
     composition: {
         onCreated() {
             const instance = Template.instance();
+            const { component, data } = instance;
 
             // Set the custom focus flag
-            instance.component.isCustomFocus = true;
+            component.isCustomFocus = true;
 
             // Utility function to get the dropdown jQuery element
             instance.getDropdownContainerElement = () => {
-                const $select2 = instance.component.$element.nextAll('.select2:first');
+                const $select2 = component.$element.nextAll('.select2:first');
                 const containerId = $select2.find('.select2-selection').attr('aria-owns');
                 return $(`#${containerId}`).closest('.select2-container');
             };
 
             // Check if this select will include a placeholder
-            const placeholder = instance.data.options && instance.data.options.placeholder;
+            const placeholder = data.options && data.options.placeholder;
             if (placeholder) {
                 instance.autorun(() => {
                     // Get the option items
-                    let items = instance.data.items;
+                    let items = data.items;
 
                     // Check if the items are reactive and get them if true
                     const isReactive = items instanceof ReactiveVar;
@@ -48,9 +49,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
                         // Set the new items list including the empty option
                         if (isReactive) {
-                            instance.data.items.set(newItems);
+                            data.items.set(newItems);
                         } else {
-                            instance.data.items = newItems;
+                            data.items = newItems;
                         }
                     }
                 });
@@ -59,7 +60,7 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
         onRendered() {
             const instance = Template.instance();
-            const component = instance.component;
+            const { component, data } = instance;
 
             // Destroy and re-create the select2 instance
             const rebuildSelect2 = () => {
@@ -68,8 +69,15 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                     component.select2Instance.destroy();
                 }
 
+                // Clone the options and check if the select2 should be initialized inside a modal
+                const options = _.clone(data.options);
+                const $closestModal = component.$element.closest('.modal');
+                if ($closestModal.length) {
+                    options.dropdownParent = $closestModal;
+                }
+
                 // Apply the select2 to the component
-                component.$element.select2(instance.data.options);
+                component.$element.select2(options);
 
                 // Store the select2 instance to allow its further destruction
                 component.select2Instance = component.$element.data('select2');
@@ -109,9 +117,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
             instance.autorun(() => {
                 // Run this computation every time the reactive items suffer any changes
-                const isReactive = instance.data.items instanceof ReactiveVar;
+                const isReactive = data.items instanceof ReactiveVar;
                 if (isReactive) {
-                    instance.data.items.dep.depend();
+                    data.items.dep.depend();
                 }
 
                 if (isReactive) {
@@ -150,7 +158,7 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
         onDestroyed() {
             const instance = Template.instance();
-            const component = instance.component;
+            const { component } = instance;
 
             // Destroy the select2 instance to remove unwanted DOM elements
             if (component.select2Instance) {
