@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "jquery.hotkeys": {
+      "version": "0.1.0",
+      "resolved": "https://registry.npmjs.org/jquery.hotkeys/-/jquery.hotkeys-0.1.0.tgz",
+      "from": "jquery.hotkeys@0.1.0"
+    }
+  }
+}

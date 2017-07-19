@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "loglevel": {
+      "version": "1.4.1",
+      "resolved": "https://registry.npmjs.org/loglevel/-/loglevel-1.4.1.tgz",
+      "from": "loglevel@1.4.1"
+    }
+  }
+}

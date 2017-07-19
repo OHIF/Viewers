@@ -1,0 +1,65 @@
+{
+  "dependencies": {
+    "cornerstone-core": {
+      "version": "0.11.0",
+      "resolved": "https://registry.npmjs.org/cornerstone-core/-/cornerstone-core-0.11.0.tgz",
+      "from": "cornerstone-core@0.11.0",
+      "dependencies": {
+        "jquery": {
+          "version": "2.2.4",
+          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.4.tgz",
+          "from": "jquery@>=2.2.4 <3.0.0"
+        }
+      }
+    },
+    "cornerstone-math": {
+      "version": "0.1.6",
+      "resolved": "https://registry.npmjs.org/cornerstone-math/-/cornerstone-math-0.1.6.tgz",
+      "from": "cornerstone-math@0.1.6"
+    },
+    "cornerstone-tools": {
+      "version": "0.8.9",
+      "resolved": "https://registry.npmjs.org/cornerstone-tools/-/cornerstone-tools-0.8.9.tgz",
+      "from": "cornerstone-tools@0.8.9",
+      "dependencies": {
+        "jquery": {
+          "version": "2.2.4",
+          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.4.tgz",
+          "from": "jquery@>=2.2.4 <3.0.0"
+        }
+      }
+    },
+    "cornerstone-wado-image-loader": {
+      "version": "0.14.6",
+      "resolved": "https://registry.npmjs.org/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-0.14.6.tgz",
+      "from": "cornerstone-wado-image-loader@0.14.6",
+      "dependencies": {
+        "jquery": {
+          "version": "2.2.4",
+          "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.4.tgz",
+          "from": "jquery@>=2.2.4 <3.0.0"
+        }
+      }
+    },
+    "dicom-parser": {
+      "version": "1.7.5",
+      "resolved": "https://registry.npmjs.org/dicom-parser/-/dicom-parser-1.7.5.tgz",
+      "from": "dicom-parser@1.7.5"
+    },
+    "hammerjs": {
+      "version": "2.0.8",
+      "resolved": "https://registry.npmjs.org/hammerjs/-/hammerjs-2.0.8.tgz",
+      "from": "hammerjs@2.0.8"
+    },
+    "jquery": {
+      "version": "2.1.4",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz",
+      "from": "jquery@>=2.1.0 <2.2.0"
+    },
+    "jquery-hammerjs": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/jquery-hammerjs/-/jquery-hammerjs-2.0.0.tgz",
+      "from": "jquery-hammerjs@2.0.0"
+    }
+  }
+}

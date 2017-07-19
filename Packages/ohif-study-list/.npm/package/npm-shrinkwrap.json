@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "hammerjs": {
+      "version": "2.0.8",
+      "resolved": "https://registry.npmjs.org/hammerjs/-/hammerjs-2.0.8.tgz",
+      "from": "hammerjs@2.0.8"
+    }
+  }
+}
