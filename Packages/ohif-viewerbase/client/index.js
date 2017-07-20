@@ -31,6 +31,10 @@ Viewerbase.switchToImageByIndex = switchToImageByIndex;
 import { getFrameOfReferenceUID } from './lib/getFrameOfReferenceUID';
 Viewerbase.getFrameOfReferenceUID = getFrameOfReferenceUID;
 
+// getImageIdForImagePath
+import { getImageIdForImagePath } from './lib/getImageIdForImagePath';
+Viewerbase.getImageIdForImagePath = getImageIdForImagePath;
+
 // updateCrosshairsSynchronizer
 import { updateCrosshairsSynchronizer } from './lib/updateCrosshairsSynchronizer';
 Viewerbase.updateCrosshairsSynchronizer = updateCrosshairsSynchronizer;

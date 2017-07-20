@@ -318,8 +318,9 @@ class MeasurementApi {
         const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
         _.each(entries, entry => {
-            if (toolState[entry.imageId]) {
-                const toolData = toolState[entry.imageId][entry.toolType];
+            const imageId = OHIF.viewerbase.getImageIdForImagePath(entry.imagePath);
+            if (toolState[imageId]) {
+                const toolData = toolState[imageId][entry.toolType];
                 const measurementsData = toolData && toolData.data;
                 const measurementEntry = _.findWhere(measurementsData, {
                     _id: entry._id

@@ -177,11 +177,9 @@ const FrameLevelMeasurement = new SimpleSchema([
             min: 0,
             label: 'Frame index in Instance'
         },
-        // TODO: In the future we should remove this in favour of searching OHIF.viewer.Studies and display sets when
-        // re-displaying measurements. Otherwise if a study moves servers the measurements will not be displayed correctly
-        imageId: {
+        imagePath: {
             type: String,
-            label: 'Cornerstone Image Id'
+            label: 'Identifier for the measurement\'s image' // studyInstanceUid_seriesInstanceUid_sopInstanceUid_frameIndex
         }
     }
 ]);
