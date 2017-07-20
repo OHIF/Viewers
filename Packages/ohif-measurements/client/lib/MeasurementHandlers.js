@@ -35,14 +35,15 @@ class MeasurementHandlers {
 
         OHIF.log.info('CornerstoneToolsMeasurementAdded');
 
+        const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
         let measurement = $.extend({
             userId: Meteor.userId(),
-            patientId: patientId,
-            studyInstanceUid: studyInstanceUid,
-            seriesInstanceUid: seriesInstanceUid,
-            sopInstanceUid: sopInstanceUid,
-            frameIndex: frameIndex,
-            imageId: imageId // TODO: In the future we should consider removing this
+            patientId,
+            studyInstanceUid,
+            seriesInstanceUid,
+            sopInstanceUid,
+            frameIndex,
+            imagePath
         }, measurementData);
 
         // Get the related timepoint by the measurement number and use its location if defined

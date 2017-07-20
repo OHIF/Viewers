@@ -5,7 +5,7 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
     OHIF.log.info('syncMeasurementAndToolData');
 
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
-    const imageId = measurement.imageId;
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurement.imagePath);
     const toolType = measurement.toolType;
 
     // If no tool state exists for this imageId, create an empty object to store it

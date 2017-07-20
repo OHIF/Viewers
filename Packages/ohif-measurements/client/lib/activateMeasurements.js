@@ -9,7 +9,7 @@ import { OHIF } from 'meteor/ohif:core';
  */
 function activateTool(measurementData) {
     const toolType = measurementData.toolType;
-    const imageId = measurementData.imageId;
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurementData.imagePath);
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
     const toolData = toolState[imageId][toolType];
@@ -25,8 +25,7 @@ function activateTool(measurementData) {
     }
 
     cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);
-};
-
+}
 
 /**
  * Switch to the image of the correct image index
@@ -68,11 +67,12 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
     const enabledElement = cornerstone.getEnabledElement(element);
     const currentImageId = enabledElement.image.imageId;
     const toolData = cornerstoneTools.getToolState(element, 'stack');
-    const imageIdIndex = toolData.data[0].imageIds.indexOf(measurementData.imageId);
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurementData.imagePath);
+    const imageIdIndex = toolData.data[0].imageIds.indexOf(imageId);
 
     // If we aren't currently displaying the image that this tool is on,
     // scroll to it now.
-    if (currentImageId !== measurementData.imageId) {
+    if (currentImageId !== imageId) {
         cornerstoneTools.scrollToIndex(element, imageIdIndex);
     }
 
@@ -89,7 +89,7 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
         // or maybe just remove the 'error' this throws?
         let ee;
         try {
-            ee = cornerstone.getEnabledElement(element)    
+            ee = cornerstone.getEnabledElement(element);
         } catch(error) {
             OHIF.log.warn(error);
             return;
@@ -99,6 +99,6 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
             return;
         }
 
-        cornerstone.updateImage(element)
+        cornerstone.updateImage(element);
     });
 };

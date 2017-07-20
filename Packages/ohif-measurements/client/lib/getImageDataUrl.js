@@ -7,10 +7,11 @@ OHIF.measurements.getImageDataUrl = ({
     width=512,
     height=512,
     cacheImage=true,
-    imageId,
+    imagePath,
     measurement
 }) => {
-    imageId = imageId || measurement.imageId;
+    imagePath = imagePath || measurement.imagePath;
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(imagePath);
 
     return new Promise((resolve, reject) => {
         const loadMethod = cacheImage ? 'loadAndCacheImage' : 'loadImage';

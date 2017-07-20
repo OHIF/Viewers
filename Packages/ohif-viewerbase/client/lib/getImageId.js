@@ -2,13 +2,12 @@ import { getWADORSImageId } from './getWADORSImageId';
 
 // https://stackoverflow.com/a/6021027/3895126
 function updateQueryStringParameter(uri, key, value) {
-    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-    if (uri.match(re)) {
-        return uri.replace(re, '$1' + key + "=" + value + '$2');
-    }
-    else {
-        return uri + separator + key + "=" + value;
+    const regex = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
+    const separator = uri.indexOf('?') !== -1 ? '&' : '?';
+    if (uri.match(regex)) {
+        return uri.replace(regex, '$1' + key + '=' + value + '$2');
+    } else {
+        return uri + separator + key + '=' + value;
     }
 }
 
@@ -25,6 +24,10 @@ export function getImageId(instance, frame, thumbnail) {
         return;
     }
 
+    if (typeof instance.getImageId === 'function') {
+        return instance.getImageId();
+    }
+
     if (instance.url) {
         if (frame !== undefined) {
             instance.url = updateQueryStringParameter(instance.url, 'frame', frame);
@@ -36,7 +39,7 @@ export function getImageId(instance, frame, thumbnail) {
     const renderingAttr = thumbnail ? 'thumbnailRendering' : 'imageRendering';
 
     if (!instance[renderingAttr] || instance[renderingAttr] === 'wadouri' || !instance.wadorsuri) {
-        var imageId = 'dicomweb:' + instance.wadouri;
+        let imageId = 'dicomweb:' + instance.wadouri;
         if (frame !== undefined) {
             imageId += '&frame=' + frame;
         }

@@ -145,7 +145,8 @@ class ConformanceCriteria {
                 const measurements = this.measurementApi.fetch(measurementType);
 
                 measurements.forEach(measurement => {
-                    const { studyInstanceUid, imageId } = measurement;
+                    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurement.imagePath);
+                    const { studyInstanceUid } = measurement;
 
                     const timepointId = measurement.timepointId;
                     const timepoint = timepointId && this.timepointApi.timepoints.findOne({ timepointId });
