@@ -9,7 +9,11 @@ import { OHIF } from 'meteor/ohif:core';
 
 export const getImageIdForImagePath = (imagePath, thumbnail=false) => {
     const [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex] = imagePath.split('_');
-    const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+    let study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+    if (!(study instanceof OHIF.viewerbase.metadata.StudyMetadata)) {
+        study = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
+    }
+
     const series = study.getSeriesByUID(seriesInstanceUid);
     const instance = series.getInstanceByUID(sopInstanceUid);
     const imageId = OHIF.viewerbase.getImageId(instance, frameIndex, thumbnail);
