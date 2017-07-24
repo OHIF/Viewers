@@ -145,7 +145,6 @@ class ConformanceCriteria {
                 const measurements = this.measurementApi.fetch(measurementType);
 
                 measurements.forEach(measurement => {
-                    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurement.imagePath);
                     const { studyInstanceUid } = measurement;
 
                     const timepointId = measurement.timepointId;
@@ -157,10 +156,14 @@ class ConformanceCriteria {
 
                     const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
                     promise.then(study => {
-                        const metadata = OHIF.viewer.metadataProvider.getMetadata(imageId);
+                        let studyMetadata = study;
+                        if (!(study instanceof OHIF.viewerbase.metadata.StudyMetadata)) {
+                            studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
+                        }
+
                         data[measurementType].push({
                             measurement,
-                            metadata: metadata.instance,
+                            metadata: studyMetadata.getFirstInstance(),
                             timepoint
                         });
                     });
