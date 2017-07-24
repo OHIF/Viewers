@@ -104,7 +104,7 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
             const { measurement, metadata } = item;
             const { location, longestDiameter, shortestDiameter } = measurement;
             const { sliceThickness } = metadata;
-            const modality = metadata.modality.toUpperCase();
+            const modality = (metadata.getRawValue('x00080060') || '').toUpperCase();
 
             // Stop here if the measurement does not match the modality and location filters
             if (options.locationIn && options.locationIn.indexOf(location) === -1) return;

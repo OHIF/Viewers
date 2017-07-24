@@ -167,6 +167,10 @@ export class StudyPrefetcher {
 
     getSeries(study, image) {
         const seriesMetadata = cornerstoneTools.metaData.get('series', image.imageId);
+        if (!(study instanceof OHIF.viewerbase.metadata.StudyMetadata)) {
+            study = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
+        }
+
         return study.getSeriesByUID(seriesMetadata.seriesInstanceUid);
     }
 
