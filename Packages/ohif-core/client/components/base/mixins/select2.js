@@ -15,8 +15,22 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             const instance = Template.instance();
             const { component, data } = instance;
 
+            // Controls select2 initialization
+            instance.isInitialized = false;
+
             // Set the custom focus flag
             component.isCustomFocus = true;
+
+            const valueMethod = component.value;
+            component.value = value => {
+                if (_.isUndefined(value) && !instance.isInitialized) {
+                    if (!_.isUndefined(instance.data.value)) return instance.data.value;
+                    if (!_.isUndefined(component.defaultValue)) return component.defaultValue;
+                    return;
+                }
+
+                return valueMethod(value);
+            };
 
             // Utility function to get the dropdown jQuery element
             instance.getDropdownContainerElement = () => {
@@ -113,6 +127,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                         instance.component.$element.focus();
                     }
                 });
+
+                // Set select2 as initialized
+                instance.isInitialized = true;
             };
 
             instance.autorun(() => {

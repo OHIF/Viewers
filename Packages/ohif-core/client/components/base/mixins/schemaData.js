@@ -179,7 +179,8 @@ OHIF.mixins.schemaData = new OHIF.Mixin({
             }
 
             // Fill the component with its default value after rendering
-            if (currentSchema.defaultValue) {
+            if (!_.isUndefined(currentSchema.defaultValue)) {
+                component.defaultValue = currentSchema.defaultValue;
                 component.value(currentSchema.defaultValue);
             }
         }
