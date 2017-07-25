@@ -163,6 +163,11 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                 const { minimumResultsForSearch } = instance.data.options;
                 if (minimumResultsForSearch === Infinity || minimumResultsForSearch === -1) return;
                 const $container = instance.getDropdownContainerElement();
+
+                if (!instance.data.wrapText) {
+                    $container.addClass('select2-container-nowrap');
+                }
+
                 const $searchInput = $container.find('.select2-search__field');
                 $searchInput.on('keydown.focusOnEsc', event => {
                     if (event.which === 27) {
