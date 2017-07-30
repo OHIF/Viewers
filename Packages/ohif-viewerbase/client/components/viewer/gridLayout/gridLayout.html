@@ -7,5 +7,13 @@
                 </div>
             </div>
         {{/each}}
+        {{#if show3DViewport}}
+            <div class="viewportContainer" style="height:{{height}}%;width:{{width}}%;">
+                <div class="removable">
+                    {{>viewer3D}}
+                </div>
+            </div>
+        {{/if}}
+
     </div>
 </template>

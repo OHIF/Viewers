@@ -127,6 +127,11 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/gridLayout/gridLayout.js', 'client');
     api.addFiles('client/components/viewer/gridLayout/gridLayout.styl', 'client');
 
+    api.addFiles('client/components/viewer/viewer3D/viewer3D.html', 'client');
+    api.addFiles('client/components/viewer/viewer3D/viewer3D.js', 'client');
+    //api.addFiles('client/components/viewer/gridLayout/gridLayout.styl', 'client');
+
+
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.html', 'client');
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.js', 'client');
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.styl', 'client');

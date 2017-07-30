@@ -1,0 +1,15 @@
+<template name="viewer3D">
+    <div class='imageViewerViewport'
+         oncontextmenu='return false;'
+         unselectable='on'
+         onselectstart='return false;'
+         tabindex='0'>
+        <canvas id="wglcanvas" width="100%" height="100%"></canvas>
+    </div>
+    <div class='viewportInstructions'>
+        Please drag a stack here to view images.
+    </div>
+    {{>viewportOverlay}}
+    {{>loadingIndicator}}
+    {{>viewportOrientationMarkers}}
+</template>

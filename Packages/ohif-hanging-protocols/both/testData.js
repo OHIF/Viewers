@@ -5,7 +5,7 @@ function getDefaultProtocol() {
 
     var oneByOne = new HP.ViewportStructure('grid', {
         rows: 1,
-        columns: 1
+        columns: 2
     });
 
     var viewport = new HP.Viewport();

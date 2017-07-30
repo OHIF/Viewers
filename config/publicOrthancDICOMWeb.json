@@ -25,6 +25,7 @@
     "ui": {
         "studyListFunctionsEnabled": true,
         "leftSidebarOpen": false,
+        "showThreeDViewport": true,
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true,
         "autoPositionMeasurementsTextCallOuts": "TRLB"

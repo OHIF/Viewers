@@ -28,6 +28,9 @@
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true,
         "autoPositionMeasurementsTextCallOuts": "TRLB"
+    },
+    "custom": {
+      "show3DViewport": true
     }
   },
   "proxy": {
