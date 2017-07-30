@@ -24,7 +24,7 @@ export class LayoutManager {
         this.layoutTemplateName = 'gridLayout';
         this.layoutProps = {
             rows: 1,
-            columns: 1
+            columns: 2
         };
         this.layoutClassName = this.getLayoutClass();
 
