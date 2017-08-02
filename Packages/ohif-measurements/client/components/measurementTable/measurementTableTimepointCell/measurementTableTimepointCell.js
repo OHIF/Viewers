@@ -61,6 +61,27 @@ Template.measurementTableTimepointCell.events({
         OHIF.measurements.jumpToRowItem(rowItem, timepoints);
     },
 
+    'dblclick .measurementTableTimepointCell'(event, instance) {
+        const { rowItem, timepointId } = instance.data;
+        if (!timepointId) return;
+
+        const measurementData = _.findWhere(rowItem.entries, { timepointId });
+        if (!measurementData || measurementData.toolType !== 'nonTarget') return;
+
+        const viewportIndex = rowItem.entries.indexOf(measurementData);
+        const $viewports = $('#viewer .imageViewerViewport');
+        let $element = $viewports.eq(viewportIndex);
+        $element = $element.length ? $element : $viewports.eq(0);
+
+        OHIF.ui.showDialog('dialogNonTargetMeasurement', {
+            event,
+            title: 'Change Lesion Location',
+            element: $element[0],
+            measurementData,
+            edit: true
+        });
+    },
+
     'keydown .measurementTableTimepointCell'(event, instance) {
         // Delete a lesion if Ctrl+D or DELETE is pressed while a lesion is selected
         const keys = {
