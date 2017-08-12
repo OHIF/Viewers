@@ -50,9 +50,10 @@ const initHangingProtocol = () => {
 Template.viewer.onCreated(() => {
     const instance = Template.instance();
 
-    instance.data.state = new ReactiveDict();
-    instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
-    instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
+    instance.state = new ReactiveDict();
+
+    instance.state.set('leftSidebar', Session.get('leftSidebar'));
+    instance.state.set('rightSidebar', Session.get('rightSidebar'));
 
     if (OHIF.viewer.data && OHIF.viewer.data.loadedSeriesData) {
         OHIF.log.info('Reloading previous loadedSeriesData');
@@ -118,7 +119,13 @@ Template.viewer.onRendered(function() {
 Template.viewer.events({
     'click .js-toggle-studies'() {
         const instance = Template.instance();
-        const current = instance.data.state.get('leftSidebar');
-        instance.data.state.set('leftSidebar', !current);
+        const current = instance.state.get('leftSidebar');
+        instance.state.set('leftSidebar', !current);
+    }
+});
+
+Template.viewer.helpers({
+    state() {
+        return Template.instance().state;
     }
 });

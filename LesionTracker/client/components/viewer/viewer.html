@@ -8,8 +8,8 @@
     </div>
     <div id="viewer">
         {{#if and Template.subscriptionsReady dataSourcesReady}}
-            {{>toolbarSection (clone this)}}
-            {{>viewerSection (clone this)}}
+            {{>toolbarSection (clone this state=state)}}
+            {{>viewerSection (clone this state=state)}}
         {{else}}
             {{>loadingText}}
         {{/if}}

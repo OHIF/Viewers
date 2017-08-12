@@ -11,8 +11,8 @@
             {{>textEntryDialog}}
         </div>
         <div id="viewer">
-            {{>toolbarSection (clone this)}}
-            {{>flexboxLayout (clone this)}}
+            {{>toolbarSection (clone this state=state)}}
+            {{>flexboxLayout (clone this state=state)}}
         </div>
     {{else}}
         {{>loadingText}}
