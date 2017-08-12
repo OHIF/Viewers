@@ -55,9 +55,9 @@ Template.viewer.onCreated(() => {
 
     ValidationErrors.remove({});
 
-    instance.data.state = new ReactiveDict();
-    instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
-    instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
+    instance.state = new ReactiveDict();
+    instance.state.set('leftSidebar', Session.get('leftSidebar'));
+    instance.state.set('rightSidebar', Session.get('rightSidebar'));
 
     const viewportUtils = OHIF.viewerbase.viewportUtils;
 
@@ -286,14 +286,14 @@ const setActiveToolAndSidebar = () => {
         }
 
         // Toggle Measurement Table
-        if (instance.data.state) {
-            instance.data.state.set('rightSidebar', 'measurements');
+        if (instance.state) {
+            instance.state.set('rightSidebar', 'measurements');
         }
     }
     // Hide as default for single study
     else {
-        if (instance.data.state) {
-            instance.data.state.set('rightSidebar', null);
+        if (instance.state) {
+            instance.state.set('rightSidebar', null);
         }
     }
 };
@@ -351,6 +351,10 @@ Template.viewer.helpers({
         const ready = Session.get('TimepointsReady') && Session.get('MeasurementsReady');
         OHIF.log.info('dataSourcesReady? : ' + ready);
         return ready;
+    },
+
+    state() {
+        return Template.instance().state;
     }
 });
 
