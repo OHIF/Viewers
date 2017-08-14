@@ -260,7 +260,6 @@ Template.studylistResult.onRendered(() => {
 
     if (startDate && endDate) {
         instance.datePicker.updateInputText();
-        $studyDate.trigger('change');
     } else {
         // Retrieve all studies
         search();
