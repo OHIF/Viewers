@@ -20,3 +20,10 @@ Router.route('/viewer/:studyInstanceUids', function() {
     const studyInstanceUids = this.params.studyInstanceUids.split(';');
     OHIF.viewerbase.renderViewer(this, { studyInstanceUids }, 'ohifViewer');
 }, { name: 'viewerStudies' });
+
+// OHIF #98 Show specific series of study
+Router.route('/study/:studyInstanceUid/series/:seriesInstanceUids', function () {
+    const studyInstanceUid = this.params.studyInstanceUid;
+    const seriesInstanceUids = this.params.seriesInstanceUids.split(';');
+    OHIF.viewerbase.renderViewer(this, { studyInstanceUids: [studyInstanceUid], seriesInstanceUids }, 'ohifViewer');
+}, { name: 'viewerSeries' });

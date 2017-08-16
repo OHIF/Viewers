@@ -4,18 +4,19 @@ import { OHIF } from 'meteor/ohif:core';
  * Prepare the studies data to render the viewer template
  *
  * @param {Array} studyInstanceUids List of studies that will be loaded into viewer
+ * @param {Array} seriesInstanceUids List of series that will be loaded into viewer. If it is not defined, all series will be loaded
  * @param {String} timepointId ID of the current timepoint to get the studies from
  * @param {Object} timepointsFilter An object containing the filter to retrieve the timepoints
  * @return {Promise} Promise that will be resolved with the studies when the metadata is loaded
  */
-export const prepareViewerData = ({ studyInstanceUids, timepointId, timepointsFilter={} }) => {
+export const prepareViewerData = ({ studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={}}) => {
     // Clear the cornerstone tool data to sync the measurements with the measurements API
     cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
 
     // Retrieve the studies metadata
     const promise = new Promise((resolve, reject) => {
         const processData = viewerData => {
-            OHIF.studylist.retrieveStudiesMetadata(viewerData.studyInstanceUids).then(studies => {
+            OHIF.studylist.retrieveStudiesMetadata(viewerData.studyInstanceUids, viewerData.seriesInstanceUids).then(studies => {
                 // Add additional metadata to our study from the studylist
                 studies.forEach(study => {
                     const studylistStudy = OHIF.studylist.collections.Studies.findOne({
@@ -38,7 +39,10 @@ export const prepareViewerData = ({ studyInstanceUids, timepointId, timepointsFi
 
         // Check if the studies are already given and ignore the timepoint ID if so
         if (studyInstanceUids && studyInstanceUids.length) {
-            const viewerData = { studyInstanceUids };
+            const viewerData = {
+                studyInstanceUids,
+                seriesInstanceUids,
+            };
             processData(viewerData);
         } else {
             // Find the timepoint by ID and load the studies from it
