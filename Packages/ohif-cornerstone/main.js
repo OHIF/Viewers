@@ -2,7 +2,7 @@
  * Import namespace...
  */
 
-import { OHIF } from  './namespace.js';
+import { OHIF } from './namespace.js';
 
 /**
  * Import scripts that will populate the Cornerstone namespace as a side effect only import. This is effectively the public API...

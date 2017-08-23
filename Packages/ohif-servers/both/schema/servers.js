@@ -170,6 +170,11 @@ export const UISettings = new SimpleSchema({
         type: Boolean,
         label: 'Show a progress bar closest to the thumbnail showing how much the stack has loaded',
         defaultValue: true
+    },
+    cornerstoneRenderer: {
+        type: String,
+        label: 'Cornerstone default image renderer',
+        defaultValue: 'webgl'
     }
 });
 
