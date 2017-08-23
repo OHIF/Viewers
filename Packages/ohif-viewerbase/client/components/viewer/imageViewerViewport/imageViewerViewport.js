@@ -92,12 +92,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
     // Enable Cornerstone for the viewport element
     const options = {
-        renderer: 'webgl'
+        renderer: OHIF.cornerstone.renderer
     };
-
-    // NOTE: This uses the experimental WebGL renderer for Cornerstone!
-    // If you have problems, replace it with this line instead:
-    // cornerstone.enable(element);
     cornerstone.enable(element, options);
 
     // Get the handler functions that will run when loading has finished or thrown

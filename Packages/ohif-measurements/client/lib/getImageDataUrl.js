@@ -154,7 +154,7 @@ const createEnabledElement = (width, height) => {
 
     const element = $element[0];
     $element.appendTo(document.body);
-    cornerstone.enable(element, { renderer: 'webgl' });
+    cornerstone.enable(element, { renderer: OHIF.cornerstone.renderer });
 
     const enabledElement = cornerstone.getEnabledElement(element);
     enabledElement.toolStateManager = cornerstoneTools.newImageIdSpecificToolStateManager();
