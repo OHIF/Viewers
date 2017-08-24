@@ -46,7 +46,7 @@ Template.gridLayout.helpers({
         const instance = Template.instance();
         const rows = instance.data.rows;
         const columns = instance.data.columns;
-        const numViewports = (OHIF.uiSettings.show3DViewport) ? (rows * columns) -1 : rows * columns;
+        const numViewports = rows * columns;
         const viewportData = instance.data.viewportData;
         const numViewportsWithData = viewportData.length;
 
