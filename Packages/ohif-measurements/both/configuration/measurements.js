@@ -293,6 +293,9 @@ class MeasurementApi {
     deleteMeasurements(measurementTypeId, filter) {
         const groupCollection = this.toolGroups[measurementTypeId];
 
+        // Stop here if it is a temporary toolGroups
+        if (!groupCollection) return;
+
         // Get the entries information before removing them
         const groupItems = groupCollection.find(filter).fetch();
         const entries = [];
