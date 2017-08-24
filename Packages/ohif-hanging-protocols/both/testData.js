@@ -5,7 +5,7 @@ function getDefaultProtocol() {
 
     var oneByOne = new HP.ViewportStructure('grid', {
         rows: 1,
-        columns: 2
+        columns: 1
     });
 
     var viewport = new HP.Viewport();
@@ -34,7 +34,7 @@ function getMRTwoByTwoTest() {
 
     var oneByTwo = new HP.ViewportStructure('grid', {
         rows: 1,
-        columns: 2
+        columns: 1
     });
 
     // Stage 1
