@@ -175,6 +175,11 @@ export const UISettings = new SimpleSchema({
         type: String,
         label: 'Cornerstone default image renderer',
         defaultValue: 'webgl'
+    },
+    sortSeriesByIncomingOrder: {
+        type: Boolean,
+        label: 'Define if the series\' images shall be sorted by incoming order. Sort by Instance Number by default.',
+        defaultValue: false
     }
 });
 
