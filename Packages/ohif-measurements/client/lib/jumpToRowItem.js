@@ -1,4 +1,5 @@
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
@@ -63,7 +64,15 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
 }
 
 function syncViewports(viewportsIndexes) {
-    OHIF.viewer.stackImagePositionOffsetSynchronizer.activateByViewportIndexes(viewportsIndexes);
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+    const linkableViewports = synchronizer.getLinkableViewports();
+    if (linkableViewports.length) {
+        const linkableViewportsIndexes = _.pluck(linkableViewports, 'index');
+        const indexes = _.intersection(linkableViewportsIndexes, viewportsIndexes);
+        if (indexes.length) {
+            OHIF.viewer.stackImagePositionOffsetSynchronizer.activateByViewportIndexes(indexes);
+        }
+    }
 }
 
 /**
