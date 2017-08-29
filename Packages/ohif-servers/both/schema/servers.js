@@ -180,6 +180,11 @@ export const UISettings = new SimpleSchema({
         type: Boolean,
         label: 'Define if the series\' images shall be sorted by incoming order. Sort by Instance Number by default.',
         defaultValue: false
+    },
+    useMiddleSeriesInstanceAsThumbnail: {
+        type: Boolean,
+        label: 'Define if the middle instance of a series will be used as thumbnail. If not, the first instance will be used.',
+        defaultValue: true
     }
 });
 
