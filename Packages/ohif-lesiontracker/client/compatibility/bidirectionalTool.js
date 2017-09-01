@@ -22,7 +22,7 @@ var keys = {
 };
 
 // The distance between the mouse and the tool to make it active
-var distanceThreshold = 7;
+var distanceThreshold = 6;
 
 // Define a callback to get your text annotation
 // This could be used, e.g. to open a modal
@@ -46,7 +46,7 @@ function createNewMeasurement(mouseEventData) {
                 y: mouseEventData.currentPoints.image.y,
                 highlight: true,
                 active: false,
-                drawnIndependently: true,
+                drawnIndependently: false,
                 allowedOutsideImage: true,
                 index: 0
             },
@@ -55,7 +55,7 @@ function createNewMeasurement(mouseEventData) {
                 y: mouseEventData.currentPoints.image.y,
                 highlight: true,
                 active: true,
-                drawnIndependently: true,
+                drawnIndependently: false,
                 allowedOutsideImage: true,
                 index: 1
             },
@@ -74,7 +74,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: false,
                 locked: true, // If perpendicular line is connected to long-line
-                drawnIndependently: true,
+                drawnIndependently: false,
                 allowedOutsideImage: true,
                 index: 2
             },
@@ -83,7 +83,7 @@ function createNewMeasurement(mouseEventData) {
                 y: mouseEventData.currentPoints.image.y,
                 highlight: true,
                 active: false,
-                drawnIndependently: true,
+                drawnIndependently: false,
                 allowedOutsideImage: true,
                 index: 3
             }
@@ -145,6 +145,9 @@ function addNewMeasurement(mouseEventData) {
     // Bind a one-time event listener for the Esc key
     $(element).one('keydown', cancelCallback);
 
+    // Make handle invisible while moving
+    measurementData.handles.end.drawnIndependently = true;
+
     cornerstone.updateImage(element);
 
     cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
@@ -161,6 +164,9 @@ function addNewMeasurement(mouseEventData) {
 
         // perpendicular line is not connected to long-line
         measurementData.handles.perpendicularStart.locked = false;
+
+        // Enable handle visibility again
+        measurementData.handles.end.drawnIndependently = false;
 
         $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
         $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
@@ -377,7 +383,7 @@ function perpendicularLeftFixedPoint(eventData, data) {
     if (length === 0) {
         return false;
     }
-    
+
     var dx = (data.handles.start.x - data.handles.end.x) / length;
     var dy = (data.handles.start.y - data.handles.end.y) / length;
 
@@ -655,21 +661,22 @@ function setHandlesPosition(handle, eventData, data) {
     }
 }
 
-// Sets drawnIndependently property of control points(handles)
-function setControlPoints(handles, value) {
-    Object.keys(handles).forEach(function(name) {
-        if (name !== 'textBox') {
-            var handle = handles[name];
-            handle.drawnIndependently = value;
-        }
-    });
-}
-
 //****************************************/
 // Cornerstone Methods
 //****************************************/
 
+// Set if the circular handles will be visible or not
+function setHandlesVisible (handles, isVisibile) {
+    Object.keys(handles).forEach(handleKey => {
+        if (handleKey === 'textBox') return;
+        handles[handleKey].drawnIndependently = !isVisibile;
+    });
+};
+
 function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
+    // Make handle invisible while moving
+    handle.drawnIndependently = true;
+
     var element = mouseEventData.element;
     var distanceFromTool = {
         x: handle.x - mouseEventData.currentPoints.image.x,
@@ -708,7 +715,8 @@ function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, 
     $(element).on('CornerstoneToolsMouseDrag', mouseDragCallback);
 
     function mouseUpCallback() {
-        handle.active = false;
+        // Enable handle visibility again
+        handle.drawnIndependently = false;
         $(element).off('CornerstoneToolsMouseDrag', mouseDragCallback);
         $(element).off('CornerstoneToolsMouseUp', mouseUpCallback);
         $(element).off('CornerstoneToolsMouseClick', mouseUpCallback);
@@ -751,9 +759,6 @@ function mouseMoveCallback(e, eventData) {
 
         if ((pointNearTool(eventData.element, data, coords) && !data.active) || (!pointNearTool(eventData.element, data, coords) && data.active)) {
             data.active = !data.active;
-
-            // Set handles visibility
-            setControlPoints(data.handles, !data.active);
             imageNeedsUpdate = true;
         }
     }
@@ -770,7 +775,6 @@ function mouseDownCallback(e, eventData) {
     var element = eventData.element;
 
     function handleDoneMove() {
-        data.active = false;
         data.invalidated = true;
         if (cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
             // delete the measurement
@@ -791,9 +795,7 @@ function mouseDownCallback(e, eventData) {
         if (toolData) {
             for (i = 0; i < toolData.data.length; i++) {
                 data = toolData.data[i];
-                // Hide control points
-                setControlPoints(data.handles, true);
-                var distance = 5;
+                var distance = 6;
                 var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distance);
                 if (handle) {
                     $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
@@ -864,7 +866,7 @@ function drawPerpendicularLine(context, eventData, element, data, color, lineWid
         startX = mid.x + (perpendicularLineLength / 2) * vectorY;
         startY = mid.y - (perpendicularLineLength / 2) * vectorX;
         endX = mid.x - (perpendicularLineLength / 2) * vectorY;
-        endY = mid.y + (perpendicularLineLength / 2) * vectorX;   
+        endY = mid.y + (perpendicularLineLength / 2) * vectorX;
     }
 
     if (data.handles.perpendicularStart.locked) {
@@ -993,7 +995,7 @@ function onImageRendered(e, eventData) {
         drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
 
         // draw the handles
-        cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+        cornerstoneTools.drawHandles(context, eventData, data.handles, color, { drawHandlesIfActive: true });
 
         // Calculate the long axis length
         var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
