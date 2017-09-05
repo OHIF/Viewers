@@ -1,1 +1,2 @@
-import './ie';
+import './all.js';
+import './ie.js';
