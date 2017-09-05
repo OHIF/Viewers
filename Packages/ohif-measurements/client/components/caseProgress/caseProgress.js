@@ -10,6 +10,7 @@ Template.caseProgress.onCreated(() => {
     instance.progressPercent = new ReactiveVar();
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar(false);
+    instance.isFollowUp = new ReactiveVar(false);
     instance.path = 'viewer.studyViewer.measurements';
     instance.saveObserver = new Tracker.Dependency();
 
@@ -130,7 +131,9 @@ Template.caseProgress.onRendered(() => {
     // progress measurement.
     if (current.timepointType === 'baseline') {
         instance.progressPercent.set(100);
+        instance.isFollowUp.set(false);
     } else {
+        instance.isFollowUp.set(true);
         // Setup a reactive function to update the progress whenever
         // a measurement is made
         instance.autorun(() => {
