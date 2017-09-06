@@ -675,7 +675,9 @@ function setHandlesVisible (handles, isVisibile) {
 
 function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
     // Make handle invisible while moving
-    handle.drawnIndependently = true;
+    if (!handle.hasBoundingBox) {
+        handle.drawnIndependently = true;
+    }
 
     var element = mouseEventData.element;
     var distanceFromTool = {
@@ -716,7 +718,9 @@ function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, 
 
     function mouseUpCallback() {
         // Enable handle visibility again
-        handle.drawnIndependently = false;
+        if (!handle.hasBoundingBox) {
+            handle.drawnIndependently = false;
+        }
         $(element).off('CornerstoneToolsMouseDrag', mouseDragCallback);
         $(element).off('CornerstoneToolsMouseUp', mouseUpCallback);
         $(element).off('CornerstoneToolsMouseClick', mouseUpCallback);
