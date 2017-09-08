@@ -83,8 +83,8 @@ Template.measurementTableRow.events({
             measurementApi.deleteMeasurements(measurementTypeId, { measurementNumber });
 
             // Sync the new measurement data with cornerstone tools
-            const baseline = timepointApi.baseline();
-            measurementApi.sortMeasurements(baseline.timepointId);
+            const previous = timepointApi.priorOrBaseline();
+            measurementApi.sortMeasurements(previous.timepointId);
 
             // Repaint the images on all viewports without the removed measurements
             _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));

@@ -40,22 +40,22 @@ OHIF.measurements.getMeasurementsGroupedByNumber = (measurementApi, timepointApi
     // Create the result object
     const groupedMeasurements = [];
 
-    const baseline = timepointApi.baseline();
-    if (!baseline) return;
+    const previous = timepointApi.priorOrBaseline();
+    if (!previous) return;
 
     configuration.measurementTools.forEach(toolGroup => {
         // Skip this tool group if it should not be displayed
         if (!displayToolGroupMap[toolGroup.id]) return;
 
         // Retrieve all the data for this Measurement type (e.g. 'targets')
-        // which was recorded at baseline.
-        const atBaseline = measurementApi.fetch(toolGroup.id, {
-            timepointId: baseline.timepointId
+        // which was recorded at previous timepoint.
+        const atPrevious = measurementApi.fetch(toolGroup.id, {
+            timepointId: previous.timepointId
         });
 
         // Obtain a list of the Measurement Numbers from the
-        // measurements which have baseline data
-        const numbers = atBaseline.map(m => m.measurementNumber);
+        // measurements which have previous timepoint's data
+        const numbers = atPrevious.map(m => m.measurementNumber);
 
         // Retrieve all the data for this Measurement type which
         // match the Measurement Numbers obtained above

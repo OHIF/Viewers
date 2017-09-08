@@ -86,12 +86,12 @@ class MeasurementApi {
 
                     // Get the current location (if already defined)
                     let location;
-                    const baselineTimepoint = timepointApi.baseline();
-                    const baselineGroupEntry = groupCollection.findOne({
-                        timepointId: baselineTimepoint.timepointId
+                    const previousTimepoint = timepointApi.priorOrBaseline();
+                    const previousGroupEntry = groupCollection.findOne({
+                        timepointId: previousTimepoint.timepointId
                     });
-                    if (baselineGroupEntry) {
-                        const tool = this.tools[baselineGroupEntry.toolId];
+                    if (previousGroupEntry) {
+                        const tool = this.tools[previousGroupEntry.toolId];
                         const found = tool.findOne({ measurementNumber });
                         if (found) {
                             location = found.location;
@@ -273,7 +273,7 @@ class MeasurementApi {
         });
     }
 
-    sortMeasurements(baselineTimepointId) {
+    sortMeasurements() {
         const tools = configuration.measurementTools;
 
         const includedTools = tools.filter(tool => {
