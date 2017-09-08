@@ -167,6 +167,11 @@ class TimepointApi {
         });
     }
 
+    // Return the prior timepoint or baseline if not found
+    priorOrBaseline() {
+        return this.prior() || this.baseline();
+    }
+
     // Return only the current and prior Timepoints
     currentAndPrior() {
         const timepoints = [];

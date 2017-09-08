@@ -26,6 +26,7 @@ export class BaseCriterion {
         if (options.newTarget) {
             _.each(data.targets, target => {
                 const { measurementNumber } = target.measurement;
+                // FIXME we might not have the baseline timepoint
                 if (target.timepoint.timepointType === 'baseline') {
                     baselineMeasurementNumbers.push(measurementNumber);
                 }

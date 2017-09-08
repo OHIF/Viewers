@@ -55,27 +55,26 @@ Template.measurementTableView.helpers({
     newMeasurements(toolGroup) {
         const { measurementApi, timepointApi } = Template.instance().data;
         const current = timepointApi.current();
-        const baseline = timepointApi.baseline();
+        const previous = timepointApi.priorOrBaseline();
 
-        if (!measurementApi || !timepointApi || !current || !baseline) return;
+        if (!measurementApi || !timepointApi || !current || !previous) return;
 
         // If this is a baseline, stop here since there are no new measurements to display
-
         if (!current || current.timepointType === 'baseline') {
             OHIF.log.info('Skipping New Measurements section');
             return;
         }
 
         // Retrieve all the data for this Measurement type (e.g. 'targets')
-        // which was recorded at baseline.
+        // which was recorded at previous timepoint.
         const measurementTypeId = toolGroup.measurementTypeId;
-        const atBaseline = measurementApi.fetch(measurementTypeId, {
-            timepointId: baseline.timepointId
+        const atPrevious = measurementApi.fetch(measurementTypeId, {
+            timepointId: previous.timepointId
         });
 
         // Obtain a list of the Measurement Numbers from the
-        // measurements which have baseline data
-        const numbers = atBaseline.map(m => m.measurementNumber);
+        // measurements which have previous timepoint's data
+        const numbers = atPrevious.map(m => m.measurementNumber);
 
         // Retrieve all the data for this Measurement type which
         // do NOT match the Measurement Numbers obtained above
