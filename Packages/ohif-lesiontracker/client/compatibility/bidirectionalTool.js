@@ -673,6 +673,31 @@ function setHandlesVisible (handles, isVisibile) {
     });
 };
 
+function unselectAllHandles(handles) {
+    Object.keys(handles).forEach(handleKey => {
+        if (handleKey === 'textBox') return;
+        handles[handleKey].selected = false;
+        handles[handleKey].active = false;
+    });
+}
+
+function drawHandles(context, eventData, handles, color, options) {
+    Object.keys(handles).forEach(handleKey => {
+        if (handleKey === 'textBox') return;
+        const handle = handles[handleKey];
+        if (handle.selected) {
+            handle.active = true;
+        } else {
+            if (handle.hover) {
+                handle.active = true;
+            } else {
+                handle.active = false;
+            }
+        }
+    });
+    cornerstoneTools.drawHandles(context, eventData, handles, color, options);
+}
+
 function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
     // Make handle invisible while moving
     if (!handle.hasBoundingBox) {
@@ -757,7 +782,13 @@ function mouseMoveCallback(e, eventData) {
         var coords = eventData.currentPoints.canvas;
 
         var data = toolData.data[i];
-        if (cornerstoneTools.handleActivator(eventData.element, data.handles, coords) === true) {
+        const handleActivatorChanged = cornerstoneTools.handleActivator(eventData.element, data.handles, coords);
+        Object.keys(data.handles).forEach(handleKey => {
+            if (handleKey === 'textBox') return;
+            const handle = data.handles[handleKey];
+            handle.hover = handle.active;
+        });
+        if (handleActivatorChanged === true) {
             imageNeedsUpdate = true;
         }
 
@@ -778,7 +809,7 @@ function mouseDownCallback(e, eventData) {
     var data;
     var element = eventData.element;
 
-    function handleDoneMove() {
+    function handleDoneMove(handle) {
         // Set the cursor back to its default
         $(element).css('cursor', '');
 
@@ -786,6 +817,12 @@ function mouseDownCallback(e, eventData) {
         if (cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
             // delete the measurement
             cornerstoneTools.removeToolState(element, toolType, data);
+        }
+
+        // Update the handles to keep selected state
+        if (handle) {
+            handle.moving = false;
+            handle.selected = true;
         }
 
         cornerstone.updateImage(element);
@@ -810,8 +847,12 @@ function mouseDownCallback(e, eventData) {
 
                     $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
+                    data.selected = true;
 
-                    moveHandle(eventData, toolType, data, handle, handleDoneMove);
+                    unselectAllHandles(data.handles);
+                    handle.moving = true;
+                    handle.selected = true;
+                    moveHandle(eventData, toolType, data, handle, () => handleDoneMove(handle));
                     e.stopImmediatePropagation();
                     return false;
                 }
@@ -830,7 +871,22 @@ function mouseDownCallback(e, eventData) {
                 data = toolData.data[i];
                 if (pointNearTool(element, data, coords)) {
                     $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
-                    cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, handleDoneMove);
+                    data.active = true;
+                    data.selected = true;
+
+                    unselectAllHandles(data.handles);
+                    Object.keys(data.handles).forEach(handleKey => {
+                        if (handleKey === 'textBox') return;
+                        data.handles[handleKey].moving = true;
+                    });
+
+                    cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, () => {
+                        Object.keys(data.handles).forEach(handleKey => {
+                            if (handleKey === 'textBox') return;
+                            data.handles[handleKey].moving = false;
+                        });
+                        handleDoneMove();
+                    });
                     e.stopImmediatePropagation();
                     return false;
                 }
@@ -1004,8 +1060,8 @@ function onImageRendered(e, eventData) {
         // Draw perpendicular line
         drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
 
-        // draw the handles
-        cornerstoneTools.drawHandles(context, eventData, data.handles, color, { drawHandlesIfActive: true });
+        // Draw the handles
+        drawHandles(context, eventData, data.handles, color, { drawHandlesIfActive: true });
 
         // Calculate the long axis length
         var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
