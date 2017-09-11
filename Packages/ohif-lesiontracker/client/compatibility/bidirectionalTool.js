@@ -779,6 +779,9 @@ function mouseDownCallback(e, eventData) {
     var element = eventData.element;
 
     function handleDoneMove() {
+        // Set the cursor back to its default
+        $(element).css('cursor', '');
+
         data.invalidated = true;
         if (cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
             // delete the measurement
@@ -802,6 +805,9 @@ function mouseDownCallback(e, eventData) {
                 var distance = 6;
                 var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distance);
                 if (handle) {
+                    // Hide the cursor to improve precision while resizing the line
+                    $(element).css('cursor', 'none');
+
                     $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
 
