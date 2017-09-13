@@ -677,9 +677,6 @@ function clearBidirectionalSelection(event) {
     const toolData = cornerstoneTools.getToolState(event.currentTarget, 'bidirectional');
     if (!toolData) return;
     toolData.data.forEach(data => {
-        data.selected = false;
-        imageNeedsUpdate = data.active || imageNeedsUpdate;
-        data.active = false;
         const unselectResult = unselectAllHandles(data.handles);
         imageNeedsUpdate = imageNeedsUpdate || unselectResult;
     });
@@ -824,8 +821,13 @@ function mouseMoveCallback(e, eventData) {
 
 // mouseDowCallback is used to restrict behaviour of perpendicular-line
 function mouseDownCallback(e, eventData) {
-    var data;
-    var element = eventData.element;
+    let data;
+    const element = eventData.element;
+    const $element = $(element);
+
+    // Add an event listener to clear the selected state when a measurement is activated
+    const activateEventKey = 'ViewerMeasurementsActivated';
+    $element.off(activateEventKey).on(activateEventKey, () => clearBidirectionalSelection(e));
 
     // Clear selection on left mouse button click
     let imageNeedsUpdate = false;
@@ -838,7 +840,7 @@ function mouseDownCallback(e, eventData) {
 
     function handleDoneMove(handle) {
         // Set the cursor back to its default
-        $(element).css('cursor', '');
+        $element.css('cursor', '');
 
         data.invalidated = true;
         if (cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
@@ -853,7 +855,7 @@ function mouseDownCallback(e, eventData) {
         }
 
         cornerstone.updateImage(element);
-        $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+        $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
     }
 
     if (cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
@@ -870,9 +872,9 @@ function mouseDownCallback(e, eventData) {
                 var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distance);
                 if (handle) {
                     // Hide the cursor to improve precision while resizing the line or set to move if dragging text box
-                    $(element).css('cursor', handle.hasBoundingBox ? 'move' : 'none');
+                    $element.css('cursor', handle.hasBoundingBox ? 'move' : 'none');
 
-                    $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
 
                     unselectAllHandles(data.handles);
@@ -896,9 +898,9 @@ function mouseDownCallback(e, eventData) {
                 data = toolData.data[i];
                 if (pointNearTool(element, data, coords)) {
                     // Set the cursor to move
-                    $(element).css('cursor', 'move');
+                    $element.css('cursor', 'move');
 
-                    $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
 
                     unselectAllHandles(data.handles);
