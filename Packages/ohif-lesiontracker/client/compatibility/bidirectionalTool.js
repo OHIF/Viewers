@@ -659,14 +659,6 @@ function setHandlesPosition(handle, eventData, data) {
 // Cornerstone Methods
 //****************************************/
 
-// Set if the circular handles will be visible or not
-function setHandlesVisible (handles, isVisibile) {
-    Object.keys(handles).forEach(handleKey => {
-        if (handleKey === 'textBox') return;
-        handles[handleKey].drawnIndependently = !isVisibile;
-    });
-};
-
 // Clear the selected state for the given handles object
 function unselectAllHandles(handles) {
     let imageNeedsUpdate = false;
@@ -882,7 +874,6 @@ function mouseDownCallback(e, eventData) {
 
                     $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
-                    data.selected = true;
 
                     unselectAllHandles(data.handles);
                     handle.moving = true;
@@ -909,7 +900,6 @@ function mouseDownCallback(e, eventData) {
 
                     $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
-                    data.selected = true;
 
                     unselectAllHandles(data.handles);
                     Object.keys(data.handles).forEach(handleKey => {
