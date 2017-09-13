@@ -1,3 +1,4 @@
+import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -33,7 +34,7 @@ function activateTool(measurementData) {
  * Deactivate all other measurements on the switched image (color to be white)
  */
 OHIF.measurements.activateMeasurements = (element, measurementData) => {
-    console.log('activateMeasurements');
+    OHIF.log.info('activateMeasurements');
 
     // If Cornerstone Viewport information was stored while the measurement was created,
     // we should re-apply this data when activating the measurement.
@@ -81,7 +82,8 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
     // updated and the highlight is removed from inactive tools in all visible viewports
     const $viewports = $('.imageViewerViewport');
     $viewports.each((index, element) => {
-        if (!$(element).find('canvas')) {
+        const $element = $(element);
+        if (!$element.find('canvas')) {
             return;
         }
 
@@ -99,6 +101,7 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
             return;
         }
 
+        $element.trigger('ViewerMeasurementsActivated');
         cornerstone.updateImage(element);
     });
 };
