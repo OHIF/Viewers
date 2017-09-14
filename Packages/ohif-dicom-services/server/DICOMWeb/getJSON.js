@@ -49,14 +49,33 @@ function makeRequest(geturl, options, callback) {
         }
 
         let output = '';
+
         resp.setEncoding('utf8');
+
         resp.on('data', function(chunk){
           output += chunk;
         });
+
+        resp.on('error', function (responseError) {
+            console.log('There was an error in the DICOMWeb Server')
+            console.error(error.stack);
+
+            callback(responseError, null);
+        });
+
         resp.on('end', function(){
           callback(null, {data: JSON.parse(output)});
         });
     });
+
+    req.on('error', function (requestError) {
+        console.error('Couldn\'t connect to DICOMWeb server.');
+        console.error('Make sure you are trying to connect to the right server and that it is up and running.');
+        console.error(requestError.stack);
+
+        callback(requestError, null);
+    });
+
     req.end();
 }
 const makeRequestSync = Meteor.wrapAsync(makeRequest);

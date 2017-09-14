@@ -152,13 +152,14 @@ function search() {
 
     Meteor.call('StudyListSearch', filter, (error, studies) => {
         OHIF.log.info('StudyListSearch');
+        // Hide loading text
+        Session.set('showLoadingText', false);
+
         if (error) {
             OHIF.log.warn(error);
             return;
         }
 
-        // Hide loading text
-        Session.set('showLoadingText', false);
 
         if (!studies) {
             OHIF.log.warn('No studies found');
