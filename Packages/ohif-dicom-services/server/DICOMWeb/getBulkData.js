@@ -165,6 +165,13 @@ function makeRequest(geturl, options, callback) {
             data.push(chunk);
         });
 
+        resp.on('error', function (responseError) {
+            console.log('There was an error in the DICOMWeb Server')
+            console.error(error.stack);
+
+            callback(responseError, null);
+        });
+
         resp.on('end', function() {
             try {
                 callback(null, parseResponse(resp.headers, Buffer.concat(data)));
@@ -173,6 +180,14 @@ function makeRequest(geturl, options, callback) {
             }
         });
 
+    });
+
+    req.on('error', function (requestError) {
+        console.error('Couldn\'t connect to DICOMWeb server.');
+        console.error('Make sure you are trying to connect to the right server and that it is up and running.');
+        console.error(requestError.stack);
+
+        callback(requestError, null);
     });
 
     req.end();
