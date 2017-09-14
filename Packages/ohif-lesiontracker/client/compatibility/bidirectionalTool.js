@@ -702,6 +702,42 @@ function handleActivator(element, handles, canvasPoint, distanceThreshold=6) {
     return handleActivatorChanged;
 }
 
+// Draw a line marker over the selected arm
+function drawSelectedMarker(eventData, handles, color) {
+    const lib = OHIF.lesiontracker.bidirectional;
+    const { canvasContext, element, enabledElement } = eventData;
+
+    const handleKey = lib.getSelectedHandleKey(handles);
+    if (!handleKey) return;
+    const handle = handles[handleKey];
+
+    // Used a big distance (1km) to fill the entire line
+    const mmStep = -1000000;
+
+    // Get the line's start and end points
+    const fakeImage = {
+        columnPixelSpacing: eventData.viewport.scale,
+        rowPixelSpacing: eventData.viewport.scale
+    };
+    const pointA = lib.repositionBidirectionalArmHandle(fakeImage, handles, handleKey, mmStep, 0);
+    const pointB = _.pick(handle, ['x', 'y']);
+
+    // Stop here if pointA is not present
+    if (!pointA) return;
+
+    // Get the canvas coordinates for the line    var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularStart);
+    const canvasPointA = cornerstone.pixelToCanvas(element, pointA);
+    const canvasPointB = cornerstone.pixelToCanvas(element, pointB);
+
+    // Draw the line marker
+    canvasContext.beginPath();
+    canvasContext.strokeStyle = color;
+    canvasContext.lineWidth = cornerstoneTools.toolStyle.getToolWidth();
+    canvasContext.moveTo(canvasPointA.x, canvasPointA.y);
+    canvasContext.lineTo(canvasPointB.x, canvasPointB.y);
+    canvasContext.stroke();
+}
+
 // Add a proxy to cornerstoneTools.drawHandles function to change the handles' active state base on
 // the hover, moving and selected states
 function drawHandles(context, eventData, handles, color, options) {
@@ -710,7 +746,7 @@ function drawHandles(context, eventData, handles, color, options) {
         const handle = handles[handleKey];
         handle.drawnIndependently = handle.moving;
         if (handle.selected) {
-            handle.active = true;
+            handle.active = handle.hover;
         } else {
             if (handle.hover) {
                 handle.active = true;
@@ -1080,27 +1116,22 @@ function onImageRendered(e, eventData) {
         var handleEndCanvas = cornerstone.pixelToCanvas(element, data.handles.end);
         var canvasTextLocation = cornerstone.pixelToCanvas(element, data.handles.textBox);
 
-        let lineColor;
-        if (!data.active && (data.handles.start.selected || data.handles.end.selected)) {
-            lineColor = activeColor;
-        }
         context.beginPath();
-        context.strokeStyle = lineColor || color;
+        context.strokeStyle = color;
         context.lineWidth = strokeWidth;
         context.moveTo(handleStartCanvas.x, handleStartCanvas.y);
         context.lineTo(handleEndCanvas.x, handleEndCanvas.y);
         context.stroke();
 
         // Draw perpendicular line
-        let perpendicularColor;
-        if (!data.active && (data.handles.perpendicularStart.selected || data.handles.perpendicularEnd.selected)) {
-            perpendicularColor = activeColor;
-        }
-        drawPerpendicularLine(context, eventData, element, data, perpendicularColor || color, strokeWidth);
+        drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
 
         // Draw the handles
-        const handlesColor = lineColor || perpendicularColor || color;
+        const handlesColor = color;
         drawHandles(context, eventData, data.handles, handlesColor, { drawHandlesIfActive: true });
+
+        // Draw the selected marker
+        drawSelectedMarker(eventData, data.handles, '#FF9999');
 
         // Calculate the long axis length
         var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);
