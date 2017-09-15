@@ -139,8 +139,8 @@ class MeasurementHandlers {
         });
 
         // Sync the new measurement data with cornerstone tools
-        const previous = timepointApi.priorOrBaseline();
-        measurementApi.sortMeasurements(previous.timepointId);
+        const baseline = timepointApi.baseline();
+        measurementApi.sortMeasurements(baseline.timepointId);
 
         // Repaint the images on all viewports without the removed measurements
         _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
