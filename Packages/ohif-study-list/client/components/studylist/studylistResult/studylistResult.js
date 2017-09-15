@@ -7,6 +7,7 @@ import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
 Session.setDefault('showLoadingText', true);
+Session.setDefault('serverError', false);
 
 Template.studylistResult.helpers({
     /**
@@ -153,13 +154,25 @@ function search() {
     Meteor.call('StudyListSearch', filter, (error, studies) => {
         OHIF.log.info('StudyListSearch');
         // Hide loading text
+
         Session.set('showLoadingText', false);
 
         if (error) {
-            OHIF.log.warn(error);
+            Session.set('serverError', true);
+
+            const errorType = error.error;
+            
+            if (errorType === 'dicomweb-server-connection-error') {
+                console.error('There was an error connecting to the DICOM server, please verify if it is up and running.');
+            } else if (errorType === 'dicomweb-server-internal-error') {
+                console.error('There was an internal error with the DICOM server');
+            } else {
+                console.error('For some reason we could not list the studies.')
+            }
+            
+            OHIF.log.error(error.stack);
             return;
         }
-
 
         if (!studies) {
             OHIF.log.warn('No studies found');

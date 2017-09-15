@@ -59,8 +59,9 @@ function makeRequest(geturl, options, callback) {
         resp.on('error', function (responseError) {
             console.error('There was an error in the DICOMWeb Server')
             console.error(error.stack);
+            console.trace();
 
-            callback(responseError, null);
+            callback(new Meteor.Error('dicomweb-server-internal-error', responseError.message), null);
         });
 
         resp.on('end', function(){
@@ -72,8 +73,9 @@ function makeRequest(geturl, options, callback) {
         console.error('Couldn\'t connect to DICOMWeb server.');
         console.error('Make sure you are trying to connect to the right server and that it is up and running.');
         console.error(requestError.stack);
+        console.trace();
 
-        callback(requestError, null);
+        callback(new Meteor.Error('dicomweb-server-connection-error', requestError.message), null);
     });
 
     req.end();

@@ -91,6 +91,14 @@ function resultDataToStudies(resultData) {
 
 Services.QIDO.Studies = function(server, filter) {
     var url = filterToQIDOURL(server, filter);
-    var result = DICOMWeb.getJSON(url, server.requestOptions);
-    return resultDataToStudies(result.data);
+
+    try {
+        var result = DICOMWeb.getJSON(url, server.requestOptions);
+
+        return resultDataToStudies(result.data);
+    } catch (error) {
+        console.trace();
+
+        throw error;
+    }
 };
