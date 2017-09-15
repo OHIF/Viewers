@@ -166,8 +166,8 @@ function makeRequest(geturl, options, callback) {
         });
 
         resp.on('error', function (responseError) {
-            console.log('There was an error in the DICOMWeb Server')
-            console.error(error.stack);
+            console.error('There was an error in the DICOMWeb Server');
+            console.error(responseError.stack)
 
             callback(responseError, null);
         });
