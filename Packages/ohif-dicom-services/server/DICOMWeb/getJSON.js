@@ -61,7 +61,7 @@ function makeRequest(geturl, options, callback) {
             console.error(error.stack);
             console.trace();
 
-            callback(new Meteor.Error('dicomweb-server-internal-error', responseError.message), null);
+            callback(new Meteor.Error('server-internal-error', responseError.message), null);
         });
 
         resp.on('end', function(){
@@ -75,7 +75,7 @@ function makeRequest(geturl, options, callback) {
         console.error(requestError.stack);
         console.trace();
 
-        callback(new Meteor.Error('dicomweb-server-connection-error', requestError.message), null);
+        callback(new Meteor.Error('server-connection-error', requestError.message), null);
     });
 
     req.end();

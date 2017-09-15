@@ -140,7 +140,7 @@ DIMSE.retrieveStudies = function(params, options) {
             console.error('Could not retrieve studies');
             console.trace();
 
-            return future.return([]);
+            return future.throw(error);
         }
 
         var defaultParams = {

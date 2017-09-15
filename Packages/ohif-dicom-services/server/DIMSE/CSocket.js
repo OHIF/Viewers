@@ -49,20 +49,20 @@ CSocket = function(socket, options) {
         o.received(data);
     });
 
-    this.socket.on('error', function(he) {
-        console.error('Connection Error. The server cannot be reached.');
-        console.error(he.stack);
+    this.socket.on('error', function(socketError) {
+        console.error('There was an error with DIMSE connection socket.');
+        console.error(socketError.stack);
         console.trace();
 
-        o.emit('error', he);
+        o.emit('error', new Meteor.Error('server-internal-error', socketError.message));
     });
 
-    this.socket.on('timeout', function(he) {
+    this.socket.on('timeout', function(socketError) {
         console.error('The connection timed out. The server is not responding.');
-        console.error(he.stack);
+        console.error(socketError.stack);
         console.trace();
 
-        o.emit('timeout', he);
+        o.emit('error', new Meteor.Error('server-connection-error', socketError.message));
     });
 
     this.socket.on('close', function() {
