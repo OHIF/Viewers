@@ -44,17 +44,27 @@ CSocket = function(socket, options) {
         console.log('Connect');
         o.ready();
     });
+
     this.socket.on('data', function(data) {
         o.received(data);
     });
+
     this.socket.on('error', function(he) {
-        console.log('Error: ', he);
-        throw 'Error: ' + he;
+        console.error('Connection Error. The server cannot be reached.');
+        console.error(he.stack);
+        console.trace();
+
+        o.emit('error', he);
     });
+
     this.socket.on('timeout', function(he) {
-        console.log('Timeout: ', he);
-        throw 'Timeout: ' + he;
+        console.error('The connection timed out. The server is not responding.');
+        console.error(he.stack);
+        console.trace();
+
+        o.emit('timeout', he);
     });
+
     this.socket.on('close', function() {
         if (o.intervalId) {
             clearInterval(o.intervalId);
@@ -62,19 +72,21 @@ CSocket = function(socket, options) {
 
         o.connected = false;
         console.log('Connection closed');
-        o.emit('close');        
+        o.emit('close');
     });
 
     this.on('released', function() {
         this.released();
     });
+
     this.on('aborted', function(pdu) {
         console.warn('Association aborted with reason ' + pdu.reason);
         this.released();
     });
+
     this.on('message', function(pdvs) {
         this.receivedMessage(pdvs);
-    });    
+    });
 };
 
 util.inherits(CSocket, EventEmitter);

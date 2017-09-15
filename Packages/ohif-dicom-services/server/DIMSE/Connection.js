@@ -248,6 +248,7 @@ Connection.prototype.addSocket = function(hostAE, socket) {
 };
 
 Connection.prototype.associate = function(options, callback) {
+    const self = this;
     var hostAE = options.hostAE ? options.hostAE : this.defaultPeer;
     var sourceAE = options.sourceAE ? options.sourceAE : this.defaultServer;
 
@@ -279,7 +280,7 @@ Connection.prototype.associate = function(options, callback) {
         if (options.contexts) {
             socket.setPresentationContexts(options.contexts);
         } else {
-            throw 'Contexts must be specified';
+            throw new Meteor.Error('Contexts must be specified');
         }
 
         socket.associate();
