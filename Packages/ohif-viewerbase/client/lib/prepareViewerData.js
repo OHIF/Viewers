@@ -89,11 +89,12 @@ const getDataFromTimepoint = timepoint => {
         };
     }
 
-    // Otherwise, this is a follow-up exam, so we should also find the prior timepoint,
-    // and all studies related to it. We also enforce that the Prior should have a studyDate
+    // Otherwise, this is a follow-up exam, so we should also find the baseline timepoint,
+    // and all studies related to it. We also enforce that the Baseline should have a studyDate
     // prior to the latest studyDate in the current (Follow-up) Timepoint.
     const Timepoints = OHIF.studylist.timepointApi.timepoints;
-    const priorTimepoint = Timepoints.findOne({
+    const baseline = Timepoints.findOne({
+        timepointType: 'baseline',
         patientId: timepoint.patientId,
         latestDate: {
             $lte: timepoint.latestDate
@@ -101,11 +102,11 @@ const getDataFromTimepoint = timepoint => {
     });
 
     let timepointIds = [];
-    if (priorTimepoint) {
-        relatedStudies = relatedStudies.concat(priorTimepoint.studyInstanceUids);
-        timepointIds.push(priorTimepoint.timepointId);
+    if (baseline) {
+        relatedStudies = relatedStudies.concat(baseline.studyInstanceUids);
+        timepointIds.push(baseline.timepointId);
     } else {
-        OHIF.log.warn('No prior Timepoint found while opening a Follow-up Timepoint');
+        OHIF.log.warn('No Baseline found while opening a Follow-up Timepoint');
     }
 
     timepointIds.push(timepoint.timepointId);
