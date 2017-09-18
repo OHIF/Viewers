@@ -161,7 +161,7 @@ function search() {
             Session.set('serverError', true);
 
             const errorType = error.error;
-            
+
             if (errorType === 'server-connection-error') {
                 console.error('There was an error connecting to the DICOM server, please verify if it is up and running.');
             } else if (errorType === 'server-internal-error') {
@@ -169,7 +169,7 @@ function search() {
             } else {
                 console.error('For some reason we could not list the studies.')
             }
-            
+
             OHIF.log.error(error.stack);
             return;
         }

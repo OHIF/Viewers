@@ -224,7 +224,7 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
             console.error('Could not retrieve Instances By Study');
             console.trace();
 
-            return future.return([]);
+            return future.throw(error);
         }
 
         var defaultParams = {
@@ -317,7 +317,7 @@ DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, 
             console.error('Could not retrieve instances');
             console.trace();
 
-            return future.return([]);
+            return future.throw(error);
         }
 
         var defaultParams = getInstanceRetrievalParams(studyInstanceUID, seriesInstanceUID);
