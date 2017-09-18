@@ -46,7 +46,7 @@ Template.imageThumbnail.onRendered(() => {
         cornerstone.disable(element);
 
         // Enable cornerstone for thumbnail element again creating a new canvas
-        cornerstone.enable(element);
+        cornerstone.enable(element, { renderer: OHIF.cornerstone.renderer });
 
         // Activate the loading state
         $loading.css('display', 'block');
