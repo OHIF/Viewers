@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 const ASCII = 'ascii';
 const http = Npm.require('http')
 const url = Npm.require('url');
@@ -165,6 +167,14 @@ function makeRequest(geturl, options, callback) {
             data.push(chunk);
         });
 
+        resp.on('error', function (responseError) {
+            OHIF.log.error('There was an error in the DICOMWeb Server');
+            OHIF.log.error(responseError.stack);
+            OHIF.log.trace();
+
+            callback(responseError, null);
+        });
+
         resp.on('end', function() {
             try {
                 callback(null, parseResponse(resp.headers, Buffer.concat(data)));
@@ -173,6 +183,15 @@ function makeRequest(geturl, options, callback) {
             }
         });
 
+    });
+
+    req.on('error', function (requestError) {
+        OHIF.log.error('Couldn\'t connect to DICOMWeb server.');
+        OHIF.log.error('Make sure you are trying to connect to the right server and that it is up and running.');
+        OHIF.log.error(requestError.stack);
+        OHIF.log.trace();
+
+        callback(requestError, null);
     });
 
     req.end();
@@ -185,7 +204,7 @@ const makeRequestSync = Meteor.wrapAsync(makeRequest);
 DICOMWeb.getBulkData = function(geturl, options) {
 
     if (options.logRequests) {
-        console.log(geturl);
+        OHIF.log.info(geturl);
     }
 
     if (options.logTiming) {
@@ -199,7 +218,7 @@ DICOMWeb.getBulkData = function(geturl, options) {
     }
 
     if (options.logResponses) {
-        console.log(result);
+        OHIF.log.info(result);
     }
 
     if (!Buffer.isBuffer(result)) {

@@ -1,4 +1,5 @@
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 
 // Uses NodeJS 'net'
 // https://nodejs.org/api/net.html
@@ -62,10 +63,10 @@ Connection.prototype.addPeer = function(options) {
         //start listening
         peer.server = net.createServer();
         peer.server.listen(options.port, options.host, function() {
-            console.log('listening on %j', this.address());
+            OHIF.log.info('listening on', this.address());
         });
         peer.server.on('error', function(err) {
-            console.log('server error %j', err);
+            OHIF.log.info('server error', err);
         });
         peer.server.on('connection', nativeSocket => {
             //incoming connections
@@ -90,13 +91,13 @@ Connection.prototype.selectPeer = function(aeTitle) {
 
 Connection.prototype._sendFile = function(socket, sHandle, file, maxSend, metaLength, list) {
     var fileNameText = typeof file.file === 'string' ? file.file : 'buffer';
-    console.log('Sending file ' + fileNameText);
+    OHIF.log.info(`Sending file ${fileNameText}`);
     var useContext = socket.getContextByUID(file.context);
     var self = this;
 
     PDU.generatePDatas(useContext.id, file.file, maxSend, null, metaLength, function(err, handle) {
         if (err) {
-            console.log('Error while sending file');
+            OHIF.log.info('Error while sending file');
             return;
         }
 
@@ -119,7 +120,7 @@ Connection.prototype._sendFile = function(socket, sHandle, file, maxSend, metaLe
         });
         store.on('response', function(msg) {
             var statusText = msg.getStatus().toString(16);
-            console.log('STORE reponse with status', statusText);
+            OHIF.log.info('STORE reponse with status', statusText);
             var error = null;
             if (msg.failure()) {
                 error = new Error(statusText);
@@ -153,7 +154,7 @@ Connection.prototype.storeInstances = function(fileList) {
                 return;
             }
 
-            console.log('Dicom file ' + (typeof bufferOrFile === 'string' ? bufferOrFile : 'buffer') + ' found');
+            OHIF.log.info(`Dicom file ${(typeof bufferOrFile === 'string' ? bufferOrFile : 'buffer')} found`);
             lastProcessedMetaLength = metaLength;
             var syntax = metaMessage.getValue(0x00020010);
             var sopClassUID = metaMessage.getValue(0x00020002);
@@ -248,6 +249,7 @@ Connection.prototype.addSocket = function(hostAE, socket) {
 };
 
 Connection.prototype.associate = function(options, callback) {
+    const self = this;
     var hostAE = options.hostAE ? options.hostAE : this.defaultPeer;
     var sourceAE = options.sourceAE ? options.sourceAE : this.defaultServer;
 
@@ -264,7 +266,7 @@ Connection.prototype.associate = function(options, callback) {
         socket.once('associated', callback);
     }
 
-    console.log('Starting Connection...');
+    OHIF.log.info('Starting Connection...');
 
     socket.setCalledAe(hostAE);
     socket.setCallingAE(sourceAE);
@@ -279,7 +281,7 @@ Connection.prototype.associate = function(options, callback) {
         if (options.contexts) {
             socket.setPresentationContexts(options.contexts);
         } else {
-            throw 'Contexts must be specified';
+            throw new Meteor.Error('Contexts must be specified');
         }
 
         socket.associate();

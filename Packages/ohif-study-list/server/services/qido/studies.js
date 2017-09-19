@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Creates a QIDO date string for a date range query
  * Assumes the year is positive, at most 4 digits long.
@@ -91,6 +93,14 @@ function resultDataToStudies(resultData) {
 
 Services.QIDO.Studies = function(server, filter) {
     var url = filterToQIDOURL(server, filter);
-    var result = DICOMWeb.getJSON(url, server.requestOptions);
-    return resultDataToStudies(result.data);
+
+    try {
+        var result = DICOMWeb.getJSON(url, server.requestOptions);
+
+        return resultDataToStudies(result.data);
+    } catch (error) {
+        OHIF.log.trace();
+
+        throw error;
+    }
 };

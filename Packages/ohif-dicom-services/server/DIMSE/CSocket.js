@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 var EventEmitter = Npm.require('events').EventEmitter;
 
 function time() {
@@ -41,40 +43,52 @@ CSocket = function(socket, options) {
 
     var o = this;
     this.socket.on('connect', function() {
-        console.log('Connect');
+        OHIF.log.info('Connect');
         o.ready();
     });
+
     this.socket.on('data', function(data) {
         o.received(data);
     });
-    this.socket.on('error', function(he) {
-        console.log('Error: ', he);
-        throw 'Error: ' + he;
+
+    this.socket.on('error', function(socketError) {
+        OHIF.log.error('There was an error with DIMSE connection socket.');
+        OHIF.log.error(socketError.stack);
+        OHIF.log.trace();
+
+        o.emit('error', new Meteor.Error('server-internal-error', socketError.message));
     });
-    this.socket.on('timeout', function(he) {
-        console.log('Timeout: ', he);
-        throw 'Timeout: ' + he;
+
+    this.socket.on('timeout', function(socketError) {
+        OHIF.log.error('The connection timed out. The server is not responding.');
+        OHIF.log.error(socketError.stack);
+        OHIF.log.trace();
+
+        o.emit('error', new Meteor.Error('server-connection-error', socketError.message));
     });
+
     this.socket.on('close', function() {
         if (o.intervalId) {
             clearInterval(o.intervalId);
         }
 
         o.connected = false;
-        console.log('Connection closed');
-        o.emit('close');        
+        OHIF.log.info('Connection closed');
+        o.emit('close');
     });
 
     this.on('released', function() {
         this.released();
     });
+
     this.on('aborted', function(pdu) {
-        console.warn('Association aborted with reason ' + pdu.reason);
+        OHIF.log.warn('Association aborted with reason ' + pdu.reason);
         this.released();
     });
+
     this.on('message', function(pdvs) {
         this.receivedMessage(pdvs);
-    });    
+    });
 };
 
 util.inherits(CSocket, EventEmitter);
@@ -213,7 +227,7 @@ CSocket.prototype.released = function() {
 };
 
 CSocket.prototype.ready = function() {
-    console.log('Connection established');
+    OHIF.log.info('Connection established');
     this.connected = true;
     this.started = time();
 
@@ -237,7 +251,7 @@ CSocket.prototype.checkIdle = function() {
 };
 
 CSocket.prototype.idleClose = function() {
-    console.log('Exceed idle time, closing connection');
+    OHIF.log.info('Exceed idle time, closing connection');
     this.release();
 };
 
@@ -283,7 +297,7 @@ CSocket.prototype.process = function(data) {
             }
         }
     } else {
-        console.log('Data received');
+        OHIF.log.info('Data received');
         var newData = Buffer.concat([this.receiving, data], this.receiving.length + data.length),
             pduLength = newData.length - 6;
 
@@ -398,7 +412,7 @@ CSocket.prototype.receivedMessage = function(pdv) {
             }
 
             if (msg.failure()) {
-                console.log('message failed with status ', msg.getStatus().toString(16));
+                OHIF.log.info('message failed with status ', msg.getStatus().toString(16));
             }
 
             listener.emit('response', msg);
@@ -452,7 +466,10 @@ CSocket.prototype.receivedMessage = function(pdv) {
                     } else {
                         throw 'Where does this c-store came from?';
                     }
-                } else console.log('move ', moveMessageId);
+                } else{
+                    OHIF.log.info('move ', moveMessageId);
+                }
+                    
                 //this.storeResponse(useId, msg);
             }
         }
@@ -508,7 +525,7 @@ CSocket.prototype.sendMessage = function(context, command, dataset) {
 
     msgData.command = command;
     this.messages[messageId] = msgData;
-    console.log('Sending command ' + command.typeString());
+    OHIF.log.info('Sending command ' + command.typeString());
     this.send(pdata);
     if (dataset && typeof dataset === 'object') {
         dataset.setSyntax(syntax);
