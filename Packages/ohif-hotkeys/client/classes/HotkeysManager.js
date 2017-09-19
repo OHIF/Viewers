@@ -80,7 +80,8 @@ export class HotkeysManager {
         return new Promise((resolve, reject) => {
             const context = this.getContext(contextName);
             if (!context) return;
-            this.retrieve(contextName).then(definitions => {
+            this.retrieve(contextName).then(defs => {
+                const definitions = defs || this.defaults[contextName];
                 if (!definitions) {
                     this.changeObserver.changed();
                     return reject();
