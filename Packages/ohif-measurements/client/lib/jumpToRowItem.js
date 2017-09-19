@@ -59,6 +59,11 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
             }
 
             findAndRenderDisplaySet(study.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback);
+        }).catch(error => {
+            OHIF.log.error(`There was an error trying to retrieve the study\'s metadata for studyInstanceUid: ${studyInstanceUid}`);
+            OHIF.log.error(error.stack);
+
+            OHIF.log.trace();
         });
     }
 }

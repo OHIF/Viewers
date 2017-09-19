@@ -14,13 +14,19 @@ Meteor.methods({
         const server = OHIF.servers.getCurrentServer();
 
         if (!server) {
-            throw 'No properly configured server was available over DICOMWeb or DIMSE.';
+            throw new Meteor.Error('improper-server-config', 'No properly configured server was available over DICOMWeb or DIMSE.');
         }
 
-        if (server.type === 'dicomWeb') {
-            return Services.WADO.RetrieveMetadata(server, studyInstanceUid);
-        } else if (server.type === 'dimse') {
-            return Services.DIMSE.RetrieveMetadata(studyInstanceUid);
+        try {
+            if (server.type === 'dicomWeb') {
+                return Services.WADO.RetrieveMetadata(server, studyInstanceUid);
+            } else if (server.type === 'dimse') {
+                return Services.DIMSE.RetrieveMetadata(studyInstanceUid);
+            }
+        } catch (error) {
+            OHIF.log.trace();
+
+            throw error;
         }
     }
 });
