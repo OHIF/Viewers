@@ -133,6 +133,9 @@ function search() {
     // Show loading message
     Session.set('showLoadingText', true);
 
+    // Hiding error message
+    Session.set('serverError', false);
+
     // Create the filters to be used for the StudyList Search
     filter = {
         patientName: getFilter($('input#patientName').val()),
