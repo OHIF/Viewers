@@ -121,7 +121,7 @@ Template.studyTimepointStudy.events({
                     OHIF.log.error(`There was an error trying to retrieve the study\'s metadata for studyInstanceUid: ${studyInstanceUid}`);
                     OHIF.log.error(error.stack);
         
-                    console.trace();
+                    OHIF.log.trace();
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;

@@ -23,7 +23,7 @@ Meteor.methods({
                 return Services.DIMSE.Studies(filter);
             }
         } catch (error) {
-            console.trace();
+            OHIF.log.trace();
 
             throw error;
         }

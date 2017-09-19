@@ -1,3 +1,4 @@
+import { OHIF } from 'meteor/ohif:core';
 import { parseFloatArray } from '../../lib/parseFloatArray';
 
 /**
@@ -148,7 +149,7 @@ function getPaletteColors(server, instance, lutDescriptor) {
                 paletteColorCache.add(entry);
             }
         } catch (error) {
-            console.log(`(${error.name}) ${error.message}`);
+            OHIF.log.error(`(${error.name}) ${error.message}`);
         }
     }
 
@@ -352,7 +353,7 @@ Services.WADO.RetrieveMetadata = function(server, studyInstanceUid) {
     
         return study;
     } catch (error) {
-        console.trace();
+        OHIF.log.trace();
 
         throw error;
     }

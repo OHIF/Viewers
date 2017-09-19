@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { OHIF } from 'meteor/ohif:core';
 
 const http = Npm.require('http');
 const https = Npm.require('https');
@@ -60,9 +61,9 @@ function makeRequest(geturl, options, callback) {
         });
 
         resp.on('error', function (responseError) {
-            console.error('There was an error in the DICOMWeb Server')
-            console.error(error.stack);
-            console.trace();
+            OHIF.log.error('There was an error in the DICOMWeb Server')
+            OHIF.log.error(error.stack);
+            OHIF.log.trace();
 
             callback(new Meteor.Error('server-internal-error', responseError.message), null);
         });
@@ -73,10 +74,10 @@ function makeRequest(geturl, options, callback) {
     });
 
     req.on('error', function (requestError) {
-        console.error('Couldn\'t connect to DICOMWeb server.');
-        console.error('Make sure you are trying to connect to the right server and that it is up and running.');
-        console.error(requestError.stack);
-        console.trace();
+        OHIF.log.error('Couldn\'t connect to DICOMWeb server.');
+        OHIF.log.error('Make sure you are trying to connect to the right server and that it is up and running.');
+        OHIF.log.error(requestError.stack);
+        OHIF.log.trace();
 
         callback(new Meteor.Error('server-connection-error', requestError.message), null);
     });
@@ -88,7 +89,7 @@ const makeRequestSync = Meteor.wrapAsync(makeRequest);
 
 DICOMWeb.getJSON = function(geturl, options) {
     if (options.logRequests) {
-        console.log(geturl);
+        OHIF.log.info(geturl);
     }
 
     if (options.logTiming) {
@@ -102,7 +103,7 @@ DICOMWeb.getJSON = function(geturl, options) {
     }
 
     if (options.logResponses) {
-        console.log(result);
+        OHIF.log.info(result);
     }
 
     return result;

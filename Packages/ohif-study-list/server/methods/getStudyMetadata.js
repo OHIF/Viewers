@@ -24,7 +24,7 @@ Meteor.methods({
                 return Services.DIMSE.RetrieveMetadata(studyInstanceUid);
             }
         } catch (error) {
-            console.trace();
+            OHIF.log.trace();
 
             throw error;
         }

@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Creates a QIDO date string for a date range query
  * Assumes the year is positive, at most 4 digits long.
@@ -97,7 +99,7 @@ Services.QIDO.Studies = function(server, filter) {
 
         return resultDataToStudies(result.data);
     } catch (error) {
-        console.trace();
+        OHIF.log.trace();
 
         throw error;
     }

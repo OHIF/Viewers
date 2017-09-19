@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 /**
  * Creates a QIDO URL given the server settings and a study instance UID
  * @param server
@@ -84,7 +86,7 @@ Services.QIDO.Instances = function(server, studyInstanceUid) {
             seriesList: resultDataToStudyMetadata(server, studyInstanceUid, result.data)
         };
     } catch (error) {
-        console.trace();
+        OHIF.log.trace();
 
         throw error;
     }

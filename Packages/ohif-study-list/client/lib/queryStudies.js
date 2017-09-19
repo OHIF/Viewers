@@ -47,7 +47,7 @@ queryStudiesWithProgress = function(studiesToQuery) {
                     OHIF.log.error('There was an error retrieving all studies metadeta.');
                     OHIF.log.error(error.stack);
 
-                    console.trace();
+                    OHIF.log.trace();
                 });
             }
         }
