@@ -63,10 +63,10 @@ Connection.prototype.addPeer = function(options) {
         //start listening
         peer.server = net.createServer();
         peer.server.listen(options.port, options.host, function() {
-            OHIF.log.info('listening on %j', this.address());
+            OHIF.log.info('listening on', this.address());
         });
         peer.server.on('error', function(err) {
-            OHIF.log.info('server error %j', err);
+            OHIF.log.info('server error', err);
         });
         peer.server.on('connection', nativeSocket => {
             //incoming connections
