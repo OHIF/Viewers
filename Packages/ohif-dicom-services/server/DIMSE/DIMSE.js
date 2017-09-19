@@ -97,7 +97,7 @@ DIMSE.retrievePatients = function(params, options) {
     var future = new Future;
     DIMSE.associate([C.SOP_PATIENT_ROOT_FIND], function(error, pdu) {
         if (error) {
-            console.error('Could not retrieve patientes');
+            console.error('Could not retrieve patients');
             console.trace();
 
             return future.return([]);
