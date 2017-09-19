@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 const http = Npm.require('http');
 const https = Npm.require('https');
 const url = Npm.require('url');
@@ -20,7 +22,7 @@ function makeRequest(geturl, options, callback) {
         requester = https.request;
 
         const allowUnauthorizedAgent = new https.Agent({ rejectUnauthorized: false });
-        requestOpt.agent = allowUnauthorizedAgent
+        requestOpt.agent = allowUnauthorizedAgent;
     } else {
         requester = http.request;
     }
@@ -41,8 +43,9 @@ function makeRequest(geturl, options, callback) {
     }
 
     const req = requester(requestOpt, function(resp) {
+        // TODO: handle errors with 400+ code
         const contentType = (resp.headers['content-type'] || '').split(';')[0];
-        if (jsonHeaders.indexOf(contentType) == -1) {
+        if (jsonHeaders.indexOf(contentType) === -1) {
             const errorMessage = `We only support json but "${contentType}" was sent by the server`;
             callback(new Error(errorMessage), null);
             return;
@@ -65,7 +68,7 @@ function makeRequest(geturl, options, callback) {
         });
 
         resp.on('end', function(){
-          callback(null, {data: JSON.parse(output)});
+          callback(null, { data: JSON.parse(output) });
         });
     });
 
@@ -80,6 +83,7 @@ function makeRequest(geturl, options, callback) {
 
     req.end();
 }
+
 const makeRequestSync = Meteor.wrapAsync(makeRequest);
 
 DICOMWeb.getJSON = function(geturl, options) {

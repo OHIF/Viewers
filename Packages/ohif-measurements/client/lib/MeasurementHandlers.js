@@ -10,7 +10,7 @@ class MeasurementHandlers {
         const measurementData = eventData.measurementData;
         const Collection = measurementApi.tools[eventData.toolType];
 
-        // Stop here if the tool data shall not be stored (e.g. temp tools)
+        // Stop here if the tool data shall not be persisted (e.g. temp tools)
         if (!Collection) {
             return;
         }
@@ -35,14 +35,15 @@ class MeasurementHandlers {
 
         OHIF.log.info('CornerstoneToolsMeasurementAdded');
 
+        const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
         let measurement = $.extend({
             userId: Meteor.userId(),
-            patientId: patientId,
-            studyInstanceUid: studyInstanceUid,
-            seriesInstanceUid: seriesInstanceUid,
-            sopInstanceUid: sopInstanceUid,
-            frameIndex: frameIndex,
-            imageId: imageId // TODO: In the future we should consider removing this
+            patientId,
+            studyInstanceUid,
+            seriesInstanceUid,
+            sopInstanceUid,
+            frameIndex,
+            imagePath
         }, measurementData);
 
         // Get the related timepoint by the measurement number and use its location if defined
@@ -78,7 +79,7 @@ class MeasurementHandlers {
         const measurementData = eventData.measurementData;
         const Collection = measurementApi.tools[eventData.toolType];
 
-        // Stop here if the tool data shall not be stored (e.g. temp tools)
+        // Stop here if the tool data shall not be persisted (e.g. temp tools)
         if (!Collection) {
             return;
         }
@@ -120,9 +121,15 @@ class MeasurementHandlers {
         const measurementData = eventData.measurementData;
         const measurementNumber = measurementData.measurementNumber;
         const { measurementApi, timepointApi } = instance.data;
-        const collection = measurementApi.tools[eventData.toolType];
+        const Collection = measurementApi.tools[eventData.toolType];
+
+        // Stop here if the tool data shall not be persisted (e.g. temp tools)
+        if (!Collection) {
+            return;
+        }
+
         const measurementTypeId = measurementApi.toolsGroupsMap[measurementData.toolType];
-        const measurement = collection.findOne(measurementData._id);
+        const measurement = Collection.findOne(measurementData._id);
         const timepointId = measurement.timepointId;
 
         // Remove all the measurements with the given type and number

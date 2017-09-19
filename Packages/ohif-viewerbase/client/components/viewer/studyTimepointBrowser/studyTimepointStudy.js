@@ -4,7 +4,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
-import { sortingManager } from '../../../lib/sortingManager';
 
 Template.studyTimepointStudy.onCreated(() => {
     const instance = Template.instance();
@@ -98,7 +97,7 @@ Template.studyTimepointStudy.events({
     // Changes the current study selection for the clicked study
     'click .studyModality'(event, instance) {
         const studyData = instance.data.study;
-        const { studyInstanceUid, _id } = studyData;
+        const { studyInstanceUid } = studyData;
         const isQuickSwitch = instance.isQuickSwitch();
 
         // @TypeSafeStudies
@@ -121,6 +120,7 @@ Template.studyTimepointStudy.events({
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;
+                instance.select(isQuickSwitch);
             }
         } else {
             instance.select(isQuickSwitch);
@@ -136,6 +136,7 @@ Template.studyTimepointStudy.helpers({
         const alreadyLoaded = OHIF.viewer.Studies.findBy({ studyInstanceUid: studyData.studyInstanceUid });
         return instance.loading.get() && !alreadyLoaded;
     },
+
     modalities() {
         const instance = Template.instance();
         let modalities = instance.data.study.modalities;

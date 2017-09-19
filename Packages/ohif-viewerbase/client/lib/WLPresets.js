@@ -205,6 +205,7 @@ class WindowLevelPresetsManager {
 const WLPresets = new WindowLevelPresetsManager();
 
 Meteor.startup(() => {
+    WLPresets.loadDefaults();
     WLPresets.load();
 });
 

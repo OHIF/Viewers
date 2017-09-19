@@ -8,11 +8,21 @@
         {{this.tagAttributes}}
     >
         {{>UI.contentBlock}}
-        {{#each item in (reactive this.items)}}
+        {{>baseSelectOptions this.items}}
+    </select>
+</template>
+
+<template name="baseSelectOptions">
+    {{#each item in (reactive this)}}
+        {{#if item.items}}
+            <optgroup label="{{item.label}}">
+                {{>baseSelectOptions item.items}}
+            </optgroup>
+        {{else}}
             <option
                 value="{{item.value}}"
                 selected="{{#if eq item.value (reactive this.value)}}selected{{/if}}"
             >{{item.label}}</option>
-        {{/each}}
-    </select>
+        {{/if}}
+    {{/each}}
 </template>

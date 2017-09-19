@@ -294,8 +294,8 @@ function createQualitativeTargetTool(toolType) {
                 context.lineTo(canvasTextLocation.x + 20, canvasTextLocation.y + 20);
                 context.stroke();
 
-                var textLine = `Target ${data.measurementNumber}`;
-                var boundingBox = cornerstoneTools.drawTextBox(context, textLine, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
+                var textLines = [`Target ${data.measurementNumber}`, response];
+                var boundingBox = cornerstoneTools.drawTextBox(context, textLines, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
                 data.handles.textBox.boundingBox = boundingBox;
             }
 

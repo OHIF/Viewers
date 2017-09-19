@@ -2,6 +2,7 @@
  * Import main dependency
  */
 
+import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -22,4 +23,4 @@ OHIF.cornerstone = Cornerstone;
  * Export relevant objects
  */
 
-export { OHIF };
+export { Meteor, OHIF };

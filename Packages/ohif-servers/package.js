@@ -8,6 +8,7 @@ Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
     api.use('ecmascript');
+    api.use('templating');
     api.use('jquery');
     api.use('stylus');
     api.use('aldeed:simple-schema');

@@ -1,17 +1,15 @@
 <template name="caseProgress">
     {{#form (extend class='caseProgress' api=instance.api)}}
-        {{#unless progressComplete}}
+        {{#if instance.isFollowUp.get}}
             {{>radialProgressBar isLocked=isLocked progressPercent=progressPercent progressText=progressText}}
-        {{/unless}}
-        {{#if isLocked}}
-            <div class="caseProgressStatus">
-                <h5>Locked</h5>
-            </div>
+            {{#if isLocked}}
+                <div class="caseProgressStatus">
+                    <h5>Locked</h5>
+                </div>
+            {{/if}}
         {{/if}}
-        {{#if progressComplete}}
-            <div class="caseProgressStatus">
-                {{#button class='btn' action='save' disabled=(isFinishDisabled)}}Save{{/button}}
-            </div>
-        {{/if}}
+        <div class="caseProgressStatus">
+            {{#button class='btn p-x-2' action='save' disabled=(isFinishDisabled)}}Save{{/button}}
+        </div>
     {{/form}}
 </template>

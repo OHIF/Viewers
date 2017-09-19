@@ -57,9 +57,8 @@ export class ModalityCriterion extends BaseCriterion {
             const items = data[measurementType];
 
             items.forEach(item => {
-                const measurement = item.measurement;
-                const metadata = item.metadata;
-                const modality = metadata.modality.toUpperCase();
+                const { measurement, metadata } = item;
+                const modality = (metadata.getRawValue('x00080060') || '').toUpperCase();
 
                 if (((validationMethod === 'allow') && !modalitiesSet.has(modality)) ||
                     ((validationMethod === 'deny') && modalitiesSet.has(modality))) {

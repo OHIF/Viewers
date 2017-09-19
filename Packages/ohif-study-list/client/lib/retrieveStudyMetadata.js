@@ -12,7 +12,7 @@ const StudyMetaDataPromises = new Map();
  * @param {String} studyInstanceUid The UID of the Study to be retrieved
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
-OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
+OHIF.studylist.retrieveStudyMetadata = (studyInstanceUid, seriesInstanceUids) => {
 
     // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
     // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -49,6 +49,11 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
                 return;
             }
 
+            // Filter series if seriesInstanceUid exists
+            if (seriesInstanceUids && seriesInstanceUids.length) {
+                study.seriesList = study.seriesList.filter(series => seriesInstanceUids.indexOf(series.seriesInstanceUid) > -1);
+            }
+
             if (!study) {
                 reject(`GetStudyMetadata: No study data returned from server: ${studyInstanceUid}`);
                 return;
@@ -74,7 +79,8 @@ OHIF.studylist.retrieveStudyMetadata = studyInstanceUid => {
 
             // Add additional metadata to our study from the studylist
             const studylistStudy = OHIF.studylist.collections.Studies.findOne({
-                studyInstanceUid: study.studyInstanceUid
+                studyInstanceUid: study.studyInstanceUid,
+                'seriesList.seriesInstanceUid': '123456',
             });
 
             if (studylistStudy) {

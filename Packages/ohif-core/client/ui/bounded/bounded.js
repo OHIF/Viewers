@@ -37,13 +37,17 @@ class Bounded {
     // Set or change the instance options
     options(options={}) {
         // Process the given options and store it in the instance
-        const { boundingElement, allowResizing } = options;
+        const { boundingElement, positionElement, dimensionElement, allowResizing } = options;
+        this.positionElement = positionElement || this.element;
+        this.$positionElement = $(this.positionElement);
+        this.dimensionElement = dimensionElement || this.element;
+        this.$dimensionElement = $(this.dimensionElement);
         this.boundingElement = boundingElement;
         this.$boundingElement = $(this.boundingElement);
         this.allowResizing = allowResizing;
 
         // Check for fixed positioning
-        if (this.$element.css('position') === 'fixed') {
+        if (this.$positionElement.css('position') === 'fixed') {
             this.boundingElement = window;
         }
 
@@ -89,12 +93,12 @@ class Bounded {
         this.$element.removeClass('bounded');
     }
 
-    static spatialInfo(element) {
+    static spatialInfo(positionElement, dimensionElement) {
         // Create the result object
         const result = {};
 
         // Check if the element is the window
-        if (!element || element === window) {
+        if (!dimensionElement || dimensionElement === window) {
             const $window = $(window);
             const width = $window.outerWidth();
             const height = $window.outerHeight();
@@ -108,31 +112,22 @@ class Bounded {
             };
         }
 
-        // Get the jQuery object for the element
-        const $element = $(element);
-
-        // Get the element style
-        const style = element.style;
+        // Get the jQuery object for the elements
+        const $dimensionElement = $(dimensionElement);
+        const $positionElement = $(positionElement);
 
         // Get the integer numbers for element's width
-        if (style.width && style.width.indexOf('px') > -1) {
-            result.width = parseInt(style.width);
-        } else {
-            result.width = $element.outerWidth();
-        }
+        result.width = $dimensionElement.outerWidth();
 
         // Get the integer numbers for element's height
-        if (style.height && style.height.indexOf('px') > -1) {
-            result.height = parseInt(style.height);
-        } else {
-            result.height = $element.outerHeight();
-        }
+        result.height = $dimensionElement.outerHeight();
 
         // Get the position property based on the element position CSS attribute
-        const positionProperty = $element.css('position') === 'fixed' ? 'position' : 'offset';
+        const elementPosition = $positionElement.css('position');
+        const positionProperty = elementPosition === 'fixed' ? 'position' : 'offset';
 
         // Get the element's start position
-        const position = $element[positionProperty]();
+        const position = $positionElement[positionProperty]();
         result.x0 = position.left;
         result.y0 = position.top;
 
@@ -148,32 +143,32 @@ class Bounded {
     defineEventHandlers() {
         this.spatialChangedHandler = event => {
             // Get the spatial information for element and its bounding element
-            const elementInfo = Bounded.spatialInfo(this.element);
-            const boundingInfo = Bounded.spatialInfo(this.boundingElement);
+            const elementInfo = Bounded.spatialInfo(this.positionElement, this.dimensionElement);
+            const boundingInfo = Bounded.spatialInfo(this.boundingElement, this.boundingElement);
 
             // Fix element's x positioning and width
             if (this.allowResizing && elementInfo.width > boundingInfo.width) {
-                this.$element.width(boundingInfo.width);
-                this.$element.css('left', boundingInfo.x0);
+                this.$dimensionElement.width(boundingInfo.width);
+                this.$positionElement.css('left', boundingInfo.x0);
                 this.setBoundedFlag(true);
             } else if (elementInfo.x0 < boundingInfo.x0) {
-                this.$element.css('left', boundingInfo.x0);
+                this.$positionElement.css('left', boundingInfo.x0);
                 this.setBoundedFlag(true);
             } else if (elementInfo.x1 > boundingInfo.x1) {
-                this.$element.css('left', boundingInfo.x1 - elementInfo.width);
+                this.$positionElement.css('left', boundingInfo.x1 - elementInfo.width);
                 this.setBoundedFlag(true);
             }
 
             // Fix element's y positioning and height
             if (this.allowResizing && elementInfo.height > boundingInfo.height) {
-                this.$element.height(boundingInfo.height);
-                this.$element.css('top', boundingInfo.y0);
+                this.$dimensionElement.height(boundingInfo.height);
+                this.$positionElement.css('top', boundingInfo.y0);
                 this.setBoundedFlag(true);
             } else if (elementInfo.y0 < boundingInfo.y0) {
-                this.$element.css('top', boundingInfo.y0);
+                this.$positionElement.css('top', boundingInfo.y0);
                 this.setBoundedFlag(true);
             } else if (elementInfo.y1 > boundingInfo.y1) {
-                this.$element.css('top', boundingInfo.y1 - elementInfo.height);
+                this.$positionElement.css('top', boundingInfo.y1 - elementInfo.height);
                 this.setBoundedFlag(true);
             }
         };

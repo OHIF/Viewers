@@ -9,7 +9,7 @@ import { OHIF } from 'meteor/ohif:core';
  * @param studyInstanceUids The UIDs of the Studies to be retrieved
  * @return Promise
  */
-OHIF.studylist.retrieveStudiesMetadata = (studyInstanceUids, doneCallback, failCallback) => {
+OHIF.studylist.retrieveStudiesMetadata = (studyInstanceUids, seriesInstanceUids, doneCallback, failCallback) => {
     // Check to make sure studyInstanceUids were actually input
     if (!studyInstanceUids || !studyInstanceUids.length) {
         if (failCallback && typeof failCallback === 'function') {
@@ -26,7 +26,7 @@ OHIF.studylist.retrieveStudiesMetadata = (studyInstanceUids, doneCallback, failC
     studyInstanceUids.forEach(function(studyInstanceUid) {
         // Send the call, and attach doneCallbacks and failCallbacks
         // which can resolve or reject the related promise based on its outcome
-        const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
+        const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid, seriesInstanceUids);
 
         // Add the current promise to the array of promises
         promises.push(promise);

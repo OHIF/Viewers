@@ -136,9 +136,9 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData, config) => {
         const offset = {
             x: [],
             y: []
-        }
+        };
 
-        if(cornerAxis === 'x') {
+        if (cornerAxis === 'x') {
             const offsetY = centerY ? 0 : halfBoxSizeY;
 
             offset.x[-1] = centerX ? halfBoxSizeX : 0;

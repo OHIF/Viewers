@@ -13,12 +13,14 @@
                     {{>section 'dialogFooter'}}
                     {{#unless this.hideCancel}}
                         {{#button action='cancel'
+                            disabled=this.cancelDisabled
                             class=(concat 'btn btn-cancel ' (choose this.cancelClass 'btn-default'))
                             tagAttributes=(extend this.tagAttributes data-dismiss='modal')
                         }}{{choose this.cancelLabel 'Cancel'}}{{/button}}
                     {{/unless}}
                     {{#unless this.hideConfirm}}
                         {{#button action='confirm'
+                            disabled=this.confirmDisabled
                             class=(concat 'btn btn-confirm ' (choose this.confirmClass 'btn-primary'))
                         }}{{choose this.confirmLabel 'Confirm'}}{{/button}}
                     {{/unless}}
