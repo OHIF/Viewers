@@ -35,17 +35,19 @@ OHIF.studylist.retrieveStudyMetadata = (studyInstanceUid, seriesInstanceUids) =>
 
             if (error) {
                 const errorType = error.error;
+                let errorMessage = '';
                 
                 if (errorType === 'server-connection-error') {
-                    OHIF.log.error('There was an error connecting to the DICOM server, please verify if it is up and running.');
+                    errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.'
                 } else if (errorType === 'server-internal-error') {
-                    OHIF.log.error('There was an internal error with the DICOM server');
+                    errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
                 } else {
-                    OHIF.log.error('For some reason we could not retrieve the study\'s metadata.')
+                    errorMessage = `For some reason we could not retrieve the study\'s metadata for ${studyInstanceUid}.`;
                 }
 
+                OHIF.log.error(errorMessage);
                 OHIF.log.error(error.stack);
-                reject(error);
+                reject(`GetStudyMetadata: ${errorMessage}`);
                 return;
             }
 
