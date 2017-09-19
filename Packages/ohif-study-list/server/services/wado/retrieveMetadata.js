@@ -339,15 +339,21 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 Services.WADO.RetrieveMetadata = function(server, studyInstanceUid) {
     var url = buildUrl(server, studyInstanceUid);
 
-    var result = DICOMWeb.getJSON(url, server.requestOptions);
+    try {
+        var result = DICOMWeb.getJSON(url, server.requestOptions);
+    
+        var study = resultDataToStudyMetadata(server, studyInstanceUid, result.data);
+        if (!study) {
+            study = {};
+        }
+    
+        study.wadoUriRoot = server.wadoUriRoot;
+        study.studyInstanceUid = studyInstanceUid;
+    
+        return study;
+    } catch (error) {
+        console.trace();
 
-    var study = resultDataToStudyMetadata(server, studyInstanceUid, result.data);
-    if (!study) {
-        study = {};
+        throw error;
     }
-
-    study.wadoUriRoot = server.wadoUriRoot;
-    study.studyInstanceUid = studyInstanceUid;
-
-    return study;
 };

@@ -117,6 +117,11 @@ Template.studyTimepointStudy.events({
                         $studies.trigger('loadEnded');
                         instance.select(isQuickSwitch);
                     }, 1);
+                }).catch(error => {
+                    OHIF.log.error(`There was an error trying to retrieve the study\'s metadata for studyInstanceUid: ${studyInstanceUid}`);
+                    OHIF.log.error(error.stack);
+        
+                    console.trace();
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;

@@ -53,7 +53,7 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
 
                 OHIFStudyMetadataSource._updateStudyCollections(studyMetadata);
                 resolve(studyMetadata);
-            }, reject);
+            }).catch(reject);
         });
     }
 

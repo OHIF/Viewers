@@ -69,15 +69,24 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * Retrieve a set of instances using a QIDO call
  * @param server
  * @param studyInstanceUid
+ * @throws ECONNREFUSED
  * @returns {{wadoUriRoot: String, studyInstanceUid: String, seriesList: Array}}
  */
 Services.QIDO.Instances = function(server, studyInstanceUid) {
     var url = buildUrl(server, studyInstanceUid);
-    var result = DICOMWeb.getJSON(url, server.requestOptions);
 
-    return {
-        wadoUriRoot: server.wadoUriRoot,
-        studyInstanceUid: studyInstanceUid,
-        seriesList: resultDataToStudyMetadata(server, studyInstanceUid, result.data)
-    };
+    try {
+        var result = DICOMWeb.getJSON(url, server.requestOptions);
+
+        return {
+            wadoUriRoot: server.wadoUriRoot,
+            studyInstanceUid: studyInstanceUid,
+            seriesList: resultDataToStudyMetadata(server, studyInstanceUid, result.data)
+        };
+    } catch (error) {
+        console.trace();
+
+        throw error;
+    }
+
 };

@@ -43,6 +43,11 @@ queryStudiesWithProgress = function(studiesToQuery) {
                     dialog.done(studiesQueried);
                 }, () => {
                     dialog.cancel();
+                }).catch(error => {
+                    OHIF.log.error('There was an error retrieving all studies metadeta.');
+                    OHIF.log.error(error.stack);
+
+                    console.trace();
                 });
             }
         }
