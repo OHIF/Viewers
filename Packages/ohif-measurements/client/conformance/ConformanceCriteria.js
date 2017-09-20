@@ -15,6 +15,7 @@ class ConformanceCriteria {
         this.nonconformities = new ReactiveVar();
         this.groupedNonConformities = new ReactiveVar();
         this.maxTargets = new ReactiveVar(null);
+        this.maxNewTargets = new ReactiveVar(null);
 
         const validate = _.debounce(trialCriteriaType => {
             if (!Session.get('MeasurementsReady')) return;
@@ -45,6 +46,7 @@ class ConformanceCriteria {
                 mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
 
                 this.maxTargets.set(null);
+                this.maxNewTargets.set(null);
                 const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
                 const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
                 const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
@@ -101,9 +103,14 @@ class ConformanceCriteria {
         let nonconformities = [];
 
         evaluators.forEach(evaluator => {
-            const maxTargets = evaluator.getMaxTargets();
+            const maxTargets = evaluator.getMaxTargets(false);
+            const maxNewTargets = evaluator.getMaxTargets(true);
             if (maxTargets) {
                 this.maxTargets.set(maxTargets);
+            }
+
+            if (maxNewTargets) {
+                this.maxNewTargets.set(maxNewTargets);
             }
 
             const result = evaluator.evaluate(data);

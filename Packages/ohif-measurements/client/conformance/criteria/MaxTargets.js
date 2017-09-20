@@ -7,7 +7,7 @@ export const MaxTargetsSchema = {
         limit: {
             label: 'Max targets allowed in study',
             type: 'integer',
-            minimum: 1
+            minimum: 0
         },
         newTarget: {
             label: 'Flag to evaluate only new targets',
@@ -64,9 +64,11 @@ export class MaxTargetsCriterion extends BaseCriterion {
         });
 
         let message;
-        if (measurementNumbers.length > this.options.limit) {
+        if (measurementNumbers.length > options.limit) {
             const increment = options.newTarget ? 'new ' : '';
-            message = options.message || `The study should not have more than ${this.options.limit} ${increment}targets.`;
+            const plural = options.limit === 1 ? '' : 's';
+            const amount = options.limit === 0 ? '' : `more than ${options.limit}`;
+            message = options.message || `The study should not have ${amount} ${increment}target${plural}.`;
         }
 
         return this.generateResponse(message);

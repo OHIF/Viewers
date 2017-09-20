@@ -9,11 +9,15 @@ Template.measurementTableHeaderRow.helpers({
         return measurementRows.length ? measurementRows.length : null;
     },
 
-    maxNumMeasurements() {
+    getMax(toolGroupId) {
         const { conformanceCriteria } = Template.instance().data;
         if (!conformanceCriteria) return;
 
-        return conformanceCriteria.maxTargets.get();
+        if (toolGroupId === 'targets') {
+            return conformanceCriteria.maxTargets.get();
+        } else if (toolGroupId === 'newTargets') {
+            return conformanceCriteria.maxNewTargets.get();
+        }
     },
 
     anyUnmarkedLesionsLeft() {
