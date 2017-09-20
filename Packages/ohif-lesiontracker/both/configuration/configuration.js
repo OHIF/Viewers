@@ -5,14 +5,17 @@ import { retrieveMeasurements, storeMeasurements, retrieveTimepoints, storeTimep
 import { validateMeasurements } from './dataValidation';
 import { FieldLesionLocation, FieldLesionLocationResponse } from 'meteor/ohif:lesiontracker/both/schema/fields';
 
-const newMeasurementTool = {
-    id: 'newLesions',
-    name: 'New Lesions'
-};
-
 OHIF.measurements.MeasurementApi.setConfiguration({
-    measurementTools: measurementTools,
-    newMeasurementTool: newMeasurementTool,
+    measurementTools,
+    newLesions: [{
+        id: 'newTargets',
+        name: 'New Targets',
+        toolGroupId: 'targets'
+    }, {
+        id: 'newNonTargets',
+        name: 'New Non-Targets',
+        toolGroupId: 'nonTargets'
+    }],
     dataExchange: {
         retrieve: retrieveMeasurements,
         store: storeMeasurements
