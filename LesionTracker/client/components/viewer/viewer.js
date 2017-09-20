@@ -53,8 +53,6 @@ Template.viewer.onCreated(() => {
     Object.assign(OHIF.viewer, apis);
     Object.assign(instance.data, apis);
 
-    ValidationErrors.remove({});
-
     instance.state = new ReactiveDict();
     instance.state.set('leftSidebar', Session.get('leftSidebar'));
     instance.state.set('rightSidebar', Session.get('rightSidebar'));

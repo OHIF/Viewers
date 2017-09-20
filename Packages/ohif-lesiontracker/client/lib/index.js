@@ -5,8 +5,6 @@ import './studylist/studylistModification.js';
 import './bidirectional';
 
 // Library functions
-import './TrialCriteriaConstraints.js';
-import './MeasurementValidation.js';
 import './pixelSpacingAutorunCheck.js';
 import './removeMeasurementIfInvalid.js';
 import './toggleLesionTrackerTools.js';
