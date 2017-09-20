@@ -31,14 +31,7 @@ Package.onUse(function(api) {
 
     api.addFiles('client/index.js', 'client');
 
-    // Export global functions
-    api.export('convertNonTarget', 'client');
-
     // Export client-side collections
-    api.export('ValidationErrors', 'client');
     api.export('LesionLocations', 'client');
     api.export('LocationResponses', 'client');
-
-    // Export collections spanning both client and server
-    api.export('Configuration', ['client', 'server']);
 });
