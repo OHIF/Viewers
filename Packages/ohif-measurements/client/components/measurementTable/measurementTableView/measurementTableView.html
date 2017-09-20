@@ -12,11 +12,11 @@
                 {{/each}}
             {{/each}}
 
-            {{#if config.newMeasurementTool}}
-                {{#let toolGroup=(getNewToolGroup config.newMeasurementTool)}}
-                {{#let newMeasure=(newMeasurements toolGroup)}}
-                    {{#if newMeasure.length}}
-                        {{#let collection=newMeasure}}
+            {{#each newLesionGroup in config.newLesions}}
+                {{#let toolGroup=(getNewLesionsToolGroup newLesionGroup)}}
+                {{#let newMeasurements=(newLesionsMeasurements toolGroup)}}
+                    {{#if newMeasurements.length}}
+                        {{#let collection=newMeasurements}}
                             {{>measurementTableHeaderRow (clone this
                                 toolGroup=toolGroup
                                 measurementRows=collection)}}
@@ -28,7 +28,7 @@
                     {{/if}}
                 {{/let}}
                 {{/let}}
-            {{/if}}
+            {{/each}}
         {{/let}}
         {{#if or (hasMeasurements 'targets') (hasMeasurements 'nonTargets')}}
             <div class="report-area">

@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
@@ -19,20 +20,14 @@ Template.measurementTableHeaderRow.helpers({
         // Skip New Lesions section
         const instance = Template.instance();
         const { toolGroup, measurementRows, timepointApi, measurementApi } = instance.data;
-        if (!measurementRows) {
-            return;
-        }
+        if (!measurementRows) return;
 
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        if (toolGroup.id === config.newMeasurementTool.id) {
-            return;
-        }
+        if (config.newLesions && config.newLesions.find(o => o.id === toolGroup.id)) return;
 
         const current = timepointApi.current();
         const prior = timepointApi.prior();
-        if (!prior) {
-            return true;
-        }
+        if (!prior) return true;
 
         const currentFilter = { timepointId: current.timepointId };
         const priorFilter = { timepointId: prior.timepointId };

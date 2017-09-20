@@ -37,22 +37,19 @@ Template.measurementTableView.helpers({
         return group && !!group.measurementRows.length;
     },
 
-    getNewToolGroup(tool) {
+    getNewLesionsToolGroup(newLesionGroup) {
         const configuration = OHIF.measurements.MeasurementApi.getConfiguration();
-        const trialCriteriaType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
-        const trialCriteriaTypeId = trialCriteriaType.id.toLowerCase();
-        const toolGroupId = trialCriteriaTypeId === 'recist' ? 'nonTargets' : 'targets';
-        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
+        const toolGroup = _.findWhere(configuration.measurementTools, { id: newLesionGroup.toolGroupId });
 
         return {
-            id: tool.id,
-            name: tool.name,
+            id: newLesionGroup.id,
+            name: newLesionGroup.name,
             childTools: toolGroup.childTools,
             measurementTypeId: toolGroup.id
         };
     },
 
-    newMeasurements(toolGroup) {
+    newLesionsMeasurements(toolGroup) {
         const { measurementApi, timepointApi } = Template.instance().data;
         const current = timepointApi.current();
         const baseline = timepointApi.baseline();
@@ -60,7 +57,6 @@ Template.measurementTableView.helpers({
         if (!measurementApi || !timepointApi || !current || !baseline) return;
 
         // If this is a baseline, stop here since there are no new measurements to display
-
         if (!current || current.timepointType === 'baseline') {
             OHIF.log.info('Skipping New Measurements section');
             return;
@@ -80,9 +76,7 @@ Template.measurementTableView.helpers({
         // Retrieve all the data for this Measurement type which
         // do NOT match the Measurement Numbers obtained above
         const data = measurementApi.fetch(measurementTypeId, {
-            measurementNumber: {
-                $nin: numbers
-            }
+            measurementNumber: { $nin: numbers }
         });
 
         // Group the Measurements by Measurement Number
