@@ -10,6 +10,14 @@ Template.studyTimepointStudy.onCreated(() => {
 
     instance.loading = new ReactiveVar(false);
 
+    const studyMetadata = OHIF.viewerbase.getStudyMetadata(instance.data.study);
+    const firstInstance = studyMetadata.getFirstInstance();
+    if (firstInstance) {
+        instance.modalities = firstInstance.getRawValue('x00080060');
+        instance.studyDescription = firstInstance.getRawValue('x00081030');
+        instance.studyDate = firstInstance.getRawValue('x00080020');
+    }
+
     // Get the current study element
     instance.getStudyElement = (isGlobal=false) => {
         const studyInstanceUid = instance.data.study.studyInstanceUid;
@@ -144,7 +152,7 @@ Template.studyTimepointStudy.helpers({
 
     modalities() {
         const instance = Template.instance();
-        let modalities = instance.data.study.modalities;
+        const modalities = instance.modalities || 'UN';
 
         // Replace backslashes with spaces
         return modalities.replace(/\\/g, ' ');
@@ -154,20 +162,18 @@ Template.studyTimepointStudy.helpers({
         // Responsively styles the Modality Acronyms for studies
         // with more than one modality
         const instance = Template.instance();
-        const modalities = instance.data.study.modalities || 'UN';
+        const modalities = instance.modalities || 'UN';
         const numModalities = modalities.split(/\\/g).length;
 
         if (numModalities === 1) {
-            // If we have only one modality, it should take up the whole
-            // div.
+            // If we have only one modality, it should take up the whole div.
             return 'font-size: 1vw';
         } else if (numModalities === 2) {
             // If we have two, let them sit side-by-side
             return 'font-size: 0.75vw';
         } else {
-            // If we have more than two modalities, change the line
-            // height to display multiple rows, depending on the number
-            // of modalities we need to display.
+            // If we have more than two modalities, change the line height to display multiple rows,
+            // depending on the number of modalities we need to display.
             const lineHeight = Math.ceil(numModalities / 2) * 1.2;
             return 'line-height: ' + lineHeight + 'vh';
         }
