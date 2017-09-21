@@ -163,10 +163,7 @@ class ConformanceCriteria {
 
                     const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
                     promise.then(study => {
-                        let studyMetadata = study;
-                        if (!(study instanceof OHIF.viewerbase.metadata.StudyMetadata)) {
-                            studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
-                        }
+                        const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
 
                         data[measurementType].push({
                             measurement,

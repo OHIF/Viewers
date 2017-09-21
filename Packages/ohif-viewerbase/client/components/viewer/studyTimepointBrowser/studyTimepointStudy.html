@@ -8,7 +8,7 @@
                 <div class="studyModality">
                     <div class="studyModalityBox">
                         <div class="studyModalityText" style="{{modalityStyle}}">
-                            {{#if this.study.modalities}}
+                            {{#if instance.modalities}}
                                 {{modalities}}
                             {{else}}
                                 UN
@@ -16,8 +16,8 @@
                         </div>
                     </div>
                     <div class="studyText">
-                        <div class="studyDate">{{formatDA this.study.studyDate 'D-MMM-YYYY'}}</div>
-                        <div class="studyDescription">{{this.study.studyDescription}}</div>
+                        <div class="studyDate">{{formatDA instance.studyDate 'D-MMM-YYYY'}}</div>
+                        <div class="studyDescription">{{instance.studyDescription}}</div>
                     </div>
                 </div>
             </div>
