@@ -109,6 +109,14 @@ const getDataFromTimepoint = timepoint => {
         OHIF.log.warn('No Baseline found while opening a Follow-up Timepoint');
     }
 
+    const priorFilter = { latestDate: { $lt: timepoint.latestDate } };
+    const priorSorting = { sort: { latestDate: -1 } };
+    const prior = OHIF.studylist.timepointApi.timepoints.findOne(priorFilter, priorSorting);
+    if (prior && prior.timepointId !== baseline.timepointId) {
+        relatedStudies = relatedStudies.concat(prior.studyInstanceUids);
+        timepointIds.push(prior.timepointId);
+    }
+
     timepointIds.push(timepoint.timepointId);
 
     return {
