@@ -26,16 +26,8 @@ Template.userLogin.onCreated(() => {
                 Meteor.defer(() => displayComponent.$element.focus());
             };
 
-            // Handle success and redirect the user
-            const successHandler = () => {
-                const currentRoute = Router.current();
-                const redirect = currentRoute.params.query.redirect;
-                const path = redirect ? decodeURI(redirect) : '/';
-                return Router.go(path);
-            };
-
             // Call the login method
-            return OHIF.user.login(formData).then(successHandler).catch(errorHandler);
+            return OHIF.user.login(formData).catch(errorHandler);
         }
     };
 
