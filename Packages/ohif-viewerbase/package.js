@@ -151,6 +151,8 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/viewerMain/viewerMain.js', 'client');
     api.addFiles('client/components/viewer/viewerMain/viewerMain.styl', 'client');
 
+    api.addFiles('client/components/viewer/toolContextMenu/toolContextMenu.js', 'client');
+
     api.addFiles('client/components/viewer/imageControls/imageControls.html', 'client');
     api.addFiles('client/components/viewer/imageControls/imageControls.js', 'client');
     api.addFiles('client/components/viewer/imageControls/imageControls.styl', 'client');

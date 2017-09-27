@@ -6,6 +6,7 @@ import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
 import { annotateTextUtils } from './annotateTextUtils';
 import { textMarkerUtils } from './textMarkerUtils';
+import { isTouchDevice } from './helpers/isTouchDevice';
 
 let defaultTool = 'wwwc';
 let activeTool;
@@ -444,6 +445,51 @@ export const toolManager = {
 
         // Store the active tool in the session in order to enable reactivity
         Session.set('ToolManagerActiveTool', tool);
+    },
+
+    getNearbyToolData(element, coords, toolTypes) {
+        const allTools = this.getTools();
+        const touchDevice = isTouchDevice();
+        const nearbyTool = {};
+        let pointNearTool = false;
+
+        toolTypes.forEach(function(toolType) {
+            const toolData = cornerstoneTools.getToolState(element, toolType);
+            if (!toolData) {
+                return;
+            }
+
+            toolData.data.forEach(function(data, index) {
+                let toolInterfaceName = toolType;
+                let toolInterface;
+
+                // Edge cases where the tool is not the same as the typeName
+                if (toolType === 'simpleAngle') {
+                  toolInterfaceName = 'angle';
+                } else if (toolType === 'arrowAnnotate') {
+                  toolInterfaceName = 'annotate';
+                }
+
+                if (touchDevice) {
+                    toolInterface = allTools[toolInterfaceName].touch;
+                } else {
+                    toolInterface = allTools[toolInterfaceName].mouse;
+                }
+
+                if (toolInterface.pointNearTool(element, data, coords)) {
+                    pointNearTool = true;
+                    nearbyTool.tool = data;
+                    nearbyTool.index = index;
+                    nearbyTool.toolType = toolType;
+                }
+            });
+
+            if (pointNearTool) {
+                return false;
+            }
+        });
+
+        return pointNearTool ? nearbyTool : undefined;
     },
 
     getActiveTool() {
