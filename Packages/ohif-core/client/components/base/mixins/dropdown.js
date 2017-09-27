@@ -105,10 +105,19 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
 
                 // Change the dropdown position if mouse event was given
                 if (event) {
+                    const originalEventTouches = event.originalEvent.touches;
                     const position = {
-                        left: event.clientX,
-                        top: event.clientY
+                      left: 0,
+                      top: 0
                     };
+
+                    if (originalEventTouches && originalEventTouches.length > 0) {
+                        position.left = originalEventTouches[0].pageX;
+                        position.top = originalEventTouches[0].pageY;
+                    } else {
+                        position.left = event.clientX;
+                        position.top = event.clientY
+                    }
 
                     if (centered) {
                         // Center the dropdown menu based on the event mouse position
