@@ -17,7 +17,8 @@ Template.hotkeysForm.onCreated(() => {
         resetDefaults() {
             const { contextName } = instance.data;
             const dialogOptions = {
-                title: 'Reset Shortcuts to Default',
+                class: 'themed',
+                title: 'Reset Keyboard Shortcuts',
                 message: 'Are you sure you want to reset all the shortcuts to their defaults?'
             };
 
