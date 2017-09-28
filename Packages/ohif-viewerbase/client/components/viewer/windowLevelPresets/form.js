@@ -15,7 +15,8 @@ Template.windowLevelPresetsForm.onCreated(() => {
 
         resetDefaults() {
             const dialogOptions = {
-                title: 'Reset Window Level Presets to Default',
+                class: 'themed',
+                title: 'Reset Window/Levels Presets',
                 message: 'Are you sure you want to reset all the window level presets to their defaults?'
             };
 

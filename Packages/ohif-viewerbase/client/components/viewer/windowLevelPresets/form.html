@@ -6,8 +6,8 @@
                     <tr>
                         <th class="p-x-1 text-center">Preset</th>
                         <th class="p-x-1">Description</th>
-                        <th class="p-x-1">Window Level (WL)</th>
-                        <th class="p-x-1">Window Width (WW)</th>
+                        <th class="p-x-1">Window</th>
+                        <th class="p-x-1">Level</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -15,8 +15,8 @@
                         {{#group base='baseTr' key=(concat @index)}}
                             <td class="p-x-1 text-center">{{sum @index 1}}</td>
                             <td class="p-x-1">{{>inputText key='id' value=presetInputInformation.id}}</td>
-                            <td class="p-x-1">{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
                             <td class="p-x-1">{{>inputText key='ww' value=(filterNaN presetInputInformation.ww) dataType='Number'}}</td>
+                            <td class="p-x-1">{{>inputText key='wc' value=(filterNaN presetInputInformation.wc) dataType='Number'}}</td>
                         {{/group}}
                     {{/each}}
                 </tbody>

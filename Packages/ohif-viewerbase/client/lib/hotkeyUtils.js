@@ -107,7 +107,7 @@ Meteor.startup(function() {
 
     // Register the tool switching commands
     registerToolCommands({
-        wwwc: 'Window W/L',
+        wwwc: 'W/L',
         zoom: 'Zoom',
         angle: 'Angle Measurement',
         dragProbe: 'Pixel Probe',
