@@ -104,4 +104,9 @@ Notifications.show = ({ template, data, text, style, timeout=5000, promise }) =>
     return notificationPromise;
 };
 
+Notifications.info = o => Notifications.show(Object.assign({}, o, { style: 'info' }));
+Notifications.success = o => Notifications.show(Object.assign({}, o, { style: 'success' }));
+Notifications.warning = o => Notifications.show(Object.assign({}, o, { style: 'warning' }));
+Notifications.danger = o => Notifications.show(Object.assign({}, o, { style: 'danger' }));
+
 OHIF.ui.notifications = Notifications;

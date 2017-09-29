@@ -12,9 +12,8 @@ Template.hotkeysForm.onCreated(() => {
             const form = instance.$('form').first().data('component');
             const definitions = form.value();
             const promise = OHIF.hotkeys.store(contextName, definitions);
-            promise.then(() => OHIF.ui.notifications.show({
-                text: 'The keyboard shortcut preferences were successfully saved.',
-                style: 'success'
+            promise.then(() => OHIF.ui.notifications.success({
+                text: 'The keyboard shortcut preferences were successfully saved.'
             }));
             return promise;
         },
