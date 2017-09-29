@@ -37,7 +37,7 @@ Notifications.dismiss = id => {
 Notifications.clear = () => Array.from(Notifications.views.keys()).forEach(Notifications.dismiss);
 
 // Display a notification note
-Notifications.show = ({ template, promise, text, style, timeout=5000 }) => {
+Notifications.show = ({ template, data, text, style, timeout=5000, promise }) => {
     // Check if the given template exists
     const templateObject = Template[template];
     if (template && !templateObject) {
@@ -52,6 +52,8 @@ Notifications.show = ({ template, promise, text, style, timeout=5000 }) => {
 
     let notificationPromise;
     let templateData = {
+        template,
+        data,
         text,
         style,
         timeout,

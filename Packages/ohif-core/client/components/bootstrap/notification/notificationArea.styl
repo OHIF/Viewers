@@ -25,7 +25,7 @@
       position: relative
 
       &:not(.hide-dismiss)
-        padding-right: 40px
+        padding-right: 50px
 
         .note-dismiss
           display: block
@@ -46,8 +46,16 @@
         position: absolute
         text-align: center
         top: 50%
-        transform(translateY(-50%))
+        transform(translateY(-50%) rotate(0deg))
+        transform-origin(50% 50%)
+        transition(transform 0.3s ease)
         width: 100%
+
+      &:hover
+        background: rgba(0, 0, 0, 0.1)
+
+        i
+          transform(translateY(-50%) rotate(180deg))
 
   &.in
     max-height: auto
