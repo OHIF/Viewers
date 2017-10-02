@@ -9,5 +9,6 @@ import './getTimepointName';
 import './hangingProtocolCustomizations';
 import './MeasurementHandlers';
 import './MeasurementManager';
+import './navigateOverLesions';
 import './syncMeasurementAndToolData';
 import './toggleLabelButton';
