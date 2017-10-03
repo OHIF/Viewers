@@ -225,6 +225,10 @@ Template.viewer.onCreated(() => {
 
         firstMeasurementActivated = true;
     });
+
+    instance.measurementModifiedHandler = _.throttle((event, instance, eventData) => {
+        OHIF.measurements.MeasurementHandlers.onModified(event, instance, eventData);
+    }, 300);
 });
 
 /**
@@ -362,7 +366,7 @@ Template.viewer.events({
     },
 
     'CornerstoneToolsMeasurementModified .imageViewerViewport'(event, instance, eventData) {
-        OHIF.measurements.MeasurementHandlers.onModified(event, instance, eventData);
+        instance.measurementModifiedHandler(event, instance, eventData);
     },
 
     'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance, eventData) {
