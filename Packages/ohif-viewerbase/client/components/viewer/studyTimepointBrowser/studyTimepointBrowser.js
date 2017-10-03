@@ -140,6 +140,13 @@ Template.studyTimepointBrowser.helpers({
         return Template.instance().showAdditionalTimepoints.get();
     },
 
+    hasAdditionalTimepoints() {
+        const instance = Template.instance();
+        const { timepointApi } = instance.data;
+        const allTimepoints = timepointApi && timepointApi.all();
+        return allTimepoints && allTimepoints.length > 1;
+    },
+
     // Get the timepoints to be listed
     timepoints() {
         const instance = Template.instance();
