@@ -23,6 +23,7 @@ Package.onUse(function(api) {
 
     api.addAssets('public/js/cornerstoneWADOImageLoaderCodecs.es5.js', 'client');
     api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.es5.js', 'client');
+    api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.min.js.map', 'client');
 
     api.mainModule('main.js', 'client');
 
