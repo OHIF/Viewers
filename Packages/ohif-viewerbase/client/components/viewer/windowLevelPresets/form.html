@@ -1,5 +1,5 @@
 <template name="windowLevelPresetsForm">
-    {{#form (extend this api=instance.api class='form-themed')}}
+    {{#form (extend api=instance.api class='form-themed')}}
         <div class="form-content">
             <table class="full-width">
                 <thead>
@@ -25,6 +25,7 @@
         <div class="form-buttons clearfix">
             {{#button class='btn btn-danger pull-left' action='resetDefaults'}}Reset to Defaults{{/button}}
             {{#button class='btn btn-primary pull-right' action='save'}}Save{{/button}}
+            {{#button class='btn btn-secondary pull-right m-r-1' tagAttributes=(extend '' data-dismiss='modal')}}Close{{/button}}
         </div>
     {{/form}}
 </template>

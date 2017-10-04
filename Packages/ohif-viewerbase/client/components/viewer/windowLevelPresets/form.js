@@ -10,7 +10,11 @@ Template.windowLevelPresetsForm.onCreated(() => {
         save() {
             const form = instance.$('form').first().data('component');
             const definitions = form.value();
-            wlPresets.store(definitions);
+            const promise = wlPresets.store(definitions);
+            promise.then(() => OHIF.ui.notifications.success({
+                text: 'The Window/Levels preferences were successfully saved.'
+            }));
+            return promise;
         },
 
         resetDefaults() {
