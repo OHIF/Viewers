@@ -48,9 +48,7 @@ Meteor.startup(function() {
 
             // Check if server was already added. Update it if so and insert if not
             if (existingServer) {
-                const newServerData = _.clone(existingServer);
-                delete newServerData._id;
-                Servers.update(existingServer._id, { $set: newServerData });
+                Servers.update(existingServer._id, { $set: server });
             } else {
                 Servers.insert(server);
             }
