@@ -26,6 +26,7 @@ export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
         label: 'Authentication',
+        defaultValue: 'orthanc:orthanc',
         optional: true
     },
     logRequests: {
