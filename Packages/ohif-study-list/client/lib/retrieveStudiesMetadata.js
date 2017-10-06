@@ -10,14 +10,14 @@ import { OHIF } from 'meteor/ohif:core';
  * @return Promise
  */
 OHIF.studylist.retrieveStudiesMetadata = (studyInstanceUids, seriesInstanceUids, doneCallback, failCallback) => {
-    // Check to make sure studyInstanceUids were actually input
-    if (!studyInstanceUids || !studyInstanceUids.length) {
-        if (failCallback && typeof failCallback === 'function') {
-            failCallback('No studyInstanceUids were input');
-        }
-
-        return;
-    }
+    // // Check to make sure studyInstanceUids were actually input
+    // if (!studyInstanceUids || !studyInstanceUids.length) {
+    //     if (failCallback && typeof failCallback === 'function') {
+    //         failCallback('No studyInstanceUids were input');
+    //     }
+    //
+    //     return;
+    // }
 
     // Create an empty array to store the Promises for each metaData retrieval call
     const promises = [];

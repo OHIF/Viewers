@@ -193,8 +193,7 @@ class TimepointApi {
 
     // Return only the key timepoints (current, prior, nadir and baseline)
     key() {
-        // Create a new Mini Mongo Collection to store the result
-        const result = new Mongo.Collection(null);
+        const result = [];
 
         // Get all the timepoints
         const all = this.all();
@@ -202,28 +201,27 @@ class TimepointApi {
         // Iterate over each timepoint and insert the key ones in the result
         _.each(all, (timepoint, index) => {
             if (index < 2 || index === (all.length - 1)) {
-                result.insert(timepoint);
+                result.push(timepoint);
             }
         });
 
         // Return the resulting timepoints
-        return result.find().fetch();
+        return result;
     }
 
     // Return only the timepoints for the given study
     study(studyInstanceUid) {
-        // Create a new Mini Mongo Collection to store the result
-        const result = new Mongo.Collection(null);
+        const result = [];
 
         // Iterate over each timepoint and insert the key ones in the result
         _.each(this.all(), (timepoint, index) => {
             if (_.contains(timepoint.studyInstanceUids, studyInstanceUid)) {
-                result.insert(timepoint);
+                result.push(timepoint);
             }
         });
 
         // Return the resulting timepoints
-        return result.find().fetch();
+        return result;
     }
 
     // Return the timepoint's name

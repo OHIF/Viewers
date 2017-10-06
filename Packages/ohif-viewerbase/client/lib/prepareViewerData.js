@@ -1,3 +1,4 @@
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -9,32 +10,37 @@ import { OHIF } from 'meteor/ohif:core';
  * @param {Object} timepointsFilter An object containing the filter to retrieve the timepoints
  * @return {Promise} Promise that will be resolved with the studies when the metadata is loaded
  */
-export const prepareViewerData = ({ studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={}}) => {
+export const prepareViewerData = ({ studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} }) => {
     // Clear the cornerstone tool data to sync the measurements with the measurements API
     cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
 
     // Retrieve the studies metadata
     const promise = new Promise((resolve, reject) => {
         const processData = viewerData => {
-            OHIF.studylist.retrieveStudiesMetadata(viewerData.studyInstanceUids, viewerData.seriesInstanceUids).then(studies => {
-                // Add additional metadata to our study from the studylist
-                studies.forEach(study => {
-                    const studylistStudy = OHIF.studylist.collections.Studies.findOne({
-                        studyInstanceUid: study.studyInstanceUid
-                    });
-
-                    if (!studylistStudy) {
-                        return;
-                    }
-
-                    Object.assign(study, studylistStudy);
-                });
-
-                resolve({
-                    studies,
-                    viewerData
-                });
-            }).catch(reject);
+            const studies = [];
+            resolve({
+                studies,
+                viewerData
+            });
+            // OHIF.studylist.retrieveStudiesMetadata(viewerData.studyInstanceUids, viewerData.seriesInstanceUids).then(studies => {
+            //     // Add additional metadata to our study from the studylist
+            //     studies.forEach(study => {
+            //         const studylistStudy = OHIF.studylist.collections.Studies.findOne({
+            //             studyInstanceUid: study.studyInstanceUid
+            //         });
+            //
+            //         if (!studylistStudy) {
+            //             return;
+            //         }
+            //
+            //         Object.assign(study, studylistStudy);
+            //     });
+            //
+            //     resolve({
+            //         studies,
+            //         viewerData
+            //     });
+            // }).catch(reject);
         };
 
         // Check if the studies are already given and ignore the timepoint ID if so
@@ -79,7 +85,7 @@ const buildViewerDataFromTimepointId = timepointId => {
  * @returns {Object} An object containing the related studies UIDs and timepoint IDs
  */
 const getDataFromTimepoint = timepoint => {
-    let relatedStudies = timepoint.studyInstanceUids;
+    let relatedStudies = _.clone(timepoint.studyInstanceUids);
 
     // If this is the baseline, we should stop here and return the relevant studies
     if (isBaseline(timepoint)) {
@@ -116,6 +122,8 @@ const getDataFromTimepoint = timepoint => {
         relatedStudies = relatedStudies.concat(prior.studyInstanceUids);
         timepointIds.push(prior.timepointId);
     }
+
+    relatedStudies = _.uniq(relatedStudies);
 
     timepointIds.push(timepoint.timepointId);
 
