@@ -25,15 +25,23 @@ Template.standaloneViewerMain.onRendered(() => {
 
     const studies = instance.data.studies;
     const parentElement = instance.$('#layoutManagerTarget').get(0);
+    const studyPrefetcher = OHIF.viewerbase.StudyPrefetcher.getInstance();
+    instance.studyPrefetcher = studyPrefetcher;
+
+    instance.studyLoadingListener = OHIF.viewerbase.StudyLoadingListener.getInstance();
+    instance.studyLoadingListener.clear();
+    instance.studyLoadingListener.addStudies(studies);
+
     OHIF.viewerbase.layoutManager = new OHIF.viewerbase.LayoutManager(parentElement, studies);
     OHIF.viewerbase.layoutManager.updateViewports();
+
+    studyPrefetcher.setStudies(studies);
 
     // Enable hotkeys
     OHIF.viewerbase.hotkeyUtils.enableHotkeys();
 });
 
 Template.standaloneViewerMain.onDestroyed(() => {
-
     // Remove the Window resize listener
     window.removeEventListener('resize', window.ResizeViewportManager.getResizeHandler());
 
@@ -41,4 +49,13 @@ Template.standaloneViewerMain.onDestroyed(() => {
     OHIF.viewer.updateImageSynchronizer.destroy();
 
     delete OHIF.viewerbase.layoutManager;
+
+    // Stop prefetching when we close the viewer
+    instance.studyPrefetcher.destroy();
+
+    // Destroy stack loading listeners when we close the viewer
+    instance.studyLoadingListener.clear();
+
+    // Clear references to all stacks in the StackManager
+    OHIF.viewerbase.stackManager.clearStacks();
 });
