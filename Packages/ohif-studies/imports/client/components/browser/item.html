@@ -1,0 +1,21 @@
+<template name="studyBrowserItem">
+    <div class="study-browser-item {{this.settings.studyItemClass}} {{#if isActive}}active{{/if}} {{#if isLoading}}loading{{/if}}" data-uid="{{this.studyInformation.studyInstanceUid}}">
+        <div class="study-item">
+            {{#if isLoading}}
+                {{>loadingText}}
+            {{/if}}
+            <div class="study-item-box">
+                <div class="study-modality">
+                    <div class="study-modality-text" style="{{modalityStyle}}">{{instance.modalities}}</div>
+                </div>
+                <div class="study-text">
+                    <div class="study-date">{{formatDA this.studyInformation.date 'D-MMM-YYYY'}}</div>
+                    <div class="study-description">{{this.studyInformation.description}}</div>
+                </div>
+            </div>
+        </div>
+        {{#if this.settings.studyTemplate}}
+            {{>Template.dynamic template=this.settings.studyTemplate data=(clone this)}}
+        {{/if}}
+    </div>
+</template>

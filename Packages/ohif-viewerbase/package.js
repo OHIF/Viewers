@@ -197,7 +197,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointBrowser.js', 'client');
 
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.html', 'client');
-    api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.styl', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.js', 'client');
 
     api.addFiles('client/components/viewer/windowLevelPresets/form.html', 'client');

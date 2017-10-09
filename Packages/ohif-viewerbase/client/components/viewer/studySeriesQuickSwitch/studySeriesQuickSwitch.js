@@ -53,7 +53,7 @@ Template.studySeriesQuickSwitch.onCreated(() => {
 
 const checkScrollArea = element => {
     const { scrollHeight, offsetHeight, scrollTop } = element;
-    
+
     const matrix = $(element).find('.thumbnailsWrapper').css('transform');
 
     let translateY = 0;
@@ -92,7 +92,7 @@ Template.studySeriesQuickSwitch.events({
         instance.$('.js-quick-switch, .switchSectionSeries').removeClass('hover');
         instance.$('.quickSwitchWrapper').removeClass('overlay');
     },
-    'click .studyTimepointStudy'(event, instance) {
+    'click .study-browser-item'(event, instance) {
         instance.$('.switchSectionSeries').addClass('hover');
     },
     'scroll .scrollArea'(event) {
