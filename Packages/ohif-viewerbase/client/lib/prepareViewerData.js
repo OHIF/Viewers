@@ -17,30 +17,25 @@ export const prepareViewerData = ({ studyInstanceUids, seriesInstanceUids, timep
     // Retrieve the studies metadata
     const promise = new Promise((resolve, reject) => {
         const processData = viewerData => {
-            const studies = [];
-            resolve({
-                studies,
-                viewerData
-            });
-            // OHIF.studylist.retrieveStudiesMetadata(viewerData.studyInstanceUids, viewerData.seriesInstanceUids).then(studies => {
-            //     // Add additional metadata to our study from the studylist
-            //     studies.forEach(study => {
-            //         const studylistStudy = OHIF.studylist.collections.Studies.findOne({
-            //             studyInstanceUid: study.studyInstanceUid
-            //         });
-            //
-            //         if (!studylistStudy) {
-            //             return;
-            //         }
-            //
-            //         Object.assign(study, studylistStudy);
-            //     });
-            //
-            //     resolve({
-            //         studies,
-            //         viewerData
-            //     });
-            // }).catch(reject);
+            OHIF.studylist.retrieveStudiesMetadata(viewerData.studyInstanceUids, viewerData.seriesInstanceUids).then(studies => {
+                // Add additional metadata to our study from the studylist
+                studies.forEach(study => {
+                    const studylistStudy = OHIF.studylist.collections.Studies.findOne({
+                        studyInstanceUid: study.studyInstanceUid
+                    });
+
+                    if (!studylistStudy) {
+                        return;
+                    }
+
+                    Object.assign(study, studylistStudy);
+                });
+
+                resolve({
+                    studies,
+                    viewerData
+                });
+            }).catch(reject);
         };
 
         // Check if the studies are already given and ignore the timepoint ID if so

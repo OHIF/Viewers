@@ -53,7 +53,7 @@ Template.studyTimepoint.events({
         }
 
         // Removes selected state from all studies but the triggered study
-        $studiesTarget.find('.studyTimepointStudy').not($selection).removeClass('active');
+        $studiesTarget.find('.study-browser-item').not($selection).removeClass('active');
 
         if (changed.isQuickSwitch) {
             // Reset active studies map to allow only one active study

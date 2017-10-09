@@ -21,7 +21,7 @@ Template.studyTimepointStudy.onCreated(() => {
     // Get the current study element
     instance.getStudyElement = (isGlobal=false) => {
         const studyInstanceUid = instance.data.study.studyInstanceUid;
-        const selector = `.studyTimepointStudy[data-uid='${studyInstanceUid}']`;
+        const selector = `.study-browser-item[data-uid='${studyInstanceUid}']`;
         return isGlobal ? $(selector) : instance.$browser.find(selector);
     };
 
@@ -73,7 +73,7 @@ Template.studyTimepointStudy.onRendered(() => {
     const instance = Template.instance();
 
     // Keep the study timepoint browser element to manipulate elements even after DOM is removed
-    instance.$browser = instance.$('.studyTimepointStudy').closest('.studyTimepointBrowser');
+    instance.$browser = instance.$('.study-browser-item').closest('.studyTimepointBrowser');
 
     instance.initializeStudyWrapper();
 });
@@ -87,23 +87,23 @@ Template.studyTimepointStudy.events({
     },
 
     // Transfers the active state to the current study
-    'click .studyQuickSwitchTimepoint .studyModality'(event, instance) {
+    'click .studyQuickSwitchTimepoint .study-item-container'(event, instance) {
         instance.select(true);
     },
 
     // Set loading state
-    'loadStarted .studyTimepointStudy'(event, instance) {
+    'loadStarted .study-browser-item'(event, instance) {
         instance.loading.set(true);
     },
 
     // Remove loading state and fix the thumbnails wrappers height
-    'loadEnded .studyTimepointStudy'(event, instance) {
+    'loadEnded .study-browser-item'(event, instance) {
         instance.loading.set(false);
         instance.initializeStudyWrapper();
     },
 
     // Changes the current study selection for the clicked study
-    'click .studyModality'(event, instance) {
+    'click .study-item-box'(event, instance) {
         const studyData = instance.data.study;
         const { studyInstanceUid } = studyData;
         const isQuickSwitch = instance.isQuickSwitch();
@@ -128,7 +128,7 @@ Template.studyTimepointStudy.events({
                 }).catch(error => {
                     OHIF.log.error(`There was an error trying to retrieve the study\'s metadata for studyInstanceUid: ${studyInstanceUid}`);
                     OHIF.log.error(error.stack);
-        
+
                     OHIF.log.trace();
                 });
             } else {
@@ -167,15 +167,15 @@ Template.studyTimepointStudy.helpers({
 
         if (numModalities === 1) {
             // If we have only one modality, it should take up the whole div.
-            return 'font-size: 1vw';
+            return 'font-size: 1em';
         } else if (numModalities === 2) {
             // If we have two, let them sit side-by-side
-            return 'font-size: 0.75vw';
+            return 'font-size: 0.75em';
         } else {
             // If we have more than two modalities, change the line height to display multiple rows,
             // depending on the number of modalities we need to display.
             const lineHeight = Math.ceil(numModalities / 2) * 1.2;
-            return 'line-height: ' + lineHeight + 'vh';
+            return 'line-height: ' + lineHeight + 'em';
         }
     }
 });
