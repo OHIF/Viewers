@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { parseFloatArray } from 'meteor/ohif:study-list/server/lib/parseFloatArray';
+import { parseFloatArray } from 'meteor/ohif:studies/imports/server/lib/parseFloatArray';
 
 /**
  * Returns the value of the element (e.g. '00280009')
@@ -151,7 +151,7 @@ function resultDataToStudyMetadata(studyInstanceUid, resultData) {
  * @param studyInstanceUid
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
-Services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
+OHIF.studies.services.DIMSE.RetrieveMetadata = function(studyInstanceUid) {
     // TODO: Check which peer it should point to
     const activeServer = OHIF.servers.getCurrentServer().peers[0];
     const supportsInstanceRetrievalByStudyUid = activeServer.supportsInstanceRetrievalByStudyUid;

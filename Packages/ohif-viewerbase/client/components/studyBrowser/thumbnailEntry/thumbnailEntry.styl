@@ -47,13 +47,7 @@ $seriesCountBackgroundColor = #678696
             margin-left: 0
             width: auto
 
-  .seriesDescription
-    float: left
-    width: calc(100% - 50px)
-
   .seriesInformation
-    display: table
-    float: right
     padding-right: 4px
     max-width: 50px
 
@@ -66,6 +60,9 @@ $seriesCountBackgroundColor = #678696
       float: right
       font-size: 12px
       margin-left: 4px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
       width: calc(100% - 15px)
 
     .icon

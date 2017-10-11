@@ -68,7 +68,7 @@ Template.studyTimepoint.events({
             $selection.removeClass('loading');
             $selection.toggleClass('active');
             // Recalculates the timepoint height to make CSS transition smoother
-            const $thumbnails = $selection.find('.studyTimepointThumbnails');
+            const $thumbnails = $selection.find('.study-browser-series');
             $thumbnails.one('transitionend', () => $timepoint.trigger('displayStateChanged'));
         }
 

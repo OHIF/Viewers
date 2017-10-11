@@ -46,7 +46,7 @@ function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, 
         const element = $viewports.get(viewportIndex);
         const startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
         startLoadingHandler(element);
-        OHIF.studylist.retrieveStudyMetadata(studyInstanceUid).then(study => {
+        OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
             OHIF.log.warn('renderIntoViewport');
 
             // Double check to make sure this study wasn't already inserted

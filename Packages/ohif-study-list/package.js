@@ -44,6 +44,4 @@ Package.onUse(function(api) {
 
     // Client imports
     api.addFiles('client/index.js', 'client');
-
-    api.export('Services', 'server');
 });

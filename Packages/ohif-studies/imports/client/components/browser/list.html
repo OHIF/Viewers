@@ -1,5 +1,5 @@
 <template name="studyBrowserList">
-    <div class="study-browser-list {{this.settings.studyListClass}}">
+    <div class="study-browser-list {{this.class}}">
         {{#each studyInformation in studiesInformation}}
             {{>studyBrowserItem (clone this studyInformation=studyInformation)}}
         {{/each}}

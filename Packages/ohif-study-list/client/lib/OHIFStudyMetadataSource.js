@@ -13,7 +13,7 @@ export class OHIFStudyMetadataSource extends OHIF.viewerbase.StudyMetadataSource
      * @return {Promise} A Promise object
      */
     getByInstanceUID(studyInstanceUID) {
-        return OHIF.studylist.retrieveStudyMetadata(studyInstanceUID);
+        return OHIF.studies.retrieveStudyMetadata(studyInstanceUID);
     }
 
     /**

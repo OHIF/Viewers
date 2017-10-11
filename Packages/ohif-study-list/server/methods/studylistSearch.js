@@ -18,9 +18,9 @@ Meteor.methods({
 
         try {
             if (server.type === 'dicomWeb') {
-                return Services.QIDO.Studies(server, filter);
+                return OHIF.studies.services.QIDO.Studies(server, filter);
             } else if (server.type === 'dimse') {
-                return Services.DIMSE.Studies(filter);
+                return OHIF.studies.services.DIMSE.Studies(filter);
             }
         } catch (error) {
             OHIF.log.trace();

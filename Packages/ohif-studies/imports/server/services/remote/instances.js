@@ -1,14 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-
-/**
- * Creates a QIDO URL given the server settings and a study instance UID
- * @param server
- * @param studyInstanceUid
- * @returns {string} URL to be used for QIDO calls
- */
-function buildUrl(server, studyInstanceUid) {
-    return server.qidoRoot + '/studies/' + studyInstanceUid + '/instances';
-}
+import { remoteGetValue } from '../../lib/remoteGetValue';
 
 /**
  * Parses data returned from a QIDO search and transforms it into
@@ -27,15 +18,15 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         // Use seriesMap to cache series data
         // If the series instance UID has already been used to
         // process series data, continue using that series
-        var seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
+        var seriesInstanceUid = remoteGetValue(instance['0020,000e']);
         var series = seriesMap[seriesInstanceUid];
 
         // If no series data exists in the seriesMap cache variable,
         // process any available series data
-        if (!series) {
+        if(!series) {
             series = {
-                seriesInstanceUid: seriesInstanceUid,
-                seriesNumber: DICOMWeb.getString(instance['00200011']),
+                seriesInstanceUid : seriesInstanceUid,
+                seriesNumber : parseFloat(remoteGetValue(instance['0020,0011'])),
                 instances: []
             };
 
@@ -53,42 +44,42 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         // manually create a WADO-URI from the UIDs
         // NOTE: Haven't been able to get Orthanc's WADO-URI to work yet - maybe its not configured?
-        var sopInstanceUid = DICOMWeb.getString(instance['00080018']);
-        var uri = server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + '&contentType=application%2Fdicom';
+        var sopInstanceUid = remoteGetValue(instance['0008,0018']);
+        var uri = server.wadoUriRoot + '?requestType=WADO&studyUID=' + studyInstanceUid + '&seriesUID=' + seriesInstanceUid + '&objectUID=' + sopInstanceUid + "&contentType=application%2Fdicom";
 
         // Add this instance to the current series
         series.instances.push({
-            sopClassUid: DICOMWeb.getString(instance['00080016']),
+            sopClassUid: remoteGetValue(instance['0008,0016']),
             sopInstanceUid: sopInstanceUid,
             uri: uri,
-            instanceNumber: DICOMWeb.getString(instance['00200013'])
+            instanceNumber: parseFloat(remoteGetValue(instance['0020,0013']))
         });
-    });
-    return seriesList;
+  });
+  return seriesList;
 }
 
 /**
  * Retrieve a set of instances using a QIDO call
  * @param server
  * @param studyInstanceUid
- * @throws ECONNREFUSED
  * @returns {{wadoUriRoot: String, studyInstanceUid: String, seriesList: Array}}
  */
-Services.QIDO.Instances = function(server, studyInstanceUid) {
-    var url = buildUrl(server, studyInstanceUid);
+OHIF.studies.services.REMOTE.Instances = function(server, studyInstanceUid) {
+    var parameters = {
+        PatientName: "",
+        PatientID: "",
+        AccessionNumber: "",
+        SeriesInstanceUID: "",
+        SeriesNumber : "",
+        SOPClassUID : "",
+        InstanceNumber : ""
+    };
 
-    try {
-        var result = DICOMWeb.getJSON(url, server.requestOptions);
+    var remote = new OrthancRemote(server.root, server.sourceAE);
 
-        return {
-            wadoUriRoot: server.wadoUriRoot,
-            studyInstanceUid: studyInstanceUid,
-            seriesList: resultDataToStudyMetadata(server, studyInstanceUid, result.data)
-        };
-    } catch (error) {
-        OHIF.log.trace();
-
-        throw error;
-    }
-
+    return {
+        wadoUriRoot: server.wadoUriRoot,
+        studyInstanceUid: studyInstanceUid,
+        seriesList: resultDataToStudyMetadata(server, studyInstanceUid, remote.findInstances(server.modality, studyInstanceUid, null, parameters))
+    };
 };

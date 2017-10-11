@@ -161,7 +161,7 @@ class ConformanceCriteria {
                         return;
                     }
 
-                    const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
+                    const promise = OHIF.studies.retrieveStudyMetadata(studyInstanceUid);
                     promise.then(study => {
                         const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
 

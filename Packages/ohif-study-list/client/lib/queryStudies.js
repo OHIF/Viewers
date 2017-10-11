@@ -12,7 +12,7 @@ queryStudies = function(studiesToQuery, options) {
     const promises = [];
 
     studiesToQuery.forEach(studyToQuery => {
-        const promise = OHIF.studylist.retrieveStudyMetadata(studyToQuery.studyInstanceUid);
+        const promise = OHIF.studies.retrieveStudyMetadata(studyToQuery.studyInstanceUid);
         promise.then(study => {
             studiesQueried++;
             notify({

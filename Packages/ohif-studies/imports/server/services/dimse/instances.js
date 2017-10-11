@@ -57,7 +57,7 @@ function resultDataToStudyMetadata(resultData, studyInstanceUid) {
  * @param studyInstanceUid
  * @returns {{wadoUriRoot: String, studyInstanceUid: String, seriesList: Array}}
  */
-Services.DIMSE.Instances = function(studyInstanceUid) {
+OHIF.studies.services.DIMSE.Instances = function(studyInstanceUid) {
     //var url = buildUrl(server, studyInstanceUid);
     const result = DIMSE.retrieveInstances(studyInstanceUid);
 

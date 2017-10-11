@@ -32,7 +32,7 @@ function resultDataToStudies(resultData) {
     return studies;
 }
 
-Services.DIMSE.Studies = function(filter) {
+OHIF.studies.services.DIMSE.Studies = function(filter) {
     OHIF.log.info('Services.DIMSE.Studies');
 
     let filterStudyDate = '';

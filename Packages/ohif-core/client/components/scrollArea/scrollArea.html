@@ -1,0 +1,7 @@
+<template name="scrollArea">
+    <div class="scroll-area {{this.class}}">
+        <div class="scrollable {{#if instance.config.scrollX}}scroll-x{{/if}} {{#if instance.config.scrollY}}scroll-y{{/if}}">
+            {{>Template.contentBlock}}
+        </div>
+    </div>
+</template>

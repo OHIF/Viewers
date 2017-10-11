@@ -46,12 +46,24 @@ $spacerY = 12px
           theme('background-color', '$activeColor')
           border-color: $boxActiveBorderColor
 
-  &:not(.active) .studyTimepointThumbnails
+  &:not(.active) .study-browser-series
     max-height: 0 !important
 
-  .studyTimepointThumbnails
+    .study-series-container
+      opacity: 0
+      transform(translateY(-100%))
+
+  .study-browser-series
     overflow: hidden
+    transform(translateY(0))
+    transform-origin(50% 0%)
     transition($sidebarTransition)
+
+    .study-series-container
+      opacity: 1
+      transition($sidebarTransition)
+      transform(translateY(0))
+      transform-origin(50% 0%)
 
 .study-item-box
   border: 1px solid $boxBorderColor
