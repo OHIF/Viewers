@@ -24,17 +24,23 @@ class UserData {
         // Check if there is an user logged in
         OHIF.MongoUtils.validateUser();
 
-        // Build the query to update only the current user's data
-        const query = { _id: Meteor.userId() };
+        // Get the user data
+        const user = Meteor.user();
 
         // Build the path to the persistent data with the given key
         const persistentPath = `profile.persistent.${key}`;
 
-        // Build the data to be updated
-        const data = { $set: { [persistentPath]: value } };
+        // Build the query to update the user's data
+        let query;
+        if (!user.profile.persistent) {
+            const persistentData = OHIF.object.getNestedObject({ [key]: value });
+            query = { $set: { 'profile.persistent': persistentData } };
+        } else {
+            query = { $set: { [persistentPath]: value } };
+        }
 
         // Update the user's profile data with the persistent information
-        Accounts.users.update(query, data, OHIF.MongoUtils.writeCallback);
+        Accounts.users.update(user._id, query, OHIF.MongoUtils.writeCallback);
     }
 
 }
