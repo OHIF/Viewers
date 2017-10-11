@@ -1,5 +1,5 @@
 <template name="studyBrowserItem">
-    <div class="study-browser-item {{this.settings.studyItemClass}} {{#if isActive}}active{{/if}} {{#if isLoading}}loading{{/if}}" data-uid="{{this.studyInformation.studyInstanceUid}}">
+    <div class="study-browser-item {{this.studyItemClass}} {{#if isActive}}active{{/if}} {{#if isLoading}}loading{{/if}}" data-uid="{{this.studyInformation.studyInstanceUid}}">
         <div class="study-item">
             {{#if isLoading}}
                 {{>loadingText}}
@@ -14,8 +14,8 @@
                 </div>
             </div>
         </div>
-        {{#if this.settings.studyTemplate}}
-            {{>Template.dynamic template=this.settings.studyTemplate data=(clone this)}}
+        {{#if this.studyChildTemplate}}
+            {{>Template.dynamic template=this.studyChildTemplate data=(clone this)}}
         {{/if}}
     </div>
 </template>

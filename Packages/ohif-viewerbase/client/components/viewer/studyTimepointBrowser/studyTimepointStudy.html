@@ -18,10 +18,12 @@
                 </div>
             </div>
             {{#if isSidebar}}
-                <div class="studyTimepointThumbnails">
-                    {{#each thumbnail in (studyThumbnails this.study)}}
-                        {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
-                    {{/each}}
+                <div class="study-browser-series">
+                    <div class="study-series-container">
+                        {{#each thumbnail in (studyThumbnails this.study)}}
+                            {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
+                        {{/each}}
+                    </div>
                 </div>
             {{/if}}
         </div>

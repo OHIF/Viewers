@@ -91,7 +91,7 @@ function resultDataToStudies(resultData) {
     return studies;
 }
 
-Services.QIDO.Studies = function(server, filter) {
+OHIF.studies.services.QIDO.Studies = function(server, filter) {
     var url = filterToQIDOURL(server, filter);
 
     try {

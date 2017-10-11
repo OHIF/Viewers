@@ -52,7 +52,7 @@ Template.studyTimepointStudy.onCreated(() => {
         }
 
         const $study = instance.getStudyElement();
-        const $thumbnails = $study.find('.studyTimepointThumbnails');
+        const $thumbnails = $study.find('.study-browser-series');
         $study.addClass('active');
         // If element already has max-height property set, .height()
         // will return that value, so remove it to recalculate
@@ -80,7 +80,7 @@ Template.studyTimepointStudy.onRendered(() => {
 
 Template.studyTimepointStudy.events({
     // Recalculates the timepoint height to make CSS transition smoother
-    'transitionend .studyTimepointThumbnails'(event, instance) {
+    'transitionend .study-browser-series'(event, instance) {
         if (event.target === event.currentTarget) {
             $(event.currentTarget).closest('.studyTimepoint').trigger('displayStateChanged');
         }
@@ -117,7 +117,7 @@ Template.studyTimepointStudy.events({
             if (!alreadyLoaded) {
                 const $studies = instance.getStudyElement(true);
                 $studies.trigger('loadStarted');
-                OHIF.studylist.retrieveStudyMetadata(studyInstanceUid).then(study => {
+                OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
                     instance.data.study = study;
                     OHIF.viewer.Studies.insert(study);
 

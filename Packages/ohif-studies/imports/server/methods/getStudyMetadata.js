@@ -19,9 +19,9 @@ Meteor.methods({
 
         try {
             if (server.type === 'dicomWeb') {
-                return Services.WADO.RetrieveMetadata(server, studyInstanceUid);
+                return OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid);
             } else if (server.type === 'dimse') {
-                return Services.DIMSE.RetrieveMetadata(studyInstanceUid);
+                return OHIF.studies.services.DIMSE.RetrieveMetadata(studyInstanceUid);
             }
         } catch (error) {
             OHIF.log.trace();

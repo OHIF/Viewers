@@ -337,20 +337,20 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * @param studyInstanceUid
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
-Services.WADO.RetrieveMetadata = function(server, studyInstanceUid) {
+OHIF.studies.services.WADO.RetrieveMetadata = function(server, studyInstanceUid) {
     var url = buildUrl(server, studyInstanceUid);
 
     try {
         var result = DICOMWeb.getJSON(url, server.requestOptions);
-    
+
         var study = resultDataToStudyMetadata(server, studyInstanceUid, result.data);
         if (!study) {
             study = {};
         }
-    
+
         study.wadoUriRoot = server.wadoUriRoot;
         study.studyInstanceUid = studyInstanceUid;
-    
+
         return study;
     } catch (error) {
         OHIF.log.trace();
