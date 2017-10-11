@@ -4,13 +4,14 @@ OHIF.object = {};
 
 // Transforms a shallow object with keys separated by "." into a nested object
 OHIF.object.getNestedObject = shallowObject => {
-    var nestedObject = {};
-    for (var key in shallowObject) {
-        var value = shallowObject[key];
-        var propertyArray = key.split('.');
-        var currentObject = nestedObject;
+    const nestedObject = {};
+    for (let key in shallowObject) {
+        if (!shallowObject.hasOwnProperty(key)) continue;
+        const value = shallowObject[key];
+        const propertyArray = key.split('.');
+        let currentObject = nestedObject;
         while (propertyArray.length) {
-            var currentProperty = propertyArray.shift();
+            const currentProperty = propertyArray.shift();
             if (!propertyArray.length) {
                 currentObject[currentProperty] = value;
             } else {
@@ -28,11 +29,12 @@ OHIF.object.getNestedObject = shallowObject => {
 
 // Transforms a nested object into a shallowObject merging its keys with "." character
 OHIF.object.getShallowObject = nestedObject => {
-    var shallowObject = {};
-    var putValues = function(baseKey, nestedObject, resultObject) {
-        for (var key in nestedObject) {
-            var currentKey = baseKey ? baseKey + '.' + key : key;
-            var currentValue = nestedObject[key];
+    const shallowObject = {};
+    const putValues = (baseKey, nestedObject, resultObject) => {
+        for (let key in nestedObject) {
+            if (!nestedObject.hasOwnProperty(key)) continue;
+            let currentKey = baseKey ? `${baseKey}.${key}` : key;
+            const currentValue = nestedObject[key];
             if (typeof currentValue === 'object') {
                 if (currentValue instanceof Array) {
                     currentKey += '[]';
