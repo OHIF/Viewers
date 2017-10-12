@@ -82,7 +82,7 @@ DIMSE.associate = function(contexts, callback, options) {
     const socket = conn.associate(options, function(pdu) {
         // associated
         OHIF.log.info('==Associated');
-        callback(null, pdu);
+        callback.call(this, null, pdu);
     });
 
     socket.on('error', function (error) {
