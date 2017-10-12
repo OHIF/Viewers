@@ -1,6 +1,6 @@
-import { OHIF } from 'meteor/ohif:core';
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
+import { Tracker } from 'meteor/tracker';
 
 Template.selectTreeCommon.events({
     'click .select-tree-common label'(event, instance) {
