@@ -25,7 +25,16 @@ Template.viewerSection.helpers({
         const timepoints = timepointApi.all();
         return {
             timepointApi,
-            timepoints
+            timepoints,
+
+            timepointChildTemplate: 'timepointBrowserStudies',
+            studyChildTemplate: 'studyBrowserSeries',
+
+            studyClickCallback(studyInformation, element) {
+                const $element = $(element);
+                $element.siblings().removeClass('active');
+                $element.toggleClass('active');
+            }
         };
     }
 });

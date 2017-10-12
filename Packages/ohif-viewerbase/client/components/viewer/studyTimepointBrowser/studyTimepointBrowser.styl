@@ -28,54 +28,6 @@ $timepointButtonHeight = 55px
     .studyTimepointScrollArea
       padding-top: $timepointButtonHeight
 
-  .timepointEntry
-    &.active
-      .timepointModalities
-        height: 0
-      .timepointDate
-        display: none
-      .expandIcon i
-        transform: rotateX(180deg)
-      .timepointFollowupTitle
-        font-size: 14px
-        theme('color', '$textSecondaryColor')
-        text-transform: uppercase
-
-  .timepointHeader
-    cursor: pointer
-    font-size: 13px
-
-    &
-    .expandIcon i
-    .timepointFollowupTitle
-    .timepointDate
-    .timepointModalities
-      theme('color', '$textSecondaryColor')
-      transition($sidebarTransition)
-
-    &:hover
-      &
-      .timepointFollowupTitle
-      .expandIcon i
-      .timepointDate
-      .timepointModalities
-        theme('color', '$textPrimaryColor') !important
-
-    .timepointDetails
-    .timepointModalities
-      line-height: 25px
-
-    .timepointModalities
-      height: 25px
-      overflow: hidden
-
-    .expandIcon i
-      theme('color', '$defaultColor')
-
-    .timepointFollowupTitle
-      theme('color', '$textPrimaryColor')
-      padding-top: 2px
-
   .studyTimepointScrollArea
     height: 100%
     overflow-x: hidden

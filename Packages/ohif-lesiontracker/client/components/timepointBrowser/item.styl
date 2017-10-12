@@ -1,0 +1,71 @@
+@require '{ohif:design}/app'
+
+.timepoint-browser-item
+
+  .timepointEntry
+    cursor: pointer
+    font-size: 13px
+
+  .timepoint-browser-studies
+    opacity: 1
+    overflow: hidden
+    transform(translateY(0))
+    transform-origin(50% 0%)
+    transition(max-height 0.3s ease\, opacity 0.3s ease\, transform 0.3s ease)
+
+  &:not(.active) .timepoint-browser-studies
+    max-height: 0 !important
+    opacity: 0
+    transform(translateY(-100%))
+
+  .timepointDate
+    opacity: 1
+
+  &.active
+    .timepointModalities
+      max-height: 0
+      opacity: 0
+
+    .timepointDate
+      opacity: 0
+
+    .expandIcon i
+      transform: rotateX(180deg)
+
+    .timepointFollowupTitle
+      font-size: 14px
+      theme('color', '$textSecondaryColor')
+      text-transform: uppercase
+
+  &
+  .expandIcon i,
+  .timepointFollowupTitle,
+  .timepointDate,
+  .timepointModalities
+    theme('color', '$textSecondaryColor')
+    transition($sidebarTransition)
+
+  &:hover
+    &,
+    .timepointFollowupTitle,
+    .expandIcon i,
+    .timepointDate,
+    .timepointModalities
+      theme('color', '$textPrimaryColor') !important
+
+  .timepointDetails
+  .timepointModalities
+    line-height: 25px
+
+  .timepointModalities
+    height: 25px
+    max-height: 25px
+    opacity: 1
+    overflow: hidden
+
+  .expandIcon i
+    theme('color', '$defaultColor')
+
+  .timepointFollowupTitle
+    theme('color', '$textPrimaryColor')
+    padding-top: 2px

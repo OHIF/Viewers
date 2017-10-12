@@ -40,6 +40,7 @@ export const schema = new SimpleSchema({
     studiesData: {
         type: [Object],
         label: 'Studies data to allow lazy loading',
-        optional: true
+        optional: true,
+        blackbox: true
     }
 });

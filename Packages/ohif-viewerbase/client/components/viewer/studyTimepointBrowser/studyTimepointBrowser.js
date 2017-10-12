@@ -195,21 +195,11 @@ Template.studyTimepointBrowser.helpers({
 
         const studies = instance.getStudies(timepoint);
 
-        const includedUids = new Set();
         const modalities = {};
         studies.forEach(study => {
             const modality = study.modalities || 'UN';
             modalities[modality] = modalities[modality] + 1 || 1;
-            includedUids.add(study.studyInstanceUid);
         });
-
-        if (_.isArray(timepoint.studiesData)) {
-            timepoint.studiesData.forEach(({ modality, studyInstanceUid }) => {
-                if (includedUids.has(studyInstanceUid)) return;
-                modalities[modality] = modalities[modality] + 1 || 1;
-                includedUids.add(studyInstanceUid);
-            });
-        }
 
         const result = [];
         _.each(modalities, (count, modality) => {
