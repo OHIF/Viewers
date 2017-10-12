@@ -1,0 +1,16 @@
+<template name="timepointBrowserItem">
+    <div class="timepointEntry p-y-2">
+        <div class="timepointHeader">
+            <div class="timepointDetails clearfix">
+                <div class="timepointFollowupTitle pull-left">
+                    {{this.timepointApi.title timepoint}}
+                </div>
+                <div class="expandIcon pull-right">
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="timepointDate pull-right m-r-1">{{formatDA this.timepoint.earliestDate 'D-MMM-YYYY'}}</div>
+            </div>
+            <!-- <div class="timepointModalities">{{modalitiesSummary timepoint}}</div> -->
+        </div>
+    </div>
+</template>

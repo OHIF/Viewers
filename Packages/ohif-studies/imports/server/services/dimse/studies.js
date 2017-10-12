@@ -1,3 +1,4 @@
+import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -7,10 +8,10 @@ import { OHIF } from 'meteor/ohif:core';
  * @returns {Array} An array of Study MetaData objects
  */
 function resultDataToStudies(resultData) {
-    var studies = [];
+    const studies = [];
 
     resultData.forEach(function(studyRaw) {
-        var study = studyRaw.toObject();
+        const study = studyRaw.toObject();
         studies.push({
             studyInstanceUid: study[0x0020000D],
             // 00080005 = SpecificCharacterSet
@@ -43,7 +44,15 @@ OHIF.studies.services.DIMSE.Studies = function(filter) {
         filterStudyDate = `${dateFrom}-${dateTo}`;
     }
 
-    var parameters = {
+    // Build the StudyInstanceUID parameter
+    let studyUids = filter.studyInstanceUid || '';
+    if (studyUids) {
+        studyUids = Array.isArray(studyUids) ? studyUids.join() : studyUids;
+        studyUids = studyUids.replace(/[^0-9.]+/g, '\\');
+    }
+
+    const parameters = {
+        0x0020000D: studyUids,
         0x00100010: filter.patientName,
         0x00100020: filter.patientId,
         0x00080050: filter.accessionNumber,
@@ -54,6 +63,6 @@ OHIF.studies.services.DIMSE.Studies = function(filter) {
         0x00080061: filter.modalitiesInStudy
     };
 
-    var results = DIMSE.retrieveStudies(parameters);
+    const results = DIMSE.retrieveStudies(parameters);
     return resultDataToStudies(results);
 };

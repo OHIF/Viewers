@@ -46,6 +46,9 @@ function makeDraggable(element, options) {
             return;
         }
 
+        // Stop the dragging if it's not the primary button
+        if (e.button !== 0) return;
+
         // Stop the dragging if the element is being resized
         if ($(element).hasClass('resizing')) {
             return;

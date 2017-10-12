@@ -39,6 +39,7 @@ ohif:core
 ohif:header
 ohif:cornerstone
 ohif:viewerbase
+ohif:studies
 ohif:study-list
 ohif:dicom-services
 ohif:hanging-protocols

@@ -1,0 +1,7 @@
+<template name="timepointBrowserList">
+    {{#scrollArea class=(concat 'full-height ' this.class) scrollableClass=this.scrollableClass}}
+        {{#each timepoint in this.timepoints}}
+            {{>timepointBrowserItem (clone this timepoint=timepoint)}}
+        {{/each}}
+    {{/scrollArea}}
+</template>

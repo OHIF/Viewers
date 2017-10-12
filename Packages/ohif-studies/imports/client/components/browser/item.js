@@ -9,8 +9,8 @@ Template.studyBrowserItem.onCreated(() => {
     instance.loaded = false;
     instance.loading = new ReactiveVar(false);
 
-    const modality = instance.data.studyInformation.modality || 'UN';
-    instance.modalities = modality.replace(/\\/g, ' ');
+    const modalities = instance.data.studyInformation.modalities || 'UN';
+    instance.modalities = modalities.replace(/\\/g, ' ');
 });
 
 Template.studyBrowserItem.events({
