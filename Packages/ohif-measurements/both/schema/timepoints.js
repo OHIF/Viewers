@@ -1,31 +1,5 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
-const StudiesData = new SimpleSchema({
-    studyInstanceUid: {
-        type: String,
-        label: 'Study Instance Uid'
-    },
-    description: {
-        type: String,
-        label: 'Study Description',
-        optional: true
-    },
-    date: {
-        type: Date,
-        label: 'Study Date'
-    },
-    modality: {
-        type: String,
-        label: 'Study Modality'
-    },
-    loaded: {
-        type: Boolean,
-        label: 'Defines if the Study is already loaded',
-        optional: true,
-        defaultValue: false
-    }
-});
-
 export const schema = new SimpleSchema({
     patientId: {
         type: String,
@@ -64,8 +38,8 @@ export const schema = new SimpleSchema({
         optional: true
     },
     studiesData: {
-        type: [StudiesData],
-        label: 'Studies minimal data to allow lazy loading',
+        type: [Object],
+        label: 'Studies data to allow lazy loading',
         optional: true
     }
 });

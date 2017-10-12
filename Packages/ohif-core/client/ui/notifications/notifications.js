@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { ReactiveDict } from 'meteor/reactive-dict';
-import { Tracker } from 'meteor/tracker';
+import { Blaze } from 'meteor/blaze';
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 const Notifications = {
@@ -29,7 +29,7 @@ Notifications.dismiss = id => {
     if ($note.length) {
         $note.addClass('out').one('transitionend', () => removeView(id, view));
     } else {
-        removeView(id, view)
+        removeView(id, view);
     }
 };
 

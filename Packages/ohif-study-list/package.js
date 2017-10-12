@@ -35,6 +35,7 @@ Package.onUse(function(api) {
     api.use('ohif:dicom-services');
     api.use('ohif:viewerbase');
     api.use('ohif:wadoproxy');
+    api.use('ohif:studies');
 
     // Client and server imports
     api.addFiles('both/index.js', [ 'client', 'server' ]);

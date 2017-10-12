@@ -21,6 +21,7 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('ohif:design');
     api.use('ohif:core');
+    api.use('ohif:studies');
     api.use('ohif:study-list');
     api.use('ohif:cornerstone');
     api.use('ohif:measurements');

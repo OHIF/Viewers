@@ -1,6 +1,8 @@
 <template name="viewerSection">
     <div class="viewerSection">
         <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
+            {{>timepointBrowserList (extend timepointBrowserData scrollableClass='p-a-1')}}
+            <hr>
             {{>studyTimepointBrowser (clone this)}}
         </div>
         <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
