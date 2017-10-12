@@ -1,6 +1,7 @@
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { _ } from 'meteor/underscore';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
 import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
@@ -403,6 +404,30 @@ export const toolManager = {
             toolManager.init();
         }
 
+        let $elements;
+        if (!elements || !elements.length) {
+            $elements = $('.imageViewerViewport');
+        } else {
+            $elements = $(elements);
+        }
+
+        const checkElementEnabled = function(allElementsEnabled, element) {
+            try {
+                cornerstone.getEnabledElement(element);
+
+                return allElementsEnabled;
+            } catch (error) {
+                return true;
+            }
+        }
+
+        if ($elements.toArray().reduce(checkElementEnabled, false)) {
+            // if at least one element is not enabled, we do not activate tool.
+            OHIF.log.info(`Could not activate tool ${tool} due to an viewport not being enabled. Try again later.`);
+
+            return;
+        }
+
         /**
          * TODO: Add textMarkerDialogs template to OHIF's
          */
@@ -427,13 +452,6 @@ export const toolManager = {
 
         if (!tool) {
             tool = defaultTool;
-        }
-
-        let $elements;
-        if (!elements || !elements.length) {
-            $elements = $('.imageViewerViewport');
-        } else {
-            $elements = $(elements);
         }
 
         // Otherwise, set the active tool for all viewport elements
