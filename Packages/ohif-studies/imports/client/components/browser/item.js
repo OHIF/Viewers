@@ -20,12 +20,13 @@ Template.studyBrowserItem.events({
         const { studyClickCallback, studyInformation } = instance.data;
         const element = event.currentTarget.parentElement;
         const $element = $(element);
-        $element.trigger('ohif.studies.study.click', studyInformation);
 
         const triggerClickCallback = () => {
             if (typeof studyClickCallback === 'function') {
                 studyClickCallback(studyInformation, element);
             }
+
+            $element.trigger('ohif.studies.study.click', studyInformation);
         };
 
         if (instance.loaded) {

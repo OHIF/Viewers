@@ -1,6 +1,6 @@
 <template name="timepointBrowserItem">
-    <div class="timepointEntry p-y-2">
-        <div class="timepointHeader">
+    <div class="timepoint-browser-item">
+        <div class="timepointEntry p-y-2">
             <div class="timepointDetails clearfix">
                 <div class="timepointFollowupTitle pull-left">
                     {{this.timepointApi.title timepoint}}
@@ -10,7 +10,12 @@
                 </div>
                 <div class="timepointDate pull-right m-r-1">{{formatDA this.timepoint.earliestDate 'D-MMM-YYYY'}}</div>
             </div>
-            <!-- <div class="timepointModalities">{{modalitiesSummary timepoint}}</div> -->
+            <div class="timepointModalities">{{choose instance.summary.get 'Click to load'}}</div>
         </div>
+        {{#if this.timepointChildTemplate}}
+            {{#if and (not instance.loading.get) instance.loaded}}
+                {{>Template.dynamic template=this.timepointChildTemplate data=(clone this studiesInformation=timepoint.studiesData)}}
+            {{/if}}
+        {{/if}}
     </div>
 </template>
