@@ -1,5 +1,6 @@
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { styleProperty }  from './styleProperty'
 
 const cloneElement = (element, targetId) => {
     // Clone the DOM element
@@ -28,6 +29,10 @@ const thumbnailDragStartHandler = (event, data) => {
     // Identify the current study and series index from the thumbnail's DOM position
     const targetThumbnail = event.currentTarget;
     const $imageThumbnail = $(targetThumbnail);
+
+    // Force to hardware acceleration to move element
+    // if browser supports translate property
+    const useTransform = styleProperty.check('transform', 'translate(1px, 1px)');
 
     // Clone the image thumbnail
     const targetId = 'DragClone';
@@ -78,15 +83,33 @@ const thumbnailDragStartHandler = (event, data) => {
     };
     $clone.data('diff', diff);
 
-    // This sets the default style properties of the cloned element so it is
-    // ready to be dragged around the page
     $clone.css({
-        left: cursorX - diff.x,
-        position: 'fixed',
-        top: cursorY - diff.y,
         visibility: 'hidden',
         'z-index': 100000
     });
+
+    if (useTransform === true) {
+        // This sets the default style properties of the cloned element so it is
+        // ready to be dragged around the page
+        $clone.css({
+            left: cursorX - diff.x,
+            position: 'fixed',
+            top: cursorY - diff.y,
+        });
+    } else {
+        const viewerHeight= $('#viewer').height();
+        const headerHeight = $('.header').outerHeight();
+        const heightDiff = viewerHeight + headerHeight;
+
+        // Save height difference for later to set top position of the element during movement
+        $clone.data('heightDiff', heightDiff);
+
+        const positionX = cursorX - diff.x;
+        const positionY = cursorY - diff.y - heightDiff;
+
+        const translation = `translate(${positionX}px, ${positionY}px)`;
+        styleProperty.set($clone.get(0), 'transform', translation);
+    }
 };
 
 const thumbnailDragHandler = event => {
@@ -105,13 +128,32 @@ const thumbnailDragHandler = event => {
     // Find the clone element and update it's position on the page
     const $clone = $('#DragClone');
     const diff = $clone.data('diff');
+
+    // Force to hardware acceleration to move element
+    // if browser supports translate property
+    const useTransform = styleProperty.check('transform', 'translate(1px, 1px)');
+
     $clone.css({
-        left: cursorX - diff.x,
-        position: 'fixed',
-        top: cursorY - diff.y,
         visibility: 'visible',
         'z-index': 100000
     });
+
+    if (useTransform === true) {
+        // This sets the default style properties of the cloned element so it is
+        // ready to be dragged around the page
+        $clone.css({
+            left: cursorX - diff.x,
+            position: 'fixed',
+            top: cursorY - diff.y,
+        });
+    } else {
+        const heightDiff = $clone.data('heightDiff');
+        const positionX = cursorX - diff.x;
+        const positionY = cursorY - diff.y - heightDiff;
+
+        const translation = `translate(${positionX}px, ${positionY}px)`;
+        styleProperty.set($clone.get(0), 'transform', translation);
+    }
 
     // Identify the element below the current cursor position
     const elemBelow = document.elementFromPoint(cursorX, cursorY);
