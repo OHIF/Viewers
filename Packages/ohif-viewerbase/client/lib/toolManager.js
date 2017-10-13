@@ -419,11 +419,11 @@ export const toolManager = {
             } catch (error) {
                 return true;
             }
-        }
+        };
 
         if ($elements.toArray().reduce(checkElementEnabled, false)) {
             // if at least one element is not enabled, we do not activate tool.
-            OHIF.log.info(`Could not activate tool ${tool} due to an viewport not being enabled. Try again later.`);
+            OHIF.log.info(`Could not activate tool ${tool} due to a viewport not being enabled. Try again later.`);
 
             return;
         }
