@@ -53,10 +53,10 @@ Template.studyTimepointBrowser.onRendered(() => {
         const type = instance.timepointViewType.get();
 
         // Removes all active classes to collapse the timepoints and studies
-        instance.$('.timepointEntry, .study-browser-item').removeClass('active');
+        instance.$('.timepoint-item, .study-browser-item').removeClass('active');
         if (type === 'key' && !instance.data.currentStudy) {
             // Show only first timepoint expanded for key timepoints
-            instance.$('.timepointEntry:first').addClass('active');
+            instance.$('.timepoint-item:first').addClass('active');
         }
     });
 
@@ -70,7 +70,7 @@ Template.studyTimepointBrowser.onRendered(() => {
             instance.$(`.study-browser-item[data-uid='${studyInstanceUid}']`).addClass('active');
         });
         // Show only first timepoint expanded for key timepoints
-        instance.$('.timepointEntry:first').addClass('active');
+        instance.$('.timepoint-item:first').addClass('active');
     });
 
     instance.autorun(() => {
@@ -95,7 +95,7 @@ Template.studyTimepointBrowser.onRendered(() => {
 
 Template.studyTimepointBrowser.events({
     'click .timepointHeader'(event, instance) {
-        const $timepoint = $(event.currentTarget).closest('.timepointEntry');
+        const $timepoint = $(event.currentTarget).closest('.timepoint-item');
 
         // Recalculates the timepoint height to make CSS transition smoother
         $timepoint.find('.studyTimepoint').trigger('displayStateChanged');

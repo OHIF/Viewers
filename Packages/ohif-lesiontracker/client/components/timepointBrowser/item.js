@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
@@ -52,16 +53,21 @@ Template.timepointBrowserItem.onCreated(() => {
 });
 
 Template.timepointBrowserItem.events({
-    'click .timepointEntry'(event, instance) {
+    'click .timepoint-item'(event, instance) {
         const element = event.currentTarget.parentElement;
         const $element = $(element);
+
+        const triggerClick = () => {
+            $element.trigger('ohif.lesiontracker.timepoint.click', instance.data.timepoint);
+        };
+
         if (!instance.loaded) {
             instance.loadStudies().then(() => {
-                $element.addClass('active');
+                Tracker.afterFlush(triggerClick);
                 instance.setModalitiesSummary();
             });
         } else {
-            $element.toggleClass('active');
+            triggerClick();
         }
     }
 });

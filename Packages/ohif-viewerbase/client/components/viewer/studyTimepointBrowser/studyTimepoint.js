@@ -17,7 +17,7 @@ Template.studyTimepoint.onRendered(() => {
 
     const $studies = instance.$('.studyTimepoint');
     const $wrapper = $studies.closest('.studyTimepointWrapper');
-    const $timepoint = $wrapper.closest('.timepointEntry');
+    const $timepoint = $wrapper.closest('.timepoint-item');
     const studiesVisible = $studies.is(':visible');
 
     if (!studiesVisible) {

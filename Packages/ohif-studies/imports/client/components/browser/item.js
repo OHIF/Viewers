@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -17,27 +18,20 @@ Template.studyBrowserItem.events({
     'click .study-item'(event, instance) {
         if (instance.loading.get()) return;
 
-        const { studyClickCallback, studyInformation } = instance.data;
+        const { studyInformation } = instance.data;
         const element = event.currentTarget.parentElement;
         const $element = $(element);
-
-        const triggerClickCallback = () => {
-            if (typeof studyClickCallback === 'function') {
-                studyClickCallback(studyInformation, element);
-            }
-
-            $element.trigger('ohif.studies.study.click', studyInformation);
-        };
+        const triggerClick = () => $element.trigger('ohif.studies.study.click', studyInformation);
 
         if (instance.loaded) {
-            triggerClickCallback();
+            triggerClick();
         } else {
             instance.loading.set(true);
             OHIF.studies.retrieveStudyMetadata(studyInformation.studyInstanceUid).then(() => {
                 instance.loaded = true;
                 instance.loading.set(false);
                 $element.trigger('ohif.studies.study.load', studyInformation);
-                triggerClickCallback();
+                Tracker.afterFlush(triggerClick);
             });
         }
     }

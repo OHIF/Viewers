@@ -2,70 +2,75 @@
 
 .timepoint-browser-item
 
-  .timepointEntry
+  .timepoint-item
     cursor: pointer
     font-size: 13px
 
-  .timepoint-browser-studies
-    opacity: 1
-    overflow: hidden
-    transform(translateY(0))
-    transform-origin(50% 0%)
-    transition(max-height 0.3s ease\, opacity 0.3s ease\, transform 0.3s ease)
-
   &:not(.active) .timepoint-browser-studies
     max-height: 0 !important
-    opacity: 0
-    transform(translateY(-100%))
 
-  .timepointDate
+    .timepoint-studies-container
+      opacity: 0
+      transform(translateY(-100%))
+
+  .timepoint-browser-studies
+    overflow: hidden
+    transition(max-height 0.3s ease)
+
+    .timepoint-studies-container
+      opacity: 1
+      transition(opacity 0.3s ease\, transform 0.3s ease)
+      transform(translateY(0))
+      transform-origin(50% 0%)
+
+  .timepoint-date
     opacity: 1
 
   &.active
-    .timepointModalities
+    .timepoint-summary
       max-height: 0
       opacity: 0
 
-    .timepointDate
+    .timepoint-date
       opacity: 0
 
-    .expandIcon i
+    .timepoint-expand-icon i
       transform: rotateX(180deg)
 
-    .timepointFollowupTitle
+    .timepoint-title
       font-size: 14px
       theme('color', '$textSecondaryColor')
       text-transform: uppercase
 
   &
-  .expandIcon i,
-  .timepointFollowupTitle,
-  .timepointDate,
-  .timepointModalities
+  .timepoint-expand-icon i,
+  .timepoint-title,
+  .timepoint-date,
+  .timepoint-summary
     theme('color', '$textSecondaryColor')
     transition($sidebarTransition)
 
   &:hover
     &,
-    .timepointFollowupTitle,
-    .expandIcon i,
-    .timepointDate,
-    .timepointModalities
+    .timepoint-title,
+    .timepoint-expand-icon i,
+    .timepoint-date,
+    .timepoint-summary
       theme('color', '$textPrimaryColor') !important
 
-  .timepointDetails
-  .timepointModalities
+  .timepoint-details
+  .timepoint-summary
     line-height: 25px
 
-  .timepointModalities
+  .timepoint-summary
     height: 25px
     max-height: 25px
     opacity: 1
     overflow: hidden
 
-  .expandIcon i
+  .timepoint-expand-icon i
     theme('color', '$defaultColor')
 
-  .timepointFollowupTitle
+  .timepoint-title
     theme('color', '$textPrimaryColor')
     padding-top: 2px
