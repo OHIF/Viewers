@@ -27,8 +27,10 @@ $.fn.tempShow = function(callback) {
 };
 
 // Adjust the max width/height to enable CSS3 transitions
-$.fn.adjustMax = function(dimension) {
+$.fn.adjustMax = function(dimension, modifierFn) {
     const $element = $(this);
+
+    // Temporarily make the element visible to allow getting its dimensions
     $element.tempShow(() => {
         const maxProperty = `max-${dimension}`;
 

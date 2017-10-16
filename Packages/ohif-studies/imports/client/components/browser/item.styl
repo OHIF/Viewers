@@ -55,13 +55,11 @@ $spacerY = 12px
 
   .study-browser-series
     overflow: hidden
-    transform(translateY(0))
-    transform-origin(50% 0%)
-    transition($sidebarTransition)
+    transition(max-height 0.3s ease)
 
     .study-series-container
       opacity: 1
-      transition($sidebarTransition)
+      transition(opacity 0.3s ease\, transform 0.3s ease)
       transform(translateY(0))
       transform-origin(50% 0%)
 

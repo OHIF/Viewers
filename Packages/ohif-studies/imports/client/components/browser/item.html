@@ -15,7 +15,9 @@
             </div>
         </div>
         {{#if this.studyChildTemplate}}
-            {{>Template.dynamic template=this.studyChildTemplate data=(clone this)}}
+            {{#if and (not isLoading) instance.loaded}}
+                {{>Template.dynamic template=this.studyChildTemplate data=(clone this)}}
+            {{/if}}
         {{/if}}
     </div>
 </template>
