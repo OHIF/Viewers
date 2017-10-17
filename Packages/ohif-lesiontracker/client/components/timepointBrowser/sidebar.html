@@ -1,0 +1,12 @@
+<template name="timepointBrowserSidebar">
+    <div class="full-height flex-v">
+        <div class="p-x-1">
+            <div class="timepoint-switch p-y-2">
+                {{>roundedButtonGroup viewTypeButtonGroupData}}
+            </div>
+        </div>
+        {{#scrollArea class='flex-grow' scrollableClass='p-a-1'}}
+            {{>timepointBrowserList (extend timepointBrowserData)}}
+        {{/scrollArea}}
+    </div>
+</template>

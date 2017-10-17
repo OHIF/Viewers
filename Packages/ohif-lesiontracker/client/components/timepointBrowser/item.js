@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
@@ -28,23 +27,16 @@ Template.timepointBrowserItem.onCreated(() => {
         instance.summary.set(summary.join(', '));
     };
 
-    instance.loadStudies = () => new Promise((resolve, reject) => {
-        const filter = { studyInstanceUid: timepoint.studyInstanceUids };
-        instance.summary.set('Loading...');
-        Meteor.call('StudyListSearch', filter, (error, studiesData) => {
-            if (error) {
-                const text = 'An error has occurred while retrieving studies information';
-                OHIF.ui.notifications.danger({ text });
-                OHIF.log.error(error);
-                reject(error);
-            } else {
-                timepoint.studiesData = studiesData;
-                timepointApi.timepoints.update(timepoint._id, { $set: { studiesData } });
-                instance.loaded = true;
-                instance.loading.set(false);
-                resolve(studiesData);
-            }
-        });
+    const filter = { studyInstanceUid: timepoint.studyInstanceUids };
+    instance.loadStudies = () => OHIF.studies.searchStudies(filter).then(studiesData => {
+        timepoint.studiesData = studiesData;
+        timepointApi.timepoints.update(timepoint._id, { $set: { studiesData } });
+        instance.loaded = true;
+        instance.loading.set(false);
+    }).catch(error => {
+        const text = 'An error has occurred while retrieving studies information';
+        OHIF.ui.notifications.danger({ text });
+        OHIF.log.error(error);
     });
 
     if (instance.loaded) {
@@ -62,6 +54,7 @@ Template.timepointBrowserItem.events({
         };
 
         if (!instance.loaded) {
+            instance.summary.set('Loading...');
             instance.loadStudies().then(() => {
                 Tracker.afterFlush(triggerClick);
                 instance.setModalitiesSummary();

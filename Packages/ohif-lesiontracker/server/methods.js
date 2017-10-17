@@ -12,6 +12,10 @@ measurementTools.forEach(tool => {
 const Timepoints = new Mongo.Collection('timepoints');
 Timepoints._debugName = 'Timepoints';
 
+Meteor.publish('timepoints', function() {
+    return Timepoints.find();
+});
+
 // TODO: Make storage use update instead of clearing the entire collection and
 // re-inserting everything.
 Meteor.methods({

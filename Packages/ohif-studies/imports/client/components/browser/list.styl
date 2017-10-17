@@ -17,14 +17,16 @@ $spacerY = 12px
   transform(scale(1))
 
   .loadingTextDiv
-    padding: 25px
-    border-radius: 12px
-    position: absolute
-    opacity: 0
-    z-index: 100
+    theme('color', '$textSecondaryColor')
     background-color: $boxHoverBackgroundColor
-    pointer-events: none
+    border-radius: 12px
+    font-size: 32px
+    opacity: 0
     margin: 0
+    padding: 25px
+    position: absolute
+    pointer-events: none
+    z-index: 100
 
   &.loading
     .loadingTextDiv
@@ -111,9 +113,10 @@ $spacerY = 12px
     position: relative
 
     .study-modality-text
+      height: 100%
+      overflow: hidden
       text-align: center
       text-transform: uppercase
-      height: 100%
 
     &
     &:before
