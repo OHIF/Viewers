@@ -120,8 +120,8 @@ class TimepointApi {
     }
 
     // Return all timepoints
-    all() {
-        return this.timepoints.find({}, {
+    all(filter={}) {
+        return this.timepoints.find(filter, {
             sort: {
                 latestDate: -1
             },
