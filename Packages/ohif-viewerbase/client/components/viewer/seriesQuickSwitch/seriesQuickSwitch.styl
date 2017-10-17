@@ -1,0 +1,115 @@
+@require '{ohif:design}/app'
+
+.series-quick-switch
+  position: absolute
+  top: calc(100% - 100vh)
+
+  &:before
+    box-shadow(0 0 0 5000px rgba(0, 0, 0, 0.8))
+    transition(opacity 0.3s ease)
+    opacity: 0
+
+  &:hover
+    z-index: 2
+
+    &:before
+      opacity: 1
+
+  &:not(.left):not(.right)
+    left: 50%
+    transform(translateX(-50%))
+
+  &.left
+    theme('border-right', '1px solid $uiBorderColor')
+    right: 0
+
+  &.right
+    left: 0
+
+    .series-switch
+      float: right
+
+    .study-switch
+      float: left
+
+    .study-browser
+      left: auto
+      right: 0
+      transform-origin(calc(100% - 1em) calc(1em + 17px))
+
+    .series-browser
+      left: 0
+      right: auto
+      transform-origin(1em calc(1em + 15px))
+
+    .series-box .series-item
+      float: left
+
+  .title-label
+    theme('color', '$textSecondaryColor')
+    font-size: 12px
+    font-weight: 500
+    line-height:  12px
+    padding-bottom: 3px
+    text-align: center
+
+  .series-switch,
+  .study-switch
+    float: left
+    position: relative
+
+  .study-browser
+    background: purple
+    left: 0
+    transform-origin(1em calc(1em + 17px))
+    width: 285px
+
+  .series-browser
+    background: blue
+    max-width: 711px
+    right: 0
+    transform-origin(calc(100% - 1em) calc(1em + 15px))
+
+  .series-browser,
+  .study-browser
+    max-height: 100vh
+    min-height: 120px
+    position: absolute
+    top: 0
+    transform(scale(0))
+    transition(transform 0.3s ease)
+
+  .series-box
+    height: 57px
+    width: 57px
+
+    .series-item
+      theme('background-color', '$boxBackgroundColor')
+      border-radius(3px)
+      float: right
+      height: 15px
+      margin: 2px
+      width: 15px
+
+      &.count
+        theme('color', '$textPrimaryColor')
+        background-color: transparent
+        font-size: 12px
+        font-weight: 500
+        line-height: 17px
+        text-align: center
+
+      &.active
+        theme('background-color', '$activeColor')
+
+
+  .study-box
+    theme('background-color', '$uiGrayDark')
+    theme('border', 'solid 2px $uiBorderColorDark')
+    border-radius: 11px
+    height: 57px
+    width: 57px
+
+  .series-switch:hover .series-browser,
+  .study-switch:hover .study-browser
+    transform(scale(1))
