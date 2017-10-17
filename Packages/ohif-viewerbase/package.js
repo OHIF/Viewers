@@ -179,6 +179,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.js', 'client');
     api.addFiles('client/components/viewer/textMarkerDialogs/textMarkerDialogs.styl', 'client');
 
+    api.addFiles('client/components/viewer/seriesQuickSwitch/seriesQuickSwitch.html', 'client');
+    api.addFiles('client/components/viewer/seriesQuickSwitch/seriesQuickSwitch.styl', 'client');
+    api.addFiles('client/components/viewer/seriesQuickSwitch/seriesQuickSwitch.js', 'client');
+
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.html', 'client');
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.styl', 'client');
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.js', 'client');

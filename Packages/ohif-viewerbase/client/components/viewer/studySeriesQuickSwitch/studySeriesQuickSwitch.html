@@ -1,7 +1,7 @@
 <template name="studySeriesQuickSwitch">
     <div class="quickSwitchWrapper {{side}}">
-        <div class="quickSwitch js-quick-switch clearfix rp-t-1 {{#if eq side 'right'}}rp-l-3{{/if}}{{#if eq side 'left'}}rp-r-3{{/if}}">
-            <div class="switchSection switchSectionStudy rp-x-1 {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">
+        <div class="quickSwitch js-quick-switch clearfix {{#if eq side 'right'}}rp-l-3{{/if}}{{#if eq side 'left'}}rp-r-3{{/if}}">
+            <div class="switchSection switchSectionStudy rp-t-1 rp-x-1 {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">
                 <div class="label">Study</div>
                 <div class="studySwitch">
                     <div class="studyBox"></div>
@@ -12,7 +12,7 @@
                     </div>
                 </div>
             </div>
-            <div class="switchSection switchSectionSeries rp-x-1 {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">
+            <div class="switchSection switchSectionSeries rp-t-1 rp-x-1 {{#if eq side 'right'}}pull-left{{else}}pull-right{{/if}}">
                 {{#let thumbnailsList=(studyThumbnails currentStudy)}}
                     <div class="label">Series</div>
                     <div class="seriesSwitch clearfix">

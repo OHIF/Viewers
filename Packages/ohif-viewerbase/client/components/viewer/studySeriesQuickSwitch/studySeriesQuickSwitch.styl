@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 $switchSize = 55px
 $seriesSpacing = 2px
@@ -103,10 +103,14 @@ $seriesSpacing = 2px
       position: relative
 
     .studySwitch
+      padding: 2px 1px 0
+
       .studyTimepointBrowser
         background-color: transparent
+
       .study-browser-item.active .study-item-box
         theme('box-shadow', 'inset 0 0 0 3px $activeColor')
+
       .studyBox
         theme('background-color', '$uiGrayDark')
         theme('border', 'solid 2px $uiBorderColorDark')
@@ -121,7 +125,7 @@ $seriesSpacing = 2px
       width: $switchSize + $seriesSpacing
 
       .seriesItem
-        theme('background-color', '$boxBackgroundColor')Dark
+        theme('background-color', '$boxBackgroundColor')
         border-radius: 3px
         height: 15px
         margin: $seriesSpacing

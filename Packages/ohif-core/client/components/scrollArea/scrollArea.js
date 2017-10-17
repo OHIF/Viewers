@@ -22,8 +22,8 @@ Template.scrollArea.onRendered(() => {
         const x = config.scrollX ? 1 : 0;
         const y = config.scrollY ? 1 : 0;
         $scrollable.css({
-            right: 0 - (scrollable.offsetWidth - scrollable.clientWidth) * y,
-            bottom: 0 - (scrollable.offsetHeight - scrollable.clientHeight) * x
+            'margin-right': 0 - (scrollable.offsetWidth - scrollable.clientWidth) * y,
+            'margin-bottom': 0 - (scrollable.offsetHeight - scrollable.clientHeight) * x
         });
     }
 });
