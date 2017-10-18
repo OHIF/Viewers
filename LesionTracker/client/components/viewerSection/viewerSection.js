@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.viewerSection.onCreated(() => {
@@ -28,6 +29,26 @@ Template.viewerSection.events({
         if (!event.target.classList.contains('sidebarMenu')) return;
 
         window.ResizeViewportManager.handleResize();
+    },
+
+    'ohif.lesiontracker.timepoint.changeViewType .timepoint-browser-list'(event, instance, viewType) {
+        const $browserList = $(event.currentTarget);
+        const $allBrowserItems = $browserList.find('.timepoint-browser-item');
+
+        // Removes all active classes to collapse the timepoints and studies
+        $allBrowserItems.removeClass('active');
+
+        if (viewType === 'key') {
+            const { timepointIds, currentTimepointId } = OHIF.viewer.data;
+            timepointIds.forEach(timepointId => {
+                const $browserItem = $allBrowserItems.filter(`[data-id=${timepointId}]`);
+                $browserItem.find('.timepoint-item').trigger('ohif.lesiontracker.timepoint.load');
+            });
+
+            // Show only current timepoint expanded on key timepoints tab
+            const $browserItem = $allBrowserItems.filter(`[data-id=${currentTimepointId}]`);
+            $browserItem.find('.timepoint-item').trigger('click');
+        }
     }
 });
 

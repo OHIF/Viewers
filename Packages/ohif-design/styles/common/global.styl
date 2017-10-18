@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 html body
   theme('background-color', '$primaryBackgroundColor')
@@ -140,16 +140,3 @@ body .select2-container--default .select2-results>.select2-results__options
 
 .flex-grow
   flex-grow: 1
-
-.scroll-area
-  overflow: hidden
-
-  .scrollable
-    max-height: inherit
-    overflow: hidden
-
-    &.scroll-x
-      overflow-x: scroll
-
-    &.scroll-y
-      overflow-y: scroll

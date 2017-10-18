@@ -1,5 +1,5 @@
 <template name="studyBrowserSidebar">
-    {{#scrollArea class='full-height' scrollableClass='p-a-1'}}
+    {{#scrollArea class='full-height' class='fit' scrollableClass='p-a-1' scrollStep=191}}
         {{>studyBrowserList (clone this studyChildTemplate='studyBrowserSeries')}}
     {{/scrollArea}}
 </template>

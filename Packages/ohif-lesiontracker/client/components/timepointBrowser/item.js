@@ -5,6 +5,8 @@ import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
+const studySearchPromises = new Map();
+
 Template.timepointBrowserItem.onCreated(() => {
     const instance = Template.instance();
     const { timepoint, timepointApi } = instance.data;
@@ -28,10 +30,22 @@ Template.timepointBrowserItem.onCreated(() => {
     };
 
     const filter = { studyInstanceUid: timepoint.studyInstanceUids };
-    instance.loadStudies = () => OHIF.studies.searchStudies(filter).then(studiesData => {
+    instance.loadStudies = () => {
+        const promiseKey = JSON.stringify(filter);
+        if (studySearchPromises.has(promiseKey)) {
+            return studySearchPromises.get(promiseKey);
+        } else {
+            const promise = instance.performLoad();
+            studySearchPromises.set(promiseKey, promise);
+            return promise;
+        }
+    };
+
+    instance.performLoad = () => OHIF.studies.searchStudies(filter).then(studiesData => {
         timepoint.studiesData = studiesData;
         timepointApi.timepoints.update(timepoint._id, { $set: { studiesData } });
         instance.loaded = true;
+        instance.setModalitiesSummary();
         instance.loading.set(false);
     }).catch(error => {
         const text = 'An error has occurred while retrieving studies information';
@@ -45,6 +59,10 @@ Template.timepointBrowserItem.onCreated(() => {
 });
 
 Template.timepointBrowserItem.events({
+    'ohif.lesiontracker.timepoint.load .timepoint-item'(event, instance) {
+        instance.loadStudies();
+    },
+
     'click .timepoint-item'(event, instance) {
         const element = event.currentTarget.parentElement;
         const $element = $(element);
@@ -55,10 +73,7 @@ Template.timepointBrowserItem.events({
 
         if (!instance.loaded) {
             instance.summary.set('Loading...');
-            instance.loadStudies().then(() => {
-                Tracker.afterFlush(triggerClick);
-                instance.setModalitiesSummary();
-            });
+            instance.loadStudies().then(() => Tracker.afterFlush(triggerClick));
         } else {
             triggerClick();
         }
