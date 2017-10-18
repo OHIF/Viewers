@@ -4,17 +4,15 @@
             <div class="series-switch rp-t-1 rp-x-1">
                 <div class="title-label">Series</div>
                 <div class="series-box r-font">
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item"></div>
-                    <div class="series-item count">37</div>
-                    {{#scrollArea class='series-browser'}}
-                        <div>BBBBB</div>
+                    {{#each seriesItem in seriesItems}}
+                        <div class="series-item {{seriesItem.class}}">{{seriesItem.value}}</div>
+                    {{/each}}
+                    {{#scrollArea class='series-browser' scrollStep=201}}
+                        <div class="clearfix thumbnails-wrapper">
+                            {{#each thumbnail in (studyThumbnails instance.currentStudy.get)}}
+                                {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
+                            {{/each}}
+                        </div>
                     {{/scrollArea}}
                 </div>
             </div>

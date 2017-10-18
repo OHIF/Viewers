@@ -11,18 +11,19 @@ Template.timepointBrowserSidebar.onCreated(() => {
 
 Template.timepointBrowserSidebar.onRendered(() => {
     const instance = Template.instance();
+    instance.lastType = '';
 
     // Collapse all timepoints but first when timepoint view type changes
+    instance.$browserList = instance.$('.timepoint-browser-list').first();
     instance.autorun(() => {
         // Runs this computation every time the timepointViewType is changed
         const type = instance.timepointViewType.get();
-
-        // Removes all active classes to collapse the timepoints and studies
-        instance.$('.timepoint-browser-item, .study-browser-item').removeClass('active');
-        if (type === 'key') {
-            // Show only first timepoint expanded for key timepoints
-            instance.$('.timepoint-browser-item:first .timepoint-item').trigger('click');
+        if (type !== instance.lastType) {
+            const eventKey = 'ohif.lesiontracker.timepoint.changeViewType';
+            instance.$browserList.trigger(eventKey, type);
         }
+
+        instance.lastType = type;
     });
 });
 

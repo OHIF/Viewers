@@ -18,6 +18,7 @@ export class LayoutManager {
     constructor(parentNode, studies) {
         OHIF.log.info('LayoutManager constructor');
 
+        this.observer = new Tracker.Dependency();
         this.parentNode = parentNode;
         this.studies = studies;
         this.viewportData = [];
@@ -30,7 +31,10 @@ export class LayoutManager {
 
         this.isZoomed = false;
 
-        const updateSessionFn = () => Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Math.random()));
+        const updateSessionFn = () => Tracker.afterFlush(() => {
+            Session.set('LayoutManagerUpdated', Math.random());
+            this.observer.changed();
+        });
         this.updateSession = _.throttle(updateSessionFn, 300);
     }
 
