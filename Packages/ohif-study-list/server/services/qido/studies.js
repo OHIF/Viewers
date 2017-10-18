@@ -71,7 +71,7 @@ function resultDataToStudies(resultData) {
             // 00080005 = SpecificCharacterSet
             studyDate: DICOMWeb.getString(study['00080020']),
             studyTime: DICOMWeb.getString(study['00080030']),
-            accessionNumber: DICOMWeb.getNumber(study['00080050']),
+            accessionNumber: DICOMWeb.getString(study['00080050']),
             referringPhysicianName: DICOMWeb.getString(study['00080090']),
             // 00081190 = URL
             patientName: DICOMWeb.getName(study['00100010']),
