@@ -1,5 +1,6 @@
 import { $ } from 'meteor/jquery';
 import { Session } from 'meteor/session';
+import { OHIF } from 'meteor/ohif:core';
 
 class BaseLoadingListener {
     constructor(stack, options) {
