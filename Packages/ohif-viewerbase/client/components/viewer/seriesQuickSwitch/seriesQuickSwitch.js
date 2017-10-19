@@ -94,11 +94,15 @@ Template.seriesQuickSwitch.helpers({
         }
 
         return seriesItems;
+    },
+
+    studyBrowserTemplate() {
+        return OHIF.viewer.quickSwitchStudyBrowserTemplate || 'studyBrowserQuickSwitch';
     }
 });
 
 Template.seriesQuickSwitch.events({
-    'mouseenter .series-switch'(event, instance) {
+    'mouseenter .series-switch, rescale .series-switch'(event, instance) {
         // Control the width of the series browser
         const $switch = $(event.currentTarget);
         const browserWidth = $switch.offset().left + $switch.outerWidth();

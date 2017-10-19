@@ -20,7 +20,7 @@
                 <div class="title-label">Study</div>
                 <div class="study-box r-font">
                     {{#scrollArea class='study-browser'}}
-                        <div>AAAAA</div>
+                        {{>Template.dynamic template=studyBrowserTemplate data=(clone this currentStudy=instance.currentStudy)}}
                     {{/scrollArea}}
                 </div>
             </div>

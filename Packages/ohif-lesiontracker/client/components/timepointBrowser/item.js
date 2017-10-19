@@ -5,8 +5,6 @@ import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
-const studySearchPromises = new Map();
-
 Template.timepointBrowserItem.onCreated(() => {
     const instance = Template.instance();
     const { timepoint, timepointApi } = instance.data;
@@ -30,18 +28,7 @@ Template.timepointBrowserItem.onCreated(() => {
     };
 
     const filter = { studyInstanceUid: timepoint.studyInstanceUids };
-    instance.loadStudies = () => {
-        const promiseKey = JSON.stringify(filter);
-        if (studySearchPromises.has(promiseKey)) {
-            return studySearchPromises.get(promiseKey);
-        } else {
-            const promise = instance.performLoad();
-            studySearchPromises.set(promiseKey, promise);
-            return promise;
-        }
-    };
-
-    instance.performLoad = () => OHIF.studies.searchStudies(filter).then(studiesData => {
+    instance.loadStudies = () => OHIF.studies.searchStudies(filter).then(studiesData => {
         timepoint.studiesData = studiesData;
         timepointApi.timepoints.update(timepoint._id, { $set: { studiesData } });
         instance.loaded = true;

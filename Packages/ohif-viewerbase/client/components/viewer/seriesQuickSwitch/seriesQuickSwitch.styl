@@ -66,13 +66,27 @@
     float: left
     position: relative
 
-  .study-browser
-    background: purple
+  .study-switch:hover:after
+    content: ''
+    display: block
+    height: 100px
     left: 0
+    position: absolute
+    top: 0
+    width: 300px
+
+  .study-browser
+    left: 0
+    margin-top: 100px
+    max-height: calc(100vh - 100px)
     transform-origin(1em calc(1em + 17px))
-    width: 285px
+    width: 300px
+
+    .study-browser-list
+      padding: 0 10px
 
   .series-browser
+    max-height: 100vh
     max-width: 711px
     right: 0
     transform-origin(calc(100% - 1em) calc(1em + 15px))
@@ -95,7 +109,6 @@
 
   .series-browser,
   .study-browser
-    max-height: 100vh
     min-height: 120px
     opacity: 0
     position: absolute
@@ -163,6 +176,9 @@
       opacity: 1
       transform(translateY(0))
       transition-delay(0.3s)
+
+  .study-browser-item.active .study-item-box
+    theme('box-shadow', 'inset 0 0 0 3px $activeColor')
 
 @media screen and (max-width: 1599px)
   .series-quick-switch
