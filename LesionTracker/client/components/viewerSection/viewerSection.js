@@ -8,7 +8,9 @@ Template.viewerSection.onCreated(() => {
 
     instance.isTimepointBrowser = () => !!OHIF.viewer.data.currentTimepointId;
 
+    OHIF.viewer.quickSwitchStudyBrowserTemplate = 'timepointBrowserQuickSwitch';
     if (!instance.isTimepointBrowser()) {
+        OHIF.viewer.quickSwitchStudyBrowserTemplate = 'studyBrowserQuickSwitch';
         instance.loading = new ReactiveVar(true);
         instance.studiesInformation = new ReactiveVar([]);
         const filter = { studyInstanceUid: OHIF.viewer.data.studyInstanceUids };
