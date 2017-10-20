@@ -104,15 +104,14 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     const $viewports = $('.imageViewerViewport');
     const numViewports = Math.max($viewports.length, 0);
 
-    /*
-    Two Timepoints, Two measurements, load Followup (FU and BA), display FU in left and BA in right
-    Two Timepoints, One measurement (BA), on 2x1 view: Display BA in right
-    Two Timepoints, One measurement (FU), on 2x1 view: Display FU in left
-
-    Two Timepoints, Two measurements, load Baseline (FU and BA) on 1x1 view: Display whichever is clicked on?
-    One Timepoint, One measurement: Display clicked on in 1x1
-    */
     const numViewportsToUpdate = Math.min(numTimepoints, numViewports);
+
+    //  Display timepoints in the order of viewports which is set by the hanging protocol
+    //      Reverse the timepoint array if the first timepoint does not match with the first viewport data
+    const layoutManager = OHIF.viewerbase.layoutManager;
+    if (timepoints[0].studyInstanceUids.indexOf(layoutManager.viewportData[0].studyInstanceUid) < 0) {
+        timepoints.reverse();
+    }
 
     for (var i=0; i < numViewportsToUpdate; i++) {
         const timepoint = timepoints[i];
