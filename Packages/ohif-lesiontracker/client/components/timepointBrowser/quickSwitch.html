@@ -1,6 +1,6 @@
 <template name="timepointBrowserQuickSwitch">
     {{>timepointBrowserList (extend timepointBrowserData)}}
-    {{#unless instance.showAdditional.get}}
-        <div class='show-additional'>Show additional timepoints</div>
-    {{/unless}}
+    {{#if instance.hasAdditional.get}}
+        <div class='study-item-box additional'>Show additional timepoints</div>
+    {{/if}}
 </template>

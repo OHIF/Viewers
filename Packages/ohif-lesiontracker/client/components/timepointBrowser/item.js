@@ -8,15 +8,28 @@ import { OHIF } from 'meteor/ohif:core';
 Template.timepointBrowserItem.onCreated(() => {
     const instance = Template.instance();
     const { timepoint, timepointApi } = instance.data;
+    const { timepointId } = timepoint;
 
+    const hasStudiesData = !!(timepoint.studiesData && timepoint.studiesData.length);
     instance.summary = new ReactiveVar('');
-    instance.loading = new ReactiveVar(false);
-    instance.loaded = !!(timepoint.studiesData && timepoint.studiesData.length);
+    instance.studiesData = new ReactiveVar(hasStudiesData ? timepoint.studiesData : null);
+
+    const updateStudiesData = newDocument => {
+        const newTimepoint = newDocument || timepointApi.timepoints.findOne({ timepointId });
+        if (newTimepoint && newTimepoint.studiesData && newTimepoint.studiesData.length) {
+            instance.studiesData.set(newTimepoint.studiesData);
+        }
+    };
+
+    timepointApi.timepoints.find({ timepointId }).observe({ changed: updateStudiesData });
 
     // Build the modalities summary of all timepoint's studies
     instance.setModalitiesSummary = () => {
+        const studiesData = instance.studiesData.get();
+        if (!studiesData) return;
+
         const modalities = {};
-        timepoint.studiesData.forEach(study => {
+        studiesData.forEach(study => {
             const modality = study.modalities || 'UN';
             modalities[modality] = modalities[modality] + 1 || 1;
         });
@@ -29,20 +42,22 @@ Template.timepointBrowserItem.onCreated(() => {
 
     const filter = { studyInstanceUid: timepoint.studyInstanceUids };
     instance.loadStudies = () => OHIF.studies.searchStudies(filter).then(studiesData => {
-        timepoint.studiesData = studiesData;
+        instance.studiesData.set(studiesData);
         timepointApi.timepoints.update(timepoint._id, { $set: { studiesData } });
-        instance.loaded = true;
         instance.setModalitiesSummary();
-        instance.loading.set(false);
     }).catch(error => {
         const text = 'An error has occurred while retrieving studies information';
         OHIF.ui.notifications.danger({ text });
         OHIF.log.error(error);
     });
 
-    if (instance.loaded) {
-        instance.setModalitiesSummary();
-    }
+    updateStudiesData();
+    instance.autorun(() => {
+        const studiesData = instance.studiesData.get();
+        if (studiesData) {
+            instance.setModalitiesSummary();
+        }
+    });
 });
 
 Template.timepointBrowserItem.events({
@@ -58,7 +73,7 @@ Template.timepointBrowserItem.events({
             $element.trigger('ohif.lesiontracker.timepoint.click', instance.data.timepoint);
         };
 
-        if (!instance.loaded) {
+        if (!instance.studiesData.get()) {
             instance.summary.set('Loading...');
             instance.loadStudies().then(() => Tracker.afterFlush(triggerClick));
         } else {

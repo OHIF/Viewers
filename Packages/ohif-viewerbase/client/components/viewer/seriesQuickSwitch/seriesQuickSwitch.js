@@ -3,10 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
-// FIXME >>>> REMOVE
-$(document.body).on('keydown', e => (e.keyCode === 69 && $('.quickSwitchWrapper').toggle()) || 1);
-OHIF.cornerstone.renderer = '';
-
 Template.seriesQuickSwitch.onCreated(() => {
     const instance = Template.instance();
 

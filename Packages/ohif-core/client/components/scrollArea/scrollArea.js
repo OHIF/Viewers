@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.scrollArea.onCreated(() => {
     const instance = Template.instance();
@@ -16,17 +17,20 @@ Template.scrollArea.onCreated(() => {
 
 Template.scrollArea.onRendered(() => {
     const instance = Template.instance();
-    const { config } = instance;
-    if (config.hideScrollbar) {
-        const $scrollable = instance.$('.scrollable').first();
-        const scrollable = $scrollable[0];
-        const x = config.scrollX ? 1 : 0;
-        const y = config.scrollY ? 1 : 0;
-        $scrollable.css({
-            'margin-right': 0 - (scrollable.offsetWidth - scrollable.clientWidth) * y,
-            'margin-bottom': 0 - (scrollable.offsetHeight - scrollable.clientHeight) * x
-        });
-    }
+
+    instance.adjustMargins = _.throttle(() => {
+        const { config } = instance;
+        if (config.hideScrollbar) {
+            const $scrollable = instance.$('.scrollable').first();
+            const x = config.scrollX ? 1 : 0;
+            const y = config.scrollY ? 1 : 0;
+            const scrollbarSize = OHIF.ui.getScrollbarSize();
+            $scrollable.css({
+                'margin-right': 0 - (scrollbarSize[0]) * y,
+                'margin-bottom': 0 - (scrollbarSize[1]) * x
+            });
+        }
+    }, 150);
 
     instance.$scrollable = instance.$('.scrollable').first();
     instance.scrollHandler = _.throttle(event => {
@@ -50,9 +54,17 @@ Template.scrollArea.onRendered(() => {
         if (scrollTop + height < scrollHeight) {
             $scrollArea.addClass('can-scroll-down');
         }
-    }, 300);
+    }, 150);
 
     instance.scrollHandler();
+
+    instance.adjustMargins();
+    $(window).on('resize', instance.adjustMargins);
+});
+
+Template.scrollArea.onDestroyed(() => {
+    const instance = Template.instance();
+    $(window).off('resize', instance.adjustMargins);
 });
 
 Template.scrollArea.events({

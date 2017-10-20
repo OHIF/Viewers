@@ -192,11 +192,11 @@ class TimepointApi {
     }
 
     // Return only the key timepoints (current, prior, nadir and baseline)
-    key() {
+    key(filter={}) {
         const result = [];
 
         // Get all the timepoints
-        const all = this.all();
+        const all = this.all(filter);
 
         // Iterate over each timepoint and insert the key ones in the result
         _.each(all, (timepoint, index) => {
