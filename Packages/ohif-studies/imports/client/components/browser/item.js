@@ -22,7 +22,13 @@ Template.studyBrowserItem.events({
         const { studyInformation } = instance.data;
         const element = event.currentTarget.parentElement;
         const $element = $(element);
-        const triggerClick = () => $element.trigger('ohif.studies.study.click', studyInformation);
+        const triggerClick = () => {
+            const cloneEvent = _.clone(event);
+            delete cloneEvent.type;
+            cloneEvent.currentTarget = cloneEvent.target = element;
+            const newEvent = $.Event('ohif.studies.study.click', cloneEvent);
+            $element.trigger(newEvent, studyInformation);
+        };
 
         if (instance.loaded) {
             triggerClick();

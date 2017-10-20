@@ -7,13 +7,6 @@
 
             {{>toolbarSectionTools toolbarButtons=toolbarButtons}}
 
-            {{#if splitView}}
-                {{>studySeriesQuickSwitch (clone this side="right" viewportIndex=1)}}
-                {{>studySeriesQuickSwitch (clone this side="left" viewportIndex=0)}}
-            {{else}}
-                {{>studySeriesQuickSwitch (clone this side="middle" viewportIndex=0)}}
-            {{/if}}
-
             <div id="toolbarSectionEntry" class="toolbarSectionEntry pull-right rm-l-1 p-x-1">
                 {{>caseProgress}}
             </div>

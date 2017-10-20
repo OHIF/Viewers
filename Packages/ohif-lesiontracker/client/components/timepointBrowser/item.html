@@ -13,8 +13,8 @@
             <div class="timepoint-summary">{{choose instance.summary.get 'Click to load'}}</div>
         </div>
         {{#if this.timepointChildTemplate}}
-            {{#if and (not instance.loading.get) instance.loaded}}
-                {{>Template.dynamic template=this.timepointChildTemplate data=(clone this studiesInformation=timepoint.studiesData)}}
+            {{#if instance.studiesData.get}}
+                {{>Template.dynamic template=this.timepointChildTemplate data=(clone this studiesInformation=instance.studiesData.get)}}
             {{/if}}
         {{/if}}
     </div>
