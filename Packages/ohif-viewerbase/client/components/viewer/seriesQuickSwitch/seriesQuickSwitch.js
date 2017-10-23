@@ -103,7 +103,7 @@ Template.seriesQuickSwitch.events({
         const $switch = $(event.currentTarget);
         const browserWidth = $switch.offset().left + $switch.outerWidth();
         const $seriesBrowser = $switch.find('.series-browser');
-        $seriesBrowser.width(browserWidth);
+        $seriesBrowser.width(browserWidth - (browserWidth % 237));
 
         instance.$('.series-quick-switch').addClass('series-triggered');
     },

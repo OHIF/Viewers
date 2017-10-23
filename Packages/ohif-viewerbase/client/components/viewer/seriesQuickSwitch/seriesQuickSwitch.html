@@ -19,7 +19,7 @@
             <div class="study-switch rp-t-1 rp-x-1">
                 <div class="title-label">Study</div>
                 <div class="study-box r-font">
-                    {{#scrollArea class='study-browser'}}
+                    {{#scrollArea class='study-browser' scrollStep=91}}
                         {{>Template.dynamic template=studyBrowserTemplate data=(clone this currentStudy=instance.currentStudy)}}
                     {{/scrollArea}}
                 </div>
