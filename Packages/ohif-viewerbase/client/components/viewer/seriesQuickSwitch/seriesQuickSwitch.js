@@ -53,7 +53,7 @@ Template.seriesQuickSwitch.helpers({
     shallDisplay() {
         const instance = Template.instance();
         const { rows, columns } = instance.data;
-        return OHIF.uiSettings.displaySeriesQuickSwitch && rows === 1 && columns <= 2;
+        return OHIF.viewer.displaySeriesQuickSwitch && rows === 1 && columns <= 2;
     },
 
     side() {

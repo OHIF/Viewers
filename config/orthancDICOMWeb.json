@@ -27,8 +27,7 @@
         "leftSidebarOpen": false,
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true,
-        "autoPositionMeasurementsTextCallOuts": "TRLB",
-        "displaySeriesQuickSwitch": true
+        "autoPositionMeasurementsTextCallOuts": "TRLB"
     }
   },
   "proxy": {

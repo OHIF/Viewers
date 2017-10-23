@@ -15,6 +15,7 @@ Meteor.startup(() => {
     Session.set('TimepointsReady', false);
     Session.set('MeasurementsReady', false);
 
+    OHIF.viewer.displaySeriesQuickSwitch = true;
     OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
 
     // Create the synchronizer used to update reference lines

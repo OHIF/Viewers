@@ -29,7 +29,6 @@ Template.viewerSection.onCreated(() => {
 Template.viewerSection.events({
     'transitionend .sidebarMenu'(event) {
         if (!event.target.classList.contains('sidebarMenu')) return;
-
         window.ResizeViewportManager.handleResize();
     },
 

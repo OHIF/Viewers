@@ -49,6 +49,7 @@ Template.timepointBrowserItem.onCreated(() => {
         const text = 'An error has occurred while retrieving studies information';
         OHIF.ui.notifications.danger({ text });
         OHIF.log.error(error);
+        instance.summary.set('Failed');
     });
 
     updateStudiesData();

@@ -79,7 +79,8 @@ Template.timepointBrowserSidebar.helpers({
         const { patientId } = currentTimepoint;
         let timepoints = [];
         if (instance.timepointViewType.get() === 'key') {
-            timepoints = timepointApi.key();
+            const filter = { latestDate: { $lte: currentTimepoint.latestDate } };
+            timepoints = timepointApi.key(filter);
         } else {
             timepoints = timepointApi.all({ patientId });
         }
