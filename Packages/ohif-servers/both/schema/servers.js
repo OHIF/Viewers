@@ -186,11 +186,6 @@ export const UISettings = new SimpleSchema({
         type: Boolean,
         label: 'Define if the middle instance of a series will be used as thumbnail. If not, the first instance will be used.',
         defaultValue: true
-    },
-    displaySeriesQuickSwitch: {
-        type: Boolean,
-        label: 'Define if the studies and series quick switch should be displayed above the viewer viewport',
-        defaultValue: false
     }
 });
 
