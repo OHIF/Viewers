@@ -27,7 +27,17 @@ Template.timepointBrowserQuickSwitch.onCreated(() => {
     instance.autorun(() => {
         OHIF.viewerbase.layoutManager.observer.depend();
         const viewportData = OHIF.viewerbase.layoutManager.viewportData[viewportIndex];
-        instance.updateSelectedTimepoint(viewportData.studyInstanceUid);
+        let { studyInstanceUid } = viewportData;
+        if (!studyInstanceUid) {
+            Tracker.nonreactive(() => {
+                const currentStudy = instance.data.currentStudy.get();
+                if (currentStudy) {
+                    studyInstanceUid = currentStudy.studyInstanceUid;
+                }
+            });
+        }
+
+        instance.updateSelectedTimepoint(studyInstanceUid);
     });
 
     instance.autorun(() => {

@@ -9,9 +9,7 @@
                     {{/each}}
                     {{#scrollArea class='series-browser' scrollStep=201}}
                         <div class="clearfix thumbnails-wrapper">
-                            {{#each thumbnail in (studyThumbnails instance.currentStudy.get)}}
-                                {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
-                            {{/each}}
+                            {{>studyBrowserSeries (clone this studyMetadata=instance.currentStudy)}}
                         </div>
                     {{/scrollArea}}
                 </div>

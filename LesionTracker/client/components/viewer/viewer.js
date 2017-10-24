@@ -111,7 +111,7 @@ Template.viewer.onCreated(() => {
         const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
         let displaySets = study.displaySets;
 
-        if(!study.displaySets) {
+        if (!study.displaySets) {
             displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
             study.displaySets = displaySets;
         }

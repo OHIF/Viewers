@@ -7,12 +7,42 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.studyBrowserItem.onCreated(() => {
     const instance = Template.instance();
+    const { studyInformation } = instance.data;
+    const { studyInstanceUid } = studyInformation;
 
     instance.loaded = false;
     instance.loading = new ReactiveVar(false);
 
-    const modalities = instance.data.studyInformation.modalities || 'UN';
-    instance.modalities = _.uniq(modalities.split(/[^A-Za-z]+/g)).join(' ');
+    instance.studyData = new ReactiveVar(studyInformation);
+
+    instance.studyMetadata = null;
+    instance.getStudyMetadata = () => {
+        instance.loading.dep.depend();
+
+        if (!instance.studyMetadata) {
+            instance.studyMetadata = OHIF.viewer.Studies.findBy({ studyInstanceUid }) || null;
+        }
+
+        return instance.studyMetadata;
+    };
+
+    instance.autorun(() => {
+        const instance = Template.instance();
+
+        OHIF.studies.loadedDict.get(studyInstanceUid);
+        const studyMetadata = instance.getStudyMetadata();
+        if (studyMetadata) {
+            const firstInstance = studyMetadata.getFirstInstance();
+            instance.studyData.set({
+                studyDate: firstInstance.getRawValue('x00080020') || '',
+                studyDescription: firstInstance.getRawValue('x00081030') || '',
+                modalities: firstInstance.getRawValue('x00080060') || '',
+            });
+
+            instance.loaded = true;
+            instance.loading.set(false);
+        }
+    });
 });
 
 Template.studyBrowserItem.events({
@@ -49,10 +79,14 @@ Template.studyBrowserItem.helpers({
         return Template.instance().loading.get();
     },
 
-    modalityStyle() {
+    modalitiesText(modalities) {
+        const text = modalities || 'UN';
+        return _.uniq(text.split(/[^A-Za-z]+/g)).join(' ');
+    },
+
+    modalityStyle(modalities) {
         // Responsively styles the Modality Acronyms for studies with more than one modality
-        const instance = Template.instance();
-        const numModalities = instance.modalities.split(/\s/g).length;
+        const numModalities = modalities.split(/\s/g).length;
 
         if (numModalities === 1) {
             // If we have only one modality, it should take up the whole div

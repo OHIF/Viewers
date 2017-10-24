@@ -32,7 +32,9 @@ Template.seriesQuickSwitch.onCreated(() => {
             instance.study = OHIF.viewer.Studies.findBy({
                 studyInstanceUid: viewportData.studyInstanceUid
             });
-        } else {
+        }
+
+        if (!instance.study) {
             instance.study = OHIF.viewer.Studies.getElementByIndex(0);
         }
 
@@ -73,9 +75,20 @@ Template.seriesQuickSwitch.helpers({
 
         const seriesItems = [];
 
-        const items = study.displaySets.length;
+        let displaySets = study.getDisplaySets();
+        if (!displaySets.length) {
+            displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
+            study.displaySets = displaySets;
+            study.setDisplaySets(displaySets);
+
+            study.forEachDisplaySet(displaySet => {
+                OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
+            });
+        }
+
+        const items = displaySets.length;
         for (let i = 0; i < items; i++) {
-            const displaySet = study.displaySets[i];
+            const displaySet = displaySets[i];
             const item = { class: '' };
             seriesItems.push(item);
             if (i === 8 && items !== 9) {
@@ -105,7 +118,10 @@ Template.seriesQuickSwitch.events({
         const $seriesBrowser = $switch.find('.series-browser');
         $seriesBrowser.width(browserWidth - (browserWidth % 237));
 
-        instance.$('.series-quick-switch').addClass('series-triggered');
+        const $quickSwitch = instance.$('.series-quick-switch');
+        if ($quickSwitch.is(':hover')) {
+            $quickSwitch.addClass('series-triggered');
+        }
     },
 
     'mouseleave .series-browser'(event, instance) {

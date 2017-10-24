@@ -5,18 +5,43 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.studyBrowserSeries.onCreated(() => {
     const instance = Template.instance();
-    const { studyInformation } = instance.data;
-    const { studyInstanceUid } = studyInformation;
+    const { studyInformation, studyMetadata } = instance.data;
+    const studyInstanceUid = (studyMetadata && studyMetadata.studyInstanceUid) || (studyInformation && studyInformation.studyInstanceUid);
 
     instance.thumbnails = new ReactiveVar([]);
 
     // Get the study metadata and update the study thumbnails
     instance.autorun(() => {
-        const studyMetadata = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+        let metadata = studyMetadata;
+
+        // Check for reactivity
+        if (metadata instanceof ReactiveVar) {
+            metadata = metadata.get();
+        }
+
+        // Retrieve the study metadata
+        if (!metadata) {
+            metadata = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+        }
+
+        // Stop here if there's no study metadata
+        if (!metadata) return;
+
+        // Get the study display sets
+        let displaySets = metadata.getDisplaySets();
+        if (!displaySets.length) {
+            displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(metadata);
+            metadata.displaySets = displaySets;
+            metadata.setDisplaySets(displaySets);
+
+            metadata.forEachDisplaySet(displaySet => {
+                OHIF.viewerbase.stackManager.makeAndAddStack(metadata, displaySet);
+            });
+        }
 
         // Defines the resulting thumbnails list
         const thumbnails = [];
-        studyMetadata.displaySets.forEach((stack, thumbnailIndex) => {
+        displaySets.forEach((stack, thumbnailIndex) => {
             thumbnails.push({
                 thumbnailIndex,
                 stack
