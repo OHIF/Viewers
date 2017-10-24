@@ -4,18 +4,20 @@
             {{#if isLoading}}
                 {{>loadingText}}
             {{/if}}
-            <div class="study-item-box">
-                <div class="study-modality">
-                    <div class="study-modality-text" style="{{modalityStyle}}">{{instance.modalities}}</div>
+            {{#let studyData=instance.studyData.get}}
+                <div class="study-item-box">
+                    <div class="study-modality">
+                        <div class="study-modality-text" style="{{modalityStyle studyData.modalities}}">{{studyData.modalities}}</div>
+                    </div>
+                    <div class="study-text">
+                        <div class="study-date">{{formatDA studyData.studyDate 'D-MMM-YYYY'}}</div>
+                        <div class="study-description">{{studyData.studyDescription}}</div>
+                    </div>
                 </div>
-                <div class="study-text">
-                    <div class="study-date">{{formatDA this.studyInformation.studyDate 'D-MMM-YYYY'}}</div>
-                    <div class="study-description">{{this.studyInformation.studyDescription}}</div>
-                </div>
-            </div>
+            {{/let}}
         </div>
         {{#if this.studyChildTemplate}}
-            {{#if and (not isLoading) instance.loaded}}
+            {{#if and (not isLoading) instance.studyData.get instance.loaded}}
                 {{>Template.dynamic template=this.studyChildTemplate data=(clone this)}}
             {{/if}}
         {{/if}}

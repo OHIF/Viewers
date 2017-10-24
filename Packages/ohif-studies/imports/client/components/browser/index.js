@@ -1,6 +1,7 @@
 import './item.html';
 import './item.js';
 import './list.html';
+import './list.js';
 import './list.styl';
 import './quickSwitch.html';
 import './quickSwitch.js';

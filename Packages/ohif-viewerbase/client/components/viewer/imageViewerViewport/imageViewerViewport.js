@@ -463,11 +463,27 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
  */
 const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
     const study = data.study;
-    if (!study || !study.displaySets) {
-        throw new OHIFError('Study does not exist or has no display sets');
+
+    if (!study) {
+        throw new OHIFError('Study does not exist');
     }
 
-    study.displaySets.every(displaySet => {
+    let displaySets = study.getDisplaySets();
+    if (!displaySets.length) {
+        displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
+        study.displaySets = displaySets;
+        study.setDisplaySets(displaySets);
+
+        study.forEachDisplaySet(displaySet => {
+            OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
+        });
+    }
+
+    if (!displaySets) {
+        throw new OHIFError('Study has no display sets');
+    }
+
+    displaySets.every(displaySet => {
         if (displaySet.displaySetInstanceUid === displaySetInstanceUid) {
             data.displaySet = displaySet;
             return false;
@@ -478,7 +494,7 @@ const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
 
     // If we didn't find anything, stop here
     if (!data.displaySet) {
-        data.displaySet = study.displaySets[0];
+        data.displaySet = displaySets[0];
         // throw new OHIFError('Display set not found in specified study!');
     }
 

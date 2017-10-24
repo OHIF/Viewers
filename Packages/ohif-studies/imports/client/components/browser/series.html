@@ -2,7 +2,7 @@
     <div class="study-browser-series">
         <div class="study-series-container">
             {{#each thumbnail in instance.thumbnails.get}}
-                {{>thumbnailEntry (clone '' thumbnail=thumbnail)}}
+                {{>thumbnailEntry (clone this thumbnail=thumbnail)}}
             {{/each}}
         </div>
     </div>
