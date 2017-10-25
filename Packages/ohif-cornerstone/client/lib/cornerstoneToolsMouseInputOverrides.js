@@ -4,7 +4,6 @@
 // Pull request: https://github.com/chafey/cornerstoneTools/pull/230
 
 import { cornerstone, cornerstoneTools, cornerstoneMath } from 'meteor/ohif:cornerstone';
-cornerstoneTools.copyPoints
 const { copyPoints, pauseEvent } = cornerstoneTools;
 
 let isClickEvent = true;

@@ -46,7 +46,7 @@ Template.viewerMain.onRendered(() => {
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);
 
-    Session.set('OHIFViewerMainRendered', Random.id());
+    Session.set('OHIFViewerMainRendered', Math.random());
 });
 
 Template.viewerMain.onDestroyed(() => {

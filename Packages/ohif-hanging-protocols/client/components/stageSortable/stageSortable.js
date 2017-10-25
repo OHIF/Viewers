@@ -212,7 +212,7 @@ Template.stageSortable.events({
             }
 
             // Update the Session variable to the UI re-renders
-            Session.set('LayoutManagerUpdated', Random.id());
+            Session.set('LayoutManagerUpdated', Math.random());
         }, options);
     },
 
@@ -234,7 +234,7 @@ Template.stageSortable.events({
         ProtocolEngine.stage = newIndex;
 
         // Update the Session variable to the UI re-renders
-        Session.set('LayoutManagerUpdated', Random.id());
+        Session.set('LayoutManagerUpdated', Math.random());
     },
     'click .moveStageDown': function() {
         // Get the old and new indices following a 'sort' event
@@ -254,6 +254,6 @@ Template.stageSortable.events({
         ProtocolEngine.stage = newIndex;
 
         // Update the Session variable to the UI re-renders
-        Session.set('LayoutManagerUpdated', Random.id());
+        Session.set('LayoutManagerUpdated', Math.random());
     }
 });
