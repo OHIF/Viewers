@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+  <Product Id="*"
+          UpgradeCode="{83f70f33-3bd9-4aef-9405-fc0361ec2d4f}"
+          Language='1033' Version='1.0.0'
+          Name="LesionTracker"
+          Manufacturer='OHIF'>
+
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+	<MediaTemplate EmbedCab="yes" />
+	
+	<WixVariable Id="WixUILicenseRtf" Value="$(var.SourceDir)\LICENSE.rtf" />
+
+	<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
+
+	<Feature Id='ProductFeature' Title='LesionTracker' Level='1'>
+      <ComponentGroupRef Id='MainComponentGroup' />
+	</Feature>
+	
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder'>
+        <Directory Id='OHIF_Folder' Name='OHIF'>
+          <Directory Id='INSTALLDIR' Name='LesionTracker' />
+        </Directory>
+      </Directory>
+    </Directory>
+	
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+    <UIRef Id="WixUI" />
+
+  </Product>
+</Wix>
