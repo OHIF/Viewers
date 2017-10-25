@@ -63,7 +63,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Sets the global variable
         OHIF.viewer.cine.framesPerSecond = parseFloat(stack.frameRate);
         // Update the cine dialog FPS
-        Session.set('UpdateCINE', Random.id());
+        Session.set('UpdateCINE', Math.random());
     }
 
     // Shortcut for array with image IDs
@@ -284,7 +284,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // Use Session to trigger reactive updates in the viewportOverlay helper functions
             // This lets the viewport overlay always display correct window / zoom values
-            Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
+            Session.set('CornerstoneImageRendered' + viewportIndex, Math.random());
 
             // Save the current viewport into the OHIF.viewer.data global variable
             const viewport = cornerstone.getViewport(element);
@@ -302,7 +302,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         $element.on('CornerstoneImageRendered', onImageRendered);
 
         // Set a random value for the Session variable in order to trigger an overlay update
-        Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
+        Session.set('CornerstoneImageRendered' + viewportIndex, Math.random());
 
         // Define a function to run whenever the Cornerstone viewport changes images
         // (e.g. during scrolling)
@@ -319,7 +319,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
             templateData.imageId = eventData.enabledElement.image.imageId;
-            Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+            Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
             layoutManager.viewportData[viewportIndex].imageId = eventData.enabledElement.image.imageId;
 
             // Get the element and stack data
@@ -353,7 +353,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         $element.on('CornerstoneNewImage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
-        Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+        Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
 
         const onStackScroll = (e, eventData) => {
             // Attention: Adding OHIF.log.info in this function may decrease the performance
@@ -361,7 +361,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // enabled/disabled -> cornerstone[toolName].tool.enable)
 
             // Update the imageSlider value
-            Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+            Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
         };
 
         $element.off('CornerstoneStackScroll', onStackScroll);

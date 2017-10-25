@@ -30,7 +30,7 @@ export class LayoutManager {
 
         this.isZoomed = false;
 
-        const updateSessionFn = () => Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Random.id()));
+        const updateSessionFn = () => Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Math.random()));
         this.updateSession = _.throttle(updateSessionFn, 300);
     }
 

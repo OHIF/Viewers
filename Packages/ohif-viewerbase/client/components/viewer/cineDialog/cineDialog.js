@@ -60,7 +60,7 @@ Template.cineDialog.onCreated(() => {
             playClipData.framesPerSecond = OHIF.viewer.cine.framesPerSecond;
         }
 
-        Session.set('UpdateCINE', Random.id());
+        Session.set('UpdateCINE', Math.random());
     };
 
     // Define the actions API
@@ -123,7 +123,7 @@ Template.cineDialog.onCreated(() => {
             }
 
             // Update the session to refresh the framerate text
-            Session.set('UpdateCINE', Random.id());
+            Session.set('UpdateCINE', Math.random());
         });
     });
 
