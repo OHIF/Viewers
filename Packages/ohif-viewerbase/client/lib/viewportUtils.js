@@ -138,7 +138,7 @@ const resetViewport = () => {
     const enabledElement = cornerstone.getEnabledElement(element);
     if (enabledElement.fitToWindow === false) {
         const imageId = enabledElement.image.imageId;
-        const instance = cornerstoneTools.metaData.get('instance', imageId);
+        const instance = cornerstone.metaData.get('instance', imageId);
 
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, enabledElement.image);
 

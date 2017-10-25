@@ -113,7 +113,7 @@ export class ResizeViewportManager {
 
         if (enabledElement.fitToWindow === false) {
             const imageId = enabledElement.image.imageId;
-            const instance = cornerstoneTools.metaData.get('instance', imageId);
+            const instance = cornerstone.metaData.get('instance', imageId);
             const instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
             cornerstone.setViewport(element, instanceClassViewport);
         }

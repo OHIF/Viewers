@@ -141,8 +141,8 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
         if (enabledElement && enabledElement.image) {
             const imageId = enabledElement.image.imageId;
-            const series = cornerstoneTools.metaData.get('series', imageId);
-            const study = cornerstoneTools.metaData.get('study', imageId);
+            const series = cornerstone.metaData.get('series', imageId);
+            const study = cornerstone.metaData.get('study', imageId);
 
             if (series.seriesInstanceUid === measurementData.seriesInstanceUid &&
                 study.studyInstanceUid === measurementData.studyInstanceUid) {

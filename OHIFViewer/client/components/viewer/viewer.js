@@ -73,7 +73,7 @@ Meteor.startup(() => {
 
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
-    cornerstoneTools.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+    cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 });
 
 Template.viewer.onCreated(() => {

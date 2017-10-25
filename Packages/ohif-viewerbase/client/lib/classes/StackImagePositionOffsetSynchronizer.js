@@ -201,7 +201,7 @@ export class StackImagePositionOffsetSynchronizer {
             }
 
             const imageId = enabledElement.image.imageId;
-            const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+            const imagePlane = cornerstone.metaData.get('imagePlane', imageId);
 
             if (!imagePlane || !imagePlane.rowCosines || !imagePlane.columnCosines) {
                 return;

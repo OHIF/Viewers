@@ -19,8 +19,8 @@ OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {
     const printMeasurement = (measurement, callback) => {
         OHIF.measurements.getImageDataUrl({ measurement }).then(imageDataUrl => {
             const imageId = OHIF.viewerbase.getImageIdForImagePath(measurement.imagePath);
-            const series = cornerstoneTools.metaData.get('series', imageId);
-            const instance = cornerstoneTools.metaData.get('instance', imageId);
+            const series = cornerstone.metaData.get('series', imageId);
+            const instance = cornerstone.metaData.get('instance', imageId);
 
             let info = measurement.response;
             if (!info) {

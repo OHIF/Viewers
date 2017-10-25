@@ -20,16 +20,16 @@ class MeasurementHandlers {
         const imageId = enabledElement.image.imageId;
 
         // Get studyInstanceUid & patientId
-        const study = cornerstoneTools.metaData.get('study', imageId);
+        const study = cornerstone.metaData.get('study', imageId);
         const studyInstanceUid = study.studyInstanceUid;
         const patientId = study.patientId;
 
         // Get seriesInstanceUid
-        const series = cornerstoneTools.metaData.get('series', imageId);
+        const series = cornerstone.metaData.get('series', imageId);
         const seriesInstanceUid = series.seriesInstanceUid;
 
         // Get sopInstanceUid
-        const sopInstance = cornerstoneTools.metaData.get('instance', imageId);
+        const sopInstance = cornerstone.metaData.get('instance', imageId);
         const sopInstanceUid = sopInstance.sopInstanceUid;
         const frameIndex = sopInstance.frame || 0;
 

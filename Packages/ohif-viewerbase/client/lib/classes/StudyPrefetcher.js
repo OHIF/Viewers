@@ -161,19 +161,19 @@ export class StudyPrefetcher {
     }
 
     getStudy(image) {
-        const studyMetadata = cornerstoneTools.metaData.get('study', image.imageId);
+        const studyMetadata = cornerstone.metaData.get('study', image.imageId);
         return OHIF.viewer.Studies.find(study => study.studyInstanceUid === studyMetadata.studyInstanceUid);
     }
 
     getSeries(study, image) {
-        const seriesMetadata = cornerstoneTools.metaData.get('series', image.imageId);
+        const seriesMetadata = cornerstone.metaData.get('series', image.imageId);
         const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
 
         return studyMetadata.getSeriesByUID(seriesMetadata.seriesInstanceUid);
     }
 
     getInstance(series, image) {
-        const instanceMetadata = cornerstoneTools.metaData.get('instance', image.imageId);
+        const instanceMetadata = cornerstone.metaData.get('instance', image.imageId);
         return series.getInstanceByUID(instanceMetadata.sopInstanceUid);
     }
 
