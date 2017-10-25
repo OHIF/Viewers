@@ -2,6 +2,7 @@ import './jumpToRowItem';
 import './activateMeasurements';
 import './deactivateAllToolData';
 import './exportPdf';
+import './findAndRenderDisplaySet';
 import './getImageDataUrl';
 import './getMeasurementsGroupedByNumber';
 import './getLocationLabel';

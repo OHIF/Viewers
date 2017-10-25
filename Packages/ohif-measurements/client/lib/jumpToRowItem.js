@@ -1,44 +1,16 @@
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
-
-function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
-        // Find the proper stack to display
-    const stacksFromSeries = displaySets.filter(stack => stack.seriesInstanceUid === seriesInstanceUid);
-    const stack = stacksFromSeries.find(stack => {
-        const imageIndex = stack.images.findIndex(image => image.getSOPInstanceUID() === sopInstanceUid);
-        return imageIndex > -1;
-    });
-
-    // TODO: make this work for multi-frame instances
-    const specificImageIndex = stack.images.findIndex(image => image.getSOPInstanceUID() === sopInstanceUid);
-
-    const displaySetData = {
-        studyInstanceUid: studyInstanceUid,
-        seriesInstanceUid: seriesInstanceUid,
-        sopInstanceUid: sopInstanceUid,
-        displaySetInstanceUid: stack.displaySetInstanceUid,
-        currentImageIdIndex: specificImageIndex
-    };
-
-    // Add a renderedCallback to activate the measurements once it's
-    if (renderedCallback) {
-        displaySetData.renderedCallback = renderedCallback;
-    }
-
-    OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
-}
 
 function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
-
     // @TypeSafeStudies
     // First, check if we already have this study loaded
     const alreadyLoadedStudy = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
+    const { findAndRenderDisplaySet } = OHIF.measurements;
     if (alreadyLoadedStudy) {
         // If the Study is already loaded, find the display set and render it
-        findAndRenderDisplaySet(alreadyLoadedStudy.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback)
+        findAndRenderDisplaySet(alreadyLoadedStudy.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback);
     } else {
         // If not, retrieve the study metadata and then find the relevant display set and
         // render it.
@@ -113,11 +85,11 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
         timepoints.reverse();
     }
 
-    for (var i=0; i < numViewportsToUpdate; i++) {
+    for (let i = 0; i < numViewportsToUpdate; i++) {
         const timepoint = timepoints[i];
         const timepointId = timepoint.timepointId;
 
-        const dataAtThisTimepoint = _.where(rowItem.entries, {timepointId: timepointId});
+        const dataAtThisTimepoint = _.where(rowItem.entries, { timepointId });
         if (!dataAtThisTimepoint || !dataAtThisTimepoint.length) {
             continue;
         }
@@ -133,7 +105,7 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
         // or maybe just remove the 'error' this throws?
         let enabledElement;
         try {
-            enabledElement = cornerstone.getEnabledElement(element)
+            enabledElement = cornerstone.getEnabledElement(element);
         } catch(error) {
             continue;
         }

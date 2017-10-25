@@ -37,6 +37,7 @@ Package.onUse(function(api) {
     api.use('ohif:log');
     api.use('ohif:study-list');
     api.use('ohif:hanging-protocols');
+    api.use('ohif:viewerbase');
 
     // Client and server imports
     api.addFiles('both/index.js', ['client', 'server']);
