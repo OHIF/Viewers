@@ -75,7 +75,7 @@ Template.seriesQuickSwitch.helpers({
 
         const seriesItems = [];
 
-        let displaySets = study.getDisplaySets();
+        let displaySets = study.displaySets;
         if (!displaySets.length) {
             displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
             study.displaySets = displaySets;

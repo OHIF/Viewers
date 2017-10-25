@@ -5,7 +5,6 @@ import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 // Local Modules
 import { unloadHandlers } from '../../../lib/unloadHandlers';
-import { hotkeyUtils } from '../../../lib/hotkeyUtils';
 import { ResizeViewportManager } from '../../../lib/classes/ResizeViewportManager';
 import { LayoutManager } from '../../../lib/classes/LayoutManager';
 import { StudyPrefetcher } from '../../../lib/classes/StudyPrefetcher';

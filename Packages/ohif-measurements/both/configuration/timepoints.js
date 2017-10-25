@@ -130,9 +130,7 @@ class TimepointApi {
 
     // Return only the current timepoint
     current() {
-        return this.timepoints.findOne({
-            timepointId: this.currentTimepointId
-        });
+        return this.timepoints.findOne({ timepointId: this.currentTimepointId });
     }
 
     lock() {
@@ -157,13 +155,9 @@ class TimepointApi {
 
         const latestDate = current.latestDate;
         return this.timepoints.findOne({
-            latestDate: {
-                $lt: latestDate
-            }
+            latestDate: { $lt: latestDate }
         }, {
-            sort: {
-                latestDate: -1
-            },
+            sort: { latestDate: -1 }
         });
     }
 
@@ -186,9 +180,13 @@ class TimepointApi {
 
     // Return only the baseline timepoint
     baseline() {
-        return this.timepoints.findOne({
-            timepointType: 'baseline'
-        });
+        return this.timepoints.findOne({ timepointType: 'baseline' });
+    }
+
+    // Return only the nadir timepoint
+    nadir() {
+        const timepoint = this.timepoints.findOne({ timepointKey: 'nadir' });
+        return timepoint || this.baseline();
     }
 
     // Return only the key timepoints (current, prior, nadir and baseline)

@@ -28,7 +28,7 @@ Template.studyBrowserSeries.onCreated(() => {
         if (!metadata) return;
 
         // Get the study display sets
-        let displaySets = metadata.getDisplaySets();
+        let displaySets = metadata.displaySets;
         if (!displaySets.length) {
             displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(metadata);
             metadata.displaySets = displaySets;
