@@ -133,7 +133,7 @@ function getAbstractPriorValue(imageId) {
         return;
     }
 
-    const priorStudy = cornerstoneTools.metaData.get('study', imageId);
+    const priorStudy = cornerstone.metaData.get('study', imageId);
     if (!priorStudy) {
         return;
     }

@@ -408,7 +408,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         OHIF.viewer.data.loadedSeriesData = layoutManager.viewportData;
 
         // Check if image plane (orientation / location) data is present for the current image
-        const imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
+        const imagePlane = cornerstone.metaData.get('imagePlane', image.imageId);
         if (imagePlane && imagePlane.frameOfReferenceUID) {
             // If it is, add this element to the global synchronizer...
             OHIF.viewer.updateImageSynchronizer.add(element);

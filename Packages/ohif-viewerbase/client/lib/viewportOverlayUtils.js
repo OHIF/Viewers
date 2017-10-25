@@ -5,7 +5,7 @@ const getPatient = function(property) {
         return false;
     }
 
-    const patient = cornerstoneTools.metaData.get('patient', this.imageId);
+    const patient = cornerstone.metaData.get('patient', this.imageId);
     if (!patient) {
         return '';
     }
@@ -18,7 +18,7 @@ const getStudy = function(property) {
         return false;
     }
 
-    const study = cornerstoneTools.metaData.get('study', this.imageId);
+    const study = cornerstone.metaData.get('study', this.imageId);
     if (!study) {
         return '';
     }
@@ -31,7 +31,7 @@ const getSeries = function(property) {
         return false;
     }
 
-    const series = cornerstoneTools.metaData.get('series', this.imageId);
+    const series = cornerstone.metaData.get('series', this.imageId);
     if (!series) {
         return '';
     }
@@ -44,7 +44,7 @@ const getInstance = function(property) {
         return false;
     }
 
-    const instance = cornerstoneTools.metaData.get('instance', this.imageId);
+    const instance = cornerstone.metaData.get('instance', this.imageId);
     if (!instance) {
         return '';
     }
@@ -57,7 +57,7 @@ const getTagDisplay = function(property) {
         return false;
     }
 
-    const instance = cornerstoneTools.metaData.get('tagDisplay', this.imageId);
+    const instance = cornerstone.metaData.get('tagDisplay', this.imageId);
     if (!instance) {
         return '';
     }

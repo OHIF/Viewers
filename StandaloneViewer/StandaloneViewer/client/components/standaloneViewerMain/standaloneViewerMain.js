@@ -17,7 +17,7 @@ Template.standaloneViewerMain.onCreated(() => {
     OHIF.viewer.metadataProvider = OHIF.cornerstone.metadataProvider;
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
-    cornerstoneTools.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+    cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 });
 
 Template.standaloneViewerMain.onRendered(() => {

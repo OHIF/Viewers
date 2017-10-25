@@ -24,7 +24,7 @@ Meteor.startup(() => {
 
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
-    cornerstoneTools.metaData.addProvider(metadataProvider.getProvider());
+    cornerstone.metaData.addProvider(metadataProvider.getProvider());
 
     // Target tools configuration
     OHIF.lesiontracker.configureTargetToolsHandles();

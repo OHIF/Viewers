@@ -9,7 +9,7 @@ const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
     const viewTypes = ['MLO', 'CC', 'LM', 'ML', 'XCCL'];
     const requiresInversion = ['LM']; // Tomo series are flipped
 
-    const instance = cornerstoneTools.metaData.get('instance', imageId);
+    const instance = cornerstone.metaData.get('instance', imageId);
     if (!instance) {
         return;
     }
