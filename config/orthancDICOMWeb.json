@@ -7,7 +7,7 @@
         "qidoRoot": "http://localhost:8042/dicom-web",
         "wadoRoot": "http://localhost:8042/dicom-web",
         "qidoSupportsIncludeField": false,
-        "imageRendering": "wadors",
+        "imageRendering": "wadouri",
         "thumbnailRendering": "wadors",
         "requestOptions": {
           "auth": "orthanc:orthanc",

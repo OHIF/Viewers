@@ -20,7 +20,12 @@ Template.studyBrowserItem.onCreated(() => {
         instance.loading.dep.depend();
 
         if (!instance.studyMetadata) {
-            instance.studyMetadata = OHIF.viewer.Studies.findBy({ studyInstanceUid }) || null;
+            let study = OHIF.viewer.Studies.findBy({ studyInstanceUid }) || null;
+            if (study && !(study instanceof OHIF.viewerbase.metadata.StudyMetadata)) {
+                study = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
+            }
+
+            instance.studyMetadata = study;
         }
 
         return instance.studyMetadata;
