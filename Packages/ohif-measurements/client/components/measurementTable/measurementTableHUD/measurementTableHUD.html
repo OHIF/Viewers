@@ -1,16 +1,20 @@
 <template name="measurementTableHUD">
     <div id="measurementTableHUD" class="{{hudHidden}}">
-        <div class="header">
-            <span>Measurements</span>
-            <svg class="buttonClose">
-                <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-close"}}></use>
-            </svg>
-        </div>
-        {{>measurementTableView (clone this)}}
-        <div class="footer">
-            {{#each toolbarButton in toolbarButtons}}
-                {{>toolbarSectionButton toolbarButton}}
-            {{/each}}
+        <div class="flex-v full-height">
+            <div class="header">
+                <span>Measurements</span>
+                <svg class="buttonClose">
+                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-close"}}></use>
+                </svg>
+            </div>
+            {{#scrollArea class='measurementTableView flex-grow fit' scrollStep=63}}
+                {{>measurementTableView (clone this isHud=true)}}
+            {{/scrollArea}}
+            <div class="footer">
+                {{#each toolbarButton in toolbarButtons}}
+                    {{>toolbarSectionButton toolbarButton}}
+                {{/each}}
+            </div>
         </div>
     </div>
 </template>

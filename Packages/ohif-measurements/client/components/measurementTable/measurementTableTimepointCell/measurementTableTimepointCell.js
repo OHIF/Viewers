@@ -93,9 +93,15 @@ Template.measurementTableTimepointCell.events({
         if (keyCode === keys.DELETE || keyCode === keys.BACKSPACE || (keyCode === keys.D && event.ctrlKey === true)) {
             const timepointId = instance.data.timepointId;
 
+            const offset = $(event.currentTarget).offset();
             const dialogSettings = {
+                class: 'themed',
                 title: 'Delete measurements',
-                message: 'Are you sure you want to delete this measurement?'
+                message: 'Are you sure you want to delete this measurement?',
+                position: {
+                    x: offset.left,
+                    y: offset.top
+                }
             };
 
             OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {
