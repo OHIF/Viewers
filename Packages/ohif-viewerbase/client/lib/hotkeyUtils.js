@@ -35,7 +35,6 @@ Meteor.startup(function() {
         dragProbe: '',
         ellipticalRoi: '',
         rectangleRoi: '',
-        spine: '',
 
         // Viewport hotkeys
         flipH: 'H',
@@ -111,14 +110,13 @@ Meteor.startup(function() {
         zoom: 'Zoom',
         angle: 'Angle Measurement',
         dragProbe: 'Pixel Probe',
-        ellipticalRoi: 'Elliptical Probe',
-        rectangleRoi: 'Rectangle',
+        ellipticalRoi: 'Elliptical ROI',
+        rectangleRoi: 'Rectangle ROI',
         magnify: 'Magnify',
         annotate: 'Annotate',
         stackScroll: 'Scroll Stack',
         pan: 'Pan',
         length: 'Length Measurement',
-        spine: 'Spine Labels',
         wwwcRegion: 'W/L by Region'
     });
 

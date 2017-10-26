@@ -33,7 +33,16 @@ Template.hotkeysForm.onCreated(() => {
     };
 
     const rg = (start, end) => _.range(start, end + 1);
-    instance.allowedKeys = _.union(rg(32, 40), rg(48, 57), rg(65, 90), rg(112, 121), [123]);
+    instance.allowedKeys = _.union(
+        [8, 13, 27, 32, 46], // BACKSPACE, ENTER, ESCAPE, SPACE, DELETE
+        [12, 106, 107, 109, 110, 111], // Numpad keys
+        rg(219, 221), // [\]
+        rg(186, 191), // ;=,-./
+        rg(112, 130), // F1-F19
+        rg(33, 40), // arrow keys, home/end, pg dn/up
+        rg(48, 57), // 0-9
+        rg(65, 90) // A-Z
+    );
 
     instance.updateInputText = (event, displayPressedKey=false) => {
         const $target = $(event.currentTarget);
@@ -41,7 +50,7 @@ Template.hotkeysForm.onCreated(() => {
 
         if (displayPressedKey) {
             const specialKeyName = jQuery.hotkeys.specialKeys[event.which];
-            const keyName = specialKeyName || event.key;
+            const keyName = specialKeyName || String.fromCharCode(event.keyCode) || event.key;
             keysPressedArray.push(keyName.toUpperCase());
         }
 
@@ -91,6 +100,11 @@ Template.hotkeysForm.onCreated(() => {
 
 Template.hotkeysForm.events({
     'keydown .hotkey'(event, instance) {
+        // Prevent ESC key from propagating and closing the modal
+        if (event.keyCode === 27) {
+            event.stopPropagation();
+        }
+
         if (instance.allowedKeys.indexOf(event.keyCode) > -1) {
             instance.updateInputText(event, true);
             $(event.currentTarget).trigger('hotkeyChange');
