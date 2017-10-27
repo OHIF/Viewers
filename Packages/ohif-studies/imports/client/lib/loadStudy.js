@@ -27,6 +27,7 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
         const loaded = OHIF.viewer.Studies.findBy({ studyInstanceUid: study.studyInstanceUid });
         if (!loaded) {
             OHIF.viewer.Studies.insert(study);
+            OHIF.viewer.StudyMetadataList.insert(study);
         }
 
         // Add the studyInstanceUid to the loaded state dictionary
