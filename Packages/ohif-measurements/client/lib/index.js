@@ -1,5 +1,6 @@
 import './jumpToRowItem';
 import './activateMeasurements';
+import './clearCornerstoneToolState';
 import './deactivateAllToolData';
 import './exportPdf';
 import './findAndRenderDisplaySet';

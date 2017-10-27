@@ -1,6 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
@@ -17,11 +16,7 @@ class ConformanceCriteria {
         this.maxTargets = new ReactiveVar(null);
         this.maxNewTargets = new ReactiveVar(null);
 
-        const validate = _.debounce(trialCriteriaType => {
-            if (!Session.get('MeasurementsReady')) return;
-            this.validate(trialCriteriaType);
-        }, 300);
-
+        const validate = _.debounce(trialCriteriaType => this.validate(trialCriteriaType), 300);
         Tracker.autorun(() => {
             const selectedType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
             this.measurementApi.changeObserver.depend();
@@ -161,7 +156,7 @@ class ConformanceCriteria {
                         return;
                     }
 
-                    const promise = OHIF.studies.retrieveStudyMetadata(studyInstanceUid);
+                    const promise = OHIF.studies.loadStudy(studyInstanceUid);
                     promise.then(study => {
                         const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
 
