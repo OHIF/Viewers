@@ -1,42 +1,38 @@
 {
   "minifier": {
     "name": "standard-minifier-js",
-    "version": "2.1.0"
+    "version": "2.1.2"
   },
-  "totalMinifiedBytes": 2444870,
-  "totalMinifiedGzipBytes": 641911,
+  "totalMinifiedBytes": 2587884,
+  "totalMinifiedGzipBytes": 670564,
   "minifiedBytesByPackage": {
+    "packages/meteor.js": 8650,
+    "packages/meteor-base.js": 68,
+    "packages/mobile-experience.js": 74,
+    "packages/babel-compiler.js": 71,
+    "packages/ecmascript.js": 64,
     "packages/underscore.js": 14436,
-    "packages/meteor.js": 8564,
-    "packages/meteor-base.js": 83,
-    "packages/mobile-experience.js": 89,
-    "packages/babel-compiler.js": 86,
-    "packages/ecmascript.js": 79,
     "packages/base64.js": 1714,
-    "packages/ejson.js": 6017,
-    "packages/id-map.js": 1166,
-    "packages/ordered-dict.js": 2885,
-    "packages/tracker.js": 4878,
     "packages/modules-runtime.js": 4015,
     "packages/modules.js": [
-      287282,
+      289459,
       {
         "node_modules": {
           "meteor": {
             "modules": {
               "client.js": 124,
               "css.js": 261,
-              "install-packages.js": 2629,
-              "process.js": 312,
+              "install-packages.js": 2859,
+              "process.js": 347,
               "reify.js": 147,
               "stubs.js": 97,
               "node_modules": {
                 "reify": {
                   "lib": {
                     "runtime": {
-                      "index.js": 845,
-                      "utils.js": 1276,
-                      "entry.js": 3334
+                      "index.js": 900,
+                      "utils.js": 1217,
+                      "entry.js": 3350
                     }
                   }
                 }
@@ -83,9 +79,9 @@
             "helpers": {
               "typeof.js": 626,
               "toConsumableArray.js": 261,
-              "classCallCheck.js": 146,
               "possibleConstructorReturn.js": 332,
               "inherits.js": 543,
+              "classCallCheck.js": 146,
               "slicedToArray.js": 587,
               "extends.js": 301,
               "createClass.js": 387
@@ -151,7 +147,7 @@
               "_array-includes.js": 282,
               "_to-length.js": 113,
               "_to-integer.js": 102,
-              "_to-index.js": 122,
+              "_to-index.js": 121,
               "_shared-key.js": 107,
               "_enum-bug-keys.js": 133,
               "_enum-keys.js": 208,
@@ -186,7 +182,7 @@
               "_set-proto.js": 444,
               "es6.set.js": 241,
               "es6.string.iterator.js": 258,
-              "_string-at.js": 319,
+              "_string-at.js": 317,
               "es6.array.is-array.js": 75,
               "es6.array.from.js": 656,
               "_create-property.js": 134,
@@ -262,6 +258,16 @@
               "_same-value.js": 94,
               "es6.object.set-prototype-of.js": 88,
               "es6.object.to-string.js": 198,
+              "es6.regexp.constructor.js": 753,
+              "_is-regexp.js": 158,
+              "_flags.js": 206,
+              "es6.regexp.to-string.js": 433,
+              "es6.regexp.flags.js": 132,
+              "es6.regexp.match.js": 193,
+              "_fix-re-wks.js": 379,
+              "es6.regexp.replace.js": 193,
+              "es6.regexp.search.js": 194,
+              "es6.regexp.split.js": 1193,
               "es6.string.from-code-point.js": 376,
               "es6.string.raw.js": 252,
               "es6.string.trim.js": 104,
@@ -270,7 +276,6 @@
               "es6.string.code-point-at.js": 132,
               "es6.string.ends-with.js": 351,
               "_string-context.js": 167,
-              "_is-regexp.js": 158,
               "_fails-is-regexp.js": 153,
               "es6.string.includes.js": 228,
               "es6.string.repeat.js": 80,
@@ -290,11 +295,6 @@
               "es6.string.strike.js": 119,
               "es6.string.sub.js": 113,
               "es6.string.sup.js": 113,
-              "es6.regexp.match.js": 193,
-              "_fix-re-wks.js": 379,
-              "es6.regexp.replace.js": 193,
-              "es6.regexp.search.js": 194,
-              "es6.regexp.split.js": 1193,
               "es6.weak-map.js": 802,
               "_collection-weak.js": 1050,
               "web.dom.iterable.js": 378,
@@ -334,6 +334,7 @@
               "function.js": 167,
               "math.js": 574,
               "object.js": 757,
+              "regexp.js": 299,
               "string.js": 951,
               "weak-map.js": 157,
               "weak-set.js": 155
@@ -362,7 +363,7 @@
               },
               "modules": {
                 "es6.string.iterator.js": 258,
-                "_string-at.js": 319,
+                "_string-at.js": 317,
                 "_to-integer.js": 102,
                 "_defined.js": 105,
                 "_iter-define.js": 1003,
@@ -395,7 +396,7 @@
                 "_cof.js": 86,
                 "_array-includes.js": 282,
                 "_to-length.js": 113,
-                "_to-index.js": 122,
+                "_to-index.js": 121,
                 "_shared-key.js": 107,
                 "_shared.js": 124,
                 "_uid.js": 129,
@@ -445,64 +446,17 @@
           "jquery": {
             "package.json": 72,
             "dist": {
-              "jquery.js": 85803
+              "jquery.js": 85793
             }
           }
         }
       }
     ],
-    "packages/ecmascript-runtime.js": 90,
-    "packages/es5-shim.js": [
-      28278,
-      {
-        "node_modules": {
-          "meteor": {
-            "es5-shim": {
-              "client.js": 132,
-              "console.js": 289,
-              "export_globals.js": 152,
-              "import_globals.js": 75,
-              "node_modules": {
-                "es5-shim": {
-                  "es5-shim.js": 22320,
-                  "es5-sham.js": 4842
-                }
-              }
-            }
-          }
-        }
-      }
-    ],
-    "packages/promise.js": [
-      4804,
-      {
-        "node_modules": {
-          "meteor": {
-            "promise": {
-              "client.js": 85,
-              "common.js": 286,
-              "node_modules": {
-                "meteor-promise": {
-                  "package.json": 113,
-                  "promise_client.js": 266
-                },
-                "promise": {
-                  "lib": {
-                    "es6-extensions.js": 1214,
-                    "core.js": 1830
-                  }
-                },
-                "asap": {
-                  "raw.js": 453
-                }
-              }
-            }
-          }
-        }
-      }
-    ],
+    "packages/ecmascript-runtime.js": 75,
+    "packages/es5-shim.js": 28252,
+    "packages/promise.js": 4836,
     "packages/babel-runtime.js": [
-      1508,
+      1482,
       {
         "node_modules": {
           "meteor": {
@@ -520,19 +474,35 @@
       }
     ],
     "packages/ecmascript-runtime-client.js": [
-      1678,
+      1676,
       {
         "node_modules": {
           "meteor": {
             "ecmascript-runtime-client": {
-              "runtime.js": 1173
+              "runtime.js": 1197
             }
           }
         }
       }
     ],
+    "packages/ejson.js": [
+      7718,
+      {
+        "node_modules": {
+          "meteor": {
+            "ejson": {
+              "ejson.js": 6065,
+              "stringify.js": 1040
+            }
+          }
+        }
+      }
+    ],
+    "packages/diff-sequence.js": 2401,
+    "packages/geojson-utils.js": 5242,
+    "packages/id-map.js": 1166,
     "packages/random.js": [
-      4049,
+      4023,
       {
         "node_modules": {
           "meteor": {
@@ -545,45 +515,29 @@
       }
     ],
     "packages/mongo-id.js": 1745,
-    "packages/diff-sequence.js": 2401,
-    "packages/geojson-utils.js": [
-      5268,
-      {
-        "node_modules": {
-          "meteor": {
-            "geojson-utils": {
-              "main.js": 48,
-              "geojson-utils.js": 4773
-            }
-          }
-        }
-      }
-    ],
+    "packages/ordered-dict.js": 2885,
+    "packages/tracker.js": 4878,
     "packages/minimongo.js": [
-      43256,
+      49685,
       {
         "node_modules": {
           "meteor": {
             "minimongo": {
-              "minimongo.js": 12118,
-              "wrap_transform.js": 461,
-              "helpers.js": 411,
-              "selector.js": 11605,
-              "sort.js": 4112,
-              "projection.js": 1932,
-              "modify.js": 6828,
-              "diff.js": 329,
-              "id_map.js": 101,
-              "observe.js": 2451,
-              "objectid.js": 761,
-              "validation.js": 510
+              "minimongo_client.js": 52,
+              "common.js": 12983,
+              "cursor.js": 5302,
+              "local_collection.js": 21599,
+              "matcher.js": 3148,
+              "minimongo_common.js": 276,
+              "observe_handle.js": 223,
+              "sorter.js": 5052
             }
           }
         }
       }
     ],
     "packages/check.js": [
-      5670,
+      5644,
       {
         "node_modules": {
           "meteor": {
@@ -596,10 +550,11 @@
       }
     ],
     "packages/retry.js": 874,
+    "packages/callback-hook.js": 1325,
     "packages/ddp-common.js": 4019,
     "packages/reload.js": 1984,
     "packages/ddp-client.js": [
-      58338,
+      58583,
       {
         "node_modules": {
           "meteor": {
@@ -607,9 +562,9 @@
               "sockjs-0.3.4.js": 30000,
               "stream_client_sockjs.js": 2698,
               "stream_client_common.js": 3083,
-              "livedata_common.js": 219,
-              "random_stream.js": 175,
-              "livedata_connection.js": 19228,
+              "livedata_common.js": 331,
+              "random_stream.js": 181,
+              "livedata_connection.js": 19349,
               "client_convenience.js": 883,
               "namespace.js": 101,
               "id_map.js": 408
@@ -619,61 +574,51 @@
       }
     ],
     "packages/ddp.js": 163,
-    "packages/ddp-server.js": 82,
+    "packages/ddp-server.js": 67,
     "packages/allow-deny.js": [
-      5975,
+      6144,
       {
         "node_modules": {
           "meteor": {
             "allow-deny": {
-              "allow-deny.js": 5162
+              "allow-deny.js": 5380
             }
           }
         }
       }
     ],
     "packages/mongo.js": [
-      9589,
+      9155,
       {
         "node_modules": {
           "meteor": {
             "mongo": {
               "local_collection_driver.js": 316,
-              "collection.js": 8211
+              "collection.js": 7803
             }
           }
         }
       }
     ],
-    "packages/blaze-html-templates.js": 92,
+    "packages/blaze-html-templates.js": 77,
     "packages/reactive-var.js": 904,
-    "packages/jquery.js": [
-      96888,
-      {
-        "node_modules": {
-          "meteor": {
-            "jquery": {
-              "main.js": 122,
-              "jquery.js": 96347
-            }
-          }
-        }
-      }
-    ],
-    "packages/standard-minifier-css.js": 93,
-    "packages/standard-minifier-js.js": 92,
-    "packages/shell-server.js": 84,
+    "packages/jquery.js": 96854,
+    "packages/standard-minifier-css.js": 78,
+    "packages/standard-minifier-js.js": 77,
+    "packages/shell-server.js": 69,
     "packages/ohif_polyfill.js": [
-      1440,
+      1501,
       {
         "node_modules": {
           "meteor": {
             "ohif:polyfill": {
               "client": {
-                "index.js": 35,
-                "ie.js": 551,
+                "index.js": 61,
+                "all.js": 231,
+                "ie.js": 174,
                 "lib": {
-                  "absoluteUrl.js": 200
+                  "absoluteUrl.js": 166,
+                  "writeScript.js": 213
                 }
               }
             }
@@ -681,25 +626,25 @@
         }
       }
     ],
-    "packages/standard-app-packages.js": 93,
-    "packages/stylus.js": 75,
+    "packages/standard-app-packages.js": 78,
+    "packages/stylus.js": 60,
     "packages/observe-sequence.js": 3010,
     "packages/deps.js": 196,
     "packages/htmljs.js": 10098,
     "packages/blaze.js": 38724,
     "packages/spacebars.js": 3004,
-    "packages/templating-compiler.js": 91,
+    "packages/templating-compiler.js": 76,
     "packages/templating-runtime.js": 3133,
     "packages/templating.js": 188,
     "packages/ui.js": 222,
-    "packages/iron_core.js": 3574,
-    "packages/iron_dynamic-template.js": 8493,
+    "packages/iron_core.js": 3553,
+    "packages/iron_dynamic-template.js": 8492,
     "packages/iron_layout.js": 5427,
     "packages/iron_url.js": 5439,
     "packages/iron_middleware-stack.js": 4347,
     "packages/iron_location.js": 3839,
     "packages/reactive-dict.js": [
-      4273,
+      4247,
       {
         "node_modules": {
           "meteor": {
@@ -711,136 +656,30 @@
         }
       }
     ],
-    "packages/iron_controller.js": 3855,
+    "packages/iron_controller.js": 3874,
     "packages/iron_router.js": 19893,
-    "packages/natestrauser_select2.js": 66392,
+    "packages/natestrauser_select2.js": 66390,
     "packages/aldeed_simple-schema.js": 34788,
     "packages/autoupdate.js": 1998,
-    "packages/meteor-platform.js": 87,
+    "packages/meteor-platform.js": 72,
     "packages/webapp.js": [
-      924,
+      953,
       {
         "node_modules": {
           "meteor": {
             "webapp": {
-              "webapp_client.js": 285
+              "webapp_client.js": 334
             }
           }
         }
       }
     ],
-    "packages/logging.js": [
-      27575,
-      {
-        "node_modules": {
-          "meteor": {
-            "logging": {
-              "logging.js": 2935,
-              "node_modules": {
-                "cli-color": {
-                  "package.json": 64,
-                  "lib": {
-                    "index.js": 2433,
-                    "_xterm-match.js": 491,
-                    "_xterm-colors.js": 2345
-                  },
-                  "node_modules": {
-                    "es5-ext": {
-                      "lib": {
-                        "Object": {
-                          "descriptor.js": 869,
-                          "is-callable.js": 247,
-                          "valid-callable.js": 139,
-                          "valid-value.js": 124,
-                          "copy.js": 361,
-                          "is-plain-object.js": 210,
-                          "for-each.js": 66,
-                          "_iterate.js": 338,
-                          "extend.js": 273,
-                          "map.js": 213,
-                          "reduce.js": 468,
-                          "is.js": 96,
-                          "is-empty.js": 146
-                        },
-                        "String": {
-                          "is-string.js": 187,
-                          "prototype": {
-                            "contains.js": 121,
-                            "repeat.js": 176
-                          }
-                        },
-                        "Number": {
-                          "to-uint.js": 100,
-                          "to-int.js": 166,
-                          "is-nan.js": 65,
-                          "is-number.js": 177
-                        },
-                        "Math": {
-                          "sign.js": 98
-                        },
-                        "Error": {
-                          "custom.js": 331
-                        },
-                        "Array": {
-                          "prototype": {
-                            "e-index-of.js": 323,
-                            "last.js": 123,
-                            "last-index.js": 201
-                          },
-                          "from.js": 197
-                        },
-                        "Function": {
-                          "is-arguments.js": 146
-                        },
-                        "global.js": 69
-                      }
-                    },
-                    "memoizee": {
-                      "package.json": 63,
-                      "lib": {
-                        "index.js": 317,
-                        "regular.js": 2662,
-                        "_base.js": 610,
-                        "primitive.js": 1189,
-                        "ext": {
-                          "dispose.js": 495,
-                          "resolvers.js": 590,
-                          "async.js": 1304,
-                          "ref-counter.js": 433,
-                          "method.js": 716,
-                          "max-age.js": 809,
-                          "max.js": 532
-                        }
-                      },
-                      "node_modules": {
-                        "event-emitter": {
-                          "lib": {
-                            "has-listeners.js": 268,
-                            "_id.js": 47,
-                            "core.js": 1565
-                          }
-                        },
-                        "next-tick": {
-                          "package.json": 74,
-                          "lib": {
-                            "next-tick.js": 205
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    ],
+    "packages/logging.js": 27750,
     "packages/session.js": 349,
     "packages/livedata.js": 190,
     "packages/launch-screen.js": 873,
     "packages/ohif_core.js": [
-      100635,
+      127303,
       {
         "node_modules": {
           "meteor": {
@@ -850,27 +689,28 @@
                 "index.js": 132,
                 "routes.js": 160,
                 "components": {
-                  "index.js": 190,
+                  "index.js": 217,
                   "base": {
                     "component.js": 699,
-                    "index.js": 981,
+                    "index.js": 1049,
                     "mixin.js": 1406,
                     "template.js": 1256,
                     "mixins": {
-                      "action.js": 909,
+                      "action.js": 1059,
                       "button.js": 315,
                       "checkbox.js": 464,
                       "component.js": 210,
-                      "dropdown.js": 3810,
+                      "dropdown.js": 3906,
                       "form.js": 1597,
-                      "formItem.js": 3082,
-                      "group.js": 1711,
+                      "formItem.js": 3307,
+                      "group.js": 1897,
                       "groupRadio.js": 660,
                       "input.js": 313,
                       "link.js": 376,
-                      "schemaData.js": 2015,
+                      "popover.js": 797,
+                      "schemaData.js": 2132,
                       "select.js": 315,
-                      "select2.js": 1544
+                      "select2.js": 2580
                     },
                     "section": {
                       "section.html": 53,
@@ -879,7 +719,7 @@
                     },
                     "templates": {
                       "button.html": 52,
-                      "template.button.js": 647,
+                      "template.button.js": 711,
                       "custom.html": 52,
                       "template.custom.js": 218,
                       "div.html": 49,
@@ -891,7 +731,9 @@
                       "link.html": 50,
                       "template.link.js": 700,
                       "select.html": 52,
-                      "template.select.js": 1334
+                      "template.select.js": 2003,
+                      "tr.html": 48,
+                      "template.tr.js": 443
                     },
                     "wrappers": {
                       "label.html": 51,
@@ -901,20 +743,20 @@
                     }
                   },
                   "bootstrap": {
-                    "index.js": 1058,
+                    "index.js": 1121,
                     "dialog": {
                       "confirm.html": 53,
                       "template.confirm.js": 582,
                       "form.html": 50,
-                      "template.form.js": 2289,
-                      "form.js": 1210,
+                      "template.form.js": 2871,
+                      "form.js": 1286,
                       "header.html": 52,
                       "template.header.js": 1134,
                       "info.html": 50,
                       "template.info.js": 1040,
                       "info.js": 227,
                       "loading.html": 53,
-                      "template.loading.js": 506,
+                      "template.loading.js": 568,
                       "loading.js": 203,
                       "login.html": 51,
                       "template.login.js": 763,
@@ -923,11 +765,11 @@
                       "template.progress.js": 1023,
                       "progress.js": 1207,
                       "simple.html": 52,
-                      "template.simple.js": 950,
+                      "template.simple.js": 1012,
                       "simple.js": 853,
                       "unsavedChangesDialog.html": 66,
                       "template.unsavedChangesDialog.js": 2099,
-                      "unsavedChangesDialog.js": 1593
+                      "unsavedChangesDialog.js": 1523
                     },
                     "dropdown": {
                       "form.html": 50,
@@ -940,7 +782,7 @@
                       "form.html": 50,
                       "template.form.js": 493,
                       "group.html": 51,
-                      "template.group.js": 585,
+                      "template.group.js": 648,
                       "link.html": 50,
                       "template.link.js": 502
                     },
@@ -961,6 +803,18 @@
                       "template.select.js": 1188,
                       "text.html": 50,
                       "template.text.js": 782
+                    },
+                    "notification": {
+                      "index.js": 124,
+                      "notification.styl": 55,
+                      "notification.styl.css": 4322,
+                      "notificationNote.html": 62,
+                      "template.notificationNote.js": 1324,
+                      "notificationNote.js": 555
+                    },
+                    "popover": {
+                      "form.html": 50,
+                      "template.form.js": 1860
                     }
                   },
                   "playground": {
@@ -969,6 +823,14 @@
                     "playground.js": 1253,
                     "playground.styl": 53,
                     "playground.styl.css": 834
+                  },
+                  "scrollArea": {
+                    "index.js": 110,
+                    "scrollArea.html": 56,
+                    "template.scrollArea.js": 804,
+                    "scrollArea.js": 1732,
+                    "scrollArea.styl": 53,
+                    "scrollArea.styl.css": 5962
                   }
                 },
                 "helpers": {
@@ -977,25 +839,24 @@
                   "debug.js": 326,
                   "index.js": 217,
                   "logical.js": 962,
-                  "number.js": 413,
-                  "string.js": 473,
+                  "number.js": 477,
+                  "string.js": 460,
                   "typing.js": 352,
                   "ui.js": 224
                 },
                 "lib": {
                   "blaze.js": 1013,
                   "cornerstone.js": 2855,
-                  "index.js": 197,
-                  "object.js": 636,
-                  "string.js": 730,
-                  "ui.js": 369,
+                  "index.js": 171,
+                  "string.js": 765,
+                  "ui.js": 923,
                   "utils.js": 380,
                   "viewer.js": 98
                 },
                 "ui": {
-                  "index.js": 406,
+                  "index.js": 488,
                   "bounded": {
-                    "bounded.js": 3245
+                    "bounded.js": 3449
                   },
                   "dialog": {
                     "display.js": 1018,
@@ -1003,28 +864,38 @@
                     "unsavedChangesDialog.js": 428
                   },
                   "dimensional": {
-                    "dimensional.js": 532
+                    "dimensional.js": 619
                   },
                   "draggable": {
-                    "draggable.js": 1266
+                    "draggable.js": 1280
                   },
                   "dropdown": {
                     "class.js": 988,
                     "display.js": 630
                   },
+                  "notifications": {
+                    "notifications.js": 1849
+                  },
+                  "popover": {
+                    "display.js": 1157
+                  },
                   "resizable": {
                     "resizable.js": 3399
                   },
                   "unsavedChanges": {
-                    "unsavedChanges.js": 4982
+                    "unsavedChanges.js": 5192
                   }
                 }
               },
               "both": {
-                "index.js": 64,
+                "index.js": 84,
                 "schema.js": 504,
+                "lib": {
+                  "index.js": 42,
+                  "object.js": 682
+                },
                 "utils": {
-                  "absoluteUrl.js": 170,
+                  "absoluteUrl.js": 260,
                   "index.js": 71,
                   "objectPath.js": 1088
                 }
@@ -1035,7 +906,7 @@
       }
     ],
     "packages/ohif_header.js": [
-      6079,
+      6053,
       {
         "node_modules": {
           "meteor": {
@@ -1059,10 +930,33 @@
         }
       }
     ],
-    "packages/ohif_themes-common.js": 90,
-    "packages/ohif_themes.js": 83,
+    "packages/ohif_themes-common.js": [
+      7114,
+      {
+        "node_modules": {
+          "meteor": {
+            "ohif:themes-common": {
+              "client": {
+                "index.js": 43,
+                "components": {
+                  "index.js": 191,
+                  "themeSelectorModal": {
+                    "themeSelectorModal.html": 64,
+                    "template.themeSelectorModal.js": 1201,
+                    "themeSelectorModal.js": 1382,
+                    "themeSelectorModal.styl": 61,
+                    "themeSelectorModal.styl.css": 3238
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "packages/ohif_themes.js": 68,
     "packages/ohif_design.js": [
-      4008,
+      3982,
       {
         "node_modules": {
           "meteor": {
@@ -1079,16 +973,18 @@
       }
     ],
     "packages/ohif_cornerstone.js": [
-      588971,
+      613566,
       {
         "node_modules": {
           "meteor": {
             "ohif:cornerstone": {
-              "main.js": 690,
-              "namespace.js": 273,
+              "main.js": 919,
+              "namespace.js": 370,
               "client": {
-                "index.js": 215,
+                "index.js": 302,
+                "renderer.js": 217,
                 "lib": {
+                  "cornerstoneToolsMouseInputOverrides.js": 3742,
                   "parsingUtils.js": 839,
                   "classes": {
                     "MetadataProvider.js": 6267
@@ -1096,47 +992,47 @@
                 }
               },
               "node_modules": {
+                "cornerstone-core": {
+                  "package.json": 89,
+                  "dist": {
+                    "cornerstone.js": 91549
+                  }
+                },
+                "cornerstone-tools": {
+                  "package.json": 95,
+                  "dist": {
+                    "cornerstoneTools.js": 187237
+                  }
+                },
                 "cornerstone-math": {
                   "package.json": 97,
                   "dist": {
                     "cornerstoneMath.min.js": 22402
                   }
                 },
-                "dicom-parser": {
-                  "package.json": 83,
-                  "dist": {
-                    "dicomParser.js": 152714
-                  }
-                },
-                "cornerstone-core": {
-                  "package.json": 94,
-                  "dist": {
-                    "cornerstone.min.js": 81071
-                  }
-                },
-                "cornerstone-tools": {
-                  "package.json": 99,
-                  "dist": {
-                    "cornerstoneTools.min.js": 180113
-                  }
-                },
-                "hammerjs": {
-                  "package.json": 69,
-                  "hammer.js": 20612
-                },
                 "cornerstone-wado-image-loader": {
-                  "package.json": 122,
+                  "package.json": 121,
                   "dist": {
-                    "cornerstoneWADOImageLoader.min.js": 35986
+                    "cornerstoneWADOImageLoader.min.js": 37531
                   },
                   "node_modules": {
                     "jquery": {
                       "package.json": 72,
                       "dist": {
-                        "jquery.js": 85793
+                        "jquery.js": 86871
                       }
                     }
                   }
+                },
+                "dicom-parser": {
+                  "package.json": 83,
+                  "dist": {
+                    "dicomParser.js": 152694
+                  }
+                },
+                "hammerjs": {
+                  "package.json": 69,
+                  "hammer.js": 20612
                 }
               }
             }
@@ -1146,7 +1042,7 @@
     ],
     "packages/url.js": 950,
     "packages/http.js": [
-      3621,
+      3595,
       {
         "node_modules": {
           "meteor": {
@@ -1159,9 +1055,9 @@
         }
       }
     ],
-    "packages/momentjs_moment.js": 51509,
+    "packages/momentjs_moment.js": 51485,
     "packages/validatejs.js": [
-      13605,
+      13579,
       {
         "node_modules": {
           "meteor": {
@@ -1176,18 +1072,17 @@
       }
     ],
     "packages/amplify.js": 8753,
-    "packages/ddp-rate-limiter.js": 88,
-    "packages/localstorage.js": 731,
-    "packages/callback-hook.js": 1325,
+    "packages/ddp-rate-limiter.js": 73,
+    "packages/localstorage.js": 869,
     "packages/accounts-base.js": [
-      13933,
+      14145,
       {
         "node_modules": {
           "meteor": {
             "accounts-base": {
-              "client_main.js": 321,
-              "accounts_client.js": 4736,
-              "accounts_common.js": 3825,
+              "client_main.js": 329,
+              "accounts_client.js": 4837,
+              "accounts_common.js": 3954,
               "localstorage_token.js": 2516,
               "url_client.js": 1588
             }
@@ -1197,12 +1092,12 @@
     ],
     "packages/u2622_persistent-session.js": 6587,
     "packages/ohif_log.js": [
-      3724,
+      4003,
       {
         "node_modules": {
           "meteor": {
             "ohif:log": {
-              "main.js": 232,
+              "main.js": 537,
               "node_modules": {
                 "loglevel": {
                   "package.json": 72,
@@ -1216,8 +1111,65 @@
         }
       }
     ],
+    "packages/ohif_commands.js": [
+      3420,
+      {
+        "node_modules": {
+          "meteor": {
+            "ohif:commands": {
+              "main.js": 411,
+              "client": {
+                "classes": {
+                  "CommandsManager.js": 2395
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "packages/ohif_hotkeys.js": [
+      17544,
+      {
+        "node_modules": {
+          "meteor": {
+            "ohif:hotkeys": {
+              "main.js": 293,
+              "client": {
+                "index.js": 63,
+                "classes": {
+                  "HotkeysContext.js": 1505,
+                  "HotkeysManager.js": 3239
+                },
+                "components": {
+                  "confirmReplacementPopover.html": 71,
+                  "template.confirmReplacementPopover.js": 908,
+                  "form.html": 50,
+                  "template.form.js": 1913,
+                  "form.js": 3787,
+                  "formTable.html": 55,
+                  "template.formTable.js": 1038,
+                  "formTable.js": 364,
+                  "index.js": 173
+                },
+                "lib": {
+                  "index.js": 39,
+                  "routes.js": 398
+                }
+              },
+              "node_modules": {
+                "jquery.hotkeys": {
+                  "package.json": 83,
+                  "jquery.hotkeys.js": 2205
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
     "packages/ohif_viewerbase.js": [
-      330775,
+      341867,
       {
         "node_modules": {
           "meteor": {
@@ -1248,21 +1200,21 @@
                       "studyBrowser.js": 256
                     },
                     "thumbnailEntry": {
-                      "template.thumbnailEntry.js": 2384,
+                      "template.thumbnailEntry.js": 2392,
                       "thumbnailEntry.js": 1592
                     },
                     "imageThumbnail": {
                       "template.imageThumbnail.js": 929,
-                      "imageThumbnail.js": 1874
+                      "imageThumbnail.js": 2054
                     }
                   },
                   "viewer": {
                     "imageViewerViewport": {
                       "template.imageViewerViewport.js": 564,
-                      "imageViewerViewport.js": 9063
+                      "imageViewerViewport.js": 9296
                     },
                     "gridLayout": {
-                      "template.gridLayout.js": 800,
+                      "template.gridLayout.js": 1044,
                       "gridLayout.js": 717
                     },
                     "loadingIndicator": {
@@ -1278,15 +1230,18 @@
                     },
                     "viewportOverlay": {
                       "template.viewportOverlay.js": 9237,
-                      "viewportOverlay.js": 4466
+                      "viewportOverlay.js": 4456
                     },
                     "viewerMain": {
                       "template.viewerMain.js": 213,
-                      "viewerMain.js": 2154
+                      "viewerMain.js": 2057
+                    },
+                    "toolContextMenu": {
+                      "toolContextMenu.js": 1356
                     },
                     "imageControls": {
                       "template.imageControls.js": 399,
-                      "imageControls.js": 1081
+                      "imageControls.js": 1063
                     },
                     "layoutButton": {
                       "template.layoutButton.js": 1093,
@@ -1298,19 +1253,15 @@
                     },
                     "cineDialog": {
                       "template.cineDialog.js": 4404,
-                      "cineDialog.js": 4801
+                      "cineDialog.js": 4815
                     },
                     "toolbarSectionButton": {
                       "template.toolbarSectionButton.js": 2788,
-                      "toolbarSectionButton.js": 1892
+                      "toolbarSectionButton.js": 2067
                     },
                     "toolbarSectionTools": {
                       "template.toolbarSectionTools.js": 510,
                       "toolbarSectionTools.js": 935
-                    },
-                    "playClipButton": {
-                      "template.playClipButton.js": 1078,
-                      "playClipButton.js": 306
                     },
                     "confirmDeleteDialog": {
                       "template.confirmDeleteDialog.js": 984,
@@ -1320,78 +1271,85 @@
                       "template.textMarkerDialogs.js": 5147,
                       "textMarkerDialogs.js": 2155
                     },
-                    "displaySetNavigation": {
-                      "template.displaySetNavigation.js": 1111,
-                      "displaySetNavigation.js": 611
+                    "seriesQuickSwitch": {
+                      "template.seriesQuickSwitch.js": 2272,
+                      "seriesQuickSwitch.js": 2349
                     },
                     "studySeriesQuickSwitch": {
-                      "template.studySeriesQuickSwitch.js": 4288,
-                      "studySeriesQuickSwitch.js": 2220
+                      "template.studySeriesQuickSwitch.js": 4295,
+                      "studySeriesQuickSwitch.js": 2219
                     },
                     "studyTimepointBrowser": {
                       "template.studyTimepoint.js": 636,
-                      "studyTimepoint.js": 1559,
-                      "template.studyTimepointBrowser.js": 3628,
-                      "studyTimepointBrowser.js": 2825,
-                      "template.studyTimepointStudy.js": 2766,
-                      "studyTimepointStudy.js": 2932
+                      "studyTimepoint.js": 1554,
+                      "template.studyTimepointBrowser.js": 3835,
+                      "studyTimepointBrowser.js": 3022,
+                      "template.studyTimepointStudy.js": 2653,
+                      "studyTimepointStudy.js": 3177
+                    },
+                    "windowLevelPresets": {
+                      "template.form.js": 3095,
+                      "form.js": 961
                     }
                   }
                 },
                 "collections.js": 356,
-                "index.js": 6419,
+                "index.js": 6663,
                 "lib": {
                   "DICOMTagDescriptions.js": 96594,
                   "StackManager.js": 1338,
-                  "WLPresets.js": 1874,
+                  "WLPresets.js": 3570,
                   "annotateTextUtils.js": 1303,
-                  "createStacks.js": 1653,
+                  "createStacks.js": 1867,
                   "crosshairsSynchronizers.js": 98,
                   "debugReactivity.js": 688,
                   "dialogUtils.js": 981,
-                  "displayReferenceLines.js": 907,
+                  "displayReferenceLines.js": 902,
                   "getElementIfNotEmpty.js": 330,
-                  "getFrameOfReferenceUID.js": 290,
-                  "getImageId.js": 551,
+                  "getFrameOfReferenceUID.js": 285,
+                  "getImageId.js": 608,
+                  "getImageIdForImagePath.js": 547,
                   "getStackDataIfNotEmpty.js": 306,
+                  "getStudyMetadata.js": 280,
                   "getWADORSImageId.js": 319,
                   "getWADORSImageUrl.js": 166,
-                  "hotkeyUtils.js": 5068,
+                  "hotkeyUtils.js": 4635,
                   "imageViewerViewportData.js": 118,
                   "instanceClassSpecificViewport.js": 241,
                   "isImage.js": 2193,
                   "panelNavigation.js": 713,
-                  "prepareViewerData.js": 1522,
+                  "prepareViewerData.js": 1878,
                   "renderViewer.js": 488,
                   "setActiveViewport.js": 1265,
                   "setFocusToActiveViewport.js": 301,
                   "sopClassDictionary.js": 7123,
                   "sortStudy.js": 417,
                   "sortingManager.js": 218,
+                  "styleProperty.js": 701,
                   "switchToImageByIndex.js": 233,
                   "switchToImageRelative.js": 227,
                   "textMarkerUtils.js": 1199,
-                  "thumbnailDragHandlers.js": 2494,
-                  "toolManager.js": 7695,
+                  "thumbnailDragHandlers.js": 2972,
+                  "toolManager.js": 8357,
                   "unloadHandlers.js": 272,
                   "updateAllViewports.js": 233,
                   "updateCrosshairsSynchronizer.js": 603,
                   "updateMetaDataManager.js": 2509,
-                  "updateOrientationMarkers.js": 1289,
-                  "viewportOverlayUtils.js": 1001,
-                  "viewportUtils.js": 3908,
+                  "updateOrientationMarkers.js": 1284,
+                  "viewportOverlayUtils.js": 976,
+                  "viewportUtils.js": 3924,
                   "classes": {
                     "ImageSet.js": 1287,
-                    "LayoutManager.js": 8547,
+                    "LayoutManager.js": 8610,
                     "OHIFError.js": 461,
-                    "ResizeViewportManager.js": 3141,
-                    "StackImagePositionOffsetSynchronizer.js": 4167,
-                    "StudyLoadingListener.js": 7328,
+                    "ResizeViewportManager.js": 3136,
+                    "StackImagePositionOffsetSynchronizer.js": 4276,
+                    "StudyLoadingListener.js": 7395,
                     "StudyMetadataSource.js": 733,
-                    "StudyPrefetcher.js": 6367,
+                    "StudyPrefetcher.js": 6301,
                     "TypeSafeCollection.js": 5106,
                     "metadata": {
-                      "InstanceMetadata.js": 3198,
+                      "InstanceMetadata.js": 3194,
                       "Metadata.js": 1736,
                       "SeriesMetadata.js": 2461,
                       "StudyMetadata.js": 4880,
@@ -1421,7 +1379,7 @@
                   }
                 }
               },
-              "main.js": 215,
+              "main.js": 223,
               "namespace.js": 180
             }
           }
@@ -1429,12 +1387,12 @@
       }
     ],
     "packages/ohif_metadata.js": [
-      5103,
+      5085,
       {
         "node_modules": {
           "meteor": {
             "ohif:metadata": {
-              "main.js": 211,
+              "main.js": 219,
               "namespace.js": 176,
               "client": {
                 "OHIFInstanceMetadata.js": 1841,
@@ -1447,11 +1405,11 @@
         }
       }
     ],
-    "packages/silentcicero_jszip.js": 79925,
+    "packages/silentcicero_jszip.js": 79895,
     "packages/raix_eventemitter.js": 2256,
     "packages/aldeed_collection2-core.js": 7048,
     "packages/aldeed_schema-index.js": [
-      1722,
+      1696,
       {
         "node_modules": {
           "meteor": {
@@ -1465,73 +1423,60 @@
       }
     ],
     "packages/aldeed_schema-deny.js": 1118,
-    "packages/aldeed_collection2.js": 90,
-    "packages/gilbertwat_bootstrap3-daterangepicker.js": 27396,
-    "packages/ohif_dicom-services.js": 91,
-    "packages/ohif_wadoproxy.js": 162,
-    "packages/ohif_study-list.js": [
-      130856,
+    "packages/aldeed_collection2.js": 75,
+    "packages/twbs_bootstrap.js": 36817,
+    "packages/dangrossman_bootstrap-daterangepicker.js": 31696,
+    "packages/ohif_servers.js": [
+      27881,
       {
         "node_modules": {
           "meteor": {
-            "ohif:study-list": {
+            "ohif:servers": {
               "both": {
-                "index.js": 114,
-                "base.js": 126,
-                "collections.js": 637,
+                "index.js": 88,
+                "base.js": 113,
+                "collections": {
+                  "currentServer.js": 307,
+                  "index.js": 242,
+                  "servers.js": 283
+                },
                 "lib": {
-                  "getCurrentServer.js": 83,
+                  "getCurrentServer.js": 316,
                   "index.js": 52
                 },
                 "schema": {
-                  "index.js": 43,
-                  "servers.js": 4214
+                  "servers.js": 4692
                 }
               },
               "client": {
-                "index.js": 137,
-                "base.js": 128,
-                "dropdown.js": 508,
+                "index.js": 71,
                 "collections": {
-                  "index.js": 76,
-                  "studies.js": 264,
-                  "subscriptions.js": 63
+                  "index.js": 49,
+                  "subscriptions.js": 137
                 },
                 "components": {
-                  "index.js": 141,
-                  "seriesDetailsModal": {
-                    "index.js": 231,
-                    "seriesDetailsModal.html": 64,
-                    "template.seriesDetailsModal.js": 525,
-                    "seriesDetailsTable": {
-                      "seriesDetailsTable.html": 64,
-                      "template.seriesDetailsTable.js": 4398,
-                      "seriesDetailsTable.js": 921,
-                      "seriesDetailsTable.styl": 61,
-                      "seriesDetailsTable.styl.css": 1773
-                    }
-                  },
+                  "index.js": 50,
                   "serverInformation": {
                     "index.js": 747,
                     "serverInformationDicomWeb": {
                       "serverInformationDicomWeb.html": 71,
                       "template.serverInformationDicomWeb.js": 3089,
-                      "serverInformationDicomWeb.js": 189
+                      "serverInformationDicomWeb.js": 269
                     },
                     "serverInformationDimse": {
                       "serverInformationDimse.html": 68,
                       "template.serverInformationDimse.js": 4358,
-                      "serverInformationDimse.js": 628
+                      "serverInformationDimse.js": 917
                     },
                     "serverInformationForm": {
                       "serverInformationForm.html": 67,
                       "template.serverInformationForm.js": 2216,
-                      "serverInformationForm.js": 1123
+                      "serverInformationForm.js": 1205
                     },
                     "serverInformationList": {
                       "serverInformationList.html": 67,
                       "template.serverInformationList.js": 3482,
-                      "serverInformationList.js": 576
+                      "serverInformationList.js": 865
                     },
                     "serverInformationModal": {
                       "serverInformationModal.html": 68,
@@ -1539,6 +1484,103 @@
                       "serverInformationModal.js": 540,
                       "serverInformationModal.styl": 65,
                       "serverInformationModal.styl.css": 187
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "packages/ohif_dicom-services.js": 76,
+    "packages/ohif_wadoproxy.js": 162,
+    "packages/ohif_studies.js": [
+      31293,
+      {
+        "node_modules": {
+          "meteor": {
+            "ohif:studies": {
+              "both": {
+                "main.js": 120
+              },
+              "client": {
+                "main.js": 35
+              },
+              "imports": {
+                "both": {
+                  "index.js": 12
+                },
+                "client": {
+                  "index.js": 63,
+                  "components": {
+                    "index.js": 40,
+                    "browser": {
+                      "index.js": 316,
+                      "item.html": 50,
+                      "template.item.js": 2399,
+                      "item.js": 2020,
+                      "list.html": 50,
+                      "template.list.js": 613,
+                      "list.js": 299,
+                      "list.styl": 47,
+                      "list.styl.css": 16632,
+                      "quickSwitch.html": 57,
+                      "template.quickSwitch.js": 290,
+                      "quickSwitch.js": 1265,
+                      "series.html": 52,
+                      "template.series.js": 627,
+                      "series.js": 1080,
+                      "sidebar.html": 53,
+                      "template.sidebar.js": 552,
+                      "sidebar.js": 249
+                    }
+                  },
+                  "lib": {
+                    "index.js": 150,
+                    "loadStudy.js": 652,
+                    "retrieveStudiesMetadata.js": 288,
+                    "retrieveStudyMetadata.js": 1527,
+                    "searchStudies.js": 359
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "packages/ohif_study-list.js": [
+      108960,
+      {
+        "node_modules": {
+          "meteor": {
+            "ohif:study-list": {
+              "both": {
+                "index.js": 71,
+                "base.js": 126,
+                "collections.js": 325
+              },
+              "client": {
+                "index.js": 137,
+                "base.js": 128,
+                "dropdown.js": 508,
+                "collections": {
+                  "index.js": 43,
+                  "studies.js": 264
+                },
+                "components": {
+                  "index.js": 77,
+                  "seriesDetailsModal": {
+                    "index.js": 231,
+                    "seriesDetailsModal.html": 64,
+                    "template.seriesDetailsModal.js": 525,
+                    "seriesDetailsTable": {
+                      "seriesDetailsTable.html": 64,
+                      "template.seriesDetailsTable.js": 4398,
+                      "seriesDetailsTable.js": 919,
+                      "seriesDetailsTable.styl": 61,
+                      "seriesDetailsTable.styl.css": 1885
                     }
                   },
                   "studylist": {
@@ -1552,14 +1594,14 @@
                       "template.studylistPagination.js": 1189,
                       "studylistPagination.js": 1112,
                       "studylistPagination.styl": 62,
-                      "studylistPagination.styl.css": 10939
+                      "studylistPagination.styl.css": 19870
                     },
                     "studylistResult": {
                       "studylistResult.html": 61,
-                      "template.studylistResult.js": 4788,
-                      "studylistResult.js": 4128,
+                      "template.studylistResult.js": 5051,
+                      "studylistResult.js": 4509,
                       "studylistResult.styl": 58,
-                      "studylistResult.styl.css": 14072
+                      "studylistResult.styl.css": 14184
                     },
                     "studylistStudy": {
                       "studylistStudy.html": 60,
@@ -1575,31 +1617,21 @@
                       "studylistToolbar.styl": 59,
                       "studylistToolbar.styl.css": 3375
                     }
-                  },
-                  "themeSelector": {
-                    "index.js": 191,
-                    "themeSelectorModal": {
-                      "themeSelectorModal.html": 64,
-                      "template.themeSelectorModal.js": 1201,
-                      "themeSelectorModal.js": 1382,
-                      "themeSelectorModal.styl": 61,
-                      "themeSelectorModal.styl.css": 3238
-                    }
                   }
                 },
                 "lib": {
-                  "OHIFStudyMetadataSource.js": 1512,
+                  "OHIFStudyMetadataSource.js": 1517,
                   "OHIFStudySummary.js": 1188,
-                  "exportSelectedStudies.js": 387,
+                  "exportSelectedStudies.js": 407,
                   "exportStudies.js": 2380,
                   "getSelectedStudies.js": 221,
                   "getStudyPriors.js": 772,
                   "getStudyPriorsMap.js": 484,
                   "importStudies.js": 1732,
                   "index.js": 431,
-                  "queryStudies.js": 743,
-                  "retrieveStudiesMetadata.js": 370,
-                  "retrieveStudyMetadata.js": 1140,
+                  "queryStudies.js": 863,
+                  "retrieveStudiesMetadata.js": 334,
+                  "retrieveStudyMetadata.js": 326,
                   "studylist.js": 799,
                   "viewSeriesDetails.js": 228,
                   "viewStudies.js": 384,
@@ -1620,7 +1652,7 @@
       }
     ],
     "packages/ohif_hanging-protocols.js": [
-      88028,
+      88033,
       {
         "node_modules": {
           "meteor": {
@@ -1651,7 +1683,7 @@
               },
               "client": {
                 "collections.js": 314,
-                "protocolEngine.js": 9327,
+                "protocolEngine.js": 9342,
                 "helpers": {
                   "displayConstraint.js": 607,
                   "attributes.js": 472
@@ -1683,7 +1715,7 @@
                   },
                   "ruleEntryDialog": {
                     "template.ruleEntryDialog.js": 2680,
-                    "ruleEntryDialog.js": 3840
+                    "ruleEntryDialog.js": 3835
                   },
                   "settingEntryDialog": {
                     "template.settingEntryDialog.js": 1003,
@@ -1703,7 +1735,7 @@
                   },
                   "stageSortable": {
                     "template.stageSortable.js": 1760,
-                    "stageSortable.js": 2234
+                    "stageSortable.js": 2255
                   }
                 },
                 "customAttributes": {
@@ -1725,7 +1757,7 @@
       }
     ],
     "packages/aldeed_template-extension.js": [
-      8041,
+      8015,
       {
         "node_modules": {
           "meteor": {
@@ -1753,27 +1785,26 @@
         }
       }
     ],
-    "packages/twbs_bootstrap.js": 36817,
-    "packages/fortawesome_fontawesome.js": 95,
-    "packages/mrt_moment.js": 31761,
+    "packages/fortawesome_fontawesome.js": 80,
+    "packages/mrt_moment.js": 31758,
     "packages/dynamic-import.js": [
-      3965,
+      4023,
       {
         "node_modules": {
           "meteor": {
             "dynamic-import": {
-              "client.js": 1492,
-              "cache.js": 1947,
-              "dynamic-versions.js": 29
+              "client.js": 1419,
+              "cache.js": 1952,
+              "dynamic-versions.js": 181
             }
           }
         }
       }
     ],
-    "packages/hot-code-push.js": 85,
-    "packages/global-imports.js": 1993,
+    "packages/hot-code-push.js": 70,
+    "packages/global-imports.js": 1802,
     "app/app.js": [
-      18612,
+      19280,
       {
         "client": {
           "components": {
@@ -1786,24 +1817,24 @@
             },
             "standaloneViewerMain": {
               "template.standaloneViewerMain.js": 257,
-              "standaloneViewerMain.js": 1273
+              "standaloneViewerMain.js": 1601
             },
             "toolbarSection": {
               "template.toolbarSection.js": 716,
-              "toolbarSection.js": 3831
+              "toolbarSection.js": 3902
             },
             "viewer": {
-              "template.viewer.js": 1021,
-              "viewer.js": 2329
+              "template.viewer.js": 1101,
+              "viewer.js": 2368
             }
           },
           "config.js": 726
         },
-        "routes.js": 1420
+        "routes.js": 1569
       }
     ],
     "packages/mdg_validation-error.js": [
-      1416,
+      1390,
       {
         "node_modules": {
           "meteor": {

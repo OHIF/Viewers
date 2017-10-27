@@ -5,6 +5,7 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { OHIFError } from './OHIFError';
 import { StackManager } from '../StackManager.js';
+import { getImageId } from '../getImageId.js';
 
 export class StudyPrefetcher {
 
