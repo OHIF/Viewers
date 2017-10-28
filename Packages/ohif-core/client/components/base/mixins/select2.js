@@ -77,7 +77,7 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             const { component, data } = instance;
 
             // Destroy and re-create the select2 instance
-            const rebuildSelect2 = () => {
+            instance.rebuildSelect2 = () => {
                 // Destroy the select2 instance if exists and re-create it
                 if (component.select2Instance) {
                     component.select2Instance.destroy();
@@ -143,11 +143,11 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                     // Keep the current value of the component
                     const currentValue = component.value();
                     Tracker.afterFlush(() => {
-                        rebuildSelect2();
                         component.$element.val(currentValue);
+                        instance.rebuildSelect2();
                     });
                 } else {
-                    rebuildSelect2();
+                    instance.rebuildSelect2();
                 }
             });
         },
