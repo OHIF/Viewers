@@ -104,11 +104,13 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
                 // Attach focus and blur handlers to focusable elements
                 $(elements).on('focus', event => {
+                    instance.isFocused = true;
                     if (event.target === event.currentTarget) {
                         // Show the state message on elements focus
                         component.toggleMessage(true);
                     }
                 }).on('blur', event => {
+                    instance.isFocused = false;
                     if (event.target === event.currentTarget) {
                         // Hide the state message on elements blur
                         component.toggleMessage(false);
@@ -142,9 +144,15 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                 if (isReactive) {
                     // Keep the current value of the component
                     const currentValue = component.value();
+                    const wasFocused = instance.isFocused;
+
                     Tracker.afterFlush(() => {
                         component.$element.val(currentValue);
                         instance.rebuildSelect2();
+
+                        if (wasFocused) {
+                            component.$element.focus();
+                        }
                     });
                 } else {
                     instance.rebuildSelect2();
