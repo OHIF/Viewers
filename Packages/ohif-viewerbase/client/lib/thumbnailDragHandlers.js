@@ -1,6 +1,5 @@
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
-import { styleProperty }  from './styleProperty'
 
 const cloneElement = (element, targetId) => {
     // Clone the DOM element
@@ -32,7 +31,7 @@ const thumbnailDragStartHandler = (event, data) => {
 
     // Force to hardware acceleration to move element
     // if browser supports translate property
-    const useTransform = styleProperty.check('transform', 'translate(1px, 1px)');
+    const useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
 
     // Clone the image thumbnail
     const targetId = 'DragClone';
@@ -55,8 +54,7 @@ const thumbnailDragStartHandler = (event, data) => {
     if (event.type === 'touchstart') {
         cursorX = event.originalEvent.touches[0].pageX;
         cursorY = event.originalEvent.touches[0].pageY;
-    } 
-    else {
+    } else {
         cursorX = event.pageX;
         cursorY = event.pageY;
 
@@ -97,7 +95,7 @@ const thumbnailDragStartHandler = (event, data) => {
             top: cursorY - diff.y,
         });
     } else {
-        const viewerHeight= $('#viewer').height();
+        const viewerHeight = $('#viewer').height();
         const headerHeight = $('.header').outerHeight();
         const heightDiff = viewerHeight + headerHeight;
 
@@ -108,7 +106,7 @@ const thumbnailDragStartHandler = (event, data) => {
         const positionY = cursorY - diff.y - heightDiff;
 
         const translation = `translate(${positionX}px, ${positionY}px)`;
-        styleProperty.set($clone.get(0), 'transform', translation);
+        OHIF.ui.styleProperty.set($clone.get(0), 'transform', translation);
     }
 };
 
@@ -119,8 +117,7 @@ const thumbnailDragHandler = event => {
     if (event.type === 'touchmove') {
         cursorX = event.originalEvent.changedTouches[0].pageX;
         cursorY = event.originalEvent.changedTouches[0].pageY;
-    } 
-    else {
+    } else {
         cursorX = event.pageX;
         cursorY = event.pageY;
     }
@@ -131,7 +128,7 @@ const thumbnailDragHandler = event => {
 
     // Force to hardware acceleration to move element
     // if browser supports translate property
-    const useTransform = styleProperty.check('transform', 'translate(1px, 1px)');
+    const useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
 
     $clone.css({
         visibility: 'visible',
@@ -152,7 +149,7 @@ const thumbnailDragHandler = event => {
         const positionY = cursorY - diff.y - heightDiff;
 
         const translation = `translate(${positionX}px, ${positionY}px)`;
-        styleProperty.set($clone.get(0), 'transform', translation);
+        OHIF.ui.styleProperty.set($clone.get(0), 'transform', translation);
     }
 
     // Identify the element below the current cursor position
@@ -172,12 +169,10 @@ const thumbnailDragHandler = event => {
         // If we're dragging over a non-empty viewport, fade it and change the cursor style
         $viewportsDraggedOver.find('canvas').not('.magnifyTool').addClass('faded');
         document.body.style.cursor = 'copy';
-    } 
-    else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
+    } else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, just change the cursor style
         document.body.style.cursor = 'copy';
-    } 
-    else {
+    } else {
         // Otherwise, keep the cursor as no-drop style
         document.body.style.cursor = 'no-drop';
     }
@@ -224,17 +219,15 @@ const thumbnailDragEndHandler = (event, data, handlers) => {
 
     let element;
     const $viewportsDraggedOver = $(elemBelow).closest('.imageViewerViewport');
-    
+
     if ($viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, retrieve it
         element = $viewportsDraggedOver.get(0);
-    } 
-    else if (elemBelow.classList.contains('imageViewerViewport') &&
+    } else if (elemBelow.classList.contains('imageViewerViewport') &&
                elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, retrieve that instead
         element = elemBelow;
-    } 
-    else {
+    } else {
         // Otherwise, stop here
         return false;
     }
