@@ -94,8 +94,8 @@ function makeDraggable(element, options) {
             lastCursor = cursor;
             lastOffset = $element.offset();
             const transformMatrix = matrixToArray($element.css('transform')) || [];
-            lastTranslateX = parseFloat(transformMatrix[4]) || lastTranslateX;
-            lastTranslateY = parseFloat(transformMatrix[5]) || lastTranslateX;
+            lastTranslateX = parseFloat(transformMatrix[4]) || 0;
+            lastTranslateY = parseFloat(transformMatrix[5]) || 0;
             elementLeft = lastTranslateX;
             elementTop = lastTranslateY;
         } else {
