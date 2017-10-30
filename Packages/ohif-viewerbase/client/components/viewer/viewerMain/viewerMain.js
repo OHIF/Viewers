@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 // Local Modules
 import { unloadHandlers } from '../../../lib/unloadHandlers';
