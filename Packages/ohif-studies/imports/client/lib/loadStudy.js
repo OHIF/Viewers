@@ -30,6 +30,10 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
             OHIF.viewer.StudyMetadataList.insert(study);
         }
 
+        // Add the study to the loading listener to display loading progress on series thumbnails
+        const studyLoadingListener = OHIF.viewerbase.StudyLoadingListener.getInstance();
+        studyLoadingListener.addStudy(study);
+
         // Add the studyInstanceUid to the loaded state dictionary
         OHIF.studies.loadedDict.set(study.studyInstanceUid, true);
 
