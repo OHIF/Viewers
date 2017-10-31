@@ -34,7 +34,7 @@ Template.studyBrowserItem.onCreated(() => {
     instance.autorun(() => {
         const instance = Template.instance();
 
-        OHIF.studies.loadedDict.get(studyInstanceUid);
+        OHIF.studies.loadingDict.get(studyInstanceUid);
         const studyMetadata = instance.getStudyMetadata();
         if (studyMetadata) {
             const firstInstance = studyMetadata.getFirstInstance();
