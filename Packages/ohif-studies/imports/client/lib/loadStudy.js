@@ -1,8 +1,9 @@
 import { ReactiveDict } from 'meteor/reactive-dict';
+import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
 
-// Create a studies loaded state dictionary to enable reactivity
-OHIF.studies.loadedDict = new ReactiveDict();
+// Create a studies loaded state dictionary to enable reactivity. Values: loading|loaded|failed
+OHIF.studies.loadingDict = new ReactiveDict();
 
 /**
  * Load the study metadata and store its information locally
@@ -11,7 +12,18 @@ OHIF.studies.loadedDict = new ReactiveDict();
  * @returns {Promise} that will be resolved with the study metadata or rejected with an error
  */
 OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
-    OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
+    // Disable reactivity to get the current loading state
+    let currentLoadingState;
+    Tracker.nonreactive(() => {
+        currentLoadingState = OHIF.studies.loadingDict.get(studyInstanceUid) || '';
+    });
+
+    // Set the loading state as the study is not yet loaded
+    if (currentLoadingState !== 'loading') {
+        OHIF.studies.loadingDict.set(studyInstanceUid, 'loading');
+    }
+
+    return OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
         // Add the display sets to the study if not present
         if (!study.displaySets) {
             const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
@@ -30,13 +42,16 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
             OHIF.viewer.StudyMetadataList.insert(study);
         }
 
-        // Add the study to the loading listener to display loading progress on series thumbnails
+        // Add the study to the loading listener to allow loading progress handling
         const studyLoadingListener = OHIF.viewerbase.StudyLoadingListener.getInstance();
         studyLoadingListener.addStudy(study);
 
         // Add the studyInstanceUid to the loaded state dictionary
-        OHIF.studies.loadedDict.set(study.studyInstanceUid, true);
+        OHIF.studies.loadingDict.set(studyInstanceUid, 'loaded');
 
         resolve(study);
-    }).catch(reject);
+    }).catch((...args) => {
+        OHIF.studies.loadingDict.set(studyInstanceUid, 'failed');
+        reject(args);
+    });
 });

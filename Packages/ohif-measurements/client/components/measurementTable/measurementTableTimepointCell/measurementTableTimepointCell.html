@@ -1,6 +1,7 @@
 <template name="measurementTableTimepointCell">
     {{#if hasDataAtThisTimepoint}}
-        <div class="measurementTableTimepointCell noselect" tabindex="1">
+        <div class="measurementTableTimepointCell noselect {{#if isLoading}}loading{{/if}}" tabindex="1">
+            <i class="fa fa-spin fa-circle-o-notch fa-fw loading-spinner"></i>
             {{displayData}}
         </div>
     {{else}}

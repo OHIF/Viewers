@@ -77,31 +77,9 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
         cornerstoneTools.scrollToIndex(element, imageIdIndex);
     }
 
-    // TODO: Find another way to do this?
-    // This might update one element twice, but at least it makes sure all viewports are
-    // updated and the highlight is removed from inactive tools in all visible viewports
-    const $viewports = $('.imageViewerViewport');
-    $viewports.each((index, element) => {
-        const $element = $(element);
-        if (!$element.find('canvas')) {
-            return;
-        }
+    const $element = $(element);
+    if (!$element.find('canvas').length) return;
 
-        // TODO: Implement isEnabledElement in Cornerstone
-        // or maybe just remove the 'error' this throws?
-        let ee;
-        try {
-            ee = cornerstone.getEnabledElement(element);
-        } catch(error) {
-            OHIF.log.warn(error);
-            return;
-        }
-
-        if (!ee.image) {
-            return;
-        }
-
-        $element.trigger('ViewerMeasurementsActivated');
-        cornerstone.updateImage(element);
-    });
+    $element.trigger('ViewerMeasurementsActivated');
+    cornerstone.updateImage(element);
 };
