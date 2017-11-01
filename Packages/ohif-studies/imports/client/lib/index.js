@@ -1,3 +1,4 @@
+import './classes';
 import './loadStudy';
 import './retrieveStudiesMetadata';
 import './retrieveStudyMetadata';
