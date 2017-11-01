@@ -16,11 +16,12 @@ class TimepointApi {
         return configuration;
     }
 
-    constructor(currentTimepointId, configuration) {
+    constructor(currentTimepointId, options={}) {
         if (currentTimepointId) {
             this.currentTimepointId = currentTimepointId;
         }
 
+        this.options = options;
         this.timepoints = new Mongo.Collection(null);
         this.timepoints.attachSchema(TimepointSchema);
         this.timepoints._debugName = 'Timepoints';
@@ -161,7 +162,7 @@ class TimepointApi {
         });
     }
 
-    // Return only the current and prior Timepoints
+    // Return only the current and prior timepoints
     currentAndPrior() {
         const timepoints = [];
 
@@ -176,6 +177,11 @@ class TimepointApi {
         }
 
         return timepoints;
+    }
+
+    // Return only the comparison timepoints
+    comparison() {
+        return this.currentAndPrior();
     }
 
     // Return only the baseline timepoint

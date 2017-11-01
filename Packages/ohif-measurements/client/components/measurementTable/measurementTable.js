@@ -21,7 +21,7 @@ Template.measurementTable.onCreated(() => {
         } else if (tableLayout === 'key') {
             timepoints = timepointApi.key();
         } else {
-            timepoints = timepointApi.currentAndPrior();
+            timepoints = timepointApi.comparison();
         }
 
         // Return key timepoints

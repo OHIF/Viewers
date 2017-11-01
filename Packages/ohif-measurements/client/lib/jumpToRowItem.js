@@ -66,8 +66,16 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     const $viewports = $('.imageViewerViewport');
     const numViewports = Math.max($viewports.length, 0);
 
+    // Clone the timepoint list to prevent modifying the original object
+    const timepointList = _.clone(timepoints);
+
+    // Reverse the timepointList array if the flag is set
+    if (OHIF.viewer.invertViewportTimepointsOrder) {
+        timepointList.reverse();
+    }
+
     // Retrieve the timepoints that are currently being displayed in the  Measurement Table
-    const numTimepoints = Math.max(timepoints.length, 1);
+    const numTimepoints = Math.max(timepointList.length, 1);
 
     const numViewportsToUpdate = Math.min(numTimepoints, numViewports);
 
@@ -75,10 +83,13 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     const measurementsData = [];
     const promises = new Set();
     for (let i = 0; i < numViewportsToUpdate; i++) {
-        const { timepointId } = timepoints[i];
+        const { timepointId } = timepointList[i];
 
         const dataAtThisTimepoint = _.where(rowItem.entries, { timepointId });
-        if (!dataAtThisTimepoint || !dataAtThisTimepoint.length) continue;
+        if (!dataAtThisTimepoint || !dataAtThisTimepoint.length) {
+            measurementsData.push(null);
+            continue;
+        }
 
         const measurementData = dataAtThisTimepoint[0];
         measurementsData.push(measurementData);
@@ -98,14 +109,6 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
 
         // Deactivate stack synchronizer because it will be re-activated later
         OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
-
-        //  Display timepoints in the order of viewports which is set by the hanging protocol
-        //  Reverse the array if the first timepoint does not match with the first viewport data
-        const layoutManager = OHIF.viewerbase.layoutManager;
-        const viewportData = layoutManager.viewportData[0];
-        if (timepoints[0].studyInstanceUids.indexOf(viewportData.studyInstanceUid) < 0) {
-            timepoints.reverse();
-        }
 
         const renderPromises = [];
         for (let viewportIndex = 0; viewportIndex < numViewportsToUpdate; viewportIndex++) {
