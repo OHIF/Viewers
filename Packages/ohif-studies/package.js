@@ -19,6 +19,7 @@ Package.onUse(function(api) {
         'ohif:design',
         'ohif:core',
         'ohif:log',
+        'ohif:servers',
         'ohif:dicom-services',
         'ohif:viewerbase',
         'ohif:wadoproxy'
