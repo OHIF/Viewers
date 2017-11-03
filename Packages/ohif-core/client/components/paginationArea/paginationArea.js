@@ -51,7 +51,9 @@ Template.paginationArea.onRendered(() => {
 
 Template.paginationArea.onDestroyed(() => {
     const instance = Template.instance();
-    instance.$paginationControl.twbsPagination('destroy');
+    if (instance.$paginationControl.data().twbsPagination) {
+        instance.$paginationControl.twbsPagination('destroy');
+    }
 });
 
 Template.paginationArea.helpers({
