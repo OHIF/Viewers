@@ -1,10 +1,10 @@
-<template name="studylistPagination">
-    {{#form class='studylistPagination' schema=instance.schema}}
+<template name="paginationArea">
+    {{#form class=(concat 'pagination-area ' this.class) schema=instance.schema}}
         <div class="row">
             <div class="col-xs-4 col-sm-3 col-md-3">
                  <div class="form-inline form-group rows-per-page">
                     <span>Show</span>
-                    {{>inputSelect class='select-small js-select-rows-per-page' key='rowsPerPage' hideSearch=true}}
+                    {{>inputSelect class='select-small' key='rowsPerPage' hideSearch=true}}
                     <span>rows per page</span>
                 </div>
             </div>

@@ -12,7 +12,3 @@ import './studylistResult/studylistResult.styl';
 import './studylistToolbar/studylistToolbar.html';
 import './studylistToolbar/studylistToolbar.js';
 import './studylistToolbar/studylistToolbar.styl';
-
-import './studylistPagination/studylistPagination.html';
-import './studylistPagination/studylistPagination.styl';
-import './studylistPagination/studylistPagination.js';

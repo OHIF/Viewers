@@ -1,6 +1,6 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
-.studylistPagination
+.pagination-area
     font-size: 13px
     font-weight: normal !important
 
@@ -59,7 +59,3 @@
           &.active a
             theme('background-color', '$uiGrayDark')
             theme('color', '$activeColor')
-
-@media only screen and (max-width: 1069px)
-  .studylistPagination > .row
-    margin-right: 0;
