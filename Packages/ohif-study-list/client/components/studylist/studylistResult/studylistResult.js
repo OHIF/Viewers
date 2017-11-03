@@ -27,8 +27,8 @@ Template.studylistResult.helpers({
         }
 
         // Pagination parameters
-        const rowsPerPage = instance.rowsPerPage.get();
-        const currentPage = instance.currentPage.get();
+        const rowsPerPage = instance.paginationData.rowsPerPage.get();
+        const currentPage = instance.paginationData.currentPage.get();
         const offset = rowsPerPage * currentPage;
         const limit = offset + rowsPerPage;
 
@@ -41,7 +41,7 @@ Template.studylistResult.helpers({
         }
 
         // Update record count
-        instance.recordCount.set(studies.length);
+        instance.paginationData.recordCount.set(studies.length);
 
         // Limit studies
         return studies.slice(offset, limit);
@@ -225,11 +225,12 @@ Template.studylistResult.onCreated(() => {
     }
 
     const rowsPerPage = getRowsPerPage();
-    instance.rowsPerPage = new ReactiveVar(parseInt(rowsPerPage, 10), setRowsPerPage);
-
-    // Set currentPage indexed 0
-    instance.currentPage = new ReactiveVar(0);
-    instance.recordCount = new ReactiveVar();
+    instance.paginationData = {
+        class: 'studylist-pagination',
+        currentPage: new ReactiveVar(0),
+        rowsPerPage: new ReactiveVar(parseInt(rowsPerPage, 10), setRowsPerPage),
+        recordCount: new ReactiveVar(0)
+    };
 
     // Set sortOption
     const sortOptionSession = Session.get('sortOption');
