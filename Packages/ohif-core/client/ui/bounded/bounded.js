@@ -32,6 +32,9 @@ class Bounded {
         this.$element = $(element);
         this.options(options);
         this.setBoundedFlag(false);
+
+        // Force to hardware acceleration to move element if browser supports translate property
+        this.useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
     }
 
     // Set or change the instance options
@@ -141,11 +144,7 @@ class Bounded {
 
     // Define the event handlers for this class
     defineEventHandlers() {
-        this.spatialChangedHandler = event => {
-            // Get the spatial information for element and its bounding element
-            const elementInfo = Bounded.spatialInfo(this.positionElement, this.dimensionElement);
-            const boundingInfo = Bounded.spatialInfo(this.boundingElement, this.boundingElement);
-
+        this.cssPositionHandler = (elementInfo, boundingInfo) => {
             // Fix element's x positioning and width
             if (this.allowResizing && elementInfo.width > boundingInfo.width) {
                 this.$dimensionElement.width(boundingInfo.width);
@@ -170,6 +169,46 @@ class Bounded {
             } else if (elementInfo.y1 > boundingInfo.y1) {
                 this.$positionElement.css('top', boundingInfo.y1 - elementInfo.height);
                 this.setBoundedFlag(true);
+            }
+        };
+
+        this.cssTransformHandler = (elementInfo, boundingInfo) => {
+            const matrixToArray = str => str.match(/(-?[0-9\.]+)/g);
+            const transformMatrix = matrixToArray(this.$positionElement.css('transform')) || [];
+            let translateX = parseFloat(transformMatrix[4]) || 0;
+            let translateY = parseFloat(transformMatrix[5]) || 0;
+
+            if (elementInfo.x1 > boundingInfo.x1) {
+                translateX -= elementInfo.x1 - boundingInfo.x1;
+            }
+
+            if (elementInfo.y1 > boundingInfo.y1) {
+                translateY -= elementInfo.y1 - boundingInfo.y1;
+            }
+
+            if (elementInfo.x0 < boundingInfo.x0) {
+                translateX += boundingInfo.x0 - elementInfo.x0;
+            }
+
+            if (elementInfo.y0 < boundingInfo.y0) {
+                translateY += boundingInfo.y0 - elementInfo.y0;
+            }
+
+            const translation = `translate(${translateX}px, ${translateY}px)`;
+            OHIF.ui.styleProperty.set(this.positionElement, 'transform', translation);
+        };
+
+        this.spatialChangedHandler = event => {
+            // Get the spatial information for element and its bounding element
+            const { positionElement, dimensionElement, boundingElement, useTransform } = this;
+            const elementInfo = Bounded.spatialInfo(positionElement, dimensionElement);
+            const boundingInfo = Bounded.spatialInfo(boundingElement, boundingElement);
+
+            // Check if CSS positioning or transform will be used
+            if (useTransform) {
+                this.cssTransformHandler(elementInfo, boundingInfo);
+            } else {
+                this.cssPositionHandler(elementInfo, boundingInfo);
             }
         };
     }

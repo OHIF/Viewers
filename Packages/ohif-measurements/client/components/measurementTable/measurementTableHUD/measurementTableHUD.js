@@ -21,7 +21,7 @@ Template.measurementTableHUD.onDestroyed(() => {
 
 Template.measurementTableHUD.onRendered(() => {
     const instance = Template.instance();
-    instance.$('#measurementTableHUD').resizable().draggable();
+    instance.$('#measurementTableHUD').resizable().draggable().bounded();
 });
 
 Template.measurementTableHUD.events({
