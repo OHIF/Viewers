@@ -237,7 +237,7 @@ Template.cineDialog.onRendered(() => {
     instance.setResizeHandler(instance.setOptimalPosition);
 
     // Make the CINE dialog bounded and draggable
-    $dialog.draggable({ defaultElementCursor: 'move' });
+    $dialog.draggable({ defaultElementCursor: 'move' }).bounded();
 
     // Polyfill for older browsers
     dialogPolyfill.registerDialog($dialog.get(0));
