@@ -7,11 +7,11 @@ Package.describe({
 Npm.depends({
     hammerjs: '2.0.8',
     'jquery-hammerjs': '2.0.0',
-    'cornerstone-core': '1.0.0',
-    'cornerstone-tools': '1.0.0',
+    'cornerstone-core': '1.0.1',
+    'cornerstone-tools': '1.0.1',
     'cornerstone-math': '0.1.6',
-    'dicom-parser': '1.7.5',
-    'cornerstone-wado-image-loader': '1.0.0'
+    'dicom-parser': '1.7.6',
+    'cornerstone-wado-image-loader': '1.0.1'
 });
 
 Package.onUse(function(api) {
@@ -23,7 +23,7 @@ Package.onUse(function(api) {
 
     api.addAssets('public/js/cornerstoneWADOImageLoaderCodecs.es5.js', 'client');
     api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.es5.js', 'client');
-    api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.es5.js.map', 'client');
+    api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.min.js.map', 'client');
 
     api.mainModule('main.js', 'client');
 
