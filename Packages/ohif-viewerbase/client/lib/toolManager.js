@@ -1,7 +1,7 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
-import { _ } from 'meteor/underscore';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
 import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
@@ -129,7 +129,7 @@ export const toolManager = {
         defaultMouseButtonTools = Meteor.settings && Meteor.settings.public && Meteor.settings.public.defaultMouseButtonTools;
 
         // Override default tool if defined in settings
-        defaultTool = (defaultMouseButtonTools && defaultMouseButtonTools.left) || "wwwc";
+        defaultTool = (defaultMouseButtonTools && defaultMouseButtonTools.left) || 'wwwc';
 
         this.configureTools();
         initialized = true;
@@ -310,10 +310,10 @@ export const toolManager = {
         // Get the imageIds for this element
         const imageIds = toolData.data[0].imageIds;
 
-        const defaultMouseButtonToolNameMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || "pan";
+        const defaultMouseButtonToolNameMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || 'pan';
         const defaultMouseButtonToolMiddle = cornerstoneTools[defaultMouseButtonToolNameMiddle];
 
-        const defaultMouseButtonToolNameRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || "zoom";
+        const defaultMouseButtonToolNameRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || 'zoom';
         const defaultMouseButtonToolRight = cornerstoneTools[defaultMouseButtonToolNameRight];
 
         // Deactivate all the middle mouse, right click, and scroll wheel tools
@@ -483,9 +483,9 @@ export const toolManager = {
 
                 // Edge cases where the tool is not the same as the typeName
                 if (toolType === 'simpleAngle') {
-                  toolInterfaceName = 'angle';
+                    toolInterfaceName = 'angle';
                 } else if (toolType === 'arrowAnnotate') {
-                  toolInterfaceName = 'annotate';
+                    toolInterfaceName = 'annotate';
                 }
 
                 if (touchDevice) {
