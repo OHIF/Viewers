@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
@@ -382,7 +381,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // If it was, no changes are necessary, so stop here.
             const activeViewportIndex = Session.get('activeViewport');
             if (viewportIndex === activeViewportIndex) {
-                return;
+                return true;
             }
 
             // Reset the focus, even if we don't need to re-enable reference lines or prefetching
@@ -514,9 +513,10 @@ Template.imageViewerViewport.onRendered(function() {
     // When the imageViewerViewport template is rendered
     const element = this.find('.imageViewerViewport');
     this.element = element;
+    this.$element = $(element);
 
     // Display the loading indicator for this element
-    $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
+    this.$element.siblings('.imageViewerLoadingIndicator').css('display', 'block');
 
     // Get the current active viewport index, if this viewport has the same index,
     // add the CSS 'active' class to highlight this viewport.
@@ -548,8 +548,8 @@ Template.imageViewerViewport.onRendered(function() {
     // instructions and then stop here since we don't know what to display in the viewport.
     if (!displaySetInstanceUid) {
         element.classList.add('empty');
-        $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
-        $(element).siblings('.viewportInstructions').show();
+        this.$element.siblings('.imageViewerLoadingIndicator').css('display', 'none');
+        this.$element.siblings('.viewportInstructions').show();
         return;
     }
 
@@ -558,6 +558,34 @@ Template.imageViewerViewport.onRendered(function() {
 
     data.study = study;
     setDisplaySet(data, displaySetInstanceUid, templateData);
+
+    // Double click event handlers to handle viewport enlargement
+    this.$element.on('CornerstoneToolsMouseDoubleClick CornerstoneToolsDoubleTap', event => {
+        this.$element.trigger('ohif.viewer.viewport.toggleEnlargement');
+
+        // Get the double clicked viewport index
+        const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
+
+        // Enlarge the double clicked viewport
+        const layoutManager = OHIF.viewerbase.layoutManager;
+        layoutManager.toggleEnlargement(viewportIndex);
+
+        // Wait for DOM re-rendering and update the active viewport
+        Tracker.afterFlush(() => {
+            let viewportIndexToZoom;
+            // Check if the viewer is zoomed
+            if (layoutManager.isZoomed) {
+                // Set the active viewport as the only one visible
+                viewportIndexToZoom = 0;
+            } else {
+                // Set the active viewport as the previous zoomed viewport
+                viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
+            }
+            // Set zoomed viewport as active...
+            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
+            setActiveViewport(element);
+        });
+    });
 });
 
 Template.imageViewerViewport.onDestroyed(function() {
@@ -607,30 +635,5 @@ Template.imageViewerViewport.events({
     'OHIFActivateViewport .imageViewerViewport'(event) {
         OHIF.log.info('imageViewerViewport OHIFActivateViewport');
         setActiveViewport(event.currentTarget);
-    },
-
-    'CornerstoneToolsMouseDoubleClick .imageViewerViewport, CornerstoneToolsDoubleTap .imageViewerViewport'(event) {
-        // Get the double clicked viewport index
-        const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
-
-        // Enlarge the double clicked viewport
-        const layoutManager = OHIF.viewerbase.layoutManager;
-        layoutManager.toggleEnlargement(viewportIndex);
-
-        // Wait for DOM re-rendering and update the active viewport
-        Tracker.afterFlush(() => {
-            let viewportIndexToZoom;
-            // Check if the viewer is zoomed
-            if (layoutManager.isZoomed) {
-                // Set the active viewport as the only one visible
-                viewportIndexToZoom = 0;
-            } else {
-                // Set the active viewport as the previous zoomed viewport
-                viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
-            }
-            // Set zoomed viewport as active...
-            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
-            setActiveViewport(element);
-        });
     }
 });

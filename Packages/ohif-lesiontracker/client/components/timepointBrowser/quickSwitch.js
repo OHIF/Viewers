@@ -61,16 +61,6 @@ Template.timepointBrowserQuickSwitch.onCreated(() => {
 Template.timepointBrowserQuickSwitch.onRendered(() => {
     const instance = Template.instance();
 
-    instance.autorun(() => {
-        const selectedTimepoint = instance.selectedTimepoint.get();
-        const selectedTimepointId = (selectedTimepoint && selectedTimepoint.timepointId) || '';
-        const $allBrowserItems = instance.$('.timepoint-browser-item');
-        const $browserItem = $allBrowserItems.filter(`[data-id=${selectedTimepointId}]`);
-        if (!$browserItem.hasClass('active')) {
-            $browserItem.find('.timepoint-item').trigger('click');
-        }
-    });
-
     instance.updateActiveStudy = () => {
         const currentStudy = instance.data.currentStudy.get();
         const studyInstanceUid = (currentStudy && currentStudy.studyInstanceUid) || '';
@@ -80,6 +70,16 @@ Template.timepointBrowserQuickSwitch.onRendered(() => {
             $studyBrowserItems.filter(`[data-uid="${studyInstanceUid}"]`).addClass('active');
         });
     };
+
+    instance.autorun(() => {
+        const selectedTimepoint = instance.selectedTimepoint.get();
+        const selectedTimepointId = (selectedTimepoint && selectedTimepoint.timepointId) || '';
+        const $allBrowserItems = instance.$('.timepoint-browser-item');
+        const $browserItem = $allBrowserItems.filter(`[data-id=${selectedTimepointId}]`);
+        if (!$browserItem.hasClass('active')) {
+            $browserItem.find('.timepoint-item').trigger('click');
+        }
+    });
 
     instance.autorun(instance.updateActiveStudy);
 });
