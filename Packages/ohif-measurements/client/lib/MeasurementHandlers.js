@@ -15,6 +15,11 @@ class MeasurementHandlers {
             return;
         }
 
+        // Stop here if there's no measurement data or if it was cancelled
+        if (!measurementData || measurementData.cancelled) {
+            return;
+        }
+
         // Get the Cornerstone imageId
         const enabledElement = cornerstone.getEnabledElement(eventData.element);
         const imageId = enabledElement.image.imageId;
@@ -88,6 +93,9 @@ class MeasurementHandlers {
 
         let measurement = Collection.findOne(measurementData._id);
 
+        // Stop here if the measurement is already deleted
+        if (!measurement) return;
+
         // Update the collection data with the cornerstone measurement data
         const ignoredKeys = ['location', 'description', 'response'];
         Object.keys(measurementData).forEach(key => {
@@ -130,6 +138,10 @@ class MeasurementHandlers {
 
         const measurementTypeId = measurementApi.toolsGroupsMap[measurementData.toolType];
         const measurement = Collection.findOne(measurementData._id);
+
+        // Stop here if the measurement is already gone or never existed
+        if (!measurement) return;
+
         const timepointId = measurement.timepointId;
 
         // Remove all the measurements with the given type and number
