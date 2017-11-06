@@ -47,7 +47,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: false,
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 0
             },
             end: {
@@ -56,7 +56,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: true,
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 1
             },
             textBox: {
@@ -75,7 +75,7 @@ function createNewMeasurement(mouseEventData) {
                 active: false,
                 locked: true, // If perpendicular line is connected to long-line
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 2
             },
             perpendicularEnd: {
@@ -84,7 +84,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: false,
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 3
             }
         },
@@ -172,12 +172,11 @@ function addNewMeasurement(mouseEventData) {
     const timestamp = new Date().getTime();
     cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
         const { handles, longestDiameter, shortestDiameter } = measurementData;
-        const hasHandlesOutside = cornerstoneTools.anyHandlesOutsideImage(mouseEventData, handles); // TODO FIXME: >>>> not working
-        const ldSize = parseFloat(longestDiameter) || 0;
-        const sdSize = parseFloat(shortestDiameter) || 0;
-        const isTooSmal = (ldSize < 1) || (sdSize < 1);
-        const isTooFast = (new Date().getTime() - timestamp) < 1000;
-        console.warn('>>>>', cancelled, hasHandlesOutside, isTooSmal, isTooFast);
+        const hasHandlesOutside = cornerstoneTools.anyHandlesOutsideImage(mouseEventData, handles);
+        const longestDiameterSize = parseFloat(longestDiameter) || 0;
+        const shortestDiameterSize = parseFloat(shortestDiameter) || 0;
+        const isTooSmal = (longestDiameterSize < 1) || (shortestDiameterSize < 1);
+        const isTooFast = (new Date().getTime() - timestamp) < 150;
         if (cancelled || hasHandlesOutside || isTooSmal || isTooFast) {
             // delete the measurement
             measurementData.cancelled = true;
@@ -793,13 +792,14 @@ function drawHandles(context, eventData, handles, color, options) {
 }
 
 function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
-    var element = mouseEventData.element;
-    var distanceFromTool = {
+    const element = mouseEventData.element;
+    const $element = $(element);
+    const distanceFromTool = {
         x: handle.x - mouseEventData.currentPoints.image.x,
         y: handle.y - mouseEventData.currentPoints.image.y
     };
 
-    function mouseDragCallback(e, eventData) {
+    const mouseDragCallback = (event, eventData) => {
         handle.active = true;
 
         if (handle.index === undefined || handle.index === null) {
@@ -825,24 +825,38 @@ function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, 
             element: element,
             measurementData: data
         };
-        $(element).trigger(eventType, modifiedEventData);
-    }
+        $element.trigger(eventType, modifiedEventData);
+    };
 
-    $(element).on('CornerstoneToolsMouseDrag', mouseDragCallback);
+    $element.on('CornerstoneToolsMouseDrag', mouseDragCallback);
 
-    function mouseUpCallback() {
-        $(element).off('CornerstoneToolsMouseDrag', mouseDragCallback);
-        $(element).off('CornerstoneToolsMouseUp', mouseUpCallback);
-        $(element).off('CornerstoneToolsMouseClick', mouseUpCallback);
+    const currentImage = cornerstone.getImage(element);
+    const imageRenderedHandler = () => {
+        const newImage = cornerstone.getImage(element);
+
+        // Check if the rendered image changed during measurement modifying and stop it if so
+        if (newImage.imageId !== currentImage.imageId) {
+            mouseUpCallback();
+        }
+    };
+
+    // Bind the event listener for image rendering
+    $element.on('CornerstoneImageRendered', imageRenderedHandler);
+
+    const mouseUpCallback = () => {
+        $element.off('CornerstoneToolsMouseDrag', mouseDragCallback);
+        $element.off('CornerstoneToolsMouseUp', mouseUpCallback);
+        $element.off('CornerstoneToolsMouseClick', mouseUpCallback);
+        $element.off('CornerstoneImageRendered', imageRenderedHandler);
         cornerstone.updateImage(element);
 
         if (typeof doneMovingCallback === 'function') {
             doneMovingCallback();
         }
-    }
+    };
 
-    $(element).on('CornerstoneToolsMouseUp', mouseUpCallback);
-    $(element).on('CornerstoneToolsMouseClick', mouseUpCallback);
+    $element.on('CornerstoneToolsMouseUp', mouseUpCallback);
+    $element.on('CornerstoneToolsMouseClick', mouseUpCallback);
 }
 
 // mouseMoveCallback is used to hide handles when mouse is away
