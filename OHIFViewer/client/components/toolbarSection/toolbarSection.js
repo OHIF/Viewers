@@ -185,6 +185,14 @@ Template.toolbarSection.helpers({
                 iconClasses: 'fa fa-youtube-play',
                 active: () => $('#cineDialog').is(':visible')
             });
+
+            buttonData.push({
+                id: 'download',
+                title: 'Download',
+                classes: 'imageViewerCommand',
+                iconClasses: 'fa fa-camera',
+                active: () => $('#downloadDialog').is(':visible')
+            });
         }
 
         buttonData.push({
