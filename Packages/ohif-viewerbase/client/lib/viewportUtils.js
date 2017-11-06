@@ -218,6 +218,12 @@ const toggleDownloadDialog = () => {
     toggleDialog(dialog);
 };
 
+const isDownloadEnabled = () => {
+    const activeViewport = getActiveViewportElement();
+
+    return activeViewport ? true : false;
+};
+
 // Check if the clip is playing on the active viewport
 const isPlaying = () => {
     // Create a dependency on LayoutManagerUpdated and UpdateCINE session
@@ -336,6 +342,7 @@ const viewportUtils = {
     toggleCineDialog,
     toggleDownloadDialog,
     isPlaying,
+    isDownloadEnabled,
     hasMultipleFrames,
     stopAllClips,
     isStackScrollLinkingDisabled
