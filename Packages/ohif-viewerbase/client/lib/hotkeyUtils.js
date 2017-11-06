@@ -51,8 +51,8 @@ Meteor.startup(function() {
         // Viewport navigation hotkeys
         scrollDown: 'DOWN',
         scrollUp: 'UP',
-        scrollLastImage: '',
-        scrollFirstImage: '',
+        scrollLastImage: 'END',
+        scrollFirstImage: 'HOME',
         previousDisplaySet: 'PAGEUP',
         nextDisplaySet: 'PAGEDOWN',
         nextPanel: 'RIGHT',
