@@ -127,7 +127,6 @@ class MeasurementHandlers {
     static onRemoved(e, instance, eventData) {
         OHIF.log.info('CornerstoneToolsMeasurementRemoved');
         const measurementData = eventData.measurementData;
-        const measurementNumber = measurementData.measurementNumber;
         const { measurementApi, timepointApi } = instance.data;
         const Collection = measurementApi.tools[eventData.toolType];
 
@@ -142,9 +141,9 @@ class MeasurementHandlers {
         // Stop here if the measurement is already gone or never existed
         if (!measurement) return;
 
-        const timepointId = measurement.timepointId;
 
         // Remove all the measurements with the given type and number
+        const { measurementNumber, timepointId } = measurement;
         measurementApi.deleteMeasurements(measurementTypeId, {
             measurementNumber,
             timepointId
