@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	 
+	<Fragment>
+        <util:RegistrySearch Id='NodeJsRegSearch'
+			Root="HKLM"
+            Key="SOFTWARE\Node.js"
+			Value="Version"
+			Win64="yes"
+            Result="exists"
+            Variable="IsNodeJsInstalled" />
+
+        <PackageGroup Id="NodeJsPackage">
+			<MsiPackage 
+				SourceFile="$(var.PreqDir)\node-v6.11.3-x64.msi"
+				ForcePerMachine="yes"
+				InstallCondition="IsNodeJsInstalled = 0 AND VersionNT64"
+				DisplayInternalUI="no" />
+        </PackageGroup>
+    </Fragment>
+	
+	<Fragment>
+        <util:RegistrySearch Id='MongoDBRegSearch'
+			Root="HKLM"
+            Key="SOFTWARE\MongoDB\Server"
+			Win64="yes"
+            Result="exists"
+            Variable="IsMongoDBInstalled" />
+
+        <PackageGroup Id="MongoDBPackage">
+			<MsiPackage 
+				SourceFile="$(var.PreqDir)\mongodb-win32-x86_64-2008plus-3.4.1-signed.msi"
+				ForcePerMachine="yes"
+				InstallCondition="IsMongoDBInstalled = 0 AND VersionNT64"
+				DisplayInternalUI="no" />
+        </PackageGroup>
+    </Fragment>
+	
+	<Fragment>
+        <util:RegistrySearch Id='OrthancRegSearch'
+			Root="HKLM"
+            Key="SYSTEM\CurrentControlSet\services\Orthanc"
+			Win64="yes"
+            Result="exists"
+            Variable="IsOrthancInstalled" />
+
+        <PackageGroup Id="OrthancPackage">
+			<ExePackage 
+				SourceFile="$(var.PreqDir)\OrthancInstaller-Win64-17.7.0.exe"
+				PerMachine="yes"
+				InstallCondition="IsOrthancInstalled = 0 AND VersionNT64"
+				InstallCommand="/VERYSILENT /SUPPRESSMSGBOXES" />
+        </PackageGroup>
+    </Fragment>
+	
+	<Fragment>
+        <PackageGroup Id="MainInstaller">
+			<MsiPackage 
+				SourceFile="$(var.LTInstallerPath)"
+				ForcePerMachine="yes"
+				InstallCondition="VersionNT64"
+				DisplayInternalUI="yes" />
+        </PackageGroup>
+    </Fragment>
+</Wix>

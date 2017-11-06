@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+		<Binary Id="CABinary" SourceFile="CustomActions.js" />
+	</Fragment>
+	
+	<Fragment>
+		<CustomAction Id="CAConfigureOrthanc" 
+					  BinaryKey="CABinary" 
+					  JScriptCall="ConfigureOrthanc" 
+					  Impersonate="no" 
+					  Execute="commit" 
+					  Return="check" />
+	</Fragment>
+	
+	<Fragment>
+		<CustomAction Id="CAConfigureMongoDB" 
+					  BinaryKey="CABinary" 
+					  JScriptCall="ConfigureMongoDB" 
+					  Impersonate="no" 
+					  Execute="commit" 
+					  Return="check" />
+	</Fragment>
+	
+	<Fragment>
+		<CustomAction Id="CAConfigureLT" 
+					  BinaryKey="CABinary" 
+					  JScriptCall="ConfigureLT" 
+					  Impersonate="no" 
+					  Execute="commit" 
+					  Return="check" />
+	</Fragment>
+</Wix>
