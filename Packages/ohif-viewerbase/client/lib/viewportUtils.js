@@ -172,11 +172,11 @@ const linkStackScroll = () => {
 
 // This function was originally defined alone inside client/lib/toggleDialog.js
 // and has been moved here to avoid circular dependency issues.
-const toggleDialog = element => {
+const toggleDialog = (element, closeAction) => {
     const $element = $(element);
     if($element.is('dialog')) {
         if (element.hasAttribute('open')) {
-            stopAllClips();
+            if (closeAction) closeAction();
             element.close();
         } else {
             element.show();
@@ -187,8 +187,6 @@ const toggleDialog = element => {
         $element.toggleClass('dialog-closed', isClosed);
         $element.toggleClass('dialog-open', !isClosed);
     }
-
-    Session.set('UpdateCINE', Random.id());
 };
 
 // Toggle the play/stop state for the cornerstone clip tool
@@ -210,6 +208,13 @@ const toggleCinePlay = () => {
 // Show/hide the CINE dialog
 const toggleCineDialog = () => {
     const dialog = document.getElementById('cineDialog');
+
+    toggleDialog(dialog, stopAllClips);
+    Session.set('UpdateCINE', Random.id());
+};
+
+const toggleDownloadDialog = () => {
+    const dialog = document.getElementById('downloadDialog');
     toggleDialog(dialog);
 };
 
@@ -329,6 +334,7 @@ const viewportUtils = {
     toggleDialog,
     toggleCinePlay,
     toggleCineDialog,
+    toggleDownloadDialog,
     isPlaying,
     hasMultipleFrames,
     stopAllClips,
