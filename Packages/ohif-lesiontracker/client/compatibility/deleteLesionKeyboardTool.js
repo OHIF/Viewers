@@ -85,7 +85,8 @@ function keyDownCallback(event, eventData) {
         const dialogSettings = {
             class: 'themed',
             title: 'Delete measurements',
-            message: 'Are you sure you want to delete this measurement?'
+            message: 'Are you sure you want to delete this measurement?',
+            position: eventData.currentPoints.page
         };
 
         // TODO= Refactor this so the confirmation dialog is an
