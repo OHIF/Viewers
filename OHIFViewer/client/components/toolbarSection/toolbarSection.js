@@ -187,7 +187,7 @@ Template.toolbarSection.helpers({
             });
 
             buttonData.push({
-                id: 'download',
+                id: 'toggleDownloadDialog',
                 title: 'Download',
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-camera',

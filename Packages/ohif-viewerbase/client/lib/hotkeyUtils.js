@@ -225,7 +225,7 @@ Meteor.startup(function() {
         toggleDownloadDialog: {
             name: 'Show/Hide Download Dialog',
             action: viewportUtils.toggleDownloadDialog,
-            disabled: viewportUtils.isDownloadEnabled
+            disabled: () => !viewportUtils.isDownloadEnabled()
         }
     }, true);
 
