@@ -4,10 +4,26 @@ import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
+function isThereSeries(studies) {
+    if (studies.length === 1) {
+        const study = studies[0];
+
+        if (study.seriesList && study.seriesList.length > 1) {
+            return true;
+        }
+
+        if (study.displaySets && study.displaySets.length > 1) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 Template.toolbarSection.onCreated(() => {
     const instance = Template.instance();
 
-    if (OHIF.uiSettings.leftSidebarOpen) {
+    if (OHIF.uiSettings.leftSidebarOpen && isThereSeries(instance.data.studies)) {
         instance.data.state.set('leftSidebar', 'studies');
     }
 });
