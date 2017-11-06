@@ -167,6 +167,10 @@ function addNewMeasurement(mouseEventData) {
     // Bind the event listener for image rendering
     $element.on('CornerstoneImageRendered', imageRenderedHandler);
 
+    // Bind the tool deactivation and enlargement handlers
+    $element.on('CornerstoneToolsToolDeactivated', cancelAction);
+    $element.one('ohif.viewer.viewport.toggleEnlargement', cancelAction);
+
     cornerstone.updateImage(element);
 
     const timestamp = new Date().getTime();
@@ -191,6 +195,10 @@ function addNewMeasurement(mouseEventData) {
 
         // Unbind the event listener for image rendering
         $element.off('CornerstoneImageRendered', imageRenderedHandler);
+
+        // Unbind the tool deactivation and enlargement handlers
+        $element.off('CornerstoneToolsToolDeactivated', cancelAction);
+        $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
         // perpendicular line is not connected to long-line
         measurementData.handles.perpendicularStart.locked = false;
