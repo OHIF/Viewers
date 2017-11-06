@@ -97,7 +97,8 @@ function createNewMeasurement(mouseEventData) {
 }
 
 function addNewMeasurement(mouseEventData) {
-    var element = mouseEventData.element;
+    const element = mouseEventData.element;
+    const $element = $(element);
 
     // LT-29 Disable Target Measurements when pixel spacing is not available
     if (!mouseEventData.image.rowPixelSpacing || !mouseEventData.image.columnPixelSpacing) {
@@ -109,47 +110,77 @@ function addNewMeasurement(mouseEventData) {
         cornerstone.updateImage(element);
     }
 
-    var measurementData = createNewMeasurement(mouseEventData);
+    const measurementData = createNewMeasurement(mouseEventData);
     measurementData.viewport = cornerstone.getViewport(element);
 
-    var eventData = {
+    const eventData = {
         mouseButtonMask: mouseEventData.which
     };
 
-    var config = cornerstoneTools.bidirectional.getConfiguration();
+    const config = cornerstoneTools.bidirectional.getConfiguration();
 
     // associate this data with this imageId so we can render it and manipulate it
     cornerstoneTools.addToolState(element, toolType, measurementData);
 
     // since we are dragging to another place to drop the end point, we can just activate
     // the end point and let the moveHandle move it for us.
-    $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
-    $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
-    $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
-    $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
+    $element.off('CornerstoneToolsMouseDown', mouseDownCallback);
+    $element.off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
+    $element.off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+
+    let cancelled = false;
+    const cancelAction = () => {
+        cancelled = true;
+        cornerstoneTools.removeToolState(element, toolType, measurementData);
+    };
 
     // Add a flag for using Esc to cancel tool placement
-    var cancelled = false;
-    function cancelCallback(e) {
+    const keyDownHandler = event => {
         // If the Esc key was pressed, set the flag to true
-        if (e.which === keys.ESC) {
-            cancelled = true;
-            cornerstoneTools.removeToolState(element, toolType, measurementData);
+        if (event.which === keys.ESC) {
+            cancelAction();
         }
 
         // Don't propagate this keydown event so it can't interfere
         // with anything outside of this tool
         return false;
-    }
+    };
 
     // Bind a one-time event listener for the Esc key
-    $(element).one('keydown', cancelCallback);
+    $element.one('keydown', keyDownHandler);
+
+    // Keep the current image and create a handler for new rendered images
+    const currentImage = cornerstone.getImage(element);
+    const currentViewport = cornerstone.getViewport(element);
+    const imageRenderedHandler = () => {
+        const newImage = cornerstone.getImage(element);
+
+        // Check if the rendered image changed during measurement creation and delete it if so
+        if (newImage.imageId !== currentImage.imageId) {
+            cornerstone.displayImage(element, currentImage, currentViewport);
+            cancelAction();
+            cornerstone.displayImage(element, newImage, currentViewport);
+        }
+    };
+
+    // Bind the event listener for image rendering
+    $element.on('CornerstoneImageRendered', imageRenderedHandler);
 
     cornerstone.updateImage(element);
 
+    const timestamp = new Date().getTime();
     cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
-        if (cancelled || cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
+        const { handles, longestDiameter, shortestDiameter } = measurementData;
+        const hasHandlesOutside = cornerstoneTools.anyHandlesOutsideImage(mouseEventData, handles); // TODO FIXME: >>>> not working
+        const ldSize = parseFloat(longestDiameter) || 0;
+        const sdSize = parseFloat(shortestDiameter) || 0;
+        const isTooSmal = (ldSize < 1) || (sdSize < 1);
+        const isTooFast = (new Date().getTime() - timestamp) < 1000;
+        console.warn('>>>>', cancelled, hasHandlesOutside, isTooSmal, isTooFast);
+        if (cancelled || hasHandlesOutside || isTooSmal || isTooFast) {
             // delete the measurement
+            measurementData.cancelled = true;
             cornerstoneTools.removeToolState(element, toolType, measurementData);
         } else {
             // Set lesionMeasurementData Session
@@ -157,15 +188,18 @@ function addNewMeasurement(mouseEventData) {
         }
 
         // Unbind the Esc keydown hook
-        $(element).off('keydown', cancelCallback);
+        $element.off('keydown', keyDownHandler);
+
+        // Unbind the event listener for image rendering
+        $element.off('CornerstoneImageRendered', imageRenderedHandler);
 
         // perpendicular line is not connected to long-line
         measurementData.handles.perpendicularStart.locked = false;
 
-        $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
-        $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
-        $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
-        $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
+        $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+        $element.on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
+        $element.on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
+        $element.on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
         cornerstone.updateImage(element);
     });
 }
