@@ -376,17 +376,20 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
 
+            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
+            const element = (eventData && eventData.element) || (event && event.currentTarget);
+            if (!element) return;
+            const $element = $(element);
+            $element.focus();
+
+            // Stop here if we don't have eventData set
+            if (!eventData) return;
+
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
             const activeViewportIndex = Session.get('activeViewport');
-            if (viewportIndex === activeViewportIndex) {
-                return true;
-            }
-
-            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
-            const element = eventData.element;
-            $(element).focus();
+            if (viewportIndex === activeViewportIndex) return;
 
             OHIF.log.info('imageViewerViewport sendActivationTrigger');
 
@@ -397,12 +400,14 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // Need to overwrite the type set in the original event
             customEvent.type = 'OHIFActivateViewport';
-            $(event.target).trigger(customEvent, eventData);
+            $element.trigger(customEvent, eventData);
         };
 
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
         $element.off(allCornerstoneEvents, sendActivationTrigger);
         $element.on(allCornerstoneEvents, sendActivationTrigger);
+        $element.off('mouseenter', sendActivationTrigger);
+        $element.on('mouseenter', sendActivationTrigger);
 
         OHIF.viewer.data.loadedSeriesData = layoutManager.viewportData;
 
@@ -521,6 +526,11 @@ Template.imageViewerViewport.onRendered(function() {
     // Get the current active viewport index, if this viewport has the same index,
     // add the CSS 'active' class to highlight this viewport.
     const activeViewport = Session.get('activeViewport');
+
+    // Focus the viewport if it's the active one
+    if (templateData.viewportIndex === activeViewport) {
+        this.$element.focus();
+    }
 
     let { currentImageIdIndex } = templateData;
     const { viewport, studyInstanceUid, seriesInstanceUid, renderedCallback, displaySetInstanceUid } = templateData;
