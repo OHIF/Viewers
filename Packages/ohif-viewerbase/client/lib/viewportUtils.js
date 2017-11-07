@@ -215,7 +215,11 @@ const toggleCineDialog = () => {
 
 const toggleDownloadDialog = () => {
     const dialog = document.getElementById('downloadDialog');
+
+    stopActiveClip();
     toggleDialog(dialog);
+
+    Session.set('UpdateDownloadViewport', Random.id());
 };
 
 const isDownloadEnabled = () => {
@@ -297,6 +301,14 @@ const stopAllClips = () => {
         }
     });
 };
+
+const stopActiveClip = () => {
+    const activeElement = getActiveViewportElement();
+
+    if ($(activeElement).find('canvas').length) {
+        cornerstoneTools.stopClip(activeElement);
+    }
+}
 
 
 const isStackScrollLinkingDisabled = () => {
