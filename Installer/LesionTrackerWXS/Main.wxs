@@ -34,8 +34,8 @@
     <UIRef Id="WixUI" />
 	
 	<InstallExecuteSequence>
-		<Custom Action="CAConfigureOrthanc" After="InstallFiles" />
-		<Custom Action="CAConfigureMongoDB" After="CAConfigureOrthanc" />
+		<Custom Action="CASetConfigureMongoDBProps" After="InstallFiles" />
+		<Custom Action="CAConfigureMongoDB" After="CASetConfigureMongoDBProps" />
 		<Custom Action="CAConfigureLT" After="CAConfigureMongoDB" />
     </InstallExecuteSequence>
 
