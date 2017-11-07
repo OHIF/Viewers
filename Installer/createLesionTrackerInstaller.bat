@@ -1,3 +1,5 @@
+@echo off
+
 REM Create LesionTracker Installer
 REM 1. Install Node.js
 REM 2. Install Meteor
@@ -17,6 +19,11 @@ cd ..\Installer\build\bundle\programs\server
 call npm install --production
 cd ..\..\..\..\
 
+REM Copy Lesion tracker startup and settings file
+xcopy /y orthancDICOMWeb.json build
+xcopy /y mongod.cfg build
+xcopy /y startLesionTracker.bat build
+
 REM Copy LICENSE file
 xcopy /y LICENSE.rtf build
 
@@ -25,7 +32,7 @@ rmdir /s /q output & mkdir output
 rmdir /s /q output\LTSingle & mkdir output\LTSingle
 rmdir /s /q output\LTComplete & mkdir output\LTComplete
 
-REM Create Leasion Tracker Installer (Single)
+REM Create Lesion Tracker Installer (Single)
 del /q LesionTrackerWXS\BuildDir.wxs
 call "%WIX%\bin\heat.exe" dir build -dr INSTALLDIR -cg MainComponentGroup -var var.SourceDir -out LesionTrackerWXS\BuildDir.wxs -srd -ke -sfrag -gg -sreg -scom
 call "%WIX%\bin\candle.exe" -dSourceDir="build" LesionTrackerWXS\*.wxs -o output\LTSingle\ -arch x64 -ext WiXUtilExtension
