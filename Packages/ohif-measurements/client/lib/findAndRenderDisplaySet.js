@@ -14,7 +14,6 @@ OHIF.measurements.findAndRenderDisplaySet = (displaySets, viewportIndex, studyIn
     const displaySetData = {
         studyInstanceUid: studyInstanceUid,
         seriesInstanceUid: seriesInstanceUid,
-        sopInstanceUid: sopInstanceUid,
         displaySetInstanceUid: stack.displaySetInstanceUid,
         currentImageIdIndex: specificImageIndex
     };
