@@ -37,7 +37,7 @@ const getActiveViewportElement = () => {
 /**
  * Get a cornerstone enabledElement for the Active Viewport Element
  * @return {Object}  Cornerstone's enabledElement object for the active
- *                   viewport element or undefined if the element 
+ *                   viewport element or undefined if the element
  *                   is not enabled
  */
 const getEnabledElementForActiveElement = () => {
@@ -133,8 +133,7 @@ const flipH = () => {
     updateOrientationMarkers(element, viewport);
 };
 
-const resetViewport = () => {
-    const element = getActiveViewportElement();
+const resetViewportWithElement = element => {
     const enabledElement = cornerstone.getEnabledElement(element);
     if (enabledElement.fitToWindow === false) {
         const imageId = enabledElement.image.imageId;
@@ -146,6 +145,18 @@ const resetViewport = () => {
         cornerstone.setViewport(element, instanceClassDefaultViewport);
     } else {
         cornerstone.reset(element);
+    }
+};
+
+const resetViewport = (viewportIndex=null) => {
+    if (viewportIndex === null) {
+        resetViewportWithElement(getActiveViewportElement());
+    } else if (viewportIndex === 'all') {
+        $('.imageViewerViewport').each((index, element) => {
+            resetViewportWithElement(element);
+        });
+    } else {
+        resetViewportWithElement($('.imageViewerViewport').get(viewportIndex));
     }
 };
 
@@ -250,7 +261,7 @@ const isPlaying = () => {
 
     // Get the clip state
     const clipState = toolState.data[0];
-    
+
     if(clipState) {
         // Return true if the clip is playing
         return !_.isUndefined(clipState.intervalId);

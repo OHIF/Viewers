@@ -14,7 +14,25 @@ function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
             $(element).one('CornerstoneImageRendered', () => resolve());
         };
 
-        // Check if the study / series we need is already the one in the viewport
+        // Find the study by studyInstanceUid and render the display set
+        const findAndRender = () => {
+            // @TypeSafeStudies
+            const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+
+            // TODO: Support frames? e.g. for measurements on multi-frame instances
+            findAndRenderDisplaySet(
+                study.displaySets,
+                viewportIndex,
+                studyInstanceUid,
+                seriesInstanceUid,
+                sopInstanceUid,
+                renderedCallback
+            );
+        };
+
+        // Check if the study / series we need is already the one in the viewport.
+        // Otherwise, re-render the viewport with the required study/series, then add a rendered
+        // callback to activate the measurements
         if (enabledElement && enabledElement.image) {
             const imageId = enabledElement.image.imageId;
             const series = cornerstone.metaData.get('series', imageId);
@@ -24,18 +42,14 @@ function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
             const isSameSeries = series.seriesInstanceUid === measurementData.seriesInstanceUid;
             if (isSameStudy && isSameSeries) {
                 // If it is, activate the measurements in this viewport and stop here
+                OHIF.viewerbase.viewportUtils.resetViewport('all');
                 renderedCallback(element);
+            } else {
+                findAndRender();
             }
+        } else {
+            findAndRender();
         }
-
-        // Otherwise, re-render the viewport with the required study/series, then add an rendered
-        // callback to activate the measurements
-
-        // @TypeSafeStudies
-        const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
-
-        // TODO: Support frames? e.g. for measurements on multi-frame instances
-        findAndRenderDisplaySet(study.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback);
     });
 }
 
