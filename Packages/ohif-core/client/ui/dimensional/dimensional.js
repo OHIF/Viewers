@@ -6,15 +6,15 @@ $.fn.tempShow = function(callback) {
     let current = this;
 
     // Temporarily show all parent invisible elements until body
-    while (this.is(':hidden') && current !== document.body) {
-        const $element = this.parentsUntil(':visible').last();
-        if (!$element.length) {
+    while (this.is(':hidden')) {
+        const $element = $(current);
+        if (!$element.length || $element.is(':visible')) {
             break;
         }
 
         $element.addClass('visible');
-        current = $element[0];
         elementsToHide.push(current);
+        current = $element[0].parentElement;
     }
 
     if (typeof callback === 'function') {
