@@ -19,10 +19,16 @@ cd ..\Installer\build\bundle\programs\server
 call npm install --production
 cd ..\..\..\..\
 
+REM Copy Lesion Tracker Service
+cd LesionTrackerService
+call npm install --production
+cd ..
+mkdir build\LesionTrackerService
+xcopy /y /s /e LesionTrackerService build\LesionTrackerService
+
 REM Copy Lesion tracker startup and settings file
 xcopy /y orthancDICOMWeb.json build
 xcopy /y mongod.cfg build
-xcopy /y startLesionTracker.bat build
 
 REM Copy LICENSE file
 xcopy /y LICENSE.rtf build

@@ -20,9 +20,15 @@
 	</Fragment>
 	
 	<Fragment>
-		<CustomAction Id="CAConfigureLT" 
+		<CustomAction Id="CAInstallLTServiceProps" 
+					  Property="CAInstallLTService" 
+					  Value="[INSTALLDIR]" 
+					  Execute="immediate" 
+					  Return="check" />
+	
+		<CustomAction Id="CAInstallLTService" 
 					  BinaryKey="CABinary" 
-					  JScriptCall="ConfigureLT" 
+					  JScriptCall="InstallLTService" 
 					  Impersonate="no" 
 					  Execute="commit" 
 					  Return="check" />

@@ -32,8 +32,20 @@ function ConfigureMongoDB() {
 	_shell.Run(cmdCreateLTDB, 1, true);
 }
 
-function ConfigureLT() {
-	// TODO
+function InstallLTService() {
+	var installDir = Session.Property("CustomActionData");
+	
+	// TODO: Set environment variables
+	
+	var installCommands = [
+		"NETSH http add urlacl url=http://+:3000/ user=\Everyone",
+		"node \""+installDir+"\\LesionTrackerService\\service.js\" \""+installDir+"\\bundle\\main.js\" --install",
+		"node \""+installDir+"\\LesionTrackerService\\service.js\" \""+installDir+"\\bundle\\main.js\" --start"
+	];
+	
+	for (var i=0; i<installCommands.length; i++) {
+		_shell.Run(installCommands[i], 1, true);
+	}
 }
 
 function Log(msg) {

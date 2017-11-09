@@ -36,7 +36,8 @@
 	<InstallExecuteSequence>
 		<Custom Action="CASetConfigureMongoDBProps" After="InstallFiles" />
 		<Custom Action="CAConfigureMongoDB" After="CASetConfigureMongoDBProps" />
-		<Custom Action="CAConfigureLT" After="CAConfigureMongoDB" />
+		<Custom Action="CAInstallLTServiceProps" After="CAConfigureMongoDB" />
+		<Custom Action="CAInstallLTService" After="CAInstallLTServiceProps" />
     </InstallExecuteSequence>
 
   </Product>
