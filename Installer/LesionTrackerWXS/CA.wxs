@@ -33,4 +33,19 @@
 					  Execute="commit" 
 					  Return="check" />
 	</Fragment>
+	
+	<Fragment>
+		<CustomAction Id="CAUninstallLTServiceProps" 
+					  Property="CAUninstallLTService" 
+					  Value="[INSTALLDIR]" 
+					  Execute="immediate" 
+					  Return="check" />
+	
+		<CustomAction Id="CAUninstallLTService" 
+					  BinaryKey="CABinary" 
+					  JScriptCall="UninstallLTService" 
+					  Impersonate="no" 
+					  Execute="commit" 
+					  Return="check" />
+	</Fragment>
 </Wix>

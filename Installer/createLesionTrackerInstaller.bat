@@ -19,12 +19,12 @@ cd ..\Installer\build\bundle\programs\server
 call npm install --production
 cd ..\..\..\..\
 
-REM Copy Lesion Tracker Service
-cd LesionTrackerService
+REM Copy Node Windows Service to run Lesion Tracker Server as a windows service
+cd NodeWindowsService
 call npm install --production
 cd ..
-mkdir build\LesionTrackerService
-xcopy /y /s /e LesionTrackerService build\LesionTrackerService
+mkdir build\NodeWindowsService
+xcopy /y /s /e NodeWindowsService build\NodeWindowsService
 
 REM Copy Lesion tracker startup and settings file
 xcopy /y orthancDICOMWeb.json build

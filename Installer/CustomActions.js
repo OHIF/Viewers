@@ -1,6 +1,7 @@
 var _shell = new ActiveXObject("WScript.Shell");
 var _fileSystem = new ActiveXObject("Scripting.FileSystemObject");
 
+// Custom Action called by WIX to configure MongoDB settings and start MongoDB service
 function ConfigureMongoDB() {
 	var installDir = Session.Property("CustomActionData");
 	
@@ -22,32 +23,100 @@ function ConfigureMongoDB() {
 	
 	_fileSystem.CopyFile(installDir+"mongod.cfg", mongoDBDir, true);
 	
-	var cmdCreateMongoDBService="\""+mongoDBDir+"\\bin\\mongod.exe\" --config \""+mongoDBDir+"\\mongod.cfg\" --install";
-	_shell.Run(cmdCreateMongoDBService, 1, true);
+	var configCommands = [
+		"\""+mongoDBDir+"\\bin\\mongod.exe\" --config \""+mongoDBDir+"\\mongod.cfg\" --install",
+		"net start MongoDB",
+		"\""+mongoDBDir+"\\bin\\mongo.exe\" --eval \"connect('127.0.0.1:27017/lesiontracker')\""
+	];
 	
-	var cmdStartMongoDBService="net start MongoDB";
-	_shell.Run(cmdStartMongoDBService, 1, true);
-	
-	var cmdCreateLTDB="\""+mongoDBDir+"\\bin\\mongo.exe\" --eval \"connect('127.0.0.1:27017/lesiontracker')\"";
-	_shell.Run(cmdCreateLTDB, 1, true);
+	RunShellCommands(configCommands);
 }
 
+// Custom Action called by WIX to install and start Lesion Tracker service
 function InstallLTService() {
 	var installDir = Session.Property("CustomActionData");
 	
-	// TODO: Set environment variables
+	// Set environment variables
+	SetEnvironmentVariables(installDir);
 	
 	var installCommands = [
 		"NETSH http add urlacl url=http://+:3000/ user=\Everyone",
-		"node \""+installDir+"\\LesionTrackerService\\service.js\" \""+installDir+"\\bundle\\main.js\" --install",
-		"node \""+installDir+"\\LesionTrackerService\\service.js\" \""+installDir+"\\bundle\\main.js\" --start"
+		"node \""+installDir+"\\NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"\\bundle\\main.js\" --install",
+		"node \""+installDir+"\\NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"\\bundle\\main.js\" --start"
 	];
 	
-	for (var i=0; i<installCommands.length; i++) {
-		_shell.Run(installCommands[i], 1, true);
+	RunShellCommands(installCommands);
+}
+
+// Custom Action called by WIX to uninstall Lesion Tracker service and stop MongoDB service
+function UninstallLTService() {
+	var installDir = Session.Property("CustomActionData");
+	
+	var uninstallCommands = [
+		"node \""+installDir+"\\NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"\\bundle\\main.js\" --uninstall",
+		"net stop MongoDB",
+		"sc delete MongoDB"
+	];
+	
+	RunShellCommands(uninstallCommands);
+	
+	// Unset environment variables
+	UnsetEnvironmentVariables();
+}
+
+// Run shell commands
+function RunShellCommands(commands) {
+	for (var i=0; i<commands.length; i++) {
+		_shell.Run(commands[i], 1, true);
 	}
 }
 
+// Set environment variable to System
+function SetEnvironmentVariable(key, value) {
+	var systemEnv = _shell.Environment('SYSTEM');
+	systemEnv(key) = value;
+}
+
+// Set environment variables which are used to run the application
+function SetEnvironmentVariables(installDir) {
+	var settings = GetFileContent(installDir+"\\orthancDICOMWeb.json");
+	var rootUrl = "http://localhost";
+	var port = 3000;
+	var mongoUrl = "mongodb://127.0.0.1:27017/lesiontracker";
+	
+	SetEnvironmentVariable('METEOR_SETTINGS', settings);
+	SetEnvironmentVariable('ROOT_URL', rootUrl);
+	SetEnvironmentVariable('PORT', port);
+	SetEnvironmentVariable('MONGO_URL', mongoUrl);
+}
+
+// Remove enviroment variable from the System
+function UnsetEnvironmentVariable(key) {
+	var systemEnv = _shell.Environment('SYSTEM');
+	systemEnv.Remove(key);
+}
+
+// Unset environment variables which are used to run the application
+function UnsetEnvironmentVariables() {
+	UnsetEnvironmentVariable('METEOR_SETTINGS');
+	UnsetEnvironmentVariable('ROOT_URL');
+	UnsetEnvironmentVariable('PORT');
+	UnsetEnvironmentVariable('MONGO_URL');
+}
+
+// Get content of the file
+function GetFileContent(fileName) {
+	var f = _fileSystem.OpenTextFile(fileName, 1);
+	  
+	  // Read from the file.
+    if (f.AtEndOfStream) {
+		return ("");
+	}
+	
+	return f.ReadAll();
+}
+
+// Show a dialog with log message for debug purposes
 function Log(msg) {
     var record = Session.Installer.CreateRecord(0);
     record.StringData(0) = "CustomAction:: " + msg;

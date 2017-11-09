@@ -34,10 +34,14 @@
     <UIRef Id="WixUI" />
 	
 	<InstallExecuteSequence>
+		<!-- Run after installation -->
 		<Custom Action="CASetConfigureMongoDBProps" After="InstallFiles" />
 		<Custom Action="CAConfigureMongoDB" After="CASetConfigureMongoDBProps" />
 		<Custom Action="CAInstallLTServiceProps" After="CAConfigureMongoDB" />
-		<Custom Action="CAInstallLTService" After="CAInstallLTServiceProps" />
+		<Custom Action="CAInstallLTService" After="CAInstallLTServiceProps" />		
+		<!-- Run before uninstallation -->
+		<Custom Action="CAUninstallLTServiceProps" After="InstallInitialize">REMOVE="ALL"</Custom>
+		<Custom Action="CAUninstallLTService" After="CAUninstallLTServiceProps">REMOVE="ALL"</Custom>
     </InstallExecuteSequence>
 
   </Product>

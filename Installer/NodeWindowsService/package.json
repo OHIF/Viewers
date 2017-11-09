@@ -1,13 +1,10 @@
 {
-  "name": "lesiontrackerservice",
+  "name": "nodewindowsservice",
   "version": "1.0.0",
   "description": "",
   "main": "service.js",
   "author": "OHIF",
   "license": "MIT",
-  "scripts": {
-    "start": "nexe service.js -r node_modules/node-windows/**/*"
-  },
   "dependencies": {
     "node-windows": "^0.1.14"
   }
