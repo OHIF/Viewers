@@ -17,6 +17,14 @@ const toolTypes = [
     'rectangleRoi'
 ];
 
+// Flag to prevent dialog from being displayed twice
+let locked = false;
+
+// Handler to unlock the keydown handling
+const unlock = () => {
+    locked = false;
+};
+
 function removeMeasurementTimepoint(data, index, toolType, element) {
     let { imageId } = data;
     if (!imageId) {
@@ -72,6 +80,9 @@ function getNearbyToolData(element, coords) {
 function keyDownCallback(event, eventData) {
     const keyCode = eventData.which;
 
+    // Stop here if the locked flag is set to true
+    if (locked) return;
+
     if (keyCode === keys.DELETE ||
         (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
@@ -86,15 +97,19 @@ function keyDownCallback(event, eventData) {
             position: eventData.currentPoints.page
         };
 
+        // Set the locked flag to true
+        locked = true;
+
         // TODO= Refactor this so the confirmation dialog is an
         // optional settable callback in the tool's configuration
         OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {
+            unlock();
             removeMeasurementTimepoint(nearbyToolData.tool,
                 nearbyToolData.index,
                 nearbyToolData.toolType,
                 eventData.element
             );
-        });
+        }).catch(unlock);
     }
 }
 
