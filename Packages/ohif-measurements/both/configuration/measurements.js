@@ -204,17 +204,39 @@ class MeasurementApi {
                 OHIF.log.info('Measurement data retrieval');
                 OHIF.log.info(measurementData);
 
+                const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
+                const measurementsGroups = {};
+
                 Object.keys(measurementData).forEach(measurementTypeId => {
                     const measurements = measurementData[measurementTypeId];
 
                     measurements.forEach(measurement => {
-                        delete measurement._id;
-                        // @TODO: check if this conditional is ok, because is throwing
-                        // an error for temp measurements -> measurement.toolType is undefined
-                        if (measurement.toolType && this.tools[measurement.toolType]) {
-                            this.tools[measurement.toolType].insert(measurement);
+                        const { toolType } = measurement;
+                        if (toolType && this.tools[toolType]) {
+                            delete measurement._id;
+                            const toolGroup = toolsGroupsMap[toolType];
+                            if (!measurementsGroups[toolGroup]) {
+                                measurementsGroups[toolGroup] = [];
+                            }
+
+                            measurementsGroups[toolGroup].push(measurement);
                         }
                     });
+                });
+
+                Object.keys(measurementsGroups).forEach(groupKey => {
+                    const group = measurementsGroups[groupKey];
+                    group.sort((a, b) => {
+                        if (a.measurementNumber > b.measurementNumber) {
+                            return 1;
+                        } else if (a.measurementNumber < b.measurementNumber) {
+                            return -1;
+                        }
+
+                        return 0;
+                    });
+
+                    group.forEach(m => this.tools[m.toolType].insert(m));
                 });
 
                 resolve();

@@ -19,7 +19,7 @@ export function displayReferenceLines(element) {
     }
 
     const imageId = enabledElement.image.imageId;
-    const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+    const imagePlane = cornerstone.metaData.get('imagePlane', imageId);
 
     // Disable reference lines for the current element
     cornerstoneTools.referenceLines.tool.disable(element);

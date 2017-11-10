@@ -25,7 +25,7 @@ const initHangingProtocol = () => {
         const layoutManager = OHIF.viewerbase.layoutManager;
 
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new OHIF.studylist.classes.OHIFStudyMetadataSource();
+        const studyMetadataSource = new OHIF.studies.classes.OHIFStudyMetadataSource();
 
         // Get prior studies map
         const studyPriorsMap = OHIF.studylist.functions.getStudyPriorsMap(studyMetadataList);
@@ -73,7 +73,7 @@ Meteor.startup(() => {
 
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
-    cornerstoneTools.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+    cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 });
 
 Template.viewer.onCreated(() => {

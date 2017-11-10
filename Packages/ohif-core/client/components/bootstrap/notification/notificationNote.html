@@ -1,0 +1,18 @@
+<template name="notificationNote">
+    <div class="notification-note {{this.class}}">
+        <div class="note-container">
+            <div class="note-body alert alert-{{choose this.style 'info'}} {{#if hideDismiss}}hide-dismiss{{/if}}">
+                <div class="note-content">
+                    {{#if this.template}}
+                        {{>Template.dynamic template=this.template data=(choose this.templateData this)}}
+                    {{else}}
+                        {{this.text}}
+                    {{/if}}
+                </div>
+                <div class="note-dismiss">
+                    <i class="fa fa-times"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

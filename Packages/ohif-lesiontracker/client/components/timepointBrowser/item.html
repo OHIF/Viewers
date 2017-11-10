@@ -1,0 +1,21 @@
+<template name="timepointBrowserItem">
+    <div class="timepoint-browser-item" data-id="{{this.timepoint.timepointId}}">
+        <div class="timepoint-item p-y-2">
+            <div class="timepoint-details clearfix">
+                <div class="timepoint-title pull-left">
+                    {{this.timepointApi.title timepoint}}
+                </div>
+                <div class="timepoint-expand-icon pull-right">
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="timepoint-date pull-right m-r-1">{{formatDA this.timepoint.earliestDate 'D-MMM-YYYY'}}</div>
+            </div>
+            <div class="timepoint-summary">{{choose instance.summary.get 'Click to load'}}</div>
+        </div>
+        {{#if this.timepointChildTemplate}}
+            {{#if instance.studiesData.get}}
+                {{>Template.dynamic template=this.timepointChildTemplate data=(clone this studiesInformation=instance.studiesData.get)}}
+            {{/if}}
+        {{/if}}
+    </div>
+</template>

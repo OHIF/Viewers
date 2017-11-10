@@ -15,5 +15,5 @@ OHIF.studylist.exportSelectedStudies = event => {
         message: `Would you like to export ${studiesCount} ${studyText.toLowerCase()}?`
     }).then(() => {
         OHIF.studylist.exportStudies(selectedStudies);
-    });
+    }).catch(() => {});
 };

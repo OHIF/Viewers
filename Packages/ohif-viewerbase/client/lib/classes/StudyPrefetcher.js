@@ -5,6 +5,7 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { OHIFError } from './OHIFError';
 import { StackManager } from '../StackManager.js';
+import { getImageId } from '../getImageId.js';
 
 export class StudyPrefetcher {
 
@@ -161,21 +162,19 @@ export class StudyPrefetcher {
     }
 
     getStudy(image) {
-        const studyMetadata = cornerstoneTools.metaData.get('study', image.imageId);
+        const studyMetadata = cornerstone.metaData.get('study', image.imageId);
         return OHIF.viewer.Studies.find(study => study.studyInstanceUid === studyMetadata.studyInstanceUid);
     }
 
     getSeries(study, image) {
-        const seriesMetadata = cornerstoneTools.metaData.get('series', image.imageId);
-        if (!(study instanceof OHIF.viewerbase.metadata.StudyMetadata)) {
-            study = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
-        }
+        const seriesMetadata = cornerstone.metaData.get('series', image.imageId);
+        const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
 
-        return study.getSeriesByUID(seriesMetadata.seriesInstanceUid);
+        return studyMetadata.getSeriesByUID(seriesMetadata.seriesInstanceUid);
     }
 
     getInstance(series, image) {
-        const instanceMetadata = cornerstoneTools.metaData.get('instance', image.imageId);
+        const instanceMetadata = cornerstone.metaData.get('instance', image.imageId);
         return series.getInstanceByUID(instanceMetadata.sopInstanceUid);
     }
 

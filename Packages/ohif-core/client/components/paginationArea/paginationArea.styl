@@ -1,0 +1,61 @@
+@require '{ohif:design}/app'
+
+.pagination-area
+    font-size: 13px
+    font-weight: normal !important
+
+    label
+      font-weight: normal
+
+    select
+      theme('background-color', '$primaryBackgroundColor')
+      color: white
+
+  .rows-per-page label.wrapperLabel
+    display: inline-table !important
+    margin: 0 4px
+
+    select
+      width: 42px
+
+  .page-number
+    margin: 0
+    text-align: right
+
+    label
+      font-weight: normal
+
+      ul.pagination-control
+        margin: 0
+
+        li
+          a
+            padding: 4px 8px
+            theme('background-color', '$primaryBackgroundColor')
+            theme('border-color', '$uiGray')
+            theme('background-color', '$uiGrayDarkest')
+            color: white
+            padding: 4px 8px
+
+            &:hover
+              theme('color', '$activeColor')
+
+        .active
+          a
+            theme('background-color', '$uiGray')
+            border-color: #ddd
+            color: white
+
+        .disabled
+          a, a:hover, a:focus, a:active
+            theme('background-color', '$uiGrayDarkest')
+            theme('border-color', '$uiGray')
+            theme('color', '$uiGrayLight')
+
+          &:not(.disabled):hover a
+            theme('background-color', '$uiGrayDark')
+            theme('color', '$activeColor')
+
+          &.active a
+            theme('background-color', '$uiGrayDark')
+            theme('color', '$activeColor')

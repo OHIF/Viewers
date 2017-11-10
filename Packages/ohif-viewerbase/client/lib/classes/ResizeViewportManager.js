@@ -81,23 +81,8 @@ export class ResizeViewportManager {
     resizeScrollbars(element) {
         OHIF.log.info('ResizeViewportManager resizeScrollbars');
 
-        const currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
-        currentOverlay.find('.imageControls').height($(element).height());
-
-        // Set it's width to its parent's height
-        // (because webkit is stupid and can't style vertical sliders)
-        const scrollbar = currentOverlay.find('#scrollbar');
-        scrollbar.height(scrollbar.parent().height() - 20);
-
-        const currentImageSlider = currentOverlay.find('#imageSlider');
-        const overlayHeight = currentImageSlider.parent().height();
-        const browserInfo = cornerstoneTools.getBrowserInfo();
-
-        if (browserInfo.indexOf('IE') > -1) {
-            currentImageSlider.height(overlayHeight);
-        } else {
-            currentImageSlider.width(overlayHeight);
-        }
+        const $currentOverlay = $(element).siblings('.imageViewerViewportOverlay');
+        $currentOverlay.find('.scrollbar').trigger('rescale');
     }
 
     // Resize a single viewport element
@@ -113,7 +98,7 @@ export class ResizeViewportManager {
 
         if (enabledElement.fitToWindow === false) {
             const imageId = enabledElement.image.imageId;
-            const instance = cornerstoneTools.metaData.get('instance', imageId);
+            const instance = cornerstone.metaData.get('instance', imageId);
             const instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
             cornerstone.setViewport(element, instanceClassViewport);
         }

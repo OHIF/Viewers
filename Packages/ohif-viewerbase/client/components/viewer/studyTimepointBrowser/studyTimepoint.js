@@ -17,7 +17,7 @@ Template.studyTimepoint.onRendered(() => {
 
     const $studies = instance.$('.studyTimepoint');
     const $wrapper = $studies.closest('.studyTimepointWrapper');
-    const $timepoint = $wrapper.closest('.timepointEntry');
+    const $timepoint = $wrapper.closest('.timepoint-item');
     const studiesVisible = $studies.is(':visible');
 
     if (!studiesVisible) {
@@ -53,7 +53,7 @@ Template.studyTimepoint.events({
         }
 
         // Removes selected state from all studies but the triggered study
-        $studiesTarget.find('.studyTimepointStudy').not($selection).removeClass('active');
+        $studiesTarget.find('.study-browser-item').not($selection).removeClass('active');
 
         if (changed.isQuickSwitch) {
             // Reset active studies map to allow only one active study
@@ -68,7 +68,7 @@ Template.studyTimepoint.events({
             $selection.removeClass('loading');
             $selection.toggleClass('active');
             // Recalculates the timepoint height to make CSS transition smoother
-            const $thumbnails = $selection.find('.studyTimepointThumbnails');
+            const $thumbnails = $selection.find('.study-browser-series');
             $thumbnails.one('transitionend', () => $timepoint.trigger('displayStateChanged'));
         }
 

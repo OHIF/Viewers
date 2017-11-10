@@ -21,7 +21,7 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('ohif:design');
     api.use('ohif:core');
-    api.use('ohif:study-list');
+    api.use('ohif:studies');
     api.use('ohif:cornerstone');
     api.use('ohif:measurements');
 
@@ -31,14 +31,7 @@ Package.onUse(function(api) {
 
     api.addFiles('client/index.js', 'client');
 
-    // Export global functions
-    api.export('convertNonTarget', 'client');
-
     // Export client-side collections
-    api.export('ValidationErrors', 'client');
     api.export('LesionLocations', 'client');
     api.export('LocationResponses', 'client');
-
-    // Export collections spanning both client and server
-    api.export('Configuration', ['client', 'server']);
 });

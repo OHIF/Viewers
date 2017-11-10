@@ -37,6 +37,11 @@ const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneTool
         label: 'Location',
         optional: true
     },
+    description: {
+        type: String,
+        label: 'Description',
+        optional: true
+    },
     locationUid: {
         type: String,
         label: 'Location UID',

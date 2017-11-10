@@ -77,7 +77,7 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             const { component, data } = instance;
 
             // Destroy and re-create the select2 instance
-            const rebuildSelect2 = () => {
+            instance.rebuildSelect2 = () => {
                 // Destroy the select2 instance if exists and re-create it
                 if (component.select2Instance) {
                     component.select2Instance.destroy();
@@ -104,11 +104,13 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
                 // Attach focus and blur handlers to focusable elements
                 $(elements).on('focus', event => {
+                    instance.isFocused = true;
                     if (event.target === event.currentTarget) {
                         // Show the state message on elements focus
                         component.toggleMessage(true);
                     }
                 }).on('blur', event => {
+                    instance.isFocused = false;
                     if (event.target === event.currentTarget) {
                         // Hide the state message on elements blur
                         component.toggleMessage(false);
@@ -142,12 +144,18 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                 if (isReactive) {
                     // Keep the current value of the component
                     const currentValue = component.value();
+                    const wasFocused = instance.isFocused;
+
                     Tracker.afterFlush(() => {
-                        rebuildSelect2();
                         component.$element.val(currentValue);
+                        instance.rebuildSelect2();
+
+                        if (wasFocused) {
+                            component.$element.focus();
+                        }
                     });
                 } else {
-                    rebuildSelect2();
+                    instance.rebuildSelect2();
                 }
             });
         },

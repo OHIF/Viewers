@@ -1,10 +1,21 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 .measurementTableTimepointCell
-	theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
-	theme('color', '$textPrimaryColor')
-	padding: 0 10px
-	cursor: pointer
+  theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+  theme('color', '$textPrimaryColor')
+  cursor: pointer
+  padding: 0 10px
+  position: relative
 
-	&:hover
-		theme('color', '$activeColor')
+  .loading-spinner
+    display: none
+    font-size: 16px
+    position: absolute
+    right: 5px
+    top: 3px
+
+  &.loading .loading-spinner
+    display: block
+
+  &:hover
+    theme('color', '$activeColor')

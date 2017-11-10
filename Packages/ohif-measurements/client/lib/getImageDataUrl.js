@@ -12,7 +12,8 @@ OHIF.measurements.getImageDataUrl = ({
     cacheImage=true,
     imagePath,
     measurement,
-    alwaysVisibleText=true
+    alwaysVisibleText=true,
+    viewport
 }) => {
     imagePath = imagePath || measurement.imagePath;
     const imageId = OHIF.viewerbase.getImageIdForImagePath(imagePath);
@@ -38,6 +39,13 @@ OHIF.measurements.getImageDataUrl = ({
                 const state = Object.assign({}, measurement, { active: true });
                 cornerstoneTools.addToolState(element, measurement.toolType, state);
                 cornerstoneTools[measurement.toolType].enable(element);
+            }
+
+            // Set the viewport voi if present
+            if (viewport && viewport.voi) {
+                const csViewport = cornerstone.getViewport(element);
+                Object.assign(csViewport, { voi: viewport.voi });
+                cornerstone.setViewport(element, csViewport);
             }
 
             // Resolve the current promise giving the dataUrl as parameter

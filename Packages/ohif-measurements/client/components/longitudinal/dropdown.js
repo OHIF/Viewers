@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -69,6 +68,8 @@ const removeTimepointAssociations = event => {
 };
 
 Meteor.startup(() => {
+    if (!OHIF.studylist) return;
+
     OHIF.studylist.dropdown.setItems([{
         action: OHIF.studylist.viewStudies,
         text: 'View',

@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 html body
   theme('background-color', '$primaryBackgroundColor')
@@ -6,7 +6,7 @@ html body
 
 html body.stretch
   height: 100%
-  minWidth: 0
+  min-width: 0
   overflow: hidden
   position: fixed
   width: 100%
@@ -79,9 +79,6 @@ body .select2-container--default .select2-results>.select2-results__options
 .height-auto
   height: auto !important
 
-.full-width
-  width: 100%
-
 .caret-down
   display: inline-block
   width: 0
@@ -126,3 +123,20 @@ body .select2-container--default .select2-results>.select2-results__options
 
     &:hover span
       transform(rotate(180deg))
+
+.full-width
+  width: 100%
+
+.full-height
+  height: 100%
+
+.flex-h
+  display: flex
+  flex-direction: row
+
+.flex-v
+  display: flex
+  flex-direction: column
+
+.flex-grow
+  flex-grow: 1

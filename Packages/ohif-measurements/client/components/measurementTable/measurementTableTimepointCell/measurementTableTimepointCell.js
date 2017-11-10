@@ -7,8 +7,7 @@ Template.measurementTableTimepointCell.helpers({
         // This simple function just checks whether or not timepoint data
         // exists for this Measurement at this Timepoint
         const instance = Template.instance();
-        const rowItem = instance.data.rowItem;
-        const timepointId = instance.data.timepointId;
+        const { rowItem, timepointId } = instance.data;
 
         if (timepointId) {
             const dataAtThisTimepoint = _.where(rowItem.entries, { timepointId });
@@ -20,8 +19,7 @@ Template.measurementTableTimepointCell.helpers({
 
     displayData() {
         const instance = Template.instance();
-        const rowItem = instance.data.rowItem;
-        const timepointId = instance.data.timepointId;
+        const { rowItem, timepointId } = instance.data;
 
         let data;
         if (timepointId) {
@@ -45,8 +43,17 @@ Template.measurementTableTimepointCell.helpers({
             OHIF.log.warn('Something went wrong?');
         }
 
-        const displayFunction = tool.options.measurementTable.displayFunction;
+        const { displayFunction } = tool.options.measurementTable;
         return displayFunction(data);
+    },
+
+    isLoading() {
+        const instance = Template.instance();
+        const { rowItem, timepointId } = instance.data;
+        const { entries } = rowItem;
+        const measurementData = timepointId ? _.findWhere(entries, { timepointId }) : entries[0];
+        const { studyInstanceUid } = measurementData;
+        return OHIF.studies.loadingDict.get(studyInstanceUid) === 'loading';
     }
 });
 
@@ -93,9 +100,15 @@ Template.measurementTableTimepointCell.events({
         if (keyCode === keys.DELETE || keyCode === keys.BACKSPACE || (keyCode === keys.D && event.ctrlKey === true)) {
             const timepointId = instance.data.timepointId;
 
+            const offset = $(event.currentTarget).offset();
             const dialogSettings = {
+                class: 'themed',
                 title: 'Delete measurements',
-                message: 'Are you sure you want to delete this measurement?'
+                message: 'Are you sure you want to delete this measurement?',
+                position: {
+                    x: offset.left,
+                    y: offset.top
+                }
             };
 
             OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {

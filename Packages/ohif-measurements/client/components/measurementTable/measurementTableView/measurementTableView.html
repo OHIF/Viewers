@@ -1,39 +1,39 @@
 <template name="measurementTableView">
-    <div class="measurementTableView scrollArea">
-        {{#let config=measurementConfiguration groups=measurementGroups.get}}
-            {{#each measurementGroup in groups}}
-                {{! #if hasMeasurements measurementGroup.toolGroup.id}}
-                    {{>measurementTableHeaderRow (clone this
-                        toolGroup=measurementGroup.toolGroup
-                        measurementRows=measurementGroup.measurementRows)}}
-                {{! /if}}
-                {{#each rowItem in measurementGroup.measurementRows}}
-                    {{>measurementTableRow (clone this rowItem=rowItem)}}
-                {{/each}}
+    {{#let config=measurementConfiguration groups=measurementGroups.get}}
+        {{#each measurementGroup in groups}}
+            {{! #if hasMeasurements measurementGroup.toolGroup.id}}
+                {{>measurementTableHeaderRow (clone this
+                    toolGroup=measurementGroup.toolGroup
+                    measurementRows=measurementGroup.measurementRows)}}
+            {{! /if}}
+            {{#each rowItem in measurementGroup.measurementRows}}
+                {{>measurementTableRow (clone this rowItem=rowItem)}}
             {{/each}}
+        {{/each}}
 
-            {{#if config.newMeasurementTool}}
-                {{#let toolGroup=(getNewToolGroup config.newMeasurementTool)}}
-                {{#let newMeasure=(newMeasurements toolGroup)}}
-                    {{#if newMeasure.length}}
-                        {{#let collection=newMeasure}}
-                            {{>measurementTableHeaderRow (clone this
-                                toolGroup=toolGroup
-                                measurementRows=collection)}}
+        {{#each newLesionGroup in config.newLesions}}
+            {{#let toolGroup=(getNewLesionsToolGroup newLesionGroup)}}
+            {{#let newMeasurements=(newLesionsMeasurements toolGroup)}}
+                {{#if newMeasurements.length}}
+                    {{#let collection=newMeasurements}}
+                        {{>measurementTableHeaderRow (clone this
+                            toolGroup=toolGroup
+                            measurementRows=collection)}}
 
-                            {{#each entry in collection}}
-                                {{>measurementTableRow (clone this rowItem=entry)}}
-                            {{/each}}
-                        {{/let}}
-                    {{/if}}
-                {{/let}}
-                {{/let}}
-            {{/if}}
-        {{/let}}
+                        {{#each entry in collection}}
+                            {{>measurementTableRow (clone this rowItem=entry)}}
+                        {{/each}}
+                    {{/let}}
+                {{/if}}
+            {{/let}}
+            {{/let}}
+        {{/each}}
+    {{/let}}
+    {{#unless this.isHud}}
         {{#if or (hasMeasurements 'targets') (hasMeasurements 'nonTargets')}}
             <div class="report-area">
                 <div class="btn btn-sm js-pdf">Generate Report</div>
             </div>
         {{/if}}
-    </div>
+    {{/unless}}
 </template>

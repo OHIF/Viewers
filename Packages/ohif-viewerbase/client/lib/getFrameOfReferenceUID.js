@@ -21,7 +21,7 @@ export function getFrameOfReferenceUID(element) {
     }
 
     var imageId = enabledElement.image.imageId;
-    var imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+    var imagePlane = cornerstone.metaData.get('imagePlane', imageId);
     if (!imagePlane || !imagePlane.frameOfReferenceUID) {
         return;
     }

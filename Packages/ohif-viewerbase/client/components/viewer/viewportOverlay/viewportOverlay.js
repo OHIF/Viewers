@@ -156,7 +156,7 @@ Template.viewportOverlay.helpers({
             return false;
         }
 
-        const instance = cornerstoneTools.metaData.get('instance', this.imageId);
+        const instance = cornerstone.metaData.get('instance', this.imageId);
         if (!instance) {
             return '';
         }
@@ -234,7 +234,7 @@ Template.viewportOverlay.helpers({
         });
 
         // Get study data
-        const study = cornerstoneTools.metaData.get('study', this.imageId);
+        const study = cornerstone.metaData.get('study', this.imageId);
         if (!study) {
             return;
         }

@@ -75,14 +75,18 @@
         </table>
 
         <!-- Pagination -->
-        {{>studylistPagination}}
+        {{>paginationArea instance.paginationData}}
 
         {{#if session "showLoadingText"}}
             {{>loadingText}}
         {{else}}
-            {{#unless numberOfStudies}}
-                <div class="notFound">No matching results</div>
-            {{/unless}}
+            {{#if session "serverError"}}
+                <div class="notFound">There was an error fetching studies</div>
+            {{else}}
+                {{#unless numberOfStudies}}
+                    <div class="notFound">No matching results</div>
+                {{/unless}}
+            {{/if}}
         {{/if}}
     </div>
 </template>

@@ -11,12 +11,11 @@ Template.longitudinalViewportOverlay.replaces(defaultTemplate);
 // Add the TimepointName helper to the default template. The
 // HTML of this template is replaced with that of longitudinalViewportOverlay
 Template[defaultTemplate].helpers({
-    timepointName: function() {
+    timepointName() {
         const instance = Template.instance();
         const studyInstanceUid = instance.data.studyInstanceUid;
 
-        // TODO: Find a better way to obtain the timepointApi from the viewer.js template
-        const timepointApi = OHIF.studylist.timepointApi;
+        const timepointApi = OHIF.viewer.timepointApi;
         if (!timepointApi) return;
 
         const timepoints = timepointApi.study(studyInstanceUid);
@@ -29,7 +28,7 @@ Template[defaultTemplate].helpers({
         return timepointApi.name(timepoint);
     },
 
-    linked: function() {
+    linked() {
         const linkedViewports = Session.get('StackImagePositionOffsetSynchronizerLinkedViewports') || [];
         return (linkedViewports.indexOf(this.viewportIndex) !== -1);
     }

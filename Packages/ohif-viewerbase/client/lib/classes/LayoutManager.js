@@ -2,7 +2,6 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { Random } from 'meteor/random';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
@@ -18,6 +17,7 @@ export class LayoutManager {
     constructor(parentNode, studies) {
         OHIF.log.info('LayoutManager constructor');
 
+        this.observer = new Tracker.Dependency();
         this.parentNode = parentNode;
         this.studies = studies;
         this.viewportData = [];
@@ -30,7 +30,10 @@ export class LayoutManager {
 
         this.isZoomed = false;
 
-        const updateSessionFn = () => Tracker.afterFlush(() => Session.set('LayoutManagerUpdated', Random.id()));
+        const updateSessionFn = () => Tracker.afterFlush(() => {
+            Session.set('LayoutManagerUpdated', Math.random());
+            this.observer.changed();
+        });
         this.updateSession = _.throttle(updateSessionFn, 300);
     }
 
@@ -197,7 +200,10 @@ export class LayoutManager {
      * @param  {integer} viewportIndex index of the viewport to be re-rendered
      * @param  {Object} data           instance data object
      */
-    rerenderViewportWithNewDisplaySet(viewportIndex, data) {
+    rerenderViewportWithNewDisplaySet(viewportIndex, viewportData) {
+        // Clone the data to prevent changing the original object
+        const data = _.clone(viewportData);
+
         OHIF.log.info(`LayoutManager rerenderViewportWithNewDisplaySet: ${viewportIndex}`);
 
         // The parent container is identified because it is later removed from the DOM

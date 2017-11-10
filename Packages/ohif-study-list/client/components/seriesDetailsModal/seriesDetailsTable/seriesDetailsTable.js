@@ -36,7 +36,7 @@ Template.seriesDetailsTable.onRendered(() => {
     // Get series list for the study
     _.map(studies, (selectedStudy, index) => {
         studies[index].seriesList = [];
-        OHIF.studylist.retrieveStudyMetadata(study => {
+        OHIF.studies.retrieveStudyMetadata(study => {
             // Set series list
             studies[index].seriesList = study.seriesList;
             studies[index].displaySeriesLoadingText = false;

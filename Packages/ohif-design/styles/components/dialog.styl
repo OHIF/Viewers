@@ -1,11 +1,11 @@
 @import "{ohif:design}/app"
 
 .viewerDialogs>.dialog-animated
-    &:not(.dialog-closed):not(.dialog-open)
-        display: none
+  &:not(.dialog-closed):not(.dialog-open)
+    display: none
 
-    &.dialog-closed
-    	animateSlideOutUp()
+  &.dialog-closed
+    animateFadeOut()
 
-    &.dialog-open
-    	animateSlideInDown()
+  &.dialog-open
+    animateFadeIn()

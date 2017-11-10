@@ -29,6 +29,10 @@ const thumbnailDragStartHandler = (event, data) => {
     const targetThumbnail = event.currentTarget;
     const $imageThumbnail = $(targetThumbnail);
 
+    // Force to hardware acceleration to move element
+    // if browser supports translate property
+    const useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
+
     // Clone the image thumbnail
     const targetId = 'DragClone';
     const clone = cloneElement(targetThumbnail, targetId);
@@ -50,8 +54,7 @@ const thumbnailDragStartHandler = (event, data) => {
     if (event.type === 'touchstart') {
         cursorX = event.originalEvent.touches[0].pageX;
         cursorY = event.originalEvent.touches[0].pageY;
-    } 
-    else {
+    } else {
         cursorX = event.pageX;
         cursorY = event.pageY;
 
@@ -78,15 +81,33 @@ const thumbnailDragStartHandler = (event, data) => {
     };
     $clone.data('diff', diff);
 
-    // This sets the default style properties of the cloned element so it is
-    // ready to be dragged around the page
     $clone.css({
-        left: cursorX - diff.x,
-        position: 'fixed',
-        top: cursorY - diff.y,
         visibility: 'hidden',
         'z-index': 100000
     });
+
+    if (useTransform === true) {
+        // This sets the default style properties of the cloned element so it is
+        // ready to be dragged around the page
+        $clone.css({
+            left: cursorX - diff.x,
+            position: 'fixed',
+            top: cursorY - diff.y,
+        });
+    } else {
+        const viewerHeight = $('#viewer').height();
+        const headerHeight = $('.header').outerHeight();
+        const heightDiff = viewerHeight + headerHeight;
+
+        // Save height difference for later to set top position of the element during movement
+        $clone.data('heightDiff', heightDiff);
+
+        const positionX = cursorX - diff.x;
+        const positionY = cursorY - diff.y - heightDiff;
+
+        const translation = `translate(${positionX}px, ${positionY}px)`;
+        OHIF.ui.styleProperty.set($clone.get(0), 'transform', translation);
+    }
 };
 
 const thumbnailDragHandler = event => {
@@ -96,8 +117,7 @@ const thumbnailDragHandler = event => {
     if (event.type === 'touchmove') {
         cursorX = event.originalEvent.changedTouches[0].pageX;
         cursorY = event.originalEvent.changedTouches[0].pageY;
-    } 
-    else {
+    } else {
         cursorX = event.pageX;
         cursorY = event.pageY;
     }
@@ -105,13 +125,32 @@ const thumbnailDragHandler = event => {
     // Find the clone element and update it's position on the page
     const $clone = $('#DragClone');
     const diff = $clone.data('diff');
+
+    // Force to hardware acceleration to move element
+    // if browser supports translate property
+    const useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
+
     $clone.css({
-        left: cursorX - diff.x,
-        position: 'fixed',
-        top: cursorY - diff.y,
         visibility: 'visible',
         'z-index': 100000
     });
+
+    if (useTransform === true) {
+        // This sets the default style properties of the cloned element so it is
+        // ready to be dragged around the page
+        $clone.css({
+            left: cursorX - diff.x,
+            position: 'fixed',
+            top: cursorY - diff.y,
+        });
+    } else {
+        const heightDiff = $clone.data('heightDiff');
+        const positionX = cursorX - diff.x;
+        const positionY = cursorY - diff.y - heightDiff;
+
+        const translation = `translate(${positionX}px, ${positionY}px)`;
+        OHIF.ui.styleProperty.set($clone.get(0), 'transform', translation);
+    }
 
     // Identify the element below the current cursor position
     const elemBelow = document.elementFromPoint(cursorX, cursorY);
@@ -130,12 +169,10 @@ const thumbnailDragHandler = event => {
         // If we're dragging over a non-empty viewport, fade it and change the cursor style
         $viewportsDraggedOver.find('canvas').not('.magnifyTool').addClass('faded');
         document.body.style.cursor = 'copy';
-    } 
-    else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
+    } else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, just change the cursor style
         document.body.style.cursor = 'copy';
-    } 
-    else {
+    } else {
         // Otherwise, keep the cursor as no-drop style
         document.body.style.cursor = 'no-drop';
     }
@@ -182,17 +219,15 @@ const thumbnailDragEndHandler = (event, data, handlers) => {
 
     let element;
     const $viewportsDraggedOver = $(elemBelow).closest('.imageViewerViewport');
-    
+
     if ($viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, retrieve it
         element = $viewportsDraggedOver.get(0);
-    } 
-    else if (elemBelow.classList.contains('imageViewerViewport') &&
+    } else if (elemBelow.classList.contains('imageViewerViewport') &&
                elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, retrieve that instead
         element = elemBelow;
-    } 
-    else {
+    } else {
         // Otherwise, stop here
         return false;
     }

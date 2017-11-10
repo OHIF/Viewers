@@ -1,0 +1,79 @@
+@require '{ohif:design}/app'
+
+$scrollNavSize = 24px
+
+.scroll-area
+  overflow: hidden
+  position: relative
+
+  .scrollable
+    max-height: inherit
+    overflow: hidden
+    zoom: 1
+
+    &.scroll-x
+      overflow-x: scroll
+
+    &.scroll-y
+      overflow-y: scroll
+
+  &.fit
+    height: 100%
+    width: 100%
+
+    .scrollable
+      bottom: 0
+      left: 0
+      max-height: none
+      position: absolute
+      right: 0
+      top: 0
+
+  .scroll-nav
+    background-color: rgba(0, 0, 0, 0.75)
+    box-shadow(0 0 10px 10px rgba(0, 0, 0, 0.75))
+    cursor: pointer
+    height: $scrollNavSize
+    left: 10px
+    opacity: 0
+    position: absolute
+    right: 10px
+    transition(transform 0.3s ease\, opacity 0.3s ease\, background-color 0.3s ease\, box-shadow 0.3s ease)
+
+    &:after
+      theme('color', '$activeColor')
+      display: block
+      font-family: FontAwesome
+      font-size: 20px
+      text-align: center
+      transition(color 0.3s ease)
+
+    &:hover
+      background-color: rgba(0, 0, 0, 0.9)
+      box-shadow(0 0 10px 10px rgba(0, 0, 0, 0.9))
+
+      &:after
+        theme('color', '$hoverColor')
+
+  .scroll-nav-up
+    border-bottom-left-radius($scrollNavSize / 2)
+    border-bottom-right-radius($scrollNavSize / 2)
+    top: 0
+    transform(translateY(- $scrollNavSize))
+
+    &:after
+      content: '\f102'
+
+  .scroll-nav-down
+    border-top-left-radius($scrollNavSize / 2)
+    border-top-right-radius($scrollNavSize / 2)
+    bottom: 0
+    transform(translateY($scrollNavSize))
+
+    &:after
+      content: '\f103'
+
+  &.can-scroll-up .scroll-nav-up,
+  &.can-scroll-down .scroll-nav-down
+    opacity: 1
+    transform(translateY(0))
