@@ -37,16 +37,6 @@ Template.downloadDialog.onRendered(() => {
     cornerstone.enable(instance.$elementDownload);
     instance.$downloadCanvas = $('#downloadElement canvas')[0];
 
-
-    // set dialog in optimal position and make sure it continues in a optimal position...
-    // ... when the window has been resized
-    // instance.setOptimalPosition(null, { top: singleRowLayout ? 47 : 26 });
-
-    // The jQuery method does not seem to be working...
-    // ... $(window).resize(instance.setOptimalPosition)
-    // This requires additional investigation.
-    // instance.setResizeHandler(instance.setOptimalPosition);
-
     // Make the CINE dialog bounded and draggable
     $dialog.draggable({ defaultElementCursor: 'move' });
 
