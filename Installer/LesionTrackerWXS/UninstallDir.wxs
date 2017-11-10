@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+
+	<Fragment Id="UninstallDir">
+		<?define RegDir="SYSTEM\ControlSet001\services\[Manufacturer]\[ProductName]"?>
+		<?define RegValueName="InstallDir"?>
+		<Property Id="INSTALLDIR">
+			<RegistrySearch Root="HKLM" Key="$(var.RegDir)" Type="raw" Id="UninstallDirRegSearch" Name="$(var.RegValueName)" />
+		</Property>
+
+		<DirectoryRef Id='INSTALLDIR'>
+			<Component Id="UninstallDirComponent" Guid="*">
+				<CreateFolder Directory="INSTALLDIR"/>
+				<util:RemoveFolderEx Property="INSTALLDIR" On="uninstall"/>
+				<RemoveFolder Id="INSTALLDIR" On="uninstall"/>
+				<RegistryValue Root="HKLM" Key="$(var.RegDir)" Name="$(var.RegValueName)" Type="string" Value="[INSTALLPARENTDIR]" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+	</Fragment>
+</Wix>

@@ -45,7 +45,7 @@
 					  BinaryKey="CABinary" 
 					  JScriptCall="UninstallLTService" 
 					  Impersonate="no" 
-					  Execute="commit" 
+					  Execute="deferred" 
 					  Return="check" />
 	</Fragment>
 </Wix>

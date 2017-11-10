@@ -4,11 +4,12 @@
 	<Bundle Name="Lesion Tracker" 
 			Version="1.0.0" UpgradeCode="{83f70f33-3bd9-4aef-9405-fc0361ec2d4f}" 
 			Manufacturer="OHIF" >
-		
+					
 		<BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
 		  <bal:WixStandardBootstrapperApplication 
 			SuppressOptionsUI="yes"
-			LicenseUrl="" />
+			LicenseUrl=""
+			LogoFile="$(var.SourceDir)\logo.ico" />
 		</BootstrapperApplicationRef>
 		
 		<Chain>

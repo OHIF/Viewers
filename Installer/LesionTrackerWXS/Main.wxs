@@ -2,47 +2,50 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
 
-  <Product Id="*" 
-          Version='1.0.0' UpgradeCode="{83f70f33-3bd9-4aef-9405-fc0361ec2d4f}" 
-          Language='1033' 
-          Name="Lesion Tracker" 
-          Manufacturer='OHIF'>
+	<Product Id="*" 
+			 Version="$(var.VersionNumber)" UpgradeCode="{83f70f33-3bd9-4aef-9405-fc0361ec2d4f}" 
+			 Language="1033" 
+			 Name="Lesion Tracker" 
+			 Manufacturer="OHIF">
 
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-	<MediaTemplate EmbedCab="yes" />
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes" />
 
-	<WixVariable Id="WixUILicenseRtf" Value="$(var.SourceDir)\LICENSE.rtf" />
+		<WixVariable Id="WixUILicenseRtf" Value="$(var.SourceDir)\LICENSE.rtf" />
+		
+		<Icon Id="icon.ico" SourceFile="$(var.SourceDir)\logo.ico" />
+		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
-	<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
+		<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
 
-	<Feature Id='ProductFeature' Title='Lesion Tracker' Level='1'>
-      <ComponentGroupRef Id='MainComponentGroup' />
-	</Feature>
-	
-    <Directory Id='TARGETDIR' Name='SourceDir'>
-      <Directory Id='ProgramFiles64Folder'>
-        <Directory Id='OHIF_Folder' Name='OHIF'>
-          <Directory Id='INSTALLDIR' Name='Lesion Tracker' />
-        </Directory>
-      </Directory>
-    </Directory>
-	
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+		<Feature Id='ProductFeature' Title='Lesion Tracker' Level='1'>
+		  <ComponentGroupRef Id='MainComponentGroup' />
+		  <ComponentRef Id="UninstallDirComponent" Primary="yes" />
+		</Feature>
 
-    <UIRef Id="WixUI" />
-	
-	<InstallExecuteSequence>
-		<!-- Run after installation -->
-		<Custom Action="CASetConfigureMongoDBProps" After="InstallFiles" />
-		<Custom Action="CAConfigureMongoDB" After="CASetConfigureMongoDBProps" />
-		<Custom Action="CAInstallLTServiceProps" After="CAConfigureMongoDB" />
-		<Custom Action="CAInstallLTService" After="CAInstallLTServiceProps" />		
-		<!-- Run before uninstallation -->
-		<Custom Action="CAUninstallLTServiceProps" After="InstallInitialize">REMOVE="ALL"</Custom>
-		<Custom Action="CAUninstallLTService" After="CAUninstallLTServiceProps">REMOVE="ALL"</Custom>
-    </InstallExecuteSequence>
+		<Directory Id='TARGETDIR' Name='SourceDir'>
+		  <Directory Id='ProgramFiles64Folder'>
+			<Directory Id='INSTALLPARENTDIR' Name='OHIF'>
+			  <Directory Id='INSTALLDIR' Name='Lesion Tracker' />
+			</Directory>
+		  </Directory>
+		</Directory>
 
-  </Product>
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+		<UIRef Id="WixUI" />
+
+		<InstallExecuteSequence>
+			<!-- Run after install or upgrade -->
+			<Custom Action="CASetConfigureMongoDBProps" Before="InstallFinalize">NOT REMOVE</Custom>
+			<Custom Action="CAConfigureMongoDB" After="CASetConfigureMongoDBProps">NOT REMOVE</Custom>
+			<Custom Action="CAInstallLTServiceProps" After="CAConfigureMongoDB">NOT REMOVE</Custom>
+			<Custom Action="CAInstallLTService" After="CAInstallLTServiceProps">NOT REMOVE</Custom>
+			<!-- Run before uninstall or upgrade -->
+			<Custom Action="CAUninstallLTServiceProps" After="InstallInitialize">REMOVE~="ALL" OR (Installed AND NOT REMOVE)</Custom>
+			<Custom Action="CAUninstallLTService" After="CAUninstallLTServiceProps">REMOVE~="ALL" OR (Installed AND NOT REMOVE)</Custom>
+		</InstallExecuteSequence>
+
+	</Product>
 </Wix>

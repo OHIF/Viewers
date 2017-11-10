@@ -40,9 +40,10 @@ function InstallLTService() {
 	SetEnvironmentVariables(installDir);
 	
 	var installCommands = [
-		"NETSH http add urlacl url=http://+:3000/ user=\Everyone",
-		"node \""+installDir+"\\NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"\\bundle\\main.js\" --install",
-		"node \""+installDir+"\\NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"\\bundle\\main.js\" --start"
+		"netsh http add urlacl url=http://+:3000/ user=\Everyone",
+		"netsh advfirewall firewall add rule name=\"Lesion Tracker Default Port 3000\" dir=in action=allow protocol=TCP localport=3000",
+		"node \""+installDir+"NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"bundle\\main.js\" --install",
+		"node \""+installDir+"NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"bundle\\main.js\" --start"
 	];
 	
 	RunShellCommands(installCommands);
@@ -53,7 +54,8 @@ function UninstallLTService() {
 	var installDir = Session.Property("CustomActionData");
 	
 	var uninstallCommands = [
-		"node \""+installDir+"\\NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"\\bundle\\main.js\" --uninstall",
+		"net stop lesiontrackerserver.exe",
+		"sc delete lesiontrackerserver.exe",
 		"net stop MongoDB",
 		"sc delete MongoDB"
 	];
