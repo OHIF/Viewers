@@ -1,18 +1,8 @@
 import { OHIF } from 'meteor/ohif:core';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
-var responseByToolType = [{
-    "toolType": "targetCR",
-    "toolResponse": "CR"
-}, {
-    "toolType": "targetUN",
-    "toolResponse": "UN"
-}, {
-    "toolType": "targetEX",
-    "toolResponse": "EX"
-}];
-
-const toolDefaultStates = OHIF.viewerbase.toolManager.getToolDefaultStates();
+const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
 const textBoxConfig = toolDefaultStates.textBoxConfig;
 
 var configuration = {
@@ -40,18 +30,12 @@ function changeMeasurementLocationCallback(measurementData, eventData, doneCallb
 }
 
 
-function createQualitativeTargetTool(toolType) {
+function createQualitativeTargetTool(toolType, responseText='') {
     var toolInterface = {
         toolType: toolType
     };
 
-    var response;
-
-    responseByToolType.forEach(function(tool) {
-        if (tool.toolType === toolInterface.toolType) {
-            response = tool.toolResponse;
-        }
-    });
+    var response = responseText;
 
     /// --- Mouse Tool --- ///
     ///////// BEGIN ACTIVE TOOL ///////
@@ -497,17 +481,14 @@ function createQualitativeTargetTool(toolType) {
     return toolInterface;
 }
 
-var targetCRInterface = createQualitativeTargetTool('targetCR');
+var targetCRInterface = createQualitativeTargetTool('targetCR', 'CR');
 cornerstoneTools.targetCR = targetCRInterface.mouse;
 cornerstoneTools.targetCR.setConfiguration(configuration);
 cornerstoneTools.targetCRTouch = targetCRInterface.touch;
 
-var targetUNInterface = createQualitativeTargetTool('targetUN');
+var targetUNInterface = createQualitativeTargetTool('targetUN', 'UN');
 cornerstoneTools.targetUN = targetUNInterface.mouse;
 cornerstoneTools.targetUN.setConfiguration(configuration);
 cornerstoneTools.targetUNTouch = targetUNInterface.touch;
 
-var targetEXInterface = createQualitativeTargetTool('targetEX');
-cornerstoneTools.targetEX = targetEXInterface.mouse;
-cornerstoneTools.targetEX.setConfiguration(configuration);
-cornerstoneTools.targetEXTouch = targetEXInterface.touch;
+OHIF.lesiontracker.createQualitativeTargetTool = createQualitativeTargetTool;
