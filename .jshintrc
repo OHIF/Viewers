@@ -88,12 +88,6 @@
     "yui"           : false,    // Yahoo User Interface
     "globals"       : {
         "require": true,
-        "Package"   : true,     // Meteor Package definition
-
-        "cornerstone": true,    // This group: cornerstone globals
-        "cornerstoneMath": true,
-        "cornerstoneTools": true,
-        "cornerstoneWADOImageLoader": true,
-        "dicomParser": true
+        "Package": true         // Meteor Package definition
     }
 }
