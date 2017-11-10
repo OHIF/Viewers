@@ -34,28 +34,23 @@ Meteor.startup(function() {
         touch: cornerstoneTools.targetUNTouch
     });
 
-    toolManager.addTool('targetEX', {
-        mouse: cornerstoneTools.targetEX,
-        touch: cornerstoneTools.targetEXTouch
-    });
-
     // Update default state for tools making sure each tool is only inserted once
     let currentDefaultStates = toolManager.getToolDefaultStates();
     let newDefaultStates = {
         enable: [ 'scaleOverlayTool' ],
-        deactivate: ['bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX'],
+        deactivate: ['bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN'],
         activate: ['deleteLesionKeyboardTool']
     };
 
-    for (let state in newDefaultStates) {
-        newDefaultStates[state].forEach(function(tool) {
+    Object.keys(newDefaultStates).forEach(state => {
+        newDefaultStates[state].forEach(tool => {
             let tools = currentDefaultStates[state];
             // make sure each tool is only inserted once
             if (tools && tools.indexOf(tool) < 0) {
                 tools.push(tool);
             }
         });
-    }
+    });
 
     toolManager.setToolDefaultStates(currentDefaultStates);
 });

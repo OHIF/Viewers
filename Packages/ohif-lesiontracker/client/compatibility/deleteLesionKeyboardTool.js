@@ -11,7 +11,6 @@ const toolTypes = [
     'bidirectional',
     'targetCR',
     'targetUN',
-    'targetEX',
     'nonTarget',
     'length',
     'ellipticalRoi',
@@ -100,4 +99,6 @@ function keyDownCallback(event, eventData) {
 }
 
 // module/private exports
-cornerstoneTools.deleteLesionKeyboardTool = cornerstoneTools.keyboardTool(keyDownCallback);
+const tool = cornerstoneTools.keyboardTool(keyDownCallback);
+tool.toolTypes = toolTypes;
+cornerstoneTools.deleteLesionKeyboardTool = tool;

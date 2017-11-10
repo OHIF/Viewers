@@ -46,8 +46,7 @@ OHIF.lesiontracker.configureTargetToolsHandles = () => {
     // Append the callback configuration to bidirectional tool
     appendConfig('bidirectional');
 
-    // Append the callback configuration to CR, UN and EX tools
+    // Append the callback configuration to CR and UN tools
     appendConfig('targetCR');
     appendConfig('targetUN');
-    appendConfig('targetEX');
 };
