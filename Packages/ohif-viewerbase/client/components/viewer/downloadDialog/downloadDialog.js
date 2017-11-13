@@ -34,6 +34,9 @@ Template.downloadDialog.onRendered(() => {
     const singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
 
     instance.$elementDownload = $('#downloadElement')[0];
+    instance.showAnnotations = false;
+    instance.availableTools = ['length', 'probe', 'simpleAngle', 'arrowAnnotate', 'ellipticalRoi', 'rectangleRoi'];
+
     cornerstone.enable(instance.$elementDownload);
     instance.$downloadCanvas = $('#downloadElement canvas')[0];
 
@@ -81,7 +84,19 @@ Template.downloadDialog.events({
         cornerstoneTools.saveAs(instance.$elementDownload, `${fileName}.${extension}`, `image/${extension}`);
     },
 
+    'change #downloadDialog .form-group .form-check input[type=checkbox]'(event, instance) {
+        const $element = instance.$elementDownload;
+
+        instance.showAnnotations = !instance.showAnnotations;
+
+        if (instance.showAnnotations) {
+            instance.availableTools.forEach(tool => cornerstoneTools[tool].enable($element));
+        } else {
+            instance.availableTools.forEach(tool => cornerstoneTools[tool].disable($element));
+        }
+    },
+
     'click button.cancel'(event, instance) {
-      viewportUtils.toggleDownloadDialog();
+        viewportUtils.toggleDownloadDialog();
     }
 });
