@@ -12,13 +12,6 @@ Template.downloadDialog.onCreated(() => {
 
         if (activeViewport) {
           const enabledElement = cornerstone.getEnabledElement(activeViewport);
-          // const context = enabledElement.canvas.getContext('2d');
-          // const downloadContext = instance.$downloadCanvas.getContext('2d');
-          // const { width, height } = enabledElement.canvas;
-
-          // downloadContext.drawImage(enabledElement.canvas, 0, 0);
-
-          // console.log(downloadContext);
 
           cornerstone.loadImage(enabledElement.image.imageId).then(function (image) {
             cornerstone.displayImage(instance.$elementDownload, image);
@@ -59,29 +52,34 @@ Template.downloadDialog.events({
         $extensionButton.text(extension);
     },
 
-    'change .form-group input[name=width]'(event, instance) {
-        const width = $(event.currentTarget).val();
-
-        $(instance.$elementDownload).width(width);
-        cornerstone.resize(instance.$elementDownload, true);
-    },
-
-    'change .form-group input[name=height]'(event, instance) {
-        const height = $(event.currentTarget).val();
-
-        $(instance.$elementDownload).height(height);
-        cornerstone.resize(instance.$elementDownload, true);
-    },
-
     'click button.download'(event, instance) {
         const fileName = $('.fileName').val();
-        const extension = $('.btn.extension').text();
+        const extension = $('.btn.extension').text().trim();
+        const height = $('.form-group input[name=height]').val();
+        const width = $('.form-group input[name=width]').val();
 
         if (!fileName || !extension) {
           return;
         }
 
-        cornerstoneTools.saveAs(instance.$elementDownload, `${fileName}.${extension}`, `image/${extension}`);
+        const $dynamicCanvas = document.createElement('canvas');
+        const $downloadCanvas = instance.$downloadCanvas;
+
+        $dynamicCanvas.width = width;
+        $dynamicCanvas.height = height;
+        $dynamicCanvas.getContext('2d').drawImage($downloadCanvas, 0, 0, $downloadCanvas.width, $downloadCanvas.height, 0, 0, width, height);
+
+        const lnk = document.createElement('a');
+        lnk.download = `${fileName}.${extension}`;
+        lnk.href = $dynamicCanvas.toDataURL(`image/${extension}`, 1.0);
+
+        if (document.createEvent) {
+            const e = document.createEvent('MouseEvents');
+            e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            lnk.dispatchEvent(e);
+        } else if (lnk.fireEvent) {
+            lnk.fireEvent('onclick');
+        }
     },
 
     'change #downloadDialog .form-group .form-check input[type=checkbox]'(event, instance) {
