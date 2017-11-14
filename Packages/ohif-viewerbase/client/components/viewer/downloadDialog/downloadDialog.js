@@ -55,13 +55,14 @@ Template.downloadDialog.events({
     'click button.download'(event, instance) {
         const fileName = $('.fileName').val();
         const extension = $('.btn.extension').text().trim();
-        const height = $('.form-group input[name=height]').val();
-        const width = $('.form-group input[name=width]').val();
 
         if (!fileName || !extension) {
           return;
         }
 
+        const height = $('.form-group input[name=height]').val();
+        const width = $('.form-group input[name=width]').val();
+        const lnk = document.createElement('a');
         const $dynamicCanvas = document.createElement('canvas');
         const $downloadCanvas = instance.$downloadCanvas;
 
@@ -69,7 +70,6 @@ Template.downloadDialog.events({
         $dynamicCanvas.height = height;
         $dynamicCanvas.getContext('2d').drawImage($downloadCanvas, 0, 0, $downloadCanvas.width, $downloadCanvas.height, 0, 0, width, height);
 
-        const lnk = document.createElement('a');
         lnk.download = `${fileName}.${extension}`;
         lnk.href = $dynamicCanvas.toDataURL(`image/${extension}`, 1.0);
 
