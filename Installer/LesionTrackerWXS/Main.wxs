@@ -19,18 +19,33 @@
 		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
 		<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
-
+		<Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="You can upload studies here: 'http://localhost:8042' Then, you can view them here: 'http://localhost:3000'" />
+		
+		<SetProperty Id="LTVIEWERURL" Value="http://localhost:3000" Sequence="execute" Before="CreateShortcuts" />
+		<SetProperty Id="ORTHANCURL" Value="http://localhost:8042" Sequence="execute" Before="CreateShortcuts" />
+		
 		<Feature Id='ProductFeature' Title='Lesion Tracker' Level='1'>
 		  <ComponentGroupRef Id='MainComponentGroup' />
 		  <ComponentRef Id="UninstallDirComponent" Primary="yes" />
+		  <ComponentRef Id="ShortcutDirComponent" Primary="yes" />
 		</Feature>
 
 		<Directory Id='TARGETDIR' Name='SourceDir'>
-		  <Directory Id='ProgramFiles64Folder'>
-			<Directory Id='INSTALLPARENTDIR' Name='OHIF'>
-			  <Directory Id='INSTALLDIR' Name='Lesion Tracker' />
+			<!-- Installation Directory -->
+			<Directory Id='ProgramFiles64Folder'>
+				<Directory Id='INSTALLPARENTDIR' Name='OHIF'>
+					<Directory Id='INSTALLDIR' Name='Lesion Tracker' />
+				</Directory>
 			</Directory>
-		  </Directory>
+			<!-- Desktop Shortcuts -->
+			<Directory Id="DesktopFolder" Name="Desktop">
+				<Component Id="ShortcutDirComponent" Guid="*">
+					<Shortcut Id="LesionTrackerShortcut" Name="Lesion Tracker" Description="Lesion Tracker Viewer" Target="[LTVIEWERURL]" Icon="icon.ico" />
+					<Shortcut Id="OrthancShortcut" Name="Orthanc Server" Description="Lesion Tracker Orthanc Server" Target="[ORTHANCURL]" Icon="icon.ico" />
+					<RemoveFolder Id="DesktopFolder" On="uninstall" />
+					<RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+				</Component>
+			</Directory>
 		</Directory>
 
 		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
