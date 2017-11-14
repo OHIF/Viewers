@@ -54,7 +54,7 @@ Template.downloadDialog.onRendered(() => {
     dialogPolyfill.registerDialog($dialog.get(0));
 
     // // Prevent dialog from being dragged when user clicks any button
-    const $controls = $dialog.find('.form-group, .instructions, #previewElement');
+    const $controls = $dialog.find('.form-group, .instructions');
     $controls.on('mousedown touchstart', event => event.stopPropagation());
 });
 
