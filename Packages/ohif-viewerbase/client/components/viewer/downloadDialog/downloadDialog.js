@@ -3,6 +3,12 @@ import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 import { viewportUtils } from '../../../lib/viewportUtils';
 
+function setElementSize(element, canvas, size, value) {
+    $(element)[size](value);
+    canvas[size] = value;
+    canvas.style[size] = `${value}px`;
+}
+
 Template.downloadDialog.onCreated(() => {
     const instance = Template.instance();
 
@@ -14,8 +20,14 @@ Template.downloadDialog.onCreated(() => {
           const enabledElement = cornerstone.getEnabledElement(activeViewport);
 
           cornerstone.loadImage(enabledElement.image.imageId).then(function (image) {
-            cornerstone.displayImage(instance.$elementDownload, image);
-            cornerstone.resize(instance.$elementDownload, true);
+            cornerstone.displayImage(instance.$previewElement, image);
+            cornerstone.displayImage(instance.$downloadElement, image);
+            cornerstone.resize(instance.$previewElement, true);
+
+            setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'width', 300);
+            setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'height', 200);
+
+            cornerstone.fitToWindow(instance.$downloadElement);
           });
         }
     })
@@ -26,25 +38,55 @@ Template.downloadDialog.onRendered(() => {
     const $dialog = instance.$('#downloadDialog');
     const singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
 
-    instance.$elementDownload = $('#downloadElement')[0];
-    instance.showAnnotations = false;
+    instance.$previewElement = $('#previewElement')[0];
+    instance.$downloadElement = document.createElement('div');
     instance.availableTools = ['length', 'probe', 'simpleAngle', 'arrowAnnotate', 'ellipticalRoi', 'rectangleRoi'];
+    instance.showAnnotations = false;
 
-    cornerstone.enable(instance.$elementDownload);
-    instance.$downloadCanvas = $('#downloadElement canvas')[0];
+    cornerstone.enable(instance.$previewElement);
+    cornerstone.enable(instance.$downloadElement);
+    instance.$downloadCanvas = $(instance.$downloadElement).find('canvas')[0];
 
-    // Make the CINE dialog bounded and draggable
+    // Make the dialog bounded and draggable
     $dialog.draggable({ defaultElementCursor: 'move' });
 
     // Polyfill for older browsers
     dialogPolyfill.registerDialog($dialog.get(0));
 
     // // Prevent dialog from being dragged when user clicks any button
-    const $controls = $dialog.find('.form-group, .instructions, #downloadElement');
+    const $controls = $dialog.find('.form-group, .instructions, #previewElement');
     $controls.on('mousedown touchstart', event => event.stopPropagation());
 });
 
 Template.downloadDialog.events({
+    'change .form-group input[name=width]'(event, instance){
+        const width = $(event.currentTarget).val();
+
+        setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'width', width);
+        cornerstone.fitToWindow(instance.$downloadElement);
+    },
+
+    'change .form-group input[name=height]'(event, instance){
+        const height = $(event.currentTarget).val();
+
+        setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'height', height);
+        cornerstone.fitToWindow(instance.$downloadElement);
+    },
+
+    'change #downloadDialog .form-group .form-check input[type=checkbox]'(event, instance) {
+        const $previewElement = instance.$previewElement;
+        const $downloadElement = instance.$downloadElement;
+
+        instance.showAnnotations = !instance.showAnnotations;
+
+        const action = (instance.showAnnotations) ? 'enable' : 'disable';
+
+        instance.availableTools.forEach(tool => {
+            cornerstoneTools[tool][action]($previewElement);
+            cornerstoneTools[tool][action]($downloadElement);
+        });
+    },
+
     'click .dropdown-menu .dropdown-item'(event, instance) {
         const extension = $(event.currentTarget).text();
         const $extensionButton = $('.btn.extension');
@@ -60,38 +102,7 @@ Template.downloadDialog.events({
           return;
         }
 
-        const height = $('.form-group input[name=height]').val();
-        const width = $('.form-group input[name=width]').val();
-        const lnk = document.createElement('a');
-        const $dynamicCanvas = document.createElement('canvas');
-        const $downloadCanvas = instance.$downloadCanvas;
-
-        $dynamicCanvas.width = width;
-        $dynamicCanvas.height = height;
-        $dynamicCanvas.getContext('2d').drawImage($downloadCanvas, 0, 0, $downloadCanvas.width, $downloadCanvas.height, 0, 0, width, height);
-
-        lnk.download = `${fileName}.${extension}`;
-        lnk.href = $dynamicCanvas.toDataURL(`image/${extension}`, 1.0);
-
-        if (document.createEvent) {
-            const e = document.createEvent('MouseEvents');
-            e.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            lnk.dispatchEvent(e);
-        } else if (lnk.fireEvent) {
-            lnk.fireEvent('onclick');
-        }
-    },
-
-    'change #downloadDialog .form-group .form-check input[type=checkbox]'(event, instance) {
-        const $element = instance.$elementDownload;
-
-        instance.showAnnotations = !instance.showAnnotations;
-
-        if (instance.showAnnotations) {
-            instance.availableTools.forEach(tool => cornerstoneTools[tool].enable($element));
-        } else {
-            instance.availableTools.forEach(tool => cornerstoneTools[tool].disable($element));
-        }
+        cornerstoneTools.saveAs(instance.$downloadElement, `${fileName}.${extension}`, `image/${extension}`);
     },
 
     'click button.cancel'(event, instance) {
