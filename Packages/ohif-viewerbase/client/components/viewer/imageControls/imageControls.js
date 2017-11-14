@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { setActiveViewport } from '../../../lib/setActiveViewport';
 import { switchToImageByIndex } from '../../../lib/switchToImageByIndex';
@@ -13,13 +14,28 @@ Template.imageControls.onRendered(() => {
     // Set the current imageSlider width to its parent's height
     // (because webkit is stupid and can't style vertical sliders)
     const $slider = instance.$('.imageSlider');
-    const $element = $slider.parents().eq(2).siblings('.imageViewerViewport');
-    const viewportHeight = $element.height();
+    const $viewport = $slider.closest('.imageViewerViewportOverlay').siblings('.imageViewerViewport');
 
-    $slider.width(viewportHeight - 20);
+    instance.handleResize = _.throttle(() => {
+        const viewportHeight = $viewport.height();
+        $slider.width(viewportHeight - 20);
+    }, 150);
+
+    instance.handleResize();
+
+    $(window).on('resize', instance.handleResize);
+});
+
+Template.imageControls.onDestroyed(() => {
+    const instance = Template.instance();
+    $(window).off('resize', instance.handleResize);
 });
 
 Template.imageControls.events({
+    'rescale .scrollbar'(event, instance) {
+        instance.handleResize();
+    },
+
     'keydown input[type=range]'(event) {
         // We don't allow direct keyboard up/down input on the
         // image sliders since the natural direction is reversed (0 is at the top)

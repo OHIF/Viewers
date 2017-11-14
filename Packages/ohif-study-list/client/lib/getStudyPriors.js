@@ -1,7 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
-// Local Dependencies
-import { OHIFStudySummary } from './OHIFStudySummary';
 
 const { StudyMetadata, StudySummary } = OHIF.viewerbase.metadata;
 const PATIENT_ID = 'x00100020';
@@ -40,7 +38,7 @@ const getStudyPriors = study => {
 
     // Create an OHIFStudySummary object for each prior study found
     cursor.forEach(study => {
-        const summary = new OHIFStudySummary(study, null, study.studyInstanceUid);
+        const summary = new OHIF.studies.classes.OHIFStudySummary(study, null, study.studyInstanceUid);
         priorStudies.push(summary);
     });
 

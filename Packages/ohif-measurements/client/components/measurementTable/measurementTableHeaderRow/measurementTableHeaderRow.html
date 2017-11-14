@@ -9,8 +9,8 @@
         {{/if}}
         <div class="type">{{toolGroup.name}}</div>
         <div class="max {{#if gt numberOfMeasurements maxNumMeasurements}}warning{{/if}}">
-            {{#if and maxNumMeasurements (eq toolGroup.id 'targets')}}
-                <p class="maxNumMeasurements">Max {{maxNumMeasurements}}</p>
+            {{#if getMax toolGroup.id}}
+                <p class="maxNumMeasurements">Max {{getMax toolGroup.id}}</p>
             {{/if}}
         </div>
         <div class="numberOfMeasurements">{{numberOfMeasurements}}</div>

@@ -57,5 +57,5 @@ OHIF.measurements.toggleLabelButton = options => {
             OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.renamed');
         }
     };
-    buttonView = Blaze.renderWithData(Template.measureFlow, data, options.element);
+    buttonView = Blaze.renderWithData(Template.measureFlow, data, document.body);
 };

@@ -2,7 +2,6 @@ import { Template } from 'meteor/templating';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
-import { Random } from 'meteor/random';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
@@ -60,7 +59,7 @@ Template.cineDialog.onCreated(() => {
             playClipData.framesPerSecond = OHIF.viewer.cine.framesPerSecond;
         }
 
-        Session.set('UpdateCINE', Random.id());
+        Session.set('UpdateCINE', Math.random());
     };
 
     // Define the actions API
@@ -123,7 +122,7 @@ Template.cineDialog.onCreated(() => {
             }
 
             // Update the session to refresh the framerate text
-            Session.set('UpdateCINE', Random.id());
+            Session.set('UpdateCINE', Math.random());
         });
     });
 
@@ -238,7 +237,7 @@ Template.cineDialog.onRendered(() => {
     instance.setResizeHandler(instance.setOptimalPosition);
 
     // Make the CINE dialog bounded and draggable
-    $dialog.draggable({ defaultElementCursor: 'move' });
+    $dialog.draggable({ defaultElementCursor: 'move' }).bounded();
 
     // Polyfill for older browsers
     dialogPolyfill.registerDialog($dialog.get(0));

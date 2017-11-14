@@ -13,7 +13,7 @@ $gray6 = #303030
   .tree-content
     background-color: white
     position: relative
-    transition(transform 0.3s ease\, background-color 0.3s ease\, border-color 0.3s ease\, border-radius 0.3s ease)
+    transition(transform 0.3s ease\, background-color 0.3s ease\, border-color 0.3s ease\, border-radius 0.3s ease\, margin-right 0.3s ease)
 
     .tree-search
     a.tree-back
@@ -231,7 +231,8 @@ $gray6 = #303030
 
     .content
       margin-left: calc(-100% - 6px)
-      transition(all 0.3s ease 0.3s)
+      transform(scale(0))
+      transition(margin-left 0.3s ease 0.3s\, transform 0s linear 0.3s)
 
   &.started
 
@@ -239,28 +240,19 @@ $gray6 = #303030
       transform(scale(1))
 
     .select-tree-common
-      animation-name: selectTreeCommonOverflow
-      animation-delay: 0.3s
-      animation-duration: 0.3s
-      animation-iteration-count: 1
-      animation-direction: alternate
-      animation-fill-mode: forwards
 
       .content
         margin-left: 0
+        transform(scale(1))
 
   &.interacted, &.selected
 
     .select-tree-common
-      z-index: 1
 
       .content
-        animation-name: selectTreeCommonCloseLeft
-        animation-duration: 0.3s
-        animation-iteration-count: 1
-        animation-direction: alternate
-        animation-timing-function: ease-out
-        animation-fill-mode: forwards
+        opacity: 0
+        transform(translateX(-100%) scale(0))
+        transition(transform 0.3s ease\, opacity 0.3s ease)
 
 @keyframes selectTreeCommonOverflow {
     from {
@@ -269,21 +261,4 @@ $gray6 = #303030
     to {
         overflow: visible
     }
-}
-
-@keyframes selectTreeCommonCloseLeft {
-  from {
-    height: 37px
-    display: table
-    margin-left: 0
-    opacity: 1
-    visibility: visible
-  }
-  to {
-    height: 100%
-    margin-left: calc(-100% - 6px)
-    opacity: 0
-    visibility: hidden
-    width: calc(100% - 6px)
-  }
 }

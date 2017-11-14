@@ -1,23 +1,25 @@
 <template name="measurementTable">
-    <div id="measurementTableContainer">
-        {{#if this.timepoints.get.length}}
-            <div class="measurementTableLayoutChanger viewerRoundedButtonGroup">
-                {{>roundedButtonGroup buttonGroupData}}
-            </div>
-        {{/if}}
-        <div class="measurementTableTimepointHeaderRow">
-            {{#if hasWarnings}}
-                <div class="warning-status">
+    <div id="measurementTableContainer" class="flex-v">
+        <div class="measurementTableHeader">
+            {{#if this.timepoints.get.length}}
+                <div class="measurementTableLayoutChanger viewerRoundedButtonGroup">
+                    {{>roundedButtonGroup buttonGroupData}}
+                </div>
+            {{/if}}
+            <div class="measurementTableTimepointHeaderRow">
+                <div class="warning-status {{#unless hasWarnings}}hidden{{/unless}}">
                     <svg>
                         <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-warning"}}></use>
                     </svg>
                 </div>
-            {{/if}}
-            {{#each timepoint in this.timepoints.get}}
-                {{>measurementTableTimepointHeader (clone this timepoint)}}
-            {{/each}}
-            <!-- TODO: Add header for cross-sectional / non-longitudinal data -->
+                {{#each timepoint in this.timepoints.get}}
+                    {{>measurementTableTimepointHeader (clone this timepoint)}}
+                {{/each}}
+                <!-- TODO: Add header for cross-sectional / non-longitudinal data -->
+            </div>
         </div>
-        {{>measurementTableView (clone this)}}
+        {{#scrollArea class='measurementTableView flex-grow fit' scrollStep=63}}
+            {{>measurementTableView (clone this)}}
+        {{/scrollArea}}
     </div>
 </template>

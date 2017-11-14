@@ -28,22 +28,18 @@ Template.studyTimepointBrowser.onCreated(() => {
         }
 
         return timepoint.studyInstanceUids.map(studyInstanceUid => {
-            const query = {
-                patientId: timepoint.patientId,
-                studyInstanceUid: studyInstanceUid
-            };
+            const query = { studyInstanceUid };
 
             const loadedStudy = OHIF.viewer.Studies.findBy(query);
-            if (loadedStudy) {
-                return loadedStudy;
-            }
+            if (loadedStudy) return loadedStudy;
 
             const notYetLoaded = OHIF.studylist.collections.Studies.findOne(query);
-            if (!notYetLoaded) {
-                throw new OHIFError(`No study data available for Study: ${studyInstanceUid}`);
-            }
+            if (notYetLoaded) return notYetLoaded;
 
-            return notYetLoaded;
+            // const studyData = _.findWhere(timepoint.studiesData, query);
+            // if (studyData) return studyData;
+
+            throw new OHIFError(`No study data available for Study: ${studyInstanceUid}`);
         });
     };
 });
@@ -57,10 +53,10 @@ Template.studyTimepointBrowser.onRendered(() => {
         const type = instance.timepointViewType.get();
 
         // Removes all active classes to collapse the timepoints and studies
-        instance.$('.timepointEntry, .studyTimepointStudy').removeClass('active');
+        instance.$('.timepoint-item, .study-browser-item').removeClass('active');
         if (type === 'key' && !instance.data.currentStudy) {
             // Show only first timepoint expanded for key timepoints
-            instance.$('.timepointEntry:first').addClass('active');
+            instance.$('.timepoint-item:first').addClass('active');
         }
     });
 
@@ -71,10 +67,10 @@ Template.studyTimepointBrowser.onRendered(() => {
     // Wait for rerendering and set the timepoint as active
     instance.refreshActiveStudies = () => Tracker.afterFlush(() => {
         _.each(activeStudiesUids, studyInstanceUid => {
-            instance.$(`.studyTimepointStudy[data-uid='${studyInstanceUid}']`).addClass('active');
+            instance.$(`.study-browser-item[data-uid='${studyInstanceUid}']`).addClass('active');
         });
         // Show only first timepoint expanded for key timepoints
-        instance.$('.timepointEntry:first').addClass('active');
+        instance.$('.timepoint-item:first').addClass('active');
     });
 
     instance.autorun(() => {
@@ -99,7 +95,7 @@ Template.studyTimepointBrowser.onRendered(() => {
 
 Template.studyTimepointBrowser.events({
     'click .timepointHeader'(event, instance) {
-        const $timepoint = $(event.currentTarget).closest('.timepointEntry');
+        const $timepoint = $(event.currentTarget).closest('.timepoint-item');
 
         // Recalculates the timepoint height to make CSS transition smoother
         $timepoint.find('.studyTimepoint').trigger('displayStateChanged');
@@ -108,7 +104,7 @@ Template.studyTimepointBrowser.events({
         $timepoint.toggleClass('active');
     },
 
-    'click .studyModality.additional'(event, instance) {
+    'click .study-item-box.additional'(event, instance) {
         // Show all key timepoints
         instance.showAdditionalTimepoints.set(true);
     }
@@ -138,6 +134,13 @@ Template.studyTimepointBrowser.helpers({
     // Defines whether to show all key timepoints or only the current one
     showAdditionalTimepoints() {
         return Template.instance().showAdditionalTimepoints.get();
+    },
+
+    hasAdditionalTimepoints() {
+        const instance = Template.instance();
+        const { timepointApi } = instance.data;
+        const allTimepoints = timepointApi && timepointApi.all();
+        return allTimepoints && allTimepoints.length > 1;
     },
 
     // Get the timepoints to be listed

@@ -1,0 +1,8 @@
+<template name="timepointBrowserList">
+    <div class="timepoint-browser-list {{this.class}}">
+        {{#each timepoint in this.timepoints}}
+            {{>timepointBrowserItem (clone this timepoint=timepoint)}}
+            <hr>
+        {{/each}}
+    </div>
+</template>

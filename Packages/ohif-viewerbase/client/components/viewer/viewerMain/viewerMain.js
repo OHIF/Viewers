@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 // Local Modules
 import { unloadHandlers } from '../../../lib/unloadHandlers';
-import { hotkeyUtils } from '../../../lib/hotkeyUtils';
 import { ResizeViewportManager } from '../../../lib/classes/ResizeViewportManager';
 import { LayoutManager } from '../../../lib/classes/LayoutManager';
 import { StudyPrefetcher } from '../../../lib/classes/StudyPrefetcher';
@@ -46,7 +44,7 @@ Template.viewerMain.onRendered(() => {
     OHIF.viewerbase.layoutManager = new LayoutManager(parentElement, studies);
     studyPrefetcher.setStudies(studies);
 
-    Session.set('OHIFViewerMainRendered', Random.id());
+    Session.set('OHIFViewerMainRendered', Math.random());
 });
 
 Template.viewerMain.onDestroyed(() => {

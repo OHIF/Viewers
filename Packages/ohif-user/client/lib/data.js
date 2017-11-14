@@ -25,7 +25,7 @@ OHIF.user.getData = key => {
     let result = data;
     const keys = key.split('.');
     keys.forEach(key => {
-        if (typeof result !== 'object') return;
+        if (typeof result !== 'object' || !result) return;
         result = result[key];
     });
 

@@ -47,7 +47,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: false,
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 0
             },
             end: {
@@ -56,7 +56,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: true,
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 1
             },
             textBox: {
@@ -75,7 +75,7 @@ function createNewMeasurement(mouseEventData) {
                 active: false,
                 locked: true, // If perpendicular line is connected to long-line
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 2
             },
             perpendicularEnd: {
@@ -84,7 +84,7 @@ function createNewMeasurement(mouseEventData) {
                 highlight: true,
                 active: false,
                 drawnIndependently: false,
-                allowedOutsideImage: true,
+                allowedOutsideImage: false,
                 index: 3
             }
         },
@@ -97,7 +97,8 @@ function createNewMeasurement(mouseEventData) {
 }
 
 function addNewMeasurement(mouseEventData) {
-    var element = mouseEventData.element;
+    const element = mouseEventData.element;
+    const $element = $(element);
 
     // LT-29 Disable Target Measurements when pixel spacing is not available
     if (!mouseEventData.image.rowPixelSpacing || !mouseEventData.image.columnPixelSpacing) {
@@ -109,50 +110,80 @@ function addNewMeasurement(mouseEventData) {
         cornerstone.updateImage(element);
     }
 
-    var measurementData = createNewMeasurement(mouseEventData);
+    const measurementData = createNewMeasurement(mouseEventData);
     measurementData.viewport = cornerstone.getViewport(element);
 
-    var eventData = {
+    const eventData = {
         mouseButtonMask: mouseEventData.which
     };
 
-    var config = cornerstoneTools.bidirectional.getConfiguration();
+    const config = cornerstoneTools.bidirectional.getConfiguration();
 
     // associate this data with this imageId so we can render it and manipulate it
     cornerstoneTools.addToolState(element, toolType, measurementData);
 
     // since we are dragging to another place to drop the end point, we can just activate
     // the end point and let the moveHandle move it for us.
-    $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
-    $(element).off('CornerstoneToolsMouseDown', mouseDownCallback);
-    $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
-    $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
+    $element.off('CornerstoneToolsMouseDown', mouseDownCallback);
+    $element.off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
+    $element.off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+
+    let cancelled = false;
+    const cancelAction = () => {
+        cancelled = true;
+        cornerstoneTools.removeToolState(element, toolType, measurementData);
+    };
 
     // Add a flag for using Esc to cancel tool placement
-    var cancelled = false;
-    function cancelCallback(e) {
+    const keyDownHandler = event => {
         // If the Esc key was pressed, set the flag to true
-        if (e.which === keys.ESC) {
-            cancelled = true;
-            cornerstoneTools.removeToolState(element, toolType, measurementData);
+        if (event.which === keys.ESC) {
+            cancelAction();
         }
 
         // Don't propagate this keydown event so it can't interfere
         // with anything outside of this tool
         return false;
-    }
+    };
 
     // Bind a one-time event listener for the Esc key
-    $(element).one('keydown', cancelCallback);
+    $element.one('keydown', keyDownHandler);
 
-    // Make handle invisible while moving
-    measurementData.handles.end.drawnIndependently = true;
+    // Keep the current image and create a handler for new rendered images
+    const currentImage = cornerstone.getImage(element);
+    const currentViewport = cornerstone.getViewport(element);
+    const imageRenderedHandler = () => {
+        const newImage = cornerstone.getImage(element);
+
+        // Check if the rendered image changed during measurement creation and delete it if so
+        if (newImage.imageId !== currentImage.imageId) {
+            cornerstone.displayImage(element, currentImage, currentViewport);
+            cancelAction();
+            cornerstone.displayImage(element, newImage, currentViewport);
+        }
+    };
+
+    // Bind the event listener for image rendering
+    $element.on('CornerstoneImageRendered', imageRenderedHandler);
+
+    // Bind the tool deactivation and enlargement handlers
+    $element.on('CornerstoneToolsToolDeactivated', cancelAction);
+    $element.one('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
     cornerstone.updateImage(element);
 
+    const timestamp = new Date().getTime();
     cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
-        if (cancelled || cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
+        const { handles, longestDiameter, shortestDiameter } = measurementData;
+        const hasHandlesOutside = cornerstoneTools.anyHandlesOutsideImage(mouseEventData, handles);
+        const longestDiameterSize = parseFloat(longestDiameter) || 0;
+        const shortestDiameterSize = parseFloat(shortestDiameter) || 0;
+        const isTooSmal = (longestDiameterSize < 1) || (shortestDiameterSize < 1);
+        const isTooFast = (new Date().getTime() - timestamp) < 150;
+        if (cancelled || hasHandlesOutside || isTooSmal || isTooFast) {
             // delete the measurement
+            measurementData.cancelled = true;
             cornerstoneTools.removeToolState(element, toolType, measurementData);
         } else {
             // Set lesionMeasurementData Session
@@ -160,18 +191,22 @@ function addNewMeasurement(mouseEventData) {
         }
 
         // Unbind the Esc keydown hook
-        $(element).off('keydown', cancelCallback);
+        $element.off('keydown', keyDownHandler);
+
+        // Unbind the event listener for image rendering
+        $element.off('CornerstoneImageRendered', imageRenderedHandler);
+
+        // Unbind the tool deactivation and enlargement handlers
+        $element.off('CornerstoneToolsToolDeactivated', cancelAction);
+        $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
         // perpendicular line is not connected to long-line
         measurementData.handles.perpendicularStart.locked = false;
 
-        // Enable handle visibility again
-        measurementData.handles.end.drawnIndependently = false;
-
-        $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
-        $(element).on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
-        $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
-        $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
+        $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+        $element.on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
+        $element.on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
+        $element.on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
         cornerstone.updateImage(element);
     });
 }
@@ -665,27 +700,114 @@ function setHandlesPosition(handle, eventData, data) {
 // Cornerstone Methods
 //****************************************/
 
-// Set if the circular handles will be visible or not
-function setHandlesVisible (handles, isVisibile) {
+// Clear the selected state for the given handles object
+function unselectAllHandles(handles) {
+    let imageNeedsUpdate = false;
     Object.keys(handles).forEach(handleKey => {
         if (handleKey === 'textBox') return;
-        handles[handleKey].drawnIndependently = !isVisibile;
+        handles[handleKey].selected = false;
+        imageNeedsUpdate = handles[handleKey].active || imageNeedsUpdate;
+        handles[handleKey].active = false;
     });
-};
+    return imageNeedsUpdate;
+}
+
+// Clear the bidirectional tool's selection for all tool handles
+function clearBidirectionalSelection(event) {
+    let imageNeedsUpdate = false;
+    const toolData = cornerstoneTools.getToolState(event.currentTarget, 'bidirectional');
+    if (!toolData) return;
+    toolData.data.forEach(data => {
+        const unselectResult = unselectAllHandles(data.handles);
+        imageNeedsUpdate = imageNeedsUpdate || unselectResult;
+    });
+    return imageNeedsUpdate;
+}
+
+// Replaces the cornerstoneTools.handleActivator function by skiping the active handle comparison
+function handleActivator(element, handles, canvasPoint, distanceThreshold=6) {
+    const nearbyHandle = cornerstoneTools.getHandleNearImagePoint(element, handles, canvasPoint, distanceThreshold);
+
+    let handleActivatorChanged = false;
+    Object.keys(handles).forEach(handleKey => {
+        if (handleKey === 'textBox') return;
+        const handle = handles[handleKey];
+        const newActiveState = handle === nearbyHandle;
+        if (handle.active !== newActiveState) {
+            handleActivatorChanged = true;
+        }
+
+        handle.active = newActiveState;
+    });
+
+    return handleActivatorChanged;
+}
+
+// Draw a line marker over the selected arm
+function drawSelectedMarker(eventData, handles, color) {
+    const lib = OHIF.lesiontracker.bidirectional;
+    const { canvasContext, element, enabledElement } = eventData;
+
+    const handleKey = lib.getSelectedHandleKey(handles);
+    if (!handleKey) return;
+    const handle = handles[handleKey];
+
+    // Used a big distance (1km) to fill the entire line
+    const mmStep = -1000000;
+
+    // Get the line's start and end points
+    const fakeImage = {
+        columnPixelSpacing: eventData.viewport.scale,
+        rowPixelSpacing: eventData.viewport.scale
+    };
+    const pointA = lib.repositionBidirectionalArmHandle(fakeImage, handles, handleKey, mmStep, 0);
+    const pointB = _.pick(handle, ['x', 'y']);
+
+    // Stop here if pointA is not present
+    if (!pointA) return;
+
+    // Get the canvas coordinates for the line    var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularStart);
+    const canvasPointA = cornerstone.pixelToCanvas(element, pointA);
+    const canvasPointB = cornerstone.pixelToCanvas(element, pointB);
+
+    // Draw the line marker
+    canvasContext.beginPath();
+    canvasContext.strokeStyle = color;
+    canvasContext.lineWidth = cornerstoneTools.toolStyle.getToolWidth();
+    canvasContext.moveTo(canvasPointA.x, canvasPointA.y);
+    canvasContext.lineTo(canvasPointB.x, canvasPointB.y);
+    canvasContext.stroke();
+}
+
+// Add a proxy to cornerstoneTools.drawHandles function to change the handles' active state base on
+// the hover, moving and selected states
+function drawHandles(context, eventData, handles, color, options) {
+    Object.keys(handles).forEach(handleKey => {
+        if (handleKey === 'textBox') return;
+        const handle = handles[handleKey];
+        handle.drawnIndependently = handle.moving;
+        if (handle.selected) {
+            handle.active = handle.hover;
+        } else {
+            if (handle.hover) {
+                handle.active = true;
+            } else {
+                handle.active = false;
+            }
+        }
+    });
+    cornerstoneTools.drawHandles(context, eventData, handles, color, options);
+}
 
 function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
-    // Make handle invisible while moving
-    if (!handle.hasBoundingBox) {
-        handle.drawnIndependently = true;
-    }
-
-    var element = mouseEventData.element;
-    var distanceFromTool = {
+    const element = mouseEventData.element;
+    const $element = $(element);
+    const distanceFromTool = {
         x: handle.x - mouseEventData.currentPoints.image.x,
         y: handle.y - mouseEventData.currentPoints.image.y
     };
 
-    function mouseDragCallback(e, eventData) {
+    const mouseDragCallback = (event, eventData) => {
         handle.active = true;
 
         if (handle.index === undefined || handle.index === null) {
@@ -711,28 +833,38 @@ function moveHandle(mouseEventData, toolType, data, handle, doneMovingCallback, 
             element: element,
             measurementData: data
         };
-        $(element).trigger(eventType, modifiedEventData);
-    }
+        $element.trigger(eventType, modifiedEventData);
+    };
 
-    $(element).on('CornerstoneToolsMouseDrag', mouseDragCallback);
+    $element.on('CornerstoneToolsMouseDrag', mouseDragCallback);
 
-    function mouseUpCallback() {
-        // Enable handle visibility again
-        if (!handle.hasBoundingBox) {
-            handle.drawnIndependently = false;
+    const currentImage = cornerstone.getImage(element);
+    const imageRenderedHandler = () => {
+        const newImage = cornerstone.getImage(element);
+
+        // Check if the rendered image changed during measurement modifying and stop it if so
+        if (newImage.imageId !== currentImage.imageId) {
+            mouseUpCallback();
         }
-        $(element).off('CornerstoneToolsMouseDrag', mouseDragCallback);
-        $(element).off('CornerstoneToolsMouseUp', mouseUpCallback);
-        $(element).off('CornerstoneToolsMouseClick', mouseUpCallback);
+    };
+
+    // Bind the event listener for image rendering
+    $element.on('CornerstoneImageRendered', imageRenderedHandler);
+
+    const mouseUpCallback = () => {
+        $element.off('CornerstoneToolsMouseDrag', mouseDragCallback);
+        $element.off('CornerstoneToolsMouseUp', mouseUpCallback);
+        $element.off('CornerstoneToolsMouseClick', mouseUpCallback);
+        $element.off('CornerstoneImageRendered', imageRenderedHandler);
         cornerstone.updateImage(element);
 
         if (typeof doneMovingCallback === 'function') {
             doneMovingCallback();
         }
-    }
+    };
 
-    $(element).on('CornerstoneToolsMouseUp', mouseUpCallback);
-    $(element).on('CornerstoneToolsMouseClick', mouseUpCallback);
+    $element.on('CornerstoneToolsMouseUp', mouseUpCallback);
+    $element.on('CornerstoneToolsMouseClick', mouseUpCallback);
 }
 
 // mouseMoveCallback is used to hide handles when mouse is away
@@ -757,7 +889,13 @@ function mouseMoveCallback(e, eventData) {
         var coords = eventData.currentPoints.canvas;
 
         var data = toolData.data[i];
-        if (cornerstoneTools.handleActivator(eventData.element, data.handles, coords) === true) {
+        const handleActivatorChanged = handleActivator(eventData.element, data.handles, coords);
+        Object.keys(data.handles).forEach(handleKey => {
+            if (handleKey === 'textBox') return;
+            const handle = data.handles[handleKey];
+            handle.hover = handle.active;
+        });
+        if (handleActivatorChanged) {
             imageNeedsUpdate = true;
         }
 
@@ -775,18 +913,41 @@ function mouseMoveCallback(e, eventData) {
 
 // mouseDowCallback is used to restrict behaviour of perpendicular-line
 function mouseDownCallback(e, eventData) {
-    var data;
-    var element = eventData.element;
+    let data;
+    const element = eventData.element;
+    const $element = $(element);
 
-    function handleDoneMove() {
+    // Add an event listener to clear the selected state when a measurement is activated
+    const activateEventKey = 'ViewerMeasurementsActivated';
+    $element.off(activateEventKey).on(activateEventKey, () => clearBidirectionalSelection(e));
+
+    // Clear selection on left mouse button click
+    let imageNeedsUpdate = false;
+    if (eventData.which === 1) {
+        const imageNeedsUpdate = clearBidirectionalSelection(e);
+        if (imageNeedsUpdate) {
+            cornerstone.updateImage(element);
+        }
+    }
+
+    function handleDoneMove(handle) {
+        // Set the cursor back to its default
+        $element.css('cursor', '');
+
         data.invalidated = true;
         if (cornerstoneTools.anyHandlesOutsideImage(eventData, data.handles)) {
             // delete the measurement
             cornerstoneTools.removeToolState(element, toolType, data);
         }
 
+        // Update the handles to keep selected state
+        if (handle) {
+            handle.moving = false;
+            handle.selected = true;
+        }
+
         cornerstone.updateImage(element);
-        $(element).on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+        $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
     }
 
     if (cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
@@ -802,10 +963,15 @@ function mouseDownCallback(e, eventData) {
                 var distance = 6;
                 var handle = cornerstoneTools.getHandleNearImagePoint(element, data.handles, coords, distance);
                 if (handle) {
-                    $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                    // Hide the cursor to improve precision while resizing the line or set to move if dragging text box
+                    $element.css('cursor', handle.hasBoundingBox ? 'move' : 'none');
+
+                    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
                     data.active = true;
 
-                    moveHandle(eventData, toolType, data, handle, handleDoneMove);
+                    unselectAllHandles(data.handles);
+                    handle.moving = true;
+                    moveHandle(eventData, toolType, data, handle, () => handleDoneMove(handle));
                     e.stopImmediatePropagation();
                     return false;
                 }
@@ -823,8 +989,25 @@ function mouseDownCallback(e, eventData) {
             for (i = 0; i < toolData.data.length; i++) {
                 data = toolData.data[i];
                 if (pointNearTool(element, data, coords)) {
-                    $(element).off('CornerstoneToolsMouseMove', mouseMoveCallback);
-                    cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, handleDoneMove);
+                    // Set the cursor to move
+                    $element.css('cursor', 'move');
+
+                    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                    data.active = true;
+
+                    unselectAllHandles(data.handles);
+                    Object.keys(data.handles).forEach(handleKey => {
+                        if (handleKey === 'textBox') return;
+                        data.handles[handleKey].moving = true;
+                    });
+
+                    cornerstoneTools.moveAllHandles(e, data, toolData, toolType, options, () => {
+                        Object.keys(data.handles).forEach(handleKey => {
+                            if (handleKey === 'textBox') return;
+                            data.handles[handleKey].moving = false;
+                        });
+                        handleDoneMove();
+                    });
                     e.stopImmediatePropagation();
                     return false;
                 }
@@ -977,8 +1160,9 @@ function onImageRendered(e, eventData) {
             context.shadowOffsetY = config.shadowOffsetY || 1;
         }
 
+        const activeColor = cornerstoneTools.toolColors.getActiveColor();
         if (data.active) {
-            color = cornerstoneTools.toolColors.getActiveColor();
+            color = activeColor;
         } else {
             color = cornerstoneTools.toolColors.getToolColor();
         }
@@ -998,8 +1182,12 @@ function onImageRendered(e, eventData) {
         // Draw perpendicular line
         drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
 
-        // draw the handles
-        cornerstoneTools.drawHandles(context, eventData, data.handles, color, { drawHandlesIfActive: true });
+        // Draw the handles
+        const handlesColor = color;
+        drawHandles(context, eventData, data.handles, handlesColor, { drawHandlesIfActive: true });
+
+        // Draw the selected marker
+        drawSelectedMarker(eventData, data.handles, '#FF9999');
 
         // Calculate the long axis length
         var dx = (data.handles.start.x - data.handles.end.x) * (eventData.image.columnPixelSpacing || 1);

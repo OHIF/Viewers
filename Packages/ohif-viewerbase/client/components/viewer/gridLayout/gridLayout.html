@@ -5,6 +5,7 @@
                 <div class="removable">
                     {{>imageViewerViewport (clone viewport)}}
                 </div>
+                {{>seriesQuickSwitch (clone this viewport=viewport viewportIndex=@index)}}
             </div>
         {{/each}}
     </div>

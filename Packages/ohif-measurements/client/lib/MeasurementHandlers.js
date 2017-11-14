@@ -15,21 +15,26 @@ class MeasurementHandlers {
             return;
         }
 
+        // Stop here if there's no measurement data or if it was cancelled
+        if (!measurementData || measurementData.cancelled) {
+            return;
+        }
+
         // Get the Cornerstone imageId
         const enabledElement = cornerstone.getEnabledElement(eventData.element);
         const imageId = enabledElement.image.imageId;
 
         // Get studyInstanceUid & patientId
-        const study = cornerstoneTools.metaData.get('study', imageId);
+        const study = cornerstone.metaData.get('study', imageId);
         const studyInstanceUid = study.studyInstanceUid;
         const patientId = study.patientId;
 
         // Get seriesInstanceUid
-        const series = cornerstoneTools.metaData.get('series', imageId);
+        const series = cornerstone.metaData.get('series', imageId);
         const seriesInstanceUid = series.seriesInstanceUid;
 
         // Get sopInstanceUid
-        const sopInstance = cornerstoneTools.metaData.get('instance', imageId);
+        const sopInstance = cornerstone.metaData.get('instance', imageId);
         const sopInstanceUid = sopInstance.sopInstanceUid;
         const frameIndex = sopInstance.frame || 0;
 
@@ -88,6 +93,9 @@ class MeasurementHandlers {
 
         let measurement = Collection.findOne(measurementData._id);
 
+        // Stop here if the measurement is already deleted
+        if (!measurement) return;
+
         // Update the collection data with the cornerstone measurement data
         const ignoredKeys = ['location', 'description', 'response'];
         Object.keys(measurementData).forEach(key => {
@@ -119,7 +127,6 @@ class MeasurementHandlers {
     static onRemoved(e, instance, eventData) {
         OHIF.log.info('CornerstoneToolsMeasurementRemoved');
         const measurementData = eventData.measurementData;
-        const measurementNumber = measurementData.measurementNumber;
         const { measurementApi, timepointApi } = instance.data;
         const Collection = measurementApi.tools[eventData.toolType];
 
@@ -130,9 +137,13 @@ class MeasurementHandlers {
 
         const measurementTypeId = measurementApi.toolsGroupsMap[measurementData.toolType];
         const measurement = Collection.findOne(measurementData._id);
-        const timepointId = measurement.timepointId;
+
+        // Stop here if the measurement is already gone or never existed
+        if (!measurement) return;
+
 
         // Remove all the measurements with the given type and number
+        const { measurementNumber, timepointId } = measurement;
         measurementApi.deleteMeasurements(measurementTypeId, {
             measurementNumber,
             timepointId

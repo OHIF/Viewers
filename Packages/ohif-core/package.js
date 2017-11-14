@@ -1,3 +1,7 @@
+Npm.depends({
+    'twbs-pagination': '1.4.1'
+});
+
 Package.describe({
     name: 'ohif:core',
     summary: 'OHIF core components, helpers and UI functions',

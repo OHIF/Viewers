@@ -121,24 +121,22 @@ class WindowLevelPresetsManager {
     }
 
     store(wlPresets) {
-        const self = this;
         return new Promise((resolve, reject) => {
-            if (self.storeFunction) {
-                self.storeFunction(wlPresets).then(resolve).catch(reject);
+            if (this.storeFunction) {
+                this.storeFunction.call(this, wlPresets).then(resolve).catch(reject);
             } else if (Meteor.userId()) {
                 OHIF.user.setData(WL_STORAGE_KEY, wlPresets).then(resolve).catch(reject);
             } else {
                 Session.setPersistent(WL_STORAGE_KEY, wlPresets);
                 resolve();
             }
-        }).then(() => self.setOHIFWLPresets(wlPresets));
+        }).then(() => this.setOHIFWLPresets.call(this, wlPresets));
     }
 
     retrieve() {
-        const self = this;
         return new Promise((resolve, reject) => {
-            if (self.retrieveFunction) {
-                self.retrieveFunction().then(resolve).catch(reject);
+            if (this.retrieveFunction) {
+                this.retrieveFunction.call(this).then(resolve).catch(reject);
             } else if (OHIF.user) {
                 try {
                     resolve(OHIF.user.getData(WL_STORAGE_KEY));
@@ -152,15 +150,14 @@ class WindowLevelPresetsManager {
     }
 
     load() {
-        const self = this;
         return new Promise((resolve, reject) => {
-            self.retrieve().then(wlPresets => {
+            this.retrieve().then(wlPresets => {
                 if (wlPresets) {
-                    self.setOHIFWLPresets(wlPresets);
+                    this.setOHIFWLPresets.call(this, wlPresets);
                 } else {
-                    self.loadDefaults();
+                    this.loadDefaults.call(this);
                 }
-            }).catch(self.loadDefaults);
+            }).catch(() => this.loadDefaults.call(this));
         });
     }
 

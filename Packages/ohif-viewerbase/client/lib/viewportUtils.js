@@ -138,7 +138,7 @@ const resetViewport = () => {
     const enabledElement = cornerstone.getEnabledElement(element);
     if (enabledElement.fitToWindow === false) {
         const imageId = enabledElement.image.imageId;
-        const instance = cornerstoneTools.metaData.get('instance', imageId);
+        const instance = cornerstone.metaData.get('instance', imageId);
 
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, enabledElement.image);
 
@@ -188,7 +188,7 @@ const toggleDialog = element => {
         $element.toggleClass('dialog-open', !isClosed);
     }
 
-    Session.set('UpdateCINE', Random.id());
+    Session.set('UpdateCINE', Math.random());
 };
 
 // Toggle the play/stop state for the cornerstone clip tool
@@ -204,7 +204,7 @@ const toggleCinePlay = () => {
     }
 
     // Update the UpdateCINE session property
-    Session.set('UpdateCINE', Random.id());
+    Session.set('UpdateCINE', Math.random());
 };
 
 // Show/hide the CINE dialog
@@ -305,7 +305,7 @@ const isStackScrollLinkingDisabled = () => {
 };
 
 // Create an event listener to update playing state when a clip stops playing
-$(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Random.id()));
+$(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Math.random()));
 
 /**
  * Export functions inside viewportUtils namespace.

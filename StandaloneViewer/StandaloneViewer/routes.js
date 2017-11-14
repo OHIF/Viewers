@@ -13,63 +13,63 @@ if (Meteor.isClient) {
 
     Router.onBeforeAction('loading');
 
-    Router.route('/:id', {
-        action: function() {
-            // Retrieve the ID from the URL the user has entered
-            let id = this.params.id;
+    Router.route('/:id?', {
+        onRun: function() {
+            console.warn('onRun');
+            // Retrieve the query from the URL the user has entered
+            const query = this.params.query;
+            const id = this.params.id;
 
-            if (!id) {
-                id = 'testId';
+            if (!id && !query.url) {
+                console.log('No URL was specified. Use ?url=${yourURL}');
+                return;
             }
 
+            const next = this.next;
+            const idUrl = `/api/${id}`;
+            const url = query.url || idUrl;
+
             // Define a request to the server to retrieve the study data
-            // as JSON, given an ID that was in the Route
+            // as JSON, given a URL that was in the Route
             const oReq = new XMLHttpRequest();
 
             // Add event listeners for request failure
             oReq.addEventListener('error', () => {
                 OHIF.log.warn('An error occurred while retrieving the JSON data');
+                next();
             });
-
-            const self = this;
 
             // When the JSON has been returned, parse it into a JavaScript Object
             // and render the OHIF Viewer with this data
-            oReq.addEventListener('load', function() {
+            oReq.addEventListener('load', () => {
                 // Parse the response content
                 // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText
-                if (!this.responseText) {
+                if (!oReq.responseText) {
                     OHIF.log.warn('Response was undefined');
                     return;
                 }
 
-                OHIF.log.info(JSON.stringify(this.responseText, null, 2));
+                OHIF.log.info(JSON.stringify(oReq.responseText, null, 2));
+                this.data = JSON.parse(oReq.responseText);
 
-                const parsed = JSON.parse(this.responseText);
-
-                // Create some data to pass to the OHIF Viewer
-                const data = {
-                    studies: parsed.studies,
-                    contentId: 'standalone' // TODO: Remove all dependence on this
-                };
-
-                // Render the Viewer with this data
-                self.render('standaloneViewer', {
-                    data: function() {
-                        return data;
-                    }
-                });
+                next();
             });
 
             // Open the Request to the server for the JSON data
             // In this case we have a server-side route called /api/
             // which responds to GET requests with the study data
-            OHIF.log.info(`Sending Request to: /api/${id}`);
-            oReq.open('GET', `/api/${id}`);
+            OHIF.log.info(`Sending Request to: ${url}`);
+            oReq.open('GET', url);
+            oReq.setRequestHeader('Accept', 'application/json')
 
-            // Fire the request the server
+            // Fire the request to the server
             oReq.send();
-            this.next();
+        },
+        action() {
+            // Render the Viewer with this data
+            this.render('standaloneViewer', {
+                data: () => this.data
+            });
         }
     });
 }

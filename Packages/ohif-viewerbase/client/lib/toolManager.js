@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
@@ -6,6 +7,7 @@ import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
 import { annotateTextUtils } from './annotateTextUtils';
 import { textMarkerUtils } from './textMarkerUtils';
+import { isTouchDevice } from './helpers/isTouchDevice';
 
 let defaultTool = 'wwwc';
 let activeTool;
@@ -127,7 +129,7 @@ export const toolManager = {
         defaultMouseButtonTools = Meteor.settings && Meteor.settings.public && Meteor.settings.public.defaultMouseButtonTools;
 
         // Override default tool if defined in settings
-        defaultTool = (defaultMouseButtonTools && defaultMouseButtonTools.left) || "wwwc";
+        defaultTool = (defaultMouseButtonTools && defaultMouseButtonTools.left) || 'wwwc';
 
         this.configureTools();
         initialized = true;
@@ -308,10 +310,10 @@ export const toolManager = {
         // Get the imageIds for this element
         const imageIds = toolData.data[0].imageIds;
 
-        const defaultMouseButtonToolNameMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || "pan";
+        const defaultMouseButtonToolNameMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || 'pan';
         const defaultMouseButtonToolMiddle = cornerstoneTools[defaultMouseButtonToolNameMiddle];
 
-        const defaultMouseButtonToolNameRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || "zoom";
+        const defaultMouseButtonToolNameRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || 'zoom';
         const defaultMouseButtonToolRight = cornerstoneTools[defaultMouseButtonToolNameRight];
 
         // Deactivate all the middle mouse, right click, and scroll wheel tools
@@ -402,6 +404,30 @@ export const toolManager = {
             toolManager.init();
         }
 
+        let $elements;
+        if (!elements || !elements.length) {
+            $elements = $('.imageViewerViewport');
+        } else {
+            $elements = $(elements);
+        }
+
+        const checkElementEnabled = function(allElementsEnabled, element) {
+            try {
+                cornerstone.getEnabledElement(element);
+
+                return allElementsEnabled;
+            } catch (error) {
+                return true;
+            }
+        };
+
+        if ($elements.toArray().reduce(checkElementEnabled, false)) {
+            // if at least one element is not enabled, we do not activate tool.
+            OHIF.log.info(`Could not activate tool ${tool} due to a viewport not being enabled. Try again later.`);
+
+            return;
+        }
+
         /**
          * TODO: Add textMarkerDialogs template to OHIF's
          */
@@ -428,13 +454,6 @@ export const toolManager = {
             tool = defaultTool;
         }
 
-        let $elements;
-        if (!elements || !elements.length) {
-            $elements = $('.imageViewerViewport');
-        } else {
-            $elements = $(elements);
-        }
-
         // Otherwise, set the active tool for all viewport elements
         $elements.each((index, element) => {
             toolManager.setActiveToolForElement(tool, element);
@@ -444,6 +463,51 @@ export const toolManager = {
 
         // Store the active tool in the session in order to enable reactivity
         Session.set('ToolManagerActiveTool', tool);
+    },
+
+    getNearbyToolData(element, coords, toolTypes) {
+        const allTools = this.getTools();
+        const touchDevice = isTouchDevice();
+        const nearbyTool = {};
+        let pointNearTool = false;
+
+        toolTypes.forEach(function(toolType) {
+            const toolData = cornerstoneTools.getToolState(element, toolType);
+            if (!toolData) {
+                return;
+            }
+
+            toolData.data.forEach(function(data, index) {
+                let toolInterfaceName = toolType;
+                let toolInterface;
+
+                // Edge cases where the tool is not the same as the typeName
+                if (toolType === 'simpleAngle') {
+                    toolInterfaceName = 'angle';
+                } else if (toolType === 'arrowAnnotate') {
+                    toolInterfaceName = 'annotate';
+                }
+
+                if (touchDevice) {
+                    toolInterface = allTools[toolInterfaceName].touch;
+                } else {
+                    toolInterface = allTools[toolInterfaceName].mouse;
+                }
+
+                if (toolInterface.pointNearTool(element, data, coords)) {
+                    pointNearTool = true;
+                    nearbyTool.tool = data;
+                    nearbyTool.index = index;
+                    nearbyTool.toolType = toolType;
+                }
+            });
+
+            if (pointNearTool) {
+                return false;
+            }
+        });
+
+        return pointNearTool ? nearbyTool : undefined;
     },
 
     getActiveTool() {

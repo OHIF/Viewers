@@ -19,7 +19,7 @@ OHIF.mixins.checkbox = new OHIF.Mixin({
                     return component.parseData(component.$element.is(':checked'));
                 }
 
-                component.$element.prop('checked', value);
+                component.$element.prop('checked', value).trigger('change');
             };
         }
     }

@@ -65,6 +65,7 @@ Template.measurementTableRow.events({
 
     'click .js-delete'(event, instance) {
         const dialogSettings = {
+            class: 'themed',
             title: 'Delete measurements',
             message: 'Are you sure you want to delete the measurement across all timepoints?',
             position: {

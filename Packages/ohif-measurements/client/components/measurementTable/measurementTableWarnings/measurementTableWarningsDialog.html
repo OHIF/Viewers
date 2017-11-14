@@ -1,5 +1,5 @@
 <template name="measurementTableWarningsDialog">
-    {{#dialogSimple (extend this dialogClass='modal-sm' title='Criteria nonconformities')}}
+    {{#dialogSimple (extend this class='themed' dialogClass='modal-sm' title='Criteria nonconformities')}}
         <ol>
             {{#each message in this.messages}}
                 <li>{{message}}</li>

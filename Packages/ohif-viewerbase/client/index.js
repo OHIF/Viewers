@@ -84,6 +84,10 @@ Viewerbase.setInstanceClassDefaultViewportFunction = setInstanceClassDefaultView
 import { displayReferenceLines } from './lib/displayReferenceLines';
 Viewerbase.displayReferenceLines = displayReferenceLines;
 
+// getStudyMetadata
+import { getStudyMetadata } from './lib/getStudyMetadata';
+Viewerbase.getStudyMetadata = getStudyMetadata;
+
 /**
  * Exported Namespaces (sub-namespaces)
  */

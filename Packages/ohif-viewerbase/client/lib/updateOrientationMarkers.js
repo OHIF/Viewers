@@ -16,7 +16,7 @@ export function updateOrientationMarkers(element, viewport) {
 
     // Updates the orientation labels on the viewport
     const enabledElement = cornerstone.getEnabledElement(element);
-    const imagePlane = cornerstoneTools.metaData.get('imagePlane', enabledElement.image.imageId);
+    const imagePlane = cornerstone.metaData.get('imagePlane', enabledElement.image.imageId);
     
     if (!imagePlane || !imagePlane.rowCosines || !imagePlane.columnCosines) {
         return;

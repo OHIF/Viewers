@@ -6,72 +6,75 @@ import { OHIF } from 'meteor/ohif:core';
 // default StudyListStudy template.
 // See https://github.com/aldeed/meteor-template-extension
 const defaultTemplate = 'studylistStudy';
-Template.longitudinalStudyListStudy.replaces(defaultTemplate);
 
-// Add the TimepointName helper to the default template. The
-// HTML of this template is replaced with that of longitudinalStudyListStudy
-Template[defaultTemplate].helpers({
-    timepointName() {
-        const instance = Template.instance();
-        const timepointApi = OHIF.studylist.timepointApi;
-        if (!timepointApi) {
-            return;
+if (OHIF.studylist) {
+    Template.longitudinalStudyListStudy.replaces(defaultTemplate);
+
+    // Add the TimepointName helper to the default template. The
+    // HTML of this template is replaced with that of longitudinalStudyListStudy
+    Template[defaultTemplate].helpers({
+        timepointName() {
+            const instance = Template.instance();
+            const timepointApi = OHIF.studylist.timepointApi;
+            if (!timepointApi) {
+                return;
+            }
+
+            const timepoint = timepointApi.study(instance.data.studyInstanceUid)[0];
+            if (!timepoint) {
+                return;
+            }
+
+            return timepointApi.name(timepoint);
+        },
+
+        reviewerTip() {
+            const instance = Template.instance();
+            const timepointApi = OHIF.studylist.timepointApi;
+            if (!timepointApi || !window.Reviewers) {
+                return;
+            }
+
+            const timepoint = timepointApi.study(instance.data.studyInstanceUid);
+            if (!timepoint) {
+                return;
+            }
+
+            const timepointReviewers = window.Reviewers.findOne({ timepointId: timepoint.timepointId });
+            if (!timepointReviewers) {
+                return;
+            }
+
+            return getReviewerTipText(timepointReviewers.reviewers);
         }
-
-        const timepoint = timepointApi.study(instance.data.studyInstanceUid)[0];
-        if (!timepoint) {
-            return;
-        }
-
-        return timepointApi.name(timepoint);
-    },
-
-    reviewerTip() {
-        const instance = Template.instance();
-        const timepointApi = OHIF.studylist.timepointApi;
-        if (!timepointApi || !window.Reviewers) {
-            return;
-        }
-
-        const timepoint = timepointApi.study(instance.data.studyInstanceUid);
-        if (!timepoint) {
-            return;
-        }
-
-        const timepointReviewers = window.Reviewers.findOne({ timepointId: timepoint.timepointId });
-        if (!timepointReviewers) {
-            return;
-        }
-
-        return getReviewerTipText(timepointReviewers.reviewers);
-    }
-});
-
-function getReviewerTipText(reviewers) {
-    if (!reviewers || !reviewers.length) {
-        return;
-    }
-
-    const newReviewers = reviewers.filter(function(reviewer) {
-        return reviewer.userId !== Meteor.userId();
     });
 
-    if (!newReviewers.length) {
-        return;
-    }
-
-    let tipText = 'The study is being reviewed by ';
-    newReviewers.forEach(function(reviewer, index) {
-        if (reviewer.userId === Meteor.userId()) {
+    function getReviewerTipText(reviewers) {
+        if (!reviewers || !reviewers.length) {
             return;
         }
 
-        if (index > 0) {
-            tipText += ',';
+        const newReviewers = reviewers.filter(function(reviewer) {
+            return reviewer.userId !== Meteor.userId();
+        });
+
+        if (!newReviewers.length) {
+            return;
         }
 
-        tipText += reviewer.userName;
-    });
+        let tipText = 'The study is being reviewed by ';
+        newReviewers.forEach(function(reviewer, index) {
+            if (reviewer.userId === Meteor.userId()) {
+                return;
+            }
 
-    return tipText;
+            if (index > 0) {
+                tipText += ',';
+            }
+
+            tipText += reviewer.userName;
+        });
+
+        return tipText;
+    }
 }

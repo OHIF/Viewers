@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 var Future = Npm.require('fibers/future');
 
 DIMSE = {
@@ -75,23 +77,34 @@ DIMSE.associate = function(contexts, callback, options) {
     };
     options = Object.assign(defaults, options);
 
-    console.log('Associating...');
-    try {
-        conn.associate(options, function(pdu) {
-            // associated
-            console.log('==Associated');
-            callback.call(this, pdu);
-        });
-    } catch(error) {
-        console.error('dimse-associate: ' + error);
-        throw new Meteor.Error('dimse-associate', error);
-    }
+    OHIF.log.info('Associating...');
+
+    const socket = conn.associate(options, function(pdu) {
+        // associated
+        OHIF.log.info('==Associated');
+        callback.call(this, null, pdu);
+    });
+
+    socket.on('error', function (error) {
+        callback(error, null);
+    });
+
+    socket.on('timeout', function (error) {
+        callback(error, null);
+    });
 };
 
 DIMSE.retrievePatients = function(params, options) {
     //var start = new Date();
     var future = new Future;
-    DIMSE.associate([C.SOP_PATIENT_ROOT_FIND], function(pdu) {
+    DIMSE.associate([C.SOP_PATIENT_ROOT_FIND], function(error, pdu) {
+        if (error) {
+            OHIF.log.error('Could not retrieve patients');
+            OHIF.log.trace();
+
+            return future.return([]);
+        }
+
         var defaultParams = {
             0x00100010: '',
             0x00100020: '',
@@ -124,7 +137,14 @@ DIMSE.retrievePatients = function(params, options) {
 DIMSE.retrieveStudies = function(params, options) {
     //var start = new Date();
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(error, pdu) {
+        if (error) {
+            OHIF.log.error('Could not retrieve studies');
+            OHIF.log.trace();
+
+            return future.throw(error);
+        }
+
         var defaultParams = {
             0x0020000D: '',
             0x00080060: '',
@@ -201,7 +221,14 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
     }
 
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(error, pdu) {
+        if (error) {
+            OHIF.log.error('Could not retrieve Instances By Study');
+            OHIF.log.trace();
+
+            return future.throw(error);
+        }
+
         var defaultParams = {
             0x0020000D: studyInstanceUID,
             0x00080005: '',
@@ -244,7 +271,14 @@ DIMSE.retrieveInstancesByStudyOnly = function(studyInstanceUID, params, options)
 
 DIMSE.retrieveSeries = function(studyInstanceUID, params, options) {
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(error, pdu) {
+        if (error) {
+            OHIF.log.error('Could not retrieve series');
+            OHIF.log.trace();
+
+            return future.return([]);
+        }
+
         var defaultParams = {
             0x0020000D: studyInstanceUID ? studyInstanceUID : '',
             0x00080005: '',
@@ -280,7 +314,14 @@ DIMSE.retrieveSeries = function(studyInstanceUID, params, options) {
 
 DIMSE.retrieveInstances = function(studyInstanceUID, seriesInstanceUID, params, options) {
     var future = new Future;
-    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(pdu) {
+    DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(error, pdu) {
+        if (error) {
+            OHIF.log.error('Could not retrieve instances');
+            OHIF.log.trace();
+
+            return future.throw(error);
+        }
+
         var defaultParams = getInstanceRetrievalParams(studyInstanceUID, seriesInstanceUID);
         var result = this.findInstances(Object.assign(defaultParams, params)),
             o = this;
@@ -309,7 +350,14 @@ DIMSE.storeInstances = function(fileList, callback) {
 };
 
 DIMSE.moveInstances = function(studyInstanceUID, seriesInstanceUID, sopInstanceUID, sopClassUID, params) {
-    DIMSE.associate([C.SOP_STUDY_ROOT_MOVE, sopClassUID], function() {
+    DIMSE.associate([C.SOP_STUDY_ROOT_MOVE, sopClassUID], function(error) {
+        if (error) {
+            OHIF.log.error('Could not move instances');
+            OHIF.log.trace();
+
+            return;
+        }
+
         var defaultParams = {
             0x0020000D: studyInstanceUID ? studyInstanceUID : '',
             0x0020000E: seriesInstanceUID ? seriesInstanceUID : '',
