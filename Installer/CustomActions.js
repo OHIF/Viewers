@@ -43,7 +43,8 @@ function InstallLTService() {
 		"netsh http add urlacl url=http://+:3000/ user=\Everyone",
 		"netsh advfirewall firewall add rule name=\"Lesion Tracker Default Port 3000\" dir=in action=allow protocol=TCP localport=3000",
 		"node \""+installDir+"NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"bundle\\main.js\" --install",
-		"node \""+installDir+"NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"bundle\\main.js\" --start"
+		"node \""+installDir+"NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"bundle\\main.js\" --start",
+		"timeout /nobreak 5 > NUL & net start lesiontrackerserver.exe"
 	];
 	
 	RunShellCommands(installCommands);
@@ -69,7 +70,7 @@ function UninstallLTService() {
 // Run shell commands
 function RunShellCommands(commands) {
 	for (var i=0; i<commands.length; i++) {
-		_shell.Run(commands[i], 1, true);
+		_shell.Run(commands[i], 0, true);
 	}
 }
 
