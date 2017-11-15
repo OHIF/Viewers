@@ -105,6 +105,7 @@ function makeDraggable(element, options) {
 
         $container.css('cursor', 'move');
         $element.css('cursor', 'move');
+        $element.addClass('dragging');
 
         reposition(elementLeft, elementTop);
 
@@ -125,6 +126,7 @@ function makeDraggable(element, options) {
     function stopMoving() {
         $container.css('cursor', 'default');
         $element.css('cursor', options.defaultElementCursor);
+        $element.removeClass('dragging');
 
         $(document).off('mousemove', moveHandler);
         $(document).off('touchmove', moveHandler);
