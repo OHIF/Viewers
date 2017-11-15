@@ -3,6 +3,7 @@
         {{#if and Template.subscriptionsReady dataSourcesReady}}
             {{>confirmDeleteDialog}}
             {{>measurementTableHUD (clone this)}}
+            {{>downloadDialog}}
             {{>cineDialog}}
         {{/if}}
     </div>
