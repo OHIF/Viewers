@@ -36,7 +36,6 @@ Template.downloadDialog.onCreated(() => {
 Template.downloadDialog.onRendered(() => {
     const instance = Template.instance();
     const $dialog = instance.$('#downloadDialog');
-    const singleRowLayout = OHIF.uiSettings.displayEchoUltrasoundWorkflow;
 
     instance.$previewElement = $('#previewElement')[0];
     instance.$downloadElement = document.createElement('div');
