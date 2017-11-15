@@ -114,8 +114,8 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                 if (event) {
                     const originalEventTouches = event.originalEvent.touches;
                     const position = {
-                      left: 0,
-                      top: 0
+                        left: 0,
+                        top: 0
                     };
 
                     if (originalEventTouches && originalEventTouches.length > 0) {
@@ -123,7 +123,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                         position.top = originalEventTouches[0].pageY;
                     } else {
                         position.left = event.clientX;
-                        position.top = event.clientY
+                        position.top = event.clientY;
                     }
 
                     if (centered) {
