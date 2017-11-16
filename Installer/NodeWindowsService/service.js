@@ -15,6 +15,10 @@ var svc = new Service({
 	}
 });
 
+svc.on("install", function () {
+	svc.start();
+});
+
 if (option == "--install") {
 	svc.install();
 } else if (option == "--uninstall") {
