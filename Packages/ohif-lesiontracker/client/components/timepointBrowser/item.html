@@ -2,6 +2,9 @@
     <div class="timepoint-browser-item" data-id="{{this.timepoint.timepointId}}">
         <div class="timepoint-item p-y-2">
             <div class="timepoint-details clearfix">
+                <div class="timepoint-study-availability pull-left m-r-1" >
+                    <i class="fa fa-circle {{studyAvailability}}"></i>
+                </div>
                 <div class="timepoint-title pull-left">
                     {{this.timepointApi.title timepoint}}
                 </div>
