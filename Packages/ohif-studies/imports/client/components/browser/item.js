@@ -10,7 +10,7 @@ Template.studyBrowserItem.onCreated(() => {
     const { studyInformation } = instance.data;
     const { studyInstanceUid } = studyInformation;
 
-    instance.loaded = false;
+    instance.loaded = new ReactiveVar(false);
     instance.loading = new ReactiveVar(false);
 
     instance.studyData = new ReactiveVar(studyInformation);
@@ -44,7 +44,7 @@ Template.studyBrowserItem.onCreated(() => {
                 modalities: firstInstance.getRawValue('x00080060') || '',
             });
 
-            instance.loaded = true;
+            instance.loaded.set(true);
             instance.loading.set(false);
         }
     });
@@ -55,6 +55,12 @@ Template.studyBrowserItem.events({
         if (instance.loading.get()) return;
 
         const { studyInformation } = instance.data;
+
+        //  Skip if study is not available
+        if (!studyInformation.available) {
+            return;
+        }
+
         const element = event.currentTarget.parentElement;
         const $element = $(element);
         const triggerClick = () => {
@@ -65,12 +71,12 @@ Template.studyBrowserItem.events({
             $element.trigger(newEvent, studyInformation);
         };
 
-        if (instance.loaded) {
+        if (instance.loaded.get()) {
             triggerClick();
         } else {
             instance.loading.set(true);
             OHIF.studies.loadStudy(studyInformation.studyInstanceUid).then(() => {
-                instance.loaded = true;
+                instance.loaded.set(true);
                 instance.loading.set(false);
                 $element.trigger('ohif.studies.study.load', studyInformation);
                 Tracker.afterFlush(triggerClick);
@@ -80,6 +86,10 @@ Template.studyBrowserItem.events({
 });
 
 Template.studyBrowserItem.helpers({
+    isLoaded() {
+        return Template.instance().loaded.get();
+    },
+
     isLoading() {
         return Template.instance().loading.get();
     },
