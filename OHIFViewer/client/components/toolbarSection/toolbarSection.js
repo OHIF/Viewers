@@ -118,6 +118,14 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
+            id: 'toggleDownloadDialog',
+            title: 'Download',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-camera',
+            active: () => $('#downloadDialog').is(':visible')
+        });
+
+        extraTools.push({
             id: 'invert',
             title: 'Invert',
             classes: 'imageViewerCommand',

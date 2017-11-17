@@ -1,0 +1,42 @@
+@import "{ohif:design}/app"
+
+#downloadDialog
+  theme('border', '2px solid $uiBorderColor', 0.95)
+  theme('background', '$uiGrayDarkest', 0.95)
+  theme('color', '$textSecondaryColor')
+  width: 626px
+  z-index: 1000
+
+  .instructions
+    margin-bottom: 20px
+    text-align: center
+
+  .extension
+    color: #000000
+    background-color: #888
+
+  .col-form-label
+    margin-top: 5px
+
+  .dropdown-menu .dropdown-item
+    display: block;
+    width: 100%;
+    padding: 3px 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #292b2c;
+    text-align: inherit;
+    white-space: nowrap;
+    background: 0 0;
+    border: 0;
+
+  #previewElement, #downloadElement
+    width: 300px
+    height: 200px
+    margin: 0 auto
+
+  #downloadElement
+    display: none
+
+  .button-holder
+    margin-top: 15px

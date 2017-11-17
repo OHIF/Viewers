@@ -168,6 +168,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/cineDialog/cineDialog.js', 'client');
     api.addFiles('client/components/viewer/cineDialog/cineDialog.styl', 'client');
 
+    api.addFiles('client/components/viewer/downloadDialog/downloadDialog.html', 'client');
+    api.addFiles('client/components/viewer/downloadDialog/downloadDialog.js', 'client');
+    api.addFiles('client/components/viewer/downloadDialog/downloadDialog.styl', 'client');
+
     api.addFiles('client/components/viewer/toolbarSectionButton/toolbarSectionButton.html', 'client');
     api.addFiles('client/components/viewer/toolbarSectionButton/toolbarSectionButton.js', 'client');
     api.addFiles('client/components/viewer/toolbarSectionButton/toolbarSectionButton.styl', 'client');
