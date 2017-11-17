@@ -1,3 +1,5 @@
+/* jshint -W083 */
+
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolType } from './definitions';
 import pointNearTool from './pointNearTool';

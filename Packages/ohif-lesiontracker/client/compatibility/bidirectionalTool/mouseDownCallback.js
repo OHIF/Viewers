@@ -1,3 +1,5 @@
+/* jshint -W083 */
+
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolType, distanceThreshold } from './definitions';
 import mouseMoveCallback from './mouseMoveCallback';
@@ -98,7 +100,7 @@ export default function(event, eventData) {
 
                     unselectAllHandles(data.handles);
                     handle.moving = true;
-                    moveHandle(eventData, toolType, data, handle, handleDoneMove);
+                    moveHandle(eventData, toolType, data, handle, () => handleDoneMove(handle));
                     event.stopImmediatePropagation();
                     return false;
                 }
