@@ -172,11 +172,11 @@ const linkStackScroll = () => {
 
 // This function was originally defined alone inside client/lib/toggleDialog.js
 // and has been moved here to avoid circular dependency issues.
-const toggleDialog = element => {
+const toggleDialog = (element, closeAction) => {
     const $element = $(element);
     if($element.is('dialog')) {
         if (element.hasAttribute('open')) {
-            stopAllClips();
+            if (closeAction) closeAction();
             element.close();
         } else {
             element.show();
@@ -187,8 +187,6 @@ const toggleDialog = element => {
         $element.toggleClass('dialog-closed', isClosed);
         $element.toggleClass('dialog-open', !isClosed);
     }
-
-    Session.set('UpdateCINE', Math.random());
 };
 
 // Toggle the play/stop state for the cornerstone clip tool
@@ -210,7 +208,24 @@ const toggleCinePlay = () => {
 // Show/hide the CINE dialog
 const toggleCineDialog = () => {
     const dialog = document.getElementById('cineDialog');
+
+    toggleDialog(dialog, stopAllClips);
+    Session.set('UpdateCINE', Random.id());
+};
+
+const toggleDownloadDialog = () => {
+    const dialog = document.getElementById('downloadDialog');
+
+    stopActiveClip();
     toggleDialog(dialog);
+
+    Session.set('UpdateDownloadViewport', Random.id());
+};
+
+const isDownloadEnabled = () => {
+    const activeViewport = getActiveViewportElement();
+
+    return activeViewport ? true : false;
 };
 
 // Check if the clip is playing on the active viewport
@@ -287,6 +302,14 @@ const stopAllClips = () => {
     });
 };
 
+const stopActiveClip = () => {
+    const activeElement = getActiveViewportElement();
+
+    if ($(activeElement).find('canvas').length) {
+        cornerstoneTools.stopClip(activeElement);
+    }
+}
+
 
 const isStackScrollLinkingDisabled = () => {
     let linkableViewportsCount = 0;
@@ -329,7 +352,9 @@ const viewportUtils = {
     toggleDialog,
     toggleCinePlay,
     toggleCineDialog,
+    toggleDownloadDialog,
     isPlaying,
+    isDownloadEnabled,
     hasMultipleFrames,
     stopAllClips,
     isStackScrollLinkingDisabled

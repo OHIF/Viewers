@@ -62,6 +62,7 @@ Meteor.startup(function() {
         toggleOverlayTags: 'SHIFT',
         toggleCinePlay: 'SPACE',
         toggleCineDialog: '',
+        toggleDownloadDialog: '',
 
         // Preset hotkeys
         WLPreset0: '1',
@@ -218,6 +219,11 @@ Meteor.startup(function() {
             name: 'Show/Hide Cine Controls',
             action: viewportUtils.toggleCineDialog,
             disabled: OHIF.viewerbase.viewportUtils.hasMultipleFrames
+        },
+        toggleDownloadDialog: {
+            name: 'Show/Hide Download Dialog',
+            action: viewportUtils.toggleDownloadDialog,
+            disabled: () => !viewportUtils.isDownloadEnabled()
         }
     }, true);
 

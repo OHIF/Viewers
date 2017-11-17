@@ -1,0 +1,41 @@
+<template name="downloadDialog">
+    <dialog id="downloadDialog">
+        {{#form id='downloadDialogForm' schema=instance.schema api=instance.api}}
+            <div class="instructions">Please specify the dimensions, filename, and desired type for the output image.</div>
+            <div class="form-group row">
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input type="text" id="fileName" class="form-control fileName" aria-label="File name input">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-secondary dropdown-toggle extension" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">png</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#">png</a>
+                                <a class="dropdown-item" href="#">jpeg</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-check col-sm-4">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input"> Show Annotations
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="width" class="col-sm-2 col-form-label">Width (px):</label>
+                <div class="col-sm-4">
+                  <input type="number" name="width" id="width" class="form-control" value="300"/>
+                </div>
+                <label for="height" class="col-sm-2 col-form-label">Height (px):</label>
+                <div class="col-sm-4">
+                  <input type="number" name="height" id="height" class="form-control" value="200"/>
+                </div>
+            </div>
+            <div id="previewElement"></div>
+            <div class="form-group button-holder row">
+                <button class="btn btn-danger col-sm-offset-2 col-sm-3 cancel">cancel</button>
+                <button class="btn btn-primary col-sm-offset-2 col-sm-3 download">download</button>
+            </div>
+        {{/form}}
+    </dialog>
+</template>
