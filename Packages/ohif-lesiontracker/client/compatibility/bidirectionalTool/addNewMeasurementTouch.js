@@ -1,6 +1,7 @@
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolType } from './definitions';
 import createNewMeasurement from './createNewMeasurement';
+import updatePerpendicularLineHandles from './updatePerpendicularLineHandles';
 
 export default function(touchEventData) {
     const element = { touchEventData };
@@ -28,6 +29,11 @@ export default function(touchEventData) {
     $element.off('CornerstoneToolsTap', tapCallback);
     $element.off('CornerstoneToolsDragStartActive', touchDownActivateCallback);
 
+    // Update the perpendicular line handles position
+    const updateHandler = (event, eventData) => updatePerpendicularLineHandles(eventData, measurementData);
+    $element.on('CornerstoneToolsTouchDrag', updateHandler);
+    $element.on('CornerstoneToolsTouchEnd', updateHandler);
+
     cornerstone.updateImage(element);
     const { end, perpendicularStart } = handles;
     cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, end, () => {
@@ -41,6 +47,10 @@ export default function(touchEventData) {
 
         // perpendicular line is not connected to long-line
         perpendicularStart.locked = false;
+
+        // Unbind the handlers to update perpendicular line
+        $element.off('CornerstoneToolsTouchDrag', updateHandler);
+        $element.off('CornerstoneToolsTouchEnd', updateHandler);
 
         $element.on('CornerstoneToolsTouchDrag', touchMoveHandle);
         $element.on('CornerstoneToolsTap', tapCallback);

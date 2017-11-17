@@ -2,6 +2,7 @@ import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:corn
 import { OHIF } from 'meteor/ohif:core';
 import { toolType } from '../definitions';
 import drawHandles from './drawHandles';
+import updatePerpendicularLineHandles from '../updatePerpendicularLineHandles';
 import drawPerpendicularLine from './drawPerpendicularLine';
 import drawSelectedMarker from './drawSelectedMarker';
 
@@ -59,7 +60,8 @@ export default function(event, eventData) {
         context.stroke();
 
         // Draw perpendicular line
-        drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
+        updatePerpendicularLineHandles(eventData, data);
+        drawPerpendicularLine(context, element, data, color, strokeWidth);
 
         // Draw the handles
         const handlesColor = color;
