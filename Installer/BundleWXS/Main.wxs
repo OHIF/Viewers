@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
 	 xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
-	<Bundle Name="Lesion Tracker" 
+	<Bundle Name="LesionTracker" 
 			Version="1.0.0" UpgradeCode="{83f70f33-3bd9-4aef-9405-fc0361ec2d4f}" 
-			Manufacturer="OHIF" >
+			Manufacturer="OHIF"
+			IconSourceFile="$(var.SourceDir)\logo.ico" >
 					
 		<BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
 		  <bal:WixStandardBootstrapperApplication 

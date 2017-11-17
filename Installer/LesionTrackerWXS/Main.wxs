@@ -5,7 +5,7 @@
 	<Product Id="*" 
 			 Version="$(var.VersionNumber)" UpgradeCode="{83f70f33-3bd9-4aef-9405-fc0361ec2d4f}" 
 			 Language="1033" 
-			 Name="Lesion Tracker" 
+			 Name="LesionTracker" 
 			 Manufacturer="OHIF">
 
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
@@ -14,17 +14,18 @@
 		<MediaTemplate EmbedCab="yes" />
 
 		<WixVariable Id="WixUILicenseRtf" Value="$(var.SourceDir)\LICENSE.rtf" />
+		<WixVariable Id="WixUIBannerBmp" Value="$(var.SourceDir)\wix-top-banner.bmp" />
+		<WixVariable Id="WixUIDialogBmp" Value="$(var.SourceDir)\wix-dialog.bmp" />
 		
 		<Icon Id="icon.ico" SourceFile="$(var.SourceDir)\logo.ico" />
 		<Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
 		<Property Id="MSIUSEREALADMINDETECTION" Value="1" />
-		<Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="You can upload studies here: 'http://localhost:8042' Then, you can view them here: 'http://localhost:3000'" />
 		
 		<SetProperty Id="LTVIEWERURL" Value="http://localhost:3000" Sequence="execute" Before="CreateShortcuts" />
 		<SetProperty Id="ORTHANCURL" Value="http://localhost:8042" Sequence="execute" Before="CreateShortcuts" />
 		
-		<Feature Id='ProductFeature' Title='Lesion Tracker' Level='1'>
+		<Feature Id='ProductFeature' Title='LesionTracker' Level='1'>
 		  <ComponentGroupRef Id='MainComponentGroup' />
 		  <ComponentRef Id="UninstallDirComponent" Primary="yes" />
 		  <ComponentRef Id="ShortcutDirComponent" Primary="yes" />
@@ -34,14 +35,14 @@
 			<!-- Installation Directory -->
 			<Directory Id='ProgramFiles64Folder'>
 				<Directory Id='INSTALLPARENTDIR' Name='OHIF'>
-					<Directory Id='INSTALLDIR' Name='Lesion Tracker' />
+					<Directory Id='INSTALLDIR' Name='LesionTracker' />
 				</Directory>
 			</Directory>
 			<!-- Desktop Shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
 				<Component Id="ShortcutDirComponent" Guid="*">
-					<Shortcut Id="LesionTrackerShortcut" Name="Lesion Tracker" Description="Lesion Tracker Viewer" Target="[LTVIEWERURL]" Icon="icon.ico" />
-					<Shortcut Id="OrthancShortcut" Name="Orthanc Server" Description="Lesion Tracker Orthanc Server" Target="[ORTHANCURL]" Icon="icon.ico" />
+					<Shortcut Id="LesionTrackerShortcut" Name="LesionTracker" Description="LesionTracker Viewer" Target="[LTVIEWERURL]" Icon="icon.ico" />
+					<Shortcut Id="OrthancShortcut" Name="Orthanc Server" Description="LesionTracker Orthanc Server" Target="[ORTHANCURL]" Icon="icon.ico" />
 					<RemoveFolder Id="DesktopFolder" On="uninstall" />
 					<RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Name="installed" Type="integer" Value="1" KeyPath="yes" />
 				</Component>

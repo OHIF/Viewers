@@ -34,6 +34,8 @@ xcopy /y mongod.cfg build
 REM Copy LICENSE and Logo files
 xcopy /y LICENSE.rtf build
 xcopy /y logo.ico build
+xcopy /y wix-dialog.bmp build
+xcopy /y wix-top-banner.bmp build
 
 REM Create Installer Folders
 rmdir /s /q output & mkdir output

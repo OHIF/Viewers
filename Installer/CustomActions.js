@@ -32,7 +32,7 @@ function ConfigureMongoDB() {
 	RunShellCommands(configCommands);
 }
 
-// Custom Action called by WIX to install and start Lesion Tracker service
+// Custom Action called by WIX to install and start LesionTracker service
 function InstallLTService() {
 	var installDir = Session.Property("CustomActionData");
 	
@@ -40,16 +40,16 @@ function InstallLTService() {
 	SetEnvironmentVariables(installDir);
 	
 	var installCommands = [
-		"node \""+installDir+"NodeWindowsService\\service.js\" \"Lesion Tracker Server\" \""+installDir+"bundle\\main.js\" --install",
+		"node \""+installDir+"NodeWindowsService\\service.js\" \"LesionTracker Server\" \""+installDir+"bundle\\main.js\" --install",
 		"netsh http add urlacl url=http://+:3000/ user=\Everyone",
-		"netsh advfirewall firewall add rule name=\"Lesion Tracker Default Port 3000\" dir=in action=allow protocol=TCP localport=3000",
+		"netsh advfirewall firewall add rule name=\"LesionTracker Default Port 3000\" dir=in action=allow protocol=TCP localport=3000",
 		"net start lesiontrackerserver.exe"
 	];
 	
 	RunShellCommands(installCommands);
 }
 
-// Custom Action called by WIX to uninstall Lesion Tracker service and stop MongoDB service
+// Custom Action called by WIX to uninstall LesionTracker service and stop MongoDB service
 function UninstallLTService() {
 	var installDir = Session.Property("CustomActionData");
 	
