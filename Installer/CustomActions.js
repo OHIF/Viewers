@@ -42,11 +42,24 @@ function InstallLTService() {
 	var installCommands = [
 		"node \""+installDir+"NodeWindowsService\\service.js\" \"LesionTracker Server\" \""+installDir+"bundle\\main.js\" --install",
 		"netsh http add urlacl url=http://+:3000/ user=\Everyone",
-		"netsh advfirewall firewall add rule name=\"LesionTracker Default Port 3000\" dir=in action=allow protocol=TCP localport=3000",
-		"net start lesiontrackerserver.exe"
+		"netsh advfirewall firewall add rule name=\"LesionTracker Default Port 3000\" dir=in action=allow protocol=TCP localport=3000"
 	];
 	
 	RunShellCommands(installCommands);
+}
+
+function UninstallOrthancServer() {
+	var orthancDir = "C:\\Program Files\\Orthanc Server\\unins000.exe";
+	
+	if (!_fileSystem.FileExists(orthancDir)) {
+		return;
+	}
+
+	var orthancCommands = [
+		"\""+orthancDir+"\" /VERYSILENT /SUPPRESSMSGBOXES"
+	];
+		
+	RunShellCommands(orthancCommands);
 }
 
 // Custom Action called by WIX to uninstall LesionTracker service and stop MongoDB service
@@ -64,6 +77,8 @@ function UninstallLTService() {
 	
 	// Unset environment variables
 	UnsetEnvironmentVariables();
+	
+	UninstallOrthancServer();
 }
 
 // Run shell commands

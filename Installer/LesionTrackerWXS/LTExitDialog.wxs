@@ -8,11 +8,11 @@
                 <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
 
                 <Control Id="OrthancServerLink" Height="20" Width="370" Type="Hyperlink" X="15" Y="60"> 
-					<Text>You can upload studies here: <![CDATA[<a href="http://localhost:8042">http://localhost:8042</a>]]></Text> 
+					<Text>{\WixUI_Font_Big}You can upload studies here: <![CDATA[<a href="http://localhost:8042">http://localhost:8042</a>]]></Text> 
 				</Control>
 				
 				<Control Id="LTViewerLink" Height="20" Width="370" Type="Hyperlink" X="15" Y="80"> 
-					<Text>You can view studies here: <![CDATA[<a href="http://localhost:3000">http://localhost:3000</a>]]></Text> 
+					<Text>{\WixUI_Font_Big}You can view studies here: <![CDATA[<a href="http://localhost:3000">http://localhost:3000</a>]]></Text> 
 				</Control>
 				
 				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
