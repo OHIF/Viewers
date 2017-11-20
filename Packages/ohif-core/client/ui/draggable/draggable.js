@@ -13,23 +13,23 @@ $.fn.draggable = function(options) {
  *
  * @param element
  */
-function makeDraggable(element, options) {
+function makeDraggable(element, options={}) {
     const $element = element;
 
     // Force to hardware acceleration to move element if browser supports translate property
     const { styleProperty } = OHIF.ui;
     const useTransform = styleProperty.check('transform', 'translate(1px, 1px)');
 
-    const $container = $(window);
+    const $container = $(options.container || window);
     let diffX;
     let diffY;
     let wasNotDragged = true;
+    let dragging = false;
 
     let lastCursor, lastOffset;
     let lastTranslateX = 0;
     let lastTranslateY = 0;
 
-    options = options || {};
     options.defaultElementCursor = options.defaultElementCursor || 'default';
 
     // initialize dragged flag
@@ -103,10 +103,6 @@ function makeDraggable(element, options) {
             diffY = cursor.y - elementTop;
         }
 
-        $container.css('cursor', 'move');
-        $element.css('cursor', 'move');
-        $element.addClass('dragging');
-
         reposition(elementLeft, elementTop);
 
         $(document).on('mousemove', moveHandler);
@@ -114,6 +110,28 @@ function makeDraggable(element, options) {
 
         $(document).on('touchmove', moveHandler);
         $(document).on('touchend', stopMoving);
+    }
+
+    function stopMoving() {
+        $container.css('cursor', 'default');
+        $element.css('cursor', options.defaultElementCursor);
+
+        if (dragging) {
+            setTimeout(() => $element.removeClass('dragging'));
+            dragging = false;
+        }
+
+        $(document).off('mousemove', moveHandler);
+        $(document).off('touchmove', moveHandler);
+    }
+
+    function moveHandler(e) {
+        if (!dragging) {
+            $container.css('cursor', 'move');
+            $element.css('cursor', 'move');
+            $element.addClass('dragging');
+            dragging = true;
+        }
 
         // let outside world know that the element in question has been dragged
         if (wasNotDragged) {
@@ -121,18 +139,6 @@ function makeDraggable(element, options) {
             wasNotDragged = false;
         }
 
-    }
-
-    function stopMoving() {
-        $container.css('cursor', 'default');
-        $element.css('cursor', options.defaultElementCursor);
-        $element.removeClass('dragging');
-
-        $(document).off('mousemove', moveHandler);
-        $(document).off('touchmove', moveHandler);
-    }
-
-    function moveHandler(e) {
         // Prevent dialog box dragging whole page in iOS
         e.preventDefault();
 
