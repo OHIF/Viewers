@@ -403,11 +403,18 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             $element.trigger(customEvent, eventData);
         };
 
+        // Handle mouseenter event to send viewport activation trigger only if there is no focused dropdown
+        const onMouseEnter = () => {
+            if ($(':focus').closest('.dropdown').length) return;
+
+            sendActivationTrigger();
+        };
+
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
         $element.off(allCornerstoneEvents, sendActivationTrigger);
         $element.on(allCornerstoneEvents, sendActivationTrigger);
-        $element.off('mouseenter', sendActivationTrigger);
-        $element.on('mouseenter', sendActivationTrigger);
+        $element.off('mouseenter', onMouseEnter);
+        $element.on('mouseenter', onMouseEnter);
 
         OHIF.viewer.data.loadedSeriesData = layoutManager.viewportData;
 
