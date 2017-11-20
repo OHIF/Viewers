@@ -3,6 +3,7 @@ import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 /*
@@ -19,6 +20,12 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
             const dropdown = $dropdown[0];
             const $dropdownMenu = $dropdown.children('.dropdown-menu');
 
+            // Get the timeout to dismiss the dropdown form
+            let { dismissTimeout } = instance.data.options;
+            if (_.isUndefined(dismissTimeout)) {
+                dismissTimeout = 500;
+            }
+
             // Set a opening state to the component
             instance.opening = true;
 
@@ -32,7 +39,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                     }
                 };
 
-                const timeout = setTimeout(destroyHandle, 500);
+                const timeout = setTimeout(destroyHandle, dismissTimeout);
                 $dropdownMenu.one('transitionend', () => {
                     destroyHandle();
                     clearTimeout(timeout);
@@ -209,7 +216,8 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
                     event,
                     reactiveClose: instance.reactiveClose,
                     $parentLi,
-                    parentInstance: instance
+                    parentInstance: instance,
+                    dismissTimeout: instance.data.options && instance.data.options.dismissTimeout
                 }).then(instance.data.promiseResolve).catch(() => {});
             },
 
