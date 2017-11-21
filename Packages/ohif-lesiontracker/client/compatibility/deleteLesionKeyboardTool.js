@@ -78,9 +78,7 @@ function keyDownCallback(event, eventData) {
 
         const nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas);
 
-        if (!nearbyToolData) {
-            return;
-        }
+        if (!nearbyToolData || nearbyToolData.tool.isCreating) return;
 
         const dialogSettings = {
             class: 'themed',

@@ -578,13 +578,18 @@ Template.imageViewerViewport.onRendered(function() {
 
     // Double click event handlers to handle viewport enlargement
     this.$element.on('CornerstoneToolsMouseDoubleClick CornerstoneToolsDoubleTap', event => {
+        const { layoutManager } = OHIF.viewerbase;
+        const $viewports = $('.imageViewerViewport');
+
         this.$element.trigger('ohif.viewer.viewport.toggleEnlargement');
 
         // Get the double clicked viewport index
         const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
 
+        // Stop here if there's only one viewport
+        if (!layoutManager.isZoomed && $viewports.length <= 1) return;
+
         // Enlarge the double clicked viewport
-        const layoutManager = OHIF.viewerbase.layoutManager;
         layoutManager.toggleEnlargement(viewportIndex);
 
         // Wait for DOM re-rendering and update the active viewport
