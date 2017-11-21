@@ -214,6 +214,29 @@ const CornerstoneToolMeasurement = new SimpleSchema([
     }
 ]);
 
+const CornerstoneHandleBoundingBoxSchema = new SimpleSchema({
+    width: {
+        type: Number,
+        label: 'Width',
+        decimal: true
+    },
+    height: {
+        type: Number,
+        label: 'Height',
+        decimal: true
+    },
+    left: {
+        type: Number,
+        label: 'Left',
+        decimal: true
+    },
+    top: {
+        type: Number,
+        label: 'Top',
+        decimal: true
+    }
+});
+
 const CornerstoneHandleSchema = new SimpleSchema({
     x: {
         type: Number,
@@ -265,6 +288,11 @@ const CornerstoneHandleSchema = new SimpleSchema({
         type: Boolean,
         label: 'Has Bounding Box',
         defaultValue: false,
+        optional: true
+    },
+    boundingBox: {
+        type: CornerstoneHandleBoundingBoxSchema,
+        label: 'Bounding Box',
         optional: true
     },
     index: { // TODO: Remove 'index' from bidirectionalTool since it's useless
