@@ -149,7 +149,7 @@ const CornerstoneViewport = new SimpleSchema({
         decimal: true,
         optional: true
     }
-})
+});
 
 const InstanceLevelMeasurement = new SimpleSchema([
     StudyLevelMeasurement,

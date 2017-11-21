@@ -1,24 +1,32 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/measurements';
-// import { OHIF } from 'meteor/ohif:core';
 
-const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
+const { CornerstoneHandleSchema } = MeasurementSchemaTypes;
+
+const BidirectionalHandleSchema = new SimpleSchema([CornerstoneHandleSchema, {
+    selected: {
+        type: Boolean,
+        label: 'Selected',
+        optional: true,
+        defaultValue: false
+    }
+}]);
 
 const BidirectionalHandlesSchema = new SimpleSchema({
     start: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'Start'
     },
     end: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'End'
     },
     perpendicularStart: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'Perpendicular Start'
     },
     perpendicularEnd: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'Perpendicular End'
     },
     textBox: {

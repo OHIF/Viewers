@@ -113,7 +113,7 @@ class MeasurementHandlers {
         }
 
         // Clean the measurement according to the Schema
-        Collection._c2._simpleSchema.clean(measurement);
+        Collection._c2._simpleSchema.clean(_.clone(measurement));
 
         // Insert the new measurement into the collection
         Collection.update(measurementId, {
