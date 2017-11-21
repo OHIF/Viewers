@@ -122,12 +122,16 @@ function addNewMeasurement(mouseEventData) {
     // associate this data with this imageId so we can render it and manipulate it
     cornerstoneTools.addToolState(element, toolType, measurementData);
 
-    // since we are dragging to another place to drop the end point, we can just activate
-    // the end point and let the moveHandle move it for us.
-    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
-    $element.off('CornerstoneToolsMouseDown', mouseDownCallback);
-    $element.off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
-    $element.off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+    const disableDefaultHandlers = () => {
+        // since we are dragging to another place to drop the end point, we can just activate
+        // the end point and let the moveHandle move it for us.
+        $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
+        $element.off('CornerstoneToolsMouseDown', mouseDownCallback);
+        $element.off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
+        $element.off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+    };
+
+    disableDefaultHandlers();
 
     // Update the perpendicular line handles position
     const updateHandler = (event, eventData) => updatePerpendicularLineHandles(eventData, measurementData);
@@ -154,6 +158,17 @@ function addNewMeasurement(mouseEventData) {
 
     // Bind a one-time event listener for the Esc key
     $element.one('keydown', keyDownHandler);
+
+    // Bind a mousedown handler to cancel the measurement if it's zero-sized
+    const mousedownHandler = () => {
+        const { start, end } = measurementData.handles;
+        if (!cornerstoneMath.point.distance(start, end)) {
+            cancelAction();
+        }
+    };
+
+    // Bind a one-time event listener for mouse down
+    $element.one('mousedown', mousedownHandler);
 
     // Keep the current image and create a handler for new rendered images
     const currentImage = cornerstone.getImage(element);
@@ -198,6 +213,9 @@ function addNewMeasurement(mouseEventData) {
         // Unbind the Esc keydown hook
         $element.off('keydown', keyDownHandler);
 
+        // Unbind the mouse down hook
+        $element.off('mousedown', mousedownHandler);
+
         // Unbind the event listener for image rendering
         $element.off('CornerstoneImageRendered', imageRenderedHandler);
 
@@ -212,10 +230,13 @@ function addNewMeasurement(mouseEventData) {
         $element.off('CornerstoneToolsMouseDrag', updateHandler);
         $element.off('CornerstoneToolsMouseUp', updateHandler);
 
+        // Disable the default handlers and re-enable again
+        disableDefaultHandlers();
         $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
         $element.on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
         $element.on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
         $element.on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
+
         cornerstone.updateImage(element);
     });
 }
