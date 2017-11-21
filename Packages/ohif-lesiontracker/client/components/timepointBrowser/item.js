@@ -13,7 +13,6 @@ Template.timepointBrowserItem.onCreated(() => {
     const hasStudiesData = !!(timepoint.studiesData && timepoint.studiesData.length);
     instance.summary = new ReactiveVar('');
     instance.studiesData = new ReactiveVar(hasStudiesData ? timepoint.studiesData : null);
-    instance.missingStudyUids = new ReactiveVar(null);
 
     const updateStudiesData = newDocument => {
         const newTimepoint = newDocument || timepointApi.timepoints.findOne({ timepointId });
@@ -58,43 +57,8 @@ Template.timepointBrowserItem.onCreated(() => {
         const studiesData = instance.studiesData.get();
         if (studiesData) {
             instance.setModalitiesSummary();
-
-            //  Determine missing timepoint studies
-            const missingStudyUids = [];
-            timepoint.studyInstanceUids.forEach((timepointStudyUid) => {
-                if (!studiesData.find(studyData => studyData.available && studyData.studyInstanceUid === timepointStudyUid)) {
-                    missingStudyUids.push(timepointStudyUid);
-                }
-            });
-            instance.missingStudyUids.set(missingStudyUids);
         }
     });
-});
-
-Template.timepointBrowserItem.helpers({
-    studyAvailability: () => {
-        const instance = Template.instance();
-        const { timepoint } = instance.data;
-        const missingStudyUids = instance.missingStudyUids && instance.missingStudyUids.get();
-
-        if (!missingStudyUids || !timepoint) {
-            //  Timepoint studies are not loaded/checked yet (may be indicated as disabled circle)
-            return "studies-not-ready";
-        }
-
-        if (missingStudyUids.length >= timepoint.studyInstanceUids.length) {
-            //  All timepoint studies are not available (may be indicated as empty circle)
-            return "studies-not-available";
-        }
-
-        if (missingStudyUids.length > 0) {
-            //  Timepoint studies are partially available (may be indicated as half-filled circle)
-            return "studies-partially-available";
-        }
-
-        //  All timepoint studies are available (may be indicated as filled circle)
-        return "studies-fully-available";
-    }
 });
 
 Template.timepointBrowserItem.events({
