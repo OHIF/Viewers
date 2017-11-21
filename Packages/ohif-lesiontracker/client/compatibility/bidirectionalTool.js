@@ -129,6 +129,11 @@ function addNewMeasurement(mouseEventData) {
     $element.off('CornerstoneToolsMouseDownActivate', cornerstoneTools.bidirectional.mouseDownActivateCallback);
     $element.off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
 
+    // Update the perpendicular line handles position
+    const updateHandler = (event, eventData) => updatePerpendicularLineHandles(eventData, measurementData);
+    $element.on('CornerstoneToolsMouseDrag', updateHandler);
+    $element.on('CornerstoneToolsMouseUp', updateHandler);
+
     let cancelled = false;
     const cancelAction = () => {
         cancelled = true;
@@ -203,6 +208,10 @@ function addNewMeasurement(mouseEventData) {
         // perpendicular line is not connected to long-line
         measurementData.handles.perpendicularStart.locked = false;
 
+        // Unbind the handlers to update perpendicular line
+        $element.off('CornerstoneToolsMouseDrag', updateHandler);
+        $element.off('CornerstoneToolsMouseUp', updateHandler);
+
         $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
         $element.on('CornerstoneToolsMouseDown', eventData, mouseDownCallback);
         $element.on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.bidirectional.mouseDownActivateCallback);
@@ -237,6 +246,11 @@ function addNewMeasurementTouch(touchEventData) {
     $(element).off('CornerstoneToolsTap', cornerstoneTools.bidirectional.tapCallback);
     $(element).off('CornerstoneToolsDragStartActive', cornerstoneTools.bidirectional.touchDownActivateCallback);
 
+    // Update the perpendicular line handles position
+    const updateHandler = (event, eventData) => updatePerpendicularLineHandles(eventData, measurementData);
+    $element.on('CornerstoneToolsTouchDrag', updateHandler);
+    $element.on('CornerstoneToolsTouchEnd', updateHandler);
+
     cornerstone.updateImage(element);
     cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
         if (cancelled || cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
@@ -249,6 +263,10 @@ function addNewMeasurementTouch(touchEventData) {
 
         // perpendicular line is not connected to long-line
         measurementData.handles.perpendicularStart.locked = false;
+
+        // Unbind the handlers to update perpendicular line
+        $element.off('CornerstoneToolsTouchDrag', updateHandler);
+        $element.off('CornerstoneToolsTouchEnd', updateHandler);
 
         $(element).on('CornerstoneToolsTouchDrag', cornerstoneTools.bidirectional.touchMoveHandle);
         $(element).on('CornerstoneToolsTap', cornerstoneTools.bidirectional.tapCallback);
@@ -1020,8 +1038,9 @@ function mouseDownCallback(e, eventData) {
 // Cornerstone Methods end
 //****************************************/
 
-// draw perpendicular line
-function drawPerpendicularLine(context, eventData, element, data, color, lineWidth) {
+function updatePerpendicularLineHandles(eventData, data) {
+    if (!data.handles.perpendicularStart.locked) return;
+
     var startX;
     var startY;
     var endX;
@@ -1056,13 +1075,14 @@ function drawPerpendicularLine(context, eventData, element, data, color, lineWid
         endY = mid.y + (perpendicularLineLength / 2) * vectorX;
     }
 
-    if (data.handles.perpendicularStart.locked) {
-        data.handles.perpendicularStart.x = startX;
-        data.handles.perpendicularStart.y = startY;
-        data.handles.perpendicularEnd.x = endX;
-        data.handles.perpendicularEnd.y = endY;
-    }
+    data.handles.perpendicularStart.x = startX;
+    data.handles.perpendicularStart.y = startY;
+    data.handles.perpendicularEnd.x = endX;
+    data.handles.perpendicularEnd.y = endY;
+};
 
+// draw perpendicular line
+function drawPerpendicularLine(context, element, data, color, lineWidth) {
     // Draw perpendicular line
     var perpendicularStartCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularStart);
     var perpendicularEndCanvas = cornerstone.pixelToCanvas(element, data.handles.perpendicularEnd);
@@ -1073,7 +1093,6 @@ function drawPerpendicularLine(context, eventData, element, data, color, lineWid
     context.moveTo(perpendicularStartCanvas.x, perpendicularStartCanvas.y);
     context.lineTo(perpendicularEndCanvas.x, perpendicularEndCanvas.y);
     context.stroke();
-
 }
 
 function findDottedLinePosition(data) {
@@ -1180,7 +1199,8 @@ function onImageRendered(e, eventData) {
         context.stroke();
 
         // Draw perpendicular line
-        drawPerpendicularLine(context, eventData, element, data, color, strokeWidth);
+        updatePerpendicularLineHandles(eventData, data);
+        drawPerpendicularLine(context, element, data, color, strokeWidth);
 
         // Draw the handles
         const handlesColor = color;
