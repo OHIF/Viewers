@@ -74,6 +74,8 @@ let lastActivatedRowItem;
  * @param measurementId The unique key for a specific Measurement
  */
 OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
+    const { isZoomed, zoomedViewportIndex } = OHIF.viewerbase.layoutManager;
+
     lastActivatedRowItem = rowItem;
 
     // Retrieve the list of available viewports
@@ -81,7 +83,12 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
     const numViewports = Math.max($viewports.length, 0);
 
     // Clone the timepoint list to prevent modifying the original object
-    const timepointList = _.clone(timepoints);
+    let timepointList;
+    if (isZoomed) {
+        timepointList = [timepoints[zoomedViewportIndex]];
+    } else {
+        timepointList = _.clone(timepoints);
+    }
 
     // Reverse the timepointList array if the flag is set
     if (OHIF.viewer.invertViewportTimepointsOrder) {
