@@ -19,7 +19,7 @@ var configuration = {
     getMeasurementLocationCallback,
     changeMeasurementLocationCallback,
     drawHandles: false,
-    drawHandlesOnHover: false,
+    drawHandlesOnHover: true,
     arrowFirst: true,
     textBox: textBoxConfig
 };
