@@ -114,15 +114,15 @@ body .select2-container--default .select2-results>.select2-results__options
     overflow: hidden
     text-align: center
     text-shadow: none
+    transition(color 0.3s ease)
     width: 20px
 
     span
       display: block
       line-height: 20px
-      transition(transform 0.3s ease)
 
-    &:hover span
-      transform(rotate(180deg))
+    &:hover
+      theme('color', '$textPrimaryColor')
 
 .full-width
   width: 100%
