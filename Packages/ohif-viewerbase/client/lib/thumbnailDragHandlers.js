@@ -86,15 +86,9 @@ const thumbnailDragStartHandler = (event, data) => {
         'z-index': 100000
     });
 
-    if (useTransform === true) {
-        // This sets the default style properties of the cloned element so it is
-        // ready to be dragged around the page
-        $clone.css({
-            left: cursorX - diff.x,
-            position: 'fixed',
-            top: cursorY - diff.y,
-        });
-    } else {
+    // This sets the default style properties of the cloned element so it is
+    // ready to be dragged around the page
+    if (useTransform) {
         const viewerHeight = $('#viewer').height();
         const headerHeight = $('.header').outerHeight();
         const heightDiff = viewerHeight + headerHeight;
@@ -107,6 +101,12 @@ const thumbnailDragStartHandler = (event, data) => {
 
         const translation = `translate(${positionX}px, ${positionY}px)`;
         OHIF.ui.styleProperty.set($clone.get(0), 'transform', translation);
+    } else {
+        $clone.css({
+            left: cursorX - diff.x,
+            position: 'fixed',
+            top: cursorY - diff.y,
+        });
     }
 };
 
@@ -135,21 +135,21 @@ const thumbnailDragHandler = event => {
         'z-index': 100000
     });
 
-    if (useTransform === true) {
-        // This sets the default style properties of the cloned element so it is
-        // ready to be dragged around the page
-        $clone.css({
-            left: cursorX - diff.x,
-            position: 'fixed',
-            top: cursorY - diff.y,
-        });
-    } else {
+    // This sets the default style properties of the cloned element so it is
+    // ready to be dragged around the page
+    if (useTransform) {
         const heightDiff = $clone.data('heightDiff');
         const positionX = cursorX - diff.x;
         const positionY = cursorY - diff.y - heightDiff;
 
         const translation = `translate(${positionX}px, ${positionY}px)`;
         OHIF.ui.styleProperty.set($clone.get(0), 'transform', translation);
+    } else {
+        $clone.css({
+            left: cursorX - diff.x,
+            position: 'fixed',
+            top: cursorY - diff.y,
+        });
     }
 
     // Identify the element below the current cursor position
