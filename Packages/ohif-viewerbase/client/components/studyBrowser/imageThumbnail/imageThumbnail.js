@@ -42,8 +42,8 @@ Template.imageThumbnail.onRendered(() => {
             return;
         }
 
-        // Disable cornerstone for thumbnail element and remove its canvas
-        cornerstone.disable(element);
+        // Remove previously generated static images
+        $element.find('.static-image').remove();
 
         // Enable cornerstone for thumbnail element again creating a new canvas
         cornerstone.enable(element, { renderer: '' });
@@ -55,13 +55,29 @@ Template.imageThumbnail.onRendered(() => {
         const loadSuccess = image => {
             // Check to make sure the element is enabled.
             try {
-                var enabledElement = cornerstone.getEnabledElement(element);
+                cornerstone.getEnabledElement(element);
             } catch(error) {
                 return;
             }
 
             cornerstone.displayImage(element, image);
-            $loading.css('display', 'none');
+
+            $element.one('CornerstoneImageRendered', () => {
+                const enabledElement = cornerstone.getEnabledElement(element);
+
+                // Create a static image from
+                const imageElement = document.createElement('img');
+                imageElement.classList.add('static-image');
+                const dataUrl = enabledElement.canvas.toDataURL('image/jpeg', 1);
+                imageElement.src = dataUrl;
+
+                // Disable cornerstone for thumbnail element and remove its canvas
+                cornerstone.disable(element);
+
+                $element.append(imageElement);
+
+                $loading.css('display', 'none');
+            });
         };
 
         // Define a handler for error on image load
