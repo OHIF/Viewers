@@ -56,8 +56,8 @@ Template.studyBrowserItem.events({
 
         const { studyInformation } = instance.data;
 
-        //  Skip if study is not available (set to false explicitly)
-        if (studyInformation.available === false) {
+        //  Skip if study is not available
+        if (!studyInformation.available) {
             return;
         }
 
