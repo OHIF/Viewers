@@ -50,15 +50,27 @@ OHIF.ui.showDialog = (templateName, dialogData={}) => {
     }
 
     // Destroy the created dialog view when the promise is either resolved or rejected
-    const dismissModal = () => {
-        if (dialogData && dialogData.promise && $modal) {
+    const dismissModal = (hideFirst=false) => {
+        if (hideFirst || (dialogData && dialogData.promise && $modal)) {
             $modal.one('hidden.bs.modal', () => Blaze.remove(view)).modal('hide');
         } else {
             Blaze.remove(view);
         }
     };
 
+    // Create a handler to dismiss the modal on navigation
+    const $body = $(document.body);
+    const navigationHandler = () => {
+        dismissModal(true);
+        $body.off('ohif.navigated', navigationHandler);
+    };
+
     promise.then(dismissModal).catch(dismissModal);
+
+    // Dismiss the modal if navigation occurs and it should not be kept opened
+    if (!dialogData.keepOpenOnNavigation) {
+        $body.on('ohif.navigated', navigationHandler);
+    }
 
     // Return the promise to allow callbacks stacking from outside
     return promise;
