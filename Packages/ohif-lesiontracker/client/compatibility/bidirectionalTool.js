@@ -97,7 +97,7 @@ function createNewMeasurement(mouseEventData) {
 }
 
 function addNewMeasurement(mouseEventData) {
-    const element = mouseEventData.element;
+    const { element } = mouseEventData;
     const $element = $(element);
 
     // LT-29 Disable Target Measurements when pixel spacing is not available
@@ -113,10 +113,7 @@ function addNewMeasurement(mouseEventData) {
     const measurementData = createNewMeasurement(mouseEventData);
     measurementData.viewport = cornerstone.getViewport(element);
 
-    const eventData = {
-        mouseButtonMask: mouseEventData.which
-    };
-
+    const eventData = { mouseButtonMask: mouseEventData.which };
     const config = cornerstoneTools.bidirectional.getConfiguration();
 
     // associate this data with this imageId so we can render it and manipulate it
