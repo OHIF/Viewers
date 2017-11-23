@@ -28,6 +28,16 @@ OHIF.ui.showDropdown = (items=[], options={}) => {
     const parentElement = options.parentElement || document.body;
     view = Blaze.renderWithData(Template.dropdownForm, templateData, parentElement);
 
+    // Create a handler to dismiss the dropdown on navigation
+    const $body = $(document.body);
+    const navigationHandler = () => {
+        promiseReject();
+        $body.off('ohif.navigated', navigationHandler);
+    };
+
+    // Dismiss the dropdown if navigation occurs
+    $body.on('ohif.navigated', navigationHandler);
+
     // Return the promise to allow callbacks stacking from outside
     return promise;
 };
