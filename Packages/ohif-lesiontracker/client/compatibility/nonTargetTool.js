@@ -66,7 +66,8 @@ function changeMeasurementLocationCallback(measurementData, eventData) {
 /// --- Mouse Tool --- ///
 ///////// BEGIN ACTIVE TOOL ///////
 function addNewMeasurement(mouseEventData) {
-    const element = mouseEventData.element;
+    const { element } = mouseEventData;
+    const $element = $(element);
 
     function doneCallback() {
         measurementData.active = true;
@@ -76,38 +77,76 @@ function addNewMeasurement(mouseEventData) {
     const measurementData = createNewMeasurement(mouseEventData);
     measurementData.viewport = cornerstone.getViewport(element);
 
-    const eventData = {
-        mouseButtonMask: mouseEventData.which
-    };
-
-    const config = cornerstoneTools.nonTarget.getConfiguration();
+    const eventData = { mouseButtonMask: mouseEventData.which };
+    const config = cornerstoneTools[toolType].getConfiguration();
 
     // associate this data with this imageId so we can render it and manipulate it
-    cornerstoneTools.addToolState(mouseEventData.element, toolType, measurementData);
+    cornerstoneTools.addToolState(element, toolType, measurementData);
 
-    // since we are dragging to another place to drop the end point, we can just activate
-    // the end point and let the moveHandle move it for us.
-    $(element).off('CornerstoneToolsMouseMove', cornerstoneTools.nonTarget.mouseMoveCallback);
-    $(element).off('CornerstoneToolsMouseDown', cornerstoneTools.nonTarget.mouseDownCallback);
-    $(element).off('CornerstoneToolsMouseDownActivate', cornerstoneTools.nonTarget.mouseDownActivateCallback);
-    $(element).off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+    const disableDefaultHandlers = () => {
+        // since we are dragging to another place to drop the end point, we can just activate
+        // the end point and let the moveHandle move it for us.
+        $element.off('CornerstoneToolsMouseMove', cornerstoneTools[toolType].mouseMoveCallback);
+        $element.off('CornerstoneToolsMouseDown', cornerstoneTools[toolType].mouseDownCallback);
+        $element.off('CornerstoneToolsMouseDownActivate', cornerstoneTools[toolType].mouseDownActivateCallback);
+        $element.off('CornerstoneToolsMouseDoubleClick', doubleClickCallback);
+    };
+
+    disableDefaultHandlers();
 
     // Add a flag for using Esc to cancel tool placement
     let cancelled = false;
-    function cancelCallback(e) {
+    const cancelAction = () => {
+        cancelled = true;
+        cornerstoneTools.removeToolState(element, toolType, measurementData);
+    };
+
+    // Add a flag for using Esc to cancel tool placement
+    const keyDownHandler = event => {
         // If the Esc key was pressed, set the flag to true
-        if (e.which === keys.ESC) {
-            cancelled = true;
-            cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
+        if (event.which === keys.ESC) {
+            cancelAction();
         }
 
         // Don't propagate this keydown event so it can't interfere
         // with anything outside of this tool
         return false;
-    }
+    };
 
     // Bind a one-time event listener for the Esc key
-    $(element).one('keydown', cancelCallback);
+    $(element).one('keydown', keyDownHandler);
+
+    // Bind a mousedown handler to cancel the measurement if it's zero-sized
+    const mousedownHandler = () => {
+        const { start, end } = measurementData.handles;
+        if (!cornerstoneMath.point.distance(start, end)) {
+            cancelAction();
+        }
+    };
+
+    // Bind a one-time event listener for mouse down
+    $element.one('mousedown', mousedownHandler);
+
+    // Keep the current image and create a handler for new rendered images
+    const currentImage = cornerstone.getImage(element);
+    const currentViewport = cornerstone.getViewport(element);
+    const imageRenderedHandler = () => {
+        const newImage = cornerstone.getImage(element);
+
+        // Check if the rendered image changed during measurement creation and delete it if so
+        if (newImage.imageId !== currentImage.imageId) {
+            cornerstone.displayImage(element, currentImage, currentViewport);
+            cancelAction();
+            cornerstone.displayImage(element, newImage, currentViewport);
+        }
+    };
+
+    // Bind the event listener for image rendering
+    $element.on('CornerstoneImageRendered', imageRenderedHandler);
+
+    // Bind the tool deactivation and enlargement handlers
+    $element.on('CornerstoneToolsToolDeactivated', cancelAction);
+    $element.one('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
     cornerstone.updateImage(element);
 
@@ -120,14 +159,26 @@ function addNewMeasurement(mouseEventData) {
         }
 
         // Unbind the Esc keydown hook
-        $(element).off('keydown', cancelCallback);
+        $element.off('keydown', keyDownHandler);
 
-        $(element).on('CornerstoneToolsMouseMove', eventData, cornerstoneTools.nonTarget.mouseMoveCallback);
-        $(element).on('CornerstoneToolsMouseDown', eventData, cornerstoneTools.nonTarget.mouseDownCallback);
-        $(element).on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools.nonTarget.mouseDownActivateCallback);
-        $(element).on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
+        // Unbind the mouse down hook
+        $element.off('mousedown', mousedownHandler);
 
-        cornerstone.updateImage(mouseEventData.element);
+        // Unbind the event listener for image rendering
+        $element.off('CornerstoneImageRendered', imageRenderedHandler);
+
+        // Unbind the tool deactivation and enlargement handlers
+        $element.off('CornerstoneToolsToolDeactivated', cancelAction);
+        $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
+
+        // Disable the default handlers and re-enable again
+        disableDefaultHandlers();
+        $element.on('CornerstoneToolsMouseMove', eventData, cornerstoneTools[toolType].mouseMoveCallback);
+        $element.on('CornerstoneToolsMouseDown', eventData, cornerstoneTools[toolType].mouseDownCallback);
+        $element.on('CornerstoneToolsMouseDownActivate', eventData, cornerstoneTools[toolType].mouseDownActivateCallback);
+        $element.on('CornerstoneToolsMouseDoubleClick', eventData, doubleClickCallback);
+
+        cornerstone.updateImage(element);
     });
 }
 
