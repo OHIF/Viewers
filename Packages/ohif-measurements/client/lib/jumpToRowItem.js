@@ -42,7 +42,7 @@ function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
             const isSameSeries = series.seriesInstanceUid === measurementData.seriesInstanceUid;
             if (isSameStudy && isSameSeries) {
                 // If it is, activate the measurements in this viewport and stop here
-                OHIF.viewerbase.viewportUtils.resetViewport('all');
+                OHIF.viewerbase.viewportUtils.resetViewport(viewportIndex);
                 renderedCallback(element);
             } else {
                 findAndRender();
