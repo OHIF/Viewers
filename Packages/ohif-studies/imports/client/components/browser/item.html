@@ -10,12 +10,8 @@
                         <div class="study-modality-text" style="{{modalityStyle studyData.modalities}}">{{studyData.modalities}}</div>
                     </div>
                     <div class="study-text">
-                        {{#if isLoaded}}
-                            <div class="study-date">{{formatDA studyData.studyDate 'D-MMM-YYYY'}}</div>
-                            <div class="study-description">{{studyData.studyDescription}}</div>
-                        {{else}}
-                            <div class="study-availability">{{#if studyData.available}}Click to load{{else}}N/A{{/if}}</div>
-                        {{/if}}
+                        <div class="study-date">{{formatDA studyData.studyDate 'D-MMM-YYYY'}}</div>
+                        <div class="study-description">{{studyData.studyDescription}}</div>
                     </div>
                 </div>
             {{/let}}
