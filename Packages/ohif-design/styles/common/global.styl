@@ -21,6 +21,10 @@ body ol
   margin: 0
   padding-left: 1em
 
+// This is needed for IE11 because svgxuse doesn't allow the browser to capture mouse events on SVG
+svg, use
+  pointer-events: none
+
 input::-ms-clear
   display: none
 

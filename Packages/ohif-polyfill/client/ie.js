@@ -7,7 +7,7 @@ if (navigator && /MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
     Meteor.startup(() => {
         $(window).on('load', () => {
             // Fix SVG+USE issues by calling the SVG polyfill
-            writeScript('svg4everybody.min.js', () => window.svg4everybody());
+            writeScript('svgxuse.min.js');
         });
     });
 }
