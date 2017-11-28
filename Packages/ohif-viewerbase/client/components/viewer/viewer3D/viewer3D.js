@@ -3,7 +3,8 @@ import 'meteor/fds:threejs';
 
 
 var scene, camera, renderer, controls;
-var geometry, material, cube, dirLight, loader;
+var geometry, material, sphere, geometry2, material2, sphere2, edges;
+var aspectRelation; // Width / Height
 
 var Detector = {
 
@@ -81,23 +82,72 @@ if ( typeof module === 'object' ) {
 
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
     renderer = new THREE.WebGLRenderer({canvas: document.getElementById('wglcanvas')});
     renderer.setSize( renderer.domElement.offsetWidth, renderer.domElement.offsetHeight );
-
-    geometry = new THREE.BoxGeometry( 3, 3, 3 );
+    aspectRelation = renderer.getSize().width / renderer.getSize().height;
+    geometry = new THREE.SphereGeometry(1, 64, 64, 3 * Math.PI / 2, Math.PI / 2);
     material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
+    material.transparent = false;
+    material.opacity = 0.5;
+    sphere = new THREE.Mesh( geometry, material );
+    sphere.scale.set(1, 1, 1);
+    edges = new THREE.EdgesHelper(sphere);
+    geometry2 = new THREE.SphereGeometry(2, 64, 64, 0, 3 * Math.PI / 2);
+    material2 = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+    material2.transparent = true;
+    material2.opacity = 0.1;
+    sphere2 = new THREE.Mesh( geometry2, material2 );
+    sphere2.scale.set(1, 1, 1);
+
+    var loader = new THREE.VTKLoader();
+    loader.load("/bunny.vtk", function (geometry) {
+        geometry.center();
+        geometry.computeVertexNormals();
+        var material = new THREE.MeshLambertMaterial( { color: 0x2A54DD, side: THREE.DoubleSide } );
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.scale.set(1, 1, 1);
+        mesh.scale.multiplyScalar(5);
+        scene.add(mesh);
+    });
+
+    scene.add( sphere );
+    scene.add( sphere2 );
+    scene.add(edges);
+
+    camera = new THREE.PerspectiveCamera( 75, aspectRelation, 0.1, 1000 );
+    controls = new THREE.TrackballControls(camera);
+
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = false;
+    controls.dynamicDampingFactor = 0.3;
+    controls.keys = [ 65, 83, 68 ];
+    controls.addEventListener( 'change', render );
+
+    var dirLight = new THREE.DirectionalLight( 0xffffff );
+    dirLight.position.set( 200, 200, 1000 ).normalize();
+    camera.add( dirLight );
+    camera.add( dirLight.target );
 
     camera.position.z = 5;
+
+    scene.add(camera);
+
+    render();
 }
 
 function animate() {
     requestAnimationFrame( animate );
-    cube.rotation.x += 0.1;
-    cube.rotation.y += 0.1;
+    // sphere.rotation.x += 0.1;
+    // sphere.rotation.y += 0.1;
+    controls.update();
+}
+
+function render() {
     renderer.render( scene, camera );
 }
 
