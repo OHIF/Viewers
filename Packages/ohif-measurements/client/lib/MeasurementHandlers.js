@@ -1,14 +1,41 @@
 import { Meteor } from 'meteor/meteor';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 import { OHIF } from 'meteor/ohif:core';
 
 class MeasurementHandlers {
 
+    static handleSingleMeasurementAdded() {
+        console.warn('>>>>handleSingleMeasurementAdded');
+    }
+
+    static handleChildMeasurementAdded() {
+        console.warn('>>>>handleChildMeasurementAdded');
+    }
+
     static onAdded(e, instance, eventData) {
+        const { MeasurementApi } = OHIF.measurements;
+        const configuration = MeasurementApi.getConfiguration();
+        const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
+
         const { measurementApi } = instance.data;
-        const measurementData = eventData.measurementData;
-        const Collection = measurementApi.tools[eventData.toolType];
+        let { measurementData, toolType } = eventData;
+
+        const toolGroupId = toolsGroupsMap[toolType];
+        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
+
+        if (!toolGroup) return;
+
+        console.warn('>>>>', toolType, toolGroupId, configuration.measurementTools);
+        const tool = _.findWhere(toolGroup.childTools, { id: toolType });
+        if (tool.parentTool) {
+            MeasurementHandlers.handleChildMeasurementAdded();
+        } else {
+            MeasurementHandlers.handleSingleMeasurementAdded();
+        }
+
+        const Collection = measurementApi.tools[toolType];
 
         // Stop here if the tool data shall not be persisted (e.g. temp tools)
         if (!Collection) {
@@ -41,7 +68,8 @@ class MeasurementHandlers {
         OHIF.log.info('CornerstoneToolsMeasurementAdded');
 
         const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
-        let measurement = $.extend({
+        let measurement = { measurementNumber: measurementData.measurementNumber };
+        const additionalProperties = {
             userId: Meteor.userId(),
             patientId,
             studyInstanceUid,
@@ -49,7 +77,13 @@ class MeasurementHandlers {
             sopInstanceUid,
             frameIndex,
             imagePath
-        }, measurementData);
+        };
+
+        if (tool.parentTool) {
+            measurement[tool.attribute] = _.extend({}, measurementData, additionalProperties);
+        } else {
+            _.extend(measurement, additionalProperties);
+        }
 
         // Get the related timepoint by the measurement number and use its location if defined
         const relatedTimepoint = Collection.findOne({
@@ -69,7 +103,7 @@ class MeasurementHandlers {
         // Insert the new measurement into the collection
         measurementData._id = Collection.insert(measurement);
 
-        // Get the update the measurement number after inserting
+        // Get the updated measurement number after inserting
         Meteor.defer(() => {
             measurementData.measurementNumber = Collection.findOne(measurementData._id).measurementNumber;
             cornerstone.updateImage(OHIF.viewerbase.viewportUtils.getActiveViewportElement());
@@ -140,7 +174,6 @@ class MeasurementHandlers {
 
         // Stop here if the measurement is already gone or never existed
         if (!measurement) return;
-
 
         // Remove all the measurements with the given type and number
         const { measurementNumber, timepointId } = measurement;

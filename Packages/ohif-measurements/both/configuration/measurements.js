@@ -2,6 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 let configuration = {};
 
@@ -289,6 +290,7 @@ class MeasurementApi {
             toolGroup.childTools.forEach(tool => {
                 const measurements = this.tools[tool.id].find().fetch();
                 measurements.forEach(measurement => {
+                    // TODO [PWV-184] >>>> iterate over multiple overlays here
                     OHIF.measurements.syncMeasurementAndToolData(measurement);
                 });
             });
