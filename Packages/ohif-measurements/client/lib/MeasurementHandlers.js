@@ -4,36 +4,42 @@ import { _ } from 'meteor/underscore';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 import { OHIF } from 'meteor/ohif:core';
 
+const getImageAttributes = element => {
+    // Get the Cornerstone imageId
+    const enabledElement = cornerstone.getEnabledElement(element);
+    const imageId = enabledElement.image.imageId;
+
+    // Get studyInstanceUid & patientId
+    const study = cornerstone.metaData.get('study', imageId);
+    const studyInstanceUid = study.studyInstanceUid;
+    const patientId = study.patientId;
+
+    // Get seriesInstanceUid
+    const series = cornerstone.metaData.get('series', imageId);
+    const seriesInstanceUid = series.seriesInstanceUid;
+
+    // Get sopInstanceUid
+    const sopInstance = cornerstone.metaData.get('instance', imageId);
+    const sopInstanceUid = sopInstance.sopInstanceUid;
+    const frameIndex = sopInstance.frame || 0;
+
+    const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
+
+    return {
+        patientId,
+        studyInstanceUid,
+        seriesInstanceUid,
+        sopInstanceUid,
+        frameIndex,
+        imagePath
+    };
+};
+
 class MeasurementHandlers {
 
-    static handleSingleMeasurementAdded() {
-        console.warn('>>>>handleSingleMeasurementAdded');
-    }
-
-    static handleChildMeasurementAdded() {
-        console.warn('>>>>handleChildMeasurementAdded');
-    }
-
-    static onAdded(e, instance, eventData) {
-        const { MeasurementApi } = OHIF.measurements;
-        const configuration = MeasurementApi.getConfiguration();
-        const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
-
+    static handleSingleMeasurementAdded({ instance, eventData, tool }) {
         const { measurementApi } = instance.data;
         let { measurementData, toolType } = eventData;
-
-        const toolGroupId = toolsGroupsMap[toolType];
-        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
-
-        if (!toolGroup) return;
-
-        console.warn('>>>>', toolType, toolGroupId, configuration.measurementTools);
-        const tool = _.findWhere(toolGroup.childTools, { id: toolType });
-        if (tool.parentTool) {
-            MeasurementHandlers.handleChildMeasurementAdded();
-        } else {
-            MeasurementHandlers.handleSingleMeasurementAdded();
-        }
 
         const Collection = measurementApi.tools[toolType];
 
@@ -47,49 +53,19 @@ class MeasurementHandlers {
             return;
         }
 
-        // Get the Cornerstone imageId
-        const enabledElement = cornerstone.getEnabledElement(eventData.element);
-        const imageId = enabledElement.image.imageId;
-
-        // Get studyInstanceUid & patientId
-        const study = cornerstone.metaData.get('study', imageId);
-        const studyInstanceUid = study.studyInstanceUid;
-        const patientId = study.patientId;
-
-        // Get seriesInstanceUid
-        const series = cornerstone.metaData.get('series', imageId);
-        const seriesInstanceUid = series.seriesInstanceUid;
-
-        // Get sopInstanceUid
-        const sopInstance = cornerstone.metaData.get('instance', imageId);
-        const sopInstanceUid = sopInstance.sopInstanceUid;
-        const frameIndex = sopInstance.frame || 0;
-
         OHIF.log.info('CornerstoneToolsMeasurementAdded');
 
-        const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
-        let measurement = { measurementNumber: measurementData.measurementNumber };
-        const additionalProperties = {
-            userId: Meteor.userId(),
-            patientId,
-            studyInstanceUid,
-            seriesInstanceUid,
-            sopInstanceUid,
-            frameIndex,
-            imagePath
-        };
-
-        if (tool.parentTool) {
-            measurement[tool.attribute] = _.extend({}, measurementData, additionalProperties);
-        } else {
-            _.extend(measurement, additionalProperties);
-        }
+        const imageAttributes = getImageAttributes(eventData.element);
+        const measurement = _.extend({}, measurementData, imageAttributes, {
+            measurementNumber: measurementData.measurementNumber,
+            userId: Meteor.userId()
+        });
 
         // Get the related timepoint by the measurement number and use its location if defined
         const relatedTimepoint = Collection.findOne({
             measurementNumber: measurement.measurementNumber,
             toolType: measurementData.toolType,
-            patientId,
+            patientId: imageAttributes.patientId,
         });
 
         // Use the related timepoint location if found and defined
@@ -111,6 +87,88 @@ class MeasurementHandlers {
 
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
+    }
+
+    static handleChildMeasurementAdded({ instance, eventData, tool, toolGroupId, toolGroup }) {
+        const { measurementApi } = instance.data;
+        let { measurementData, toolType } = eventData;
+
+        const Collection = measurementApi.tools[toolType];
+
+        // Stop here if the tool data shall not be persisted (e.g. temp tools)
+        if (!Collection) {
+            return;
+        }
+
+        // Stop here if there's no measurement data or if it was cancelled
+        if (!measurementData || measurementData.cancelled) {
+            return;
+        }
+
+        OHIF.log.info('CornerstoneToolsMeasurementAdded');
+
+        const measurement = { measurementNumber: measurementData.measurementNumber };
+
+        const imageAttributes = getImageAttributes(eventData.element);
+        const additionalProperties = _.extend(imageAttributes, {
+            userId: Meteor.userId()
+        });
+
+        measurement[tool.attribute] = _.extend({}, measurementData, additionalProperties);
+
+        // Get the related timepoint by the measurement number and use its location if defined
+        const relatedTimepoint = Collection.findOne({
+            measurementNumber: measurement.measurementNumber,
+            toolType: measurementData.toolType,
+            patientId: imageAttributes.patientId
+        });
+
+        // Use the related timepoint location if found and defined
+        if (relatedTimepoint && relatedTimepoint.location) {
+            measurement.location = relatedTimepoint.location;
+        }
+
+        // Clean the measurement according to the Schema
+        Collection._c2._simpleSchema.clean(measurement);
+
+        // Insert the new measurement into the collection
+        measurementData._id = Collection.insert(measurement);
+
+        // Get the updated measurement number after inserting
+        Meteor.defer(() => {
+            measurementData.measurementNumber = Collection.findOne(measurementData._id).measurementNumber;
+            cornerstone.updateImage(OHIF.viewerbase.viewportUtils.getActiveViewportElement());
+        });
+
+        // Signal unsaved changes
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
+    }
+
+    static onAdded(event, instance, eventData) {
+        const { MeasurementApi } = OHIF.measurements;
+        const configuration = MeasurementApi.getConfiguration();
+        const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
+
+        const { toolType } = eventData;
+        const toolGroupId = toolsGroupsMap[toolType];
+        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
+
+        if (!toolGroup) return;
+
+        const tool = _.findWhere(toolGroup.childTools, { id: toolType });
+        const params = {
+            instance,
+            eventData,
+            tool,
+            toolGroupId,
+            toolGroup
+        };
+
+        if (tool.parentTool) {
+            MeasurementHandlers.handleChildMeasurementAdded(params);
+        } else {
+            MeasurementHandlers.handleSingleMeasurementAdded(params);
+        }
     }
 
     static onModified(e, instance, eventData) {
