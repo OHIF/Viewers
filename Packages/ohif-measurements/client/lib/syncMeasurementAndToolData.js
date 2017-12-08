@@ -1,5 +1,5 @@
-import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 OHIF.measurements.syncMeasurementAndToolData = measurement => {
     OHIF.log.info('syncMeasurementAndToolData');
@@ -41,7 +41,7 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
             alreadyExists = true;
 
             // Update the toolData from the Measurement data
-            $.extend(tool, measurement);
+            Object.assign(tool, measurement);
             return false;
         });
 
