@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
-import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
+import { $ } from 'meteor/jquery';
+import { OHIF } from 'meteor/ohif:core';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 
 Template.measurementTableRow.onCreated(() => {
     const instance = Template.instance();
@@ -43,7 +45,8 @@ Template.measurementTableRow.events({
         $row.closest('.measurementTableView').find('.measurementTableRow').not($row).removeClass('active');
         $row.toggleClass('active');
 
-        OHIF.measurements.jumpToRowItem(rowItem, timepoints);
+        const childToolKey = $(event.target).attr('data-child');
+        OHIF.measurements.jumpToRowItem(rowItem, timepoints, childToolKey);
     },
 
     'click .js-rename'(event, instance) {
