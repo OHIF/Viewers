@@ -34,24 +34,21 @@ const Measurement = new SimpleSchema({
             if (this.isInsert) {
                 return new Date();
             } else if (this.isUpsert) {
-                return {
-                    $setOnInsert: new Date()
-                };
+                return { $setOnInsert: new Date() };
             } else {
-                this.unset(); // Prevent user from supplying their own value
+                // [PWV-184] Preventing unset due to child tools updating
+                // this.unset(); // Prevent user from supplying their own value
             }
         }
     },
     // Force value to be current date (on server) upon update
-    // and don't allow it to be set upon insert.
     updatedAt: {
         type: Date,
         autoValue: function() {
             if (this.isUpdate) {
-                return new Date();
+                // return new Date();
             }
         },
-        // denyInsert: true, // Commenting this out for now since we are constantly re-adding entries to client-side collections
         optional: true
     }
 });
