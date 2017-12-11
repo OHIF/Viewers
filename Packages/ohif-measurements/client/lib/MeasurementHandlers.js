@@ -134,7 +134,10 @@ class MeasurementHandlers {
             Collection._c2._simpleSchema.clean(measurement);
 
             // Update the measurement in the collection
-            Collection.update(parentMeasurement._id, { $set: { [key]: measurement[key] } });
+            Collection.update(parentMeasurement._id, {
+                $set: { [key]: measurement[key] },
+                $inc: { childToolsCount: 1 }
+            });
 
             // Update the measurementData ID and measurementNumber
             measurementData._id = parentMeasurement._id;
@@ -172,17 +175,8 @@ class MeasurementHandlers {
     }
 
     static onAdded(event, instance, eventData) {
-        const { MeasurementApi } = OHIF.measurements;
-        const configuration = MeasurementApi.getConfiguration();
-        const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
-
         const { toolType } = eventData;
-        const toolGroupId = toolsGroupsMap[toolType];
-        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
-
-        if (!toolGroup) return;
-
-        const tool = _.findWhere(toolGroup.childTools, { id: toolType });
+        const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
         const params = {
             instance,
             eventData,
@@ -190,6 +184,8 @@ class MeasurementHandlers {
             toolGroupId,
             toolGroup
         };
+
+        if (!tool) return;
 
         if (tool.parentTool) {
             MeasurementHandlers.handleChildMeasurementAdded(params);
@@ -275,17 +271,8 @@ class MeasurementHandlers {
     }
 
     static onModified(event, instance, eventData) {
-        const { MeasurementApi } = OHIF.measurements;
-        const configuration = MeasurementApi.getConfiguration();
-        const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
-
         const { toolType } = eventData;
-        const toolGroupId = toolsGroupsMap[toolType];
-        const toolGroup = _.findWhere(configuration.measurementTools, { id: toolGroupId });
-
-        if (!toolGroup) return;
-
-        const tool = _.findWhere(toolGroup.childTools, { id: toolType });
+        const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
         const params = {
             instance,
             eventData,
@@ -294,6 +281,8 @@ class MeasurementHandlers {
             toolGroup
         };
 
+        if (!tool) return;
+
         if (tool.parentTool) {
             MeasurementHandlers.handleChildMeasurementModified(params);
         } else {
@@ -301,16 +290,14 @@ class MeasurementHandlers {
         }
     }
 
-    static onRemoved(e, instance, eventData) {
+    static handleSingleMeasurementRemoved({ instance, eventData, tool, toolGroupId, toolGroup }) {
         OHIF.log.info('CornerstoneToolsMeasurementRemoved');
         const measurementData = eventData.measurementData;
         const { measurementApi, timepointApi } = instance.data;
         const Collection = measurementApi.tools[eventData.toolType];
 
         // Stop here if the tool data shall not be persisted (e.g. temp tools)
-        if (!Collection) {
-            return;
-        }
+        if (!Collection) return;
 
         const measurementTypeId = measurementApi.toolsGroupsMap[measurementData.toolType];
         const measurement = Collection.findOne(measurementData._id);
@@ -334,6 +321,62 @@ class MeasurementHandlers {
 
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
+    }
+
+    static handleChildMeasurementRemoved({ instance, eventData, tool, toolGroupId, toolGroup }) {
+        OHIF.log.info('CornerstoneToolsMeasurementRemoved');
+        const measurementData = eventData.measurementData;
+        const { measurementApi, timepointApi } = instance.data;
+        const Collection = measurementApi.tools[tool.parentTool];
+
+        // Stop here if the tool data shall not be persisted (e.g. temp tools)
+        if (!Collection) return;
+
+        const measurement = Collection.findOne(measurementData._id);
+
+        // Stop here if the measurement is already gone or never existed
+        if (!measurement) return;
+
+        if (measurement.childToolsCount === 1) {
+            // Remove the measurement
+            Collection.remove(measurement._id);
+
+            // Sync the new measurement data with cornerstone tools
+            const baseline = timepointApi.baseline();
+            measurementApi.sortMeasurements(baseline.timepointId);
+        } else {
+            // Update the measurement in the collection
+            Collection.update(measurement._id, {
+                $set: { [tool.attribute]: null },
+                $inc: { childToolsCount: -1 }
+            });
+        }
+
+        // Repaint the images on all viewports without the removed measurements
+        _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
+
+        // Signal unsaved changes
+        OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
+    }
+
+    static onRemoved(e, instance, eventData) {
+        const { toolType } = eventData;
+        const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
+        const params = {
+            instance,
+            eventData,
+            tool,
+            toolGroupId,
+            toolGroup
+        };
+
+        if (!tool) return;
+
+        if (tool.parentTool) {
+            MeasurementHandlers.handleChildMeasurementRemoved(params);
+        } else {
+            MeasurementHandlers.handleSingleMeasurementRemoved(params);
+        }
     }
 }
 

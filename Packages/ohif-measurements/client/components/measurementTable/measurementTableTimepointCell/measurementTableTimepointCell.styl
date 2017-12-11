@@ -2,7 +2,6 @@
 
 .measurementTableTimepointCell
   theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
-  theme('color', '$textPrimaryColor')
   cursor: pointer
   padding: 0 10px
   position: relative
@@ -14,8 +13,14 @@
     right: 5px
     top: 3px
 
+  span
+    display: block
+
   &.loading .loading-spinner
     display: block
 
-  &:hover
+  &, span
+    theme('color', '$textPrimaryColor')
+
+  &:hover, span:hover
     theme('color', '$activeColor')
