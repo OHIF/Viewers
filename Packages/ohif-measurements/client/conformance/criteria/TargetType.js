@@ -21,7 +21,7 @@ export class TargetTypeCriterion extends BaseCriterion {
         items.forEach(item => {
             const measurement = item.measurement;
 
-            if (measurement.toolType !== 'bidirectional') {
+            if (measurement.toolType !== 'bidirectional' && !measurement.bidirectional) {
                 measurements.push(measurement);
             }
         });

@@ -11,8 +11,22 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
     const metadata = OHIF.viewer.StudyMetadataList.findBy({ studyInstanceUid });
     if (!metadata) return;
 
-    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurement.imagePath);
+    // Iterate each child tool if the current tool has children
+    const { getImageIdForImagePath } = OHIF.viewerbase;
     const toolType = measurement.toolType;
+    const { tool } = OHIF.measurements.getToolConfiguration(toolType);
+    if (Array.isArray(tool.childTools)) {
+        tool.childTools.forEach(childToolKey => {
+            const childMeasurement = measurement[childToolKey];
+            if (!childMeasurement) return;
+            childMeasurement._id = measurement._id;
+            OHIF.measurements.syncMeasurementAndToolData(childMeasurement);
+        });
+
+        return;
+    }
+
+    const imageId = getImageIdForImagePath(measurement.imagePath);
 
     // If no tool state exists for this imageId, create an empty object to store it
     if (!toolState[imageId]) {

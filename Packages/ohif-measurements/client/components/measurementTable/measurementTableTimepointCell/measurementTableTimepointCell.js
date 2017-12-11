@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
 import { _ } from 'meteor/underscore';
+import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 
 Template.measurementTableTimepointCell.helpers({
     hasDataAtThisTimepoint() {
@@ -58,16 +60,6 @@ Template.measurementTableTimepointCell.helpers({
 });
 
 Template.measurementTableTimepointCell.events({
-    'click .measurementTableTimepointCell'(event, instance) {
-        if (!instance.data.timepointId) {
-            return;
-        }
-
-        const rowItem = instance.data.rowItem;
-        const timepoints = instance.data.timepoints.get();
-        OHIF.measurements.jumpToRowItem(rowItem, timepoints);
-    },
-
     'dblclick .measurementTableTimepointCell'(event, instance) {
         const { rowItem, timepointId } = instance.data;
         if (!timepointId) return;

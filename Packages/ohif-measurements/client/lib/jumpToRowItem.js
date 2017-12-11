@@ -5,8 +5,8 @@ import { cornerstone } from 'meteor/ohif:cornerstone';
 
 function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
     const { activateMeasurements, findAndRenderDisplaySet } = OHIF.measurements;
-    const { studyInstanceUid, seriesInstanceUid, sopInstanceUid } = measurementData;
     const { element } = enabledElement;
+    const { studyInstanceUid, seriesInstanceUid, sopInstanceUid } = measurementData;
 
     return new Promise((resolve, reject) => {
         const renderedCallback = element => {
@@ -73,7 +73,7 @@ let lastActivatedRowItem;
  *
  * @param measurementId The unique key for a specific Measurement
  */
-OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
+OHIF.measurements.jumpToRowItem = (rowItem, timepoints, childToolKey) => {
     const { isZoomed, zoomedViewportIndex } = OHIF.viewerbase.layoutManager;
 
     lastActivatedRowItem = rowItem;
@@ -112,10 +112,22 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
             continue;
         }
 
-        const measurementData = dataAtThisTimepoint[0];
+        const measurement = dataAtThisTimepoint[0];
+        let measurementData = measurement;
+        const { toolType } = measurementData;
+        const { tool } = OHIF.measurements.getToolConfiguration(toolType);
+        if (childToolKey) {
+            measurementData = measurementData[childToolKey];
+        } else if (Array.isArray(tool.childTools)) {
+            tool.childTools.every(key => {
+                measurementData = measurementData[key];
+                return !measurementData;
+            });
+        }
+
         measurementsData.push(measurementData);
         const promise = OHIF.studies.loadStudy(measurementData.studyInstanceUid);
-        promise.then(() => OHIF.measurements.syncMeasurementAndToolData(measurementData));
+        promise.then(() => OHIF.measurements.syncMeasurementAndToolData(measurement));
         promises.add(promise);
     }
 
