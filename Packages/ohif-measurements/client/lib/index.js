@@ -8,6 +8,7 @@ import './getImageDataUrl';
 import './getMeasurementsGroupedByNumber';
 import './getLocationLabel';
 import './getTimepointName';
+import './getToolConfiguration';
 import './hangingProtocolCustomizations';
 import './MeasurementHandlers';
 import './MeasurementManager';

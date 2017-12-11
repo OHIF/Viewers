@@ -1,5 +1,4 @@
 import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
@@ -47,6 +46,8 @@ Template.measurementTableHeaderRow.helpers({
 Template.measurementTableHeaderRow.events({
     'click .js-setTool'(event, instance) {
         const { toolGroup } = instance.data;
-        Viewerbase.toolManager.setActiveTool(toolGroup.childTools[0].cornerstoneToolType);
+        const toolType = toolGroup.childTools[0].cornerstoneToolType;
+        const activeToolId = Array.isArray(toolType) ? toolType[0] : toolType;
+        Viewerbase.toolManager.setActiveTool(activeToolId);
     }
 });

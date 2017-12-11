@@ -274,7 +274,8 @@ const setActiveToolAndSidebar = () => {
 
                         // Found a measurement, save tool and stop loop
                         if (measurement) {
-                            activeTool = cornerstoneToolType;
+                            const isArray = Array.isArray(cornerstoneToolType);
+                            activeTool = isArray ? cornerstoneToolType[0] : cornerstoneToolType;
 
                             return false;
                         }
