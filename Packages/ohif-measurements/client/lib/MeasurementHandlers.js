@@ -112,31 +112,60 @@ class MeasurementHandlers {
             userId: Meteor.userId()
         });
 
-        measurement[tool.attribute] = _.extend({}, measurementData, additionalProperties);
+        const childMeasurement = _.extend({}, measurementData, additionalProperties);
 
-        // Get the related timepoint by the measurement number and use its location if defined
-        const relatedTimepoint = Collection.findOne({
-            measurementNumber: measurement.measurementNumber,
-            toolType: measurement.toolType,
-            patientId: imageAttributes.patientId
+        const parentMeasurement = Collection.findOne({
+            toolType: tool.parentTool,
+            patientId: imageAttributes.patientId,
+            [tool.attribute]: null
         });
 
-        // Use the related timepoint location if found and defined
-        if (relatedTimepoint && relatedTimepoint.location) {
-            measurement.location = relatedTimepoint.location;
+        // Check if a measurement to fit this child tool already exists
+        if (parentMeasurement) {
+            const key = tool.attribute;
+
+            // Add the createdAt attribute
+            childMeasurement.createdAt = new Date();
+
+            // Add the child measurement
+            measurement[key] = childMeasurement;
+
+            // Clean the measurement according to the Schema
+            Collection._c2._simpleSchema.clean(measurement);
+
+            // Update the measurement in the collection
+            Collection.update(parentMeasurement._id, { $set: { [key]: measurement[key] } });
+
+            // Update the measurementData ID and measurementNumber
+            measurementData._id = parentMeasurement._id;
+            measurementData.measurementNumber = parentMeasurement.measurementNumber;
+        } else {
+            measurement[tool.attribute] = _.extend({}, measurementData, additionalProperties);
+
+            // Get the related timepoint by the measurement number and use its location if defined
+            const relatedTimepoint = Collection.findOne({
+                measurementNumber: measurement.measurementNumber,
+                toolType: tool.parentTool,
+                patientId: imageAttributes.patientId
+            });
+
+            // Use the related timepoint location if found and defined
+            if (relatedTimepoint && relatedTimepoint.location) {
+                measurement.location = relatedTimepoint.location;
+            }
+
+            // Clean the measurement according to the Schema
+            Collection._c2._simpleSchema.clean(measurement);
+
+            // Insert the new measurement into the collection
+            measurementData._id = Collection.insert(measurement);
+
+            // Get the updated measurement number after inserting
+            Meteor.defer(() => {
+                measurementData.measurementNumber = Collection.findOne(measurementData._id).measurementNumber;
+                cornerstone.updateImage(OHIF.viewerbase.viewportUtils.getActiveViewportElement());
+            });
         }
-
-        // Clean the measurement according to the Schema
-        Collection._c2._simpleSchema.clean(measurement);
-
-        // Insert the new measurement into the collection
-        measurementData._id = Collection.insert(measurement);
-
-        // Get the updated measurement number after inserting
-        Meteor.defer(() => {
-            measurementData.measurementNumber = Collection.findOne(measurementData._id).measurementNumber;
-            cornerstone.updateImage(OHIF.viewerbase.viewportUtils.getActiveViewportElement());
-        });
 
         // Signal unsaved changes
         OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
