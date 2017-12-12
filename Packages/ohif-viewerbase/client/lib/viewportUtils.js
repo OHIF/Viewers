@@ -360,7 +360,9 @@ const isStackScrollLinkingActive = () => {
 };
 
 // Create an event listener to update playing state when a clip stops playing
-$(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Math.random()));
+window.addEventListener('cornerstonetoolsclipstopped', () => {
+    Session.set('UpdateCINE', Math.random());
+});
 
 /**
  * Export functions inside viewportUtils namespace.

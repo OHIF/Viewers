@@ -13,7 +13,6 @@ import * as cornerstoneTools from 'cornerstone-tools';
 import * as cornerstoneMath from 'cornerstone-math';
 import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import * as dicomParser from 'dicom-parser';
-import { $ } from 'meteor/jquery';
 import Hammer from 'hammerjs';
 
 import './client/'; // which is actually: import './client/index.js';
@@ -22,11 +21,11 @@ import './client/'; // which is actually: import './client/index.js';
 // WADO Image Loader and Tools libraries
 //
 // Note: You would also need to do this with Cornerstone Web Image Loader
-cornerstone.external.$ = $;
-cornerstoneTools.external.$ = $;
 cornerstoneTools.external.Hammer = Hammer;
 cornerstoneTools.external.cornerstone = cornerstone;
+cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
 export {
     cornerstone,

@@ -246,18 +246,23 @@ export const toolManager = {
     },
 
     configureLoadProcess() {
-        // Whenever the CornerstoneImageLoadProgress is fired, identify which viewports
+        // Whenever CornerstoneImageLoadProgress is fired, identify which viewports
         // the "in-progress" image is to be displayed in. Then pass the percent complete
         // via the Meteor Session to the other templates to be displayed in the relevant viewports.
-        $(cornerstone.events).on('CornerstoneImageLoadProgress', (e, eventData) => {
-            viewportIndices = this.getKeysByValue(window.ViewportLoading, eventData.imageId);
+
+        function handleLoadProgress (e) {
+            const eventData = e.detail;
+            const viewportIndices = toolManager.getKeysByValue(window.ViewportLoading, eventData.imageId);
             viewportIndices.forEach(viewportIndex => {
                 Session.set('CornerstoneLoadProgress' + viewportIndex, eventData.percentComplete);
             });
 
             const encodedId = OHIF.string.encodeId(eventData.imageId);
             Session.set('CornerstoneThumbnailLoadProgress' + encodedId, eventData.percentComplete);
-        });
+        }
+
+        cornerstone.events.removeEventListener('cornerstoneimageloadprogress', handleLoadProgress);
+        cornerstone.events.addEventListener('cornerstoneimageloadprogress', handleLoadProgress);
     },
 
     setGestures(newGestures) {

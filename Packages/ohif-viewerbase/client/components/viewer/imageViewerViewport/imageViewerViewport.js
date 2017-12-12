@@ -273,7 +273,9 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
-        const onImageRendered = (event, eventData) => {
+        const onImageRendered = (event) => {
+            const eventData = event.detail;
+
             // Attention: Adding OHIF.log.info in this function may decrease the performance
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
@@ -298,15 +300,17 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         };
 
         // Attach the onImageRendered callback to the CornerstoneImageRendered event
-        $element.off('CornerstoneImageRendered', onImageRendered);
-        $element.on('CornerstoneImageRendered', onImageRendered);
+        element.removeEventListener('cornerstoneimagerendered', onImageRendered);
+        element.addEventListener('cornerstoneimagerendered', onImageRendered);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneImageRendered' + viewportIndex, Math.random());
 
         // Define a function to run whenever the Cornerstone viewport changes images
         // (e.g. during scrolling)
-        const onNewImage = (event, eventData) => {
+        const onNewImage = (event) => {
+            const eventData = event.detail;
+
             // Attention: Adding OHIF.log.info in this function may decrease the performance
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
@@ -349,13 +353,13 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         };
 
         // Attach the onNewImage callback to the CornerstoneNewImage event
-        $element.off('CornerstoneNewImage', onNewImage);
-        $element.on('CornerstoneNewImage', onNewImage);
+        element.removeEventListener('cornerstonenewimage', onNewImage);
+        element.addEventListener('cornerstonenewimage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
 
-        const onStackScroll = (e, eventData) => {
+        const onStackScroll = () => {
             // Attention: Adding OHIF.log.info in this function may decrease the performance
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
@@ -364,9 +368,9 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
         };
 
-        $element.off('CornerstoneStackScroll', onStackScroll);
+        element.removeEventListener('cornerstonestackscroll', onStackScroll);
         if (stack.imageIds.length > 1) {
-            $element.on('CornerstoneStackScroll', onStackScroll);
+            element.addEventListener('cornerstonestackscroll', onStackScroll);
         }
 
         // Define a function to trigger an event whenever a new viewport is being used
@@ -578,14 +582,14 @@ Template.imageViewerViewport.onRendered(function() {
     setDisplaySet(data, displaySetInstanceUid, templateData);
 
     // Double click event handlers to handle viewport enlargement
-    this.$element.on('CornerstoneToolsMouseDoubleClick CornerstoneToolsDoubleTap', event => {
+    function doubleClickHandler (event) {
         const { layoutManager } = OHIF.viewerbase;
         const $viewports = $('.imageViewerViewport');
 
-        this.$element.trigger('ohif.viewer.viewport.toggleEnlargement');
+        $element.trigger('ohif.viewer.viewport.toggleEnlargement');
 
         // Get the double clicked viewport index
-        const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
+        const viewportIndex = $viewports.index(event.currentTarget);
 
         // Stop here if there's only one viewport
         if (!layoutManager.isZoomed && $viewports.length <= 1) return;
@@ -608,6 +612,12 @@ Template.imageViewerViewport.onRendered(function() {
             const element = $('.imageViewerViewport').get(viewportIndexToZoom);
             setActiveViewport(element);
         });
+    }
+
+    const doubleClickEvents = ['cornerstonetoolsmousedoubleclick', 'cornerstonetoolsdoubletap'];
+    doubleClickEvents.forEach(eventType => {
+        element.removeEventListener(eventType, doubleClickHandler);
+        element.addEventListener(eventType, doubleClickHandler);
     });
 });
 

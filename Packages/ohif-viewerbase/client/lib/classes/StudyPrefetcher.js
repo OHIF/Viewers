@@ -10,16 +10,17 @@ import { getImageId } from '../getImageId.js';
 export class StudyPrefetcher {
 
     constructor(studies) {
-        this.studies = [];
+        this.studies = studies || [];
         this.prefetchDisplaySetsTimeout = 300;
         this.lastActiveViewportElement = null;
+        this.cacheFullHandlerBound = _.bind(this.cacheFullHandler, this);
 
-        $(cornerstone.events).on('CornerstoneImageCacheFull.StudyPrefetcher', _.bind(this.cacheFullHandler, this));
+        cornerstone.events.addEventListener('cornerstoneimagecachefull.StudyPrefetcher', this.cacheFullHandlerBound);
     }
 
     destroy() {
         this.stopPrefetching();
-        $(cornerstone.events).off('CornerstoneImageCacheFull.StudyPrefetcher');
+        cornerstone.events.removeEventListener('cornerstoneimagecachefull.StudyPrefetcher', this.cacheFullHandlerBound);
     }
 
     static getInstance() {
@@ -99,19 +100,22 @@ export class StudyPrefetcher {
     }
 
     attachActiveViewportListeners(activeViewportElement) {
-        const newImageHandler = () => {
+        function newImageHandler() {
             // It needs to be called asynchronously because cornerstone does it at the same way.
             // All instance urls to be prefetched will be removed again if we add them before
             // Cornerstone callback (see stackPrefetch.onImageUpdated).
-            this.prefetchDisplaySetsAsync();
-        };
+            StudyPrefetcher.prefetchDisplaySetsAsync();
+        }
 
-        $(this.lastActiveViewportElement).off('CornerstoneNewImage.StudyPrefetcher');
-        $(activeViewportElement).off('CornerstoneNewImage.StudyPrefetcher');
+        if (this.lastActiveViewportElement) {
+            this.lastActiveViewportElement.removeEventListener('cornerstonenewimage.StudyPrefetcher', newImageHandler);
+        }
+
+        activeViewportElement.removeEventListener('cornerstonenewimage.StudyPrefetcher', newImageHandler);
 
         // Cornerstone will not attach an event listener if the element doesn't have a stack
         if (this.hasStack(activeViewportElement)) {
-            $(activeViewportElement).on('CornerstoneNewImage.StudyPrefetcher', newImageHandler);
+            activeViewportElement.addEventListener('cornerstonenewimage.StudyPrefetcher', newImageHandler);
         }
 
         this.lastActiveViewportElement = activeViewportElement;
@@ -303,8 +307,8 @@ export class StudyPrefetcher {
     }
 
     isImageCached(imageId) {
-        const imagePromise = cornerstone.imageCache.getImagePromise(imageId);
-        return imagePromise && (imagePromise.state() === 'resolved');
+        const image = cornerstone.imageCache.imageCache[imageId];
+        return image && image.sizeInBytes;
     }
 
     cacheFullHandler() {

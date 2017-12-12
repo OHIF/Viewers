@@ -216,14 +216,16 @@ class StackLoadingListener extends BaseLoadingListener {
     _checkCachedData() {
         const imageIds = this.stack.imageIds;
 
-        for(let i = 0; i < imageIds.length; i++) {
+        // TODO: No way to check status of Promise.
+        /*for(let i = 0; i < imageIds.length; i++) {
             const imageId = imageIds[i];
+
             const imagePromise = cornerstone.imageCache.getImagePromise(imageId);
 
             if (imagePromise && (imagePromise.state() === 'resolved')) {
                 this._updateFrameStatus(imageId, true);
             }
-        }
+        }*/
     }
 
     _getImageLoadedEventName() {
