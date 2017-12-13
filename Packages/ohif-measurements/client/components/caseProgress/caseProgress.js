@@ -23,7 +23,9 @@ Template.caseProgress.onCreated(() => {
             };
 
             // Display the error messages
-            const errorHandler = data => OHIF.ui.showDialog('dialogInfo', data);
+            const errorHandler = data => {
+                OHIF.ui.showDialog('dialogInfo', Object.assign({ class: 'themed' }, data));
+            };
 
             const promise = instance.data.measurementApi.storeMeasurements();
             promise.then(successHandler).catch(errorHandler);

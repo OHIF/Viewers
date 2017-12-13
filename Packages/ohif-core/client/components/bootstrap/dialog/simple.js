@@ -31,7 +31,16 @@ Template.dialogSimple.onRendered(() => {
     // Create the bootstrap modal
     $modal.modal(modalOptions);
 
-    const position = instance.data.position;
+    let position = instance.data.position;
+
+    const { event } = instance.data;
+    if (!position && event && !_.isUndefined(event.clientX)) {
+        position = {
+            x: event.clientX,
+            y: event.clientY
+        };
+    }
+
     if (position) {
         OHIF.ui.repositionDialog($modal, position.x, position.y);
     }
