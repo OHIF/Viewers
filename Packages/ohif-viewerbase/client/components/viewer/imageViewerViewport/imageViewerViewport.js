@@ -16,11 +16,10 @@ import { updateOrientationMarkers } from '../../../lib/updateOrientationMarkers'
 import { getInstanceClassDefaultViewport } from '../../../lib/instanceClassSpecificViewport';
 import { OHIFError } from '../../../lib/classes/OHIFError';
 
-const allCornerstoneEvents = 'click CornerstoneToolsMouseDown CornerstoneToolsMouseDownActivate ' +
-    'CornerstoneToolsMouseClick CornerstoneToolsMouseDrag CornerstoneToolsMouseUp ' +
-    'CornerstoneToolsMouseWheel CornerstoneToolsTap CornerstoneToolsTouchPress ' +
-    'CornerstoneToolsTouchStart CornerstoneToolsTouchStartActive ' +
-    'CornerstoneToolsMultiTouchDragStart';
+const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstonetoolsmousedownactivate',
+    'cornerstonetoolsmouseclick', 'cornerstonetoolsmousedrag', 'cornerstonetoolsmouseup',
+    'cornerstonetoolsmousewheel', 'cornerstonetoolsdoubletap', 'cornerstonetoolstouchpress',
+    'cornerstonetoolsmultitouchstart', 'cornerstonetoolsmultitouchstartactive', 'cornerstonetoolsmultitouchdrag'];
 
 /**
  * This function loads a study series into a viewport element.
@@ -376,7 +375,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Define a function to trigger an event whenever a new viewport is being used
         // This is used to update the value of the "active viewport", when the user interacts
         // with a new viewport element
-        const sendActivationTrigger = (event, eventData) => {
+        const sendActivationTrigger = (event) => {
+            const eventData = event && event.detail;
             // Attention: Adding OHIF.log.info in this function decrease the performance
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
@@ -416,8 +416,10 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         };
 
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
-        $element.off(allCornerstoneEvents, sendActivationTrigger);
-        $element.on(allCornerstoneEvents, sendActivationTrigger);
+        allCornerstoneEvents.forEach(eventType => {
+            element.removeEventListener(eventType, sendActivationTrigger);
+            element.addEventListener(eventType, sendActivationTrigger);
+        });
         $element.off('mouseenter', onMouseEnter);
         $element.on('mouseenter', onMouseEnter);
 
