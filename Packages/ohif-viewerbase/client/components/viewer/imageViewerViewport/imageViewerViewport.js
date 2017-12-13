@@ -583,6 +583,7 @@ Template.imageViewerViewport.onRendered(function() {
 
     // Double click event handlers to handle viewport enlargement
     function doubleClickHandler (event) {
+        const $element = $(this);
         const { layoutManager } = OHIF.viewerbase;
         const $viewports = $('.imageViewerViewport');
 
