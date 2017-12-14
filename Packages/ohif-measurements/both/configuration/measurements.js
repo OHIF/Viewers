@@ -178,6 +178,9 @@ class MeasurementApi {
                         }
                     });
 
+                    // Synchronize the new tool data
+                    this.syncMeasurementsAndToolData();
+
                     // Enable reactivity
                     this.changeObserver.changed();
                 };
@@ -343,19 +346,31 @@ class MeasurementApi {
         const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
         _.each(entries, entry => {
-            const imageId = OHIF.viewerbase.getImageIdForImagePath(entry.imagePath);
-            if (toolState[imageId]) {
-                const toolData = toolState[imageId][entry.toolType];
-                const measurementsData = toolData && toolData.data;
-                const measurementEntry = _.findWhere(measurementsData, {
-                    _id: entry._id
+            const measurementsData = [];
+            const { tool } = OHIF.measurements.getToolConfiguration(entry.toolType);
+            if (Array.isArray(tool.childTools)) {
+                tool.childTools.forEach(key => {
+                    const childMeasurement = entry[key];
+                    if (!childMeasurement) return;
+                    measurementsData.push(childMeasurement);
                 });
-
-                if (measurementEntry) {
-                    const index = measurementsData.indexOf(measurementEntry);
-                    measurementsData.splice(index, 1);
-                }
+            } else {
+                measurementsData.push(entry);
             }
+
+            measurementsData.forEach(measurementData => {
+                const { imagePath, toolType } = measurementData;
+                const imageId = OHIF.viewerbase.getImageIdForImagePath(imagePath);
+                if (toolState[imageId]) {
+                    const toolData = toolState[imageId][toolType];
+                    const measurementEntries = toolData && toolData.data;
+                    const measurementEntry = _.findWhere(measurementEntries, { _id: entry._id });
+                    if (measurementEntry) {
+                        const index = measurementsData.indexOf(measurementEntry);
+                        measurementEntries.splice(index, 1);
+                    }
+                }
+            });
         });
 
         cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);

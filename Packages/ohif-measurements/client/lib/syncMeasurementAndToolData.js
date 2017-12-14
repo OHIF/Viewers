@@ -20,6 +20,8 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
             const childMeasurement = measurement[childToolKey];
             if (!childMeasurement) return;
             childMeasurement._id = measurement._id;
+            childMeasurement.measurementNumber = measurement.measurementNumber;
+
             OHIF.measurements.syncMeasurementAndToolData(childMeasurement);
         });
 
