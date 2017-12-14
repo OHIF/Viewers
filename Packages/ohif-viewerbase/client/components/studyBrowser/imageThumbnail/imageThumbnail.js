@@ -62,7 +62,7 @@ Template.imageThumbnail.onRendered(() => {
 
             cornerstone.displayImage(element, image);
 
-            $element.one('CornerstoneImageRendered', () => {
+            $element.one('cornerstoneimagerendered', () => {
                 const enabledElement = cornerstone.getEnabledElement(element);
 
                 // Create a static image from
