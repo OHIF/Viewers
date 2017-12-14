@@ -33,7 +33,7 @@ export class HotkeysManager {
         const storageKey = `hotkeysDefinitions.${contextName}`;
         return new Promise((resolve, reject) => {
             if (this.storeFunction) {
-                this.storeFunction(contextName, definitions).then(resolve).catch(reject);
+                this.storeFunction.call(this, storageKey, definitions).then(resolve).catch(reject);
             } else if (Meteor.userId()) {
                 OHIF.user.setData(storageKey, definitions).then(resolve).catch(reject);
             } else {

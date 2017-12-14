@@ -50,6 +50,14 @@ class WindowLevelPresetsManager {
         this.changeObserver = new Tracker.Dependency();
     }
 
+    setRetrieveFunction(retrieveFunction) {
+        this.retrieveFunction = retrieveFunction;
+    }
+
+    setStoreFunction(storeFunction) {
+        this.storeFunction = storeFunction;
+    }
+
     updateElementWLPresetData(element) {
         const wlPresetData = cornerstone.getElementData(element, 'wlPreset');
         const enabledElement = cornerstone.getEnabledElement(element);
@@ -123,7 +131,7 @@ class WindowLevelPresetsManager {
     store(wlPresets) {
         return new Promise((resolve, reject) => {
             if (this.storeFunction) {
-                this.storeFunction.call(this, wlPresets).then(resolve).catch(reject);
+                this.storeFunction.call(this, WL_STORAGE_KEY, wlPresets).then(resolve).catch(reject);
             } else if (Meteor.userId()) {
                 OHIF.user.setData(WL_STORAGE_KEY, wlPresets).then(resolve).catch(reject);
             } else {
