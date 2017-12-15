@@ -291,7 +291,6 @@ class MeasurementApi {
             toolGroup.childTools.forEach(tool => {
                 const measurements = this.tools[tool.id].find().fetch();
                 measurements.forEach(measurement => {
-                    // TODO [PWV-184] >>>> iterate over multiple overlays here
                     OHIF.measurements.syncMeasurementAndToolData(measurement);
                 });
             });
@@ -366,7 +365,7 @@ class MeasurementApi {
                     const measurementEntries = toolData && toolData.data;
                     const measurementEntry = _.findWhere(measurementEntries, { _id: entry._id });
                     if (measurementEntry) {
-                        const index = measurementsData.indexOf(measurementEntry);
+                        const index = measurementEntries.indexOf(measurementEntry);
                         measurementEntries.splice(index, 1);
                     }
                 }
