@@ -101,22 +101,22 @@ function init() {
     sphere2.scale.set(1, 1, 1);
 
     var loader = new THREE.VTKLoader();
-    loader.load("/bunny.vtk", function (geometry) {
+    loader.load("/artery.vtk", function (geometry) {
         geometry.center();
         geometry.computeVertexNormals();
         var material = new THREE.MeshLambertMaterial( { color: 0x2A54DD, side: THREE.DoubleSide } );
         var mesh = new THREE.Mesh(geometry, material);
         mesh.scale.set(1, 1, 1);
-        mesh.scale.multiplyScalar(5);
+//        mesh.scale.multiplyScalar(5);
         scene.add(mesh);
     });
 
-    scene.add( sphere );
-    scene.add( sphere2 );
-    scene.add(edges);
+    // scene.add( sphere );
+    // scene.add( sphere2 );
+    // scene.add(edges);
 
     camera = new THREE.PerspectiveCamera( 75, aspectRelation, 0.1, 1000 );
-    controls = new THREE.TrackballControls(camera);
+    controls = new THREE.TrackballControls(camera, renderer.domElement);
 
     controls.rotateSpeed = 1.0;
     controls.zoomSpeed = 1.2;
