@@ -1,0 +1,31 @@
+{
+  "transactionId": "DXStudy",
+  "studies": [
+    {
+      "patientName": "MISTER^DX",
+      "seriesList": [
+        {
+          "instances": [
+            {
+              "columns": 2022,
+              "instanceNumber": 1,
+              "rows": 2006,
+              "sopInstanceUid": "1.2.840.113619.2.67.2158294438.16324010109084338.243",
+              "url": "dicomweb://s3.amazonaws.com/lury/DXStudy/1.2.840.113619.2.67.2158294438.16324010109084338.243.dcm"
+            },
+            {
+              "columns": 2022,
+              "instanceNumber": 1,
+              "rows": 1736,
+              "sopInstanceUid": "1.2.840.113619.2.67.2158294438.16324010109084413.245",
+              "url": "dicomweb://s3.amazonaws.com/lury/DXStudy/1.2.840.113619.2.67.2158294438.16324010109084413.245.dcm"
+            }
+          ],
+          "seriesDescription": "DX CHEST",
+          "seriesInstanceUid": "1.2.840.113619.2.67.2158294438.15745010109084325.10003"
+        }
+      ],
+      "studyInstanceUid": "1.2.840.113619.2.67.2158294438.15745010109084247.20000"
+    }
+  ]
+}

@@ -1,0 +1,1837 @@
+{
+  "transactionId": "PTCTStudy",
+  "studies": [
+    {
+      "patientName": "Patient^Anonymous",
+      "seriesList": [
+        {
+          "instances": [
+            {
+              "columns": 512,
+              "instanceNumber": 1,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 1,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 1,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.21",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.21.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 2,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 2,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.17.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 2,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.23",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.23.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 3,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 3,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.18.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 3,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.24",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.24.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 4,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 4,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.19.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 4,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.25",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.25.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 5,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 5,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.20",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.20.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 5,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.26",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.26.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 6,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 6,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.21",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.21.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 6,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.27",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.27.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 7,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 7,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.22",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.22.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 7,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.28",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.28.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 8,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 8,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.23",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.23.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 8,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.29",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.29.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 9,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 9,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.24",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.24.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 9,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.30",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.30.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 10,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 10,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 10,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.31",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.31.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 11,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.4.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 11,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 11,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.32",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.32.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 12,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.5.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 12,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 12,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.33",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.33.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 13,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.6.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 13,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.4.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 13,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.34",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.34.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 14,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 14,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.5.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 14,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.35",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.35.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 15,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 15,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.6.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 15,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.36",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.36.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 16,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 16,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 16,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.37",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.37.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 17,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 17,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 17,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.38",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.38.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 18,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 18,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 18,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.39",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.39.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 19,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 19,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 19,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.40",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.40.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 20,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.13.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 20,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 20,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.41",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.41.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 21,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.14.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 21,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 21,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.42",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.42.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 22,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 22,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.13.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 22,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.43",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.43.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 23,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.16.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 23,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.14.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 23,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.44",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.44.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 24,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.17.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 24,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 24,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.1.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 25,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.18.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 25,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.16.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 25,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.2.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 26,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032221.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032221.19.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 26,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.17.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 26,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.3.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 27,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 27,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.18.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 27,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.4.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 28,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 28,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.19.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 28,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.5.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 29,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 29,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.20",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.20.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 29,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.6.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 30,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.4.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 30,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.21",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.21.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 30,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.7.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 31,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.5.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 31,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.23",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.23.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 31,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.8.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 32,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.6.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 32,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.22",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.22.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 32,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.9.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 33,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 33,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.24",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.24.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 33,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.10.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 34,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 34,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.25",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.25.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 34,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.12.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 35,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 35,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.26",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.26.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 35,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.11.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 36,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 36,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.27",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.27.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 36,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.13.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 37,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 37,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.28",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.28.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 37,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.14.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 38,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 38,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.29",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.29.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 38,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.15.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 39,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.13.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 39,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.30",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.30.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 39,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.16.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 40,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.14.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 40,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.31",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.31.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 40,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.17.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 41,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 41,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.32",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.32.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 41,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.18.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 42,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032222.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032222.16.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 42,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.33",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.33.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 42,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.19.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 43,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 43,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.34",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.34.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 43,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.20",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.20.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 44,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 44,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.35",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.35.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 44,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.21",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.21.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 45,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 45,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.36",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.36.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 45,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.22",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.22.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 46,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.4.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 46,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.37",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.37.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 46,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.23",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.23.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 47,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.5.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 47,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.38",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.38.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 47,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.24",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.24.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 48,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.6.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 48,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.39",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.39.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 48,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.25",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.25.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 49,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 49,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.40",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.40.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 49,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.26",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.26.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 50,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 50,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.41",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.41.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 50,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.27",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.27.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 51,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 51,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.42",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.42.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 51,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.28",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.28.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 52,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 52,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.43",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.43.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 52,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.29",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.29.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 53,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 53,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.44",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.44.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 53,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.30",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.30.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 54,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 54,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.45",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.45.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 54,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.31",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.31.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 55,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.13.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 55,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.46",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.46.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 55,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.32",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.32.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 56,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.14.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 56,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.47",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.47.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 56,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.33",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.33.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 57,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 57,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.48",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.48.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 57,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.34",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.34.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 58,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.16.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 58,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.49",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.49.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 58,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.35",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.35.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 59,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.17.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 59,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.50",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.50.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 59,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.36",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.36.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 60,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.18.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 60,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.51",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.51.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 60,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032228.37",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032228.37.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 61,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.19.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 61,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.52",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.52.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 61,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.1.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 62,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.20",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.20.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 62,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.53",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.53.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 62,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.2.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 63,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.21",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.21.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 63,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.54",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.54.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 63,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.3.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 64,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032223.22",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032223.22.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 64,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032226.55",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032226.55.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 64,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.4.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 65,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 65,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 65,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.5.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 66,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 66,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 66,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.6.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 67,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 67,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.3.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 67,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.7.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 68,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.4.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 68,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.4.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 68,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.8.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 69,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.5.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 69,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.5.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 69,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.9.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 70,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.6.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 70,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.6.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 70,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.10.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 71,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 71,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.7.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 71,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.11.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 72,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 72,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.8.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 72,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.12.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 73,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 73,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.9.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 73,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.13.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 74,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 74,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.10.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 74,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.14.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 75,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 75,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.11.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 75,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.15.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 76,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 76,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.12.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 76,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.16.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 77,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.13.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 77,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.13.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 77,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.17.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 78,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.14.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 78,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.14",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.14.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 78,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.18.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 79,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 79,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.15",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.15.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 79,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.19.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 80,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.16.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 80,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.16",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.16.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 80,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.20",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.20.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 81,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032224.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032224.17.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 81,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.17",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.17.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 81,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.21",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.21.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 82,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.1.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 82,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.18",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.18.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 82,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.22",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.22.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 83,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.2",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.2.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 83,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032227.19",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032227.19.dcm"
+            },
+            {
+              "columns": 128,
+              "instanceNumber": 83,
+              "rows": 128,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032229.23",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032229.23.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 84,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.3.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 85,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.4",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.4.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 86,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.5.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 87,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.6",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.6.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 88,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.7.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 89,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.8",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.8.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 90,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.9",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.9.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 91,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.11",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.11.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 92,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.10",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.10.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 93,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.12",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.12.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 94,
+              "rows": 512,
+              "sopInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032225.13",
+              "url": "dicomweb://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032225.13.dcm"
+            }
+          ],
+          "seriesDescription": "CT HeadNeck 5.0 H30s",
+          "seriesInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.2"
+        }
+      ],
+      "studyInstanceUid": "1.3.6.1.4.1.25403.52237031786.3872.20100510032220.1"
+    }
+  ]
+}
