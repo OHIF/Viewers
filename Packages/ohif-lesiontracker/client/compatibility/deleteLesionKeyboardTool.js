@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 // Delete a lesion if Ctrl+D or DELETE is pressed while a lesion is selected
 const keys = {
