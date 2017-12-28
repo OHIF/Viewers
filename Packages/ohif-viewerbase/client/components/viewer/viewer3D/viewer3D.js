@@ -1,13 +1,13 @@
 import { Template } from 'meteor/templating';
 import 'meteor/fds:threejs';
-
+import 'meteor/polguixe:meteor-datgui';
 
 var scene, camera, renderer, controls;
 var geometry, material, sphere, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
 var objects = [];
 var mouse , INTERSECTED, SELECTED_OBJECT;
-var canvas;
+var canvas, raycaster, effectController;
 
 var Detector = {
 
@@ -90,14 +90,12 @@ function onMouseClick(event) {
 
 function onMouseMove(event) {
     event.preventDefault();
-    var x = event.offsetX == undefined ? event.layerX : event.offsetX;
-    var y = event.offsetY == undefined ? event.layerY : event.offsetY;
-    mouse.x = ( x / renderer.domElement.width ) * 2 - 1;
-    mouse.y = - ( y / renderer.domElement.height ) * 2 + 1;
-    var raycaster =  new THREE.Raycaster();
+    // var x = event.offsetX == undefined ? event.layerX : event.offsetX;
+    // var y = event.offsetY == undefined ? event.layerY : event.offsetY;
+    mouse.x = ( event.offsetX / renderer.domElement.width ) * 2 - 1;
+    mouse.y = - ( event.offsetY / renderer.domElement.height ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
     var intersects = raycaster.intersectObjects( scene.children );
-    console.log(intersects);
 
     if (intersects.length > 0) {
         if (INTERSECTED != intersects[0].object) {
@@ -116,6 +114,11 @@ function onMouseMove(event) {
 function init() {
     //Initialize vars
     mouse = new THREE.Vector2();
+    raycaster =  new THREE.Raycaster();
+    effectController = {
+        color: 0x2A54DD
+    }
+
 
     //Scene
     scene = new THREE.Scene();
@@ -151,6 +154,9 @@ function init() {
     controls.dynamicDampingFactor = 0.3;
     controls.keys = [ 65, 83, 68 ];
     controls.addEventListener( 'change', render );
+
+    var gui = new dat.GUI({autoPlace: false, closed: true, domElement: document.getElementsByClassName('dg').item(0)});
+    gui.addColor(effectController, 'color');
 
     // geometry = new THREE.SphereGeometry(1, 64, 64, 3 * Math.PI / 2, Math.PI / 2);
     // geometry.center();
