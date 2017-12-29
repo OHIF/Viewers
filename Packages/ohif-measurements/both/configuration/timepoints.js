@@ -54,6 +54,7 @@ class TimepointApi {
                 resolve();
             }).catch(reason => {
                 OHIF.log.error(`Timepoint retrieval function failed: ${reason}`);
+                reject(reason);
             });
         });
     }
