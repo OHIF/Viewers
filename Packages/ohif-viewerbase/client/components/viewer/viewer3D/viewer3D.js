@@ -1,13 +1,16 @@
 import { Template } from 'meteor/templating';
 import 'meteor/fds:threejs';
 import 'meteor/polguixe:meteor-datgui';
+import { $ } from 'meteor/jquery';
 
 var scene, camera, renderer, controls;
 var geometry, material, sphere, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
 var objects = [];
-var mouse , INTERSECTED, SELECTED_OBJECT;
+var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
 var canvas, raycaster, effectController;
+var lengthX, lengthY, lengthZ;
+var arrowHelper_x, arrowHelper_y, arrowHelper_z;
 
 var Detector = {
 
@@ -83,13 +86,49 @@ if ( typeof module === 'object' ) {
 
 }
 
+function setArrowHelper() {
+    var dir_x = new THREE.Vector3( 1, 0, 0 ); dir_x.normalize();
+    var dir_y = new THREE.Vector3( 0, 1, 0 ); dir_y.normalize();
+    var dir_z = new THREE.Vector3( 0, 0, 1 ); dir_z.normalize();
+
+    var origin = new THREE.Vector3( 0, 0, 0 );
+
+    arrowHelper_x = new THREE.ArrowHelper( dir_x, origin, lengthX * 0.25, 0xff0000 );
+    arrowHelper_y = new THREE.ArrowHelper( dir_y, origin, lengthY * 0.25, 0x00ff00 );
+    arrowHelper_z = new THREE.ArrowHelper( dir_z, origin, lengthZ * 0.25, 0xffff00 );
+    arrowHelper_x.name = 'arrowHelper_x';
+    arrowHelper_y.name = 'arrowHelper_y';
+    arrowHelper_y.name = 'arrowHelper_y';
+    scene.remove(scene.getObjectByName(arrowHelper_x.name));
+    scene.remove(scene.getObjectByName(arrowHelper_y.name));
+    scene.remove(scene.getObjectByName(arrowHelper_z.name));
+    scene.add( arrowHelper_x );
+    scene.add( arrowHelper_y );
+    scene.add( arrowHelper_z );
+}
+
+function computeScale(geometry) {
+    var geometrySize;
+    geometry.computeBoundingBox();
+    geometrySize = geometry.boundingBox.size();
+    lengthX = Math.max(lengthX, geometrySize.x);
+    lengthY = Math.max(lengthY, geometrySize.y);
+    lengthZ = Math.max(lengthZ, geometrySize.z);
+    setArrowHelper();
+}
+
 function onMouseClick(event) {
     event.preventDefault();
+    if (!selectionMode) return;
     SELECTED_OBJECT = INTERSECTED;
+    effectController.color = SELECTED_OBJECT.effectController.color;
+    effectController.transparent = SELECTED_OBJECT.effectController.transparent;
+    effectController.opacity = SELECTED_OBJECT.effectController.opacity;
 }
 
 function onMouseMove(event) {
     event.preventDefault();
+    if (!selectionMode) return;
     // var x = event.offsetX == undefined ? event.layerX : event.offsetX;
     // var y = event.offsetY == undefined ? event.layerY : event.offsetY;
     mouse.x = ( event.offsetX / renderer.domElement.width ) * 2 - 1;
@@ -116,8 +155,12 @@ function init() {
     mouse = new THREE.Vector2();
     raycaster =  new THREE.Raycaster();
     effectController = {
-        color: 0x2A54DD
-    }
+        color: 0x000000,
+        transparent: false,
+        opacity: 1.0
+    };
+    selectionMode = false;
+    lengthX = lengthY = lengthZ = 0.0;
 
 
     //Scene
@@ -155,8 +198,33 @@ function init() {
     controls.keys = [ 65, 83, 68 ];
     controls.addEventListener( 'change', render );
 
-    var gui = new dat.GUI({autoPlace: false, closed: true, domElement: document.getElementsByClassName('dg').item(0)});
-    gui.addColor(effectController, 'color');
+    $("#enableSelectionButton").click(function (event) {
+        event.preventDefault();
+        $( this ).toggleClass( "active" );
+        selectionMode = !selectionMode;
+    });
+
+    var gui = new dat.GUI({autoPlace: false, domElement: document.getElementsByClassName('dg').item(0)});
+    gui.close();
+    gui.addColor(effectController, 'color').onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            var nc = '#' + effectController.color.toString(16);
+            SELECTED_OBJECT.material.color.set(nc);
+            SELECTED_OBJECT.effectController.color = SELECTED_OBJECT.material.color.getHex();
+        }
+    }).listen();
+    gui.add(effectController, 'transparent').onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.material.transparent = value;
+            SELECTED_OBJECT.effectController.transparent = SELECTED_OBJECT.material.transparent;
+        }
+    }).listen();
+    gui.add(effectController, 'opacity', 0.0, 1.0, 0.1).listen().onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.material.opacity = value;
+            SELECTED_OBJECT.effectController.opacity = SELECTED_OBJECT.material.opacity;
+        }
+    });
 
     // geometry = new THREE.SphereGeometry(1, 64, 64, 3 * Math.PI / 2, Math.PI / 2);
     // geometry.center();
@@ -182,11 +250,13 @@ function init() {
 
     var loader = new THREE.VTKLoader();
     loader.load("/artery.vtk", function (geometry) {
-        geometry.center();
         geometry.computeVertexNormals();
-        var material = new THREE.MeshLambertMaterial( { color: 0x2A54DD, side: THREE.DoubleSide } );
+        computeScale(geometry);
+        var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xFFFFFF, side: THREE.FrontSide } );
         var mesh = new THREE.Mesh(geometry, material);
         mesh.updateMatrixWorld();
+        mesh.effectController = $.extend({}, effectController);
+        mesh.effectController.color = mesh.material.color.getHex();
         // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
         // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
         // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
@@ -195,11 +265,13 @@ function init() {
     });
 
     loader.load("/bone.vtk", function (geometry) {
-        geometry.center();
         geometry.computeVertexNormals();
-        var material = new THREE.MeshLambertMaterial( { color: 0x66ff99, side: THREE.DoubleSide } );
+        computeScale(geometry);
+        var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xFFFFFF, side: THREE.FrontSide } );
         var mesh = new THREE.Mesh(geometry, material);
         mesh.updateMatrixWorld();
+        mesh.effectController = $.extend({}, effectController);
+        mesh.effectController.color = mesh.material.color.getHex();
         // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
         // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
         // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
@@ -207,21 +279,7 @@ function init() {
         objects.push(mesh);
     });
 
-
-
-    var dir_x = new THREE.Vector3( 1, 0, 0 ); dir_x.normalize();
-    var dir_y = new THREE.Vector3( 0, 1, 0 ); dir_y.normalize();
-    var dir_z = new THREE.Vector3( 0, 0, 1 ); dir_z.normalize();
-
-    var origin = new THREE.Vector3( 0, 0, 0 );
-    var length = 3;
-
-    var arrowHelper_x = new THREE.ArrowHelper( dir_x, origin, length, 0xff0000 );
-    var arrowHelper_y = new THREE.ArrowHelper( dir_y, origin, length, 0x00ff00 );
-    var arrowHelper_z = new THREE.ArrowHelper( dir_z, origin, length, 0xffff00 );
-    scene.add( arrowHelper_x );
-    scene.add( arrowHelper_y );
-    scene.add( arrowHelper_z );
+    setArrowHelper();
 }
 
 function animate() {
