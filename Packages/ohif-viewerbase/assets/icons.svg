@@ -76,13 +76,6 @@
       <path id="icon-tools-measure-target-cr-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
     </g>
   </symbol>
-  <symbol id="icon-tools-measure-target-ex" viewBox="0 0 24 24">
-    <title>Target EX Measurement</title>
-    <g id="icon-tools-measure-target-ex-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-      <text id="icon-tools-measure-target-ex-text" fill="#000000" x="0" y="8" style="font-size:10px; font-family:sans-serif">EX</text>
-      <path id="icon-tools-measure-target-ex-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
-    </g>
-  </symbol>
   <symbol id="icon-tools-measure-target-un" viewBox="0 0 24 24">
     <title>Target UN Measurement</title>
     <g id="icon-tools-measure-target-un-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
