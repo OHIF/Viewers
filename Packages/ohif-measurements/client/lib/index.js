@@ -11,6 +11,7 @@ import './getLocationLabel';
 import './getTimepointName';
 import './getToolConfiguration';
 import './hangingProtocolCustomizations';
+import './isNewLesionsMeasurement';
 import './MeasurementHandlers';
 import './MeasurementManager';
 import './navigateOverLesions';
