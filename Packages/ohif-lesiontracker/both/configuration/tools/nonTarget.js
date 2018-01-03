@@ -41,11 +41,6 @@ const NonTargetSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneTool
         type: String,
         label: 'Description',
         optional: true
-    },
-    locationUid: {
-        type: String,
-        label: 'Location UID',
-        optional: true // Optional because it is added after initial drawing, via a callback
     }
 }]);
 

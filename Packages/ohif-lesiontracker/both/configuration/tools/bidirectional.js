@@ -64,10 +64,11 @@ const BidirectionalSchema = new SimpleSchema([MeasurementSchemaTypes.Cornerstone
         label: 'Shortest Diameter',
         decimal: true
     },
-    locationUid: {
-        type: String,
-        label: 'Location UID',
-        optional: true // Optional because it is added after initial drawing, via a callback
+    isSplitLesion: {
+        type: Boolean,
+        label: 'Is Split Lesion',
+        optional: true,
+        defaultValue: false
     }
 }]);
 
