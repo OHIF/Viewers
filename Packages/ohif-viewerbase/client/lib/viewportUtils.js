@@ -340,6 +340,24 @@ const isStackScrollLinkingDisabled = () => {
     return linkableViewportsCount <= 1;
 };
 
+const isStackScrollLinkingActive = () => {
+    let isActive = true;
+
+    // Its called everytime active viewport layout changes
+    Session.get('LayoutManagerUpdated');
+
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+    const syncedElements = _.pluck(synchronizer.syncedViewports, 'element');
+    const $renderedViewports = $('.imageViewerViewport');
+    $renderedViewports.each((index, element) => {
+        if (!_.contains(syncedElements, element)) {
+            isActive = false;
+        }
+    });
+
+    return isActive;
+};
+
 // Create an event listener to update playing state when a clip stops playing
 $(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Math.random()));
 
@@ -370,7 +388,8 @@ const viewportUtils = {
     isDownloadEnabled,
     hasMultipleFrames,
     stopAllClips,
-    isStackScrollLinkingDisabled
+    isStackScrollLinkingDisabled,
+    isStackScrollLinkingActive
 };
 
 export { viewportUtils };
