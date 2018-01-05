@@ -8,7 +8,6 @@ Template.toolbarSectionButton.onCreated(() => {
 
     instance.isActive = activeToolId => {
         OHIF.commands.last.dep.depend();
-        const instance = Template.instance();
         const subTools = instance.data.subTools;
         const currentId = instance.data.id;
         const isCurrentTool = currentId === activeToolId;
@@ -52,7 +51,12 @@ Template.toolbarSectionButton.onCreated(() => {
             $element.addClass('active');
             setTimeout(() => {
                 if ($element.hasClass('expandable') && $element.find('.toolbarSectionButton.active').length) return;
-                $element.removeClass('active');
+
+                const activeToolId = Session.get('ToolManagerActiveTool');
+                const isActive = instance.isActive(activeToolId);
+                if (!isActive) {
+                    $element.removeClass('active');
+                }
             }, 100);
         };
 

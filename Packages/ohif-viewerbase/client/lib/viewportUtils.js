@@ -4,6 +4,7 @@ import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 // Local Modules
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { updateOrientationMarkers } from './updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from './instanceClassSpecificViewport';
 
@@ -170,11 +171,11 @@ const clearTools = () => {
 const linkStackScroll = () => {
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
-    if(!synchronizer) {
+    if (!synchronizer) {
         return;
     }
 
-    if(synchronizer.isActive()) {
+    if (synchronizer.isActive()) {
         synchronizer.deactivate();
     } else {
         synchronizer.activate();
@@ -185,15 +186,17 @@ const linkStackScroll = () => {
 // and has been moved here to avoid circular dependency issues.
 const toggleDialog = (element, closeAction) => {
     const $element = $(element);
-    if($element.is('dialog')) {
+    if ($element.is('dialog')) {
         if (element.hasAttribute('open')) {
-            if (closeAction) closeAction();
+            if (closeAction) {
+                closeAction();
+            }
+
             element.close();
         } else {
             element.show();
         }
-    }
-    else {
+    } else {
         const isClosed = $element.hasClass('dialog-open');
         $element.toggleClass('dialog-closed', isClosed);
         $element.toggleClass('dialog-open', !isClosed);
@@ -262,7 +265,7 @@ const isPlaying = () => {
     // Get the clip state
     const clipState = toolState.data[0];
 
-    if(clipState) {
+    if (clipState) {
         // Return true if the clip is playing
         return !_.isUndefined(clipState.intervalId);
     }
@@ -279,8 +282,8 @@ const hasMultipleFrames = () => {
     const activeViewport = getActiveViewportElement();
 
     // No active viewport yet: disable button
-    if(!activeViewport || !$(activeViewport).find('canvas').length) {
-      return true;
+    if (!activeViewport || !$(activeViewport).find('canvas').length) {
+        return true;
     }
 
     // Get images in the stack
@@ -296,8 +299,8 @@ const hasMultipleFrames = () => {
     const nImages = stackData.imageIds && stackData.imageIds.length ? stackData.imageIds.length : 1;
 
     // Stack has just one image, so disable button
-    if(nImages === 1) {
-      return true;
+    if (nImages === 1) {
+        return true;
     }
 
     return false;
@@ -306,7 +309,7 @@ const hasMultipleFrames = () => {
 // Stop clips on all non-empty elements
 const stopAllClips = () => {
     const elements = $('.imageViewerViewport').not('.empty');
-    elements.each( (index, element) => {
+    elements.each((index, element) => {
         if ($(element).find('canvas').length) {
             cornerstoneTools.stopClip(element);
         }
@@ -319,8 +322,7 @@ const stopActiveClip = () => {
     if ($(activeElement).find('canvas').length) {
         cornerstoneTools.stopClip(activeElement);
     }
-}
-
+};
 
 const isStackScrollLinkingDisabled = () => {
     let linkableViewportsCount = 0;
