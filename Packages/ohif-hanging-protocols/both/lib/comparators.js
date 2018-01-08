@@ -23,6 +23,18 @@ const comparators = [{
     validatorOption: 'value',
     description: 'The attribute must not contain this value.'
 }, {
+    id: 'startsWith',
+    name: 'Starts with',
+    validator: 'startsWith',
+    validatorOption: 'value',
+    description: 'The attribute must start with this value.'
+}, {
+    id: 'endsWith',
+    name: 'Ends with',
+    validator: 'endsWith',
+    validatorOption: 'value',
+    description: 'The attribute must end with this value.'
+}, {
     id: 'onlyInteger',
     name: 'Only Integers',
     validator: 'numericality',

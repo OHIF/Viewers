@@ -24,4 +24,16 @@ v.validators.doesNotContain = function(value, options, key) {
     }
 };
 
+v.validators.startsWith = function(value, options, key) {
+    if (options && value.startsWith && !value.startsWith(options.value)) {
+        return key + 'must start with ' + options.value;
+    }
+};
+
+v.validators.endsWith = function(value, options, key) {
+    if (options && value.endsWith && !value.endsWith(options.value)) {
+        return key + 'must end with ' + options.value;
+    }
+};
+
 validate = v;
