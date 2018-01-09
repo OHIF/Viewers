@@ -2,14 +2,15 @@ import { Template } from 'meteor/templating';
 import 'meteor/fds:threejs';
 import 'meteor/polguixe:meteor-datgui';
 import { $ } from 'meteor/jquery';
+import { EffectController } from "./EffectController";
 
 var scene, camera, renderer, controls;
 var geometry, material, sphere, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
 var objects = [];
 var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
-var canvas, raycaster, effectController;
-var lengthX, lengthY, lengthZ;
+var canvas, raycaster, effectController, gui_initialized, gui;
+var lengthX, lengthY, lengthZ, originX, originY, originZ;
 var arrowHelper_x, arrowHelper_y, arrowHelper_z;
 
 var Detector = {
@@ -91,14 +92,17 @@ function setArrowHelper() {
     var dir_y = new THREE.Vector3( 0, 1, 0 ); dir_y.normalize();
     var dir_z = new THREE.Vector3( 0, 0, 1 ); dir_z.normalize();
 
-    var origin = new THREE.Vector3( 0, 0, 0 );
+    var origin = new THREE.Vector3( originX, originY, originZ );
+    origin.subScalar(1);
 
-    arrowHelper_x = new THREE.ArrowHelper( dir_x, origin, lengthX * 0.25, 0xff0000 );
-    arrowHelper_y = new THREE.ArrowHelper( dir_y, origin, lengthY * 0.25, 0x00ff00 );
-    arrowHelper_z = new THREE.ArrowHelper( dir_z, origin, lengthZ * 0.25, 0xffff00 );
+    var length = Math.min(lengthX, lengthY, lengthZ) * 0.25;
+
+    arrowHelper_x = new THREE.ArrowHelper( dir_x, origin, length, 0xff0000 );
+    arrowHelper_y = new THREE.ArrowHelper( dir_y, origin, length, 0x00ff00 );
+    arrowHelper_z = new THREE.ArrowHelper( dir_z, origin, length, 0xffff00 );
     arrowHelper_x.name = 'arrowHelper_x';
     arrowHelper_y.name = 'arrowHelper_y';
-    arrowHelper_y.name = 'arrowHelper_y';
+    arrowHelper_z.name = 'arrowHelper_z';
     scene.remove(scene.getObjectByName(arrowHelper_x.name));
     scene.remove(scene.getObjectByName(arrowHelper_y.name));
     scene.remove(scene.getObjectByName(arrowHelper_z.name));
@@ -114,27 +118,69 @@ function computeScale(geometry) {
     lengthX = Math.max(lengthX, geometrySize.x);
     lengthY = Math.max(lengthY, geometrySize.y);
     lengthZ = Math.max(lengthZ, geometrySize.z);
+    originX = Math.min(originX, geometry.boundingBox.min.x);
+    originY = Math.min(originY, geometry.boundingBox.min.y);
+    originZ = Math.min(originZ, geometry.boundingBox.min.z);
     setArrowHelper();
+}
+
+function initializeGUI() {
+
+        gui = new dat.GUI({autoPlace: false, domElement: document.getElementsByClassName('dg').item(0)});
+        gui.close();
+
+        var colorController, opacityController, transparentController, positionController;
+
+        colorController = gui.addColor(effectController, 'color');
+        colorController.onChange(function (value) {
+            if (SELECTED_OBJECT) {
+                SELECTED_OBJECT.material.color.setStyle('#' + value.toString(16));
+                SELECTED_OBJECT.effectController.color = SELECTED_OBJECT.material.color.getHex();
+            }
+        }).listen();
+
+        transparentController = gui.add(effectController, 'transparent');
+        transparentController.onChange(function (value) {
+            if (SELECTED_OBJECT) {
+                SELECTED_OBJECT.material.transparent = value;
+                SELECTED_OBJECT.effectController.transparent = SELECTED_OBJECT.material.transparent;
+            }
+        }).listen();
+
+        opacityController = gui.add(effectController, 'opacity', 0.0, 1.0, 0.1);
+        opacityController.listen().onChange(function (value) {
+            if (SELECTED_OBJECT) {
+                SELECTED_OBJECT.material.opacity = value;
+                SELECTED_OBJECT.effectController.opacity = SELECTED_OBJECT.material.opacity;
+            }
+        });
+        positionController = gui.add(effectController, 'position').min(0).max(10).step(1.0);
+        positionController.onChange(function (value) {
+            if (SELECTED_OBJECT) {
+                SELECTED_OBJECT.effectController.setPosition(value);
+                SELECTED_OBJECT.renderOrder = value;
+            }
+        });
+        positionController.listen();
 }
 
 function onMouseClick(event) {
     event.preventDefault();
     if (!selectionMode) return;
     SELECTED_OBJECT = INTERSECTED;
-    effectController.color = SELECTED_OBJECT.effectController.color;
-    effectController.transparent = SELECTED_OBJECT.effectController.transparent;
-    effectController.opacity = SELECTED_OBJECT.effectController.opacity;
+    effectController.copy(SELECTED_OBJECT.effectController);
+    $("#enableSelectionButton").click();
 }
 
 function onMouseMove(event) {
     event.preventDefault();
-    if (!selectionMode) return;
+
     // var x = event.offsetX == undefined ? event.layerX : event.offsetX;
     // var y = event.offsetY == undefined ? event.layerY : event.offsetY;
     mouse.x = ( event.offsetX / renderer.domElement.width ) * 2 - 1;
     mouse.y = - ( event.offsetY / renderer.domElement.height ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObjects( scene.children );
+    var intersects = raycaster.intersectObjects( objects );
 
     if (intersects.length > 0) {
         if (INTERSECTED != intersects[0].object) {
@@ -142,7 +188,7 @@ function onMouseMove(event) {
 
             INTERSECTED = intersects[ 0 ].object;
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex( 0xff0000 );
+            if (selectionMode) INTERSECTED.material.emissive.setHex( 0xff0000 );
         }
     } else {
         if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
@@ -154,13 +200,10 @@ function init() {
     //Initialize vars
     mouse = new THREE.Vector2();
     raycaster =  new THREE.Raycaster();
-    effectController = {
-        color: 0x000000,
-        transparent: false,
-        opacity: 1.0
-    };
+    effectController = new EffectController(0, false, 1.0, 1);
     selectionMode = false;
     lengthX = lengthY = lengthZ = 0.0;
+    originX = originY = originZ = 0;
 
 
     //Scene
@@ -195,35 +238,16 @@ function init() {
     controls.noPan = false;
     controls.staticMoving = false;
     controls.dynamicDampingFactor = 0.3;
-    controls.keys = [ 65, 83, 68 ];
+    controls.keys = [ 74, 75, 76 ];
     controls.addEventListener( 'change', render );
+
+    //GUI
+    initializeGUI();
 
     $("#enableSelectionButton").click(function (event) {
         event.preventDefault();
         $( this ).toggleClass( "active" );
         selectionMode = !selectionMode;
-    });
-
-    var gui = new dat.GUI({autoPlace: false, domElement: document.getElementsByClassName('dg').item(0)});
-    gui.close();
-    gui.addColor(effectController, 'color').onChange(function (value) {
-        if (SELECTED_OBJECT) {
-            var nc = '#' + effectController.color.toString(16);
-            SELECTED_OBJECT.material.color.set(nc);
-            SELECTED_OBJECT.effectController.color = SELECTED_OBJECT.material.color.getHex();
-        }
-    }).listen();
-    gui.add(effectController, 'transparent').onChange(function (value) {
-        if (SELECTED_OBJECT) {
-            SELECTED_OBJECT.material.transparent = value;
-            SELECTED_OBJECT.effectController.transparent = SELECTED_OBJECT.material.transparent;
-        }
-    }).listen();
-    gui.add(effectController, 'opacity', 0.0, 1.0, 0.1).listen().onChange(function (value) {
-        if (SELECTED_OBJECT) {
-            SELECTED_OBJECT.material.opacity = value;
-            SELECTED_OBJECT.effectController.opacity = SELECTED_OBJECT.material.opacity;
-        }
     });
 
     // geometry = new THREE.SphereGeometry(1, 64, 64, 3 * Math.PI / 2, Math.PI / 2);
@@ -249,14 +273,15 @@ function init() {
     // objects.push(sphere2);
 
     var loader = new THREE.VTKLoader();
-    loader.load("/artery.vtk", function (geometry) {
+    loader.load("/pancreas.vtk", function (geometry) {
         geometry.computeVertexNormals();
+        console.log("pancreas");
+        //geometry.center();
         computeScale(geometry);
-        var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xFFFFFF, side: THREE.FrontSide } );
+        var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
         var mesh = new THREE.Mesh(geometry, material);
         mesh.updateMatrixWorld();
-        mesh.effectController = $.extend({}, effectController);
-        mesh.effectController.color = mesh.material.color.getHex();
+        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
         // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
         // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
         // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
@@ -264,14 +289,33 @@ function init() {
         objects.push(mesh);
     });
 
-    loader.load("/bone.vtk", function (geometry) {
+    loader.load("/colon.vtk", function (geometry) {
         geometry.computeVertexNormals();
+        console.log("colon");
+
+        //geometry.center();
         computeScale(geometry);
-        var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xFFFFFF, side: THREE.FrontSide } );
+        var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
         var mesh = new THREE.Mesh(geometry, material);
         mesh.updateMatrixWorld();
-        mesh.effectController = $.extend({}, effectController);
-        mesh.effectController.color = mesh.material.color.getHex();
+        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
+        // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
+        // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
+        // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
+        scene.add(mesh);
+        objects.push(mesh);
+    });
+
+    loader.load("/heart.vtk", function (geometry) {
+        geometry.computeVertexNormals();
+        console.log("heart");
+
+        //geometry.center();
+        computeScale(geometry);
+        var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.updateMatrixWorld();
+        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
         // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
         // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
         // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
@@ -291,7 +335,6 @@ function animate() {
 function render() {
     renderer.render( scene, camera );
 }
-
 
 Template.viewer3D.onRendered(() => {
 
