@@ -10,7 +10,7 @@ var aspectRelation; // Width / Height
 var objects = [];
 var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
 var canvas, raycaster, effectController, gui_initialized, gui;
-var lengthX, lengthY, lengthZ, originX, originY, originZ;
+var lengthX, lengthY, lengthZ, originX, originY, originZ, centerX, centerY;
 var arrowHelper_x, arrowHelper_y, arrowHelper_z;
 
 var Detector = {
@@ -93,7 +93,7 @@ function setArrowHelper() {
     var dir_z = new THREE.Vector3( 0, 0, 1 ); dir_z.normalize();
 
     var origin = new THREE.Vector3( originX, originY, originZ );
-    origin.subScalar(1);
+    origin.subScalar(2);
 
     var length = Math.min(lengthX, lengthY, lengthZ) * 0.25;
 
@@ -121,6 +121,9 @@ function computeScale(geometry) {
     originX = Math.min(originX, geometry.boundingBox.min.x);
     originY = Math.min(originY, geometry.boundingBox.min.y);
     originZ = Math.min(originZ, geometry.boundingBox.min.z);
+    camera.position.x = originX + (lengthX);
+    camera.position.y = originY + (lengthY);
+    camera.updateProjectionMatrix();
     setArrowHelper();
 }
 
@@ -162,6 +165,11 @@ function initializeGUI() {
             }
         });
         positionController.listen();
+
+        var fcam = gui.addFolder("Camera");
+        fcam.add(camera.position, 'x').min(-1200).max(1200).step(1.0).listen();
+        fcam.add(camera.position, 'y').min(-1200).max(1200).step(1.0).listen();
+        fcam.add(camera.position, 'z').min(-1200).max(1200).step(1.0).listen();
 }
 
 function onMouseClick(event) {
@@ -203,7 +211,8 @@ function init() {
     effectController = new EffectController(0, false, 1.0, 1);
     selectionMode = false;
     lengthX = lengthY = lengthZ = 0.0;
-    originX = originY = originZ = 0;
+    centerX = centerY = 0.0;
+    originX = originY = originZ = Number.POSITIVE_INFINITY;
 
 
     //Scene
@@ -219,7 +228,7 @@ function init() {
     aspectRelation = renderer.getSize().width / renderer.getSize().height;
     camera = new THREE.PerspectiveCamera( 70, aspectRelation, 0.1, 10000 );
     camera.updateProjectionMatrix();
-    camera.position.z = 5;
+    camera.position.z = 1000;
     scene.add(camera);
 
     //Light
