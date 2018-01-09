@@ -13,6 +13,19 @@ Template.toolbarSection.onCreated(() => {
 });
 
 Template.toolbarSection.helpers({
+    buttonData3D() {
+        let buttonData = [];
+
+        buttonData.push({
+            toggleable: true,
+            id: 'enableSelectionButton',
+            title: 'Select mode',
+            iconClasses: 'fa fa-hand-pointer-o'
+        });
+
+        return buttonData;
+    },
+
     leftSidebarToggleButtonData() {
         const instance = Template.instance();
         return {
