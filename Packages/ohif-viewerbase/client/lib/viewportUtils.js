@@ -228,12 +228,8 @@ const toggleCineDialog = () => {
 };
 
 const toggleDownloadDialog = () => {
-    const dialog = document.getElementById('downloadDialog');
-
     stopActiveClip();
-    toggleDialog(dialog);
-
-    Session.set('UpdateDownloadViewport', Random.id());
+    OHIF.ui.showDialog('imageDownloadDialog');
 };
 
 const isDownloadEnabled = () => {

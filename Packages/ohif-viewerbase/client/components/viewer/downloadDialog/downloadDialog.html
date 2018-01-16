@@ -1,4 +1,57 @@
-<template name="downloadDialog">
+<template name="imageDownloadDialog">
+    {{#dialogForm (extend this
+        title='Download High Quality Image'
+        class='themed'
+        dialogClass='modal-lg'
+        formClass='form-themed'
+        confirmLabel='Download'
+        cancelLabel='Cancel'
+        id='imageDownloadDialog'
+        schema=instance.schema
+    )}}
+        <h5>Please specify the dimensions, filename, and desired type for the output image.</h5>
+        <div class="card-round">
+            <div class="row m-t-2">
+                <div class="col-lg-4">
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="text-right p-r-1">Width</td>
+                                <td>{{>inputText key='width'}}</td>
+                                <td class="p-l-1" rowspan="2">
+                                    <button class="btn btn-secondary js-keep-aspect {{#if keepAspect}}active{{/if}}" title="Keep aspect ratio">
+                                        <i class="fa fa-chain{{#unless keepAspect}}-broken{{/unless}}"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right p-r-1">Height</td>
+                                <td>{{>inputText key='height'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-5">
+                    <table class="full-width">
+                        <tbody>
+                            <tr>
+                                <td class="text-right p-r-1">File name</td>
+                                <td>{{>inputText key='name'}}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right p-r-1">File type</td>
+                                <td>{{>inputSelect key='type'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-3">{{>inputCheckbox key='showAnnotations'}}</div>
+            </div>
+        </div>
+        <div class="viewport-element hidden"></div>
+        <img class="viewport-preview" />
+    {{/dialogForm}}
+    <!--
     <dialog id="downloadDialog">
         {{#form id='downloadDialogForm' schema=instance.schema api=instance.api}}
             <div class="instructions">Please specify the dimensions, filename, and desired type for the output image.</div>
@@ -38,4 +91,5 @@
             </div>
         {{/form}}
     </dialog>
+    -->
 </template>

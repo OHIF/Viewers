@@ -129,7 +129,7 @@ Template.toolbarSection.helpers({
             title: 'Download',
             classes: 'imageViewerCommand',
             iconClasses: 'fa fa-camera',
-            active: () => $('#downloadDialog').is(':visible')
+            active: () => $('#imageDownloadDialog').is(':visible')
         });
 
         extraTools.push({
