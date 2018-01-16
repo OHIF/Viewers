@@ -37,7 +37,7 @@ It is possible to build this standalone viewer to run as a client-only bundle of
 
   ````
   METEOR_PACKAGE_DIRS="../../Packages" meteor-build-client ../myOutputFolder -u localhost:3000
-  ```
+  ````
 
 
 3. Test the bundled client-side package locally.
