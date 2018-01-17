@@ -65,7 +65,7 @@ OHIF.ui.showDialog = (templateName, dialogData={}) => {
         $body.off('ohif.navigated', navigationHandler);
     };
 
-    promise.then(dismissModal).catch(dismissModal);
+    promise.then(() => dismissModal(false)).catch(() => dismissModal(false));
 
     // Dismiss the modal if navigation occurs and it should not be kept opened
     if (!dialogData.keepOpenOnNavigation) {

@@ -1,10 +1,15 @@
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { OHIF } from 'meteor/ohif:core';
-import { cornerstone } from 'meteor/ohif:cornerstone';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
+
+OHIF.viewerbase.getImageDownloadDialogAnnotationTools = () => {
+    return ['length', 'probe', 'simpleAngle', 'arrowAnnotate', 'ellipticalRoi', 'rectangleRoi'];
+};
 
 Template.imageDownloadDialog.onCreated(() => {
     const instance = Template.instance();
@@ -25,19 +30,30 @@ Template.imageDownloadDialog.onCreated(() => {
         showAnnotations: {
             type: Boolean,
             label: 'Show Annotations',
-            defaultValue: false
+            defaultValue: true
+        },
+        quality: {
+            type: Number,
+            defaultValue: 100
         }
     });
 
+    instance.changeObserver = new Tracker.Dependency();
+
     instance.keepAspect = new ReactiveVar(true);
     instance.showAnnotations = new ReactiveVar(false);
+
+    instance.lastImage = {};
+
+    instance.getConfirmCallback = () => () => {
+        instance.downloadImage();
+    };
 });
 
 Template.imageDownloadDialog.onRendered(() => {
     const instance = Template.instance();
     const { viewportUtils } = OHIF.viewerbase;
 
-    instance.quality = 1;
     instance.$viewportElement = instance.$('.viewport-element');
     instance.viewportElement = instance.$viewportElement[0];
     instance.$viewportPreview = instance.$('.viewport-preview');
@@ -53,14 +69,22 @@ Template.imageDownloadDialog.onRendered(() => {
         canvas[size] = value;
         canvas.style[size] = `${value}px`;
 
-        instance.form.item(size).value(value);
+        instance.form.item(size).$element.val(value);
+    };
+
+    instance.toggleAnnotations = toggle => {
+        const action = toggle ? 'enable' : 'disable';
+        const annotationTools = OHIF.viewerbase.getImageDownloadDialogAnnotationTools();
+        annotationTools.forEach(tool => cornerstoneTools[tool][action](instance.viewportElement));
     };
 
     instance.updateViewportPreview = () => {
         instance.$viewportElement.one('CornerstoneImageRendered', (event, enabledElement) => {
+            const formData = instance.form.value();
             const image = instance.viewportPreview;
-            const type = 'image/' + instance.form.item('type').value();
-            const dataUrl = instance.downloadCanvas.toDataURL(type, instance.quality);
+            const type = 'image/' + formData.type;
+            const quality = formData.type === 'png' ? 1 : formData.quality / 100;
+            const dataUrl = instance.downloadCanvas.toDataURL(type, quality);
             image.src = dataUrl;
 
             const $element = $(enabledElement.element);
@@ -77,13 +101,30 @@ Template.imageDownloadDialog.onRendered(() => {
         });
     };
 
+    // TODO: Add quality parameter to cornerstoneTools' saveAs method
+    instance.downloadImage = () => {
+        const formData = instance.form.value();
+        const link = document.createElement('a');
+        link.download = `${formData.name}.${formData.type}`;
+        link.href = instance.viewportPreview.src;
+
+        // Create a 'fake' click event to trigger the download
+        if (document.createEvent) {
+            const event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            link.dispatchEvent(event);
+        } else if (link.fireEvent) {
+            link.fireEvent('onclick');
+        }
+    };
+
     instance.autorun(() => {
+        instance.changeObserver.depend();
         Session.get('UpdateDownloadViewport');
         const activeViewport = viewportUtils.getActiveViewportElement();
 
         if (activeViewport) {
             const enabledElement = cornerstone.getEnabledElement(activeViewport);
-            const { width, height } = enabledElement.image;
 
             const viewport = Object.assign({}, enabledElement.viewport);
             delete viewport.scale;
@@ -93,140 +134,83 @@ Template.imageDownloadDialog.onRendered(() => {
             };
 
             cornerstone.loadImage(enabledElement.image.imageId).then(image => {
-                cornerstone.displayImage(instance.viewportElement, image);
-                cornerstone.setViewport(instance.viewportElement, viewport);
-                cornerstone.resize(instance.viewportElement, true);
+                instance.lastImage = image;
+                const { viewportElement, downloadCanvas } = instance;
+                const formData = instance.form.value();
 
-                instance.setElementSize(instance.viewportElement, instance.downloadCanvas, 'width', width);
-                instance.setElementSize(instance.viewportElement, instance.downloadCanvas, 'height', height);
+                cornerstone.displayImage(viewportElement, image);
+                cornerstone.setViewport(viewportElement, viewport);
+                cornerstone.resize(viewportElement, true);
 
-                cornerstone.fitToWindow(instance.viewportElement);
+                instance.toggleAnnotations(formData.showAnnotations);
+
+                const width = Math.min(formData.width || image.width, 16384);
+                const height = Math.min(formData.height || image.height, 16384);
+                instance.setElementSize(viewportElement, downloadCanvas, 'width', width);
+                instance.setElementSize(viewportElement, downloadCanvas, 'height', height);
+
+                cornerstone.fitToWindow(viewportElement);
                 instance.updateViewportPreview();
             });
         }
     });
 });
 
-Template.imageDownloadDialog.helpers({
-    keepAspect() {
-        return Template.instance().keepAspect.get();
-    }
-});
-
 Template.imageDownloadDialog.events({
     'click .js-keep-aspect'(event, instance) {
         const currentState = instance.keepAspect.get();
         instance.keepAspect.set(!currentState);
+        instance.$('[data-key=width]').trigger('input');
+    },
+
+    'change [data-key=showAnnotations], change [data-key=type]'(event, instance) {
+        instance.changeObserver.changed();
+    },
+
+    'input [data-key=quality]'(event, instance) {
+        instance.changeObserver.changed();
+    },
+
+    'input [data-key=width]'(event, instance) {
+        const { viewportElement, downloadCanvas } = instance;
+        const formData = instance.form.value();
+        const { width, height } = instance.lastImage;
+        const newWidth = formData.width;
+        instance.setElementSize(viewportElement, downloadCanvas, 'width', newWidth);
+        if (instance.keepAspect.get()) {
+            const multiplier = newWidth / width;
+            const newHeight = Math.round(height * multiplier);
+            instance.setElementSize(viewportElement, downloadCanvas, 'height', newHeight);
+        }
+
+        instance.changeObserver.changed();
+    },
+
+    'input [data-key=height]'(event, instance) {
+        const { viewportElement, downloadCanvas } = instance;
+        const formData = instance.form.value();
+        const { width, height } = instance.lastImage;
+        const newHeight = formData.height;
+        instance.setElementSize(viewportElement, downloadCanvas, 'height', newHeight);
+        if (instance.keepAspect.get()) {
+            const multiplier = newHeight / height;
+            const newWidth = Math.round(width * multiplier);
+            instance.setElementSize(viewportElement, downloadCanvas, 'width', newWidth);
+        }
+
+        instance.changeObserver.changed();
     }
 });
 
-// import { Template } from 'meteor/templating';
-// import { Session } from 'meteor/session';
-// import { OHIF } from 'meteor/ohif:core';
-// import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
-//
-// function setElementSize(element, canvas, size, value) {
-//     $(element)[size](value);
-//     canvas[size] = value;
-//     canvas.style[size] = `${value}px`;
-// }
-//
-// Template.imageDownloadDialog.onCreated(() => {
-//     const instance = Template.instance();
-//     const { viewportUtils } = OHIF.viewerbase;
-//
-//     instance.autorun(() => {
-//         Session.get('UpdateDownloadViewport');
-//         const activeViewport = viewportUtils.getActiveViewportElement();
-//
-//         if (activeViewport) {
-//             const enabledElement = cornerstone.getEnabledElement(activeViewport);
-//
-//             cornerstone.loadImage(enabledElement.image.imageId).then(function(image) {
-//                 cornerstone.displayImage(instance.$previewElement, image);
-//                 cornerstone.displayImage(instance.$downloadElement, image);
-//                 cornerstone.resize(instance.$previewElement, true);
-//
-//                 setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'width', 300);
-//                 setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'height', 200);
-//
-//                 cornerstone.fitToWindow(instance.$downloadElement);
-//             });
-//         }
-//     });
-// });
-//
-// Template.imageDownloadDialog.onRendered(() => {
-//     const instance = Template.instance();
-//     const $dialog = instance.$('#imageDownloadDialog');
-//
-//     instance.$previewElement = $('#previewElement')[0];
-//     instance.$downloadElement = document.createElement('div');
-//     instance.availableTools = ['length', 'probe', 'simpleAngle', 'arrowAnnotate', 'ellipticalRoi', 'rectangleRoi'];
-//     instance.showAnnotations = false;
-//
-//     cornerstone.enable(instance.$previewElement);
-//     cornerstone.enable(instance.$downloadElement);
-//     instance.$downloadCanvas = $(instance.$downloadElement).find('canvas')[0];
-//
-//     // Make the dialog bounded and draggable
-//     $dialog.draggable({ defaultElementCursor: 'move' });
-//
-//     // Polyfill for older browsers
-//     dialogPolyfill.registerDialog($dialog.get(0));
-//
-//     // // Prevent dialog from being dragged when user clicks any button
-//     const $controls = $dialog.find('.form-group, .instructions');
-//     $controls.on('mousedown touchstart', event => event.stopPropagation());
-// });
-//
-// Template.imageDownloadDialog.events({
-//     'change .form-group input[name=width]'(event, instance){
-//         const width = $(event.currentTarget).val();
-//
-//         setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'width', width);
-//         cornerstone.fitToWindow(instance.$downloadElement);
-//     },
-//
-//     'change .form-group input[name=height]'(event, instance){
-//         const height = $(event.currentTarget).val();
-//
-//         setElementSize(instance.$downloadElement, instance.$downloadCanvas, 'height', height);
-//         cornerstone.fitToWindow(instance.$downloadElement);
-//     },
-//
-//     'change #imageDownloadDialog .form-group .form-check input[type=checkbox]'(event, instance) {
-//         const $previewElement = instance.$previewElement;
-//         const $downloadElement = instance.$downloadElement;
-//
-//         instance.showAnnotations = !instance.showAnnotations;
-//
-//         const action = (instance.showAnnotations) ? 'enable' : 'disable';
-//
-//         instance.availableTools.forEach(tool => {
-//             cornerstoneTools[tool][action]($previewElement);
-//             cornerstoneTools[tool][action]($downloadElement);
-//         });
-//     },
-//
-//     'click .dropdown-menu .dropdown-item'(event, instance) {
-//         const extension = $(event.currentTarget).text();
-//         const $extensionButton = $('.btn.extension');
-//
-//         $extensionButton.text(extension);
-//     },
-//
-//     'click button.download'(event, instance) {
-//         const fileName = $('.fileName').val();
-//         const extension = $('.btn.extension').text().trim();
-//
-//         if (!fileName || !extension) return;
-//
-//         cornerstoneTools.saveAs(instance.$downloadElement, `${fileName}.${extension}`, `image/${extension}`);
-//     },
-//
-//     'click button.cancel'(event, instance) {
-//         const { viewportUtils } = OHIF.viewerbase;
-//         viewportUtils.toggleDownloadDialog();
-//     }
-// });
+Template.imageDownloadDialog.helpers({
+    keepAspect() {
+        return Template.instance().keepAspect.get();
+    },
+
+    showQuality() {
+        const instance = Template.instance();
+        instance.changeObserver.depend();
+        if (!instance.form) return true;
+        return instance.form.item('type').value() === 'jpeg';
+    }
+});

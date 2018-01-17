@@ -26,6 +26,7 @@ import './form/link.html';
 import './input/checkbox.html';
 import './input/hidden.html';
 import './input/groupRadio.html';
+import './input/number.html';
 import './input/password.html';
 import './input/radio.html';
 import './input/range.html';

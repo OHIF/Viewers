@@ -1,43 +1,14 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 #imageDownloadDialog
+
+  .image-preview
+    display: table
+    margin: 0 auto
+
+    h3
+      white-space: nowrap
 
   .viewport-preview
     max-width: 512px
     max-height: 512px
-
-
-
-  .instructions
-    margin-bottom: 20px
-    text-align: center
-
-  .extension
-    color: #000000
-    background-color: #888
-
-  .col-form-label
-    margin-top: 5px
-
-  .dropdown-menu .dropdown-item
-    display: block;
-    width: 100%;
-    padding: 3px 1.5rem;
-    clear: both;
-    font-weight: 400;
-    color: #292b2c;
-    text-align: inherit;
-    white-space: nowrap;
-    background: 0 0;
-    border: 0;
-
-  #previewElement, #downloadElement
-    width: 300px
-    height: 200px
-    margin: 0 auto
-
-  #downloadElement
-    display: none
-
-  .button-holder
-    margin-top: 15px

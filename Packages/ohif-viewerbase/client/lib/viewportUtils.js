@@ -229,7 +229,12 @@ const toggleCineDialog = () => {
 
 const toggleDownloadDialog = () => {
     stopActiveClip();
-    OHIF.ui.showDialog('imageDownloadDialog');
+    const $dialog = $('#imageDownloadDialog');
+    if ($dialog.length) {
+        $dialog.find('.close:first').click();
+    } else {
+        OHIF.ui.showDialog('imageDownloadDialog');
+    }
 };
 
 const isDownloadEnabled = () => {
