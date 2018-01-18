@@ -1,6 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
@@ -15,12 +14,9 @@ class ConformanceCriteria {
         this.nonconformities = new ReactiveVar();
         this.groupedNonConformities = new ReactiveVar();
         this.maxTargets = new ReactiveVar(null);
+        this.maxNewTargets = new ReactiveVar(null);
 
-        const validate = _.debounce(trialCriteriaType => {
-            if (!Session.get('MeasurementsReady')) return;
-            this.validate(trialCriteriaType);
-        }, 300);
-
+        const validate = _.debounce(trialCriteriaType => this.validate(trialCriteriaType), 300);
         Tracker.autorun(() => {
             const selectedType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
             this.measurementApi.changeObserver.depend();
@@ -45,6 +41,7 @@ class ConformanceCriteria {
                 mergedData.nonTargets = mergedData.nonTargets.concat(followupData.nonTargets);
 
                 this.maxTargets.set(null);
+                this.maxNewTargets.set(null);
                 const resultBoth = this.validateTimepoint('both', trialCriteriaType, mergedData);
                 const resultBaseline = this.validateTimepoint('baseline', trialCriteriaType, baselineData);
                 const resultFollowup = this.validateTimepoint('followup', trialCriteriaType, followupData);
@@ -101,9 +98,14 @@ class ConformanceCriteria {
         let nonconformities = [];
 
         evaluators.forEach(evaluator => {
-            const maxTargets = evaluator.getMaxTargets();
+            const maxTargets = evaluator.getMaxTargets(false);
+            const maxNewTargets = evaluator.getMaxTargets(true);
             if (maxTargets) {
                 this.maxTargets.set(maxTargets);
+            }
+
+            if (maxNewTargets) {
+                this.maxNewTargets.set(maxNewTargets);
             }
 
             const result = evaluator.evaluate(data);
@@ -145,7 +147,7 @@ class ConformanceCriteria {
                 const measurements = this.measurementApi.fetch(measurementType);
 
                 measurements.forEach(measurement => {
-                    const { studyInstanceUid, imageId } = measurement;
+                    const { studyInstanceUid } = measurement;
 
                     const timepointId = measurement.timepointId;
                     const timepoint = timepointId && this.timepointApi.timepoints.findOne({ timepointId });
@@ -154,12 +156,13 @@ class ConformanceCriteria {
                         return;
                     }
 
-                    const promise = OHIF.studylist.retrieveStudyMetadata(studyInstanceUid);
+                    const promise = OHIF.studies.loadStudy(studyInstanceUid);
                     promise.then(study => {
-                        const metadata = OHIF.viewer.metadataProvider.getMetadata(imageId);
+                        const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
+
                         data[measurementType].push({
                             measurement,
-                            metadata: metadata.instance,
+                            metadata: studyMetadata.getFirstInstance(),
                             timepoint
                         });
                     });

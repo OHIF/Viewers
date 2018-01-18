@@ -4,10 +4,26 @@ import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
+function isThereSeries(studies) {
+    if (studies.length === 1) {
+        const study = studies[0];
+
+        if (study.seriesList && study.seriesList.length > 1) {
+            return true;
+        }
+
+        if (study.displaySets && study.displaySets.length > 1) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 Template.toolbarSection.onCreated(() => {
     const instance = Template.instance();
 
-    if (OHIF.uiSettings.leftSidebarOpen) {
+    if (OHIF.uiSettings.leftSidebarOpen && isThereSeries(instance.data.studies)) {
         instance.data.state.set('leftSidebar', 'studies');
     }
 });
@@ -102,6 +118,14 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
+            id: 'toggleDownloadDialog',
+            title: 'Download',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-camera',
+            active: () => $('#downloadDialog').is(':visible')
+        });
+
+        extraTools.push({
             id: 'invert',
             title: 'Invert',
             classes: 'imageViewerCommand',
@@ -164,6 +188,13 @@ Template.toolbarSection.helpers({
             title: 'Reset',
             classes: 'imageViewerCommand',
             iconClasses: 'fa fa-undo'
+        });
+
+        buttonData.push({
+            id: 'seed',
+            title: 'Seed',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-paint-brush'
         });
 
         if (!OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
@@ -239,6 +270,16 @@ Template.toolbarSection.helpers({
     }
 
 });
+
+Template.toolbarSection.events({
+    'click #seed'(event, instance) {
+        const $target = $(event.currentTarget);
+        if (!$target.hasClass('active') && $target.hasClass('expanded')) {
+            OHIF.viewerbase.toolManager.setActiveTool('seed');
+        }
+    }
+});
+
 
 Template.toolbarSection.onRendered(function() {
     const instance = Template.instance();

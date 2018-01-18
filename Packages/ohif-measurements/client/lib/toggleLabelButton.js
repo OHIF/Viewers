@@ -4,7 +4,13 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 OHIF.measurements.toggleLabelButton = options => {
-    const toolType = options.measurement.toolType;
+    let { toolType } = options.measurement;
+    const { tool } = OHIF.measurements.getToolConfiguration(toolType);
+
+    if (!tool) return;
+
+    toolType = (tool && tool.parentTool) || toolType;
+
     const measurementId = options.measurement._id;
     let buttonView = null;
 
@@ -57,5 +63,5 @@ OHIF.measurements.toggleLabelButton = options => {
             OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.renamed');
         }
     };
-    buttonView = Blaze.renderWithData(Template.measureFlow, data, options.element);
+    buttonView = Blaze.renderWithData(Template.measureFlow, data, document.body);
 };

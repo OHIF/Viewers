@@ -1,15 +1,35 @@
-import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 // Delete a lesion if Ctrl+D or DELETE is pressed while a lesion is selected
-var keys = {
+const keys = {
     D: 68,
     DELETE: 46
 };
 
+// Defined the toolTypes for which the delete dialog will be displayed when the keys are pressed
+const toolTypes = [
+    'bidirectional',
+    'targetCR',
+    'targetUN',
+    'nonTarget',
+    'length',
+    'ellipticalRoi',
+    'rectangleRoi'
+];
+
+// Flag to prevent dialog from being displayed twice
+let locked = false;
+
+// Handler to unlock the keydown handling
+const unlock = () => {
+    locked = false;
+};
+
 function removeMeasurementTimepoint(data, index, toolType, element) {
-    var imageId = data.imageId;
+    let { imageId } = data;
     if (!imageId) {
-        var enabledElement = cornerstone.getEnabledElement(element);
+        const enabledElement = cornerstone.getEnabledElement(element);
         imageId = enabledElement.image.imageId;
     }
 
@@ -18,25 +38,24 @@ function removeMeasurementTimepoint(data, index, toolType, element) {
 }
 
 // TODO = Check if we have the same function already in Cornerstone Tools
-function getNearbyToolData(element, coords, toolTypes) {
-    var allTools = Viewerbase.toolManager.getTools();
-    var pointNearTool = false;
-    var touchDevice = Viewerbase.helpers.isTouchDevice();
-    var nearbyTool = {},
-        nearbyToolIndex,
-        nearbyToolType;
+function getNearbyToolData(element, coords) {
+    const Viewerbase = OHIF.viewerbase;
+    const allTools = Viewerbase.toolManager.getTools();
+    let pointNearTool = false;
+    const isTouchDevice = Viewerbase.helpers.isTouchDevice();
+    const nearbyTool = {};
 
-    toolTypes.forEach(function(toolType) {
-        var toolData = cornerstoneTools.getToolState(element, toolType);
+    toolTypes.forEach(toolType => {
+        const toolData = cornerstoneTools.getToolState(element, toolType);
         if (!toolData) {
             return;
         }
 
-        for (var i = 0; i < toolData.data.length; i++) {
-            var data = toolData.data[i];
+        for (let i = 0; i < toolData.data.length; i++) {
+            const data = toolData.data[i];
 
-            var toolInterface;
-            if (touchDevice) {
+            let toolInterface;
+            if (isTouchDevice) {
                 toolInterface = allTools[toolType].touch;
             } else {
                 toolInterface = allTools[toolType].mouse;
@@ -59,35 +78,43 @@ function getNearbyToolData(element, coords, toolTypes) {
     return pointNearTool ? nearbyTool : undefined;
 }
 
-function keyDownCallback(e, eventData) {
-    var keyCode = eventData.which;
+function keyDownCallback(event, eventData) {
+    const keyCode = eventData.which;
+
+    // Stop here if the locked flag is set to true
+    if (locked) return;
 
     if (keyCode === keys.DELETE ||
         (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
-        var toolTypes = [ 'bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN', 'targetEX'];
-        var nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
+        const nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas);
 
-        if (!nearbyToolData) {
-            return;
-        }
+        if (!nearbyToolData || nearbyToolData.tool.isCreating) return;
 
         const dialogSettings = {
+            class: 'themed',
             title: 'Delete measurements',
-            message: 'Are you sure you want to delete this measurement?'
+            message: 'Are you sure you want to delete this measurement?',
+            position: eventData.currentPoints.page
         };
+
+        // Set the locked flag to true
+        locked = true;
 
         // TODO= Refactor this so the confirmation dialog is an
         // optional settable callback in the tool's configuration
         OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(() => {
+            unlock();
             removeMeasurementTimepoint(nearbyToolData.tool,
                 nearbyToolData.index,
                 nearbyToolData.toolType,
                 eventData.element
             );
-        });
+        }).catch(unlock);
     }
 }
 
 // module/private exports
-cornerstoneTools.deleteLesionKeyboardTool = cornerstoneTools.keyboardTool(keyDownCallback);
+const tool = cornerstoneTools.keyboardTool(keyDownCallback);
+tool.toolTypes = toolTypes;
+cornerstoneTools.deleteLesionKeyboardTool = tool;

@@ -37,13 +37,23 @@
       margin-left: 0
       visibility: visible
 
+  .loadingTextDiv
+    theme('color', '$textSecondaryColor')
+    font-size: 32px
+
   .mainContent
     flex: 1
     height: 100%
     order: 2
-    overflow: hidden
+    overflow: visible
+    position: relative
     transition($sidebarTransition)
     width: 100%
+
+    .viewerMain
+      left: 0
+      position: absolute
+      top: 0
 
   .sidebar-right
     flex: 1

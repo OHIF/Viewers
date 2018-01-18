@@ -53,3 +53,26 @@ label.wrapperLabel:not(.checkboxLabel)
       theme('background-color', '$activeColor', 0.8)
       theme('border-color', '$uiBorderColorActive', 0.8)
       theme('color', '$textColorActive')
+
+  span.select2.select2-container
+    width: 100% !important
+
+    span.select2-selection
+      color: rgba(255, 255, 255, 0.52)
+      background-color: #2c353f
+
+      span.select2-selection__arrow
+        theme('background-color', '$uiGray')
+
+      &:hover, &:focus
+        span.select2-selection__arrow
+          theme('background-color', '$uiGray')
+          theme('color', '$textPrimaryColor')
+
+      span.select2-selection__rendered
+        theme('color', '$textPrimaryColor')
+        font-size: 14px
+
+    &.select2-container--open span.select2-selection span.select2-selection__arrow
+      theme('background-color', '$uiGrayDark')
+      theme('color', '$textPrimaryColor')

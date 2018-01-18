@@ -4,8 +4,8 @@
             <div class="p-x-1">
                 {{>imageThumbnail (clone this)}}
             </div>
-            <div class="seriesDetails clearfix m-x-1 {{#unless stack.seriesDescription}}info-only{{/unless}}">
-                <div class="seriesDescription">
+            <div class="seriesDetails flex-h m-x-1 {{#unless stack.seriesDescription}}info-only{{/unless}}">
+                <div class="seriesDescription flex-grow">
                     {{stack.seriesDescription}}
                 </div>
                 <div class="seriesInformation">

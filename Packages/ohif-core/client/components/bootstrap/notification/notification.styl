@@ -1,0 +1,66 @@
+@require '{ohif:design}/app'
+
+.notification-area
+  position: fixed
+  right: 0
+  top: 50px
+  max-width: 320px
+  z-index: 10000
+
+.notification-note
+  opacity: 0
+  position: relative
+  transition(opacity 0.5s linear\, max-height 0.5s linear)
+  width: 300px
+  z-index: 2
+
+  .note-container
+    padding: 10px
+    transform(translateY(0))
+    transition(transform 0.5s linear)
+
+    .note-body
+      margin: 0
+      padding: 10px
+      position: relative
+
+      &:not(.hide-dismiss)
+        padding-right: 50px
+
+        .note-dismiss
+          display: block
+
+    .note-dismiss
+      bottom: 0
+      cursor: pointer
+      display: none
+      position: absolute
+      right: 0
+      top: 0
+      transition(background-color 0.3s ease)
+      width: 40px
+
+      i
+        display: block
+        font-size: 20px
+        left: 0
+        position: absolute
+        text-align: center
+        top: 50%
+        transform(translateY(-50%))
+        width: 100%
+
+      &:hover
+        background-color: rgba(0, 0, 0, 0.1)
+
+  &.in
+    max-height: auto
+    opacity: 1
+
+  &.out
+    max-height: 0 !important
+    opacity: 0
+    z-index: 1
+
+    .note-container
+      transform(translateY(-100%))

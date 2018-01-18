@@ -35,7 +35,6 @@ Meteor.startup(function() {
         dragProbe: '',
         ellipticalRoi: '',
         rectangleRoi: '',
-        spine: '',
 
         // Viewport hotkeys
         flipH: 'H',
@@ -52,8 +51,8 @@ Meteor.startup(function() {
         // Viewport navigation hotkeys
         scrollDown: 'DOWN',
         scrollUp: 'UP',
-        scrollLastImage: '',
-        scrollFirstImage: '',
+        scrollLastImage: 'END',
+        scrollFirstImage: 'HOME',
         previousDisplaySet: 'PAGEUP',
         nextDisplaySet: 'PAGEDOWN',
         nextPanel: 'RIGHT',
@@ -63,6 +62,7 @@ Meteor.startup(function() {
         toggleOverlayTags: 'SHIFT',
         toggleCinePlay: 'SPACE',
         toggleCineDialog: '',
+        toggleDownloadDialog: '',
 
         // Preset hotkeys
         WLPreset0: '1',
@@ -107,18 +107,17 @@ Meteor.startup(function() {
 
     // Register the tool switching commands
     registerToolCommands({
-        wwwc: 'Window W/L',
+        wwwc: 'W/L',
         zoom: 'Zoom',
         angle: 'Angle Measurement',
         dragProbe: 'Pixel Probe',
-        ellipticalRoi: 'Elliptical Probe',
-        rectangleRoi: 'Rectangle',
+        ellipticalRoi: 'Elliptical ROI',
+        rectangleRoi: 'Rectangle ROI',
         magnify: 'Magnify',
         annotate: 'Annotate',
         stackScroll: 'Scroll Stack',
         pan: 'Pan',
         length: 'Length Measurement',
-        spine: 'Spine Labels',
         wwwcRegion: 'W/L by Region'
     });
 
@@ -220,6 +219,11 @@ Meteor.startup(function() {
             name: 'Show/Hide Cine Controls',
             action: viewportUtils.toggleCineDialog,
             disabled: OHIF.viewerbase.viewportUtils.hasMultipleFrames
+        },
+        toggleDownloadDialog: {
+            name: 'Show/Hide Download Dialog',
+            action: viewportUtils.toggleDownloadDialog,
+            disabled: () => !viewportUtils.isDownloadEnabled()
         }
     }, true);
 

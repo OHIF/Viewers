@@ -24,10 +24,11 @@ export class CriteriaEvaluator {
         });
     }
 
-    getMaxTargets() {
+    getMaxTargets(newTarget=false) {
         let result = 0;
         _.each(this.criteria, criterion => {
-            if (criterion instanceof Criteria.MaxTargetsCriterion) {
+            const newTargetMatch = newTarget === !!criterion.options.newTarget;
+            if (criterion instanceof Criteria.MaxTargetsCriterion && newTargetMatch) {
                 const { limit } = criterion.options;
                 if (limit > result) {
                     result = limit;

@@ -1,0 +1,21 @@
+@require '{ohif:design}/app'
+
+div.popover
+  theme('background-color', '$uiGray')
+  theme('color', '$textPrimaryColor')
+
+  .popover-title
+    theme('background-color', '$uiGrayDark')
+    theme('border-bottom-color', '$uiGrayDarkest')
+
+  &.top .arrow:after
+    theme('border-top-color', '$uiGray')
+
+  &.right .arrow:after
+    theme('border-right-color', '$uiGray')
+
+  &.bottom .arrow:after
+    theme('border-bottom-color', '$uiGray')
+
+  &.left .arrow:after
+    theme('border-left-color', '$uiGray')

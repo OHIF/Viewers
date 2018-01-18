@@ -1,3 +1,4 @@
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 // Allow attaching to jQuery selectors
@@ -43,8 +44,8 @@ class Resizable {
     init() {
         this.defineEventHandlers();
 
-        for (var x = -1; x <= 1; x++) {
-            for (var y = -1; y <= 1; y++) {
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
                 this.createBound(x, y);
             }
         }

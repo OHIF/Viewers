@@ -4,19 +4,6 @@ import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.toolbarSection.helpers({
-    // Returns true if the view shall be split in two viewports
-    splitView() {
-        // Run this computation every time the viewports are updated
-        Session.get('LayoutManagerUpdated');
-
-        // Stops here if layout manager is not defined yet
-        if (!Viewerbase.layoutManager) {
-            return;
-        }
-
-        return Viewerbase.layoutManager.viewportData.length > 1;
-    },
-
     leftSidebarToggleButtonData() {
         const instance = Template.instance();
         return {
@@ -135,6 +122,14 @@ Template.toolbarSection.helpers({
             title: 'Ellipse',
             classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-elliptical-roi'
+        });
+
+        extraTools.push({
+            id: 'toggleDownloadDialog',
+            title: 'Download',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-camera',
+            active: () => $('#downloadDialog').is(':visible')
         });
 
         extraTools.push({

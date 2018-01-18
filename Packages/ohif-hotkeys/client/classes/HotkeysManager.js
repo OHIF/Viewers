@@ -33,7 +33,7 @@ export class HotkeysManager {
         const storageKey = `hotkeysDefinitions.${contextName}`;
         return new Promise((resolve, reject) => {
             if (this.storeFunction) {
-                this.storeFunction(contextName, definitions).then(resolve).catch(reject);
+                this.storeFunction.call(this, storageKey, definitions).then(resolve).catch(reject);
             } else if (Meteor.userId()) {
                 OHIF.user.setData(storageKey, definitions).then(resolve).catch(reject);
             } else {
@@ -80,7 +80,8 @@ export class HotkeysManager {
         return new Promise((resolve, reject) => {
             const context = this.getContext(contextName);
             if (!context) return;
-            this.retrieve(contextName).then(definitions => {
+            this.retrieve(contextName).then(defs => {
+                const definitions = defs || this.defaults[contextName];
                 if (!definitions) {
                     this.changeObserver.changed();
                     return reject();

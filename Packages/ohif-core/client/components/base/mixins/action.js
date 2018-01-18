@@ -41,13 +41,13 @@ OHIF.mixins.action = new OHIF.Mixin({
 
                 if (typeof action === 'function') {
                     // Call the action if it's a function
-                    component.actionResult = action.call(event.currentTarget, params);
+                    component.actionResult = action.call(event.currentTarget, params, event);
                 } else if (!api || !action || typeof api[action] !== 'function') {
                     // Stop here if no API or action was defined
                     return true;
                 } else {
                     // Call the defined action function
-                    component.actionResult = api[action].call(event.currentTarget, params);
+                    component.actionResult = api[action].call(event.currentTarget, params, event);
                 }
 
                 // Prepend a spinner into the action element content if it's a promise

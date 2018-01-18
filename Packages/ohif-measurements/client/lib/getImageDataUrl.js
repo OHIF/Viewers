@@ -1,5 +1,8 @@
 import { OHIF } from 'meteor/ohif:core';
 import { $ } from 'meteor/jquery';
+import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:cornerstone';
+
+window.resolve = [];
 
 OHIF.measurements.getImageDataUrl = ({
     imageType='image/jpeg',
@@ -7,12 +10,21 @@ OHIF.measurements.getImageDataUrl = ({
     width=512,
     height=512,
     cacheImage=true,
-    imageId,
-    measurement
+    imagePath,
+    measurement,
+    alwaysVisibleText=true,
+    viewport
 }) => {
-    imageId = imageId || measurement.imageId;
+    imagePath = imagePath || measurement.imagePath;
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(imagePath);
+
+    // Create a deep copy of the measurement to prevent changing its original properties
+    if (measurement) {
+        measurement = $.extend(true, {}, measurement);
+    }
 
     return new Promise((resolve, reject) => {
+        window.resolve.push(resolve);
         const loadMethod = cacheImage ? 'loadAndCacheImage' : 'loadImage';
         cornerstone[loadMethod](imageId).then(image => {
             // Create a cornerstone enabled element to handle the image
@@ -29,8 +41,15 @@ OHIF.measurements.getImageDataUrl = ({
                 cornerstoneTools[measurement.toolType].enable(element);
             }
 
-            // Wait for image rendering to get its data URL
-            $(element).one('CornerstoneImageRendered', () => {
+            // Set the viewport voi if present
+            if (viewport && viewport.voi) {
+                const csViewport = cornerstone.getViewport(element);
+                Object.assign(csViewport, { voi: viewport.voi });
+                cornerstone.setViewport(element, csViewport);
+            }
+
+            // Resolve the current promise giving the dataUrl as parameter
+            const renderedCallback = () => {
                 const dataUrl = enabledElement.canvas.toDataURL(imageType, quality);
 
                 // Disable the tool and clear the measurement state if a measurement was given
@@ -44,10 +63,91 @@ OHIF.measurements.getImageDataUrl = ({
 
                 // Resolve the promise with the image's data URL
                 resolve(dataUrl);
+            };
+
+            // Wait for image rendering to get its data URL
+            $(element).one('CornerstoneImageRendered', () => {
+                if (measurement && alwaysVisibleText) {
+                    rearrangeTextBox(image, measurement, element).then(() => renderedCallback());
+                } else {
+                    renderedCallback();
+                }
             });
         });
     });
 };
+
+const getPoint = (x, y) => {
+    return {
+        x,
+        y
+    };
+};
+
+const lineRectangleIntersection = (line, rect) => {
+    let intersection;
+
+    Object.keys(rect).forEach(side => {
+        if (intersection) return;
+        const rectSegment = rect[side];
+        intersection = cornerstoneMath.lineSegment.intersectLine(line, rectSegment);
+    });
+
+    return intersection;
+};
+
+const rearrangeTextBox = (image, measurement, element) => new Promise((resolve, reject) => {
+    const handles = measurement && measurement.handles;
+    if (!handles) return resolve();
+    const { textBox, start, end } = handles;
+    if (!textBox || !textBox.boundingBox || !start || !end) return resolve();
+
+    // Build the dashed line segment
+    let dashedLine = new cornerstoneMath.Line3();
+    const maxX = Math.max(start.x, end.x);
+    const minX = Math.min(start.x, end.x);
+    const maxY = Math.max(start.y, end.y);
+    const minY = Math.min(start.y, end.y);
+    dashedLine.start = getPoint(minX + ((maxX - minX) / 2), minY + ((maxY - minY) / 2));
+    dashedLine.end = getPoint(textBox.x, textBox.y);
+
+    // Build the bounding rectangle
+    const x0 = (textBox.boundingBox.width / 2);
+    const x1 = image.width - x0;
+    const y0 = (textBox.boundingBox.height / 2);
+    const y1 = image.height - y0;
+    const topLeft = getPoint(x0, y0);
+    const topRight = getPoint(x1, y0);
+    const bottomLeft = getPoint(x0, y1);
+    const bottomRight = getPoint(x1, y1);
+    const boundingRect = {
+        top: new cornerstoneMath.Line3(topLeft, topRight),
+        left: new cornerstoneMath.Line3(topLeft, bottomLeft),
+        right: new cornerstoneMath.Line3(topRight, bottomRight),
+        bottom: new cornerstoneMath.Line3(bottomLeft, bottomRight)
+    };
+
+    // Check if the measurement center is outside the bounding rectangle
+    const imageCenter = getPoint(image.width / 2, image.height / 2);
+    const imageCenterToMeasurement = new cornerstoneMath.Line3();
+    imageCenterToMeasurement.start = imageCenter;
+    imageCenterToMeasurement.end = dashedLine.start;
+    if (lineRectangleIntersection(imageCenterToMeasurement, boundingRect)) {
+        dashedLine = new cornerstoneMath.Line3(imageCenter, dashedLine.end);
+    }
+
+    // Check if the text box is outside the image area
+    const intersection = lineRectangleIntersection(dashedLine, boundingRect);
+    if (intersection) {
+        textBox.boundingBox.left = intersection.x - x0;
+        textBox.boundingBox.top = intersection.y - y0;
+        Object.assign(textBox, intersection);
+        cornerstone.updateImage(element);
+        $(element).one('CornerstoneImageRendered', () => resolve());
+    } else {
+        resolve();
+    }
+});
 
 const createEnabledElement = (width, height) => {
     const $element = $('<div></div>').css({
@@ -62,7 +162,7 @@ const createEnabledElement = (width, height) => {
 
     const element = $element[0];
     $element.appendTo(document.body);
-    cornerstone.enable(element, { renderer: 'webgl' });
+    cornerstone.enable(element, { renderer: OHIF.cornerstone.renderer });
 
     const enabledElement = cornerstone.getEnabledElement(element);
     enabledElement.toolStateManager = cornerstoneTools.newImageIdSpecificToolStateManager();

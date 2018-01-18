@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
@@ -8,16 +9,18 @@ Template.imageThumbnail.onCreated(() => {
 
     // Get the image ID for current thumbnail
     instance.getThumbnailImageId = () => {
+        const settingPath = 'public.ui.useMiddleSeriesInstanceAsThumbnail';
+        const useMiddleFrame = OHIF.utils.ObjectPath.get(Meteor.settings, settingPath);
         const stack = instance.data.thumbnail.stack;
         const lastIndex = (stack.numImageFrames || stack.images.length || 1) - 1;
-        let imageIndex = Math.floor(lastIndex / 2);
+        let imageIndex = useMiddleFrame ? Math.floor(lastIndex / 2) : 0;
         let imageInstance;
 
         if (stack.isMultiFrame) {
             imageInstance = stack.images[0];
         } else {
             imageInstance = stack.images[imageIndex];
-            imageIndex = 0;
+            imageIndex = undefined;
         }
 
         return imageInstance.getImageId(imageIndex, true);
@@ -39,11 +42,11 @@ Template.imageThumbnail.onRendered(() => {
             return;
         }
 
-        // Disable cornerstone for thumbnail element and remove its canvas
-        cornerstone.disable(element);
+        // Remove previously generated static images
+        $element.find('.static-image').remove();
 
         // Enable cornerstone for thumbnail element again creating a new canvas
-        cornerstone.enable(element);
+        cornerstone.enable(element, { renderer: '' });
 
         // Activate the loading state
         $loading.css('display', 'block');
@@ -52,13 +55,29 @@ Template.imageThumbnail.onRendered(() => {
         const loadSuccess = image => {
             // Check to make sure the element is enabled.
             try {
-                var enabledElement = cornerstone.getEnabledElement(element);
+                cornerstone.getEnabledElement(element);
             } catch(error) {
                 return;
             }
 
             cornerstone.displayImage(element, image);
-            $loading.css('display', 'none');
+
+            $element.one('CornerstoneImageRendered', () => {
+                const enabledElement = cornerstone.getEnabledElement(element);
+
+                // Create a static image from
+                const imageElement = document.createElement('img');
+                imageElement.classList.add('static-image');
+                const dataUrl = enabledElement.canvas.toDataURL('image/jpeg', 1);
+                imageElement.src = dataUrl;
+
+                // Disable cornerstone for thumbnail element and remove its canvas
+                cornerstone.disable(element);
+
+                $element.append(imageElement);
+
+                $loading.css('display', 'none');
+            });
         };
 
         // Define a handler for error on image load

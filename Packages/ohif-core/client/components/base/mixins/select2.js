@@ -15,8 +15,22 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             const instance = Template.instance();
             const { component, data } = instance;
 
+            // Controls select2 initialization
+            instance.isInitialized = false;
+
             // Set the custom focus flag
             component.isCustomFocus = true;
+
+            const valueMethod = component.value;
+            component.value = value => {
+                if (_.isUndefined(value) && !instance.isInitialized) {
+                    if (!_.isUndefined(instance.data.value)) return instance.data.value;
+                    if (!_.isUndefined(component.defaultValue)) return component.defaultValue;
+                    return;
+                }
+
+                return valueMethod(value);
+            };
 
             // Utility function to get the dropdown jQuery element
             instance.getDropdownContainerElement = () => {
@@ -63,7 +77,7 @@ OHIF.mixins.select2 = new OHIF.Mixin({
             const { component, data } = instance;
 
             // Destroy and re-create the select2 instance
-            const rebuildSelect2 = () => {
+            instance.rebuildSelect2 = () => {
                 // Destroy the select2 instance if exists and re-create it
                 if (component.select2Instance) {
                     component.select2Instance.destroy();
@@ -90,11 +104,13 @@ OHIF.mixins.select2 = new OHIF.Mixin({
 
                 // Attach focus and blur handlers to focusable elements
                 $(elements).on('focus', event => {
+                    instance.isFocused = true;
                     if (event.target === event.currentTarget) {
                         // Show the state message on elements focus
                         component.toggleMessage(true);
                     }
                 }).on('blur', event => {
+                    instance.isFocused = false;
                     if (event.target === event.currentTarget) {
                         // Hide the state message on elements blur
                         component.toggleMessage(false);
@@ -113,6 +129,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                         instance.component.$element.focus();
                     }
                 });
+
+                // Set select2 as initialized
+                instance.isInitialized = true;
             };
 
             instance.autorun(() => {
@@ -125,12 +144,18 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                 if (isReactive) {
                     // Keep the current value of the component
                     const currentValue = component.value();
+                    const wasFocused = instance.isFocused;
+
                     Tracker.afterFlush(() => {
-                        rebuildSelect2();
                         component.$element.val(currentValue);
+                        instance.rebuildSelect2();
+
+                        if (wasFocused) {
+                            component.$element.focus();
+                        }
                     });
                 } else {
-                    rebuildSelect2();
+                    instance.rebuildSelect2();
                 }
             });
         },
@@ -146,6 +171,11 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                 const { minimumResultsForSearch } = instance.data.options;
                 if (minimumResultsForSearch === Infinity || minimumResultsForSearch === -1) return;
                 const $container = instance.getDropdownContainerElement();
+
+                if (!instance.data.wrapText) {
+                    $container.addClass('select2-container-nowrap');
+                }
+
                 const $searchInput = $container.find('.select2-search__field');
                 $searchInput.on('keydown.focusOnEsc', event => {
                     if (event.which === 27) {

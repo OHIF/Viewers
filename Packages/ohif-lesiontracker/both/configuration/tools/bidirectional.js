@@ -1,24 +1,32 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/measurements';
-// import { OHIF } from 'meteor/ohif:core';
 
-const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
+const { CornerstoneHandleSchema } = MeasurementSchemaTypes;
+
+const BidirectionalHandleSchema = new SimpleSchema([CornerstoneHandleSchema, {
+    selected: {
+        type: Boolean,
+        label: 'Selected',
+        optional: true,
+        defaultValue: false
+    }
+}]);
 
 const BidirectionalHandlesSchema = new SimpleSchema({
     start: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'Start'
     },
     end: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'End'
     },
     perpendicularStart: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'Perpendicular Start'
     },
     perpendicularEnd: {
-        type: CornerstoneHandleSchema,
+        type: BidirectionalHandleSchema,
         label: 'Perpendicular End'
     },
     textBox: {
@@ -64,22 +72,8 @@ const BidirectionalSchema = new SimpleSchema([MeasurementSchemaTypes.Cornerstone
 }]);
 
 const displayFunction = data => {
-    // Check whether this is a Nodal or Extranodal Measurement
-    // const targetType = 'target';
-    // const nodalType = data.isNodal ? 'nodal' : 'extraNodal';
-
-    // Get criteria types
-    // const criteriaTypes = OHIF.lesiontracker.TrialCriteriaTypes.find({
-    //     selected: true
-    // }).map(criteria => {
-    //     return criteria.id;
-    // });
-
-    // const currentConstraints = OHIF.lesiontracker.getTrialCriteriaConstraints(criteriaTypes, data.imageId);
-
     if (data.shortestDiameter) {
-        // TODO: Make this check criteria again to see if we should display
-        // shortest x longest
+        // TODO: Make this check criteria again to see if we should display shortest x longest
         return data.longestDiameter + ' x ' + data.shortestDiameter;
     }
 

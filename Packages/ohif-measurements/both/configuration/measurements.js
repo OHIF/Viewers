@@ -2,6 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 let configuration = {};
 
@@ -54,9 +55,7 @@ class MeasurementApi {
 
                     // Preventing errors thrown when non-associated (standalone) study is opened...
                     // @TODO: Make sure this logic is correct.
-                    if (!timepoint) {
-                        return;
-                    }
+                    if (!timepoint) return;
 
                     const emptyItem = groupCollection.findOne({
                         toolId: { $eq: null },
@@ -179,6 +178,9 @@ class MeasurementApi {
                         }
                     });
 
+                    // Synchronize the new tool data
+                    this.syncMeasurementsAndToolData();
+
                     // Enable reactivity
                     this.changeObserver.changed();
                 };
@@ -204,17 +206,39 @@ class MeasurementApi {
                 OHIF.log.info('Measurement data retrieval');
                 OHIF.log.info(measurementData);
 
+                const toolsGroupsMap = MeasurementApi.getToolsGroupsMap();
+                const measurementsGroups = {};
+
                 Object.keys(measurementData).forEach(measurementTypeId => {
                     const measurements = measurementData[measurementTypeId];
 
                     measurements.forEach(measurement => {
-                        delete measurement._id;
-                        // @TODO: check if this conditional is ok, because is throwing
-                        // an error for temp measurements -> measurement.toolType is undefined
-                        if (measurement.toolType && this.tools[measurement.toolType]) {
-                            this.tools[measurement.toolType].insert(measurement);
+                        const { toolType } = measurement;
+                        if (toolType && this.tools[toolType]) {
+                            delete measurement._id;
+                            const toolGroup = toolsGroupsMap[toolType];
+                            if (!measurementsGroups[toolGroup]) {
+                                measurementsGroups[toolGroup] = [];
+                            }
+
+                            measurementsGroups[toolGroup].push(measurement);
                         }
                     });
+                });
+
+                Object.keys(measurementsGroups).forEach(groupKey => {
+                    const group = measurementsGroups[groupKey];
+                    group.sort((a, b) => {
+                        if (a.measurementNumber > b.measurementNumber) {
+                            return 1;
+                        } else if (a.measurementNumber < b.measurementNumber) {
+                            return -1;
+                        }
+
+                        return 0;
+                    });
+
+                    group.forEach(m => this.tools[m.toolType].insert(m));
                 });
 
                 resolve();
@@ -293,6 +317,9 @@ class MeasurementApi {
     deleteMeasurements(measurementTypeId, filter) {
         const groupCollection = this.toolGroups[measurementTypeId];
 
+        // Stop here if it is a temporary toolGroups
+        if (!groupCollection) return;
+
         // Get the entries information before removing them
         const groupItems = groupCollection.find(filter).fetch();
         const entries = [];
@@ -318,18 +345,31 @@ class MeasurementApi {
         const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
         _.each(entries, entry => {
-            if (toolState[entry.imageId]) {
-                const toolData = toolState[entry.imageId][entry.toolType];
-                const measurementsData = toolData && toolData.data;
-                const measurementEntry = _.findWhere(measurementsData, {
-                    _id: entry._id
+            const measurementsData = [];
+            const { tool } = OHIF.measurements.getToolConfiguration(entry.toolType);
+            if (Array.isArray(tool.childTools)) {
+                tool.childTools.forEach(key => {
+                    const childMeasurement = entry[key];
+                    if (!childMeasurement) return;
+                    measurementsData.push(childMeasurement);
                 });
-
-                if (measurementEntry) {
-                    const index = measurementsData.indexOf(measurementEntry);
-                    measurementsData.splice(index, 1);
-                }
+            } else {
+                measurementsData.push(entry);
             }
+
+            measurementsData.forEach(measurementData => {
+                const { imagePath, toolType } = measurementData;
+                const imageId = OHIF.viewerbase.getImageIdForImagePath(imagePath);
+                if (toolState[imageId]) {
+                    const toolData = toolState[imageId][toolType];
+                    const measurementEntries = toolData && toolData.data;
+                    const measurementEntry = _.findWhere(measurementEntries, { _id: entry._id });
+                    if (measurementEntry) {
+                        const index = measurementEntries.indexOf(measurementEntry);
+                        measurementEntries.splice(index, 1);
+                    }
+                }
+            });
         });
 
         cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);

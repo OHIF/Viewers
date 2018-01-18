@@ -3,6 +3,53 @@ import { _ } from 'meteor/underscore';
 
 OHIF.cornerstone = {};
 
+OHIF.cornerstone.getBoundingBox = (context, textLines, x, y, options) => {
+    if (Object.prototype.toString.call(textLines) !== '[object Array]') {
+        textLines = [textLines];
+    }
+
+    const padding = 5;
+    const font = cornerstoneTools.textStyle.getFont();
+    const fontSize = cornerstoneTools.textStyle.getFontSize();
+
+    context.save();
+    context.font = font;
+    context.textBaseline = 'top';
+
+    // Find the longest text width in the array of text data
+    let maxWidth = 0;
+
+    textLines.forEach(text => {
+        // Get the text width in the current font
+        const width = context.measureText(text).width;
+
+        // Find the maximum with for all the text rows;
+        maxWidth = Math.max(maxWidth, width);
+    });
+
+    // Calculate the bounding box for this text box
+    const boundingBox = {
+        width: maxWidth + (padding * 2),
+        height: padding + textLines.length * (fontSize + padding)
+    };
+
+    if (options && options.centering && options.centering.x === true) {
+        x -= boundingBox.width / 2;
+    }
+
+    if (options && options.centering && options.centering.y === true) {
+        y -= boundingBox.height / 2;
+    }
+
+    boundingBox.left = x;
+    boundingBox.top = y;
+
+    context.restore();
+
+    // Return the bounding box so it can be used for pointNearHandle
+    return boundingBox;
+};
+
 OHIF.cornerstone.pixelToPage = (element, position) => {
     const enabledElement = cornerstone.getEnabledElement(element);
     const result = {
@@ -136,9 +183,9 @@ OHIF.cornerstone.repositionTextBox = (eventData, measurementData, config) => {
         const offset = {
             x: [],
             y: []
-        }
+        };
 
-        if(cornerAxis === 'x') {
+        if (cornerAxis === 'x') {
             const offsetY = centerY ? 0 : halfBoxSizeY;
 
             offset.x[-1] = centerX ? halfBoxSizeX : 0;

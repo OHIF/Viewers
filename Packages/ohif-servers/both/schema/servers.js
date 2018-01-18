@@ -26,6 +26,7 @@ export const DICOMWebRequestOptions = new SimpleSchema({
     auth: {
         type: String,
         label: 'Authentication',
+        defaultValue: 'orthanc:orthanc',
         optional: true
     },
     logRequests: {
@@ -169,6 +170,21 @@ export const UISettings = new SimpleSchema({
     showStackLoadingProgressBar: {
         type: Boolean,
         label: 'Show a progress bar closest to the thumbnail showing how much the stack has loaded',
+        defaultValue: true
+    },
+    cornerstoneRenderer: {
+        type: String,
+        label: 'Cornerstone default image renderer',
+        defaultValue: 'webgl'
+    },
+    sortSeriesByIncomingOrder: {
+        type: Boolean,
+        label: 'Define if the series\' images shall be sorted by incoming order. Sort by Instance Number by default.',
+        defaultValue: false
+    },
+    useMiddleSeriesInstanceAsThumbnail: {
+        type: Boolean,
+        label: 'Define if the middle instance of a series will be used as thumbnail. If not, the first instance will be used.',
         defaultValue: true
     }
 });

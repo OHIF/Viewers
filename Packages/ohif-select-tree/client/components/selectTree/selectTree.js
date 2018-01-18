@@ -64,14 +64,21 @@ Template.selectTree.onRendered(() => {
 
     instance.component = component;
 
+    // Force to hardware acceleration to move element if browser supports translate property
+    instance.useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
+
     // Set the margin to display the common section
-    const isthreeColumns = instance.data.threeColumns;
-    const marginProperty = isthreeColumns ? 'margin-left' : 'margin-right';
-    const marginWidth = isthreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
-    $treeRoot.children('.tree-content').css(marginProperty, marginWidth);
+    if (!$treeRoot.hasClass('started')) {
+        const isthreeColumns = instance.data.threeColumns;
+        const marginProperty = isthreeColumns ? 'margin-left' : 'margin-right';
+        const marginWidth = isthreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
+        $treeRoot.children('.tree-content').css(marginProperty, marginWidth);
+    }
 
     // Make the component respect the window boundaries
-    $treeRoot.bounded();
+    if (rootComponent === component) {
+        $treeRoot.bounded();
+    }
 
     // Check if the component will be rendered on a specific position
     const position = instance.data.position;
@@ -97,7 +104,7 @@ Template.selectTree.onRendered(() => {
     });
 
     // Update the component's viewport height
-    instance.updateHeight = searchTerm => {
+    instance.updateHeight = _.throttle(searchTerm => {
         let height;
 
         // Check if there's a search term
@@ -109,10 +116,9 @@ Template.selectTree.onRendered(() => {
             height = rootInstance.$('.tree-options:last').data('height');
         }
 
-        // Update the viewport's height and trigger the bounded event
-        rootInstance.$('.tree-options:first').first().height(height)
-            .on('transitionend', () => $treeRoot.trigger('spatialChanged'));
-    };
+        // Update the viewport's height
+        rootInstance.$('.tree-options:first').first().height(height);
+    }, 100, { trailing: false });
 
     // Update the opened node
     instance.updateOpen = () => {
@@ -133,6 +139,11 @@ Template.selectTree.onRendered(() => {
     const $treeOptions = instance.$('.tree-options:first').first();
     const height = $treeOptions.height();
     $treeOptions.data('height', height);
+
+    $treeOptions.off('transitionend').on('transitionend', event => {
+        if (event.target !== event.currentTarget) return;
+        $treeRoot.trigger('spatialChanged');
+    });
 
     instance.autorun(() => {
         // Run this computation everytime the current node is changed
@@ -206,6 +217,7 @@ Template.selectTree.events({
         const eventComponent = $target.data('component');
         const rootComponent = instance.data.root || component;
         const rootInstance = rootComponent.templateInstance;
+        const offsetTop = $target.closest('.wrapperLabel').offset().top;
 
         // Change the component's node
         component.node(eventComponent.value());
@@ -250,12 +262,45 @@ Template.selectTree.events({
             // Get the position of the clicked element
             const position = $label.position();
 
+            const getPosition = $element => {
+                if (instance.useTransform) {
+                    const matrixToArray = str => str.match(/(-?[0-9\.]+)/g);
+                    const transformMatrix = matrixToArray($element.css('transform')) || [];
+                    return {
+                        x: parseFloat(transformMatrix[4]) || 0,
+                        y: parseFloat(transformMatrix[5]) || 0
+                    };
+                } else {
+                    return {
+                        x: parseFloat($element.css('left')),
+                        y: parseFloat($element.css('top'))
+                    };
+                }
+            };
+
+            const setPosition = ($element, position) => {
+                if (instance.useTransform) {
+                    const translation = `translate(${position.x}px, ${position.y}px)`;
+                    OHIF.ui.styleProperty.set($element[0], 'transform', translation);
+                } else {
+                    $element.css('left', `${position.x}px`);
+                    $element.css('top', `${position.y}px`);
+                }
+            };
+
             Meteor.defer(() => {
                 const $treeNode = $label.parent().siblings('.select-tree');
 
                 // Do the transition from the clicked position to top
                 $treeNode.css(position);
                 setTimeout(() => $treeNode.css('top', 0));
+
+                const optionsTop = $target.closest('.tree-options').position().top;
+                const $treeRoot = $target.closest('.select-tree-root');
+                const treeOffsetTop = $treeRoot.offset().top;
+                const treeRootPosition = getPosition($treeRoot);
+                treeRootPosition.y += offsetTop - treeOffsetTop - optionsTop;
+                setPosition($treeRoot, treeRootPosition);
             });
         }
     },

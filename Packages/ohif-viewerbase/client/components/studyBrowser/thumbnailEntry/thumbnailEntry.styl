@@ -23,16 +23,16 @@ $seriesCountBackgroundColor = #678696
     word-wrap: break-word
 
     &.info-only
-      min-height: auto
 
       .seriesDescription
         display: none
 
       .seriesInformation
         display: flex
+        flex-grow: 1
         float: none
         max-width: none
-        padding-right: none
+        padding-right: 0
 
         .item
           flex: 1
@@ -47,13 +47,7 @@ $seriesCountBackgroundColor = #678696
             margin-left: 0
             width: auto
 
-  .seriesDescription
-    float: left
-    width: calc(100% - 50px)
-
   .seriesInformation
-    display: table
-    float: right
     padding-right: 4px
     max-width: 50px
 
@@ -66,6 +60,9 @@ $seriesCountBackgroundColor = #678696
       float: right
       font-size: 12px
       margin-left: 4px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
       width: calc(100% - 15px)
 
     .icon

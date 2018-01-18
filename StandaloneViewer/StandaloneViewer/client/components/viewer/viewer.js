@@ -36,7 +36,7 @@ const initHangingProtocol = () => {
         const layoutManager = OHIF.viewerbase.layoutManager;
 
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new OHIF.studylist.classes.OHIFStudyMetadataSource();
+        const studyMetadataSource = new OHIF.studies.classes.OHIFStudyMetadataSource();
 
         // Creates Protocol Engine object with required arguments
         const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, [], studyMetadataSource);
@@ -50,9 +50,10 @@ const initHangingProtocol = () => {
 Template.viewer.onCreated(() => {
     const instance = Template.instance();
 
-    instance.data.state = new ReactiveDict();
-    instance.data.state.set('leftSidebar', Session.get('leftSidebar'));
-    instance.data.state.set('rightSidebar', Session.get('rightSidebar'));
+    instance.state = new ReactiveDict();
+
+    instance.state.set('leftSidebar', Session.get('leftSidebar'));
+    instance.state.set('rightSidebar', Session.get('rightSidebar'));
 
     if (OHIF.viewer.data && OHIF.viewer.data.loadedSeriesData) {
         OHIF.log.info('Reloading previous loadedSeriesData');
@@ -91,7 +92,7 @@ Template.viewer.onCreated(() => {
             displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
             study.displaySets = displaySets;
         }
-        
+
         study.selected = true;
         OHIF.viewer.Studies.insert(study);
         OHIF.viewer.StudyMetadataList.insert(studyMetadata);
@@ -118,7 +119,13 @@ Template.viewer.onRendered(function() {
 Template.viewer.events({
     'click .js-toggle-studies'() {
         const instance = Template.instance();
-        const current = instance.data.state.get('leftSidebar');
-        instance.data.state.set('leftSidebar', !current);
+        const current = instance.state.get('leftSidebar');
+        instance.state.set('leftSidebar', !current);
+    }
+});
+
+Template.viewer.helpers({
+    state() {
+        return Template.instance().state;
     }
 });

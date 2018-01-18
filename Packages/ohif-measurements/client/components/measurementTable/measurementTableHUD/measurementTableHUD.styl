@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 $borderColor = rgba(77, 99, 110, 0.81)
 
@@ -14,9 +14,9 @@ $borderColor = rgba(77, 99, 110, 0.81)
   right: 3px
   top: auto
   width: 318px
-  z-index: 10000
+  z-index: 1
 
-  .measurementTableView.scrollArea
+  .measurementTableView .scrollable
     margin-left: 0
     padding-left: 0
 
@@ -42,17 +42,14 @@ $borderColor = rgba(77, 99, 110, 0.81)
       top: 20px
       width: 14px
 
-  .measurementTableView.scrollArea
+  .measurementTableView
     height: calc(100% - 55px - 70px)
     padding-bottom: 20px
 
   .footer
     theme('background', '$uiGrayDarkest')
     border-top: $uiBorderThickness solid $borderColor
-    width: 100%
     height: 70px
-    position: absolute
-    bottom: 0
     padding: 10px
 
     .toolbarSectionButton

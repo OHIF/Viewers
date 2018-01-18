@@ -40,6 +40,16 @@ HP.setEngine = protocolEngine => {
     ProtocolEngine = protocolEngine;
 };
 
+/**
+ * Gets the instantiated ProtocolEngine global object
+ *
+ * @returns protocolEngine An instantiated ProtocolEngine linked to a LayoutManager from the
+ *                       Viewerbase package
+ */
+HP.getEngine = () => {
+    return ProtocolEngine;
+};
+
 Meteor.startup(() => {
     HP.addCustomViewportSetting('wlPreset', 'Window/Level Preset', Object.create(null), (element, optionValue) => {
         if (_.findWhere(OHIF.viewer.wlPresets, { id: optionValue })) {

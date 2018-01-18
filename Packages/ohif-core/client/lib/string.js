@@ -35,7 +35,9 @@ OHIF.string.search = (object, query, property=null, result=[]) => {
 };
 
 // Encode any string into a safe format for HTML id attribute
-OHIF.string.encodeId = string => {
+OHIF.string.encodeId = input => {
+    const string = input && input.toString ? input.toString() : input;
+
     // Return an underscore if the given string is empty or if it's not a string
     if (string === '' || typeof string !== 'string') {
         return '_';

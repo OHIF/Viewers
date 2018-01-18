@@ -1,0 +1,787 @@
+{
+  "transactionId": "CTStudy",
+  "studies": [
+    {
+      "patientName": "MISTER^CT",
+      "seriesList": [
+        {
+          "instances": [
+            {
+              "columns": 375,
+              "instanceNumber": 1,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668949.888",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668949.888.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 1,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.109",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.109.dcm"
+            },
+            {
+              "columns": 375,
+              "instanceNumber": 2,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668949.889",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668949.889.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 2,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.110",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.110.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 3,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.111",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.111.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 4,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.112",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.112.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 5,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.113",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.113.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 6,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.114",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.114.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 7,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.115",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.115.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 8,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.116",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.116.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 9,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.117",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.117.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 10,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.118",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.118.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 11,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.119",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.119.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 12,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.120",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.120.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 13,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.121",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.121.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 14,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.122",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.122.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 15,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.123",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.123.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 16,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.124",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.124.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 17,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.125",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.125.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 18,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.126",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.126.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 19,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.127",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.127.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 20,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.128",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.128.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 21,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.129",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.129.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 22,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.130",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.130.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 23,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.131",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.131.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 24,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.132",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.132.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 25,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.133",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.133.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 26,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.134",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.134.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 27,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.135",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.135.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 28,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.136",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.136.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 29,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.137",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.137.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 30,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.138",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.138.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 31,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.139",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.139.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 32,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.140",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.140.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 33,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.141",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.141.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 34,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.142",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.142.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 35,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.143",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.143.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 36,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.144",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.144.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 37,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.145",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.145.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 38,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.146",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.146.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 39,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.147",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.147.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 40,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.148",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.148.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 41,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.149",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.149.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 42,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.150",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.150.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 43,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.151",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.151.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 44,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.152",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.152.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 45,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.153",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.153.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 46,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.154",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.154.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 47,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.155",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.155.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 48,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.156",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.156.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 49,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.157",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.157.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 50,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.158",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.158.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 51,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.159",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.159.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 53,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.161",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.161.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 54,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.162",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.162.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 55,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.163",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.163.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 56,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.164",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.164.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 57,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.165",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.165.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 58,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.166",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.166.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 59,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.167",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.167.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 60,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.168",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.168.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 61,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.169",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.169.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 62,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.170",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.170.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 63,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.171",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.171.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 64,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.172",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.172.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 65,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.173",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.173.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 66,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.174",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.174.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 67,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.175",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.175.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 68,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.176",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.176.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 69,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.177",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.177.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 70,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.178",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.178.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 71,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.179",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.179.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 72,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.180",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.180.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 73,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.181",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.181.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 74,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.182",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.182.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 75,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.183",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.183.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 76,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.184",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.184.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 77,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.185",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.185.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 78,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.186",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.186.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 79,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.187",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.187.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 80,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.188",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.188.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 81,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.189",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.189.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 82,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.190",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.190.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 83,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.191",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.191.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 84,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.192",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.192.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 85,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.193",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.193.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 86,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.194",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.194.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 87,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.195",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.195.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 88,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.196",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.196.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 89,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.197",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.197.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 90,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.198",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.198.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 91,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.199",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.199.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 92,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.200",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.200.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 93,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.201",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.201.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 94,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.202",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.202.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 95,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.203",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.203.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 96,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.204",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.204.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 97,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.205",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.205.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 98,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.206",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.206.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 99,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.207",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.207.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 100,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.208",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.208.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 101,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.209",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.209.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 102,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.210",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.210.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 103,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.211",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.211.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 104,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.212",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.212.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 105,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.213",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.213.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 106,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.214",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.214.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 107,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.215",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.215.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 108,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.216",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.216.dcm"
+            },
+            {
+              "columns": 512,
+              "instanceNumber": 109,
+              "rows": 512,
+              "sopInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668950.217",
+              "url": "dicomweb://s3.amazonaws.com/lury/CTStudy/1.2.840.113619.2.30.1.1762295590.1623.978668950.217.dcm"
+            }
+          ],
+          "seriesDescription": "SCOUT",
+          "seriesInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668949.887"
+        }
+      ],
+      "studyInstanceUid": "1.2.840.113619.2.30.1.1762295590.1623.978668949.886"
+    }
+  ]
+}

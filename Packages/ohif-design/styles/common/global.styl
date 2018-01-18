@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 html body
   theme('background-color', '$primaryBackgroundColor')
@@ -6,7 +6,7 @@ html body
 
 html body.stretch
   height: 100%
-  minWidth: 0
+  min-width: 0
   overflow: hidden
   position: fixed
   width: 100%
@@ -20,6 +20,10 @@ body .table > thead > tr > th
 body ol
   margin: 0
   padding-left: 1em
+
+// This is needed for IE11 because svgxuse doesn't allow the browser to capture mouse events on SVG
+svg, use
+  pointer-events: none
 
 input::-ms-clear
   display: none
@@ -60,6 +64,17 @@ label.form-group
       line-height: 20px
       width: 12px
 
+.select2-container-nowrap
+
+  .select2-dropdown
+    display: table
+
+    .select2-results__options li
+      white-space: nowrap
+
+body .select2-container--default .select2-results>.select2-results__options
+  max-height: 320px
+
 .center-table
   display: table
   margin-left: auto
@@ -67,9 +82,6 @@ label.form-group
 
 .height-auto
   height: auto !important
-
-.full-width
-  width: 100%
 
 .caret-down
   display: inline-block
@@ -106,12 +118,29 @@ label.form-group
     overflow: hidden
     text-align: center
     text-shadow: none
+    transition(color 0.3s ease)
     width: 20px
 
     span
       display: block
       line-height: 20px
-      transition(transform 0.3s ease)
 
-    &:hover span
-      transform(rotate(180deg))
+    &:hover
+      theme('color', '$textPrimaryColor')
+
+.full-width
+  width: 100%
+
+.full-height
+  height: 100%
+
+.flex-h
+  display: flex
+  flex-direction: row
+
+.flex-v
+  display: flex
+  flex-direction: column
+
+.flex-grow
+  flex-grow: 1

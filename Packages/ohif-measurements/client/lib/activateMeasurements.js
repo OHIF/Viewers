@@ -1,3 +1,5 @@
+import { $ } from 'meteor/jquery';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { OHIF } from 'meteor/ohif:core';
 
 /**
@@ -9,7 +11,7 @@ import { OHIF } from 'meteor/ohif:core';
  */
 function activateTool(measurementData) {
     const toolType = measurementData.toolType;
-    const imageId = measurementData.imageId;
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurementData.imagePath);
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
     const toolData = toolState[imageId][toolType];
@@ -25,8 +27,7 @@ function activateTool(measurementData) {
     }
 
     cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(toolState);
-};
-
+}
 
 /**
  * Switch to the image of the correct image index
@@ -34,7 +35,7 @@ function activateTool(measurementData) {
  * Deactivate all other measurements on the switched image (color to be white)
  */
 OHIF.measurements.activateMeasurements = (element, measurementData) => {
-    console.log('activateMeasurements');
+    OHIF.log.info('activateMeasurements');
 
     // If Cornerstone Viewport information was stored while the measurement was created,
     // we should re-apply this data when activating the measurement.
@@ -68,37 +69,18 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
     const enabledElement = cornerstone.getEnabledElement(element);
     const currentImageId = enabledElement.image.imageId;
     const toolData = cornerstoneTools.getToolState(element, 'stack');
-    const imageIdIndex = toolData.data[0].imageIds.indexOf(measurementData.imageId);
+    const imageId = OHIF.viewerbase.getImageIdForImagePath(measurementData.imagePath);
+    const imageIdIndex = toolData.data[0].imageIds.indexOf(imageId);
 
     // If we aren't currently displaying the image that this tool is on,
     // scroll to it now.
-    if (currentImageId !== measurementData.imageId) {
+    if (currentImageId !== imageId) {
         cornerstoneTools.scrollToIndex(element, imageIdIndex);
     }
 
-    // TODO: Find another way to do this?
-    // This might update one element twice, but at least it makes sure all viewports are
-    // updated and the highlight is removed from inactive tools in all visible viewports
-    const $viewports = $('.imageViewerViewport');
-    $viewports.each((index, element) => {
-        if (!$(element).find('canvas')) {
-            return;
-        }
+    const $element = $(element);
+    if (!$element.find('canvas').length) return;
 
-        // TODO: Implement isEnabledElement in Cornerstone
-        // or maybe just remove the 'error' this throws?
-        let ee;
-        try {
-            ee = cornerstone.getEnabledElement(element)    
-        } catch(error) {
-            OHIF.log.warn(error);
-            return;
-        }
-
-        if (!ee.image) {
-            return;
-        }
-
-        cornerstone.updateImage(element)
-    });
+    $element.trigger('ViewerMeasurementsActivated');
+    cornerstone.updateImage(element);
 };

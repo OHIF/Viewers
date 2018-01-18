@@ -6,15 +6,15 @@ $.fn.tempShow = function(callback) {
     let current = this;
 
     // Temporarily show all parent invisible elements until body
-    while (this.is(':hidden') && current !== document.body) {
-        const $element = this.parentsUntil(':visible').last();
-        if (!$element.length) {
+    while (this.is(':hidden')) {
+        const $element = $(current);
+        if (!$element.length || $element.is(':visible')) {
             break;
         }
 
         $element.addClass('visible');
-        current = $element[0];
         elementsToHide.push(current);
+        current = $element[0].parentElement;
     }
 
     if (typeof callback === 'function') {
@@ -27,19 +27,24 @@ $.fn.tempShow = function(callback) {
 };
 
 // Adjust the max width/height to enable CSS3 transitions
-$.fn.adjustMax = function(dimension) {
+$.fn.adjustMax = function(dimension, modifierFn) {
     const $element = $(this);
+
+    // Temporarily make the element visible to allow getting its dimensions
     $element.tempShow(() => {
-        // Add a class to remove the max restriction
-        const maxClass = `no-max-${dimension}`;
-        $element.addClass(maxClass);
+        const maxProperty = `max-${dimension}`;
+
+        // Remove the current max restriction
+        $element.each((i, e) => e.style.setProperty(maxProperty, 'none', 'important'));
 
         // Get the dimension function to obtain the outer dimension
         const dimensionFn = 'outer' + dimension.charAt(0).toUpperCase() + dimension.slice(1);
         const value = $element[dimensionFn]();
 
-        // Remove the max restriction class and set the new max
-        const maxProperty = `max-${dimension}`;
-        $element.removeClass(maxClass).css(maxProperty, value);
+        // Remove the property (needed for IE)
+        $element.each((i, e) => e.style.removeProperty(maxProperty));
+
+        // Set the new max restriction
+        $element.css(maxProperty, value);
     });
 };

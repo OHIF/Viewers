@@ -1,0 +1,39 @@
+{
+  "servers": {
+   
+    "dimse": [{
+      "name": "SPRITE PACS",
+      "wadoUriRoot": "http://localhost:1000/wado/CT",
+      "requestOptions": {
+       
+        "logRequests": true,
+        "logResponses": true,
+        "logTiming": true
+      },
+      "peers": [
+        {
+          "host": "localhost",
+          "port": 108,
+          "aeTitle": "CT",
+          "default": true,
+          "supportsInstanceRetrievalByStudyUid": false
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 104,
+          "aeTitle": "OHIFDCM",
+          "default": true,
+          "server": true
+        }
+      ]
+    }]
+  },
+  "defaultServiceType": "dimse",
+  "dropCollections": true,
+  "public": {
+    "verifyEmail": false,
+    "ui": {
+        "studyListFunctionsEnabled": true
+    }
+  }
+}

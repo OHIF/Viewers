@@ -23,6 +23,9 @@ generateSpacings($prefix, $spacerX, $spacerY)
   $axes = x left right 0,
           y top bottom 1
 
+  .r-font
+    font-size: $spacerX
+
   for $property in $properties
     for $spacing in $spacings
       .{$prefix}{$property[0]}-a-{$spacing[0]}

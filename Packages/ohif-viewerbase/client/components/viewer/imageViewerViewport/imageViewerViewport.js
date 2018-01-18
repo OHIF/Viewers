@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
@@ -63,7 +62,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Sets the global variable
         OHIF.viewer.cine.framesPerSecond = parseFloat(stack.frameRate);
         // Update the cine dialog FPS
-        Session.set('UpdateCINE', Random.id());
+        Session.set('UpdateCINE', Math.random());
     }
 
     // Shortcut for array with image IDs
@@ -92,12 +91,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
     // Enable Cornerstone for the viewport element
     const options = {
-        renderer: 'webgl'
+        renderer: OHIF.cornerstone.renderer
     };
-
-    // NOTE: This uses the experimental WebGL renderer for Cornerstone!
-    // If you have problems, replace it with this line instead:
-    // cornerstone.enable(element);
     cornerstone.enable(element, options);
 
     // Get the handler functions that will run when loading has finished or thrown
@@ -288,7 +283,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // Use Session to trigger reactive updates in the viewportOverlay helper functions
             // This lets the viewport overlay always display correct window / zoom values
-            Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
+            Session.set('CornerstoneImageRendered' + viewportIndex, Math.random());
 
             // Save the current viewport into the OHIF.viewer.data global variable
             const viewport = cornerstone.getViewport(element);
@@ -306,7 +301,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         $element.on('CornerstoneImageRendered', onImageRendered);
 
         // Set a random value for the Session variable in order to trigger an overlay update
-        Session.set('CornerstoneImageRendered' + viewportIndex, Random.id());
+        Session.set('CornerstoneImageRendered' + viewportIndex, Math.random());
 
         // Define a function to run whenever the Cornerstone viewport changes images
         // (e.g. during scrolling)
@@ -323,7 +318,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // Update the templateData with the new imageId
             // This allows the template helpers to update reactively
             templateData.imageId = eventData.enabledElement.image.imageId;
-            Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+            Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
             layoutManager.viewportData[viewportIndex].imageId = eventData.enabledElement.image.imageId;
 
             // Get the element and stack data
@@ -357,7 +352,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         $element.on('CornerstoneNewImage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
-        Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+        Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
 
         const onStackScroll = (e, eventData) => {
             // Attention: Adding OHIF.log.info in this function may decrease the performance
@@ -365,7 +360,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // enabled/disabled -> cornerstone[toolName].tool.enable)
 
             // Update the imageSlider value
-            Session.set('CornerstoneNewImage' + viewportIndex, Random.id());
+            Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
         };
 
         $element.off('CornerstoneStackScroll', onStackScroll);
@@ -381,17 +376,20 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // since this callback function is called multiple times (eg: when a tool is
             // enabled/disabled -> cornerstone[toolName].tool.enable)
 
+            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
+            const element = (eventData && eventData.element) || (event && event.currentTarget);
+            if (!element) return;
+            const $element = $(element);
+            $element.focus();
+
+            // Stop here if we don't have eventData set
+            if (!eventData) return;
+
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
             const activeViewportIndex = Session.get('activeViewport');
-            if (viewportIndex === activeViewportIndex) {
-                return;
-            }
-
-            // Reset the focus, even if we don't need to re-enable reference lines or prefetching
-            const element = eventData.element;
-            $(element).focus();
+            if (viewportIndex === activeViewportIndex) return;
 
             OHIF.log.info('imageViewerViewport sendActivationTrigger');
 
@@ -402,17 +400,26 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             // Need to overwrite the type set in the original event
             customEvent.type = 'OHIFActivateViewport';
-            $(event.target).trigger(customEvent, eventData);
+            $element.trigger(customEvent, eventData);
+        };
+
+        // Handle mouseenter event to send viewport activation trigger only if there is no focused dropdown
+        const onMouseEnter = () => {
+            if ($(':focus').closest('.dropdown').length) return;
+
+            sendActivationTrigger();
         };
 
         // Attach the sendActivationTrigger function to all of the Cornerstone interaction events
         $element.off(allCornerstoneEvents, sendActivationTrigger);
         $element.on(allCornerstoneEvents, sendActivationTrigger);
+        $element.off('mouseenter', onMouseEnter);
+        $element.on('mouseenter', onMouseEnter);
 
         OHIF.viewer.data.loadedSeriesData = layoutManager.viewportData;
 
         // Check if image plane (orientation / location) data is present for the current image
-        const imagePlane = cornerstoneTools.metaData.get('imagePlane', image.imageId);
+        const imagePlane = cornerstone.metaData.get('imagePlane', image.imageId);
         if (imagePlane && imagePlane.frameOfReferenceUID) {
             // If it is, add this element to the global synchronizer...
             OHIF.viewer.updateImageSynchronizer.add(element);
@@ -467,11 +474,27 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
  */
 const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
     const study = data.study;
-    if (!study || !study.displaySets) {
-        throw new OHIFError('Study does not exist or has no display sets');
+
+    if (!study) {
+        throw new OHIFError('Study does not exist');
     }
 
-    study.displaySets.every(displaySet => {
+    let displaySets = study.displaySets;
+    if (!displaySets.length) {
+        displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
+        study.displaySets = displaySets;
+        study.setDisplaySets(displaySets);
+
+        study.forEachDisplaySet(displaySet => {
+            OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
+        });
+    }
+
+    if (!displaySets) {
+        throw new OHIFError('Study has no display sets');
+    }
+
+    displaySets.every(displaySet => {
         if (displaySet.displaySetInstanceUid === displaySetInstanceUid) {
             data.displaySet = displaySet;
             return false;
@@ -482,7 +505,7 @@ const setDisplaySet = (data, displaySetInstanceUid, templateData) => {
 
     // If we didn't find anything, stop here
     if (!data.displaySet) {
-        data.displaySet = study.displaySets[0];
+        data.displaySet = displaySets[0];
         // throw new OHIFError('Display set not found in specified study!');
     }
 
@@ -502,13 +525,19 @@ Template.imageViewerViewport.onRendered(function() {
     // When the imageViewerViewport template is rendered
     const element = this.find('.imageViewerViewport');
     this.element = element;
+    this.$element = $(element);
 
     // Display the loading indicator for this element
-    $(element).siblings('.imageViewerLoadingIndicator').css('display', 'block');
+    this.$element.siblings('.imageViewerLoadingIndicator').css('display', 'block');
 
     // Get the current active viewport index, if this viewport has the same index,
     // add the CSS 'active' class to highlight this viewport.
     const activeViewport = Session.get('activeViewport');
+
+    // Focus the viewport if it's the active one
+    if (templateData.viewportIndex === activeViewport) {
+        this.$element.focus();
+    }
 
     let { currentImageIdIndex } = templateData;
     const { viewport, studyInstanceUid, seriesInstanceUid, renderedCallback, displaySetInstanceUid } = templateData;
@@ -536,8 +565,8 @@ Template.imageViewerViewport.onRendered(function() {
     // instructions and then stop here since we don't know what to display in the viewport.
     if (!displaySetInstanceUid) {
         element.classList.add('empty');
-        $(element).siblings('.imageViewerLoadingIndicator').css('display', 'none');
-        $(element).siblings('.viewportInstructions').show();
+        this.$element.siblings('.imageViewerLoadingIndicator').css('display', 'none');
+        this.$element.siblings('.viewportInstructions').show();
         return;
     }
 
@@ -546,6 +575,39 @@ Template.imageViewerViewport.onRendered(function() {
 
     data.study = study;
     setDisplaySet(data, displaySetInstanceUid, templateData);
+
+    // Double click event handlers to handle viewport enlargement
+    this.$element.on('CornerstoneToolsMouseDoubleClick CornerstoneToolsDoubleTap', event => {
+        const { layoutManager } = OHIF.viewerbase;
+        const $viewports = $('.imageViewerViewport');
+
+        this.$element.trigger('ohif.viewer.viewport.toggleEnlargement');
+
+        // Get the double clicked viewport index
+        const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
+
+        // Stop here if there's only one viewport
+        if (!layoutManager.isZoomed && $viewports.length <= 1) return;
+
+        // Enlarge the double clicked viewport
+        layoutManager.toggleEnlargement(viewportIndex);
+
+        // Wait for DOM re-rendering and update the active viewport
+        Tracker.afterFlush(() => {
+            let viewportIndexToZoom;
+            // Check if the viewer is zoomed
+            if (layoutManager.isZoomed) {
+                // Set the active viewport as the only one visible
+                viewportIndexToZoom = 0;
+            } else {
+                // Set the active viewport as the previous zoomed viewport
+                viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
+            }
+            // Set zoomed viewport as active...
+            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
+            setActiveViewport(element);
+        });
+    });
 });
 
 Template.imageViewerViewport.onDestroyed(function() {
@@ -595,30 +657,5 @@ Template.imageViewerViewport.events({
     'OHIFActivateViewport .imageViewerViewport'(event) {
         OHIF.log.info('imageViewerViewport OHIFActivateViewport');
         setActiveViewport(event.currentTarget);
-    },
-
-    'CornerstoneToolsMouseDoubleClick .imageViewerViewport, CornerstoneToolsDoubleTap .imageViewerViewport'(event) {
-        // Get the double clicked viewport index
-        const viewportIndex = $('.imageViewerViewport').index(event.currentTarget);
-
-        // Enlarge the double clicked viewport
-        const layoutManager = OHIF.viewerbase.layoutManager;
-        layoutManager.toggleEnlargement(viewportIndex);
-
-        // Wait for DOM re-rendering and update the active viewport
-        Tracker.afterFlush(() => {
-            let viewportIndexToZoom;
-            // Check if the viewer is zoomed
-            if (layoutManager.isZoomed) {
-                // Set the active viewport as the only one visible
-                viewportIndexToZoom = 0;
-            } else {
-                // Set the active viewport as the previous zoomed viewport
-                viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
-            }
-            // Set zoomed viewport as active...
-            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
-            setActiveViewport(element);
-        });
     }
 });

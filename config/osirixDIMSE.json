@@ -1,0 +1,41 @@
+{
+  "servers": {
+    "dimse": [{
+      "name": "OSIRIX_DIMSE",
+      "wadoUriRoot": "http://localhost:3333/wado",
+      "requestOptions": {
+        "logRequests": true,
+        "logResponses": false,
+        "logTiming": true
+      },
+      "peers": [
+        {
+          "host": "localhost",
+          "port": 11112,
+          "aeTitle": "OSIRIX",
+          "default": true,
+          "server": false
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 4242,
+          "aeTitle": "OHIFDCM",
+          "default": true,
+          "server": true
+        }
+      ]
+    }]
+  },
+  "defaultServiceType": "dimse",
+  "dropCollections": true,
+  "public": {
+    "verifyEmail": false,
+    "ui": {
+        "studyListFunctionsEnabled": true,
+        "leftSidebarOpen": false,
+        "displaySetNavigationLoopOverSeries": false,
+        "displaySetNavigationMultipleViewports": true,
+        "autoPositionMeasurementsTextCallOuts": "TRLB"
+    }
+  }
+}

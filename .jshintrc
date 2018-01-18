@@ -87,12 +87,7 @@
     "wsh"           : false,    // Windows Scripting Host
     "yui"           : false,    // Yahoo User Interface
     "globals"       : {
-        "Package"   : true,     // Meteor Package definition
-
-        "cornerstone": true,    // This group: cornerstone globals
-        "cornerstoneMath": true,
-        "cornerstoneTools": true,
-        "cornerstoneWADOImageLoader": true,
-        "dicomParser": true
+        "require": true,
+        "Package": true         // Meteor Package definition
     }
 }

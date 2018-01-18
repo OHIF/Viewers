@@ -33,15 +33,20 @@ OHIF.lesiontracker.configureTargetToolsHandles = () => {
         changeMeasurementLocationCallback: toggleLabel,
     };
 
-    // TODO: Reconcile this with the configuration in toolManager
-    // it would be better to have this all in one place.
-    const bidirectionalConfig = cornerstoneTools.bidirectional.getConfiguration();
-    const config = Object.assign({}, bidirectionalConfig, callbackConfig);
+    // TODO: Reconcile this with the configuration in toolManager  it would be better to have this
+    // all in one place.
+    const appendConfig = toolType => {
+        const tool = cornerstoneTools[toolType];
+        const toolConfig = tool.getConfiguration();
+        const config = Object.assign({}, toolConfig, callbackConfig);
 
-    cornerstoneTools.bidirectional.setConfiguration(config);
+        tool.setConfiguration(config);
+    };
 
-    // Set CR-Tool, UN-Tool, EX-Tool configurations
-    cornerstoneTools.targetCR.setConfiguration(config);
-    cornerstoneTools.targetUN.setConfiguration(config);
-    cornerstoneTools.targetEX.setConfiguration(config);
+    // Append the callback configuration to bidirectional tool
+    appendConfig('bidirectional');
+
+    // Append the callback configuration to CR and UN tools
+    appendConfig('targetCR');
+    appendConfig('targetUN');
 };

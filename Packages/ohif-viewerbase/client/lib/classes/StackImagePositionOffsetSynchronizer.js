@@ -68,7 +68,7 @@ export class StackImagePositionOffsetSynchronizer {
             this.synchronizer.add(viewport.element);
             this.syncedViewports.push(viewport);
             viewportIndexes.push(viewport.index);
-            
+
             $(viewport.element).on(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.elementDisabledHandler(this));
         });
 
@@ -104,7 +104,7 @@ export class StackImagePositionOffsetSynchronizer {
 
         for (let i = 0; i < length; i++) {
             const viewport = this.syncedViewports[i];
-            
+
             if (viewport.element === viewportElement) {
                 return viewport;
             }
@@ -155,25 +155,31 @@ export class StackImagePositionOffsetSynchronizer {
         return viewports;
     }
 
+    isViewportsLinkable(viewportElementA, viewportElementB) {
+        const viewportAImageNormal = this.getViewportImageNormal(viewportElementA);
+        const viewportBImageNormal = this.getViewportImageNormal(viewportElementB);
+
+        if (viewportAImageNormal && viewportBImageNormal) {
+            const angleInRadians = viewportBImageNormal.angleTo(viewportAImageNormal);
+
+            // Pi / 12 radians = 15 degrees
+            // If the angle between two vectors is Pi, it means they are just inverted
+            return angleInRadians < Math.PI / 12 || angleInRadians === Math.PI;
+        }
+
+        return false;
+    }
+
     getLinkableViewports() {
         const activeViewportElement = this.getActiveViewportElement();
-        const activeViewportImageNormal = this.getViewportImageNormal(activeViewportElement);
         const viewports = [];
 
         $('.imageViewerViewport').each((index, viewportElement) => {
-            const viewportImageNormal = this.getViewportImageNormal(viewportElement);
-
-            if (activeViewportImageNormal && viewportImageNormal) {
-                const angleInRadians = viewportImageNormal.angleTo(activeViewportImageNormal);
-
-                // Pi / 12 radians = 15 degrees
-                // If the angle between two vectors is Pi, it means they are just inverted
-                if (angleInRadians < Math.PI / 12 || angleInRadians === Math.PI) {
-                    viewports.push({
-                        index: index,
-                        element: viewportElement
-                    });
-                }
+            if (this.isViewportsLinkable(activeViewportElement, viewportElement)) {
+                viewports.push({
+                    index: index,
+                    element: viewportElement
+                });
             }
         });
 
@@ -195,7 +201,7 @@ export class StackImagePositionOffsetSynchronizer {
             }
 
             const imageId = enabledElement.image.imageId;
-            const imagePlane = cornerstoneTools.metaData.get('imagePlane', imageId);
+            const imagePlane = cornerstone.metaData.get('imagePlane', imageId);
 
             if (!imagePlane || !imagePlane.rowCosines || !imagePlane.columnCosines) {
                 return;

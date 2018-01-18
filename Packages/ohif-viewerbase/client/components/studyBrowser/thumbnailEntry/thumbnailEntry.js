@@ -14,7 +14,13 @@ Template.thumbnailEntry.onCreated(() => {
 
 Template.thumbnailEntry.events({
     // Event handlers for drag and drop
-    'touchstart .thumbnailEntry, mousedown .thumbnailEntry'(event, instance) {
+    'mousedown .thumbnailEntry'(event, instance) {
+        const data = instance.data.thumbnail.stack;
+        if (!instance.isDragAndDrop || event.button !== 0) return;
+        thumbnailDragHandlers.thumbnailDragStartHandler(event, data);
+    },
+
+    'touchstart .thumbnailEntry'(event, instance) {
         const data = instance.data.thumbnail.stack;
         if (!instance.isDragAndDrop) return;
         thumbnailDragHandlers.thumbnailDragStartHandler(event, data);

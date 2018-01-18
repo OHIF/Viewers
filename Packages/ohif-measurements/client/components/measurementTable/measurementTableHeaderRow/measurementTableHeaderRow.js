@@ -8,31 +8,29 @@ Template.measurementTableHeaderRow.helpers({
         return measurementRows.length ? measurementRows.length : null;
     },
 
-    maxNumMeasurements() {
+    getMax(toolGroupId) {
         const { conformanceCriteria } = Template.instance().data;
         if (!conformanceCriteria) return;
 
-        return conformanceCriteria.maxTargets.get();
+        if (toolGroupId === 'targets') {
+            return conformanceCriteria.maxTargets.get();
+        } else if (toolGroupId === 'newTargets') {
+            return conformanceCriteria.maxNewTargets.get();
+        }
     },
 
     anyUnmarkedLesionsLeft() {
         // Skip New Lesions section
         const instance = Template.instance();
         const { toolGroup, measurementRows, timepointApi, measurementApi } = instance.data;
-        if (!measurementRows) {
-            return;
-        }
+        if (!measurementRows) return;
 
         const config = OHIF.measurements.MeasurementApi.getConfiguration();
-        if (toolGroup.id === config.newMeasurementTool.id) {
-            return;
-        }
+        if (config.newLesions && config.newLesions.find(o => o.id === toolGroup.id)) return;
 
         const current = timepointApi.current();
         const prior = timepointApi.prior();
-        if (!prior) {
-            return true;
-        }
+        if (!prior) return true;
 
         const currentFilter = { timepointId: current.timepointId };
         const priorFilter = { timepointId: prior.timepointId };
@@ -48,6 +46,8 @@ Template.measurementTableHeaderRow.helpers({
 Template.measurementTableHeaderRow.events({
     'click .js-setTool'(event, instance) {
         const { toolGroup } = instance.data;
-        Viewerbase.toolManager.setActiveTool(toolGroup.childTools[0].cornerstoneToolType);
+        const toolType = toolGroup.childTools[0].cornerstoneToolType;
+        const activeToolId = Array.isArray(toolType) ? toolType[0] : toolType;
+        Viewerbase.toolManager.setActiveTool(activeToolId);
     }
 });

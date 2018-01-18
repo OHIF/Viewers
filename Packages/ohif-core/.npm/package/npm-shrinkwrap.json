@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "jquery": {
+      "version": "3.2.1",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
+      "integrity": "sha1-XE2d5lKvbNCncBVKYxu6ErAVx4c="
+    },
+    "twbs-pagination": {
+      "version": "1.4.1",
+      "resolved": "https://registry.npmjs.org/twbs-pagination/-/twbs-pagination-1.4.1.tgz",
+      "integrity": "sha1-8X6221QP4FG8h4Zlqk3GKO5PyBw="
+    }
+  }
+}

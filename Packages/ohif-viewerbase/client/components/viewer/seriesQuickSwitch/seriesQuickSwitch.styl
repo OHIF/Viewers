@@ -1,0 +1,202 @@
+@require '{ohif:design}/app'
+
+.series-quick-switch
+  position: absolute
+  top: calc(100% - 100vh)
+
+  &:before
+    box-shadow(0 0 0 5000px rgba(0, 0, 0, 0.8))
+    transition(opacity 0.3s ease)
+    opacity: 0
+
+  &:hover
+    z-index: 2
+
+    &:before
+      opacity: 1
+
+  &:not(.left):not(.right)
+    left: 50%
+    transform(translateX(-50%))
+
+  &.left
+    theme('border-right', '1px solid $uiBorderColor')
+    right: 0
+
+  &.right
+    left: 0
+
+    .series-switch
+      float: right
+
+    .study-switch
+      float: left
+
+    .study-browser
+      left: auto
+      right: 0
+      transform-origin(calc(100% - 1em) calc(1em + 17px))
+
+    .series-browser
+      left: 0
+      right: auto
+      transform-origin(1em calc(1em + 15px))
+
+      .thumbnails-wrapper
+        transform-origin(0% 0%)
+
+      .thumbnailEntry
+        float: left
+
+    .series-item
+      float: left
+
+  .title-label
+    theme('color', '$textSecondaryColor')
+    font-size: 12px
+    font-weight: 500
+    line-height:  12px
+    opacity: 1
+    padding-bottom: 3px
+    text-align: center
+    transition(opacity 0.3s ease)
+
+  .series-switch,
+  .study-switch
+    float: left
+    position: relative
+
+  .study-switch:hover:after
+    content: ''
+    display: block
+    height: 100px
+    left: 0
+    position: absolute
+    top: 0
+    width: 300px
+
+  .study-browser
+    left: 0
+    margin-top: 100px
+    max-height: calc(100vh - 100px)
+    transform-origin(1em calc(1em + 17px))
+    width: 300px
+
+    .study-browser-list
+      padding: 0 10px
+
+  .series-browser
+    max-height: 100vh
+    max-width: 711px
+    right: 0
+    transform-origin(calc(100% - 1em) calc(1em + 15px))
+
+    .thumbnails-wrapper
+      transition(transform 0.3s ease)
+      transform-origin(100% 0%)
+
+    .thumbnailEntry
+      float: right
+
+      .seriesDetails
+        opacity: 0
+        transform(translateY(-100%))
+        transition(transform 0.3s ease\, opacity 0.3s ease)
+
+    .scrollable
+      padding-top: 15px
+      transition(padding-bottom 0.3s ease)
+
+  .series-browser,
+  .study-browser
+    min-height: 120px
+    opacity: 0
+    position: absolute
+    top: 0
+    transform(scale(0))
+    transition(transform 0.3s ease\, opacity 0.3s ease)
+    z-index: 3
+
+  .series-box,
+  .study-box
+    height: 57px
+    width: 57px
+
+  .study-box
+    theme('background-color', '$uiGrayDark')
+    theme('border', 'solid 2px $uiBorderColorDark')
+    border-radius(11px)
+
+  .series-item
+    theme('background-color', '$boxBackgroundColor')
+    border-radius(3px)
+    float: right
+    height: 15px
+    margin: 2px
+    transition(opacity 0.3s ease)
+    width: 15px
+
+    &.count
+      theme('color', '$textPrimaryColor')
+      background-color: transparent
+      font-size: 12px
+      font-weight: 500
+      line-height: 17px
+      text-align: center
+
+    &.active
+      theme('background-color', '$activeColor')
+
+  &.series-triggered .series-browser,
+  .series-switch:hover .series-browser,
+  .study-switch:hover .study-browser
+    opacity: 1
+    transform(scale(1))
+
+  &.series-triggered .series-item,
+  .series-switch:hover .title-label
+    opacity: 0
+
+  &.series-triggered
+    .thumbnails-wrapper
+      transform(scale(0.9) translateY(80px))
+
+    .series-browser:not(:hover)
+      &>.scrollable
+        padding-bottom: 80px
+
+      &>.scroll-nav
+        opacity: 0
+
+  .series-switch:hover .series-browser
+    .thumbnails-wrapper
+      transform(scale(1) translateY(0))
+
+    .thumbnailEntry .seriesDetails
+      opacity: 1
+      transform(translateY(0))
+      transition-delay(0.3s)
+
+  .study-browser-item.active .study-item-box
+    theme('box-shadow', 'inset 0 0 0 3px $activeColor')
+
+@media screen and (max-width: 1599px)
+  .series-quick-switch
+
+    .series-box,
+    .study-box
+      width: 36px
+      height: 36px
+
+    .study-box
+      border-radius(7px)
+
+    .series-item
+      height: 10px
+      margin: 1px
+      width: 10px
+
+      &.count
+        font-size: 10px
+        font-weight: 300
+        line-height: 10px

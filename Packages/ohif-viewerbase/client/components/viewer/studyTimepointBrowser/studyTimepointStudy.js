@@ -10,10 +10,18 @@ Template.studyTimepointStudy.onCreated(() => {
 
     instance.loading = new ReactiveVar(false);
 
+    const studyMetadata = OHIF.viewerbase.getStudyMetadata(instance.data.study);
+    const firstInstance = studyMetadata.getFirstInstance();
+    if (firstInstance) {
+        instance.modalities = firstInstance.getRawValue('x00080060');
+        instance.studyDescription = firstInstance.getRawValue('x00081030');
+        instance.studyDate = firstInstance.getRawValue('x00080020');
+    }
+
     // Get the current study element
     instance.getStudyElement = (isGlobal=false) => {
         const studyInstanceUid = instance.data.study.studyInstanceUid;
-        const selector = `.studyTimepointStudy[data-uid='${studyInstanceUid}']`;
+        const selector = `.study-browser-item[data-uid='${studyInstanceUid}']`;
         return isGlobal ? $(selector) : instance.$browser.find(selector);
     };
 
@@ -44,7 +52,7 @@ Template.studyTimepointStudy.onCreated(() => {
         }
 
         const $study = instance.getStudyElement();
-        const $thumbnails = $study.find('.studyTimepointThumbnails');
+        const $thumbnails = $study.find('.study-browser-series');
         $study.addClass('active');
         // If element already has max-height property set, .height()
         // will return that value, so remove it to recalculate
@@ -65,37 +73,37 @@ Template.studyTimepointStudy.onRendered(() => {
     const instance = Template.instance();
 
     // Keep the study timepoint browser element to manipulate elements even after DOM is removed
-    instance.$browser = instance.$('.studyTimepointStudy').closest('.studyTimepointBrowser');
+    instance.$browser = instance.$('.study-browser-item').closest('.studyTimepointBrowser');
 
     instance.initializeStudyWrapper();
 });
 
 Template.studyTimepointStudy.events({
     // Recalculates the timepoint height to make CSS transition smoother
-    'transitionend .studyTimepointThumbnails'(event, instance) {
+    'transitionend .study-browser-series'(event, instance) {
         if (event.target === event.currentTarget) {
             $(event.currentTarget).closest('.studyTimepoint').trigger('displayStateChanged');
         }
     },
 
     // Transfers the active state to the current study
-    'click .studyQuickSwitchTimepoint .studyModality'(event, instance) {
+    'click .studyQuickSwitchTimepoint .study-item-container'(event, instance) {
         instance.select(true);
     },
 
     // Set loading state
-    'loadStarted .studyTimepointStudy'(event, instance) {
+    'loadStarted .study-browser-item'(event, instance) {
         instance.loading.set(true);
     },
 
     // Remove loading state and fix the thumbnails wrappers height
-    'loadEnded .studyTimepointStudy'(event, instance) {
+    'loadEnded .study-browser-item'(event, instance) {
         instance.loading.set(false);
         instance.initializeStudyWrapper();
     },
 
     // Changes the current study selection for the clicked study
-    'click .studyModality'(event, instance) {
+    'click .study-item-box'(event, instance) {
         const studyData = instance.data.study;
         const { studyInstanceUid } = studyData;
         const isQuickSwitch = instance.isQuickSwitch();
@@ -109,7 +117,7 @@ Template.studyTimepointStudy.events({
             if (!alreadyLoaded) {
                 const $studies = instance.getStudyElement(true);
                 $studies.trigger('loadStarted');
-                OHIF.studylist.retrieveStudyMetadata(studyInstanceUid).then(study => {
+                OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
                     instance.data.study = study;
                     OHIF.viewer.Studies.insert(study);
 
@@ -117,6 +125,11 @@ Template.studyTimepointStudy.events({
                         $studies.trigger('loadEnded');
                         instance.select(isQuickSwitch);
                     }, 1);
+                }).catch(error => {
+                    OHIF.log.error(`There was an error trying to retrieve the study\'s metadata for studyInstanceUid: ${studyInstanceUid}`);
+                    OHIF.log.error(error.stack);
+
+                    OHIF.log.trace();
                 });
             } else {
                 studyData.seriesList = alreadyLoaded.seriesList;
@@ -139,7 +152,7 @@ Template.studyTimepointStudy.helpers({
 
     modalities() {
         const instance = Template.instance();
-        let modalities = instance.data.study.modalities;
+        const modalities = instance.modalities || 'UN';
 
         // Replace backslashes with spaces
         return modalities.replace(/\\/g, ' ');
@@ -149,22 +162,20 @@ Template.studyTimepointStudy.helpers({
         // Responsively styles the Modality Acronyms for studies
         // with more than one modality
         const instance = Template.instance();
-        const modalities = instance.data.study.modalities || 'UN';
+        const modalities = instance.modalities || 'UN';
         const numModalities = modalities.split(/\\/g).length;
 
         if (numModalities === 1) {
-            // If we have only one modality, it should take up the whole
-            // div.
-            return 'font-size: 1vw';
+            // If we have only one modality, it should take up the whole div.
+            return 'font-size: 1em';
         } else if (numModalities === 2) {
             // If we have two, let them sit side-by-side
-            return 'font-size: 0.75vw';
+            return 'font-size: 0.75em';
         } else {
-            // If we have more than two modalities, change the line
-            // height to display multiple rows, depending on the number
-            // of modalities we need to display.
+            // If we have more than two modalities, change the line height to display multiple rows,
+            // depending on the number of modalities we need to display.
             const lineHeight = Math.ceil(numModalities / 2) * 1.2;
-            return 'line-height: ' + lineHeight + 'vh';
+            return 'line-height: ' + lineHeight + 'em';
         }
     }
 });

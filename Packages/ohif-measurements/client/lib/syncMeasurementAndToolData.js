@@ -1,12 +1,34 @@
-import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 OHIF.measurements.syncMeasurementAndToolData = measurement => {
     OHIF.log.info('syncMeasurementAndToolData');
 
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
-    const imageId = measurement.imageId;
+
+    // Stop here if the metadata for the measurement's study is not loaded yet
+    const { studyInstanceUid } = measurement;
+    const metadata = OHIF.viewer.StudyMetadataList.findBy({ studyInstanceUid });
+    if (!metadata) return;
+
+    // Iterate each child tool if the current tool has children
+    const { getImageIdForImagePath } = OHIF.viewerbase;
     const toolType = measurement.toolType;
+    const { tool } = OHIF.measurements.getToolConfiguration(toolType);
+    if (Array.isArray(tool.childTools)) {
+        tool.childTools.forEach(childToolKey => {
+            const childMeasurement = measurement[childToolKey];
+            if (!childMeasurement) return;
+            childMeasurement._id = measurement._id;
+            childMeasurement.measurementNumber = measurement.measurementNumber;
+
+            OHIF.measurements.syncMeasurementAndToolData(childMeasurement);
+        });
+
+        return;
+    }
+
+    const imageId = getImageIdForImagePath(measurement.imagePath);
 
     // If no tool state exists for this imageId, create an empty object to store it
     if (!toolState[imageId]) {
@@ -35,7 +57,7 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
             alreadyExists = true;
 
             // Update the toolData from the Measurement data
-            $.extend(tool, measurement);
+            Object.assign(tool, measurement);
             return false;
         });
 

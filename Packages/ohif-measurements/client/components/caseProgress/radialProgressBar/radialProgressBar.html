@@ -26,14 +26,14 @@
                 </circle>
             {{/unless}}
         </svg>
-        <div class="progressText">
+        <div class="progressArea {{#if isLocked}}locked{{else}}{{#if progressComplete}}complete{{/if}}{{/if}}">
             {{#if isLocked}}
-                <svg class="locked">
+                <svg>
                     <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-status-lock"}}></use>
                 </svg>
             {{else}}
                 {{#if progressComplete}}
-                    <svg class="complete">
+                    <svg>
                         <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-status-complete"}}></use>
                     </svg>
                 {{else}}

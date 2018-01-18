@@ -1,3 +1,12 @@
+import { OHIF } from 'meteor/ohif:core';
+
+OHIF.cornerstone.scaleOverlaySettings = {
+    color: 'white',
+    lineWidth: 2,
+    shadowColor: 'black',
+    shadowBlur: 4
+};
+
 function drawLine(context, startPoint, endPoint, config) {
     context.moveTo(startPoint.x, startPoint.y);
     context.lineTo(endPoint.x, endPoint.y);
@@ -195,10 +204,7 @@ function onImageRendered(e, eventData) {
                 y: hscaleBounds.bottomRight.y
             }
         },
-        color: 'white', // TODO: fix this later
-        lineWidth: cornerstoneTools.toolStyle.getToolWidth(),
-        shadowColor: 'black',
-        shadowBlur: 4
+        ...OHIF.cornerstone.scaleOverlaySettings
     };
 
     const context = eventData.enabledElement.canvas.getContext('2d');

@@ -1,0 +1,73 @@
+{
+  "transactionId": "MGStudy",
+  "studies": [
+    {
+      "patientName": "MS^MG",
+      "seriesList": [
+        {
+          "instances": [
+            {
+              "columns": 2294,
+              "instanceNumber": 1,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110250.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110250.1.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 1,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110300.85",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110300.85.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 2,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110432.3",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110432.3.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 2,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110441.87",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110441.87.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 3,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110513.5",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110513.5.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 3,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110523.89",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110523.89.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 4,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110601.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110601.7.dcm"
+            },
+            {
+              "columns": 2294,
+              "instanceNumber": 4,
+              "rows": 1914,
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110610.91",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110610.91.dcm"
+            }
+          ],
+          "seriesDescription": "BILATERAL",
+          "seriesInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109105933.10001"
+        }
+      ],
+      "studyInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109105933.20000"
+    }
+  ]
+}

@@ -44,6 +44,12 @@ OHIF.mixins.group = new OHIF.Mixin({
                     component.registeredItems.forEach(child => {
                         // Check if it is an array or an object group
                         if (isArray) {
+                            // Get the mixins array
+                            const mixins = child.templateInstance.data.mixins.split(' ');
+
+                            // Prevent reading action components
+                            if (mixins.indexOf('action') > -1) return;
+
                             // Push the item value to the result array
                             result.push(child.value());
                         } else {
@@ -73,6 +79,11 @@ OHIF.mixins.group = new OHIF.Mixin({
                 // Iterate over each registered item and set its value
                 let i = 0;
                 component.registeredItems.forEach(child => {
+                    const mixins = child.templateInstance.data.mixins.split(' ');
+
+                    // Prevent reading action components
+                    if (isArray && mixins.indexOf('action') > -1) return;
+
                     const key = isArray ? i : child.templateInstance.data.key;
                     const childValue = _.isUndefined(groupValue[key]) ? null : groupValue[key];
                     child.value(childValue);

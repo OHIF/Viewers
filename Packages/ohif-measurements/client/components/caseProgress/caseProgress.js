@@ -10,6 +10,7 @@ Template.caseProgress.onCreated(() => {
     instance.progressPercent = new ReactiveVar();
     instance.progressText = new ReactiveVar();
     instance.isLocked = new ReactiveVar(false);
+    instance.isFollowUp = new ReactiveVar(false);
     instance.path = 'viewer.studyViewer.measurements';
     instance.saveObserver = new Tracker.Dependency();
 
@@ -22,7 +23,9 @@ Template.caseProgress.onCreated(() => {
             };
 
             // Display the error messages
-            const errorHandler = data => OHIF.ui.showDialog('dialogInfo', data);
+            const errorHandler = data => {
+                OHIF.ui.showDialog('dialogInfo', Object.assign({ class: 'themed' }, data));
+            };
 
             const promise = instance.data.measurementApi.storeMeasurements();
             promise.then(successHandler).catch(errorHandler);
@@ -130,7 +133,9 @@ Template.caseProgress.onRendered(() => {
     // progress measurement.
     if (current.timepointType === 'baseline') {
         instance.progressPercent.set(100);
+        instance.isFollowUp.set(false);
     } else {
+        instance.isFollowUp.set(true);
         // Setup a reactive function to update the progress whenever
         // a measurement is made
         instance.autorun(() => {

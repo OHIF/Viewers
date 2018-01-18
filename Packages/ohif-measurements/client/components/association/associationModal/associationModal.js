@@ -117,7 +117,8 @@ Template.dialogStudyAssociation.onCreated(() => {
                     studyInstanceUids: studyInstanceUids,
                     patientId: relatedStudies[0].patientId,
                     earliestDate: studyDates[0],
-                    latestDate: studyDates[studyDates.length - 1]
+                    latestDate: studyDates[studyDates.length - 1],
+                    isLocked: false
                 };
 
                 // Insert this timepoint into the Timepoints Collection

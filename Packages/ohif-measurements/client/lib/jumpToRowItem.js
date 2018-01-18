@@ -1,164 +1,171 @@
 import { $ } from 'meteor/jquery';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 
-function findAndRenderDisplaySet(displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
-        // Find the proper stack to display
-    const stacksFromSeries = displaySets.filter(stack => stack.seriesInstanceUid === seriesInstanceUid);
-    const stack = stacksFromSeries.find(stack => {
-        const imageIndex = stack.images.findIndex(image => image.getSOPInstanceUID() === sopInstanceUid);
-        return imageIndex > -1;
-    });
+function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
+    const { activateMeasurements, findAndRenderDisplaySet } = OHIF.measurements;
+    const { element } = enabledElement;
+    const { studyInstanceUid, seriesInstanceUid, sopInstanceUid } = measurementData;
 
-    // TODO: make this work for multi-frame instances
-    const specificImageIndex = stack.images.findIndex(image => image.getSOPInstanceUID() === sopInstanceUid);
+    return new Promise((resolve, reject) => {
+        const renderedCallback = element => {
+            activateMeasurements(element, measurementData);
+            $(element).one('CornerstoneImageRendered', () => resolve());
+        };
 
-    const displaySetData = {
-        studyInstanceUid: studyInstanceUid,
-        seriesInstanceUid: seriesInstanceUid,
-        sopInstanceUid: sopInstanceUid,
-        displaySetInstanceUid: stack.displaySetInstanceUid,
-        currentImageIdIndex: specificImageIndex
-    };
+        // Find the study by studyInstanceUid and render the display set
+        const findAndRender = () => {
+            // @TypeSafeStudies
+            const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
-    // Add a renderedCallback to activate the measurements once it's
-    if (renderedCallback) {
-        displaySetData.renderedCallback = renderedCallback;
-    }
+            // TODO: Support frames? e.g. for measurements on multi-frame instances
+            findAndRenderDisplaySet(
+                study.displaySets,
+                viewportIndex,
+                studyInstanceUid,
+                seriesInstanceUid,
+                sopInstanceUid,
+                renderedCallback
+            );
+        };
 
-    OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
-}
+        // Check if the study / series we need is already the one in the viewport.
+        // Otherwise, re-render the viewport with the required study/series, then add a rendered
+        // callback to activate the measurements
+        if (enabledElement && enabledElement.image) {
+            const imageId = enabledElement.image.imageId;
+            const series = cornerstone.metaData.get('series', imageId);
+            const study = cornerstone.metaData.get('study', imageId);
 
-function renderIntoViewport(viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) {
-
-    // @TypeSafeStudies
-    // First, check if we already have this study loaded
-    const alreadyLoadedStudy = OHIF.viewer.Studies.findBy({ studyInstanceUid });
-
-    if (alreadyLoadedStudy) {
-        // If the Study is already loaded, find the display set and render it
-        findAndRenderDisplaySet(alreadyLoadedStudy.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback)
-    } else {
-        // If not, retrieve the study metadata and then find the relevant display set and
-        // render it.
-        const $viewports = $('.imageViewerViewport');
-        const element = $viewports.get(viewportIndex);
-        const startLoadingHandler = cornerstoneTools.loadHandlerManager.getStartLoadHandler();
-        startLoadingHandler(element);
-        OHIF.studylist.retrieveStudyMetadata(studyInstanceUid).then(study => {
-            OHIF.log.warn('renderIntoViewport');
-
-            // Double check to make sure this study wasn't already inserted
-            // into OHIF.viewer.Studies, so we don't cause duplicate entry errors
-            const loaded = OHIF.viewer.Studies.findBy({
-                studyInstanceUid: study.studyInstanceUid
-            });
-            if (!loaded) {
-                OHIF.viewer.Studies.insert(study);
+            const isSameStudy = study.studyInstanceUid === measurementData.studyInstanceUid;
+            const isSameSeries = series.seriesInstanceUid === measurementData.seriesInstanceUid;
+            if (isSameStudy && isSameSeries) {
+                // If it is, activate the measurements in this viewport and stop here
+                OHIF.viewerbase.viewportUtils.resetViewport(viewportIndex);
+                renderedCallback(element);
+            } else {
+                findAndRender();
             }
-
-            findAndRenderDisplaySet(study.displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback);
-        });
-    }
+        } else {
+            findAndRender();
+        }
+    });
 }
 
 function syncViewports(viewportsIndexes) {
-    OHIF.viewer.stackImagePositionOffsetSynchronizer.activateByViewportIndexes(viewportsIndexes);
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+    const linkableViewports = synchronizer.getLinkableViewports();
+    if (linkableViewports.length) {
+        const linkableViewportsIndexes = _.pluck(linkableViewports, 'index');
+        const indexes = _.intersection(linkableViewportsIndexes, viewportsIndexes);
+        if (indexes.length) {
+            OHIF.viewer.stackImagePositionOffsetSynchronizer.activateByViewportIndexes(indexes);
+        }
+    }
 }
+
+// Store the lastActivatedRowItem to cancel jumping if another rowItem was triggered during loading
+let lastActivatedRowItem;
 
 /**
  * Activates a set of lesions when lesion table row is clicked
  *
  * @param measurementId The unique key for a specific Measurement
  */
-OHIF.measurements.jumpToRowItem = (rowItem, timepoints) => {
-    OHIF.measurements.deactivateAllToolData();
+OHIF.measurements.jumpToRowItem = (rowItem, timepoints, childToolKey) => {
+    const { isZoomed, zoomedViewportIndex } = OHIF.viewerbase.layoutManager;
 
-    const activateMeasurements = OHIF.measurements.activateMeasurements;
-    const activatedViewportIndexes = [];
-    let syncViewportsCaller = syncViewports;
-    let renderCount = 0;
-
-    // Deactivate stack synchronizer because it will be re-activated later
-    OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
-
-    // Retrieve the timepoints that are currently being displayed in the
-    // Measurement Table
-    const numTimepoints = Math.max(timepoints.length, 1);
+    lastActivatedRowItem = rowItem;
 
     // Retrieve the list of available viewports
     const $viewports = $('.imageViewerViewport');
     const numViewports = Math.max($viewports.length, 0);
 
-    /*
-    Two Timepoints, Two measurements, load Followup (FU and BA), display FU in left and BA in right
-    Two Timepoints, One measurement (BA), on 2x1 view: Display BA in right
-    Two Timepoints, One measurement (FU), on 2x1 view: Display FU in left
+    // Clone the timepoint list to prevent modifying the original object
+    let timepointList;
+    if (isZoomed) {
+        timepointList = [timepoints[zoomedViewportIndex]];
+    } else {
+        timepointList = _.clone(timepoints);
+    }
 
-    Two Timepoints, Two measurements, load Baseline (FU and BA) on 1x1 view: Display whichever is clicked on?
-    One Timepoint, One measurement: Display clicked on in 1x1
-    */
+    // Reverse the timepointList array if the flag is set
+    if (OHIF.viewer.invertViewportTimepointsOrder) {
+        timepointList.reverse();
+    }
+
+    // Retrieve the timepoints that are currently being displayed in the  Measurement Table
+    const numTimepoints = Math.max(timepointList.length, 1);
+
     const numViewportsToUpdate = Math.min(numTimepoints, numViewports);
 
-    for (var i=0; i < numViewportsToUpdate; i++) {
-        const timepoint = timepoints[i];
-        const timepointId = timepoint.timepointId;
+    // Retrieve the measurements data
+    const measurementsData = [];
+    const promises = new Set();
+    for (let i = 0; i < numViewportsToUpdate; i++) {
+        const { timepointId } = timepointList[i];
 
-        const dataAtThisTimepoint = _.where(rowItem.entries, {timepointId: timepointId});
+        const dataAtThisTimepoint = _.where(rowItem.entries, { timepointId });
         if (!dataAtThisTimepoint || !dataAtThisTimepoint.length) {
+            measurementsData.push(null);
             continue;
         }
 
-        const measurementData = dataAtThisTimepoint[0];
-
-        // Check if the study / series we need is already the one in the viewport
-        const element = $viewports.get(i);
-
-        activatedViewportIndexes.push(i);
-
-        // TODO: Implement isEnabledElement in Cornerstone
-        // or maybe just remove the 'error' this throws?
-        let enabledElement;
-        try {
-            enabledElement = cornerstone.getEnabledElement(element)
-        } catch(error) {
-            continue;
+        const measurement = dataAtThisTimepoint[0];
+        let measurementData = measurement;
+        const { toolType } = measurementData;
+        const { tool } = OHIF.measurements.getToolConfiguration(toolType);
+        if (childToolKey) {
+            measurementData = measurementData[childToolKey];
+        } else if (Array.isArray(tool.childTools)) {
+            tool.childTools.every(key => {
+                measurementData = measurementData[key];
+                return !measurementData;
+            });
         }
 
-        if (enabledElement && enabledElement.image) {
-            const imageId = enabledElement.image.imageId;
-            const series = cornerstoneTools.metaData.get('series', imageId);
-            const study = cornerstoneTools.metaData.get('study', imageId);
+        measurementsData.push(measurementData);
+        const promise = OHIF.studies.loadStudy(measurementData.studyInstanceUid);
+        promise.then(() => OHIF.measurements.syncMeasurementAndToolData(measurement));
+        promises.add(promise);
+    }
 
-            if (series.seriesInstanceUid === measurementData.seriesInstanceUid &&
-                study.studyInstanceUid === measurementData.studyInstanceUid) {
+    // Wait for studies metadata to be retrieved before jumpint to the given row item
+    Promise.all(promises).then(() => {
+        // Stop here if another rowItem was activated during loading process
+        if (rowItem !== lastActivatedRowItem) return;
 
-                // If it is, activate the measurements in this viewport and stop here
-                activateMeasurements(element, measurementData);
+        OHIF.measurements.deactivateAllToolData();
+
+        const activatedViewportIndexes = [];
+
+        // Deactivate stack synchronizer because it will be re-activated later
+        OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
+
+        const renderPromises = [];
+        for (let viewportIndex = 0; viewportIndex < numViewportsToUpdate; viewportIndex++) {
+            const measurementData = measurementsData[viewportIndex];
+            if (!measurementData) continue;
+
+            activatedViewportIndexes.push(viewportIndex);
+
+            const element = $viewports.get(viewportIndex);
+
+            // TODO: Implement isEnabledElement in Cornerstone
+            // or maybe just remove the 'error' this throws?
+            let enabledElement;
+            try {
+                enabledElement = cornerstone.getEnabledElement(element);
+            } catch(error) {
                 continue;
             }
+
+            const promise = renderIntoViewport(measurementData, enabledElement, viewportIndex);
+            renderPromises.push(promise);
         }
 
-        // The sync will be called only after loading all series on viewports
-        syncViewportsCaller = _.after(++renderCount, syncViewports);
-
-        // Otherwise, re-render the viewport with the required study/series, then
-        // add an onRendered callback to activate the measurements
-        const renderedCallback = element => {
-            activateMeasurements(element, measurementData);
-            syncViewportsCaller(activatedViewportIndexes);
-        };
-
-        // TODO: Support frames? e.g. for measurements on multi-frame instances
-        renderIntoViewport(i,
-                           measurementData.studyInstanceUid,
-                           measurementData.seriesInstanceUid,
-                           measurementData.sopInstanceUid,
-                           renderedCallback);
-    }
-
-    // If all viewports are already rendered then sync them
-    if (!renderCount) {
-        syncViewportsCaller(activatedViewportIndexes);
-    }
+        // Wait for all viewports to be rendered then sync them
+        Promise.all(renderPromises).then(() => syncViewports(activatedViewportIndexes));
+    });
 };

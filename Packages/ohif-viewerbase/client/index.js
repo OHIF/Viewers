@@ -31,6 +31,10 @@ Viewerbase.switchToImageByIndex = switchToImageByIndex;
 import { getFrameOfReferenceUID } from './lib/getFrameOfReferenceUID';
 Viewerbase.getFrameOfReferenceUID = getFrameOfReferenceUID;
 
+// getImageIdForImagePath
+import { getImageIdForImagePath } from './lib/getImageIdForImagePath';
+Viewerbase.getImageIdForImagePath = getImageIdForImagePath;
+
 // updateCrosshairsSynchronizer
 import { updateCrosshairsSynchronizer } from './lib/updateCrosshairsSynchronizer';
 Viewerbase.updateCrosshairsSynchronizer = updateCrosshairsSynchronizer;
@@ -79,6 +83,10 @@ Viewerbase.setInstanceClassDefaultViewportFunction = setInstanceClassDefaultView
 // displayReferenceLines
 import { displayReferenceLines } from './lib/displayReferenceLines';
 Viewerbase.displayReferenceLines = displayReferenceLines;
+
+// getStudyMetadata
+import { getStudyMetadata } from './lib/getStudyMetadata';
+Viewerbase.getStudyMetadata = getStudyMetadata;
 
 /**
  * Exported Namespaces (sub-namespaces)

@@ -13,7 +13,6 @@ Package.onUse(function(api) {
 
     // Assets to be imported dynamically
     api.addAssets('public/js/svgxuse.min.js', 'client');
-    api.addAssets('public/js/typedarray.min.js', 'client');
 
     // Client imports
     api.addFiles('client/index.js', 'client');

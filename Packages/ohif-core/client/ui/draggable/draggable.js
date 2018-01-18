@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 // Allow attaching to jQuery selectors
 $.fn.draggable = function(options) {
     makeDraggable(this, options);
@@ -11,20 +13,34 @@ $.fn.draggable = function(options) {
  *
  * @param element
  */
-function makeDraggable(element, options) {
-    var container = $(window);
-    var diffX,
-        diffY,
-        wasNotDragged = true;
+function makeDraggable(element, options={}) {
+    const $element = element;
 
-    options = options || {};
+    // Force to hardware acceleration to move element if browser supports translate property
+    const { styleProperty } = OHIF.ui;
+    const useTransform = styleProperty.check('transform', 'translate(1px, 1px)');
+
+    const $container = $(options.container || window);
+    let diffX;
+    let diffY;
+    let wasNotDragged = true;
+    let dragging = false;
+
+    let lastCursor, lastOffset;
+    let lastTranslateX = 0;
+    let lastTranslateY = 0;
+
     options.defaultElementCursor = options.defaultElementCursor || 'default';
 
     // initialize dragged flag
-    element.data('wasDragged', false);
+    $element.data('wasDragged', false);
+
+    function matrixToArray(str) {
+        return str.match(/(-?[0-9\.]+)/g);
+    }
 
     function getCursorCoords(e) {
-        var cursor = {
+        const cursor = {
             x: e.clientX,
             y: e.clientY
         };
@@ -33,10 +49,26 @@ function makeDraggable(element, options) {
         if (cursor.x === undefined) {
             cursor.x = e.originalEvent.touches[0].pageX;
         }
+
         if (cursor.y === undefined) {
             cursor.y = e.originalEvent.touches[0].pageY;
         }
+
         return cursor;
+    }
+
+    function reposition(elementLeft, elementTop) {
+        if (useTransform) {
+            const translation = `translate(${elementLeft}px, ${elementTop}px)`;
+            styleProperty.set($element[0], 'transform', translation);
+        } else {
+            $element.css({
+                left: elementLeft + 'px',
+                top: elementTop + 'px',
+                bottom: 'auto', // Setting these to empty doesn't seem to work in Firefox or Safari
+                right: 'auto'
+            });
+        }
     }
 
     function startMoving(e) {
@@ -46,84 +78,121 @@ function makeDraggable(element, options) {
             return;
         }
 
+        // Stop the dragging if it's not the primary button
+        if (e.button !== 0) return;
+
         // Stop the dragging if the element is being resized
-        if ($(element).hasClass('resizing')) {
+        if ($element.hasClass('resizing')) {
             return;
         }
 
-        var elementTop = parseFloat(element.offset().top),
-            elementLeft = parseFloat(element.offset().left);
+        let elementLeft = parseFloat($element.offset().left);
+        let elementTop = parseFloat($element.offset().top);
 
-        var cursor = getCursorCoords(e);
-        diffX = cursor.x - elementLeft;
-        diffY = cursor.y - elementTop;
+        const cursor = getCursorCoords(e);
+        if (useTransform) {
+            lastCursor = cursor;
+            lastOffset = $element.offset();
+            const transformMatrix = matrixToArray($element.css('transform')) || [];
+            lastTranslateX = parseFloat(transformMatrix[4]) || 0;
+            lastTranslateY = parseFloat(transformMatrix[5]) || 0;
+            elementLeft = lastTranslateX;
+            elementTop = lastTranslateY;
+        } else {
+            diffX = cursor.x - elementLeft;
+            diffY = cursor.y - elementTop;
+        }
 
-        container.css('cursor', 'move');
-        element.css('cursor', 'move');
-
-        element.css({
-            cursor: 'move',
-            left: elementLeft + 'px',
-            top: elementTop + 'px',
-            bottom: 'auto', // Setting these to empty doesn't seem to work in Firefox or Safari
-            right: 'auto'
-        });
+        reposition(elementLeft, elementTop);
 
         $(document).on('mousemove', moveHandler);
         $(document).on('mouseup', stopMoving);
 
         $(document).on('touchmove', moveHandler);
         $(document).on('touchend', stopMoving);
-
-        // let outside world know that the element in question has been dragged
-        if (wasNotDragged) {
-            element.data('wasDragged', true);
-            wasNotDragged = false;
-        }
-
     }
 
     function stopMoving() {
-        container.css('cursor', 'default');
-        element.css('cursor', options.defaultElementCursor);
+        $container.css('cursor', 'default');
+        $element.css('cursor', options.defaultElementCursor);
+
+        if (dragging) {
+            setTimeout(() => $element.removeClass('dragging'));
+            dragging = false;
+        }
 
         $(document).off('mousemove', moveHandler);
         $(document).off('touchmove', moveHandler);
     }
 
     function moveHandler(e) {
+        if (!dragging) {
+            $container.css('cursor', 'move');
+            $element.css('cursor', 'move');
+            $element.addClass('dragging');
+            dragging = true;
+        }
+
+        // let outside world know that the element in question has been dragged
+        if (wasNotDragged) {
+            $element.data('wasDragged', true);
+            wasNotDragged = false;
+        }
+
         // Prevent dialog box dragging whole page in iOS
         e.preventDefault();
 
-        var elementWidth = parseFloat(element.outerWidth()),
-            elementHeight = parseFloat(element.outerHeight()),
-            containerWidth = parseFloat(container.width()),
-            containerHeight = parseFloat(container.height());
+        const elementWidth = parseFloat($element.outerWidth());
+        const elementHeight = parseFloat($element.outerHeight());
+        const containerWidth = parseFloat($container.width());
+        const containerHeight = parseFloat($container.height());
 
-        var cursor = getCursorCoords(e);
+        const cursor = getCursorCoords(e);
 
-        var elementLeft = cursor.x - diffX;
-        var elementTop = cursor.y - diffY;
+        let elementLeft, elementTop;
+        if (useTransform) {
+            elementLeft = lastTranslateX - (lastCursor.x - cursor.x);
+            elementTop = lastTranslateY - (lastCursor.y - cursor.y);
 
-        elementLeft = Math.max(elementLeft, 0);
-        elementTop = Math.max(elementTop, 0);
+            const limitX = containerWidth - elementWidth;
+            const limitY = containerHeight - elementHeight;
+            const sumX = lastOffset.left + (elementLeft - lastTranslateX);
+            const sumY = lastOffset.top + (elementTop - lastTranslateY);
 
-        if (elementLeft + elementWidth > containerWidth) {
-            elementLeft = containerWidth - elementWidth;
+            if (sumX > limitX) {
+                elementLeft -= sumX - limitX;
+            }
+
+            if (sumY > limitY) {
+                elementTop -= sumY - limitY;
+            }
+
+            if (sumX < 0) {
+                elementLeft += 0 - sumX;
+            }
+
+            if (sumY < 0) {
+                elementTop += 0 - sumY;
+            }
+        } else {
+            elementLeft = cursor.x - diffX;
+            elementTop = cursor.y - diffY;
+
+            elementLeft = Math.max(elementLeft, 0);
+            elementTop = Math.max(elementTop, 0);
+
+            if (elementLeft + elementWidth > containerWidth) {
+                elementLeft = containerWidth - elementWidth;
+            }
+
+            if (elementTop + elementHeight > containerHeight) {
+                elementTop = containerHeight - elementHeight;
+            }
         }
 
-        if (elementTop + elementHeight > containerHeight) {
-            elementTop = containerHeight - elementHeight;
-        }
-
-        element.css({
-            left: elementLeft + 'px',
-            top: elementTop + 'px',
-            bottom: 'auto', // Setting these to empty doesn't seem to work in Firefox or Safari
-            right: 'auto'
-        });
+        reposition(elementLeft, elementTop);
     }
 
-    element.on('mousedown', startMoving);
-    element.on('touchstart', startMoving);
-};
+    $element.on('mousedown', startMoving);
+    $element.on('touchstart', startMoving);
+}

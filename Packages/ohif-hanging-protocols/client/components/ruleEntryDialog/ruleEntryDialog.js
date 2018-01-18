@@ -133,7 +133,7 @@ function getAbstractPriorValue(imageId) {
         return;
     }
 
-    const priorStudy = cornerstoneTools.metaData.get('study', imageId);
+    const priorStudy = cornerstone.metaData.get('study', imageId);
     if (!priorStudy) {
         return;
     }
@@ -378,6 +378,10 @@ Template.ruleEntryDialog.events({
 
         // Update the ReactiveVar with the user-specified value
         template.currentValue.set(value);
+
+        // Enforce to update the input value (Otherwise, ReactiveVar does not update input value with the same values)
+        const currentValueInput = $('.ruleEntryDialog').find('input.currentValue');
+        currentValueInput.val(value);
     },
     /**
      * Update the currentValue ReactiveVar if the user changes the attribute value

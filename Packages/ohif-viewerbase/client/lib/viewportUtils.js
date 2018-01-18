@@ -4,6 +4,7 @@ import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 // Local Modules
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { updateOrientationMarkers } from './updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from './instanceClassSpecificViewport';
 
@@ -37,7 +38,7 @@ const getActiveViewportElement = () => {
 /**
  * Get a cornerstone enabledElement for the Active Viewport Element
  * @return {Object}  Cornerstone's enabledElement object for the active
- *                   viewport element or undefined if the element 
+ *                   viewport element or undefined if the element
  *                   is not enabled
  */
 const getEnabledElementForActiveElement = () => {
@@ -133,12 +134,11 @@ const flipH = () => {
     updateOrientationMarkers(element, viewport);
 };
 
-const resetViewport = () => {
-    const element = getActiveViewportElement();
+const resetViewportWithElement = element => {
     const enabledElement = cornerstone.getEnabledElement(element);
     if (enabledElement.fitToWindow === false) {
         const imageId = enabledElement.image.imageId;
-        const instance = cornerstoneTools.metaData.get('instance', imageId);
+        const instance = cornerstone.metaData.get('instance', imageId);
 
         enabledElement.viewport = cornerstone.getDefaultViewport(enabledElement.canvas, enabledElement.image);
 
@@ -146,6 +146,18 @@ const resetViewport = () => {
         cornerstone.setViewport(element, instanceClassDefaultViewport);
     } else {
         cornerstone.reset(element);
+    }
+};
+
+const resetViewport = (viewportIndex=null) => {
+    if (viewportIndex === null) {
+        resetViewportWithElement(getActiveViewportElement());
+    } else if (viewportIndex === 'all') {
+        $('.imageViewerViewport').each((index, element) => {
+            resetViewportWithElement(element);
+        });
+    } else {
+        resetViewportWithElement($('.imageViewerViewport').get(viewportIndex));
     }
 };
 
@@ -159,11 +171,11 @@ const clearTools = () => {
 const linkStackScroll = () => {
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
-    if(!synchronizer) {
+    if (!synchronizer) {
         return;
     }
 
-    if(synchronizer.isActive()) {
+    if (synchronizer.isActive()) {
         synchronizer.deactivate();
     } else {
         synchronizer.activate();
@@ -172,23 +184,23 @@ const linkStackScroll = () => {
 
 // This function was originally defined alone inside client/lib/toggleDialog.js
 // and has been moved here to avoid circular dependency issues.
-const toggleDialog = element => {
+const toggleDialog = (element, closeAction) => {
     const $element = $(element);
-    if($element.is('dialog')) {
+    if ($element.is('dialog')) {
         if (element.hasAttribute('open')) {
-            stopAllClips();
+            if (closeAction) {
+                closeAction();
+            }
+
             element.close();
         } else {
             element.show();
         }
-    }
-    else {
+    } else {
         const isClosed = $element.hasClass('dialog-open');
         $element.toggleClass('dialog-closed', isClosed);
         $element.toggleClass('dialog-open', !isClosed);
     }
-
-    Session.set('UpdateCINE', Random.id());
 };
 
 // Toggle the play/stop state for the cornerstone clip tool
@@ -204,13 +216,30 @@ const toggleCinePlay = () => {
     }
 
     // Update the UpdateCINE session property
-    Session.set('UpdateCINE', Random.id());
+    Session.set('UpdateCINE', Math.random());
 };
 
 // Show/hide the CINE dialog
 const toggleCineDialog = () => {
     const dialog = document.getElementById('cineDialog');
+
+    toggleDialog(dialog, stopAllClips);
+    Session.set('UpdateCINE', Random.id());
+};
+
+const toggleDownloadDialog = () => {
+    const dialog = document.getElementById('downloadDialog');
+
+    stopActiveClip();
     toggleDialog(dialog);
+
+    Session.set('UpdateDownloadViewport', Random.id());
+};
+
+const isDownloadEnabled = () => {
+    const activeViewport = getActiveViewportElement();
+
+    return activeViewport ? true : false;
 };
 
 // Check if the clip is playing on the active viewport
@@ -235,8 +264,8 @@ const isPlaying = () => {
 
     // Get the clip state
     const clipState = toolState.data[0];
-    
-    if(clipState) {
+
+    if (clipState) {
         // Return true if the clip is playing
         return !_.isUndefined(clipState.intervalId);
     }
@@ -253,8 +282,8 @@ const hasMultipleFrames = () => {
     const activeViewport = getActiveViewportElement();
 
     // No active viewport yet: disable button
-    if(!activeViewport || !$(activeViewport).find('canvas').length) {
-      return true;
+    if (!activeViewport || !$(activeViewport).find('canvas').length) {
+        return true;
     }
 
     // Get images in the stack
@@ -270,8 +299,8 @@ const hasMultipleFrames = () => {
     const nImages = stackData.imageIds && stackData.imageIds.length ? stackData.imageIds.length : 1;
 
     // Stack has just one image, so disable button
-    if(nImages === 1) {
-      return true;
+    if (nImages === 1) {
+        return true;
     }
 
     return false;
@@ -280,13 +309,20 @@ const hasMultipleFrames = () => {
 // Stop clips on all non-empty elements
 const stopAllClips = () => {
     const elements = $('.imageViewerViewport').not('.empty');
-    elements.each( (index, element) => {
+    elements.each((index, element) => {
         if ($(element).find('canvas').length) {
             cornerstoneTools.stopClip(element);
         }
     });
 };
 
+const stopActiveClip = () => {
+    const activeElement = getActiveViewportElement();
+
+    if ($(activeElement).find('canvas').length) {
+        cornerstoneTools.stopClip(activeElement);
+    }
+};
 
 const isStackScrollLinkingDisabled = () => {
     let linkableViewportsCount = 0;
@@ -304,8 +340,26 @@ const isStackScrollLinkingDisabled = () => {
     return linkableViewportsCount <= 1;
 };
 
+const isStackScrollLinkingActive = () => {
+    let isActive = true;
+
+    // Its called everytime active viewport layout changes
+    Session.get('LayoutManagerUpdated');
+
+    const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+    const syncedElements = _.pluck(synchronizer.syncedViewports, 'element');
+    const $renderedViewports = $('.imageViewerViewport');
+    $renderedViewports.each((index, element) => {
+        if (!_.contains(syncedElements, element)) {
+            isActive = false;
+        }
+    });
+
+    return isActive;
+};
+
 // Create an event listener to update playing state when a clip stops playing
-$(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Random.id()));
+$(window).on('CornerstoneToolsClipStopped', () => Session.set('UpdateCINE', Math.random()));
 
 /**
  * Export functions inside viewportUtils namespace.
@@ -329,10 +383,13 @@ const viewportUtils = {
     toggleDialog,
     toggleCinePlay,
     toggleCineDialog,
+    toggleDownloadDialog,
     isPlaying,
+    isDownloadEnabled,
     hasMultipleFrames,
     stopAllClips,
-    isStackScrollLinkingDisabled
+    isStackScrollLinkingDisabled,
+    isStackScrollLinkingActive
 };
 
 export { viewportUtils };
