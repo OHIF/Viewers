@@ -1,9 +1,10 @@
 {
+  "lockfileVersion": 1,
   "dependencies": {
     "performance-now": {
       "version": "2.1.0",
       "resolved": "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz",
-      "from": "performance-now@2.1.0"
+      "integrity": "sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns="
     }
   }
 }

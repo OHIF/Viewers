@@ -8,7 +8,7 @@ Npm.depends({
     hammerjs: '2.0.8',
     'jquery-hammerjs': '2.0.0',
     'cornerstone-core': '1.1.2',
-    'cornerstone-tools': '1.0.3',
+    'gtajesgenga-cornerstone-tools': '1.0.4',
     'cornerstone-math': '0.1.6',
     'dicom-parser': '1.7.6',
     'cornerstone-wado-image-loader': '1.0.1'

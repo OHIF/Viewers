@@ -190,6 +190,13 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-undo'
         });
 
+        buttonData.push({
+            id: 'seed',
+            title: 'Seed',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-paint-brush'
+        });
+
         if (!OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
 
             buttonData.push({
@@ -263,6 +270,16 @@ Template.toolbarSection.helpers({
     }
 
 });
+
+Template.toolbarSection.events({
+    'click #seed'(event, instance) {
+        const $target = $(event.currentTarget);
+        if (!$target.hasClass('active') && $target.hasClass('expanded')) {
+            OHIF.viewerbase.toolManager.setActiveTool('seed');
+        }
+    }
+});
+
 
 Template.toolbarSection.onRendered(function() {
     const instance = Template.instance();

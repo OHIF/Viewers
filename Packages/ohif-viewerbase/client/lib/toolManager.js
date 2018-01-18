@@ -121,6 +121,11 @@ export const toolManager = {
             touch: cornerstoneTools.crosshairsTouch
         });
 
+        toolManager.addTool('seed', {
+            mouse: cornerstoneTools.seedAnnotate,
+            touch: cornerstoneTools.seedAnnotateTouch
+        });
+
         // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
             defaultTool = OHIF.viewer.defaultTool;
@@ -139,7 +144,7 @@ export const toolManager = {
         // Get Cornerstone Tools
         const { panMultiTouch, textStyle, toolStyle, toolColors,
                 length, arrowAnnotate, zoom, ellipticalRoi,
-                textMarker, magnify } = cornerstoneTools;
+                textMarker, magnify, seedAnnotate } = cornerstoneTools;
 
         // Set the configuration for the multitouch pan tool
         const multiTouchPanConfig = {
@@ -219,6 +224,10 @@ export const toolManager = {
             magnificationLevel: 3
         };
         magnify.setConfiguration(magnifyConfig);
+
+        const seedAnnotateConfig = seedAnnotate.getConfiguration();
+        seedAnnotateConfig.radius = 30;
+        seedAnnotate.setConfiguration(seedAnnotateConfig);
     },
     /**
      * This function searches an object to return the keys that contain a specific value
