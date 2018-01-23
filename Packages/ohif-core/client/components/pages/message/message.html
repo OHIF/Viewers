@@ -1,0 +1,9 @@
+<template name="pageMessage">
+    <div class="page-message {{this.class}}">
+        <div class="message-container">
+            <h1 class="message-title">{{choose this.title}}</h1>
+            <p class="message-content">{{choose this.message}}{{>UI.contentBlock}}</p>
+            {{>section 'pageMessageAfterContent'}}
+        </div>
+    </div>
+</template>

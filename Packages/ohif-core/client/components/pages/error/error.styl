@@ -1,0 +1,19 @@
+@require '{ohif:design}/app'
+
+.page-error .error-stack
+  display: table
+  margin-top: 10px
+  table-layout: fixed
+  width: 100%
+
+  p
+    theme('background-color', '$uiGrayDarkest')
+    theme('border', '1px solid $uiGray')
+    border-radius(4px)
+    display: inline-block
+    font-family: monospace
+    margin: 0
+    padding: 10px 20px
+    overflow-x: auto
+    white-space: pre
+    width: 100%

@@ -11,7 +11,8 @@ OHIF.measurements.isNewLesionsMeasurement = measurementData => {
     if (!measurementData) return;
 
     const { timepointApi, measurementApi } = OHIF.viewer;
-    const { timepointId, toolType } = measurementData;
+    const currentMeasurement = measurementApi.tools.bidirectional.findOne(measurementData._id);
+    const { timepointId, toolType, measurementNumber } = currentMeasurement;
     const toolConfig = OHIF.measurements.getToolConfiguration(toolType);
 
     // Stop here if the needed information is not set
@@ -31,5 +32,5 @@ OHIF.measurements.isNewLesionsMeasurement = measurementData => {
     const numbers = atBaseline.map(m => m.measurementNumber);
 
     // Return true if the measurement number from follow-up is not present at baseline
-    return !_.contains(numbers, measurementData.measurementNumber);
+    return !_.contains(numbers, measurementNumber);
 };

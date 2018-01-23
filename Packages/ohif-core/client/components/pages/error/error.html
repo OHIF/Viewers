@@ -1,0 +1,16 @@
+<template name="pageError">
+    {{#section 'pageMessageAfterContent'}}
+        {{#let stack=(choose this.stack this.error.stack)}}
+            {{#if (and shallDisplayErrorStack stack)}}
+                <div class="error-stack">
+                    <p>{{stack}}</p>
+                </div>
+            {{/if}}
+        {{/let}}
+    {{/section}}
+    {{#pageMessage
+        class='page-error'
+        title=(choose this.title this.error.message 'Error')
+        message=(choose this.message this.error.reason getDefaultErrorMessage)
+    }}{{>UI.contentBlock}}{{/pageMessage}}
+</template>

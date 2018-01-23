@@ -101,7 +101,7 @@ Template.studyBrowserItem.helpers({
 
     modalityStyle(modalities) {
         // Responsively styles the Modality Acronyms for studies with more than one modality
-        const numModalities = modalities.split(/\s/g).length;
+        const numModalities = modalities ? modalities.split(/\s/g).length : 1;
 
         if (numModalities === 1) {
             // If we have only one modality, it should take up the whole div

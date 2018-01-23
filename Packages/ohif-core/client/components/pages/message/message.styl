@@ -1,0 +1,31 @@
+@require '{ohif:design}/app'
+
+.page-message
+  theme('color', '$textPrimaryColor')
+  font-weight: 300
+  padding: 10px 0 20px
+
+  .message-container
+    display: table
+    margin: 0 auto
+    padding: 0 32px
+
+  .message-title
+    theme('color', '$textSecondaryColor')
+    font-size: 30px
+    font-weight: 300
+
+  .message-content
+    font-size: 18px
+
+  a
+    &, &:hover, &:active, &:focus
+      theme('color', '$activeColor')
+
+.modal .page-message
+
+  .page-message, .message-container
+    padding: 0
+
+  .message-title
+    display: none
