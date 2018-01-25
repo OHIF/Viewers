@@ -60,10 +60,7 @@ OHIF.measurements.toggleLabelButton = options => {
             options.measurement.description = description;
 
             // Notify that viewer suffered changes
-            const { timepointId } = measurement;
-            const basePath = 'viewer.studyViewer.measurements';
-            const timepointPath = timepointId ? `.${timepointId}` : '';
-            OHIF.ui.unsavedChanges.set(`${basePath}${timepointPath}.renamed`);
+            OHIF.measurements.triggerTimepointUnsavedChanges('renamed');
         }
     };
     buttonView = Blaze.renderWithData(Template.measureFlow, data, document.body);

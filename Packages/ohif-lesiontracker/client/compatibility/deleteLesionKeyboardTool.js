@@ -110,6 +110,9 @@ function keyDownCallback(event, eventData) {
                 nearbyToolData.toolType,
                 eventData.element
             );
+
+            // Notify that viewer suffered changes
+            OHIF.measurements.triggerTimepointUnsavedChanges('deleted');
         }).catch(unlock);
     }
 }

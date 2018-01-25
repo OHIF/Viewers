@@ -94,10 +94,7 @@ Template.measurementTableRow.events({
             _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
 
             // Notify that viewer suffered changes
-            const { timepointId } = measurement;
-            const basePath = 'viewer.studyViewer.measurements';
-            const timepointPath = timepointId ? `.${timepointId}` : '';
-            OHIF.ui.unsavedChanges.set(`${basePath}${timepointPath}.deleted`);
+            OHIF.measurements.triggerTimepointUnsavedChanges('deleted');
         });
     }
 });

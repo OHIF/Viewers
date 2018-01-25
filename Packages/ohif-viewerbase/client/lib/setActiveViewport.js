@@ -8,24 +8,30 @@ import { displayReferenceLines } from './displayReferenceLines';
 
 /**
  * Sets a viewport element active
- * @param  {node} element DOM element to be activated
+ * @param  {node} element DOM element to be activated or viewportIndex
  */
 export function setActiveViewport(element) {
-    if (!element) {
+    const $viewerports = $('.imageViewerViewport');
+
+    let viewportIndex;
+    if (typeof element === 'number') {
+        viewportIndex = element;
+    } else {
+        viewportIndex = $viewerports.index(element);
+    }
+
+    const $element = $viewerports.eq(viewportIndex);
+    if (!$element.length) {
         OHIF.log.info('setActiveViewport element does not exist');
         return;
     }
 
-    const viewerports = $('.imageViewerViewport');
-    const viewportIndex = viewerports.index(element);
-    const jQueryElement = $(element);
-
     OHIF.log.info(`setActiveViewport setting viewport index: ${viewportIndex}`);
 
     // If viewport is not active
-    if(!jQueryElement.parents('.viewportContainer').hasClass('active')) {
+    if (!$element.parents('.viewportContainer').hasClass('active')) {
         // Trigger an event for compatibility with other systems
-        jQueryElement.trigger('OHIFBeforeActivateViewport');
+        $element.trigger('OHIFBeforeActivateViewport');
     }
 
     // When an OHIFActivateViewport event is fired, update the Meteor Session
@@ -42,15 +48,15 @@ export function setActiveViewport(element) {
 
     // Add the 'active' class to the parent container to highlight the active viewport
     $('#imageViewerViewports .viewportContainer').removeClass('active');
-    jQueryElement.parents('.viewportContainer').addClass('active');
+    $element.parents('.viewportContainer').addClass('active');
 
     // Finally, enable stack prefetching and hide the reference lines from
     // the newly activated viewport that has a canvas
 
-    if (jQueryElement.find('canvas').length) {
+    if ($element.find('canvas').length) {
         // Cornerstone Tools compare DOM elements (check getEnabledElement cornerstone function)
         // so we can't pass a jQuery object as an argument, otherwise it throws an excepetion
-        const domElement = jQueryElement.get(0);
+        const domElement = $element.get(0);
         displayReferenceLines(domElement);
         StudyPrefetcher.getInstance().prefetch();
 
@@ -63,10 +69,10 @@ export function setActiveViewport(element) {
     // Set the div to focused, so keypress events are handled
     //$(element).focus();
     //.focus() event breaks in FF&IE
-    jQueryElement.triggerHandler('focus');
+    $element.triggerHandler('focus');
 
     // Trigger OHIFAfterActivateViewport event on activated instance
     // for compatibility with other systems
-    jQueryElement.trigger('OHIFAfterActivateViewport');
+    $element.trigger('OHIFAfterActivateViewport');
 
 }

@@ -35,9 +35,6 @@ export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) 
     // Repaint the images on all viewports without the removed measurements
     _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
 
-    // Signal unsaved changes
-    const { timepointId } = Collection.findOne(measurementData._id);
-    const basePath = 'viewer.studyViewer.measurements';
-    const timepointPath = timepointId ? `.${timepointId}` : '';
-    OHIF.ui.unsavedChanges.set(`${basePath}${timepointPath}.${eventData.toolType}`);
+    // Notify that viewer suffered changes
+    OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolType);
 }
