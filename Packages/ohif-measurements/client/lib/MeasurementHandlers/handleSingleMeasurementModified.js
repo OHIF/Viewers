@@ -38,5 +38,8 @@ export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) 
     Collection.update(measurementId, { $set: measurement });
 
     // Signal unsaved changes
-    OHIF.ui.unsavedChanges.set('viewer.studyViewer.measurements.' + eventData.toolType);
+    const { timepointId } = Collection.findOne(measurementData._id);
+    const basePath = 'viewer.studyViewer.measurements';
+    const timepointPath = timepointId ? `.${timepointId}` : '';
+    OHIF.ui.unsavedChanges.set(`${basePath}${timepointPath}.${eventData.toolType}`);
 }
