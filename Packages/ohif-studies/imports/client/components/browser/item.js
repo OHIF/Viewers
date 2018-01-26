@@ -113,5 +113,14 @@ Template.studyBrowserItem.helpers({
             // If we have more than two modalities, change the line height to display multiple rows
             return 'font-size:0.7em;line-height:1.4em;padding-top:0.5em';
         }
+    },
+
+    studyAvailable() {
+        const { studyInformation } = Template.instance().data;
+        if (!studyInformation) {
+            return;
+        }
+
+        return studyInformation.available;
     }
 });

@@ -14,7 +14,7 @@
                             <div class="study-date">{{formatDA studyData.studyDate 'D-MMM-YYYY'}}</div>
                             <div class="study-description">{{studyData.studyDescription}}</div>
                         {{else}}
-                            <div class="study-availability">{{#if eq studyData.available false}}N/A{{else}}Click to load{{/if}}</div>
+                            <div class="study-availability">{{#if eq studyAvailable false}}N/A{{else}}Click to load{{/if}}</div>
                         {{/if}}
                     </div>
                 </div>
