@@ -56,7 +56,8 @@ export class MaxTargetsCriterion extends BaseCriterion {
         const newTargetNumbers = this.getNewTargetNumbers(data);
         const measurementNumbers = [];
         _.each(data.targets, target => {
-            const { location, measurementNumber } = target.measurement;
+            const { location, measurementNumber, isSplitLesion } = target.measurement;
+            if (isSplitLesion) return;
             if (options.newTarget && !newTargetNumbers.has(measurementNumber)) return;
             if (options.locationIn && options.locationIn.indexOf(location) === -1) return;
             if (options.locationNotIn && options.locationNotIn.indexOf(location) > -1) return;

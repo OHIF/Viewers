@@ -38,7 +38,10 @@ export class MaxTargetsPerOrganCriterion extends BaseCriterion {
         const newTargetNumbers = this.getNewTargetNumbers(data);
         _.each(data.targets, target => {
             const { measurement } = target;
-            const { location, measurementNumber } = measurement;
+            const { location, measurementNumber, isSplitLesion } = measurement;
+
+            if (isSplitLesion) return;
+
             if (!targetsPerOrgan[location]) {
                 targetsPerOrgan[location] = new Set();
             }
