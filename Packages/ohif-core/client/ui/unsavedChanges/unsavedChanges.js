@@ -318,6 +318,8 @@ export const unsavedChanges = {
 
     observer: new Tracker.Dependency(),
 
+    hooks: new Map(),
+
     /**
      * Register a reactive dependency on every change any path suffers
      */
@@ -483,6 +485,69 @@ export const unsavedChanges = {
             callback.call(null, hasChanges, null);
         }
 
+    },
+
+    addHook(saveCallback, options={}) {
+        _.defaults(options, {
+            path: '*',
+            message: 'There are unsaved changes'
+        });
+
+        this.hooks.set(saveCallback, options);
+    },
+
+    removeHook(saveCallback) {
+        this.hooks.delete(saveCallback);
+    },
+
+    confirmNavigation(navigateCallback, event) {
+        let dialogPresented = false;
+        Array.from(this.hooks.keys()).every(saveCallback => {
+            const options = this.hooks.get(saveCallback);
+            const probe = this.probe(options.path, true);
+            if (!probe) return true;
+
+            const dialogOptions = Object.assign({ class: 'themed' }, options);
+            if (event) {
+                dialogOptions.position = {
+                    x: event.clientX + 15,
+                    y: event.clientY + 15
+                };
+            }
+
+            OHIF.ui.unsavedChanges.presentProactiveDialog(options.path, (hasChanges, userChoice) => {
+                if (!hasChanges) return;
+
+                const clear = () => this.clear(options.path, true);
+                switch (userChoice) {
+                    case 'abort-action':
+                        return;
+                    case 'save-changes':
+                        const result = saveCallback();
+                        if (result instanceof Promise) {
+                            return result.then(() => {
+                                clear();
+                                this.confirmNavigation(navigateCallback, event);
+                            });
+                        }
+
+                        clear();
+                        return this.confirmNavigation(navigateCallback, event);
+                    case 'abandon-changes':
+                        clear();
+                        break;
+                }
+
+                navigateCallback();
+            }, dialogOptions);
+
+            dialogPresented = true;
+            return false;
+        });
+
+        if (!dialogPresented) {
+            navigateCallback();
+        }
     }
 
 };

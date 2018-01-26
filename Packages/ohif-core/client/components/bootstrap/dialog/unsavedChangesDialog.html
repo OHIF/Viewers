@@ -1,12 +1,12 @@
 <template name="unsavedChangesDialog">
-    <div class="modal unsavedChangesDialog fade" tabindex="-1" role="dialog">
+    <div class="modal unsavedChangesDialog fade {{this.class}}" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button class="close" aria-label="Close" data-choice="abort-action" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title">You have unsaved changes!</h4>
+                    <h4 class="modal-title">{{choose this.message 'You have unsaved changes!'}}</h4>
                 </div>
                 <div class="modal-footer">
 
