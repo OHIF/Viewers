@@ -1,27 +1,27 @@
 <template name="radialProgressBar">
     <div class="radialProgress">
         <svg id="svg"
-             width="46"
-             height="46"
-             viewPort="0 0 50 50"
+             width="40"
+             height="40"
+             viewPort="0 0 40 40"
              version="1.1"
              xmlns="http://www.w3.org/2000/svg">
 
             <!-- stroke-dasharray is 2 * PI * radius !-->
-            <circle r="21"
-                    cx="23"
-                    cy="23"
+            <circle r="18"
+                    cx="20"
+                    cy="20"
                     fill="transparent"
-                    stroke-dasharray="131.9469"
+                    stroke-dasharray="113.097335529232557"
                     stroke-dashoffset="0">
             </circle>
             {{#unless isLocked}}
                 <circle id="bar"
-                        r="21"
-                        cx="23"
-                        cy="23"
+                        r="18"
+                        cx="20"
+                        cy="20"
                         fill="transparent"
-                        stroke-dasharray="131.9469"
+                        stroke-dasharray="113.097335529232557"
                         style="stroke-dashoffset: {{progressRadius}}px;">
                 </circle>
             {{/unless}}

@@ -246,7 +246,7 @@ class MeasurementApi {
         });
     }
 
-    storeMeasurements() {
+    storeMeasurements(timepointId) {
         const storeFn = configuration.dataExchange.store;
         if (!_.isFunction(storeFn)) {
             return;
@@ -263,7 +263,8 @@ class MeasurementApi {
             });
         });
 
-        const timepoints = this.timepointApi.all();
+        const timepointFilter = timepointId ? { timepointId } : {};
+        const timepoints = this.timepointApi.all(timepointFilter);
         const timepointIds = timepoints.map(t => t.timepointId);
         const patientId = timepoints[0].patientId;
         const filter = {

@@ -13,7 +13,7 @@ Template.caseProgress.onCreated(() => {
 
 Template.caseProgress.onRendered(() => {
     const instance = Template.instance();
-    const { timepointApi, measurementApi } = instance.data;
+    const { timepointApi, measurementApi, timepointId } = instance.data;
 
     // Stop here if we have no current timepoint ID (and therefore no defined timepointAPI)
     if (!timepointApi) {
@@ -22,8 +22,13 @@ Template.caseProgress.onRendered(() => {
     }
 
     // Get the current and prior timepoints
-    const current = timepointApi.current();
-    const prior = timepointApi.prior();
+    const current = timepointApi.timepoints.findOne({ timepointId });
+    const priorFilter = {
+        latestDate: { $lt: current.latestDate },
+        patientId: current.patientId
+    };
+    const priorSorting = { sort: { latestDate: -1 } };
+    const prior = timepointApi.timepoints.findOne(priorFilter, priorSorting);
 
     // Stop here if timepoint is locked
     if (current && current.isLocked) {

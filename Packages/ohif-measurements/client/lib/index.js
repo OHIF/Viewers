@@ -14,6 +14,7 @@ import './hangingProtocolCustomizations';
 import './MeasurementHandlers';
 import './MeasurementManager';
 import './navigateOverLesions';
+import './saveMeasurements';
 import './syncMeasurementAndToolData';
 import './toggleLabelButton';
 import './triggerTimepointUnsavedChanges';

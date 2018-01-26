@@ -33,38 +33,21 @@ Meteor.startup(() => {
         id: 'linkStackScroll',
         name: 'Link',
         action: OHIF.viewerbase.viewportUtils.linkStackScroll
+    }, {
+        id: 'saveMeasurements',
+        name: 'Save measurements',
+        hotkey: 'CTRL+S',
+        action() {
+            const activeTimepoint = OHIF.measurements.getActiveTimepoint();
+            if (!activeTimepoint) return;
+            OHIF.measurements.saveMeasurements(OHIF.viewer.measurementApi, activeTimepoint.timepointId);
+        }
     }];
     customCommands.forEach(command => {
-        _.defaults(OHIF.hotkeys.defaults[contextName], { [command.id]: '' });
+        _.defaults(OHIF.hotkeys.defaults[contextName], { [command.id]: command.hotkey || '' });
         OHIF.commands.register(contextName, command.id, {
             name: command.name,
             action: command.action || (() => toolManager.setActiveTool(command.id))
         });
-    });
-
-    // Add the save command
-    OHIF.commands.register(contextName, 'storeMeasurements', () => {
-        // Register the hotkey default
-        _.defaults(OHIF.hotkeys.defaults[contextName], { storeMeasurements: '' });
-
-        // Clear signaled unsaved changes...
-        const successHandler = () => {
-            OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
-            instance.saveObserver.changed();
-        };
-
-        // Display the error messages
-        const errorHandler = data => {
-            OHIF.ui.showDialog('dialogInfo', Object.assign({ class: 'themed' }, data));
-        };
-
-        const promise = OHIF.viewer.measurementApi.storeMeasurements();
-        promise.then(successHandler).catch(errorHandler);
-        OHIF.ui.showDialog('dialogLoading', {
-            promise,
-            text: 'Saving measurement data'
-        });
-
-        return promise;
     });
 });

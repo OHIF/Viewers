@@ -1,10 +1,12 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 .measurementTableTimepointHeader
   flex: 1
   justify-content: space-around
+  padding-top: 2px
+  position: relative
 
-  div
+  .timepointName, .timepointDate
     theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
     font-weight: 400
     padding-left: 12px
@@ -20,3 +22,8 @@
     font-size: 14px
     line-height: 20px
     padding-bottom: 6px
+
+  .case-progress-container
+    position: absolute
+    right: 4px
+    top: 0

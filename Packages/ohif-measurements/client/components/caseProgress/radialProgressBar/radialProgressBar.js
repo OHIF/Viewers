@@ -1,3 +1,5 @@
+import { Template } from 'meteor/templating';
+
 Template.radialProgressBar.helpers({
     progressComplete() {
         const instance = Template.instance();
@@ -5,9 +7,9 @@ Template.radialProgressBar.helpers({
     },
 
     progressRadius() {
-        var radius = 21 * 2 * Math.PI;
         const instance = Template.instance();
-        var percentLeft = (100 - instance.data.progressPercent) / 100;
+        const radius = 18 * 2 * Math.PI;
+        const percentLeft = (100 - instance.data.progressPercent) / 100;
         return percentLeft * radius;
     }
 });
