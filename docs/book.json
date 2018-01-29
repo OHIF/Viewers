@@ -1,0 +1,25 @@
+{
+  "title": "OHIF",
+  "gitbook": ">3.0.0",
+  "plugins": [
+    "edit-link",
+    "theme-cornerstone",
+    "-fontsettings",
+    "github"
+  ],
+  "pluginsConfig": {
+    "edit-link": {
+      "base": "https://github.com/OHIF/Viewers/edit/master/docs",
+      "label": "Edit This Page"
+    },
+    "github": {
+      "url": "https://github.com/OHIF/Viewers"
+    }
+  },
+  "links": {
+    "sharing": {
+      "facebook": false,
+      "twitter": false
+    }
+  }
+}
