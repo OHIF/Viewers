@@ -1,13 +1,14 @@
 @require '{ohif:design}/app'
 
-$circleSize = 40px
+$circleSize = 26px
 
 .radialProgress
-  position: relative
-  height: $circleSize
-  width: $circleSize
-  vendorize(box-shadow, 0 0 1em black)
   border-radius: 100%
+  height: $circleSize
+  margin-top: 8px
+  position: relative
+  vendorize(box-shadow, 0 0 1em black)
+  width: $circleSize
 
   #svg circle
     stroke-dashoffset: 0
@@ -16,15 +17,15 @@ $circleSize = 40px
     vendorize(transition, stroke-dashoffset 1s linear)
 
   #svg #bar
-    theme('stroke', '$activeColor')
+    theme('stroke', '$textSecondaryColor')
     vendorize(transform, rotate(270deg))
     vendorize(transform-origin, center center)
 
   .progressArea
-    theme('color', '$activeColor')
+    theme('color', '$textSecondaryColor')
     display: table
     font-weight: 700
-    font-size: 17px
+    font-size: 12px
     height: $circleSize
     line-height: $circleSize
     left: 50%
@@ -38,16 +39,16 @@ $circleSize = 40px
       line-height: 0
 
       &, & svg
-        height: 21px
-        width: 16px
+        height: 12px
+        width: 10px
 
     &.complete
       line-height: 0
 
       &, & svg
-        height: 27px
-        width: 27px
+        height: 16px
+        width: 16px
 
     svg
-      theme('fill', '$activeColor')
-      theme('stroke', '$activeColor')
+      theme('fill', '$textSecondaryColor')
+      theme('stroke', '$textSecondaryColor')

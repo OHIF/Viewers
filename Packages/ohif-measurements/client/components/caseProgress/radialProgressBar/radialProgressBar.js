@@ -8,7 +8,7 @@ Template.radialProgressBar.helpers({
 
     progressRadius() {
         const instance = Template.instance();
-        const radius = 18 * 2 * Math.PI;
+        const radius = 11 * 2 * Math.PI;
         const percentLeft = (100 - instance.data.progressPercent) / 100;
         return percentLeft * radius;
     }

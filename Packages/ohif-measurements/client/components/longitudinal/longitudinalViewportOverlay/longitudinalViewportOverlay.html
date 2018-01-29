@@ -5,18 +5,18 @@
                 <div>{{formatPN patientName}}</div>
                 <div>{{patientId}}</div>
                 <div class='timepointName'>{{timepointName}}</div>
-            </div>
-            <div class="topright dicomTag">
-                <div>{{studyDescription}}</div>
-                <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
                 <div class="icons-section">
-                    {{>imageViewportIcons this}}
                     {{#if linked}}
                         <svg>
                             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-viewport-link"}}></use>
                         </svg>
                     {{/if}}
+                    {{>imageViewportIcons this}}
                 </div>
+            </div>
+            <div class="topright dicomTag">
+                <div>{{studyDescription}}</div>
+                <div>{{formatDA studyDate}} {{formatTM studyTime}}</div>
             </div>
             <div class="bottomright dicomTag">
                 <div>{{#if zoom}}Zoom: {{formatNumberPrecision zoom 0}}%{{/if}}</div>
