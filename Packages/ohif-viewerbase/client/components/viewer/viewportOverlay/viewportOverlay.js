@@ -1,6 +1,8 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 import { viewportOverlayUtils } from '../../../lib/viewportOverlayUtils';
 import { getElementIfNotEmpty } from '../../../lib/getElementIfNotEmpty';
 import { getStackDataIfNotEmpty } from '../../../lib/getStackDataIfNotEmpty';
@@ -21,6 +23,7 @@ Template.viewportOverlay.helpers({
 
         return 'W ' + viewport.voi.windowWidth.toFixed(0) + ' L ' + viewport.voi.windowCenter.toFixed(0);
     },
+
     zoom() {
         Session.get('CornerstoneImageRendered' + this.viewportIndex);
 
@@ -36,6 +39,7 @@ Template.viewportOverlay.helpers({
 
         return (viewport.scale * 100.0);
     },
+
     imageDimensions() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
@@ -46,46 +50,55 @@ Template.viewportOverlay.helpers({
 
         return image.width + ' x ' + image.height;
     },
+
     patientName() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getPatient.call(this, 'name');
     },
+
     patientId() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getPatient.call(this, 'id');
     },
+
     patientBirthDate() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getPatient.call(this, 'birthDate');
     },
+
     patientSex() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getPatient.call(this, 'sex');
     },
+
     studyDate() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getStudy.call(this, 'studyDate');
     },
+
     studyTime() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getStudy.call(this, 'studyTime');
     },
+
     studyDescription() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getStudy.call(this, 'studyDescription');
     },
+
     seriesDescription() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getSeries.call(this, 'seriesDescription');
     },
+
     frameRate() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
@@ -97,16 +110,19 @@ Template.viewportOverlay.helpers({
         const frameRate = 1000 / frameTime;
         return frameRate.toFixed(1);
     },
+
     seriesNumber() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getSeries.call(this, 'seriesNumber');
     },
+
     instanceNumber() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getInstance.call(this, 'instanceNumber');
     },
+
     thickness() {
         // Displays Slice Thickness (0018,0050)
 
@@ -114,6 +130,7 @@ Template.viewportOverlay.helpers({
 
         return viewportOverlayUtils.getInstance.call(this, 'sliceThickness');
     },
+
     location() {
         // Displays Slice Location (0020,1041), if present.
         // - Otherwise, displays Table Position (0018,9327)
@@ -132,6 +149,7 @@ Template.viewportOverlay.helpers({
 
         return viewportOverlayUtils.getInstance.call(this, 'imagePositionPatient');
     },
+
     spacingBetweenSlices() {
         // Displays Spacing Between Slices (0018,0088), if present.
 
@@ -143,6 +161,7 @@ Template.viewportOverlay.helpers({
 
         return viewportOverlayUtils.getInstance.call(this, 'spacingBetweenSlices');
     },
+
     compression() {
         // Displays whether or not lossy compression has been applied:
         //
@@ -170,26 +189,31 @@ Template.viewportOverlay.helpers({
 
         return 'Lossless / Uncompressed';
     },
+
     tagDisplayLeftOnly() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getTagDisplay.call(this, 'side') === 'L';
     },
+
     tagDisplayRightOnly() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getTagDisplay.call(this, 'side') === 'R';
     },
+
     tagDisplaySpecified() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getTagDisplay.call(this, 'side');
     },
+
     imageNumber() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
         return viewportOverlayUtils.getInstance.call(this, 'number');
     },
+
     imageIndex() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
@@ -200,6 +224,7 @@ Template.viewportOverlay.helpers({
 
         return stack.currentImageIdIndex + 1;
     },
+
     numImages() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
@@ -210,6 +235,7 @@ Template.viewportOverlay.helpers({
 
         return stack.imageIds.length;
     },
+
     prior() {
         // This helper is updated whenever a new image is displayed in the viewport
         Session.get('CornerstoneNewImage' + this.viewportIndex);

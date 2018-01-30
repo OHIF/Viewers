@@ -1,3 +1,4 @@
+import { cornerstone } from 'meteor/ohif:cornerstone';
 import { getElementIfNotEmpty } from './getElementIfNotEmpty';
 
 const getPatient = function(property) {
@@ -22,7 +23,7 @@ const getStudy = function(property) {
     if (!study) {
         return '';
     }
-    
+
     return study[property];
 };
 

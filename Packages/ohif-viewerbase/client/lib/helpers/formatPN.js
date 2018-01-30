@@ -6,6 +6,7 @@ const formatPN = context => {
     if (!context) {
         return;
     }
+
     return context.replace('^', ', ');
 };
 
