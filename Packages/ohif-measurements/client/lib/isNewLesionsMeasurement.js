@@ -10,10 +10,11 @@ import { _ } from 'meteor/underscore';
 OHIF.measurements.isNewLesionsMeasurement = measurementData => {
     if (!measurementData) return;
 
+    const toolConfig = OHIF.measurements.getToolConfiguration(measurementData.toolType);
+    const toolType = toolConfig.tool.parentTool || measurementData.toolType;
     const { timepointApi, measurementApi } = OHIF.viewer;
-    const currentMeasurement = measurementApi.tools.bidirectional.findOne(measurementData._id);
-    const { timepointId, toolType, measurementNumber } = currentMeasurement;
-    const toolConfig = OHIF.measurements.getToolConfiguration(toolType);
+    const currentMeasurement = measurementApi.tools[toolType].findOne(measurementData._id);
+    const { timepointId, measurementNumber } = currentMeasurement;
 
     // Stop here if the needed information is not set
     if (!measurementApi || !timepointApi || !timepointId || !toolConfig) return;
