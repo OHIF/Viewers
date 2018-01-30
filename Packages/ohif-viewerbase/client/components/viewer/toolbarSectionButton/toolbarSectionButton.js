@@ -35,6 +35,8 @@ Template.toolbarSectionButton.onCreated(() => {
     };
 
     instance.autorun(computation => {
+        Session.get('ToolManagerActiveToolUpdated');
+
         // Get the last executed command
         const lastCommand = OHIF.commands.last.get();
 
@@ -52,7 +54,7 @@ Template.toolbarSectionButton.onCreated(() => {
             setTimeout(() => {
                 if ($element.hasClass('expandable') && $element.find('.toolbarSectionButton.active').length) return;
 
-                const activeToolId = Session.get('ToolManagerActiveTool');
+                const activeToolId = OHIF.viewerbase.toolManager.getActiveTool();
                 const isActive = instance.isActive(activeToolId);
                 if (!isActive) {
                     $element.removeClass('active');
@@ -74,22 +76,25 @@ Template.toolbarSectionButton.onCreated(() => {
 
 Template.toolbarSectionButton.helpers({
     activeClass() {
+        Session.get('ToolManagerActiveToolUpdated');
         const instance = Template.instance();
-        const activeToolId = Session.get('ToolManagerActiveTool');
+        const activeToolId = OHIF.viewerbase.toolManager.getActiveTool();
         const isActive = instance.isActive(activeToolId);
         return isActive ? 'active' : '';
     },
 
     svgLink() {
+        Session.get('ToolManagerActiveToolUpdated');
         const instance = Template.instance();
-        const activeToolId = Session.get('ToolManagerActiveTool');
+        const activeToolId = OHIF.viewerbase.toolManager.getActiveTool();
         const svgLink = instance.getActiveToolSubProperty('svgLink', activeToolId);
         return _.isFunction(svgLink) ? svgLink() : svgLink;
     },
 
     iconClasses() {
+        Session.get('ToolManagerActiveToolUpdated');
         const instance = Template.instance();
-        const activeToolId = Session.get('ToolManagerActiveTool');
+        const activeToolId = OHIF.viewerbase.toolManager.getActiveTool();
         const iconClasses = instance.getActiveToolSubProperty('iconClasses', activeToolId);
         return _.isFunction(iconClasses) ? iconClasses() : iconClasses;
     },

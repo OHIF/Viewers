@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
+import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
@@ -9,7 +10,11 @@ import { annotateTextUtils } from './annotateTextUtils';
 import { textMarkerUtils } from './textMarkerUtils';
 import { isTouchDevice } from './helpers/isTouchDevice';
 
-let defaultTool = 'wwwc';
+let defaultTool = {
+    left: 'wwwc',
+    right: 'zoom',
+    middle: 'pan'
+};
 let activeTool;
 let defaultMouseButtonTools;
 
@@ -123,13 +128,20 @@ export const toolManager = {
 
         // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
-            defaultTool = OHIF.viewer.defaultTool;
+            defaultTool.left = OHIF.viewer.defaultTool;
         }
 
         defaultMouseButtonTools = Meteor.settings && Meteor.settings.public && Meteor.settings.public.defaultMouseButtonTools;
 
         // Override default tool if defined in settings
-        defaultTool = (defaultMouseButtonTools && defaultMouseButtonTools.left) || 'wwwc';
+        const defaultLeft = (defaultMouseButtonTools && defaultMouseButtonTools.left) || 'wwwc';
+        const defaultRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || 'zoom';
+        const defaultMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || 'pan';
+        defaultTool = {
+            left: defaultLeft,
+            right: defaultRight,
+            middle: defaultMiddle
+        };
 
         this.configureTools();
         initialized = true;
@@ -272,17 +284,24 @@ export const toolManager = {
         return toolDefaultStates;
     },
 
-    setActiveToolForElement(tool, element) {
+    setActiveToolForElement(toolId, element, button) {
         const canvases = $(element).find('canvas');
         if (element.classList.contains('empty') || !canvases.length) {
             return;
         }
 
-        // First, deactivate the current active tool
-        tools[activeTool].mouse.deactivate(element, 1);
+        // If button is not defined, we should consider it left
+        if (!button) {
+            button = 'left';
+        }
 
-        if (tools[activeTool].touch) {
-            tools[activeTool].touch.deactivate(element);
+        // First, deactivate the current active tool
+        tools[activeTool.left].mouse.deactivate(element, 1); // 1 means left mouse button
+        tools[activeTool.middle].mouse.deactivate(element, 2); // 2 means middle mouse button
+        tools[activeTool.right].mouse.deactivate(element, 4); // 3 means right mouse button
+
+        if (tools[activeTool.left].touch) {
+            tools[activeTool.left].touch.deactivate(element);
         }
 
         // Enable tools based on their default states
@@ -291,7 +310,12 @@ export const toolManager = {
             if (!relevantTools || !relevantTools.length || action === 'disabledToolButtons') return;
             relevantTools.forEach(toolType => {
                 // the currently active tool has already been deactivated and can be skipped
-                if (action === 'deactivate' && toolType === activeTool) return;
+                if (action === 'deactivate' &&
+                    (toolType === activeTool.left ||
+                        toolType === activeTool.middle ||
+                        toolType === activeTool.right)) {
+                    return;
+                }
 
                 tools[toolType].mouse[action](
                     element,
@@ -310,24 +334,32 @@ export const toolManager = {
         // Get the imageIds for this element
         const imageIds = toolData.data[0].imageIds;
 
-        const defaultMouseButtonToolNameMiddle = (defaultMouseButtonTools && defaultMouseButtonTools.middle) || 'pan';
-        const defaultMouseButtonToolMiddle = cornerstoneTools[defaultMouseButtonToolNameMiddle];
+        // Get the mouse button tools
+        let newToolIdLeft = activeTool.left;
+        if (button === 'left') {
+            newToolIdLeft = toolId;
+        }
+        const newCornerstoneToolLeft = tools[newToolIdLeft]; // left mouse tool is used for touch as well
 
-        const defaultMouseButtonToolNameRight = (defaultMouseButtonTools && defaultMouseButtonTools.right) || 'zoom';
-        const defaultMouseButtonToolRight = cornerstoneTools[defaultMouseButtonToolNameRight];
+        let newToolIdMiddle = activeTool.middle;
+        if (button === 'middle') {
+            newToolIdMiddle = toolId;
+        }
+        const newCornerstoneToolMiddle = cornerstoneTools[newToolIdMiddle];
 
-        // Deactivate all the middle mouse, right click, and scroll wheel tools
-        defaultMouseButtonToolMiddle.deactivate(element);
-        defaultMouseButtonToolRight.deactivate(element);
+        let newToolIdRight = activeTool.right;
+        if (button === 'right') {
+            newToolIdRight = toolId;
+        }
+        const newCornerstoneToolRight = cornerstoneTools[newToolIdRight];
+
+        // Deactivate scroll wheel tools
         cornerstoneTools.zoomWheel.deactivate(element);
         cornerstoneTools.stackScrollWheel.deactivate(element);
         cornerstoneTools.panMultiTouch.disable(element);
         cornerstoneTools.zoomTouchPinch.disable(element);
         cornerstoneTools.stackScrollMultiTouch.disable(element);
         cornerstoneTools.doubleTapZoom.disable(element);
-
-        // Reactivate the middle mouse and right click tools
-        defaultMouseButtonToolRight.activate(element, 4); // zoom is the default tool for right mouse button
 
         // Reactivate the relevant scrollwheel tool for this element
         let multiTouchPanConfig;
@@ -358,32 +390,34 @@ export const toolManager = {
             cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
         }
 
-        // This block ensures that the middle mouse and scroll tools keep working
-        if (tool === defaultMouseButtonToolNameMiddle) {
-            defaultMouseButtonToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
-        } else if (tool === 'crosshairs') {
-            defaultMouseButtonToolMiddle.activate(element, 2); // pan is the default tool for middle mouse button
+        if (newToolIdLeft === 'crosshairs') {
             const currentFrameOfReferenceUID = getFrameOfReferenceUID(element);
             if (currentFrameOfReferenceUID) {
                 updateCrosshairsSynchronizer(currentFrameOfReferenceUID);
                 const synchronizer = crosshairsSynchronizers.synchronizers[currentFrameOfReferenceUID];
-
-                // Activate the chosen tool
-                tools[tool].mouse.activate(element, 1, synchronizer);
             }
-        } else if (tool === defaultMouseButtonToolNameRight) {
-            defaultMouseButtonToolMiddle.activate(element, 2); // pan is the default tool for middle mouse button
-            defaultMouseButtonToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
-        } else {
-            // Reactivate the middle mouse and right click tools
-            defaultMouseButtonToolMiddle.activate(element, 2); // pan is the default tool for middle mouse button
-
-            // Activate the chosen tool
-            tools[tool].mouse.activate(element, 1);
         }
 
-        if (tools[tool].touch) {
-            tools[tool].touch.activate(element);
+        // This block ensures that all mouse button tools keep working
+        if (newToolIdLeft === newToolIdMiddle && newToolIdMiddle === newToolIdRight) {
+            newCornerstoneToolRight.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
+        } else if (newToolIdLeft === newToolIdMiddle) {
+            newCornerstoneToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
+            newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+        } else if (newToolIdMiddle === newToolIdRight) {
+            newCornerstoneToolRight.activate(element, 6); // 6 means right mouse button and middle mouse button
+            newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
+        } else if (newToolIdLeft === newToolIdRight) {
+            newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
+            newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
+        } else {
+            newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
+            newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
+            newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+        }
+
+        if (newCornerstoneToolLeft.touch) {
+            newCornerstoneToolLeft.touch.activate(element);
         }
 
         if (gestures.zoomTouchPinch.enabled === true) {
@@ -399,7 +433,7 @@ export const toolManager = {
         }
     },
 
-    setActiveTool(tool, elements) {
+    setActiveTool(toolId, elements, button) {
         if (!initialized) {
             toolManager.init();
         }
@@ -423,46 +457,47 @@ export const toolManager = {
 
         if ($elements.toArray().reduce(checkElementEnabled, false)) {
             // if at least one element is not enabled, we do not activate tool.
-            OHIF.log.info(`Could not activate tool ${tool} due to a viewport not being enabled. Try again later.`);
+            OHIF.log.info(`Could not activate tool ${toolId} due to a viewport not being enabled. Try again later.`);
 
             return;
         }
+
+        if (!activeTool) {
+            activeTool = defaultTool;
+        }
+
+        // If button is not defined, we should consider it left
+        if (!button) {
+            button = 'left';
+        }
+
+        const activeToolId = activeTool[button];
 
         /**
          * TODO: Add textMarkerDialogs template to OHIF's
          */
         const dialog = document.getElementById('textMarkerOptionsDialog');
         if (dialog) {
-            if (tool === 'spine' && activeTool !== 'spine' && dialog.getAttribute('open') !== 'open') {
+            if (toolId === 'spine' && activeToolId !== 'spine' && dialog.getAttribute('open') !== 'open') {
                 dialog.show();
-            } else if (activeTool !== 'spine' && dialog.getAttribute('open') === 'open') {
+            } else if (activeToolId !== 'spine' && dialog.getAttribute('open') === 'open') {
                 dialog.close();
             }
         }
 
-        /**
-         * TODO: Use Session variables to activate a button and use Helpers like in toolbarSectionButton.js from OHIF’s.
-         */
-        // Set the div to active for the tool
-        $('.imageViewerButton').removeClass('active');
-        const toolButton = document.getElementById(tool);
-        if (toolButton) {
-            toolButton.classList.add('active');
-        }
-
-        if (!tool) {
-            tool = defaultTool;
+        if (!toolId) {
+            toolId = defaultTool[button];
         }
 
         // Otherwise, set the active tool for all viewport elements
         $elements.each((index, element) => {
-            toolManager.setActiveToolForElement(tool, element);
+            toolManager.setActiveToolForElement(toolId, element, button);
         });
 
-        activeTool = tool;
+        activeTool[button] = toolId;
 
-        // Store the active tool in the session in order to enable reactivity
-        Session.set('ToolManagerActiveTool', tool);
+        // Enable reactivity
+        Session.set('ToolManagerActiveToolUpdated', Random.id());
     },
 
     getNearbyToolData(element, coords, toolTypes) {
@@ -510,7 +545,7 @@ export const toolManager = {
         return pointNearTool ? nearbyTool : undefined;
     },
 
-    getActiveTool() {
+    getActiveTool(button) {
         if (!initialized) {
             toolManager.init();
         }
@@ -520,15 +555,30 @@ export const toolManager = {
             activeTool = defaultTool;
         }
 
-        return activeTool;
+        // If button is not defined, we should consider it left
+        if (!button) {
+            button = 'left';
+        }
+
+        return activeTool[button];
     },
 
-    setDefaultTool(tool) {
-        defaultTool = tool;
+    setDefaultTool(tool, button) {
+        // If button is not defined, we should consider it left
+        if (!button) {
+            button = 'left';
+        }
+
+        defaultTool[button] = tool;
     },
 
-    getDefaultTool() {
-        return defaultTool;
+    getDefaultTool(button) {
+        // If button is not defined, we should consider it left
+        if (!button) {
+            button = 'left';
+        }
+
+        return defaultTool[button];
     },
 
     setConfigureTools(configureTools) {
