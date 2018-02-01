@@ -5,6 +5,7 @@ import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
 // OHIF Modules
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 // Local Modules
 import { StackManager } from '../../../lib/StackManager';
 import { setActiveViewport } from '../../../lib/setActiveViewport';
@@ -348,8 +349,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         };
 
         // Attach the onNewImage callback to the CornerstoneNewImage event
-        $element.off('CornerstoneNewImage', onNewImage);
-        $element.on('CornerstoneNewImage', onNewImage);
+        $element.one('CornerstoneNewImage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneNewImage' + viewportIndex, Math.random());

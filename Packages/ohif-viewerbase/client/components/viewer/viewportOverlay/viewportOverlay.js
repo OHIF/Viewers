@@ -7,6 +7,17 @@ import { viewportOverlayUtils } from '../../../lib/viewportOverlayUtils';
 import { getElementIfNotEmpty } from '../../../lib/getElementIfNotEmpty';
 import { getStackDataIfNotEmpty } from '../../../lib/getStackDataIfNotEmpty';
 
+Template.viewportOverlay.onCreated(() => {
+    const instance = Template.instance();
+
+    instance.getImageIndex = () => {
+        const stack = getStackDataIfNotEmpty(instance.data.viewportIndex);
+        if (!stack || stack.currentImageIdIndex === undefined) return;
+
+        return stack.currentImageIdIndex;
+    };
+});
+
 Template.viewportOverlay.helpers({
     wwwc() {
         Session.get('CornerstoneImageRendered' + this.viewportIndex);
@@ -217,12 +228,8 @@ Template.viewportOverlay.helpers({
     imageIndex() {
         Session.get('CornerstoneNewImage' + this.viewportIndex);
 
-        const stack = getStackDataIfNotEmpty(this.viewportIndex);
-        if (!stack || stack.currentImageIdIndex === undefined) {
-            return;
-        }
-
-        return stack.currentImageIdIndex + 1;
+        const imageIndex = Template.instance().getImageIndex();
+        return _.isUndefined(imageIndex) ? 0 : imageIndex + 1;
     },
 
     numImages() {

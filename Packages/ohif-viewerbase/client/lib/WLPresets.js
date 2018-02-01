@@ -3,6 +3,7 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 import { viewportUtils } from './viewportUtils';
 
 const WL_PRESET_CUSTOM = 'Custom';
@@ -70,6 +71,7 @@ class WindowLevelPresetsManager {
         } else {
             const WLPresets = OHIF.viewer.wlPresets;
             for (let index in WLPresets) {
+                if (!WLPresets.hasOwnProperty(index)) continue;
                 const currentPreset = WLPresets[index];
                 if (windowCenter === currentPreset.wc && windowWidth === currentPreset.ww) {
                     preset = currentPreset;
