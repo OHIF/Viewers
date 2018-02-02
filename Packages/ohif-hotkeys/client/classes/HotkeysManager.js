@@ -17,7 +17,9 @@ export class HotkeysManager {
 
         Tracker.autorun(() => {
             const contextName = OHIF.context.get();
-            this.switchToContext(contextName);
+
+            // Avoind falling in MongoDB collections reactivity
+            Tracker.nonreactive(() => this.switchToContext(contextName));
         });
     }
 
