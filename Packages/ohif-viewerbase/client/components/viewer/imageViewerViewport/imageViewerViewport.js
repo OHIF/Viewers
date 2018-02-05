@@ -349,7 +349,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         };
 
         // Attach the onNewImage callback to the CornerstoneNewImage event
-        $element.one('CornerstoneNewImage', onNewImage);
+        $element.off('CornerstoneNewImage', onNewImage);
+        $element.on('CornerstoneNewImage', onNewImage);
 
         // Set a random value for the Session variable in order to trigger an overlay update
         Session.set('CornerstoneNewImage' + viewportIndex, Math.random());
