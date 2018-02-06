@@ -6,7 +6,7 @@
       {{#each message in this.messages}}
         <div class="message">{{{message}}}</div>
       {{else}}
-        {{#if eq this.errorType 'Meteor.Error'}}
+        {{#if isError}}
             {{>pageError (extend this error=this.details)}}
         {{else}}
           {{#let message=(choose this.reason this.message 'An error has ocurred.')}}

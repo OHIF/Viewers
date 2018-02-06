@@ -105,3 +105,10 @@ Template.dialogForm.events({
         }
     }
 });
+
+Template.dialogForm.helpers({
+    isError() {
+        const data = Template.instance().data;
+        return data instanceof Error || (data && data.error instanceof Error);
+    }
+});

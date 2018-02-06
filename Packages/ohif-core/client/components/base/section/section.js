@@ -55,3 +55,7 @@ Template.section.onCreated(() => {
         });
     }
 });
+
+Template.registerHelper('hasSection', sectionName => {
+    return !!OHIF.blaze.getSectionContent(Template.instance().view, sectionName);
+});

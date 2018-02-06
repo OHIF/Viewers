@@ -7,3 +7,10 @@ Template.dialogInfo.onRendered(() => {
 
     $modal.one('hidden.bs.modal', () => instance.data.promiseResolve());
 });
+
+Template.dialogInfo.helpers({
+    isError() {
+        const data = Template.instance().data;
+        return data instanceof Error || (data && data.error instanceof Error);
+    }
+});

@@ -7,7 +7,7 @@
                 <div>{{getGenderAndAge}}</div>
                 <div class="icons-section">
                     {{#if linked}}
-                        <svg>
+                        <svg class="icon-link">
                             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-viewport-link"}}></use>
                         </svg>
                     {{/if}}
@@ -18,7 +18,7 @@
                 <div>{{seriesDescription}}</div>
                 <div>{{studyInfo 'AccessionNumber'}}</div>
                 <div>{{formatDA (studyInfo 'AcquisitionDate')}} {{formatTM (studyInfo 'AcquisitionTime')}}</div>
-                <div>{{#if seriesNumber}}S: {{seriesNumber}}{{#if gt numImages 1}},{{/if}} {{/if}}{{#if gt instanceNumber 0}}I: {{instanceNumber}} {{/if}}{{#if gt numImages 1}}({{imageIndex}}/{{numImages}}){{/if}}</div>
+                <div>{{#if seriesNumber}}S: {{seriesNumber}}{{#if gt numImages 1}},{{/if}} {{/if}}{{#if gt numImages 1}}I: {{imageIndex}}/{{numImages}}{{/if}}</div>
                 <div class='timepointName'>{{timepointName}}</div>
             </div>
             <div class="bottomright dicomTag">

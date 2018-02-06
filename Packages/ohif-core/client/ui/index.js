@@ -10,4 +10,5 @@ import './notifications/notifications.js';
 import './popover/display.js';
 import './resizable/resizable.js';
 import './unsavedChanges/unsavedChanges.js';
+import './handleError.js';
 import './styleProperty.js';

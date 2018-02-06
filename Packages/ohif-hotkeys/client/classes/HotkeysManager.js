@@ -81,7 +81,7 @@ export class HotkeysManager {
     load(contextName) {
         return new Promise((resolve, reject) => {
             const context = this.getContext(contextName);
-            if (!context) return;
+            if (!context) return reject();
             this.retrieve(contextName).then(defs => {
                 const definitions = defs || this.defaults[contextName];
                 if (!definitions) {
@@ -151,6 +151,6 @@ export class HotkeysManager {
 
         this.currentContextName = contextName;
         newContext.initialize();
-        this.load(contextName);
+        this.load(contextName).catch(() => {});
     }
 }

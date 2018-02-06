@@ -1,7 +1,7 @@
 <template name="dialogHeader">
     <div class="modal-header">
         {{>section 'dialogHeader'}}
-        {{#if this.title}}
+        {{#if or this.title (hasSection 'dialogHeader')}}
             {{#button class='close' action='cancel'
                 tagAttributes=(extend this.tagAttributes
                     data-dismiss='modal' aria-label='Close'
