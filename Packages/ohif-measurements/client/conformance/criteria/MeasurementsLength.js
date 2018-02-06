@@ -101,8 +101,15 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
         const shortMultiplier = options.shortAxisSliceThicknessMultiplier;
 
         data.targets.forEach(item => {
-            const { measurement, metadata } = item;
-            const { location, longestDiameter, shortestDiameter } = measurement;
+            const { metadata, measurement } = item;
+            const { location } = measurement;
+
+            let { longestDiameter, shortestDiameter } = measurement;
+            if (measurement.childToolsCount) {
+                longestDiameter = measurement.bidirectional.longestDiameter;
+                shortestDiameter = measurement.bidirectional.shortestDiameter;
+            }
+
             const { sliceThickness } = metadata;
             const modality = (metadata.getRawValue('x00080060') || '').toUpperCase();
 
