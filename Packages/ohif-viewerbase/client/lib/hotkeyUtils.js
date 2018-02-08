@@ -118,7 +118,8 @@ Meteor.startup(function() {
         stackScroll: 'Scroll Stack',
         pan: 'Pan',
         length: 'Length Measurement',
-        wwwcRegion: 'W/L by Region'
+        wwwcRegion: 'W/L by Region',
+        crosshairs: 'Crosshairs'
     });
 
     // Functions to register the viewport commands

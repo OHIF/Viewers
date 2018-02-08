@@ -63,6 +63,13 @@ Template.toolbarSection.helpers({
         const extraTools = [];
 
         extraTools.push({
+            id: 'crosshairs',
+            title: 'Crosshairs',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-crosshairs'
+        });
+
+        extraTools.push({
             id: 'stackScroll',
             title: 'Stack Scroll',
             classes: 'imageViewerTool',

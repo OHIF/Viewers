@@ -390,34 +390,58 @@ export const toolManager = {
             cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
         }
 
+        // TODO: Remove this messy approach for adding synchronizer when necessary.
+        let leftToolSynchronizer;
         if (newToolIdLeft === 'crosshairs') {
             const currentFrameOfReferenceUID = getFrameOfReferenceUID(element);
             if (currentFrameOfReferenceUID) {
                 updateCrosshairsSynchronizer(currentFrameOfReferenceUID);
-                const synchronizer = crosshairsSynchronizers.synchronizers[currentFrameOfReferenceUID];
+                leftToolSynchronizer = crosshairsSynchronizers.synchronizers[currentFrameOfReferenceUID];
+            }
+
+            if (newToolIdLeft === newToolIdMiddle && newToolIdMiddle === newToolIdRight) {
+                newCornerstoneToolRight.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
+            } else if (newToolIdLeft === newToolIdMiddle) {
+                newCornerstoneToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
+                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+            } else if (newToolIdMiddle === newToolIdRight) {
+                newCornerstoneToolRight.activate(element, 6); // 6 means right mouse button and middle mouse button
+                newCornerstoneToolLeft.mouse.activate(element, 1, leftToolSynchronizer); // 1 means left mouse button
+            } else if (newToolIdLeft === newToolIdRight) {
+                newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
+                newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
+            } else {
+                newCornerstoneToolLeft.mouse.activate(element, 1, leftToolSynchronizer); // 1 means left mouse button
+                newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
+                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+            }
+        } else {
+            // This block ensures that all mouse button tools keep working
+            if (newToolIdLeft === newToolIdMiddle && newToolIdMiddle === newToolIdRight) {
+                newCornerstoneToolRight.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
+            } else if (newToolIdLeft === newToolIdMiddle) {
+                newCornerstoneToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
+                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+            } else if (newToolIdMiddle === newToolIdRight) {
+                newCornerstoneToolRight.activate(element, 6); // 6 means right mouse button and middle mouse button
+                newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
+            } else if (newToolIdLeft === newToolIdRight) {
+                newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
+                newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
+            } else {
+                newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
+                newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
+                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
             }
         }
 
-        // This block ensures that all mouse button tools keep working
-        if (newToolIdLeft === newToolIdMiddle && newToolIdMiddle === newToolIdRight) {
-            newCornerstoneToolRight.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
-        } else if (newToolIdLeft === newToolIdMiddle) {
-            newCornerstoneToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
-            newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
-        } else if (newToolIdMiddle === newToolIdRight) {
-            newCornerstoneToolRight.activate(element, 6); // 6 means right mouse button and middle mouse button
-            newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
-        } else if (newToolIdLeft === newToolIdRight) {
-            newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
-            newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
-        } else {
-            newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
-            newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
-            newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
-        }
-
         if (newCornerstoneToolLeft.touch) {
-            newCornerstoneToolLeft.touch.activate(element);
+            if (leftToolSynchronizer) {
+                newCornerstoneToolLeft.touch.activate(element, leftToolSynchronizer);
+            } else {
+                newCornerstoneToolLeft.touch.activate(element);
+            }
+
         }
 
         if (gestures.zoomTouchPinch.enabled === true) {
