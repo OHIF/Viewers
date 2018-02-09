@@ -20,7 +20,9 @@ Package.onUse(function(api) {
     // OHIF dependencies
     api.use([
         'ohif:design',
+        'ohif:cornerstone',
         'ohif:core',
+        'ohif:cornerstone-settings',
         'ohif:hotkeys',
         'ohif:log'
     ]);

@@ -23,6 +23,7 @@ ohif:core
 ohif:header
 ohif:design
 ohif:cornerstone
+ohif:cornerstone-settings
 ohif:viewerbase
 ohif:metadata
 ohif:study-list

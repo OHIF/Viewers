@@ -1,4 +1,4 @@
-import * as cornerstoneMath from 'cornerstone-math';
+import { cornerstoneMath } from 'meteor/ohif:cornerstone';
 import { parsingUtils } from '../parsingUtils';
 
 const FUNCTION = 'function';
@@ -112,7 +112,7 @@ export class MetadataProvider {
     getFromImage(image, type, tag, attrName, defaultValue) {
         let value;
 
-        if(image.data) {
+        if (image.data) {
             value = this.getFromDataSet(image.data, type, tag);
         } else {
             value = image.instance[attrName];
@@ -140,15 +140,15 @@ export class MetadataProvider {
 
         if (parsingUtils.isValidDataSet(dataSet)) {
             const frameInstancePointerNames = {
-                'x00181063': 'frameTime',
-                'x00181065': 'frameTimeVector'
-            }
+                x00181063: 'frameTime',
+                x00181065: 'frameTimeVector'
+            };
 
             // (0028,0009) = Frame Increment Pointer
             const frameInstancePointerTag = parsingUtils.attributeTag(dataSet, 'x00280009');
             frameInstancePointer = frameInstancePointerNames[frameInstancePointerTag];
         } else {
-            frameInstancePointer = image.instance['frameIncrementPointer'];
+            frameInstancePointer = image.instance.frameIncrementPointer;
         }
 
         return frameInstancePointer || '';
@@ -162,7 +162,7 @@ export class MetadataProvider {
             return parsingUtils.floatArray(dataSet, 'x00181065');
         }
 
-        return image.instance['frameTimeVector'];
+        return image.instance.frameTimeVector;
     }
 
     getFrameTime(image) {
@@ -175,7 +175,7 @@ export class MetadataProvider {
             return dataSet.floatString('x00181063', -1);
         }
 
-        return image.instance['frameTime'];
+        return image.instance.frameTime;
     }
 
     /**
@@ -322,6 +322,7 @@ export class MetadataProvider {
             provider = this.provider.bind(this);
             this._provider = provider;
         }
+
         return provider;
     }
 

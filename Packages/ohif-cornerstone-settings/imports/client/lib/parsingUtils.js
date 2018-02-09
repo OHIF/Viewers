@@ -1,4 +1,4 @@
-import * as dicomParser from 'dicom-parser';
+import { dicomParser } from 'meteor/ohif:cornerstone';
 
 /**
  * A small set of utilities to help parsing DICOM element values.
@@ -33,6 +33,7 @@ export const parsingUtils = {
                 return 'x' + ('00000000' + (parser(bytes, offset) * 256 * 256 + parser(bytes, offset + 2)).toString(16)).substr(-8);
             }
         }
+
         return null;
     },
 
@@ -53,6 +54,7 @@ export const parsingUtils = {
                     if (typeof parser !== 'function') {
                         parser = null;
                     }
+
                     return string.split('\\').map(function(value) {
                         value = value.trim();
                         return parser !== null ? parser(value) : value;
@@ -60,6 +62,7 @@ export const parsingUtils = {
                 }
             }
         }
+
         return null;
     },
 

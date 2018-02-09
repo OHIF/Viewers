@@ -434,7 +434,9 @@ export const toolManager = {
                 newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
                 newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
             } else {
-                newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
+                setTimeout(() => newCornerstoneToolLeft.mouse.activate(element, 1));
+                // >>>> TODO Find out why it's working only with a timeout
+                // newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
                 newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
                 newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
             }

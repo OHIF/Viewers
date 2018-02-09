@@ -37,6 +37,7 @@ ohif:design
 ohif:core
 ohif:header
 ohif:cornerstone
+ohif:cornerstone-settings
 ohif:viewerbase
 ohif:studies
 ohif:study-list

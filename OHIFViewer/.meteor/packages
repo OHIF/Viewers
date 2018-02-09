@@ -35,6 +35,7 @@ ohif:commands
 ohif:hotkeys
 ohif:header
 ohif:cornerstone
+ohif:cornerstone-settings
 ohif:viewerbase
 ohif:study-list
 ohif:dicom-services

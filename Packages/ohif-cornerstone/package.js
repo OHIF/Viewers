@@ -17,7 +17,6 @@ Package.onUse(function(api) {
     api.versionsFrom('1.5');
 
     api.use('ecmascript');
-    api.use('ohif:core');
 
     api.addAssets('public/js/cornerstoneWADOImageLoaderCodecs.es5.js', 'client');
     api.addAssets('public/js/cornerstoneWADOImageLoaderWebWorker.es5.js', 'client');

@@ -20,9 +20,10 @@ Package.onUse(function(api) {
 
     // Our custom packages
     api.use('ohif:design');
-    api.use('ohif:core');
-    api.use('ohif:studies');
     api.use('ohif:cornerstone');
+    api.use('ohif:core');
+    api.use('ohif:cornerstone-settings');
+    api.use('ohif:studies');
     api.use('ohif:measurements');
 
     api.addFiles('both/index.js', [ 'client', 'server' ]);
