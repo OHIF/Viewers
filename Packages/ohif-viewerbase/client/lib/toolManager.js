@@ -479,13 +479,6 @@ export const toolManager = {
             }
         };
 
-        if ($elements.toArray().reduce(checkElementEnabled, false)) {
-            // if at least one element is not enabled, we do not activate tool.
-            OHIF.log.info(`Could not activate tool ${toolId} due to a viewport not being enabled. Try again later.`);
-
-            return;
-        }
-
         if (!activeTool) {
             activeTool = defaultTool;
         }
@@ -515,6 +508,10 @@ export const toolManager = {
 
         // Otherwise, set the active tool for all viewport elements
         $elements.each((index, element) => {
+            if (checkElementEnabled(element) === false) {
+                return;
+            }
+
             toolManager.setActiveToolForElement(toolId, element, button);
         });
 
