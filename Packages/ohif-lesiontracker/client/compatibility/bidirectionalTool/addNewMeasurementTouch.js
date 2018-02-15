@@ -30,7 +30,7 @@ export default function(touchEventData) {
     $element.off('CornerstoneToolsDragStartActive', touchDownActivateCallback);
 
     // Update the perpendicular line handles position
-    const updateHandler = (event, eventData) => updatePerpendicularLineHandles(eventData, measurementData);
+    const updateHandler = event => updatePerpendicularLineHandles(event.detail, measurementData);
     $element.on('CornerstoneToolsTouchDrag', updateHandler);
     $element.on('CornerstoneToolsTouchEnd', updateHandler);
 

@@ -116,7 +116,7 @@ function createQualitativeTargetTool(toolType, responseText='') {
         };
 
         // Bind the event listener for image rendering
-        $element.on('CornerstoneImageRendered', imageRenderedHandler);
+        $element.on('cornerstoneimagerendered', imageRenderedHandler);
 
         // Bind the tool deactivation and enlargement handlers
         $element.on('CornerstoneToolsToolDeactivated', cancelAction);
@@ -139,7 +139,7 @@ function createQualitativeTargetTool(toolType, responseText='') {
             $element.off('mousedown', mousedownHandler);
 
             // Unbind the event listener for image rendering
-            $element.off('CornerstoneImageRendered', imageRenderedHandler);
+            $element.off('cornerstoneimagerendered', imageRenderedHandler);
 
             // Unbind the tool deactivation and enlargement handlers
             $element.off('CornerstoneToolsToolDeactivated', cancelAction);
@@ -261,7 +261,8 @@ function createQualitativeTargetTool(toolType, responseText='') {
     }
 
     ///////// BEGIN IMAGE RENDERING ///////
-    function onImageRendered(e, eventData) {
+    function onImageRendered(e) {
+        const eventData = e.detail;
         var element = eventData.element;
 
         // if we have no toolData for this element, return immediately as there is nothing to do
@@ -416,7 +417,8 @@ function createQualitativeTargetTool(toolType, responseText='') {
         });
     }
 
-    function doubleClickCallback(e, eventData) {
+    function doubleClickCallback(e) {
+        const eventData = e.detail;
         var element = eventData.element;
         var data;
 

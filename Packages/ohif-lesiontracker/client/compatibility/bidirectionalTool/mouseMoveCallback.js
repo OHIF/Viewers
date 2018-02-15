@@ -24,7 +24,8 @@ const handleActivator = (element, handles, canvasPoint, distanceThreshold=6) => 
 };
 
 // mouseMoveCallback is used to hide handles when mouse is away
-export default function (event, eventData) {
+export default function (event) {
+    const eventData = event.detail;
     cornerstoneTools.toolCoordinates.setCoords(eventData);
     // if a mouse button is down, do nothing
     if (eventData.which !== 0) {

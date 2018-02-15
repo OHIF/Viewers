@@ -14,7 +14,8 @@ const MeasurementHandlers = {
     handleSingleMeasurementRemoved,
     handleChildMeasurementRemoved,
 
-    onAdded(event, instance, eventData) {
+    onAdded(event, instance) {
+        const eventData = event.detail;
         const { toolType } = eventData;
         const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
         const params = {
@@ -34,7 +35,8 @@ const MeasurementHandlers = {
         }
     },
 
-    onModified(event, instance, eventData) {
+    onModified(event, instance) {
+        const eventData = event.detail;
         const { toolType } = eventData;
         const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
         const params = {
@@ -54,7 +56,8 @@ const MeasurementHandlers = {
         }
     },
 
-    onRemoved(e, instance, eventData) {
+    onRemoved(e, instance) {
+        const eventData = event.detail;
         const { toolType } = eventData;
         const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
         const params = {

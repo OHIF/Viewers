@@ -66,7 +66,7 @@ OHIF.measurements.getImageDataUrl = ({
             };
 
             // Wait for image rendering to get its data URL
-            $(element).one('CornerstoneImageRendered', () => {
+            $(element).one('cornerstoneimagerendered', () => {
                 if (measurement && alwaysVisibleText) {
                     rearrangeTextBox(image, measurement, element).then(() => renderedCallback());
                 } else {
@@ -143,7 +143,7 @@ const rearrangeTextBox = (image, measurement, element) => new Promise((resolve, 
         textBox.boundingBox.top = intersection.y - y0;
         Object.assign(textBox, intersection);
         cornerstone.updateImage(element);
-        $(element).one('CornerstoneImageRendered', () => resolve());
+        $(element).one('cornerstoneimagerendered', () => resolve());
     } else {
         resolve();
     }

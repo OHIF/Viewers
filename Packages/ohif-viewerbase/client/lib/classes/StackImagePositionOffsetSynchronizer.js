@@ -130,9 +130,7 @@ export class StackImagePositionOffsetSynchronizer {
     }
 
     elementDisabledHandler(context) {
-        return (e, eventData) => {
-            context.removeViewportByElement(eventData.element);
-        };
+        return e => context.removeViewportByElement(e.detail.element);
     }
 
     getViewportByIndexes(viewportIndexes) {

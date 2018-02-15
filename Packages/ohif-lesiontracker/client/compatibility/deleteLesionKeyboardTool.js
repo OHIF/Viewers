@@ -78,7 +78,8 @@ function getNearbyToolData(element, coords) {
     return pointNearTool ? nearbyTool : undefined;
 }
 
-function keyDownCallback(event, eventData) {
+function keyDownCallback(event) {
+    const eventData = event.detail;
     const keyCode = eventData.which;
 
     // Stop here if the locked flag is set to true

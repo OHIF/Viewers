@@ -9,7 +9,8 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
         y: handle.y - mouseEventData.currentPoints.image.y
     };
 
-    const mouseDragCallback = (event, eventData) => {
+    const mouseDragCallback = event => {
+        const eventData = event.detail;
         handle.active = true;
 
         if (handle.index === undefined || handle.index === null) {
@@ -51,13 +52,13 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
     };
 
     // Bind the event listener for image rendering
-    $element.on('CornerstoneImageRendered', imageRenderedHandler);
+    $element.on('cornerstoneimagerendered', imageRenderedHandler);
 
     const mouseUpCallback = () => {
         $element.off('CornerstoneToolsMouseDrag', mouseDragCallback);
         $element.off('CornerstoneToolsMouseUp', mouseUpCallback);
         $element.off('CornerstoneToolsMouseClick', mouseUpCallback);
-        $element.off('CornerstoneImageRendered', imageRenderedHandler);
+        $element.off('cornerstoneimagerendered', imageRenderedHandler);
         cornerstone.updateImage(element);
 
         if (typeof doneMovingCallback === 'function') {

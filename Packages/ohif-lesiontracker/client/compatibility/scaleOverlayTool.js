@@ -144,7 +144,8 @@ function computeScaleBounds(eventData, canvasSize, imageSize, horizontalReductio
     };
 }
 
-function onImageRendered(e, eventData) {
+function onImageRendered(e) {
+    const eventData = e.detail;
 
     // Check whether pixel spacing is defined
     if (!eventData.image.rowPixelSpacing || !eventData.image.columnPixelSpacing) {
@@ -219,7 +220,7 @@ function onImageRendered(e, eventData) {
 
 function disable(element) {
     // TODO: displayTool does not have cornerstone.updateImage(element) method to hide tool
-    $(element).off('CornerstoneImageRendered', onImageRendered);
+    $(element).off('cornerstoneimagerendered', onImageRendered);
     cornerstone.updateImage(element);
 }
 

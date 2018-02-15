@@ -38,10 +38,12 @@ const setHandlesMovingState = (handles, state) => {
 };
 
 // mouseDowCallback is used to restrict behaviour of perpendicular-line
-export default function(event, eventData) {
+export default function(event) {
+    const eventData = event.detail;
     let data;
     const element = eventData.element;
     const $element = $(element);
+    const options = cornerstoneTools.getToolOptions(toolType, element);
 
     // Add an event listener to clear the selected state when a measurement is activated
     const activateEventKey = 'ViewerMeasurementsActivated';
@@ -75,7 +77,7 @@ export default function(event, eventData) {
         $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
     }
 
-    if (cornerstoneTools.isMouseButtonEnabled(eventData.which, event.data.mouseButtonMask)) {
+    if (cornerstoneTools.isMouseButtonEnabled(eventData.which, options.mouseButtonMask)) {
         const coords = eventData.startPoints.canvas;
         const toolData = cornerstoneTools.getToolState(event.currentTarget, toolType);
 

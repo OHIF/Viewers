@@ -79,9 +79,10 @@ Template.imageDownloadDialog.onRendered(() => {
     };
 
     instance.updateViewportPreview = () => {
-        instance.$viewportElement.one('CornerstoneImageRendered', (event, enabledElement) => {
+        instance.$viewportElement.one('cornerstoneimagerendered', event => {
             // Wait for the tools to handle CornerstoneImageRendered event
             Tracker.afterFlush(() => {
+                const enabledElement = cornerstone.getEnabledElement(event.currentTarget);
                 const formData = instance.form.value();
                 const image = instance.viewportPreview;
                 const type = 'image/' + formData.type;

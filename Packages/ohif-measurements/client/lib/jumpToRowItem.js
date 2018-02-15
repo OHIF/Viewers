@@ -11,7 +11,7 @@ function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
     return new Promise((resolve, reject) => {
         const renderedCallback = element => {
             activateMeasurements(element, measurementData);
-            $(element).one('CornerstoneImageRendered', () => resolve());
+            $(element).one('cornerstoneimagerendered', () => resolve());
         };
 
         // Find the study by studyInstanceUid and render the display set

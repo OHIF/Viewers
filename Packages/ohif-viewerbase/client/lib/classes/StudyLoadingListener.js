@@ -1,6 +1,7 @@
 import { $ } from 'meteor/jquery';
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneWADOImageLoader } from 'meteor/ohif:cornerstone';
 
 class BaseLoadingListener {
     constructor(stack, options) {
@@ -127,7 +128,8 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
         $(cornerstone.events).off(imageLoadProgressEventName);
     }
 
-    _imageLoadProgressEventHandle(e, eventData) {
+    _imageLoadProgressEventHandle(e) {
+        const eventData = e.detail;
         const dataSetUrl = this._convertImageIdToDataSetUrl(eventData.imageId);
         const bytesDiff = eventData.loaded - this._lastLoaded;
 
@@ -204,9 +206,9 @@ class StackLoadingListener extends BaseLoadingListener {
     _createArray(length, defaultValue) {
         // `new Array(length)` is an anti-pattern in javascript because its
         // funny API. Otherwise I would go for `new Array(length).fill(false)`
-        const array = new Array();
+        const array = [];
 
-        for(let i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             array[i] = defaultValue;
         }
 
@@ -214,7 +216,7 @@ class StackLoadingListener extends BaseLoadingListener {
     }
 
     _checkCachedData() {
-        const imageIds = this.stack.imageIds;
+        // const imageIds = this.stack.imageIds;
 
         // TODO: No way to check status of Promise.
         /*for(let i = 0; i < imageIds.length; i++) {
@@ -264,7 +266,7 @@ class StackLoadingListener extends BaseLoadingListener {
         }
 
         // Add one more frame to the stats
-        if(loaded) {
+        if (loaded) {
             this._addStatsData(1);
         }
 
@@ -274,14 +276,12 @@ class StackLoadingListener extends BaseLoadingListener {
         this._updateProgress();
     }
 
-    _imageLoadedEventHandle(e, eventData) {
-        const imageId = eventData.image.imageId;
-        this._updateFrameStatus(imageId, true);
+    _imageLoadedEventHandle(e) {
+        this._updateFrameStatus(e.detail.image.imageId, true);
     }
 
-    _imageCachePromiseRemovedEventHandle(e, eventData) {
-        const imageId = eventData.imageId;
-        this._updateFrameStatus(imageId, false);
+    _imageCachePromiseRemovedEventHandle(e) {
+        this._updateFrameStatus(e.detail.imageId, false);
     }
 
     _updateProgress() {
@@ -307,13 +307,13 @@ class StackLoadingListener extends BaseLoadingListener {
         const displaySetInstanceUid = this.stack.displaySetInstanceUid;
         let progressBar = '[';
 
-        for(let i = 0; i < totalFramesCount; i++) {
+        for (let i = 0; i < totalFramesCount; i++) {
             const ch = this.framesStatus[i] ? '|' : '.';
             progressBar += `${ch}`;
         }
 
         progressBar += ']';
-        console.log(`${displaySetInstanceUid}: ${progressBar}`);
+        OHIF.log.info(`${displaySetInstanceUid}: ${progressBar}`);
     }
 }
 
@@ -326,7 +326,7 @@ class StudyLoadingListener {
         const displaySetInstanceUid = stack.displaySetInstanceUid;
 
         if (!this.listeners[displaySetInstanceUid]) {
-            listener = this._createListener(stack, stackMetaData);
+            const listener = this._createListener(stack, stackMetaData);
             if (listener) {
                 this.listeners[displaySetInstanceUid] = listener;
             }
@@ -389,7 +389,7 @@ class StudyLoadingListener {
 
     // Singleton
     static getInstance() {
-        if(!StudyLoadingListener._instance) {
+        if (!StudyLoadingListener._instance) {
             StudyLoadingListener._instance = new StudyLoadingListener();
         }
 

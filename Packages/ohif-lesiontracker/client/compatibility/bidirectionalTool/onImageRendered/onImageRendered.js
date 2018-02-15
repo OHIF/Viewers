@@ -6,7 +6,8 @@ import updatePerpendicularLineHandles from '../updatePerpendicularLineHandles';
 import drawPerpendicularLine from './drawPerpendicularLine';
 import drawSelectedMarker from './drawSelectedMarker';
 
-export default function(event, eventData) {
+export default function(event) {
+    const eventData = event.detail;
     const { element, canvasContext } = eventData;
 
     // if we have no toolData for this element, return immediately as there is nothing to do

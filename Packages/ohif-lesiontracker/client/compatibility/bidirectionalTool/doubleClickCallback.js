@@ -2,7 +2,8 @@ import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolType } from './definitions';
 import pointNearTool from './pointNearTool';
 
-export default function (event, eventData) {
+export default function (event) {
+    const eventData = event.detail;
     const { element } = eventData.element;
 
     function doneCallback(data, deleteTool) {

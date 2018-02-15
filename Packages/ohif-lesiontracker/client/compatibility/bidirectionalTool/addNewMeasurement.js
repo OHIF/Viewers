@@ -44,7 +44,7 @@ export default function(mouseEventData) {
     disableDefaultHandlers();
 
     // Update the perpendicular line handles position
-    const updateHandler = (event, eventData) => updatePerpendicularLineHandles(eventData, measurementData);
+    const updateHandler = event => updatePerpendicularLineHandles(event.detail, measurementData);
     $element.on('CornerstoneToolsMouseDrag', updateHandler);
     $element.on('CornerstoneToolsMouseUp', updateHandler);
 
@@ -95,7 +95,7 @@ export default function(mouseEventData) {
     };
 
     // Bind the event listener for image rendering
-    $element.on('CornerstoneImageRendered', imageRenderedHandler);
+    $element.on('cornerstoneimagerendered', imageRenderedHandler);
 
     // Bind the tool deactivation and enlargement handlers
     $element.on('CornerstoneToolsToolDeactivated', cancelAction);
@@ -128,7 +128,7 @@ export default function(mouseEventData) {
         $element.off('mousedown', mousedownHandler);
 
         // Unbind the event listener for image rendering
-        $element.off('CornerstoneImageRendered', imageRenderedHandler);
+        $element.off('cornerstoneimagerendered', imageRenderedHandler);
 
         // Unbind the tool deactivation and enlargement handlers
         $element.off('CornerstoneToolsToolDeactivated', cancelAction);
