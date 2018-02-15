@@ -87,6 +87,27 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
+            id: 'rotateR',
+            title: 'Rotate Right',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
+        });
+
+        extraTools.push({
+            id: 'flipH',
+            title: 'Flip H',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
+        });
+
+        extraTools.push({
+            id: 'flipV',
+            title: 'Flip V',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
+        });
+
+        extraTools.push({
             id: 'clearTools',
             title: 'Clear',
             classes: 'imageViewerCommand',
