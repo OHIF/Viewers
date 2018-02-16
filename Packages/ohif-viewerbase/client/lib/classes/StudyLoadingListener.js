@@ -235,7 +235,7 @@ class StackLoadingListener extends BaseLoadingListener {
     }
 
     _getImageCachePromiseRemoveEventName() {
-        return 'CornerstoneImageCachePromiseRemoved.' + this.id;
+        return 'cornerstoneimagecachepromiseremoved.' + this.id;
     }
 
     startListening() {

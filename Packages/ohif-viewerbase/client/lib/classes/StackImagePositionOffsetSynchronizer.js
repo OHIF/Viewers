@@ -1,6 +1,7 @@
-import { OHIF } from 'meteor/ohif:core';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
+import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolManager } from '../toolManager';
 
 export class StackImagePositionOffsetSynchronizer {
@@ -11,7 +12,7 @@ export class StackImagePositionOffsetSynchronizer {
     }
 
     static get ELEMENT_DISABLED_EVENT() {
-        return 'CornerstoneElementDisabled.StackImagePositionOffsetSynchronizer';
+        return 'cornerstoneelementdisabled.StackImagePositionOffsetSynchronizer';
     }
 
     isActive() {
@@ -211,4 +212,4 @@ export class StackImagePositionOffsetSynchronizer {
             OHIF.log.info(`StackImagePositionOffsetSynchronizer getViewportImageNormal: ${errorMessage}`);
         }
     }
-};
+}

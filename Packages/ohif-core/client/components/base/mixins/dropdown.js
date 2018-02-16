@@ -112,7 +112,7 @@ OHIF.mixins.dropdown = new OHIF.Mixin({
 
                 // Change the dropdown position if mouse event was given
                 if (event) {
-                    const originalEventTouches = event.originalEvent.touches;
+                    const originalEventTouches = event.originalEvent && event.originalEvent.touches;
                     const position = {
                         left: 0,
                         top: 0

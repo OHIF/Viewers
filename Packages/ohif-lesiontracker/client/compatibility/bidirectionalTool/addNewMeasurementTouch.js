@@ -5,7 +5,6 @@ import updatePerpendicularLineHandles from './updatePerpendicularLineHandles';
 
 export default function(touchEventData) {
     const element = { touchEventData };
-    const $element = $(element);
 
     // LT-29 Disable Target Measurements when pixel spacing is not available
     if (!touchEventData.image.rowPixelSpacing || !touchEventData.image.columnPixelSpacing) return;
@@ -25,14 +24,14 @@ export default function(touchEventData) {
     // since we are dragging to another place to drop the end point, we can just activate
     // the end point and let the moveHandle move it for us.
     const { touchMoveHandle, tapCallback, touchDownActivateCallback } = cornerstoneTools[toolType];
-    $element.off('CornerstoneToolsTouchDrag', touchMoveHandle);
-    $element.off('CornerstoneToolsTap', tapCallback);
-    $element.off('CornerstoneToolsDragStartActive', touchDownActivateCallback);
+    element.removeEventListener('cornerstonetoolstouchdrag', touchMoveHandle);
+    element.removeEventListener('cornerstonetoolstap', tapCallback);
+    element.removeEventListener('cornerstonetoolsdragstartactive', touchDownActivateCallback);
 
     // Update the perpendicular line handles position
     const updateHandler = event => updatePerpendicularLineHandles(event.detail, measurementData);
-    $element.on('CornerstoneToolsTouchDrag', updateHandler);
-    $element.on('CornerstoneToolsTouchEnd', updateHandler);
+    element.addEventListener('cornerstonetoolstouchdrag', updateHandler);
+    element.addEventListener('cornerstonetoolstouchend', updateHandler);
 
     cornerstone.updateImage(element);
     const { end, perpendicularStart } = handles;
@@ -49,12 +48,12 @@ export default function(touchEventData) {
         perpendicularStart.locked = false;
 
         // Unbind the handlers to update perpendicular line
-        $element.off('CornerstoneToolsTouchDrag', updateHandler);
-        $element.off('CornerstoneToolsTouchEnd', updateHandler);
+        element.removeEventListener('cornerstonetoolstouchdrag', updateHandler);
+        element.removeEventListener('cornerstonetoolstouchend', updateHandler);
 
-        $element.on('CornerstoneToolsTouchDrag', touchMoveHandle);
-        $element.on('CornerstoneToolsTap', tapCallback);
-        $element.on('CornerstoneToolsDragStartActive', touchDownActivateCallback);
+        element.addEventListener('cornerstonetoolstouchdrag', touchMoveHandle);
+        element.addEventListener('cornerstonetoolstap', tapCallback);
+        element.addEventListener('cornerstonetoolsdragstartactive', touchDownActivateCallback);
         cornerstone.updateImage(element);
     });
 }

@@ -74,7 +74,7 @@ export default function(event) {
         }
 
         cornerstone.updateImage(element);
-        $element.on('CornerstoneToolsMouseMove', eventData, mouseMoveCallback);
+        element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
     }
 
     if (cornerstoneTools.isMouseButtonEnabled(eventData.which, options.mouseButtonMask)) {
@@ -97,7 +97,7 @@ export default function(event) {
                     // if dragging text box
                     $element.css('cursor', handle.hasBoundingBox ? 'move' : 'none');
 
-                    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                    element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
                     data.active = true;
 
                     unselectAllHandles(data.handles);
@@ -128,7 +128,7 @@ export default function(event) {
                     // Set the cursor to move
                     $element.css('cursor', 'move');
 
-                    $element.off('CornerstoneToolsMouseMove', mouseMoveCallback);
+                    element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
                     data.active = true;
 
                     unselectAllHandles(data.handles);

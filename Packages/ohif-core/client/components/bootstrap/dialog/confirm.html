@@ -1,8 +1,7 @@
 <template name="dialogConfirm">
-    {{#dialogForm (extend this
+    {{>dialogForm (extend this
         dialogClass='modal-sm'
         title=(choose this.title 'Confirmation')
+        message=(choose this.message 'Are you sure you want to perform this action?')
     )}}
-        <p>{{choose this.message 'Are you sure you want to perform this action?'}}</p>
-    {{/dialogForm}}
 </template>

@@ -57,13 +57,13 @@ const createDropdown = function(event, isTouchEvent = false) {
 };
 
 Template.viewerMain.events({
-    'CornerstoneToolsMouseClick .imageViewerViewport'(event, instance) {
+    'cornerstonetoolsmouseclick .imageViewerViewport'(event, instance) {
         if (event.which === 3) {
             createDropdown(event);
         }
     },
 
-    'CornerstoneToolsTouchPress .imageViewerViewport'(event, instance) {
+    'cornerstonetoolstouchpress .imageViewerViewport'(event, instance) {
         createDropdown(event, true);
     }
 });

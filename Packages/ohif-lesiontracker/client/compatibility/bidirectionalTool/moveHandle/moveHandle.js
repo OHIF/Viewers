@@ -30,7 +30,7 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
 
         cornerstone.updateImage(element);
 
-        const eventType = 'CornerstoneToolsMeasurementModified';
+        const eventType = 'cornerstonetoolsmeasurementmodified';
         const modifiedEventData = {
             toolType: toolType,
             element: element,
@@ -39,7 +39,7 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
         $element.trigger(eventType, modifiedEventData);
     };
 
-    $element.on('CornerstoneToolsMouseDrag', mouseDragCallback);
+    element.addEventListener('cornerstonetoolsmousedrag', mouseDragCallback);
 
     const currentImage = cornerstone.getImage(element);
     const imageRenderedHandler = () => {
@@ -52,13 +52,13 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
     };
 
     // Bind the event listener for image rendering
-    $element.on('cornerstoneimagerendered', imageRenderedHandler);
+    element.addEventListener('cornerstoneimagerendered', imageRenderedHandler);
 
     const mouseUpCallback = () => {
-        $element.off('CornerstoneToolsMouseDrag', mouseDragCallback);
-        $element.off('CornerstoneToolsMouseUp', mouseUpCallback);
-        $element.off('CornerstoneToolsMouseClick', mouseUpCallback);
-        $element.off('cornerstoneimagerendered', imageRenderedHandler);
+        element.removeEventListener('cornerstonetoolsmousedrag', mouseDragCallback);
+        element.removeEventListener('cornerstonetoolsmouseup', mouseUpCallback);
+        element.removeEventListener('cornerstonetoolsmouseclick', mouseUpCallback);
+        element.removeEventListener('cornerstoneimagerendered', imageRenderedHandler);
         cornerstone.updateImage(element);
 
         if (typeof doneMovingCallback === 'function') {
@@ -66,6 +66,6 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
         }
     };
 
-    $element.on('CornerstoneToolsMouseUp', mouseUpCallback);
-    $element.on('CornerstoneToolsMouseClick', mouseUpCallback);
+    element.addEventListener('cornerstonetoolsmouseup', mouseUpCallback);
+    element.addEventListener('cornerstonetoolsmouseclick', mouseUpCallback);
 }

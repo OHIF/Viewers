@@ -363,16 +363,19 @@ Template.viewer.helpers({
 });
 
 Template.viewer.events({
-    'CornerstoneToolsMeasurementAdded .imageViewerViewport'(event, instance) {
-        OHIF.measurements.MeasurementHandlers.onAdded(event, instance);
+    'cornerstonetoolsmeasurementadded .imageViewerViewport'(event, instance) {
+        const originalEvent = event.originalEvent;
+        OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
     },
 
-    'CornerstoneToolsMeasurementModified .imageViewerViewport'(event, instance) {
-        instance.measurementModifiedHandler(event, instance);
+    'cornerstonetoolsmeasurementmodified .imageViewerViewport'(event, instance) {
+        const originalEvent = event.originalEvent;
+        instance.measurementModifiedHandler(originalEvent, instance);
     },
 
-    'CornerstoneToolsMeasurementRemoved .imageViewerViewport'(event, instance) {
-        OHIF.measurements.MeasurementHandlers.onRemoved(event, instance);
+    'cornerstonetoolsmeasurementremoved .imageViewerViewport'(event, instance) {
+        const originalEvent = event.originalEvent;
+        OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
     }
 });
 
