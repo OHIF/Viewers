@@ -21,7 +21,7 @@ const unselectAllHandles = handles => {
 // Clear the bidirectional tool's selection for all tool handles
 const clearBidirectionalSelection = event => {
     let imageNeedsUpdate = false;
-    const toolData = cornerstoneTools.getToolState(event.currentTarget, 'bidirectional');
+    const toolData = cornerstoneTools.getToolState(event.target, 'bidirectional');
     if (!toolData) return;
     toolData.data.forEach(data => {
         const unselectResult = unselectAllHandles(data.handles);
@@ -37,13 +37,15 @@ const setHandlesMovingState = (handles, state) => {
     });
 };
 
-// mouseDowCallback is used to restrict behaviour of perpendicular-line
+// mouseDownCallback is used to restrict behaviour of perpendicular-line
 export default function(event) {
     const eventData = event.detail;
     let data;
     const element = eventData.element;
     const $element = $(element);
     const options = cornerstoneTools.getToolOptions(toolType, element);
+
+    if (!cornerstoneTools.isMouseButtonEnabled(eventData.which, options.mouseButtonMask)) return;
 
     // Add an event listener to clear the selected state when a measurement is activated
     const activateEventKey = 'ViewerMeasurementsActivated';
@@ -74,72 +76,71 @@ export default function(event) {
         }
 
         cornerstone.updateImage(element);
-        element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
+        element.addEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
     }
 
-    if (cornerstoneTools.isMouseButtonEnabled(eventData.which, options.mouseButtonMask)) {
-        const coords = eventData.startPoints.canvas;
-        const toolData = cornerstoneTools.getToolState(event.currentTarget, toolType);
+    const coords = eventData.startPoints.canvas;
+    const toolData = cornerstoneTools.getToolState(event.currentTarget, toolType);
 
-        // now check to see if there is a handle we can move
-        if (toolData) {
-            for (let i = 0; i < toolData.data.length; i++) {
-                data = toolData.data[i];
-                const handle = cornerstoneTools.getHandleNearImagePoint(
-                    element,
-                    data.handles,
-                    coords,
-                    distanceThreshold
-                );
+    if (!toolData) return;
 
-                if (handle) {
-                    // Hide the cursor to improve precision while resizing the line or set to move
-                    // if dragging text box
-                    $element.css('cursor', handle.hasBoundingBox ? 'move' : 'none');
+    // now check to see if there is a handle we can move
+    for (let i = 0; i < toolData.data.length; i++) {
+        data = toolData.data[i];
+        const handleParams = [element, data.handles, coords, distanceThreshold];
+        const handle = cornerstoneTools.getHandleNearImagePoint(...handleParams);
 
-                    element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
-                    data.active = true;
+        if (handle) {
+            // Hide the cursor to improve precision while resizing the line or set to move
+            // if dragging text box
+            $element.css('cursor', handle.hasBoundingBox ? 'move' : 'none');
 
-                    unselectAllHandles(data.handles);
-                    handle.moving = true;
-                    moveHandle(eventData, toolType, data, handle, () => handleDoneMove(handle));
-                    event.stopImmediatePropagation();
-                    return false;
-                }
-            }
+            element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
+            data.active = true;
+
+            unselectAllHandles(data.handles);
+            handle.moving = true;
+            moveHandle(eventData, toolType, data, handle, () => handleDoneMove(handle));
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            event.preventDefault();
+
+            return;
         }
+    }
 
-        // Now check to see if there is a line we can move
-        // Now check to see if we have a tool that we can move
-        if (toolData) {
-            const options = {
-                deleteIfHandleOutsideImage: true,
-                preventHandleOutsideImage: false
-            };
+    // Now check to see if there is a line we can move
+    // Now check to see if we have a tool that we can move
+    const opt = {
+        deleteIfHandleOutsideImage: true,
+        preventHandleOutsideImage: false
+    };
 
-            const getDoneMovingCallback = handles => () => {
-                setHandlesMovingState(handles, false);
-                handleDoneMove();
-            };
+    const getDoneMovingCallback = handles => () => {
+        setHandlesMovingState(handles, false);
+        handleDoneMove();
+    };
 
-            for (let i = 0; i < toolData.data.length; i++) {
-                data = toolData.data[i];
-                if (pointNearTool(element, data, coords)) {
-                    // Set the cursor to move
-                    $element.css('cursor', 'move');
+    for (let i = 0; i < toolData.data.length; i++) {
+        data = toolData.data[i];
+        if (pointNearTool(element, data, coords)) {
+            // Set the cursor to move
+            $element.css('cursor', 'move');
 
-                    element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
-                    data.active = true;
+            element.removeEventListener('cornerstonetoolsmousemove', mouseMoveCallback);
+            data.active = true;
 
-                    unselectAllHandles(data.handles);
-                    setHandlesMovingState(data.handles, true);
+            unselectAllHandles(data.handles);
+            setHandlesMovingState(data.handles, true);
 
-                    const doneMovingCallback = getDoneMovingCallback(data.handles);
-                    cornerstoneTools.moveAllHandles(event, data, toolData, toolType, options, doneMovingCallback);
-                    event.stopImmediatePropagation();
-                    return false;
-                }
-            }
+            const doneMovingCallback = getDoneMovingCallback(data.handles);
+            const allHandlesParams = [event, data, toolData, toolType, opt, doneMovingCallback];
+            cornerstoneTools.moveAllHandles(...allHandlesParams);
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            event.preventDefault();
+
+            return;
         }
     }
 }

@@ -8,7 +8,7 @@ export class StackImagePositionOffsetSynchronizer {
     constructor() {
         this.active = false;
         this.syncedViewports = [];
-        this.synchronizer = new cornerstoneTools.Synchronizer('CornerstoneNewImage', cornerstoneTools.stackImagePositionOffsetSynchronizer);
+        this.synchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.stackImagePositionOffsetSynchronizer);
     }
 
     static get ELEMENT_DISABLED_EVENT() {

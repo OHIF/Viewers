@@ -3,7 +3,6 @@ import setHandlesPosition from './setHandlesPosition';
 
 export default function (mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
     const element = mouseEventData.element;
-    const $element = $(element);
     const distanceFromTool = {
         x: handle.x - mouseEventData.currentPoints.image.x,
         y: handle.y - mouseEventData.currentPoints.image.y
@@ -32,11 +31,12 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
 
         const eventType = 'cornerstonetoolsmeasurementmodified';
         const modifiedEventData = {
-            toolType: toolType,
-            element: element,
+            toolType,
+            element,
             measurementData: data
         };
-        $element.trigger(eventType, modifiedEventData);
+
+        cornerstone.triggerEvent(element, eventType, modifiedEventData);
     };
 
     element.addEventListener('cornerstonetoolsmousedrag', mouseDragCallback);

@@ -106,8 +106,9 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
 
             let { longestDiameter, shortestDiameter } = measurement;
             if (measurement.childToolsCount) {
-                longestDiameter = measurement.bidirectional.longestDiameter;
-                shortestDiameter = measurement.bidirectional.shortestDiameter;
+                const child = measurement.bidirectional;
+                longestDiameter = (child && child.longestDiameter) || 0;
+                shortestDiameter = (child && child.shortestDiameter) || 0;
             }
 
             const { sliceThickness } = metadata;

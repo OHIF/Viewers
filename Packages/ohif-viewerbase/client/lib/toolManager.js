@@ -3,6 +3,7 @@ import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
 import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
@@ -344,18 +345,21 @@ export const toolManager = {
         if (button === 'left') {
             newToolIdLeft = toolId;
         }
+
         const newCornerstoneToolLeft = tools[newToolIdLeft]; // left mouse tool is used for touch as well
 
         let newToolIdMiddle = activeTool.middle;
         if (button === 'middle') {
             newToolIdMiddle = toolId;
         }
+
         const newCornerstoneToolMiddle = cornerstoneTools[newToolIdMiddle];
 
         let newToolIdRight = activeTool.right;
         if (button === 'right') {
             newToolIdRight = toolId;
         }
+
         const newCornerstoneToolRight = cornerstoneTools[newToolIdRight];
 
         // Deactivate scroll wheel tools
