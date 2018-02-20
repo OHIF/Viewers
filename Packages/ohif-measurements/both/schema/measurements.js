@@ -255,7 +255,8 @@ const CornerstoneHandleSchema = new SimpleSchema({
     active: {
         type: Boolean,
         label: 'Active',
-        defaultValue: false
+        defaultValue: false,
+        optional: true
     },
     drawnIndependently: {
         type: Boolean,

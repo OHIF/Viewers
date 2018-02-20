@@ -29,10 +29,6 @@ export default function (event) {
     const eventData = event.detail;
     const { element } = eventData;
     cornerstoneTools.toolCoordinates.setCoords(eventData);
-    // if a mouse button is down, do nothing
-    if (eventData.which !== 0) {
-        return;
-    }
 
     // if we have no tool data for this element, do nothing
     const toolData = cornerstoneTools.getToolState(element, toolType);
