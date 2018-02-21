@@ -69,8 +69,11 @@ export class StackImagePositionOffsetSynchronizer {
             this.synchronizer.add(viewport.element);
             this.syncedViewports.push(viewport);
             viewportIndexes.push(viewport.index);
+            if (!this.disabledListener) {
+                this.disabledListener = this.elementDisabledHandler(this);
+            }
 
-            $(viewport.element).on(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.elementDisabledHandler(this));
+            viewport.element.addEventListener(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.disabledListener);
         });
 
         this.active = true;
@@ -97,7 +100,7 @@ export class StackImagePositionOffsetSynchronizer {
         this.syncedViewports.splice(index, 1);
         this.synchronizer.remove(viewport.element);
         this.removeLinkedViewportFromSession(viewport);
-        $(viewport.element).off(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT);
+        viewport.element.removeEventListener(StackImagePositionOffsetSynchronizer.ELEMENT_DISABLED_EVENT, this.disabledListener);
     }
 
     getViewportByElement(viewportElement) {

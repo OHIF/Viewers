@@ -222,7 +222,7 @@ class StackLoadingListener extends BaseLoadingListener {
         /*for(let i = 0; i < imageIds.length; i++) {
             const imageId = imageIds[i];
 
-            const imagePromise = cornerstone.imageCache.getImagePromise(imageId);
+            const imagePromise = cornerstone.imageCache.getImageLoadObject(imageId).promise;
 
             if (imagePromise && (imagePromise.state() === 'resolved')) {
                 this._updateFrameStatus(imageId, true);
