@@ -67,12 +67,22 @@ Template.selectTree.onRendered(() => {
     // Force to hardware acceleration to move element if browser supports translate property
     instance.useTransform = OHIF.ui.styleProperty.check('transform', 'translate(1px, 1px)');
 
+    // Set the margin property and width
+    const isthreeColumns = instance.data.threeColumns;
+    if (!rootInstance.marginProperty) {
+        rootInstance.marginProperty = isthreeColumns ? 'margin-left' : 'margin-right';
+        rootInstance.marginWidth = isthreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
+    }
+
+    // Define a function to set the margin and toggle common section
+    instance.setMargin = isHidden => {
+        const marginWidth = isHidden ? '' : rootInstance.marginWidth;
+        $treeRoot.children('.tree-content').css(rootInstance.marginProperty, marginWidth);
+    };
+
     // Set the margin to display the common section
     if (!$treeRoot.hasClass('started')) {
-        const isthreeColumns = instance.data.threeColumns;
-        const marginProperty = isthreeColumns ? 'margin-left' : 'margin-right';
-        const marginWidth = isthreeColumns ? $treeRoot.width() / 2 : $treeRoot.width();
-        $treeRoot.children('.tree-content').css(marginProperty, marginWidth);
+        instance.setMargin(false);
     }
 
     // Make the component respect the window boundaries
@@ -176,26 +186,21 @@ Template.selectTree.onRendered(() => {
 });
 
 Template.selectTree.events({
-    'click .select-tree-root>.tree-content'(event, instance) {
-        // Get the tree root
-        const $treeRoot = $(event.currentTarget).closest('.select-tree-root');
-
-        // Detect the first interaction with the component and do the animation
-        $treeRoot.addClass('interacted');
-
-        // Remove the margin after the common section is closed
-        $treeRoot.children('.tree-content').css('margin-right', '');
-    },
-
     'input .tree-search input'(event, instance) {
+        const $target = $(event.currentTarget);
         // Get the tree root
-        const $treeRoot = $(event.currentTarget).closest('.select-tree-root');
+        const $treeRoot = $target.closest('.select-tree-root');
+
+        // Get the search term
+        const searchTerm = $target.val();
 
         // Change the search term to update the tree items
-        instance.searchTerm.set($(event.currentTarget).val());
+        instance.searchTerm.set(searchTerm);
 
         // Change the component state
-        $treeRoot.addClass('interacted');
+        const method = searchTerm ? 'addClass' : 'removeClass';
+        $treeRoot[method]('navigated');
+        instance.setMargin(!!searchTerm);
     },
 
     'keydown .tree-search input'(event, instance) {
@@ -213,6 +218,7 @@ Template.selectTree.events({
     'change .select-tree:first>.tree-content>.tree-options>.tree-inputs>label>input'(event, instance) {
         const component = instance.component;
         const $target = $(event.currentTarget);
+        const $treeRoot = $target.closest('.select-tree-root');
         const $label = $target.closest('label');
         const eventComponent = $target.data('component');
         const rootComponent = instance.data.root || component;
@@ -227,6 +233,10 @@ Template.selectTree.events({
 
         // Unset the selected state
         instance.setSelected(false);
+
+        // Detect the first interaction with the component and do the animation
+        instance.setMargin(true);
+        $treeRoot.addClass('navigated');
 
         // Check if the clicked element is a node or a leaf
         const isLeaf = $label.hasClass('tree-leaf');
@@ -296,7 +306,6 @@ Template.selectTree.events({
                 setTimeout(() => $treeNode.css('top', 0));
 
                 const optionsTop = $target.closest('.tree-options').position().top;
-                const $treeRoot = $target.closest('.select-tree-root');
                 const treeOffsetTop = $treeRoot.offset().top;
                 const treeRootPosition = getPosition($treeRoot);
                 treeRootPosition.y += offsetTop - treeOffsetTop - optionsTop;
@@ -306,6 +315,7 @@ Template.selectTree.events({
     },
 
     'click .select-tree:first>.tree-content>.tree-options>.tree-breadcrumb .tree-back'(event, instance) {
+        const $target = $(event.currentTarget);
         const rootComponent = instance.data.root || instance.component;
         const rootInstance = rootComponent.templateInstance;
 
@@ -317,9 +327,11 @@ Template.selectTree.events({
 
         // Unset the selected state
         instance.setSelected(false);
+        instance.setMargin(false);
+        $target.closest('.select-tree-root').removeClass('navigated');
 
         // Get the index of the breadcrumb's clicked option
-        const index = parseInt($(event.currentTarget).attr('data-index'));
+        const index = parseInt($target.attr('data-index'));
 
         // Set the current instance
         let currentInstance = instance.component.parent.templateInstance;
