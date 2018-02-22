@@ -9,7 +9,8 @@ Template.thumbnailEntry.onCreated(() => {
     const instance = Template.instance();
 
     // Check if the thumbnails will be draggable or clickable
-    instance.isDragAndDrop = _.isUndefined(instance.data.viewportIndex);
+    const isIndexUndefined = _.isUndefined(instance.data.viewportIndex);
+    instance.isDragAndDrop = isIndexUndefined && OHIF.uiSettings.leftSidebarDragAndDrop !== false;
 });
 
 Template.thumbnailEntry.events({
@@ -44,8 +45,14 @@ Template.thumbnailEntry.events({
         // Get the thumbnail stack data
         const data = instance.data.thumbnail.stack;
 
+        // Get the viewport index
+        let { viewportIndex } = instance.data;
+        if (_.isUndefined(viewportIndex)) {
+            viewportIndex = Session.get('activeViewport') || 0;
+        }
+
         // Rerender the viewport using the clicked thumbnail data
-        OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(instance.data.viewportIndex, data);
+        OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, data);
     },
 
     // Event handlers for double click

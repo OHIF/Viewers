@@ -142,6 +142,11 @@ export const UISettings = new SimpleSchema({
         label: 'Left sidebar open by default?',
         defaultValue: false
     },
+    leftSidebarDragAndDrop: {
+        type: Boolean,
+        label: 'Left sidebar allows thumbnail drag and drop. If false, images will be loaded on single click.',
+        defaultValue: true
+    },
     displaySetNavigationLoopOverSeries: {
         type: Boolean,
         label: 'The UP/DOWN display set navigation buttons will start over when reach the last display set in viewport?',
