@@ -37,6 +37,14 @@ OHIF.measurements.getImageDataUrl = ({
             // Add the measurement state and enable the tool if a measurement was given
             if (measurement) {
                 const state = Object.assign({}, measurement, { active: true });
+                Object.keys(measurement.handles).forEach(handleKey => {
+                    const handle = Object.assign({}, state.handles[handleKey]);
+                    handle.selected = false;
+                    handle.active = false;
+                    handle.moving = false;
+                    state.handles[handleKey] = handle;
+                });
+
                 cornerstoneTools.addToolState(element, measurement.toolType, state);
                 cornerstoneTools[measurement.toolType].enable(element);
             }
