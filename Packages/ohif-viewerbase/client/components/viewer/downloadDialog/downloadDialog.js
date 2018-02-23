@@ -80,24 +80,27 @@ Template.imageDownloadDialog.onRendered(() => {
 
     instance.updateViewportPreview = () => {
         instance.$viewportElement.one('CornerstoneImageRendered', (event, enabledElement) => {
-            const formData = instance.form.value();
-            const image = instance.viewportPreview;
-            const type = 'image/' + formData.type;
-            const quality = formData.type === 'png' ? 1 : formData.quality / 100;
-            const dataUrl = instance.downloadCanvas.toDataURL(type, quality);
-            image.src = dataUrl;
+            // Wait for the tools to handle CornerstoneImageRendered event
+            Tracker.afterFlush(() => {
+                const formData = instance.form.value();
+                const image = instance.viewportPreview;
+                const type = 'image/' + formData.type;
+                const quality = formData.type === 'png' ? 1 : formData.quality / 100;
+                const dataUrl = instance.downloadCanvas.toDataURL(type, quality);
+                image.src = dataUrl;
 
-            const $element = $(enabledElement.element);
-            let width = $element.width();
-            let height = $element.height();
-            if (width > 512 || height > 512) {
-                const multiplier = 512 / Math.max(width, height);
-                height *= multiplier;
-                width *= multiplier;
-            }
+                const $element = $(enabledElement.element);
+                let width = $element.width();
+                let height = $element.height();
+                if (width > 512 || height > 512) {
+                    const multiplier = 512 / Math.max(width, height);
+                    height *= multiplier;
+                    width *= multiplier;
+                }
 
-            image.width = width;
-            image.height = height;
+                image.width = width;
+                image.height = height;
+            });
         });
     };
 
