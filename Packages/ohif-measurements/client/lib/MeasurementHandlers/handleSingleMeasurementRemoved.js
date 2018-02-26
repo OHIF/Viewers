@@ -33,5 +33,7 @@ export default function({ instance, eventData, tool, toolGroupId, toolGroup }) {
     _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
 
     // Notify that viewer suffered changes
-    OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolType);
+    if (tool.toolGroup !== 'temp') {
+        OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolType);
+    }
 }
