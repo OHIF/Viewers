@@ -1,25 +1,27 @@
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.hotkeysForm.onCreated(() => {
     const instance = Template.instance();
+    const { contextName } = instance.data;
 
     instance.api = {
         save() {
-            const { contextName } = instance.data;
             const form = instance.$('form').first().data('component');
             const definitions = form.value();
             const promise = OHIF.hotkeys.store(contextName, definitions);
-            promise.then(() => OHIF.ui.notifications.success({
-                text: 'The keyboard shortcut preferences were successfully saved.'
-            }));
+            promise.then(() => {
+                const successMessage = 'The keyboard shortcut preferences were successfully saved.';
+                OHIF.ui.notifications.success({ text: successMessage });
+                OHIF.hotkeys.load(contextName).then(defs => instance.hotkeysDefinitions.set(defs));
+            });
             return promise;
         },
 
         resetDefaults() {
-            const { contextName } = instance.data;
             const dialogOptions = {
                 class: 'themed',
                 title: 'Reset Keyboard Shortcuts',
@@ -93,9 +95,13 @@ Template.hotkeysForm.onCreated(() => {
         '': [],
         ALT: ['SPACE'],
         SHIFT: [],
-        CTRL: ['F4', 'F5', 'F11', 'W', 'R', 'T', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'PAGEDOWN', 'PAGEUP'],
+        CTRL: ['F4', 'F5', 'F11', 'W', 'R', 'T', 'O', 'P', 'A', 'D', 'F', 'G', 'H', 'J', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'PAGEDOWN', 'PAGEUP'],
         'CTRL+SHIFT': ['Q', 'W', 'R', 'T', 'P', 'A', 'H', 'V', 'B', 'N']
     };
+
+    const hotkeysContext = OHIF.hotkeys.getContext(contextName) || {};
+    instance.hotkeysDefinitions = new ReactiveVar(hotkeysContext.definitions);
+    OHIF.hotkeys.load(contextName).then(defs => instance.hotkeysDefinitions.set(defs));
 });
 
 Template.hotkeysForm.events({
@@ -201,11 +207,10 @@ Template.hotkeysForm.helpers({
         const instance = Template.instance();
         const { contextName } = instance.data;
 
-        const hotkeysContext = OHIF.hotkeys.getContext(contextName);
+        const hotkeyDefinitions = instance.hotkeysDefinitions.get();
         const commandsContext = OHIF.commands.getContext(contextName);
-        if (!hotkeysContext || !commandsContext) return {};
+        if (!hotkeyDefinitions || !commandsContext) return {};
 
-        const hotkeyDefinitions = hotkeysContext.definitions;
         const commands = Object.keys(OHIF.hotkeys.defaults[contextName] || {});
         const list = [];
         commands.forEach(commandName => {

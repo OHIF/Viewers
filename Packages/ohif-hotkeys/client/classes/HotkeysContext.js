@@ -34,6 +34,7 @@ export class HotkeysContext {
         const bind = hotkey => $(document).bind(bindingKey, hotkey, event => {
             if (!this.enabled.get()) return;
             OHIF.commands.run(command);
+            event.preventDefault();
         });
 
         if (hotkey instanceof Array) {
