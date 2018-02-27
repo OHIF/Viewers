@@ -5,6 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { viewportUtils } from '../../../lib/viewportUtils';
 import { switchToImageRelative } from '../../../lib/switchToImageRelative';
 import { switchToImageByIndex } from '../../../lib/switchToImageByIndex';
@@ -163,6 +164,7 @@ Template.cineDialog.onCreated(() => {
         const $viewer = $('#viewer');
         const $toolbarElement = $('.toolbarSection .toolbarSectionTools:first');
         const $cineDialog = $('#cineDialog');
+        $cineDialog.width($('#cineDialogForm').outerWidth());
 
         if ($toolbarElement.length < 1 || $cineDialog.length < 1) {
             return;
@@ -240,7 +242,7 @@ Template.cineDialog.onRendered(() => {
     $dialog.draggable({ defaultElementCursor: 'move' }).bounded();
 
     // Polyfill for older browsers
-    dialogPolyfill.registerDialog($dialog.get(0));
+    window.dialogPolyfill.registerDialog($dialog.get(0));
 
     // Prevent dialog from being dragged when user clicks any button
     const $controls = $dialog.find('.cine-navigation, .cine-controls, .cine-options');
@@ -268,6 +270,10 @@ Template.cineDialog.events({
         // Update the FPS text onscreen
         const rate = parseFloat($(event.currentTarget).val());
         instance.updateFramerate(rate);
+    },
+
+    'click .button-close'(event, instance) {
+        OHIF.commands.run('toggleCineDialog');
     }
 });
 

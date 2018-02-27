@@ -112,19 +112,6 @@ body .select2-container--default .select2-results>.select2-results__options
     .modal-header, .modal-footer
       theme('border-color', '$uiBorderColor')
 
-  button.close
-    theme('color', '$textSecondaryColor')
-    opacity: 1
-    overflow: hidden
-    text-align: center
-    text-shadow: none
-    transition(color 0.3s ease)
-    width: 20px
-
-    span
-      display: block
-      line-height: 20px
-
     &:hover
       theme('color', '$textPrimaryColor')
 
@@ -132,6 +119,66 @@ body .select2-container--default .select2-results>.select2-results__options
     theme('background-color', '$uiGrayDark')
     border-radius(5px)
     padding: 10px
+
+  .modal-header
+    position: relative
+
+  button.close
+    position: absolute
+    right: 21px
+    top: 50%
+    transform(translateY(-50%))
+    transition(color 0.3s ease)
+
+.button-close, .modal-dialog button.close
+  theme('color', '$textSecondaryColor')
+  height: 20px
+  opacity: 1
+  overflow: hidden
+  padding: 2px
+  text-align: center
+  text-shadow: none
+  width: 20px
+
+  &:hover span
+    &:before, &:after
+      theme('background-color', '$textPrimaryColor')
+
+  &:active span
+    &:before, &:after
+      theme('background-color', '$activeColor')
+
+  span
+    color: transparent
+    display: block
+    font-size: 0
+    height: 100%
+    line-height: 0
+    overflow: hidden
+    position: relative
+    width: 100%
+
+    &:before, &:after
+      theme('background-color', '$textSecondaryColor')
+      content: ' '
+      display: block
+      height: 2px
+      transition(background-color 0.3s ease)
+      width: 19px
+
+    &:before
+      left: 1px
+      position: absolute
+      top: 1px
+      transform(rotate(45deg))
+      transform-origin(1px 50%)
+
+    &:after
+      right: 1px
+      position: absolute
+      top: 1px
+      transform(rotate(-45deg))
+      transform-origin(calc(100% - 1px) 50%)
 
 .full-width
   width: 100%

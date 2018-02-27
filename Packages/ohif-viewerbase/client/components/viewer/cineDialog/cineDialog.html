@@ -2,15 +2,8 @@
     <dialog id="cineDialog">
         {{#form id='cineDialogForm' class=(getClassNames 'dialog-animated noselect') schema=instance.schema api=instance.api}}
             {{>inputHidden key='intervalId'}}
-            <div class="cine-navigation">
-                <div class="btn-group">
-                    {{#button class='btn' disabled=(displaySetDisabled false) action='displaySetPrevious' title='Previous display set'}}
-                        <i class="fa fa-toggle-up"></i>
-                    {{/button}}
-                    {{#button class='btn' disabled=(displaySetDisabled true) action='displaySetNext' title='Next display set'}}
-                        <i class="fa fa-toggle-down"></i>
-                    {{/button}}
-                </div>
+            <div class="button-close-container">
+                <div class="button-close"><span aria-hidden="true">x</span></div>
             </div>
             <div class="cine-controls">
                 <div class="btn-group">
@@ -41,6 +34,16 @@
                     {{/inputRange}}
                 </div>
                 <span id="fps">{{framerate}} fps</span>
+            </div>
+            <div class="cine-navigation">
+                <div class="btn-group">
+                    {{#button class='btn' disabled=(displaySetDisabled false) action='displaySetPrevious' title='Previous display set'}}
+                        <i class="fa fa-toggle-up"></i>
+                    {{/button}}
+                    {{#button class='btn' disabled=(displaySetDisabled true) action='displaySetNext' title='Next display set'}}
+                        <i class="fa fa-toggle-down"></i>
+                    {{/button}}
+                </div>
             </div>
         {{/form}}
     </dialog>
