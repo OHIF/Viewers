@@ -111,7 +111,7 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
     }
 
     _getImageLoadProgressEventName() {
-        return 'CornerstoneImageLoadProgress.' + this.id;
+        return 'cornerstoneimageloadprogress.' + this.id;
     }
 
     startListening() {
@@ -120,12 +120,12 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
 
         this.stopListening();
 
-        $(cornerstone.events).on(imageLoadProgressEventName, imageLoadProgressEventHandle);
+        cornerstone.events.addEventListener(imageLoadProgressEventName, imageLoadProgressEventHandle);
     }
 
     stopListening() {
         const imageLoadProgressEventName = this._getImageLoadProgressEventName();
-        $(cornerstone.events).off(imageLoadProgressEventName);
+        cornerstone.events.removeEventListener(imageLoadProgressEventName);
     }
 
     _imageLoadProgressEventHandle(e) {
@@ -231,7 +231,7 @@ class StackLoadingListener extends BaseLoadingListener {
     }
 
     _getImageLoadedEventName() {
-        return 'CornerstoneImageLoaded.' + this.id;
+        return 'cornerstoneimageloaded.' + this.id;
     }
 
     _getImageCachePromiseRemoveEventName() {
@@ -246,16 +246,16 @@ class StackLoadingListener extends BaseLoadingListener {
 
         this.stopListening();
 
-        $(cornerstone.events).on(imageLoadedEventName, imageLoadedEventHandle);
-        $(cornerstone.events).on(imageCachePromiseRemovedEventName, imageCachePromiseRemovedEventHandle);
+        cornerstone.events.addEventListener(imageLoadedEventName, imageLoadedEventHandle);
+        cornerstone.events.addEventListener(imageCachePromiseRemovedEventName, imageCachePromiseRemovedEventHandle);
     }
 
     stopListening() {
         const imageLoadedEventName = this._getImageLoadedEventName();
         const imageCachePromiseRemovedEventName = this._getImageCachePromiseRemoveEventName();
 
-        $(cornerstone.events).off(imageLoadedEventName);
-        $(cornerstone.events).off(imageCachePromiseRemovedEventName);
+        cornerstone.events.removeEventListener(imageLoadedEventName);
+        cornerstone.events.removeEventListener(imageCachePromiseRemovedEventName);
     }
 
     _updateFrameStatus(imageId, loaded) {
