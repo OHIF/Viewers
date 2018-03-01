@@ -10,5 +10,13 @@ Template.dropdownFormMenu.helpers({
         }
 
         return isVisible;
+    },
+
+    getText(item) {
+        if (typeof item.text === 'function') {
+            return item.text(item.params || {});
+        }
+
+        return item.text || '';
     }
 });

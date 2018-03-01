@@ -24,9 +24,11 @@
                                     <use xlink:href={{absoluteUrl item.iconSvgUse}}></use>
                                 </svg>
                             {{/if}}
-                            {{#if item.text}}
-                                <span>{{item.text}}</span>
-                            {{/if}}
+                            {{#let text=(getText item)}}
+                                {{#if text}}
+                                    <span>{{text}}</span>
+                                {{/if}}
+                            {{/let}}
                         {{/link}}
                     </li>
                     {{#if item.separatorAfter}}
