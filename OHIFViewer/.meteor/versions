@@ -78,6 +78,7 @@ observe-sequence@1.0.16
 ohif:commands@0.0.1
 ohif:core@0.0.1
 ohif:cornerstone@0.0.1
+ohif:cornerstone-settings@0.0.1
 ohif:design@0.0.1
 ohif:dicom-services@0.0.1
 ohif:hanging-protocols@0.0.1
