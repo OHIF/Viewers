@@ -33,8 +33,7 @@ const getTypeText = function(toolData, actionType) {
     return `${actionType} ${message}`;
 };
 
-const createDropdown = function(event, isTouchEvent = false) {
-    const eventData = event.detail;
+const createDropdown = function(eventData, isTouchEvent = false) {
     const nearbyToolData = toolManager.getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
 
     // Annotate tools for touch events already have a press handle to edit it, has a better UX for deleting it
@@ -57,13 +56,17 @@ const createDropdown = function(event, isTouchEvent = false) {
 };
 
 Template.viewerMain.events({
-    'cornerstonetoolsmouseclick .imageViewerViewport'(event, instance) {
-        if (event.which === 3) {
-            createDropdown(event);
+    'cornerstonetoolsmouseclick .imageViewerViewport'(event) {
+        const { originalEvent } = event;
+        const eventData = originalEvent.detail;
+        if (eventData.which === 3) {
+            createDropdown(eventData);
         }
     },
 
-    'cornerstonetoolstouchpress .imageViewerViewport'(event, instance) {
-        createDropdown(event, true);
+    'cornerstonetoolstouchpress .imageViewerViewport'(event) {
+        const { originalEvent } = event;
+        const eventData = originalEvent.detail;
+        createDropdown(eventData, true);
     }
 });
