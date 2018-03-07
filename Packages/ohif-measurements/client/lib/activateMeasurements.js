@@ -14,7 +14,8 @@ function activateTool(measurementData) {
     const imageId = OHIF.viewerbase.getImageIdForImagePath(measurementData.imagePath);
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
-    const toolData = toolState[imageId][toolType];
+    const imageToolState = toolState[imageId];
+    const toolData = imageToolState && imageToolState[toolType];
     if (!toolData || !toolData.data || !toolData.data.length) {
         return;
     }

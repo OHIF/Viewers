@@ -29,5 +29,6 @@ OHIF.ui.handleError = error => {
         cancelClass: 'btn-secondary'
     }, error || {});
 
-    OHIF.ui.showDialog('dialogForm', data);
+    // TODO: Find a better way to handle errors instead of displaying a dialog for all of them.
+    // OHIF.ui.showDialog('dialogForm', data);
 };

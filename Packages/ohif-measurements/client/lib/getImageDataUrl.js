@@ -2,8 +2,6 @@ import { OHIF } from 'meteor/ohif:core';
 import { $ } from 'meteor/jquery';
 import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
-window.resolve = [];
-
 OHIF.measurements.getImageDataUrl = ({
     imageType='image/jpeg',
     quality=1,
@@ -24,7 +22,6 @@ OHIF.measurements.getImageDataUrl = ({
     }
 
     return new Promise((resolve, reject) => {
-        window.resolve.push(resolve);
         const loadMethod = cacheImage ? 'loadAndCacheImage' : 'loadImage';
         cornerstone[loadMethod](imageId).then(image => {
             // Create a cornerstone enabled element to handle the image

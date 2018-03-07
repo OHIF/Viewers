@@ -2,12 +2,12 @@ import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone } from 'meteor/ohif:cornerstone';
 
 Template.dialogNonTargetMeasurement.onCreated(() => {
     const instance = Template.instance();
 
     instance.measurementTypeId = 'nonTarget';
-    const timepointApi = instance.data.timepointApi;
 
     const config = OHIF.measurements.MeasurementApi.getConfiguration();
     instance.schema = new SimpleSchema({

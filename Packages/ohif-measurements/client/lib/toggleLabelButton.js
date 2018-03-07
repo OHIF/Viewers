@@ -60,7 +60,7 @@ OHIF.measurements.toggleLabelButton = options => {
             options.measurement.description = description;
 
             // Notify that viewer suffered changes
-            OHIF.measurements.triggerTimepointUnsavedChanges('renamed');
+            OHIF.measurements.triggerTimepointUnsavedChanges('relabel');
         }
     };
     buttonView = Blaze.renderWithData(Template.measureFlow, data, document.body);

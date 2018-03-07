@@ -83,8 +83,11 @@ class MeasurementApi {
 
                     measurement.measurementNumber = measurementNumber;
 
-                    // Get the current location (if already defined)
-                    let location;
+                    // Get the current location/description (if already defined)
+                    const updateObject = {
+                        timepointId: timepoint.timepointId,
+                        measurementNumber
+                    };
                     const baselineTimepoint = timepointApi.baseline();
                     const baselineGroupEntry = groupCollection.findOne({
                         timepointId: baselineTimepoint.timepointId
@@ -93,18 +96,15 @@ class MeasurementApi {
                         const tool = this.tools[baselineGroupEntry.toolId];
                         const found = tool.findOne({ measurementNumber });
                         if (found) {
-                            location = found.location;
+                            updateObject.location = found.location;
+                            if (found.description) {
+                                updateObject.description = found.description;
+                            }
                         }
                     }
 
-                    // Set the timepoint ID, measurement number and location
-                    collection.update(measurement._id, {
-                        $set: {
-                            timepointId: timepoint.timepointId,
-                            measurementNumber,
-                            location
-                        }
-                    });
+                    // Set the timepoint ID, measurement number, location and description
+                    collection.update(measurement._id, { $set: updateObject });
 
                     if (!emptyItem) {
                         // Reflect the entry in the tool group collection
@@ -122,7 +122,7 @@ class MeasurementApi {
                     this.changeObserver.changed();
                 };
 
-                const changedHandler = () => {
+                const changedHandler = measurement => {
                     this.changeObserver.changed();
                 };
 

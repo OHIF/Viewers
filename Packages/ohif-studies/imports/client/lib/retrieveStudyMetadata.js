@@ -88,6 +88,7 @@ OHIF.studies.retrieveStudyMetadata = (studyInstanceUid, seriesInstanceUids) => {
             study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
             study.displaySets.forEach(displaySet => {
                 OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
+                studyMetadata.addDisplaySet(displaySet);
             });
 
             // Resolve the promise with the final study metadata object

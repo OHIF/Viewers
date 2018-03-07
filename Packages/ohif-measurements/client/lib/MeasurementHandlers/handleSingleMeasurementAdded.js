@@ -36,6 +36,11 @@ export default function ({ instance, eventData, tool }) {
         measurement.location = relatedTimepoint.location;
     }
 
+    // Use the related timepoint description if found and defined
+    if (relatedTimepoint && relatedTimepoint.description) {
+        measurement.description = relatedTimepoint.description;
+    }
+
     // Clean the measurement according to the Schema
     Collection._c2._simpleSchema.clean(measurement);
 
