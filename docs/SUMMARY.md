@@ -27,6 +27,7 @@
   - [Security](deployment/security.md)
 - I Want To...
   - [Add a Tool to the Viewer](I-want-to/add-a-tool-to-the-viewer.md)
+  - [Add Logo to the Viewer](I-want-to/add-logo-to-the-viewer.md)
 ----
 
 - Example Applications
