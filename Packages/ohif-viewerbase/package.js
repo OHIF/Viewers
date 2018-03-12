@@ -214,11 +214,13 @@ Package.onTest(function (api) {
 
     api.use([
         'ecmascript',
-        'templating',
         'stylus@2.513.14',
+        'templating',
         'reactive-var',
         'session',
         'u2622:persistent-session',
+        'aldeed:simple-schema@1.5.3',
+        'ohif:viewerbase',
         'practicalmeteor:mocha',
         'practicalmeteor:mocha-console-runner',
         'practicalmeteor:sinon',

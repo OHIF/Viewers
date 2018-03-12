@@ -4,6 +4,9 @@
 # Runs the packages tests
 ##################################################
 
+TEST_PACKAGES=./Packages/*
+export METEOR_PACKAGE_DIRS="./Packages"
+
 # check execution arguments
 while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
@@ -26,7 +29,7 @@ if [ "$RUN_COVERAGE" == 1 ];
 then
     # Setting coverage variables
     app_folder=$(pwd)
-    app_folder+="/Packages/ohif-viewerbase/"
+    app_folder+=TEST_PACKAGES
     export COVERAGE_APP_FOLDER=$app_folder
     export COVERAGE=1
     echo 'Running meteor-coverage'
@@ -34,7 +37,7 @@ fi
 
 if [ "$RUN_SPACEJAM" == 1 ];
 then
-    spacejam-mocha ./Packages/ohif-viewerbase/ 
+    spacejam-mocha $TEST_PACKAGES
 else
-    meteor test-packages --driver-package='practicalmeteor:mocha' ./Packages/ohif-viewerbase/
+    meteor test-packages --driver-package='practicalmeteor:mocha' $TEST_PACKAGES
 fi
