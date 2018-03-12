@@ -206,3 +206,31 @@ Package.onUse(function(api) {
     api.mainModule('main.js', 'client');
 
 });
+
+Package.onTest(function (api) {
+    const both = ['client', 'server'];
+
+    api.versionsFrom('1.4');
+
+    api.use([
+        'ecmascript',
+        'templating',
+        'stylus@2.513.14',
+        'reactive-var',
+        'session',
+        'u2622:persistent-session',
+        'practicalmeteor:mocha',
+        'practicalmeteor:mocha-console-runner',
+        'practicalmeteor:sinon',
+        'practicalmeteor:chai',
+        'lmieulet:meteor-coverage@1.1.4',
+        'momentjs:moment'
+    ]);
+
+    api.addFiles('./tests/client/templatemock.js', 'client');
+    api.addFiles('./tests/client/components/viewer/gridLayout/gridLayout.tests.js', 'client');
+
+    if (process.env.COVERAGE && process.env.RUN_SPACEJAM) {
+        api.addFiles('./tests/coverage/exportCoverageReport.js', 'server');
+    }
+});
