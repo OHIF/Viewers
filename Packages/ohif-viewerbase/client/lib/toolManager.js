@@ -26,10 +26,12 @@ let gestures = {
         enabled: true
     },
     panMultiTouch: {
-        enabled: true
+        enabled: true,
+        numPointers: 2
     },
     stackScrollMultiTouch: {
-        enabled: true
+        enabled: true,
+        numPointers: 3
     },
     doubleTapZoom: {
         enabled: true
@@ -81,11 +83,13 @@ export const toolManager = {
         });
         toolManager.addTool('pan', {
             mouse: cornerstoneTools.pan,
-            touch: cornerstoneTools.panTouchDrag
+            touch: cornerstoneTools.panTouchDrag,
+            multiTouch: cornerstoneTools.panMultiTouch
         });
         toolManager.addTool('stackScroll', {
             mouse: cornerstoneTools.stackScroll,
-            touch: cornerstoneTools.stackScrollTouchDrag
+            touch: cornerstoneTools.stackScrollTouchDrag,
+            multiTouch: cornerstoneTools.stackScrollMultiTouch
         });
         toolManager.addTool('length', {
             mouse: cornerstoneTools.length,
@@ -150,17 +154,9 @@ export const toolManager = {
 
     configureTools() {
         // Get Cornerstone Tools
-        const { panMultiTouch, textStyle, toolStyle, toolColors,
-                length, arrowAnnotate, zoom, ellipticalRoi,
-                textMarker, magnify } = cornerstoneTools;
-
-        // Set the configuration for the multitouch pan tool
-        const multiTouchPanConfig = {
-            testPointers: eventData => {
-                return (eventData.numPointers >= 3);
-            }
-        };
-        panMultiTouch.setConfiguration(multiTouchPanConfig);
+        const { textStyle, toolStyle, toolColors,
+            length, arrowAnnotate, zoom, ellipticalRoi,
+            textMarker, magnify } = cornerstoneTools;
 
         // Set text box background color
         textStyle.setBackgroundColor('transparent');
@@ -197,9 +193,9 @@ export const toolManager = {
         const $ascending = $('#ascending');
         const textMarkerConfig = {
             markers: [ 'L5', 'L4', 'L3', 'L2', 'L1', // Lumbar spine
-                         'T12', 'T11', 'T10', 'T9', 'T8', 'T7', // Thoracic spine
-                         'T6', 'T5', 'T4', 'T3', 'T2', 'T1',
-                         'C7', 'C6', 'C5', 'C4', 'C3', 'C2', 'C1', // Cervical spine
+                'T12', 'T11', 'T10', 'T9', 'T8', 'T7', // Thoracic spine
+                'T6', 'T5', 'T4', 'T3', 'T2', 'T1',
+                'C7', 'C6', 'C5', 'C4', 'C3', 'C2', 'C1', // Cervical spine
             ],
             current: $startFrom.val(),
             ascending: $ascending.is(':checked'),
@@ -232,6 +228,33 @@ export const toolManager = {
             magnificationLevel: 3
         };
         magnify.setConfiguration(magnifyConfig);
+
+        if (Meteor.settings && Meteor.settings.public && Meteor.settings.public.defaultGestures) {
+            gestures.zoomTouchPinch = Meteor.settings.public.defaultGestures.zoomTouchPinch || gestures.zoomTouchPinch;
+            gestures.stackScrollMultiTouch = Meteor.settings.public.defaultGestures.stackScrollMultiTouch || gestures.stackScrollMultiTouch;
+            gestures.panMultiTouch = Meteor.settings.public.defaultGestures.panMultiTouch || gestures.panMultiTouch;
+            gestures.doubleTapZoom = Meteor.settings.public.defaultGestures.doubleTapZoom || gestures.doubleTapZoom;
+        }
+
+        //  Set number of fingers to stack scroll
+        if (gestures.stackScrollMultiTouch.enabled === true && gestures.stackScrollMultiTouch.numPointers) {
+            const stackScrollMultiTouchConfig = {
+                testPointers(eventData) {
+                    return (eventData.numPointers === gestures.stackScrollMultiTouch.numPointers);
+                }
+            };
+            cornerstoneTools.stackScrollMultiTouch.setConfiguration(stackScrollMultiTouchConfig);
+        }
+
+        //  Set number of fingers to pan
+        if (gestures.panMultiTouch.enabled === true && gestures.panMultiTouch.numPointers) {
+            const panMultiTouchConfig = {
+                testPointers(eventData) {
+                    return (eventData.numPointers === gestures.panMultiTouch.numPointers);
+                }
+            };
+            cornerstoneTools.panMultiTouch.setConfiguration(panMultiTouchConfig);
+        }
     },
     /**
      * This function searches an object to return the keys that contain a specific value
@@ -310,6 +333,10 @@ export const toolManager = {
             tools[activeTool.left].touch.deactivate(element);
         }
 
+        if (tools[activeTool.right].multiTouch) {
+            tools[activeTool.right].multiTouch.disable(element);
+        }
+
         // Enable tools based on their default states
         Object.keys(toolDefaultStates).forEach(action => {
             const relevantTools = toolDefaultStates[action];
@@ -327,7 +354,14 @@ export const toolManager = {
                     element,
                     (action === 'activate' || action === 'deactivate' ? 1 : void 0)
                 );
-                tools[toolType].touch[action](element);
+
+                if (tools[toolType].touch) {
+                    tools[toolType].touch[action](element);
+                }
+
+                if (tools[toolType].multiTouch) {
+                    tools[toolType].multiTouch[action](element);
+                }
             });
         });
 
@@ -360,7 +394,7 @@ export const toolManager = {
             newToolIdRight = toolId;
         }
 
-        const newCornerstoneToolRight = cornerstoneTools[newToolIdRight];
+        const newCornerstoneToolRight = tools[newToolIdRight]; // right mouse tool is used for multi-touch as well
 
         // Deactivate scroll wheel tools
         cornerstoneTools.zoomWheel.deactivate(element);
@@ -371,32 +405,34 @@ export const toolManager = {
         cornerstoneTools.doubleTapZoom.disable(element);
 
         // Reactivate the relevant scrollwheel tool for this element
-        let multiTouchPanConfig;
         if (imageIds.length > 1) {
             // scroll is the default tool for middle mouse wheel for stacks
             cornerstoneTools.stackScrollWheel.activate(element);
 
-            if (gestures.stackScrollMultiTouch.enabled === true) {
-                cornerstoneTools.stackScrollMultiTouch.activate(element); // Three finger scroll
+            // 3 or more finger stack scroll
+            if (gestures.stackScrollMultiTouch.enabled === true && gestures.stackScrollMultiTouch.numPointers >= 3) {
+                const stackScrollMultiTouchConfig = {
+                    testPointers(eventData) {
+                        return (eventData.numPointers === gestures.stackScrollMultiTouch.numPointers);
+                    }
+                };
+                cornerstoneTools.stackScrollMultiTouch.setConfiguration(stackScrollMultiTouchConfig);
+                cornerstoneTools.stackScrollMultiTouch.activate(element);
             }
-
-            multiTouchPanConfig = {
-                testPointers(eventData) {
-                    return (eventData.numPointers === 2);
-                }
-            };
-
-            cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
         } else {
             // zoom is the default tool for middle mouse wheel for single images (non stacks)
             cornerstoneTools.zoomWheel.activate(element);
+        }
 
-            multiTouchPanConfig = {
+        // 3 or more finger pan
+        if (gestures.panMultiTouch.enabled === true && gestures.panMultiTouch.numPointers >= 3) {
+            const panMultiTouchConfig = {
                 testPointers(eventData) {
-                    return (eventData.numPointers >= 2);
+                    return (eventData.numPointers === gestures.panMultiTouch.numPointers);
                 }
             };
-            cornerstoneTools.panMultiTouch.setConfiguration(multiTouchPanConfig);
+            cornerstoneTools.panMultiTouch.setConfiguration(panMultiTouchConfig);
+            cornerstoneTools.panMultiTouch.activate(element);
         }
 
         // TODO: Remove this messy approach for adding synchronizer when necessary.
@@ -409,60 +445,75 @@ export const toolManager = {
             }
 
             if (newToolIdLeft === newToolIdMiddle && newToolIdMiddle === newToolIdRight) {
-                newCornerstoneToolRight.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
+                newCornerstoneToolRight.mouse.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
             } else if (newToolIdLeft === newToolIdMiddle) {
                 newCornerstoneToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
-                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+                newCornerstoneToolRight.mouse.activate(element, 4); // 4 means right mouse button
             } else if (newToolIdMiddle === newToolIdRight) {
-                newCornerstoneToolRight.activate(element, 6); // 6 means right mouse button and middle mouse button
+                newCornerstoneToolRight.mouse.activate(element, 6); // 6 means right mouse button and middle mouse button
                 newCornerstoneToolLeft.mouse.activate(element, 1, leftToolSynchronizer); // 1 means left mouse button
             } else if (newToolIdLeft === newToolIdRight) {
                 newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
-                newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
+                newCornerstoneToolRight.mouse.activate(element, 5); // 5 means left mouse button and right mouse button
             } else {
                 newCornerstoneToolLeft.mouse.activate(element, 1, leftToolSynchronizer); // 1 means left mouse button
                 newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
-                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+                newCornerstoneToolRight.mouse.activate(element, 4); // 4 means right mouse button
             }
         } else {
             // This block ensures that all mouse button tools keep working
             if (newToolIdLeft === newToolIdMiddle && newToolIdMiddle === newToolIdRight) {
-                newCornerstoneToolRight.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
+                newCornerstoneToolRight.mouse.activate(element, 7); // 7 means left mouse button, right mouse button and middle mouse button
             } else if (newToolIdLeft === newToolIdMiddle) {
                 newCornerstoneToolMiddle.activate(element, 3); // 3 means left mouse button and middle mouse button
-                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+                newCornerstoneToolRight.mouse.activate(element, 4); // 4 means right mouse button
             } else if (newToolIdMiddle === newToolIdRight) {
-                newCornerstoneToolRight.activate(element, 6); // 6 means right mouse button and middle mouse button
+                newCornerstoneToolRight.mouse.activate(element, 6); // 6 means right mouse button and middle mouse button
                 newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
             } else if (newToolIdLeft === newToolIdRight) {
                 newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
-                newCornerstoneToolRight.activate(element, 5); // 5 means left mouse button and right mouse button
+                newCornerstoneToolRight.mouse.activate(element, 5); // 5 means left mouse button and right mouse button
             } else {
                 setTimeout(() => newCornerstoneToolLeft.mouse.activate(element, 1));
                 // >>>> TODO Find out why it's working only with a timeout
                 // newCornerstoneToolLeft.mouse.activate(element, 1); // 1 means left mouse button
                 newCornerstoneToolMiddle.activate(element, 2); // 2 means middle mouse button
-                newCornerstoneToolRight.activate(element, 4); // 4 means right mouse button
+                newCornerstoneToolRight.mouse.activate(element, 4); // 4 means right mouse button
             }
         }
 
+        // One finger touch
         if (newCornerstoneToolLeft.touch) {
             if (leftToolSynchronizer) {
                 newCornerstoneToolLeft.touch.activate(element, leftToolSynchronizer);
             } else {
                 newCornerstoneToolLeft.touch.activate(element);
             }
-
         }
 
+        // Two finger swipe
+        const twoFingerMultiTouchConfig = {
+            testPointers(eventData) {
+                return (eventData.numPointers === 2);
+            }
+        };
+        if (newCornerstoneToolRight.multiTouch) {
+            newCornerstoneToolRight.multiTouch.setConfiguration(twoFingerMultiTouchConfig);
+            newCornerstoneToolRight.multiTouch.activate(element);
+        } else if (gestures.panMultiTouch.enabled === true && gestures.panMultiTouch.numPointers === 2) {
+            cornerstoneTools.panMultiTouch.setConfiguration(twoFingerMultiTouchConfig);
+            cornerstoneTools.panMultiTouch.activate(element);
+        } else if (gestures.stackScrollMultiTouch.enabled === true && gestures.stackScrollMultiTouch.numPointers === 2) {
+            cornerstoneTools.stackScrollMultiTouch.setConfiguration(twoFingerMultiTouchConfig);
+            cornerstoneTools.stackScrollMultiTouch.activate(element);
+        }
+
+        // Two finger pinch
         if (gestures.zoomTouchPinch.enabled === true) {
-            cornerstoneTools.zoomTouchPinch.activate(element); // Two finger pinch
+            cornerstoneTools.zoomTouchPinch.activate(element);
         }
 
-        if (gestures.panMultiTouch.enabled === true) {
-            cornerstoneTools.panMultiTouch.activate(element); // Two or >= Two finger pan
-        }
-
+        // Double Tap
         if (gestures.doubleTapZoom.enabled === true) {
             cornerstoneTools.doubleTapZoom.activate(element);
         }
