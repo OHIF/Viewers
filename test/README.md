@@ -6,6 +6,7 @@
     https://github.com/practicalmeteor/meteor-mocha~~
     + meteor package: cultofcoders:mocha 
     https://github.com/cult-of-coders/meteor-mocha
+    + Using cultofcoders because of this issue: https://github.com/practicalmeteor/meteor-mocha/issues/100
 
 + chai as assertion library meteor package:
     + practicalmeteor:chai https://github.com/practicalmeteor/meteor-chai
