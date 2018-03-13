@@ -33,6 +33,8 @@
   "homepage": "https://github.com/OHIF/Viewers#readme",
   "dependencies": {
     "gitbook-plugin-edit-link": "^2.0.2",
-    "gitbook-plugin-github": "^3.0.0"
+    "gitbook-plugin-github": "^3.0.0",
+    "gitbook-plugin-ga": "^2.0.0",
+    "gitbook-plugin-sitemap": "^1.2.0"
   }
 }
