@@ -4,7 +4,7 @@
 # Runs the packages tests
 ##################################################
 
-TEST_PACKAGES=./Packages/*
+TEST_PACKAGES=./Packages/ohif-viewerbase
 export METEOR_PACKAGE_DIRS="./Packages"
 
 # check execution arguments
@@ -39,5 +39,5 @@ if [ "$RUN_SPACEJAM" == 1 ];
 then
     spacejam-mocha $TEST_PACKAGES
 else
-    meteor test-packages --driver-package='practicalmeteor:mocha' $TEST_PACKAGES
+    meteor test-packages --driver-package='cultofcoders:mocha' $TEST_PACKAGES
 fi

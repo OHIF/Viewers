@@ -4,10 +4,10 @@ import ReportService from 'meteor/lmieulet:meteor-coverage'
 
 chai.should();
 
-describe('Exporting coverage report', function () {
-    it('Generating coverage report', function () { });
+describe('Exporting coverage report', function() {
+    it('Generating coverage report', function() { });
 
-    after(function () {
+    after(function() {
         const reportService = new ReportService.ReportService();
         const mockRes = { end: () => { }, writeHead: () => { } };
 
@@ -17,6 +17,5 @@ describe('Exporting coverage report', function () {
         reportService.generateReport(mockRes, 'html', {});
         reportService.generateReport(mockRes, 'json-summary', {});
         reportService.generateReport(mockRes, 'lcovonly', {});
-
     });
 });
