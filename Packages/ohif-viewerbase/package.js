@@ -207,32 +207,50 @@ Package.onUse(function(api) {
 
 });
 
-Package.onTest(function (api) {
+Package.onTest(function(api) {
     const both = ['client', 'server'];
 
     api.versionsFrom('1.4');
 
+    /*
+   * Really important dependencies to the project
+   */
+    api.use(['ecmascript',
+        'standard-app-packages',
+        'http',
+        'jquery',
+        'mongo',
+        'momentjs:moment',
+        'validatejs',
+        'u2622:persistent-session'
+    ], both);
+
+    // OHIF dependencies
     api.use([
-        'ecmascript',
-        'stylus@2.513.14',
-        'templating',
-        'reactive-var',
-        'session',
-        'u2622:persistent-session',
+        'lookback:logger',
         'aldeed:simple-schema@1.5.3',
-        'ohif:viewerbase',
-        'practicalmeteor:mocha',
-        'practicalmeteor:mocha-console-runner',
-        'practicalmeteor:sinon',
-        'practicalmeteor:chai',
-        'lmieulet:meteor-coverage@1.1.4',
-        'momentjs:moment'
-    ]);
+        'ohif:design',
+        'ohif:core',
+        'ohif:hotkeys',
+        'ohif:log'
+    ], both);
 
-    api.addFiles('./tests/client/templatemock.js', 'client');
+    /*
+     * Our custom packages
+     */
+    api.use('ohif:viewerbase', both);
+
+    /*
+    * Tests framework components
+    */
+    api.use('cultofcoders:mocha');
+    api.use('practicalmeteor:sinon');
+    api.use('practicalmeteor:chai');
+    api.use('lmieulet:meteor-coverage@1.1.4');
+    api.use('xolvio:template-isolator');
+
+    /*
+    * Adding all our tests files
+    */
     api.addFiles('./tests/client/components/viewer/gridLayout/gridLayout.tests.js', 'client');
-
-    if (process.env.COVERAGE && process.env.RUN_SPACEJAM) {
-        api.addFiles('./tests/coverage/exportCoverageReport.js', 'server');
-    }
 });
