@@ -243,10 +243,6 @@ Package.onTest(function(api) {
     /*
     * Tests framework components
     */
-    // https://github.com/practicalmeteor/meteor-mocha/issues/100
-    // https://github.com/cult-of-coders/meteor-mocha
-    // api.use('practicalmeteor:mocha');
-    // api.use('practicalmeteor:mocha-console-runner');
     api.use('cultofcoders:mocha');
     api.use('practicalmeteor:sinon');
     api.use('practicalmeteor:chai');
