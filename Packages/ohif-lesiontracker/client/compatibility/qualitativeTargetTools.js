@@ -430,6 +430,13 @@ function createQualitativeTargetTool(toolType, responseText='') {
             return false;
         }
 
+        // Check if the element is enabled and stop here if not
+        try {
+            cornerstone.getEnabledElement(element);
+        } catch (error) {
+            return;
+        }
+
         const config = cornerstoneTools[toolType].getConfiguration();
 
         const coords = eventData.currentPoints.canvas;

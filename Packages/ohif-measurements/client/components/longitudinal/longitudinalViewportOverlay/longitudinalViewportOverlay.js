@@ -66,14 +66,14 @@ Template[defaultTemplate].helpers({
             const date = moment(patientBirthDate, 'YYYYMMDD');
             const yearDiff = moment().diff(date, 'years');
             if (yearDiff) {
-                values.push(yearDiff + 'Y').padStart(4, '0');
+                values.push((yearDiff + 'Y').padStart(4, '0'));
             } else {
                 const monthDiff = moment().diff(date, 'months');
                 if (monthDiff) {
-                    values.push(monthDiff + 'M').padStart(4, '0');
+                    values.push((monthDiff + 'M').padStart(4, '0'));
                 } else {
                     const dayDiff = moment().diff(date, 'days') || 0;
-                    values.push(dayDiff + 'D').padStart(4, '0');
+                    values.push((dayDiff + 'D').padStart(4, '0'));
                 }
             }
         }

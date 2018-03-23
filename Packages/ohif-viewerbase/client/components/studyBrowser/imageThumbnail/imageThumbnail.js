@@ -63,7 +63,9 @@ Template.imageThumbnail.onRendered(() => {
 
             cornerstone.displayImage(element, image);
 
-            $element.one('cornerstoneimagerendered', () => {
+            $element.one('cornerstoneimagerendered', event => {
+                const eventData = event.originalEvent.detail;
+                const { element } = eventData;
                 const enabledElement = cornerstone.getEnabledElement(element);
 
                 // Create a static image from
@@ -72,8 +74,10 @@ Template.imageThumbnail.onRendered(() => {
                 const dataUrl = enabledElement.canvas.toDataURL('image/jpeg', 1);
                 imageElement.src = dataUrl;
 
-                // Disable cornerstone for thumbnail element and remove its canvas
-                cornerstone.disable(element);
+                // Try to disable cornerstone for thumbnail element and remove its canvas
+                try {
+                    cornerstone.disable(element);
+                } catch (e) {}
 
                 $element.append(imageElement);
 
@@ -117,7 +121,11 @@ Template.imageThumbnail.onDestroyed(() => {
     const $parent = instance.$('.imageThumbnail');
     const $element = $parent.find('.imageThumbnailCanvas');
     const element = $element.get(0);
-    cornerstone.disable(element);
+
+    // Try to disable the element if it still exists
+    try {
+        cornerstone.disable(element);
+    } catch (e) {}
 });
 
 Template.imageThumbnail.helpers({

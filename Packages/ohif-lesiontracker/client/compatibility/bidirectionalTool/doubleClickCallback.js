@@ -18,6 +18,13 @@ export default function (event) {
         return false;
     }
 
+    // Check if the element is enabled and stop here if not
+    try {
+        cornerstone.getEnabledElement(element);
+    } catch (error) {
+        return;
+    }
+
     const config = cornerstoneTools.bidirectional.getConfiguration();
 
     const coords = eventData.currentPoints.canvas;
