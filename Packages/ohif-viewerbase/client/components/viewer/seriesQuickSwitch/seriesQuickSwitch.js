@@ -114,9 +114,21 @@ Template.seriesQuickSwitch.events({
     'mouseenter .series-switch, rescale .series-switch'(event, instance) {
         // Control the width of the series browser
         const $switch = $(event.currentTarget);
-        const browserWidth = $switch.offset().left + $switch.outerWidth();
         const $seriesBrowser = $switch.find('.series-browser');
-        $seriesBrowser.width(browserWidth - (browserWidth % 237));
+        const $seriesQuickSwitch = $switch.closest('.series-quick-switch');
+
+        const isRight = $seriesQuickSwitch.hasClass('right');
+        const switchOffsetLeft = $switch.offset().left;
+        const switchOuterWidth = $switch.outerWidth();
+
+        let browserWidth;
+        if (isRight) {
+            browserWidth = $(window).width() - switchOffsetLeft;
+        } else {
+            browserWidth = switchOffsetLeft + switchOuterWidth;
+        }
+
+        $seriesBrowser.width(browserWidth - (browserWidth % 240));
 
         const $quickSwitch = instance.$('.series-quick-switch');
         if ($quickSwitch.is(':hover')) {
