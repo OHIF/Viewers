@@ -15,6 +15,15 @@ Template.studyBrowserItem.onCreated(() => {
 
     instance.studyData = new ReactiveVar(studyInformation);
 
+    // Try to load the study data from an external source if available
+    if (OHIF.studies.getStudyBoxData) {
+        OHIF.studies.getStudyBoxData(studyInformation).then(studyData => {
+            if (!instance.loaded.get()) {
+                instance.studyData.set(studyData);
+            }
+        });
+    }
+
     instance.studyMetadata = null;
     instance.getStudyMetadata = () => {
         instance.loading.dep.depend();
@@ -88,6 +97,11 @@ Template.studyBrowserItem.events({
 Template.studyBrowserItem.helpers({
     isLoaded() {
         return Template.instance().loaded.get();
+    },
+
+    hasDescriptionAndDate() {
+        const studyData = Template.instance().studyData.get();
+        return studyData.studyDescription && studyData.studyDate;
     },
 
     isLoading() {
