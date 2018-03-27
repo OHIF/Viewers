@@ -212,3 +212,51 @@ Package.onUse(function(api) {
     api.mainModule('main.js', 'client');
 
 });
+
+Package.onTest(function(api) {
+    const both = ['client', 'server'];
+
+    api.versionsFrom('1.4');
+
+    /*
+   * Really important dependencies to the project
+   */
+    api.use(['ecmascript',
+        'standard-app-packages',
+        'http',
+        'jquery',
+        'mongo',
+        'momentjs:moment',
+        'validatejs',
+        'u2622:persistent-session'
+    ], both);
+
+    // OHIF dependencies
+    api.use([
+        'lookback:logger',
+        'aldeed:simple-schema@1.5.3',
+        'ohif:design',
+        'ohif:core',
+        'ohif:hotkeys',
+        'ohif:log'
+    ], both);
+
+    /*
+     * Our custom packages
+     */
+    api.use('ohif:viewerbase', both);
+
+    /*
+    * Tests framework components
+    */
+    api.use('cultofcoders:mocha');
+    api.use('practicalmeteor:sinon');
+    api.use('practicalmeteor:chai');
+    api.use('lmieulet:meteor-coverage@1.1.4');
+    api.use('xolvio:template-isolator');
+
+    /*
+    * Adding all our tests files
+    */
+    api.addFiles('./tests/client/components/viewer/gridLayout/gridLayout.tests.js', 'client');
+});
