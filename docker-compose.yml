@@ -1,0 +1,19 @@
+version: '3.6'
+services:
+  mongo:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+
+  viewer:
+    #image: ohifviewer:latest
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    env_file: dockersupport/ohifviewer.env # TODO: Doesn't look like METEOR Settings are being used properly?
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/ohif
+    extra_hosts:
+      - "localpacs:192.168.1.11"

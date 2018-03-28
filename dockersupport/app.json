@@ -1,0 +1,9 @@
+{
+  "apps" : [{
+    "name"        : "ohif-viewer",
+    "script"      : "main.js",
+    "watch"       : true,
+    "merge_logs"  : true,
+    "cwd"         : "/app/bundle/"
+  }]
+}
