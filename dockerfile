@@ -15,11 +15,12 @@ RUN curl https://install.meteor.com/ | sh
 # Create a non-root user
 RUN useradd -ms /bin/bash user
 USER user
+RUN mkdir /home/user/Viewers
+COPY OHIFViewer/package.json /home/user/Viewers/OHIFViewer/
 ADD --chown=user:user . /home/user/Viewers
 
 WORKDIR /home/user/Viewers/OHIFViewer
 
-RUN meteor npm install
 ENV METEOR_PACKAGE_DIRS=../Packages
 RUN meteor build --directory /home/user/app
 WORKDIR /home/user/app/bundle/programs/server
@@ -27,24 +28,18 @@ RUN npm install --production
 
 # Second stage of multi-stage build
 # Creates a slim production image for the node.js application
-#
-# TODO: Switch to node:8.10.0-alpine for size purposes. I was getting Segmentation Faults from the node
-# process. There are probably some minor changes to be made to ensure it works.
 FROM node:8.10.0-slim
-
-WORKDIR /app
-COPY --from=builder /home/user/app .
 
 RUN npm install -g pm2
 
-ADD dockersupport/app.json . 
+WORKDIR /app
+COPY --from=builder /home/user/app .
+COPY dockersupport/app.json .
 
 ENV ROOT_URL http://localhost:3000
 ENV PORT 3000
-ENV NODE_ENV development
+ENV NODE_ENV production
 
 EXPOSE 3000
 
-WORKDIR /app
 CMD ["pm2-runtime", "app.json"]
-

@@ -4,6 +4,34 @@
     "script"      : "main.js",
     "watch"       : true,
     "merge_logs"  : true,
-    "cwd"         : "/app/bundle/"
+    "cwd"         : "/app/bundle/",
+    "env": {
+    	"METEOR_SETTINGS": {
+		  "servers": {
+		    "dicomWeb": [
+		      {
+		        "name": "Orthanc",
+		        "wadoUriRoot": "http://pacsIP:8042/wado",
+		        "qidoRoot": "http://pacsIP:8042/dicom-web",
+		        "wadoRoot": "http://pacsIP:8042/dicom-web",
+		        "qidoSupportsIncludeField": false,
+		        "imageRendering": "wadouri",
+		        "thumbnailRendering": "wadors",
+		        "requestOptions": {
+		          "auth": "orthanc:orthanc",
+		          "logRequests": true,
+		          "logResponses": false,
+		          "logTiming": true
+		        }
+		      }
+		    ]
+		  },
+		  "defaultServiceType": "dicomWeb",
+		  "public": {},
+		  "proxy": {
+		    "enabled": true
+		  }
+		}
+    }
   }]
 }
