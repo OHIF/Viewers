@@ -11,12 +11,25 @@ export default function(event) {
     const { element, canvasContext } = eventData;
 
     // if we have no toolData for this element, return immediately as there is nothing to do
-    const toolData = cornerstoneTools.getToolState(event.currentTarget, toolType);
+    const toolData = cornerstoneTools.getToolState(element, toolType);
     if (!toolData) return;
 
+    const imagePlane = cornerstone.metaData.get('imagePlaneModule', eventData.image.imageId);
+    let rowPixelSpacing;
+    let colPixelSpacing;
+
+    if (imagePlane) {
+        rowPixelSpacing = imagePlane.rowPixelSpacing || imagePlane.rowImagePixelSpacing;
+        colPixelSpacing = imagePlane.columnPixelSpacing || imagePlane.colImagePixelSpacing;
+    } else {
+        rowPixelSpacing = eventData.image.rowPixelSpacing;
+        colPixelSpacing = eventData.image.columnPixelSpacing;
+    }
+
     // LT-29 Disable Target Measurements when pixel spacing is not available
-    const { rowPixelSpacing, columnPixelSpacing } = eventData.image;
-    if (!rowPixelSpacing || !columnPixelSpacing) return;
+    if (!rowPixelSpacing || !colPixelSpacing) {
+        return;
+    }
 
     // we have tool data for this element - iterate over each one and draw it
     const context = canvasContext.canvas.getContext('2d');
@@ -72,12 +85,12 @@ export default function(event) {
         drawSelectedMarker(eventData, data.handles, '#FF9999');
 
         // Calculate the long axis length
-        const dx = (start.x - end.x) * (columnPixelSpacing || 1);
+        const dx = (start.x - end.x) * (colPixelSpacing || 1);
         const dy = (start.y - end.y) * (rowPixelSpacing || 1);
         let length = Math.sqrt(dx * dx + dy * dy);
 
         // Calculate the short axis length
-        const wx = (perpendicularStart.x - perpendicularEnd.x) * (columnPixelSpacing || 1);
+        const wx = (perpendicularStart.x - perpendicularEnd.x) * (colPixelSpacing || 1);
         const wy = (perpendicularStart.y - perpendicularEnd.y) * (rowPixelSpacing || 1);
         let width = Math.sqrt(wx * wx + wy * wy);
         if (!width) {
@@ -95,7 +108,7 @@ export default function(event) {
         if (data.measurementNumber) {
             // Draw the textbox
             let suffix = ' mm';
-            if (!rowPixelSpacing || !columnPixelSpacing) {
+            if (!rowPixelSpacing || !colPixelSpacing) {
                 suffix = ' pixels';
             }
 

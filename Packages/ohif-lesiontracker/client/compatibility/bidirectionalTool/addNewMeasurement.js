@@ -10,8 +10,20 @@ export default function(mouseEventData) {
     const { element } = mouseEventData;
     const $element = $(element);
 
+    const imagePlane = cornerstone.metaData.get('imagePlaneModule', mouseEventData.image.imageId);
+    let rowPixelSpacing;
+    let colPixelSpacing;
+
+    if (imagePlane) {
+        rowPixelSpacing = imagePlane.rowPixelSpacing || imagePlane.rowImagePixelSpacing;
+        colPixelSpacing = imagePlane.columnPixelSpacing || imagePlane.colImagePixelSpacing;
+    } else {
+        rowPixelSpacing = mouseEventData.image.rowPixelSpacing;
+        colPixelSpacing = mouseEventData.image.columnPixelSpacing;
+    }
+
     // LT-29 Disable Target Measurements when pixel spacing is not available
-    if (!mouseEventData.image.rowPixelSpacing || !mouseEventData.image.columnPixelSpacing) {
+    if (!rowPixelSpacing || !colPixelSpacing) {
         return;
     }
 
