@@ -174,10 +174,10 @@ export const toolManager = {
         toolStyle.setToolWidth(2);
 
         // Set color for inactive tools
-        toolColors.setToolColor('rgb(255, 255, 0)');
+        toolColors.setToolColor('rgb(255, 255, 0)'); // yellow
 
         // Set color for active tools
-        toolColors.setActiveColor('rgb(0, 255, 0)');
+        toolColors.setActiveColor('rgb(50, 205, 50)'); // limegreen
 
         // Set shadow configuration
         const shadowConfig = toolManager.getToolDefaultStates().shadowConfig;
