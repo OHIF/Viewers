@@ -14,12 +14,14 @@
                     {{>imageViewportIcons this}}
                 </div>
             </div>
+            <div class="topcenter dicomTag">
+                <div class='timepointName'>{{timepointName}}</div>
+            </div>
             <div class="topright dicomTag">
                 <div>{{seriesDescription}}</div>
                 <div>{{studyInfo 'AccessionNumber'}}</div>
                 <div>{{formatDA (studyInfo 'AcquisitionDate')}} {{formatTM (studyInfo 'AcquisitionTime')}}</div>
                 <div>{{#if seriesNumber}}S: {{seriesNumber}}{{#if gt numImages 1}},{{/if}} {{/if}}{{#if gt numImages 1}}I: {{imageIndex}}/{{numImages}}{{/if}}</div>
-                <div class='timepointName'>{{timepointName}}</div>
             </div>
             <div class="bottomright dicomTag">
                 <div class="stationName">{{studyInfo 'StationName'}}</div>
