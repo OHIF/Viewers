@@ -4,6 +4,9 @@ import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
+let zIndexBackdrop = 1060;
+let zIndexModal = 1061;
+
 OHIF.ui.showDialog = (templateName, dialogData={}) => {
     // Check if the given template exists
     const template = Template[templateName];
@@ -48,6 +51,20 @@ OHIF.ui.showDialog = (templateName, dialogData={}) => {
     } else if ($node && $node.has('.modal')) {
         $modal = $node.find('.modal:first');
     }
+
+    $modal.one('show.bs.modal', function() {
+        setTimeout(() => {
+            const $modal = $(this);
+            const modal = $modal.data('bs.modal');
+            if (!modal) return;
+            const { $backdrop } = modal;
+            if (!$backdrop) return;
+            $backdrop.css('z-index', zIndexBackdrop);
+            $modal.css('z-index', zIndexModal);
+            zIndexBackdrop += 2;
+            zIndexModal += 2;
+        });
+    });
 
     // Destroy the created dialog view when the promise is either resolved or rejected
     const dismissModal = (hideFirst=false) => {

@@ -7,8 +7,7 @@ Template.dialogSimple.onCreated(() => {
     const instance = Template.instance();
 
     instance.close = () => {
-        const $modal = instance.$('.modal');
-        $modal.one('hidden.bs.modal', () => instance.data.promiseResolve()).modal('hide');
+        instance.$('.modal').modal('hide');
     };
 
     // Automatically close the modal if a timeout value was given
@@ -30,6 +29,9 @@ Template.dialogSimple.onRendered(() => {
 
     // Create the bootstrap modal
     $modal.modal(modalOptions);
+
+    // Resolve the promise as soon as the modal is closed
+    $modal.one('hidden.bs.modal', () => instance.data.promiseResolve());
 
     let position = instance.data.position;
 
