@@ -132,12 +132,12 @@ export class HotkeysManager {
         delete this.defaults[contextName];
     }
 
-    resetDefauls(contextName) {
+	resetDefaults(contextName) {
         const context = this.getContext(contextName);
         const definitions = this.defaults[contextName];
         if (!context || !definitions) return;
         context.extend(definitions);
-        return this.store(contextName, definitions).then(this.changeObserver.changed);
+        return this.store(contextName, definitions);
     }
 
     switchToContext(contextName) {

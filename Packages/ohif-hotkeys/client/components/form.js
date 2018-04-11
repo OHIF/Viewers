@@ -29,7 +29,10 @@ Template.hotkeysForm.onCreated(() => {
             };
 
             return OHIF.ui.showDialog('dialogConfirm', dialogOptions).then(() => {
-                return OHIF.hotkeys.resetDefauls(contextName);
+                const resetDefaults = OHIF.hotkeys.resetDefaults(contextName);
+                resetDefaults.then(() => {
+                    OHIF.hotkeys.load(contextName).then(defs => instance.hotkeysDefinitions.set(defs));
+                });
             });
         }
     };
