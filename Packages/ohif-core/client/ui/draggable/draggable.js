@@ -15,6 +15,8 @@ $.fn.draggable = function(options) {
  */
 function makeDraggable(element, options={}) {
     const $element = element;
+    const $document = $(document);
+    const $body = $(document.body);
 
     // Force to hardware acceleration to move element if browser supports translate property
     const { styleProperty } = OHIF.ui;
@@ -30,7 +32,7 @@ function makeDraggable(element, options={}) {
     let lastTranslateX = 0;
     let lastTranslateY = 0;
 
-    options.defaultElementCursor = options.defaultElementCursor || 'default';
+    let initialCursor;
 
     // initialize dragged flag
     $element.data('wasDragged', false);
@@ -105,28 +107,30 @@ function makeDraggable(element, options={}) {
 
         reposition(elementLeft, elementTop);
 
-        $(document).on('mousemove', moveHandler);
-        $(document).on('mouseup', stopMoving);
+        $document.on('mousemove', moveHandler);
+        $document.on('mouseup', stopMoving);
 
-        $(document).on('touchmove', moveHandler);
-        $(document).on('touchend', stopMoving);
+        $document.on('touchmove', moveHandler);
+        $document.on('touchend', stopMoving);
     }
 
     function stopMoving() {
-        $container.css('cursor', 'default');
-        $element.css('cursor', options.defaultElementCursor);
+        $body.css('cursor', '');
+        $container.css('cursor', '');
+        $element.css('cursor', '');
 
         if (dragging) {
             setTimeout(() => $element.removeClass('dragging'));
             dragging = false;
         }
 
-        $(document).off('mousemove', moveHandler);
-        $(document).off('touchmove', moveHandler);
+        $document.off('mousemove', moveHandler);
+        $document.off('touchmove', moveHandler);
     }
 
     function moveHandler(e) {
         if (!dragging) {
+            $body.css('cursor', 'move');
             $container.css('cursor', 'move');
             $element.css('cursor', 'move');
             $element.addClass('dragging');
@@ -193,6 +197,33 @@ function makeDraggable(element, options={}) {
         reposition(elementLeft, elementTop);
     }
 
-    $element.on('mousedown', startMoving);
-    $element.on('touchstart', startMoving);
+    function mouseDownHandler(e) {
+        initialCursor = getCursorCoords(e);
+        $document.on('mousemove', moveDetectHandler);
+        $document.on('touchmove', moveDetectHandler);
+    }
+
+    function mouseUpHandler() {
+        $document.off('mousemove', moveDetectHandler);
+        $document.off('touchmove', moveDetectHandler);
+    }
+
+    function moveDetectHandler(e) {
+        const currentCursor = getCursorCoords(e);
+
+        const c1 = initialCursor;
+        const c2 = currentCursor;
+        const distance = Math.hypot(c2.x - c1.x, c2.y - c1.y);
+
+        if (distance > 5) {
+            mouseUpHandler();
+            startMoving(e);
+        }
+    }
+
+    $element.on('mousedown', mouseDownHandler);
+    $element.on('touchstart', mouseDownHandler);
+
+    $element.on('mouseup', mouseUpHandler);
+    $element.on('touchend', mouseUpHandler);
 }
