@@ -12,7 +12,7 @@ const WL_STORAGE_KEY = `WindowLevelPresetsDefinitions`;
 
 OHIF.viewer.defaultWLPresets = {
     0: {
-        id: 'SoftTissue',
+        id: 'Soft Tissue',
         wc: 40,
         ww: 400
     },
