@@ -1,12 +1,5 @@
 <template name="measurementTableHeaderRow">
     <div class="measurementTableHeaderRow">
-        {{#if anyUnmarkedLesionsLeft}}
-            <div class="add js-setTool">
-                <svg>
-                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-add"}}></use>
-                </svg>
-            </div>
-        {{/if}}
         <div class="type">{{toolGroup.name}}</div>
         <div class="max {{#if gt numberOfMeasurements maxNumMeasurements}}warning{{/if}}">
             {{#if getMax toolGroup.id}}
