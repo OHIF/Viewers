@@ -41,6 +41,10 @@ export default function(event) {
 
     for (let i = 0; i < toolData.data.length; i++) {
         const data = toolData.data[i];
+        if (data.visible === false) {
+          continue;
+        }
+
         const { start, end, perpendicularStart, perpendicularEnd, textBox } = data.handles;
         const strokeWidth = lineWidth;
 

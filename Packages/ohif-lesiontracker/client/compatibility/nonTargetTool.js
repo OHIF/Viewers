@@ -272,6 +272,9 @@ function onImageRendered(e) {
 
     for (let i = 0; i < toolData.data.length; i++) {
         const data = toolData.data[i];
+        if (data.visible === false) {
+          continue;
+        }
 
         context.save();
 
