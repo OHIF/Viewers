@@ -128,6 +128,10 @@ export const toolManager = {
             touch: cornerstoneTools.crosshairsTouch
         });
 
+        toolManager.addTool('scaleOverlayTool', {
+          mouse: cornerstoneTools.scaleOverlayTool,
+        });
+
         // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
             this.setDefaultTool(OHIF.viewer.defaultTool);

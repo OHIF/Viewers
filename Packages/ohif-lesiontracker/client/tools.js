@@ -14,11 +14,6 @@ Meteor.startup(function() {
         touch: cornerstoneTools.nonTargetTouch
     });
 
-    toolManager.addTool('scaleOverlayTool', {
-        mouse: cornerstoneTools.scaleOverlayTool,
-        touch: cornerstoneTools.scaleOverlayTool
-    });
-
     toolManager.addTool('deleteLesionKeyboardTool', {
         mouse: cornerstoneTools.deleteLesionKeyboardTool,
         touch: cornerstoneTools.deleteLesionKeyboardTool
@@ -37,7 +32,7 @@ Meteor.startup(function() {
     // Update default state for tools making sure each tool is only inserted once
     let currentDefaultStates = toolManager.getToolDefaultStates();
     let newDefaultStates = {
-        enable: [ 'scaleOverlayTool' ],
+        enable: [],
         deactivate: ['bidirectional', 'nonTarget', 'length', 'targetCR', 'targetUN'],
         activate: ['deleteLesionKeyboardTool']
     };
