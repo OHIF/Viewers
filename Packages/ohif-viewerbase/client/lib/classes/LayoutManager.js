@@ -1,4 +1,4 @@
-import { Blaze } from 'meteor/blaze';
+import { Meteor } from 'meteor/meteor';import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
@@ -6,6 +6,17 @@ import { _ } from 'meteor/underscore';
 import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
+
+let isInteractingWithViewport = false;
+Meteor.startup(() => {
+    const setInteracting = flag => {
+        isInteractingWithViewport = flag;
+    };
+
+    const $body = $('body');
+    $body.on('mousedown', '.imageViewerViewport', () => setInteracting(true));
+    $body.on('mouseup', () => setInteracting(false));
+});
 
 // Displays Series in Viewports given a Protocol and list of Studies
 export class LayoutManager {
@@ -652,6 +663,9 @@ export class LayoutManager {
      * @param  {Boolean} isNext Represents the direction (true = forward, false = backward)
      */
     moveDisplaySets(isNext) {
+        // Prevent display sets navigation while interacting with any cornerstone tool
+        if (isInteractingWithViewport) return;
+
         OHIF.log.info('LayoutManager moveDisplaySets');
 
         //Check if navigation is on a single or multiple viewports
