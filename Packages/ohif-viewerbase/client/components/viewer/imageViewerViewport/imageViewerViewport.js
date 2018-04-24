@@ -23,6 +23,9 @@ const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstone
 
 const PLUGIN_CORNERSTONE = 'cornerstone';
 
+// Create a way to add hooks to be executed every time a cornerstone element is enabled
+OHIF.viewer.cornerstoneElementHooks = [];
+
 /**
  * This function loads a study series into a viewport element.
  *
@@ -98,6 +101,13 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         renderer: OHIF.cornerstone.renderer
     };
     cornerstone.enable(element, options);
+
+    // Call every defined hook
+    OHIF.viewer.cornerstoneElementHooks.forEach(hook => {
+        if (typeof hook === 'function') {
+            hook(element);
+        }
+    });
 
     // Get the handler functions that will run when loading has finished or thrown
     // an error. These are used to show/hide loading / error text boxes on each viewport.
@@ -409,7 +419,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // If it was, no changes are necessary, so stop here.
             const activeViewportIndex = Session.get('activeViewport');
             if (viewportIndex === activeViewportIndex) return;
-            
+
             $element.focus();
 
             OHIF.log.info('imageViewerViewport sendActivationTrigger');
