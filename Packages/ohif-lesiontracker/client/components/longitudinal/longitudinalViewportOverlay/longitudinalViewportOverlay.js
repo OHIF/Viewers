@@ -35,6 +35,11 @@ Template[defaultTemplate].onRendered(() => {
         if (computation.firstRun) return;
         computation.stop();
         const imageIndex = instance.getImageIndex();
+
+        if (!studyInstanceUid || !seriesInstanceUid) {
+          return;
+        }
+
         OHIF.studies.loadStudy(studyInstanceUid).then(studyMetadata => {
             const seriesMetadata = studyMetadata.getSeriesByUID(seriesInstanceUid);
             const instanceMetadata = seriesMetadata.getInstanceByIndex(imageIndex);
