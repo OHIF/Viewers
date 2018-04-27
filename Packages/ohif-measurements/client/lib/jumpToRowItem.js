@@ -3,6 +3,9 @@ import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 
+// Flag that can be changed to disable automatic stack scroll linking when jumping over lesions
+OHIF.measurements.automaticStackScrollLinkingEnabled = true;
+
 function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
     const { activateMeasurements, findAndRenderDisplaySet } = OHIF.measurements;
     const { element } = enabledElement;
@@ -54,6 +57,11 @@ function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
 }
 
 function syncViewports(viewportsIndexes) {
+    // Prevent stack scrolling from being linked if it's disabled
+    if (!OHIF.measurements.automaticStackScrollLinkingEnabled) {
+        return;
+    }
+
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
     if(!synchronizer) { return; }
