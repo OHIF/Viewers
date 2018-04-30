@@ -74,7 +74,7 @@ Template.studyTimepointBrowser.onRendered(() => {
     });
 
     instance.autorun(() => {
-        // Runs this computation every time the curenty study is changed
+        // Runs this computation every time the current study is changed
         const currentStudy = instance.data.currentStudy && instance.data.currentStudy.get();
 
         // Stop here if there's no current study set

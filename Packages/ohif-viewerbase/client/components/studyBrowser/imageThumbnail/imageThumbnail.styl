@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@require '{ohif:design}/app'
 
 .thumbnailEntry.active .imageThumbnail
   theme('border-color', '$activeColor')
@@ -46,6 +46,9 @@
   bottom: 0
   margin: auto
   position: absolute
+
+  &.d-block
+    display: block;
 
   p
     text-align: center

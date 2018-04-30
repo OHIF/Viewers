@@ -2,7 +2,7 @@
     {{#let stack=this.thumbnail.stack}}
         <div class="thumbnailEntry noselect m-t-1 m-b-2 {{draggableClass}} {{#if isDisplaySetActive stack.displaySetInstanceUid viewportIndex}}active{{/if}}">
             <div class="p-x-1">
-                {{>imageThumbnail (clone this)}}
+                {{>imageThumbnail thumbnail=thumbnail currentStudy=currentStudy}}
             </div>
             <div class="seriesDetails flex-h m-x-1 {{#unless stack.seriesDescription}}info-only{{/unless}}">
                 <div class="seriesDescription flex-grow">

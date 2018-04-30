@@ -1,5 +1,8 @@
 import Hammer from 'hammerjs';
-import * as cornerstone from 'cornerstone-core/dist/cornerstone.js';
+// TODO: [PWV-379] delete local cornerstone.js and switch back to the npm library after
+//       merging https://github.com/cornerstonejs/cornerstone/pull/2
+// import * as cornerstone from 'cornerstone-core/dist/cornerstone.js';
+import * as cornerstone from './cornerstone.js';
 import * as cornerstoneMath from 'cornerstone-math/dist/cornerstoneMath.js';
 import * as cornerstoneTools from 'cornerstone-tools/dist/cornerstoneTools.js';
 import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoader.js';

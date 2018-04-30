@@ -1,12 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 
+/**
+ * Asynchronous wrapper around Cornerstone's renderToCanvas method.
+ *
+ * @param {HTMLElement} canvasElement An HTML <canvas> element
+ * @param {Image} image A Cornerstone Image
+ *
+ * @return {Promise} A promise tracking the progress of the rendering. Resolves empty.
+ */
+function renderAsync(canvasElement, image) {
+  return new Promise((resolve, reject) => {
+    try {
+      cornerstone.renderToCanvas(canvasElement, image);
+      resolve();
+    } catch(error) {
+      reject(error);
+    }
+  });
+}
+
 Template.imageThumbnail.onCreated(() => {
     const instance = Template.instance();
+
+    instance.isLoading = new ReactiveVar(false);
+    instance.hasLoadingError = new ReactiveVar(false);
 
     // Get the image ID for current thumbnail
     instance.getThumbnailImageId = () => {
@@ -33,69 +54,42 @@ Template.imageThumbnail.onRendered(() => {
 
     // Declare DOM and jQuery objects
     const $parent = instance.$('.imageThumbnail');
-    const $loading = $parent.find('.imageThumbnailLoadingIndicator');
-    const $loadingError = $parent.find('.imageThumbnailErrorLoadingIndicator');
-    const $element = $parent.find('.imageThumbnailCanvas');
-    const element = $element.get(0);
+    const $thumbnailElement = $parent.find('.imageThumbnailCanvas');
 
     instance.refreshImage = () => {
-        if (!element) {
-            return;
-        }
-
-        // Remove previously generated static images
-        $element.find('.static-image').remove();
-
-        // Enable cornerstone for thumbnail element again creating a new canvas
-        cornerstone.enable(element, { renderer: '' });
+        const imageElement = $thumbnailElement.find('img').get(0);
 
         // Activate the loading state
-        $loading.css('display', 'block');
+        instance.isLoading.set(true);
+        instance.hasLoadingError.set(false);
+
+        // Clear the previous image
+        imageElement.removeAttribute('src');
 
         // Define a handler for success on image load
         const loadSuccess = image => {
-            // Check to make sure the element is enabled.
-            try {
-                cornerstone.getEnabledElement(element);
-            } catch(error) {
-                return;
-            }
+            // This is an off-screen canvas. It's used to get dataURL images by using
+            // cornerstone.renderToCanvas function.
+            const canvasElement = document.createElement('canvas');
+            canvasElement.width = 193;
+            canvasElement.height = 123;
 
-            cornerstone.displayImage(element, image);
+            // Render the image to canvas to be able to get its dataURL
+            renderAsync(canvasElement, image).then(() => {
+              instance.isLoading.set(false);
 
-            $element.one('cornerstoneimagerendered', event => {
-                const eventData = event.originalEvent.detail;
-                const { element } = eventData;
-                const enabledElement = cornerstone.getEnabledElement(element);
-
-                // Create a static image from
-                const imageElement = document.createElement('img');
-                imageElement.classList.add('static-image');
-                const dataUrl = enabledElement.canvas.toDataURL('image/jpeg', 1);
-                imageElement.src = dataUrl;
-
-                // Try to disable cornerstone for thumbnail element and remove its canvas
-                try {
-                    cornerstone.disable(element);
-                } catch (e) {}
-
-                $element.append(imageElement);
-
-                $loading.css('display', 'none');
+              imageElement.src = canvasElement.toDataURL('image/jpeg', 1);
             });
         };
 
         // Define a handler for error on image load
         const loadError = () => {
-            $loading.css('display', 'none');
-            $loadingError.css('display', 'block');
+            instance.isLoading.set(false);
+            instance.hasLoadingError.set(true);
         };
 
-        // Get the image ID
-        const imageId = instance.getThumbnailImageId();
-
         // Call cornerstone image loader with the defined handlers
-        cornerstone.loadAndCacheImage(imageId).then(loadSuccess, loadError);
+        cornerstone.loadAndCacheImage(instance.imageId).then(loadSuccess, loadError);
     };
 
     // Run this computation every time the current study is changed
@@ -109,23 +103,15 @@ Template.imageThumbnail.onRendered(() => {
         // Depend on external data and re-run this computation when it changes
         Template.currentData();
 
-        // Wait for the new data and refresh the image thumbnail
-        Tracker.afterFlush(() => instance.refreshImage());
+        // Get the image ID. If it is the same as the currently rendered imageId,
+        // refresh the image.
+        const imageId = instance.getThumbnailImageId();
+        if (imageId !== instance.imageId) {
+          instance.imageId = imageId;
+
+          instance.refreshImage();
+        }
     });
-});
-
-Template.imageThumbnail.onDestroyed(() => {
-    const instance = Template.instance();
-
-    // Declare DOM and jQuery objects
-    const $parent = instance.$('.imageThumbnail');
-    const $element = $parent.find('.imageThumbnailCanvas');
-    const element = $element.get(0);
-
-    // Try to disable the element if it still exists
-    try {
-        cornerstone.disable(element);
-    } catch (e) {}
 });
 
 Template.imageThumbnail.helpers({
@@ -134,7 +120,7 @@ Template.imageThumbnail.helpers({
         const instance = Template.instance();
 
         // Get the encoded image ID for thumbnail
-        const encodedImageId = OHIF.string.encodeId(instance.getThumbnailImageId());
+        const encodedImageId = OHIF.string.encodeId(instance.imageId);
 
         // Register a dependency from this computation on Session key
         const percentComplete = Session.get('CornerstoneThumbnailLoadProgress' + encodedImageId);
@@ -147,16 +133,20 @@ Template.imageThumbnail.helpers({
 
     // Return how much the stack has already loaded
     stackPercentComplete() {
-        const instance = Template.instance();
-        const stack = instance.data.thumbnail.stack;
-        const displaySetInstanceUid = stack.displaySetInstanceUid;
-        const progress = Session.get('StackProgress:' + displaySetInstanceUid);
-        const percentComplete = progress && progress.percentComplete;
-
-        return percentComplete;
+        const stack = Template.instance().data.thumbnail.stack;
+        const progress = Session.get(`StackProgress:${stack.displaySetInstanceUid}`);
+        return progress && progress.percentComplete;
     },
 
     showStackLoadingProgressBar() {
         return OHIF.uiSettings.showStackLoadingProgressBar;
+    },
+
+    isLoading() {
+      return Template.instance().isLoading.get();
+    },
+
+    hasLoadingError() {
+      return Template.instance().hasLoadingError.get();
     }
 });
