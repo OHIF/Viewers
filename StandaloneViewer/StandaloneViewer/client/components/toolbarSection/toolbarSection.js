@@ -31,6 +31,34 @@ Template.toolbarSection.helpers({
         const extraTools = [];
 
         extraTools.push({
+            id: 'length',
+            title: 'Length',
+            classes: 'imageViewerTool toolbarSectionButton',
+            svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
+        });
+
+        extraTools.push({
+            id: 'annotate',
+            title: 'Annotate',
+            classes: 'imageViewerTool',
+            svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
+        });
+
+        extraTools.push({
+            id: 'angle',
+            title: 'Angle',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-angle-left'
+        });
+
+        extraTools.push({
+            id: 'layout',
+            title: 'Layout',
+            iconClasses: 'fa fa-th-large',
+            buttonTemplateName: 'layoutButton'
+        });
+
+        extraTools.push({
             id: 'crosshairs',
             title: 'Crosshairs',
             classes: 'imageViewerTool',
@@ -42,13 +70,6 @@ Template.toolbarSection.helpers({
             title: 'Stack Scroll',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'
-        });
-
-        extraTools.push({
-            id: 'magnify',
-            title: 'Magnify',
-            classes: 'imageViewerTool toolbarSectionButton',
-            iconClasses: 'fa fa-circle'
         });
 
         extraTools.push({
@@ -80,34 +101,6 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
-            id: 'invert',
-            title: 'Invert',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-adjust'
-        });
-
-        extraTools.push({
-            id: 'rotateR',
-            title: 'Rotate Right',
-            classes: 'imageViewerCommand',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
-        });
-
-        extraTools.push({
-            id: 'flipH',
-            title: 'Flip H',
-            classes: 'imageViewerCommand',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
-        });
-
-        extraTools.push({
-            id: 'flipV',
-            title: 'Flip V',
-            classes: 'imageViewerCommand',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
-        });
-
-        extraTools.push({
             id: 'clearTools',
             title: 'Clear',
             classes: 'imageViewerCommand',
@@ -124,6 +117,13 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
+            id: 'magnify',
+            title: 'Magnify',
+            classes: 'imageViewerTool toolbarSectionButton',
+            iconClasses: 'fa fa-circle'
+        });
+
+        buttonData.push({
             id: 'wwwc',
             title: 'Levels',
             classes: 'imageViewerTool',
@@ -135,27 +135,6 @@ Template.toolbarSection.helpers({
             title: 'Pan',
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
-        });
-
-        buttonData.push({
-            id: 'length',
-            title: 'Length',
-            classes: 'imageViewerTool toolbarSectionButton',
-            svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
-        });
-
-        buttonData.push({
-            id: 'annotate',
-            title: 'Annotate',
-            classes: 'imageViewerTool',
-            svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
-        });
-
-        buttonData.push({
-            id: 'angle',
-            title: 'Angle',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-angle-left'
         });
 
         buttonData.push({
@@ -181,29 +160,58 @@ Template.toolbarSection.helpers({
                 iconClasses: 'fa fa-toggle-down fa-fw'
             });
 
-            const { isPlaying } = OHIF.viewerbase.viewportUtils;
-            buttonData.push({
-                id: 'toggleCinePlay',
-                title: () => isPlaying() ? 'Stop' : 'Play',
-                classes: 'imageViewerCommand',
-                iconClasses: () => ('fa fa-fw ' + (isPlaying() ? 'fa-stop' : 'fa-play')),
-                active: isPlaying
-            });
-
-            buttonData.push({
-                id: 'toggleCineDialog',
-                title: 'CINE',
-                classes: 'imageViewerCommand',
-                iconClasses: 'fa fa-youtube-play',
-                active: () => $('#cineDialog').is(':visible')
-            });
+            // const { isPlaying } = OHIF.viewerbase.viewportUtils;
+            // buttonData.push({
+            //     id: 'toggleCinePlay',
+            //     title: () => isPlaying() ? 'Stop' : 'Play',
+            //     classes: 'imageViewerCommand',
+            //     iconClasses: () => ('fa fa-fw ' + (isPlaying() ? 'fa-stop' : 'fa-play')),
+            //     active: isPlaying
+            // });
+            //
+            // buttonData.push({
+            //     id: 'toggleCineDialog',
+            //     title: 'CINE',
+            //     classes: 'imageViewerCommand',
+            //     iconClasses: 'fa fa-youtube-play',
+            //     active: () => $('#cineDialog').is(':visible')
+            // });
         }
 
         buttonData.push({
-            id: 'layout',
-            title: 'Layout',
-            iconClasses: 'fa fa-th-large',
-            buttonTemplateName: 'layoutButton'
+            id: 'rotateR',
+            title: 'Rotate Right',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
+        });
+
+        buttonData.push({
+            id: 'flipH',
+            title: 'Flip H',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
+        });
+
+        buttonData.push({
+            id: 'flipV',
+            title: 'Flip V',
+            classes: 'imageViewerCommand',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
+        });
+
+        buttonData.push({
+            id: 'invert',
+            title: 'Invert',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-adjust'
+        });
+
+        buttonData.push({
+            id: 'toggleDownloadDialog',
+            title: 'Download',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-camera',
+            active: () => $('#downloadDialog').is(':visible')
         });
 
         buttonData.push({

@@ -27,6 +27,9 @@ const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstone
  * @param data {object} Object containing the study, series, and viewport element to be used
  */
 const loadDisplaySetIntoViewport = (data, templateData) => {
+    if (window.parent.ohifSeriesLoaded){
+        window.parent.ohifSeriesLoaded(data.seriesInstanceUid);
+    }
     OHIF.log.info('imageViewerViewport loadDisplaySetIntoViewport');
 
     // Make sure we have all the data required to render the series
