@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstoneWADOImageLoader } from 'meteor/ohif:cornerstone';
+import * as cornerstoneWebImageLoader from 'cornerstone-web-image-loader'; 
 
 Meteor.startup(function() {
     const maxWebWorkers = Math.max(navigator.hardwareConcurrency - 1, 1);
@@ -19,4 +20,5 @@ Meteor.startup(function() {
     };
 
     cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+    cornerstoneWebImageLoader.external.cornerstone = cornerstone;
 });
