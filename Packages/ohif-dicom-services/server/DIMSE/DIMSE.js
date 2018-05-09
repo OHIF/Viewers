@@ -78,6 +78,7 @@ DIMSE.associate = function(contexts, callback, options) {
     options = Object.assign(defaults, options);
 
     OHIF.log.info('Associating...');
+    OHIF.log.info(options);
 
     const socket = conn.associate(options, function(pdu) {
         // associated
@@ -86,6 +87,7 @@ DIMSE.associate = function(contexts, callback, options) {
     });
 
     socket.on('error', function (error) {
+        OHIF.log.error(error);
         callback(error, null);
     });
 
@@ -135,6 +137,7 @@ DIMSE.retrievePatients = function(params, options) {
 };
 
 DIMSE.retrieveStudies = function(params, options) {
+    DIMSE.status.action = 'retrieveStudies';
     //var start = new Date();
     var future = new Future;
     DIMSE.associate([C.SOP_STUDY_ROOT_FIND], function(error, pdu) {
@@ -348,21 +351,39 @@ DIMSE.storeInstances = function(fileList, callback) {
         callback(err, file);
     });
 };
+DIMSE.status = {};
 
-DIMSE.moveInstances = function(studyInstanceUID, seriesInstanceUID, sopInstanceUID, sopClassUID, params) {
-    DIMSE.associate([C.SOP_STUDY_ROOT_MOVE, sopClassUID], function(error) {
-        if (error) {
-            OHIF.log.error('Could not move instances');
-            OHIF.log.trace();
+DIMSE.moveInstances = function(options) {
+  var future = new Future;
+  OHIF.log.info("options are");
+  OHIF.log.info(options);
+  DIMSE.status.action = 'moveInstances';
+  DIMSE.associate([C.SOP_STUDY_ROOT_MOVE], function(error) {
+      console.log("*** DIMSE associating ***")
+      if (error) {
+          OHIF.log.error('Could not move instances');
+          OHIF.log.trace();
 
-            return;
-        }
+          return future.throw(error);
+      }
 
-        var defaultParams = {
-            0x0020000D: studyInstanceUID ? studyInstanceUID : '',
-            0x0020000E: seriesInstanceUID ? seriesInstanceUID : '',
-            0x00080018: sopInstanceUID ? sopInstanceUID : ''
-        };
-        this.moveInstances('OHIFDCM', Object.assign(defaultParams, params));
-    });
+      var params = {
+          0x0020000D: options.studyInstanceUid,
+          0x0020000E: '',
+          0x00080018: ''
+      };
+      var result = this.moveInstances('ORTHANC', params);
+      let status = {};
+
+      status.processed = 0;
+      this.on('message', function(pdv) {
+        status.processed = status.processed + 1;
+        DIMSE.status = Object.assign(status, DIMSE.status);
+      });
+      result.on('end', function() {
+          future.return(DIMSE.status);
+      });
+  });
+
+  return future.wait();
 };

@@ -587,7 +587,7 @@ CSocket.prototype.storeInstance = function(sopClassUID, sopInstanceUID, options)
 
 CSocket.prototype.moveInstances = function(destination, params, options) {
     var sendParams = Object.assign({
-        0x00080052: C.QUERY_RETRIEVE_LEVEL_IMAGE,
+        0x00080052: C.QUERY_RETRIEVE_LEVEL_STUDY,
     }, params);
     options = Object.assign({
         context: C.SOP_STUDY_ROOT_MOVE
