@@ -16,10 +16,19 @@ Router.route('/studylist', function() {
     this.render('ohifViewer', { data: { template: 'studylist' } });
 }, { name: 'studylist' });
 
-Router.route('/viewer/:studyInstanceUids', function() {
-    const studyInstanceUids = this.params.studyInstanceUids.split(';');
-    OHIF.viewerbase.renderViewer(this, { studyInstanceUids }, 'ohifViewer');
-}, { name: 'viewerStudies' });
+Router.route('/viewer/:studyInstanceUids', {
+    name: 'viewerStudies',
+    action: function() {
+      const studyInstanceUids = this.params.studyInstanceUids.split(';');
+  
+      Meteor.call('MoveRequest', {
+        studyInstanceUid: studyInstanceUids[0]
+      }, function(error, result){
+        console.log("DONE", error, result);
+      });
+  
+      OHIF.viewerbase.renderViewer(this, { studyInstanceUids }, 'ohifViewer');
+  } });
 
 // OHIF #98 Show specific series of study
 Router.route('/study/:studyInstanceUid/series/:seriesInstanceUids', function () {

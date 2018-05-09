@@ -35,5 +35,8 @@ Package.onUse(function(api) {
     api.addFiles('server/DIMSE/Connection.js', 'server');
     api.addFiles('server/DIMSE/DIMSE.js', 'server');
 
+    // Server imports
+    api.addFiles('server/index.js', 'server');
+
     api.export('DIMSE', 'server');
 });
