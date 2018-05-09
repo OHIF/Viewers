@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  pacs:
+    image: jodogne/orthanc-plugins:1.3.1
+    volumes:
+      - ./UniCa/extra/config/pacs.json5:/etc/orthanc/orthanc.json:ro
+    ports:
+      - 8042:8042
+      - 4242:4242
+    command: "/etc/orthanc/orthanc.json --verbose"
+    networks:
+      main:
+        aliases:
+          - pacs
+
+  orthanc:
+    image: jodogne/orthanc-plugins:1.3.1
+    volumes:
+      - ./UniCa/extra/config/orthanc.json5:/etc/orthanc/orthanc.json:ro
+    ports:
+      - 8043:8042
+      - 4243:4242
+    networks:
+      main:
+        aliases:
+          - orthanc
+
+networks:
+  main:
