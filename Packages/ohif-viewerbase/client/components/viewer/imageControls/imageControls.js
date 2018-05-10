@@ -28,7 +28,9 @@ Template.imageControls.onRendered(() => {
 
 Template.imageControls.onDestroyed(() => {
     const instance = Template.instance();
-    $(window).off('resize', instance.handleResize);
+    if (instance.handleResize) {
+        $(window).off('resize', instance.handleResize);
+    }
 });
 
 Template.imageControls.events({
