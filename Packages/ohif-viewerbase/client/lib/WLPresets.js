@@ -6,8 +6,8 @@ import { OHIF } from 'meteor/ohif:core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 import { viewportUtils } from './viewportUtils';
 
-const WL_PRESET_CUSTOM = 'Custom';
-const WL_PRESET_DEFAULT = 'Default';
+const WL_PRESET_CUSTOM = 'WL_PRESET_CUSTOM';
+const WL_PRESET_DEFAULT = 'WL_PRESET_DEFAULT';
 const WL_STORAGE_KEY = `WindowLevelPresetsDefinitions`;
 
 OHIF.viewer.defaultWLPresets = {
@@ -59,29 +59,37 @@ class WindowLevelPresetsManager {
         this.storeFunction = storeFunction;
     }
 
+    /**
+     * Updates the enabledElement data for the Cornerstone element
+     * to reflect the current W/L preset which is applied.
+     *
+     * @param {HTMLElement} element
+     */
     updateElementWLPresetData(element) {
         const wlPresetData = cornerstone.getElementData(element, 'wlPreset');
         const enabledElement = cornerstone.getEnabledElement(element);
         const { viewport, image } = enabledElement;
         const { windowCenter, windowWidth } = viewport.voi;
-        let preset, presetName;
+        let presetName;
 
         if (windowWidth === image.windowWidth && windowCenter === image.windowCenter) {
             presetName = WL_PRESET_DEFAULT;
         } else {
             const WLPresets = OHIF.viewer.wlPresets;
-            for (let index in WLPresets) {
-                if (!WLPresets.hasOwnProperty(index)) continue;
-                const currentPreset = WLPresets[index];
-                if (windowCenter === currentPreset.wc && windowWidth === currentPreset.ww) {
-                    preset = currentPreset;
-                    presetName = preset.id;
-                    break;
-                }
+
+            const currentPreset = Object.values(WLPresets).find(currentPreset => {
+              return (windowCenter === currentPreset.wc &&
+                      windowWidth === currentPreset.ww);
+            });
+
+            if (currentPreset) {
+              presetName = currentPreset.id;
+            } else {
+              presetName = WL_PRESET_CUSTOM;
             }
         }
 
-        wlPresetData.name = presetName || WL_PRESET_CUSTOM;
+        wlPresetData.name = presetName;
         wlPresetData.ww = windowWidth;
         wlPresetData.wc = windowCenter;
 
@@ -95,7 +103,7 @@ class WindowLevelPresetsManager {
     /**
      * Set specified W/L preset on given element on fallback to default W/L preset if the specified preset is not valid.
      * @param {String} presetName The desired W/L preset to be applied
-     * @param {DOMElement} element An enabled viewport DOM Element.
+     * @param {HTMLElement} element An enabled viewport DOM Element.
      */
     applyWLPreset(presetName, element) {
         const wlPresets = OHIF.viewer.wlPresets;
@@ -123,8 +131,6 @@ class WindowLevelPresetsManager {
 
         // Update the viewport
         cornerstone.setViewport(element, viewport);
-
-        OHIF.log.info('WLPresets::Applying WL Preset: ' + presetName);
 
         // Notify other components about W/L Preset changes
         Session.set('OHIFWlPresetApplied', presetName);

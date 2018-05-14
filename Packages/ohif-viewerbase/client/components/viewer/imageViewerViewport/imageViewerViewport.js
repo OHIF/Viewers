@@ -27,6 +27,8 @@ const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstone
  * @param data {object} Object containing the study, series, and viewport element to be used
  */
 const loadDisplaySetIntoViewport = (data, templateData) => {
+    const wlPresets = OHIF.viewerbase.wlPresets;
+
     OHIF.log.info('imageViewerViewport loadDisplaySetIntoViewport');
 
     // Make sure we have all the data required to render the series
@@ -211,6 +213,9 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             cornerstone.resize(element, true);
         }
 
+        // Set/store W/L preset data to Default on first display
+        wlPresets.updateElementWLPresetData(element);
+
         // Remove the data for this viewport from the ViewportLoading object
         // This will stop the loading percentage complete from being displayed.
         delete window.ViewportLoading[viewportIndex];
@@ -274,6 +279,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // (e.g. following a change of window or zoom)
         const onImageRendered = (event) => {
             const eventData = event.detail;
+            const { viewport, element } = eventData;
 
             // Attention: Adding OHIF.log.info in this function may decrease the performance
             // since this callback function is called multiple times (eg: when a tool is
@@ -288,9 +294,11 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             Session.set('CornerstoneImageRendered' + viewportIndex, Math.random());
 
             // Save the current viewport into the OHIF.viewer.data global variable
-            const viewport = cornerstone.getViewport(element);
             layoutManager.viewportData[viewportIndex].viewport = viewport;
             OHIF.viewer.data.loadedSeriesData[viewportIndex].viewport = viewport;
+
+            // Update the W/L Preset data, if necessary
+            wlPresets.updateElementWLPresetData(element);
 
             // Check if it has onImageRendered loadAndCacheImage callback
             if (typeof callbacks.onImageRendered === 'function') {
@@ -344,6 +352,10 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
                 layoutManager.viewportData[viewportIndex].currentImageIdIndex = imageIdIndex;
                 OHIF.viewer.data.loadedSeriesData[viewportIndex].currentImageIdIndex = imageIdIndex;
             }
+
+            const wlPresetData = cornerstone.getElementData(element, 'wlPreset');
+            const wlPresetDataName = wlPresetData && wlPresetData.name;
+            wlPresets.applyWLPreset(wlPresetDataName, element);
 
             // Check if it has onNewImage loadAndCacheImage callback
             if (typeof callbacks.onNewImage === 'function') {
