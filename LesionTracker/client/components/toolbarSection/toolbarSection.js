@@ -1,9 +1,21 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
+import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.toolbarSection.helpers({
+    isFinishDisabled() {
+        const instance = Template.instance();
+    
+        // Run this computation on save or every time any measurement / timepoint suffer changes
+        OHIF.ui.unsavedChanges.depend();
+        instance.saveObserver.depend();
+        Session.get('LayoutManagerUpdated');
+    
+        return OHIF.ui.unsavedChanges.probe('viewer.*') === 0;
+    },
+
     leftSidebarToggleButtonData() {
         const instance = Template.instance();
         return {
@@ -235,6 +247,46 @@ Template.toolbarSection.events({
     }
 });
 
+Template.toolbarSection.onCreated( function() {
+    const instance = Template.instance();
+
+    instance.path = 'viewer.studyViewer.measurements';
+    instance.saveObserver = new Tracker.Dependency();
+    instance.api = {
+        save() {
+            // Clear signaled unsaved changes...
+            const successHandler = () => {
+                OHIF.ui.unsavedChanges.clear(`${instance.path}.*`);
+                instance.saveObserver.changed();
+            };
+    
+            // Display the error messages
+            const errorHandler = data => {
+                OHIF.ui.showDialog('dialogInfo', Object.assign({ class: 'themed' }, data));
+            };
+    
+            const promise = instance.data.measurementApi.storeMeasurements();
+            promise.then(successHandler).catch(errorHandler);
+            OHIF.ui.showDialog('dialogLoading', {
+                promise,
+                text: 'Saving measurement data'
+            });
+    
+            return promise;
+        }
+    };
+
+    instance.unsavedChangesHandler = () => {
+        const isNotDisabled = !instance.$('.js-finish-case').hasClass('disabled');
+        if (isNotDisabled && instance.progressPercent.get() === 100) {
+            instance.api.save();
+        }
+    };
+
+    // Attach handler for unsaved changes dialog...
+    OHIF.ui.unsavedChanges.attachHandler(instance.path, 'save', instance.unsavedChangesHandler);
+});
+
 Template.toolbarSection.onRendered(function() {
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = Viewerbase.toolManager.getToolDefaultStates();
@@ -258,4 +310,10 @@ Template.toolbarSection.onRendered(function() {
             }
         }
     }
+});
+
+Template.caseProgress.onDestroyed(() => {
+    const instance = Template.instance();
+    // Remove unsaved changes handler after this view has been destroyed...
+    OHIF.ui.unsavedChanges.removeHandler(instance.path, 'save', instance.unsavedChangesHandler);
 });

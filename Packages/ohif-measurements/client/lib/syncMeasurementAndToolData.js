@@ -8,7 +8,7 @@ OHIF.measurements.syncMeasurementAndToolData = measurement => {
 
     // Stop here if the metadata for the measurement's study is not loaded yet
     const { studyInstanceUid } = measurement;
-    const metadata = OHIF.viewer.StudyMetadataList.findBy({ studyInstanceUid });
+    const metadata = OHIF.viewer.StudyMetadataList.findBy({ "studyInstanceUID": studyInstanceUid });
     if (!metadata) return;
 
     // Iterate each child tool if the current tool has children
