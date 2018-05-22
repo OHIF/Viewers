@@ -6,18 +6,17 @@ import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
 
 /**
- * Extend the Array prototype with a Swap function
- * so we can swap stages more easily
+ * Add an array index swapping function so we can swap stages more easily
  */
-Array.prototype.move = function(oldIndex, newIndex) {
-    var value = this[oldIndex];
+move = function(array, oldIndex, newIndex) {
+    var value = array[oldIndex];
 
     newIndex = Math.max(0, newIndex);
-    newIndex = Math.min(this.length, newIndex);
+    newIndex = Math.min(array.length, newIndex);
 
-    this.splice(oldIndex, 1);
-    this.splice(newIndex, 0, value);
-    return this;
+    array.splice(oldIndex, 1);
+    array.splice(newIndex, 0, value);
+    return array;
 };
 
 /**
@@ -227,7 +226,7 @@ Template.stageSortable.events({
 
         // Swap the stages in the current Protocol's display set sequence
         // using our addition to the Array prototype
-        ProtocolEngine.protocol.stages = ProtocolEngine.protocol.stages.move(oldIndex, newIndex);
+        ProtocolEngine.protocol.stages = move(ProtocolEngine.protocol.stages, oldIndex, newIndex);
 
         // If the currently displayed stage was reordered into a new position,
         // update the value for the stage index in the displayed Protocol
@@ -247,7 +246,7 @@ Template.stageSortable.events({
 
         // Swap the stages in the current Protocol's display set sequence
         // using our addition to the Array prototype
-        ProtocolEngine.protocol.stages = ProtocolEngine.protocol.stages.move(oldIndex, newIndex);
+        ProtocolEngine.protocol.stages = move(ProtocolEngine.protocol.stages.move, oldIndex, newIndex);
 
         // If the currently displayed stage was reordered into a new position,
         // update the value for the stage index in the displayed Protocol
