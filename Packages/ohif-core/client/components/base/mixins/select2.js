@@ -53,7 +53,9 @@ OHIF.mixins.select2 = new OHIF.Mixin({
                     }
 
                     // Check if there is already an empty option on items list
-                    if (!_.findWhere(items, { value: '' })) {
+                    // Note: If this is a multi-select input. Do not add a placeholder
+                    const isMultiple = instance.data.options && instance.data.options.multiple;
+                    if (!_.findWhere(items, { value: '' }) && isMultiple === false) {
                         // Clone the current items
                         const newItems = _.clone(items) || [];
                         newItems.unshift({
