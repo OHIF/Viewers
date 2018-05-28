@@ -31,10 +31,6 @@ Template.imageDownloadDialog.onCreated(() => {
             type: Boolean,
             label: 'Show Annotations',
             defaultValue: true
-        },
-        quality: {
-            type: Number,
-            defaultValue: 100
         }
     });
 
@@ -86,8 +82,7 @@ Template.imageDownloadDialog.onRendered(() => {
                 const formData = instance.form.value();
                 const image = instance.viewportPreview;
                 const type = 'image/' + formData.type;
-                const quality = formData.type === 'png' ? 1 : formData.quality / 100;
-                const dataUrl = instance.downloadCanvas.toDataURL(type, quality);
+                const dataUrl = instance.downloadCanvas.toDataURL(type, 1);
                 image.src = dataUrl;
 
                 const $element = $(enabledElement.element);
@@ -105,21 +100,12 @@ Template.imageDownloadDialog.onRendered(() => {
         });
     };
 
-    // TODO: Add quality parameter to cornerstoneTools' saveAs method
     instance.downloadImage = () => {
         const formData = instance.form.value();
-        const link = document.createElement('a');
-        link.download = `${formData.name}.${formData.type}`;
-        link.href = instance.viewportPreview.src;
+        const filename = `${formData.name}.${formData.type}`;
+        const mimetype = `image/${formData.type}`;
 
-        // Create a 'fake' click event to trigger the download
-        if (document.createEvent) {
-            const event = document.createEvent('MouseEvents');
-            event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            link.dispatchEvent(event);
-        } else if (link.fireEvent) {
-            link.fireEvent('onclick');
-        }
+        cornerstoneTools.saveAs(instance.viewportElement, filename, mimetype);
     };
 
     instance.autorun(() => {
@@ -160,6 +146,12 @@ Template.imageDownloadDialog.onRendered(() => {
     });
 });
 
+Template.imageDownloadDialog.onDestroyed(() => {
+  const instance = Template.instance();
+
+  cornerstone.disable(instance.viewportElement);
+});
+
 Template.imageDownloadDialog.events({
     'click .js-keep-aspect'(event, instance) {
         const currentState = instance.keepAspect.get();
@@ -168,10 +160,6 @@ Template.imageDownloadDialog.events({
     },
 
     'change [data-key=showAnnotations], change [data-key=type]'(event, instance) {
-        instance.changeObserver.changed();
-    },
-
-    'input [data-key=quality]'(event, instance) {
         instance.changeObserver.changed();
     },
 
@@ -209,12 +197,5 @@ Template.imageDownloadDialog.events({
 Template.imageDownloadDialog.helpers({
     keepAspect() {
         return Template.instance().keepAspect.get();
-    },
-
-    showQuality() {
-        const instance = Template.instance();
-        instance.changeObserver.depend();
-        if (!instance.form) return true;
-        return instance.form.item('type').value() === 'jpeg';
     }
 });
