@@ -9,8 +9,6 @@ Template.timepointBrowserQuickSwitch.onCreated(() => {
     const instance = Template.instance();
     const { timepointApi } = OHIF.viewer;
 
-    instance.hasAdditional = new ReactiveVar(false);
-    instance.showAdditional = new ReactiveVar(false);
     instance.selectedTimepoint = new ReactiveVar();
     instance.timepoints = new ReactiveVar([]);
 
@@ -41,19 +39,8 @@ Template.timepointBrowserQuickSwitch.onCreated(() => {
     });
 
     instance.autorun(() => {
-        instance.data.currentStudy.dep.depend();
-        instance.showAdditional.set(false);
-    });
-
-    instance.autorun(() => {
-        const showAdditional = instance.showAdditional.get();
-        instance.hasAdditional.set(!showAdditional && instance.keyTimepoints.length > 1);
-    });
-
-    instance.autorun(() => {
         const selectedTimepoint = instance.selectedTimepoint.get();
-        const showAdditional = instance.showAdditional.get();
-        const timepoints = showAdditional ? instance.keyTimepoints : [selectedTimepoint];
+        const timepoints = [selectedTimepoint];
         instance.timepoints.set(timepoints);
     });
 });
@@ -116,10 +103,6 @@ Template.timepointBrowserQuickSwitch.events({
                 $scrollable.one('mouseleave', () => $scrollable.off('mousemove', hoverHandler));
             }
         });
-    },
-
-    'click .study-item-box.additional'(event, instance) {
-        instance.showAdditional.set(true);
     }
 });
 
