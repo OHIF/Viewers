@@ -7,6 +7,12 @@
 
             {{>toolbarSectionTools toolbarButtons=toolbarButtons}}
 
+            <div class="pull-right m-t-1 rm-x-1">
+                {{#form (extend api=instance.api)}}
+                    {{#button class='btn p-x-2' action='save' disabled=(isFinishDisabled)}}Save{{/button}}
+                {{/form}}
+            </div>
+
             <div id="toggleMeasurements" class="pull-right m-t-1 rm-x-1">
                 {{>roundedButtonGroup rightSidebarToggleButtonData}}
             </div>
