@@ -12,7 +12,7 @@ export default function({ instance, eventData, tool, toolGroupId, toolGroup }) {
     // Stop here if the tool data shall not be persisted (e.g. temp tools)
     if (!Collection) return;
 
-    const measurementTypeId = measurementApi.toolsGroupsMap[measurementData.toolType];
+    const measurementTypeId = measurementApi.toolsGroupsMap[eventData.toolType];
     const measurement = Collection.findOne(measurementData._id);
 
     // Stop here if the measurement is already gone or never existed

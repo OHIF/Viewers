@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "babel-runtime": "^6.23.0",
+    "npm": "^6.0.0",
     "loglevel": "^1.4.1"
   },
   "devDependencies": {},

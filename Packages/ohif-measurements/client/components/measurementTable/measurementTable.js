@@ -52,7 +52,11 @@ Template.measurementTable.onRendered(() => {
 
 Template.measurementTable.helpers({
     hasWarnings() {
-        return Template.instance().data.conformanceCriteria.nonconformities.get();
+        const nonconformities = false;
+        if (Template.instance().data.conformanceCriteria) {
+            nonconformities = Template.instance().data.conformanceCriteria.nonconformities.get();
+        }
+        return nonconformities;
     },
 
     buttonGroupData() {
@@ -72,7 +76,7 @@ Template.measurementTable.helpers({
 
 Template.measurementTable.events({
     'click .warning-status'(event, instance) {
-        const nonconformities = instance.data.conformanceCriteria.nonconformities.get();
+        const nonconformities = instance.data.conformanceCriteria && instance.data.conformanceCriteria.nonconformities.get();
         const messages = [];
         _.each(nonconformities, nonconformity => messages.push(nonconformity.message));
 
