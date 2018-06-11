@@ -24,9 +24,13 @@
                 {{/if}}
                 <div class="actions clearfix">
                     <button class="pull-left btn-rename">Relabel</button>
-                    <button class="pull-right btn-description">{{valueIf instance.description.get 'Edit' 'Add'}} description</button>
+                    <button class="pull-left btn-description">{{valueIf instance.description.get 'Edit' 'Add'}} description</button>
+                    {{#if instance.data.oldValue}}
+                        <button class="pull-left btn-cancel">Cancel</button>
+                    {{/if}}
                 </div>
             </div>
         {{/if}}
+        
     </div>
 </template>

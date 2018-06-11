@@ -246,6 +246,13 @@ Template.measureFlow.events({
         // Change the measure flow state to selected
         instance.state.set('selected');
 
+        if( instance.data.oldValue ) {
+            instance.data.oldValue = {
+                location: instance.data.measurement.location || '',
+                description: instance.data.measurement.description || ''
+            }
+        }
+
         // Wait for the DOM re-rendering
         Tracker.afterFlush(() => {
             // Get the measure flow div
@@ -264,7 +271,7 @@ Template.measureFlow.events({
 
             // Resize the copied label with same width of the clicked one
             // $measureFlow.children('.tree-leaf').width($label.outerWidth());
-            $measureFlow.children('.tree-leaf').width(212);
+            $measureFlow.children('.tree-leaf').width(270);
 
             // Reset the flag to avoid wrong positioning when clicking normal labels again
             instance.commonClicked = false;
@@ -287,6 +294,15 @@ Template.measureFlow.events({
                 $measureFlow.trigger('close');
             }
         });
+    },
+
+    'click .btn-cancel'(event, instance) {
+        // evert to old location and description
+        const { location, description } = instance.data.oldValue;
+        instance.data.updateCallback(location, description);
+
+        const $measureFlow = $(event.currentTarget);
+        $measureFlow.trigger('close');
     },
 
     'mouseleave .measure-flow'(event, instance) {
