@@ -131,6 +131,16 @@ export const toolManager = {
             touch: cornerstoneTools.crosshairsTouch
         });
 
+        toolManager.addTool('brush', {
+            mouse: cornerstoneTools.brush,
+            touch: cornerstoneTools.brushTouch // doesn't exist
+        });
+
+        toolManager.addTool('freehand', {
+            mouse: cornerstoneTools.freehand,
+            touch: cornerstoneTools.freehandTouch // doesn't exist
+        });
+
         // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
             defaultTool.left = OHIF.viewer.defaultTool;

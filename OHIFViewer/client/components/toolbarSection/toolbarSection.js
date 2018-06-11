@@ -186,8 +186,15 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'pan',
-            title: 'Pan',
+            id: 'brush',
+            title: 'Brush',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
+        });
+
+        buttonData.push({
+            id: 'freehand',
+            title: 'Freehand',
             classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
         });

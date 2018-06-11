@@ -33,6 +33,7 @@ OHIF.measurements.toggleLabelButton = options => {
 
     const data = {
         measurement,
+        oldValue: options.oldValue,
         position: options.position,
         direction: options.direction,
         threeColumns: true,
