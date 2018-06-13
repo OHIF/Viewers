@@ -7,7 +7,15 @@ const formatPN = context => {
         return;
     }
 
-    return context.replace('^', ', ');
+    // Convert the first ^ to a ', '. String.replace() only affects
+    // the first appearance of the character.
+    const commaBetweenFirstAndLast = context.replace('^', ', ');
+
+    // Replace any remaining '^' characters with spaces
+    const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
+
+    // Trim any extraneous whitespace
+    return cleaned.trim();
 };
 
 /**
