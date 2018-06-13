@@ -1,49 +1,27 @@
 import { OHIF } from 'meteor/ohif:core';
-import { handleSR } from "../utils/handleSR";
+import {
+    getLatestSRSeries,
+    retrieveMeasurementFromSR,
+    stowSRFromMeasurements
+} from '../utils/handleSR';
+import stowSR from '../utils/stowSR';
 
 export const retrieveMeasurements = (patientId, timepointIds) => {
     OHIF.log.info('retrieveMeasurements');
 
-    const srSeries = [];
-    const allStudies = OHIF.viewer.StudyMetadataList.all();
-    allStudies.forEach(study => {
-        study.getSeries().forEach(series => {
-            const firstInstance = series.getFirstInstance();
-            const sopClassUid = firstInstance._instance.sopClassUid;
+    const latestSeries = getLatestSRSeries();
 
-            console.log(sopClassUid);
-
-            if (sopClassUid === '1.2.840.10008.5.1.4.1.1.88.22') {
-                srSeries.push(series);
-            }
-        });
-    });
-
-    // handle the SR documents after the others so that the imageIds will have been defined
-
-    // TODO: Figure out which SR to use...
-    const promises = [];
-    srSeries.forEach(series => {
-        promises.push(handleSR(series));
-    });
-
-    return Promise.all(promises).then((values) => {
-        // Concatenate the measurements retrieved from each SR
-        const combined = [].concat.apply([], [...values]);
-
+    return retrieveMeasurementFromSR(latestSeries).then((value) => {
         return {
-            length: combined
-        };
+            length: value
+        }
     });
 };
 
 export const storeMeasurements = (measurementData, timepointIds) => {
     OHIF.log.info('storeMeasurements');
-
-    // Here is where we should do any required data transformation and API calls
-
-    // TODO: Write SR, STOW back to PACS
-    return Promise.resolve();
+    //return stowSR.stowSR();
+    return stowSRFromMeasurements(measurementData);
 };
 
 export const retrieveTimepoints = filter => {

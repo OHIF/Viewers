@@ -183,6 +183,11 @@ Template.viewer.onCreated(() => {
             Session.set('MeasurementsReady', true);
 
             measurementApi.syncMeasurementsAndToolData();
+
+            const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+            if (Object.keys(toolState).length !== 0) {
+                instance.state.set('rightSidebar', true);
+            }
         });
     });
 
@@ -270,6 +275,11 @@ Template.viewer.events({
         const instance = Template.instance();
         const current = instance.state.get('rightSidebar');
         instance.data.state.set('rightSidebar', !current);
+    },
+
+    'click .saveMeasurementsToSR'() {
+        const instance = Template.instance();
+        instance.data.measurementApi.storeMeasurements();
     },
 
     'cornerstonetoolsmeasurementadded .imageViewerViewport'(event, instance) {
