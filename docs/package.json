@@ -32,9 +32,11 @@
   },
   "homepage": "https://github.com/OHIF/Viewers#readme",
   "dependencies": {
+    "gitbook-plugin-anchors": "^0.7.1",
     "gitbook-plugin-edit-link": "^2.0.2",
-    "gitbook-plugin-github": "^3.0.0",
     "gitbook-plugin-ga": "^2.0.0",
-    "gitbook-plugin-sitemap": "^1.2.0"
+    "gitbook-plugin-github": "^3.0.0",
+    "gitbook-plugin-sitemap": "^1.2.0",
+    "gitbook-plugin-theme-cornerstone": "^1.1.1"
   }
 }

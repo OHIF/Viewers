@@ -41,7 +41,6 @@ It is possible to build this standalone viewer to run as a client-only bundle of
   METEOR_PACKAGE_DIRS="../../Packages" meteor-build-client-fixed ../myOutputFolder -u localhost:3000
   ````
 
-
 3. Test the bundled client-side package locally.
 
     Note: You will need to have Python installed to run the test server for this case. It is not a typical simple HTTP server. The bundled script redirects all URLs following the base URL to index.html. It will then use the routes defined in your application to handle the URL parameters.
@@ -50,25 +49,24 @@ It is possible to build this standalone viewer to run as a client-only bundle of
 
     So if you navigate to http://localhost:3000/sampleJPEG.json the application will retrieve the JSON from http://localhost:3000/api/sampleJPEG.json and use it to populate the viewer. If something appears to be broken, make sure you retrieve a JSON file at the /api URL.
 
-
     Create the api folder for your data
 
-    ````bash
-    cd myOutputFolder
-    mkdir api
-    ````
+  ````bash
+  cd myOutputFolder
+  mkdir api
+  ````
 
     Copy your data into the folder
 
-    ````bash
-    cp ../etc/sample* api/
-    ````
+  ````bash
+  cp ../etc/sample* api/
+  ````
 
     Run the server
 
-    ```` bash
-    python ../etc/redirectingSimpleServer.py
-    ````
+  ```` bash
+  python ../etc/redirectingSimpleServer.py
+  ````
 
     Open your web browser and navigate to http://localhost:3000/sampleJPEG.json or http://localhost:3000/sampleDICOM.json
 
