@@ -10,6 +10,15 @@ OHIF.measurements.getLocation = collection => {
     }
 };
 
+// TODO: change this to a const after refactoring newMeasurements code on measurementTableView.js
+OHIF.measurements.getDescription = collection => {
+    for (let i = 0; i < collection.length; i++) {
+        if (collection[i].description) {
+            return collection[i].description;
+        }
+    }
+};
+
 /**
  * Group all measurements by its tool group and measurement number.
  *
@@ -76,6 +85,7 @@ OHIF.measurements.getMeasurementsGroupedByNumber = (measurementApi, timepointApi
             measurementTypeId: toolGroup.id,
             measurementNumber: key,
             location: OHIF.measurements.getLocation(groupObject[key]),
+            description: OHIF.measurements.getDescription(groupObject[key]),
             responseStatus: false, // TODO: Get the latest timepoint and determine the response status
             entries: groupObject[key]
         }));

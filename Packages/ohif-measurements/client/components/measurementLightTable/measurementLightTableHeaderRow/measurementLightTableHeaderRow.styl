@@ -1,0 +1,36 @@
+@import "{ohif:design}/app"
+
+$headerRowHeight = 63px
+
+.measurementLightTableHeaderRow
+  theme('background-color', '$uiGrayDarker')
+  theme('color', '$textSecondaryColor')
+  display: flex
+  theme('fill', '$textSecondaryColor')
+  height: $headerRowHeight
+  line-height: $headerRowHeight
+  margin-top: 2px
+  width: 100%
+
+  div
+    align-items: stretch
+    flex: 1
+    justify-content: space-around
+    text-align: center
+
+  .type
+    theme('color', '$textSecondaryColor')
+    font-size: 22px
+    font-weight: 300
+    line-height: $headerRowHeight
+    padding: 0 10px
+    text-align: left
+
+  .numberOfMeasurements
+    theme('color', '$uiSkyBlue')
+    float: right
+    font-weight: 300
+    font-size: 40px
+    max-width: 54px
+    height: $headerRowHeight
+    line-height: 66px

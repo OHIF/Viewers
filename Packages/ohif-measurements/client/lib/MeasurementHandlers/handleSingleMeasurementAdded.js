@@ -21,7 +21,7 @@ export default function ({ instance, eventData, tool }) {
     const imageAttributes = getImageAttributes(eventData.element);
     const measurement = _.extend({}, measurementData, imageAttributes, {
         measurementNumber: measurementData.measurementNumber,
-        userId: Meteor.userId()
+        userId: Meteor.userId() || 'UserID'
     });
 
     // Get the related timepoint by the measurement number and use its location if defined
