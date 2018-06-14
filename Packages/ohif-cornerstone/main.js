@@ -4,6 +4,7 @@ import * as cornerstoneMath from 'cornerstone-math/dist/cornerstoneMath.js';
 import * as cornerstoneTools from 'cornerstone-tools/dist/cornerstoneTools.js';
 import * as cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader/dist/cornerstoneWADOImageLoader.js';
 import * as dicomParser from 'dicom-parser'; // Importing from dist breaks instance reference of dicomParser.DataSet class
+import * as dcmjs from 'dcmjs/build/dcmjs';
 
 cornerstoneTools.external.Hammer = Hammer;
 cornerstoneTools.external.cornerstone = cornerstone;
@@ -18,5 +19,6 @@ export {
     cornerstoneTools,
     cornerstoneMath,
     cornerstoneWADOImageLoader,
-    dicomParser
+    dicomParser,
+    dcmjs
 };

@@ -1,0 +1,17 @@
+<template name="measurementLightTable">
+    <div id="measurementLightTableContainer" class="flex-v">
+        <div class="measurementLightTableHeaderContainer">
+            <div class="measurementLightTableHeader">
+                <div class="studyDateLabel">
+                    Study date:
+                </div>
+                <div class="studyDate">
+                    {{formatDA this.timepointApi.all.[0].latestDate "DD-MMM-YY"}}
+                </div>
+            </div>
+        </div>
+        {{#scrollArea class='measurementLightTableView flex-grow fit' scrollStep=63}}
+            {{>measurementLightTableView (clone this)}}
+        {{/scrollArea}}
+    </div>
+</template>

@@ -1,0 +1,87 @@
+@import "{ohif:design}/app"
+
+.measurementLightTableRow
+  display: flex
+  margin-left: -6px
+  margin-top: 2px
+  padding-left: 6px
+  opacity: 0.7
+  transform(scale(1))
+  width: calc(100% + 6px)
+
+  &:hover
+    opacity 1
+
+  &.active
+    opacity 1
+    .measurementRowSidebar
+      theme('color', '$activeColor')
+
+    .rowOptions
+      height: 35px
+      visibility: visible
+
+  .rowOptions
+    theme('background-color', '$uiGrayDarker')
+    height: 0
+    overflow: hidden
+    transition(all 0.3s ease)
+    visibility: hidden
+    padding-left: 14px
+
+    .rowAction
+      theme('color', '$defaultColor')
+      cursor: pointer
+      line-height: 35px
+      transition(all 0.3s ease)
+
+      &:hover, &:active
+        theme('color', '$textPrimaryColor')
+
+        svg
+          theme('fill', '$textPrimaryColor')
+          theme('stroke', '$textPrimaryColor')
+
+    svg
+      theme('fill', '$defaultColor')
+      theme('stroke', '$defaultColor')
+      transition(all 0.3s ease)
+
+      &.edit-icon
+        width: 14px
+        height: 13px
+
+      &.close-icon
+        width: 11px
+        height: 11px
+
+  .measurementRowSidebar
+    theme('background', '$uiGray')
+    theme('color', '$textSecondaryColor')
+    cursor: pointer
+    flex: 1
+    max-width: 30px
+    transition(all 0.3s ease)
+
+    .measurementNumber
+      font-size: 14px
+      font-weight: 400
+      margin-right: 5px
+      padding-top: 10px
+      text-align: center
+
+  .measurementRowContent
+    flex: 1
+
+  .measurementDetails
+    padding: 5px 2px 0 14px
+    line-height: 30px
+    font-size: 14px
+
+    .location
+      theme('color', '$textSecondaryColor')
+      font-weight: 400
+      margin-left: -2px
+
+    .value
+      theme('color', '$textPrimaryColor')

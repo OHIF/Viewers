@@ -47,14 +47,29 @@ Template.toolbarSection.helpers({
 
     rightSidebarToggleButtonData() {
         const instance = Template.instance();
+
+        // TODO: Figured out a way to handle both right panel contents
+        // return {
+        //     toggleable: true,
+        //     key: 'rightSidebar',
+        //     value: instance.data.state,
+        //     options: [{
+        //         value: 'hangingprotocols',
+        //         iconClasses: 'fa fa-cog',
+        //         bottomLabel: 'Hanging'
+        //     }]
+        // };
+        
         return {
             toggleable: true,
             key: 'rightSidebar',
             value: instance.data.state,
             options: [{
-                value: 'hangingprotocols',
-                iconClasses: 'fa fa-cog',
-                bottomLabel: 'Hanging'
+                value: 'measurements',
+                svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-measurements-lesions',
+                svgWidth: 18,
+                svgHeight: 10,
+                bottomLabel: 'Measurements'
             }]
         };
     },
