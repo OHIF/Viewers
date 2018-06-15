@@ -1,36 +1,46 @@
 <template name="toolbarSectionButton">
-    {{#if this.buttonTemplateName}}
-        {{>UI.dynamic template=this.buttonTemplateName data=this}}
-    {{else}}
-        <div id="{{this.id}}" tabindex="1"
-            class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if or this.disabled (disableButton)}}disabled{{/if}} {{#if this.subTools}}expandable{{/if}}"
-            title="{{this.tooltipTitle}}">
-            <div class="svgContainer">
-                {{#let svg=svgLink icon=iconClasses}}
-                    {{#if svg}}
-                        <svg>
-                            <use xlink:href={{absoluteUrl svg}}></use>
-                        </svg>
-                    {{else}}
-                        <i class={{icon}}></i>
-                    {{/if}}
-                {{/let}}
-            </div>
-            <div class="buttonLabel">
-                <span>{{this.title}}</span>
-                {{#if this.subTools}}
-                    <i class="fa fa-caret-down expanded-status" aria-hidden="true"></i>
-                {{/if}}
-            </div>
-            {{#if this.subTools}}
-                <div class="toolbarSectionDrawerContainer">
-                    <div class="toolbarSectionDrawer">
-                        {{#each subTool in this.subTools}}
-                            {{>toolbarSectionButton subTool}}
-                        {{/each}}
-                    </div>
+        {{#if this.buttonTemplateName}}
+            {{>UI.dynamic template=this.buttonTemplateName data=this}}
+        {{else}}
+            <div id="{{this.id}}" tabindex="1"
+                class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if or this.disabled (disableButton)}}disabled{{/if}} {{#if this.subTools}}expandable{{/if}}"
+                title="{{this.tooltipTitle}}">
+                <div class="svgContainer">
+                    {{#let svg=svgLink icon=iconClasses}}
+                        {{#if svg}}
+                            <svg>
+                                <use xlink:href={{absoluteUrl svg}}></use>
+                            </svg>
+                        {{else}}
+                            <i class={{icon}}></i>
+                        {{/if}}
+                    {{/let}}
                 </div>
-            {{/if}}
-        </div>
-    {{/if}}
-</template>
+                <div class="buttonLabel">
+                    <span>{{this.title}}</span>
+                    {{#if hasSubTools}}
+                        <i class="fa fa-caret-down expanded-status" aria-hidden="true"></i>
+                    {{/if}}
+                </div>
+                {{#if this.subToolsTemplateName}}
+                    <div class="toolbarSectionDrawerContainer">
+                        <div class="toolbarSectionDrawer">
+                            {{>UI.dynamic template=this.subToolsTemplateName data=this}}
+                        </div>
+                    </div>
+                {{else}}
+                    {{#if this.subTools}}
+                        <div class="toolbarSectionDrawerContainer">
+                            <div class="toolbarSectionDrawer">
+                                {{#each subTool in this.subTools}}
+                                    {{>toolbarSectionButton subTool}}
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/if}}
+                {{/if}}
+    
+            </div>
+        {{/if}}
+    </template>
+    
