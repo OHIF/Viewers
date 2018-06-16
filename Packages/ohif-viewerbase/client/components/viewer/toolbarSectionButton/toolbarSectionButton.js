@@ -106,6 +106,10 @@ Template.toolbarSectionButton.helpers({
         const isCommandDisabled = OHIF.commands.isDisabled(instance.data.id);
         const isFunctionDisabled = instance.data.disableFunction && instance.data.disableFunction();
         return isCommandDisabled || isFunctionDisabled;
+    },
+
+    hasSubTools() {
+        return this.subTools || this.subToolsTemplateName;
     }
 });
 

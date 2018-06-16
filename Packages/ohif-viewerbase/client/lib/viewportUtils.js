@@ -359,6 +359,33 @@ const isStackScrollLinkingActive = () => {
     return isActive;
 };
 
+//Change color of images from current viewport
+//It changes enabled image and all other slices into current enabled viewport
+const changeCurrentViewportColor = (colorId) => {
+    const element = getActiveViewportElement();
+    const colormap = cornerstone.colors.getColormap(colorId);
+    const nextColormapName = colormap.getColorSchemeName() || undefined;
+    const viewport = cornerstone.getViewport(element);
+
+    //cut in case no change
+    if(viewport.colormap && viewport.colormap.getColorSchemeName() === nextColormapName) {
+        return;
+    }
+    
+    let {data} = cornerstoneTools.getToolState(element, 'stack');
+
+    let imageIds = data[0].imageIds;
+    for(let imageId of imageIds) {
+        cornerstone.loadImage(imageId).then(image => {
+            //remove render function of images
+            image.render = undefined;
+        });
+    }
+    viewport.colormap = nextColormapName ? colormap : undefined;
+    cornerstone.setViewport(element, viewport);
+    cornerstone.updateImage(element, true);
+};
+
 // Create an event listener to update playing state when a clip stops playing
 window.addEventListener('cornerstonetoolsclipstopped', () => {
     Session.set('UpdateCINE', Math.random());
@@ -392,7 +419,8 @@ const viewportUtils = {
     hasMultipleFrames,
     stopAllClips,
     isStackScrollLinkingDisabled,
-    isStackScrollLinkingActive
+    isStackScrollLinkingActive,
+    changeCurrentViewportColor
 };
 
 export { viewportUtils };
