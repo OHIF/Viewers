@@ -106,6 +106,10 @@ Template.toolbarSectionButton.helpers({
         const isCommandDisabled = OHIF.commands.isDisabled(instance.data.id);
         const isFunctionDisabled = instance.data.disableFunction && instance.data.disableFunction();
         return isCommandDisabled || isFunctionDisabled;
+    },
+
+    hasSubTools() {
+        return this.subTools || this.subToolsTemplateName;
     }
 });
 
@@ -113,9 +117,12 @@ Template.toolbarSectionButton.events({
     'click .toolbarSectionButton:not(.expandable)'(event, instance) {
         // Prevent the event from bubbling to parent tools
         event.stopPropagation();
+        const $currentTarget = $(event.currentTarget);
 
-        // Stop here if the button is disabled
-        if ($(event.currentTarget).hasClass('disabled')) return;
+        // Stop here if the button is disabled or customAction
+        if ($currentTarget.hasClass('disabled') || $currentTarget.hasClass('customAction')) {
+            return;
+        }
 
         // Run the command attached to the button
         OHIF.commands.run(instance.data.id);

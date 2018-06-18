@@ -3,7 +3,7 @@
         {{>UI.dynamic template=this.buttonTemplateName data=this}}
     {{else}}
         <div id="{{this.id}}" tabindex="1"
-            class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if or this.disabled (disableButton)}}disabled{{/if}} {{#if this.subTools}}expandable{{/if}}"
+            class="toolbarSectionButton rp-x-1 {{this.classes}} {{activeClass}} {{#if or this.disabled (disableButton)}}disabled{{/if}} {{#if hasSubTools}}expandable{{/if}}"
             title="{{this.tooltipTitle}}">
             <div class="svgContainer">
                 {{#let svg=svgLink icon=iconClasses}}
@@ -18,18 +18,24 @@
             </div>
             <div class="buttonLabel">
                 <span>{{this.title}}</span>
-                {{#if this.subTools}}
+                {{#if hasSubTools}}
                     <i class="fa fa-caret-down expanded-status" aria-hidden="true"></i>
                 {{/if}}
             </div>
-            {{#if this.subTools}}
+            {{#if hasSubTools}}
                 <div class="toolbarSectionDrawerContainer">
                     <div class="toolbarSectionDrawer">
-                        {{#each subTool in this.subTools}}
-                            {{>toolbarSectionButton subTool}}
-                        {{/each}}
+                        {{#if this.subToolsTemplateName}}
+                            {{>UI.dynamic template=this.subToolsTemplateName data=this}}
+                        {{else}}
+                            {{#if this.subTools}}
+                                {{#each subTool in this.subTools}}
+                                    {{>toolbarSectionButton subTool}}
+                                {{/each}}
+                            {{/if}}
+                        {{/if}}
                     </div>
-                </div>
+                </div>         
             {{/if}}
         </div>
     {{/if}}
