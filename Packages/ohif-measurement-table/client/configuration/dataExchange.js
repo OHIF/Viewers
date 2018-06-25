@@ -1,6 +1,8 @@
 import { OHIF } from 'meteor/ohif:core';
 import { handleSR } from "../utils/handleSR";
 
+const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22'];
+
 export const retrieveMeasurements = (patientId, timepointIds) => {
     OHIF.log.info('retrieveMeasurements');
 
@@ -11,21 +13,13 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
             const firstInstance = series.getFirstInstance();
             const sopClassUid = firstInstance._instance.sopClassUid;
 
-            console.log(sopClassUid);
-
-            if (sopClassUid === '1.2.840.10008.5.1.4.1.1.88.22') {
+            if (supportedSopClassUIDs.includes(sopClassUid)) {
                 srSeries.push(series);
             }
         });
     });
 
-    // handle the SR documents after the others so that the imageIds will have been defined
-
-    // TODO: Figure out which SR to use...
-    const promises = [];
-    srSeries.forEach(series => {
-        promises.push(handleSR(series));
-    });
+    const promises = srSeries.map(handleSR);
 
     return Promise.all(promises).then((values) => {
         // Concatenate the measurements retrieved from each SR
