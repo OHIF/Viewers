@@ -27,3 +27,25 @@ Router.route('/study/:studyInstanceUid/series/:seriesInstanceUids', function () 
     const seriesInstanceUids = this.params.seriesInstanceUids.split(';');
     OHIF.viewerbase.renderViewer(this, { studyInstanceUids: [studyInstanceUid], seriesInstanceUids }, 'ohifViewer');
 }, { name: 'viewerSeries' });
+
+Router.route('/IHEInvokeImageDisplay', function() {
+    const requestType = this.params.query.requestType;
+
+    if (requestType === "STUDY") {
+        const studyInstanceUids = this.params.query.studyUID.split(';');
+
+        OHIF.viewerbase.renderViewer(this, {studyInstanceUids}, 'ohifViewer');
+    } else if (requestType === "STUDYBASE64") {
+        const uids = this.params.query.studyUID;
+        const decodedData = window.atob(uids);
+        const studyInstanceUids = decodedData.split(';');
+
+        OHIF.viewerbase.renderViewer(this, {studyInstanceUids}, 'ohifViewer');
+    } else if (requestType === "PATIENT") {
+        const patientUids = this.params.query.patientID.split(';');
+
+        Router.go('studylist', {}, {replaceState: true});
+    } else {
+        Router.go('studylist', {}, {replaceState: true});
+    }
+});
