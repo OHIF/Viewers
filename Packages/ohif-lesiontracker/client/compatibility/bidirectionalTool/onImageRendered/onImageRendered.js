@@ -7,7 +7,7 @@ import updatePerpendicularLineHandles from '../updatePerpendicularLineHandles';
 import drawPerpendicularLine from './drawPerpendicularLine';
 import drawSelectedMarker from './drawSelectedMarker';
 
-export default function(event) {
+export default function onImageRendered(event) {
     const eventData = event.detail;
     const { element, canvasContext } = eventData;
 
@@ -44,7 +44,7 @@ export default function(event) {
         const data = toolData.data[i];
         if (data.visible === false) continue;
 
-        const { start, end, textBox } = data.handles;
+        const { start, end, perpendicularStart, perpendicularEnd, textBox } = data.handles;
         const strokeWidth = lineWidth;
 
         context.save();
@@ -130,9 +130,14 @@ export default function(event) {
                 end: {}
             };
 
-            const midpointCanvas = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
+            const longLine = {
+                start: handleStartCanvas,
+                end: handleEndCanvas
+            };
+
+            const perpendicularLine = {
+                start: handlePerpendicularStartCanvas,
+                end: handlePerpendicularEndCanvas
             };
 
             // Check if the perpendicular line has some length (start and end are not equal)
