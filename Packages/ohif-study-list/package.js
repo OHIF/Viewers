@@ -1,11 +1,12 @@
+Npm.depends({
+    daterangepicker: '3.0.3',
+    hammerjs: '2.0.8'
+});
+
 Package.describe({
     name: 'ohif:study-list',
     summary: 'Basic study list for web-based DICOM viewers',
     version: '0.0.1'
-});
-
-Npm.depends({
-    hammerjs: '2.0.8'
 });
 
 Package.onUse(function(api) {
@@ -24,8 +25,6 @@ Package.onUse(function(api) {
 
     // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
     api.use('momentjs:moment');
-
-    api.use('dangrossman:bootstrap-daterangepicker@2.1.13');
 
     // Our custom packages
     api.use('ohif:design');

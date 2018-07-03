@@ -34,9 +34,14 @@ aldeed:simple-schema@1.5.3
 stylus@2.513.9
 iron:router
 session@1.1.7
+<<<<<<< HEAD
 cultofcoders:persistent-session
 reactive-dict@1.2.0
 twbs:bootstrap
+=======
+u2622:persistent-session@0.4.4
+reactive-dict@1.1.9
+>>>>>>> 75b08f6f... fix(bootstrap) Include Bootstrap manually to avoid reported XSS vulnerability (#43)
 fortawesome:fontawesome
 mrt:moment
 random@1.1.0

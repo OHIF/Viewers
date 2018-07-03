@@ -42,12 +42,10 @@ ohif:dicom-services
 ohif:hanging-protocols
 ohif:metadata
 
-twbs:bootstrap
 fortawesome:fontawesome
 momentjs:moment@2.15.1
 aldeed:simple-schema          # Third party package to deal with schemas
 aldeed:template-extension
-gilbertwat:bootstrap3-daterangepicker
 johdirr:meteor-git-rev
 cultofcoders:persistent-session
 shell-server@0.3.1

@@ -54,14 +54,12 @@ ohif:select-tree
 accounts-base@1.4.0
 accounts-password@1.5.0
 
-twbs:bootstrap
 fortawesome:fontawesome
 momentjs:moment@2.15.1
 aldeed:simple-schema          # Third party package to deal with schemas
 aldeed:template-extension@4.0.0
 aldeed:collection2
 zuuk:stale-session
-dangrossman:bootstrap-daterangepicker
 johdirr:meteor-git-rev
 cultofcoders:persistent-session@0.4.4
 shell-server@0.3.0
