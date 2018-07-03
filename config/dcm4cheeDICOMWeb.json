@@ -47,7 +47,8 @@
   "public": {
     "verifyEmail": false,
     "ui": {
-        "studyListFunctionsEnabled": true
+        "studyListFunctionsEnabled": true,
+        "studyListDateFilterNumDays": 1
     }
   }
 }
