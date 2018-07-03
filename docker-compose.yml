@@ -14,6 +14,6 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/ohif
     extra_hosts:
-      - "pacsIP:192.168.1.11"
+      - "pacsIP:192.168.0.2"
     volumes:
-      - /opt/docker/ohif-viewer/app.json:/app/app.json
+      - ./dockersupport/app.json:/app/app.json
