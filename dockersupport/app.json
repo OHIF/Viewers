@@ -9,7 +9,7 @@
     	"METEOR_SETTINGS": {
 		  "servers": {
 		    "dicomWeb": [
-		      {
+					{
 		        "name": "Orthanc",
 		        "wadoUriRoot": "http://pacsIP:8042/wado",
 		        "qidoRoot": "http://pacsIP:8042/dicom-web",
@@ -27,7 +27,11 @@
 		    ]
 		  },
 		  "defaultServiceType": "dicomWeb",
-		  "public": {},
+		  "public": {
+				"ui": {
+					"studyListDateFilterNumDays": 1
+				}
+			},
 		  "proxy": {
 		    "enabled": true
 		  }

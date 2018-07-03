@@ -35,7 +35,8 @@
         "leftSidebarOpen": false,
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true,
-        "autoPositionMeasurementsTextCallOuts": "TRLB"
+        "autoPositionMeasurementsTextCallOuts": "TRLB",
+        "studyListDateFilterNumDays": 1
     }
   }
 }

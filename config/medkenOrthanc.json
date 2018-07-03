@@ -42,5 +42,10 @@
   "fhir" : {
     "host" : "localhost",
     "port" : 3937
+  },
+  "public": {
+    "ui": {
+      "studyListDateFilterNumDays": 1
+    }
   }
 }
