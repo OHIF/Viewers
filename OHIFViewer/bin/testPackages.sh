@@ -26,7 +26,7 @@ if [ "$RUN_COVERAGE" == 1 ];
 then
     # Setting coverage variables
     app_folder=$(pwd)
-    app_folder+="/packages/ascend-adaptive-reporting/"
+    app_folder+="/packages/ohif-viewerbase/"
     export COVERAGE_APP_FOLDER=$app_folder
     export COVERAGE=1
     echo 'Running meteor-coverage'
@@ -34,7 +34,7 @@ fi
 
 if [ "$RUN_SPACEJAM" == 1 ];
 then
-    spacejam-mocha ./packages/ascend-adaptive-reporting/ 
+    spacejam-mocha ./packages/ohif-viewerbase/
 else
-    meteor test-packages --driver-package='practicalmeteor:mocha' ./packages/ascend-adaptive-reporting/
+    meteor test-packages --driver-package='cultofcoders:mocha' ./packages/ohif-viewerbase/
 fi

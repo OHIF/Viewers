@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "babel-runtime": "^6.23.0",
-    "loglevel": "^1.4.1"
+    "@babel/runtime": "7.0.0-beta.51",
+    "loglevel": "^1.6.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "puppeteer": "^1.5.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

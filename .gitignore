@@ -8,5 +8,4 @@ node_modules
 npm-debug.log
 Packages/active-entry/helloworld/
 LesionTracker/tests/nightwatch/reports/
-package-lock.json
 docs/_book

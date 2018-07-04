@@ -218,8 +218,6 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
-    const both = ['client', 'server'];
-
     api.versionsFrom('1.4');
 
     /*
@@ -233,7 +231,7 @@ Package.onTest(function(api) {
         'momentjs:moment',
         'validatejs',
         'cultofcoders:persistent-session'
-    ], both);
+    ], 'client');
 
     // OHIF dependencies
     api.use([
@@ -243,12 +241,12 @@ Package.onTest(function(api) {
         'ohif:core',
         'ohif:hotkeys',
         'ohif:log'
-    ], both);
+    ], 'client');
 
     /*
      * Our custom packages
      */
-    api.use('ohif:viewerbase', both);
+    api.use('ohif:viewerbase', 'client');
 
     /*
     * Tests framework components

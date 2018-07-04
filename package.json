@@ -1,0 +1,24 @@
+{
+  "name": "ohif-viewers-meta",
+  "version": "0.0.1",
+  "description": "NPM Package for running scripts in the OHIF/Viewers Repository",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "./test/testApp.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OHIF/Viewers.git"
+  },
+  "author": "Open Health Imaging Foundation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OHIF/Viewers/issues"
+  },
+  "homepage": "https://github.com/OHIF/Viewers#readme"
+}
