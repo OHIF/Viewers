@@ -63,10 +63,13 @@ function buildInstanceWadoUrl(server, studyInstanceUid, seriesInstanceUid, sopIn
     params.push(`studyUID=${studyInstanceUid}`);
     params.push(`seriesUID=${seriesInstanceUid}`);
     params.push(`objectUID=${sopInstanceUid}`);
-    params.push('contentType=application%2Fdicom');
+    params.push('contentType=application/dicom');
     params.push('transferSyntax=*');
 
-    return `${server.wadoUriRoot}?${params.join('&')}`;
+    const paramString = params.join('&');
+    const uri = encodeURIComponent(paramString);
+
+    return `${server.wadoUriRoot}?${uri}`;
 }
 
 function buildInstanceWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid) {
