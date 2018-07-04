@@ -163,6 +163,9 @@ $bodyCellHeight = 40px
           white-space: nowrap
           transition(all 0.1s ease)
 
+          &.emptyValue
+            theme('color', '$uiGrayLight')
+
         &:hover, &:active, &.active
           background-color: $tableHoverColor
           color: white
