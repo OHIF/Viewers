@@ -70,13 +70,6 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
-            id: 'stackScroll',
-            title: 'Stack Scroll',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-bars'
-        });
-
-        extraTools.push({
             id: 'magnify',
             title: 'Magnify',
             classes: 'imageViewerTool toolbarSectionButton',
@@ -155,6 +148,13 @@ Template.toolbarSection.helpers({
         });
 
         const buttonData = [];
+
+        buttonData.push({
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-bars'
+        });
 
         buttonData.push({
             id: 'zoom',
