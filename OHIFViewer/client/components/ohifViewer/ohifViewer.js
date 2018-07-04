@@ -14,6 +14,12 @@ Template.ohifViewer.onCreated(() => {
         icon: 'fa fa-server fa-lg',
         separatorAfter: true
     }, {
+        action: () => OHIF.ui.showDialog('themeSelectorModal'),
+        text: 'Themes',
+        iconClasses: 'theme',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#theme',
+        separatorAfter: false
+    }, {
         action: () => OHIF.ui.showDialog('userPreferencesDialog'),
         text: 'Preferences',
         icon: 'fa fa-user',

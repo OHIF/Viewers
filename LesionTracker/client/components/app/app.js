@@ -12,19 +12,19 @@ Template.app.onCreated(() => {
         action: OHIF.user.audit,
         text: 'View Audit Log',
         iconClasses: 'log',
-        iconSvgUse: 'packages/ohif_user-management/assets/user-menu-icons.svg#log',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#log',
         separatorAfter: true
     }, {
         action: () => OHIF.ui.showDialog('themeSelectorModal'),
         text: 'Themes',
         iconClasses: 'theme',
-        iconSvgUse: 'packages/ohif_user-management/assets/user-menu-icons.svg#theme',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#theme',
         separatorAfter: true
     }, {
         action: () => OHIF.ui.showDialog('serverInformationModal'),
         text: 'Server Information',
         iconClasses: 'server',
-        iconSvgUse: 'packages/ohif_user-management/assets/user-menu-icons.svg#server',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#server',
         separatorAfter: true
     }, {
         action: () => OHIF.ui.showDialog('userPreferencesDialog'),
@@ -35,12 +35,12 @@ Template.app.onCreated(() => {
         action: OHIF.user.changePassword,
         text: 'Change Password',
         iconClasses: 'password',
-        iconSvgUse: 'packages/ohif_user-management/assets/user-menu-icons.svg#password'
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#password'
     }, {
         action: OHIF.user.logout,
         text: 'Logout',
         iconClasses: 'logout',
-        iconSvgUse: 'packages/ohif_user-management/assets/user-menu-icons.svg#logout'
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#logout'
     }]);
 
     instance.autorun(() => {

@@ -49,5 +49,5 @@ aldeed:simple-schema          # Third party package to deal with schemas
 aldeed:template-extension
 gilbertwat:bootstrap3-daterangepicker
 johdirr:meteor-git-rev
-u2622:persistent-session@0.4.4
+cultofcoders:persistent-session
 shell-server@0.3.0

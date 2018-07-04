@@ -14,7 +14,7 @@ Package.onUse(function(api) {
         'stylus',
         'momentjs:moment',
         'validatejs',
-        'u2622:persistent-session'
+        'cultofcoders:persistent-session'
     ]);
 
     // OHIF dependencies
@@ -177,6 +177,10 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.js', 'client');
     api.addFiles('client/components/viewer/toolbarSectionTools/toolbarSectionTools.styl', 'client');
 
+    api.addFiles('client/components/viewer/userPreferences/dialog.html', 'client');
+    api.addFiles('client/components/viewer/userPreferences/dialog.js', 'client');
+    api.addFiles('client/components/viewer/userPreferences/dialog.styl', 'client');
+
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.html', 'client');
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.js', 'client');
     api.addFiles('client/components/viewer/confirmDeleteDialog/confirmDeleteDialog.styl', 'client');
@@ -228,7 +232,7 @@ Package.onTest(function(api) {
         'mongo',
         'momentjs:moment',
         'validatejs',
-        'u2622:persistent-session'
+        'cultofcoders:persistent-session'
     ], both);
 
     // OHIF dependencies

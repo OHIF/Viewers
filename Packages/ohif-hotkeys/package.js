@@ -19,7 +19,7 @@ Package.onUse(function(api) {
         'reactive-var',
         'session',
         'iron:router',
-        'u2622:persistent-session'
+        'cultofcoders:persistent-session'
     ]);
 
     // OHIF dependencies

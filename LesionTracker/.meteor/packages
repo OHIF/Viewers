@@ -63,5 +63,5 @@ aldeed:collection2
 zuuk:stale-session
 dangrossman:bootstrap-daterangepicker
 johdirr:meteor-git-rev
-u2622:persistent-session@0.4.4
+cultofcoders:persistent-session@0.4.4
 shell-server@0.3.0

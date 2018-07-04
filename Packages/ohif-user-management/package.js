@@ -26,9 +26,6 @@ Package.onUse(function(api) {
     api.use('ohif:user');
     api.use('ohif:study-list');
 
-    // Load icons
-    api.addAssets('assets/user-menu-icons.svg', 'client');
-
     api.addFiles('both/collections.js', ['client', 'server']);
     //api.addFiles('both/schema/reviewers.js', ['client', 'server']);
 

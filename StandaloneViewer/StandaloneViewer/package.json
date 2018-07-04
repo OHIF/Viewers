@@ -5,8 +5,8 @@
     "start": "meteor run"
   },
   "dependencies": {
-    "babel-runtime": "^6.23.0",
-    "cornerstone-web-image-loader": "^2.1.0",
-    "meteor-node-stubs": "^0.2.11"
+    "@babel/runtime": "^7.0.0-beta.51",
+    "core-js": "^2.5.7",
+    "cornerstone-web-image-loader": "^2.1.0"
   }
 }

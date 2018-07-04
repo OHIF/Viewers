@@ -76,3 +76,19 @@ label.wrapperLabel:not(.checkboxLabel)
     &.select2-container--open span.select2-selection span.select2-selection__arrow
       theme('background-color', '$uiGrayDark')
       theme('color', '$textPrimaryColor')
+
+  .form-control
+    background-color: #FFFFFF
+    border: 0
+    border-radius(2px)
+    font-size: 14px
+    height: 30px
+    line-height: 16px
+    padding: 8px 9px 6px
+
+    &:focus
+      theme('box-shadow', '0 0 0 2px $activeColor !important')
+
+  .form-themed .form-control
+    theme('box-shadow', '0 0 0 1px $uiBorderColor')
+
