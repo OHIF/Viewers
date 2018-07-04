@@ -88,21 +88,21 @@ function makeRequest(geturl, options, callback) {
 const makeRequestSync = Meteor.wrapAsync(makeRequest);
 
 DICOMWeb.getJSON = function(geturl, options) {
-    if (options.logRequests) {
+    if (options && options.logRequests) {
         OHIF.log.info(geturl);
     }
 
-    if (options.logTiming) {
+    if (options && options.logTiming) {
         console.time(geturl);
     }
 
     const result = makeRequestSync(geturl, options);
 
-    if (options.logTiming) {
+    if (options && options.logTiming) {
         console.timeEnd(geturl);
     }
 
-    if (options.logResponses) {
+    if (options && options.logResponses) {
         OHIF.log.info(result);
     }
 
