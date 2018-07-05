@@ -1,7 +1,11 @@
 <template name="studylistStudy">
     <tr class="studylistStudy noselect {{#if this.selected}}active{{/if}}">
-        <td class="patientName">
-            {{formatPN patientName}}
+        <td class="patientName {{#unless patientName}}emptyValue{{/unless}}">
+            {{#if patientName}}
+                {{formatPN patientName}}
+            {{else}}
+                (empty)
+            {{/if}}
         </td>
         <td class="patientId">
             {{patientId}}
