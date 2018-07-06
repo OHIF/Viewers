@@ -23,6 +23,7 @@ WORKDIR /home/user/Viewers/OHIFViewer
 
 ENV METEOR_PACKAGE_DIRS=../Packages
 ENV METEOR_PROFILE=1
+RUN meteor npm install
 RUN meteor build --directory /home/user/app
 WORKDIR /home/user/app/bundle/programs/server
 RUN npm install --production
