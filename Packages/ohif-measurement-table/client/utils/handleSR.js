@@ -37,10 +37,10 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
 
 const retrieveDataFromSR = (Part10SRArrayBuffer) => {
     const allStudies = OHIF.viewer.Studies.all();
-    const allDisplaySets = [];
+    let allDisplaySets = [];
 
     allStudies.forEach(study => {
-        allDisplaySets.concat(study.displaySets);
+        allDisplaySets = allDisplaySets.concat(study.displaySets);
     });
 
     // get the dicom data as an Object

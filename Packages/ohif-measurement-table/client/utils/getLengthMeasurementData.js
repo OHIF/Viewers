@@ -36,7 +36,11 @@ export default function getLengthMeasurementData(lengthMeasurementContent, displ
             lengthState.handles.end.y] = lengthContent.GraphicData;
 
         lengthState.ReferencedInstanceUID = reference.ReferencedSOPInstanceUID;
-        lengthState.ReferencedFrameNumber = reference.ReferencedFrameNumber;
+        if (reference.ReferencedFrameNumber && reference.ReferencedFrameNumber !== 'NaN') {
+            lengthState.ReferencedFrameNumber = reference.ReferencedFrameNumber;
+        } else {
+            lengthState.ReferencedFrameNumber = 0;
+        }
 
         lengthStates.push(lengthState);
     });
@@ -54,7 +58,8 @@ export default function getLengthMeasurementData(lengthMeasurementContent, displ
 
         const studyInstanceUid = cornerstone.metaData.get('study', imageId).studyInstanceUid;
         const seriesInstanceUid = cornerstone.metaData.get('series', imageId).seriesInstanceUid;
-        const frameIndex = lengthState.ReferencedFrameNumber || 0;
+        const patientId = instanceMetadata._study.patientId;
+        const frameIndex = lengthState.ReferencedFrameNumber;
         const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
         const measurement = {
             handles: lengthState.handles,
@@ -64,6 +69,7 @@ export default function getLengthMeasurementData(lengthMeasurementContent, displ
             sopInstanceUid,
             seriesInstanceUid,
             studyInstanceUid,
+            patientId,
             frameIndex,
             measurementNumber: ++measurementNumber,
             userId: 'UserID',
