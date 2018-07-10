@@ -96,6 +96,34 @@ function handleCtrlClick($studyRow, data) {
     handler($studyRow, data);
 }
 
+function handlePress(event, instance) {
+    const $studyRow = $(event.currentTarget);
+
+    if (!instance.data.selected) {
+        doSelectSingleRow($studyRow, instance.data);
+    }
+
+    event.preventDefault();
+    OHIF.ui.showDropdown(OHIF.studylist.dropdown.getItems(), {
+        event,
+        menuClasses: 'dropdown-menu-left'
+    });
+
+    return false;
+}
+
+function handleDoubleClick(event, instance) {
+    if (event.which !== undefined && event.which !== 1) {
+        return;
+    }
+
+    const dblClickOnStudy = OHIF.studylist.callbacks.dblClickOnStudy;
+
+    if (dblClickOnStudy && typeof dblClickOnStudy === 'function') {
+        dblClickOnStudy(instance.data);
+    }
+}
+
 Template.studylistStudy.onRendered(() => {
     const instance = Template.instance();
     const data = instance.data;
@@ -110,7 +138,19 @@ Template.studylistStudy.onRendered(() => {
         threshold: 30,
         posThreshold: 30
     });
+    const press = new Hammer.Press();
+
+    mc.add(press);
     mc.add(doubleTapRecognizer);
+
+    mc.on('press', function(event) {
+        handlePress(event, instance);
+    });
+
+    mc.on('doubletap', function(event) {
+        handleDoubleClick(event, instance);
+    });
+
 
     // Check if current row has been previously selected
     if (data.selected) {
@@ -147,30 +187,6 @@ Template.studylistStudy.events({
         }
     },
 
-    'dblclick tr.studylistStudy, doubletap tr.studylistStudy'(event, instance) {
-        if (event.which !== undefined && event.which !== 1) {
-            return;
-        }
-
-        const dblClickOnStudy = OHIF.studylist.callbacks.dblClickOnStudy;
-
-        if (dblClickOnStudy && typeof dblClickOnStudy === 'function') {
-            dblClickOnStudy(instance.data);
-        }
-    },
-
-    'contextmenu tr.studylistStudy, press tr.studylistStudy'(event, instance) {
-        const $studyRow = $(event.currentTarget);
-
-        if (!instance.data.selected) {
-            doSelectSingleRow($studyRow, instance.data);
-        }
-
-        event.preventDefault();
-        OHIF.ui.showDropdown(OHIF.studylist.dropdown.getItems(), {
-            event,
-            menuClasses: 'dropdown-menu-left'
-        });
-        return false;
-    }
+    'dblclick tr.studylistStudy, doubletap tr.studylistStudy': handleDoubleClick,
+    'contextmenu tr.studylistStudy, press tr.studylistStudy': handlePress,
 });
