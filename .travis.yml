@@ -26,7 +26,7 @@ env:
 
 jobs:
   include:
-    - stage: build docker image
+    - stage: build production docker image
       before_script:
         - export REPO=ohif/viewer
         - export COMMIT=${TRAVIS_COMMIT::8}
@@ -38,6 +38,27 @@ jobs:
         - docker --version
       script:
         - docker build -t $REPO:$COMMIT . --cache-from $REPO:latest
+      after_success:
+        - docker tag $REPO:$COMMIT $REPO:$TAG
+        - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+        - docker images
+        - docker login -u $DOCKER_USER -p $DOCKER_PASS
+        - docker push $REPO:$TAG
+        - docker push $REPO:travis-$TRAVIS_BUILD_NUMBER
+        - docker push $REPO:$COMMIT
+
+    - stage: build development docker image
+      before_script:
+        - export REPO=ohif/viewer-dev
+        - export COMMIT=${TRAVIS_COMMIT::8}
+        - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+        - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+        - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+        - echo "TAG=$TAG, COMMIT=$COMMIT"
+        - docker pull $REPO:latest
+        - docker --version
+      script:
+        - docker build -f development.Dockerfile -t $REPO:$COMMIT . --cache-from $REPO:latest
       after_success:
         - docker tag $REPO:$COMMIT $REPO:$TAG
         - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
