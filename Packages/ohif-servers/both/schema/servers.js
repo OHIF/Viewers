@@ -58,8 +58,16 @@ export const DICOMWebServer = new SimpleSchema({
     imageRendering: {
         type: String,
         label: 'Image rendering',
-        allowedValues: ['wadouri', 'orthanc'],
-        valuesLabels: ['WADO URI', 'ORTHANC']
+        allowedValues: ['wadouri', 'wadors', 'orthanc'],
+        valuesLabels: ['WADO URI', 'WADO RS', 'ORTHANC'],
+        defaultValue: 'wadouri'
+    },
+    thumbnailRendering: {
+        type: String,
+        label: 'Thumbnail rendering',
+        allowedValues: ['wadouri', 'wadors', 'orthanc'],
+        valuesLabels: ['WADO URI', 'WADO RS', 'ORTHANC'],
+        defaultValue: 'wadouri'
     },
     qidoRoot: {
         type: String,
