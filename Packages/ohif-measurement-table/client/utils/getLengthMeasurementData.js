@@ -35,6 +35,15 @@ export default function getLengthMeasurementData(lengthMeasurementContent, displ
             lengthState.handles.end.x,
             lengthState.handles.end.y] = lengthContent.GraphicData;
 
+        // TODO: Save textbox position in GraphicData?
+        lengthState.handles.textBox = {
+            hasMoved: false,
+            movesIndependently: false,
+            drawnIndependently: true,
+            allowedOutsideImage: true,
+            hasBoundingBox: true
+        }
+
         lengthState.ReferencedInstanceUID = reference.ReferencedSOPInstanceUID;
         if (reference.ReferencedFrameNumber && reference.ReferencedFrameNumber !== 'NaN') {
             lengthState.ReferencedFrameNumber = reference.ReferencedFrameNumber;
