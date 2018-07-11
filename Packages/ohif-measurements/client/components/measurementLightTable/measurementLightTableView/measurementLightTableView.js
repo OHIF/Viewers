@@ -14,24 +14,3 @@ Template.measurementLightTableView.onCreated(() => {
         instance.data.measurementGroups.set(data);
     });
 });
-
-Template.measurementLightTableView.events({
-    'click .js-csv'(event, instance) {
-        const { measurementApi, timepointApi } = instance.data;
-        OHIF.measurements.exportCSV(measurementApi, timepointApi);
-    },
-});
-
-Template.measurementLightTableView.helpers({
-    hasAnyMeasurement() {
-        const instance = Template.instance();
-        const groups = instance.data.measurementGroups.get();
-
-        if (!groups) {
-            return false;
-        }
-
-        const group = groups.find(item => item.measurementRows.length > 0);
-        return group;
-    }
-});

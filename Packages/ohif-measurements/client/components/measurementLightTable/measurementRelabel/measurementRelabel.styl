@@ -1,0 +1,106 @@
+@import "{ohif:design}/app"
+
+.measurement-relabel
+  outline: none
+  position: fixed
+  z-index: 1
+
+  &.fadeOut
+    animateFadeOut()
+
+  .select-tree-root>.tree-content
+    width: 140px
+
+    &>.tree-options
+      position: relative
+      z-index: 2
+
+    .tree-inputs
+      position: relative
+
+  &>.tree-leaf
+    position: relative
+
+    .icon-check
+      theme('background-color', '$activeColor')
+      animateZoomIn()
+      left: -46px
+      position: absolute
+      top: 3px
+
+    span
+      background: white
+      font-weight: normal
+      height: 46px
+      line-height: 46px
+      padding: 0 12px
+
+    input, span
+      display: none
+
+    .actions
+      padding-top: 16px
+      opacity: 0
+
+      &:not(.fadeOut)
+        animateFadeIn()
+        animation-delay: 0.3s
+
+      &.fadeOut
+        animateFadeOut()
+
+  &.selected>.tree-leaf
+
+    span
+      display: block
+
+  &.tree-columns
+
+    .select-tree-root
+
+      &.navigated .select-tree-common .content
+        animation-name: none
+
+      &.selected .select-tree-common .content
+        animation-name: selectTreeCommonCloseLeft
+
+      .select-tree-common
+        padding-left: 0
+        padding-right: 6px
+        right: auto
+        left: 0
+        width: 180px
+
+      &>.tree-content
+        transform-origin(0% 50%)
+        width: 280px
+
+      .select-tree-common .content
+        right: -180px
+
+      &.started .select-tree-common .content
+        right: 46px
+
+      &.navigated .select-tree-common .content
+        animation-name: selectTreeCommonCloseRight
+
+      .tree-inputs>label
+        float: left
+        width: 50%
+
+@keyframes selectTreeCommonCloseRight {
+  from {
+    height: 37px
+    display: table
+    right: 6px
+    opacity: 1
+    visibility: visible
+  }
+  to {
+    height: 100%
+    right: -100%
+    opacity: 0
+    visibility: hidden
+    width: calc(100% - 6px)
+  }
+}

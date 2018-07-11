@@ -12,16 +12,14 @@
         </div>
         <div class="measurementRowContent">
             <div class="measurementDetails">
-                <label class='location'>
+                <label class="location">
                     {{#if rowItem.location}}
                         {{rowItem.location}}
                     {{else}}
                         (No Location)
                     {{/if}}
-                </label>
-                <label class="description">
                     {{#if rowItem.description}}
-                        |  {{rowItem.description}}
+                        ({{rowItem.description}})
                     {{/if}}
                 </label>
                 <div class="value">
@@ -33,11 +31,17 @@
                 </div>
             </div>
             <div class="rowOptions">
-                <div class="rowAction js-rename pull-left m-r-2" tabindex="1">
+                <div class="rowAction js-edit-label pull-left m-r-2" tabindex="1">
                     <svg class="edit-icon">
                         <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-measurements-additional"}}></use>
                     </svg>
                     Relabel
+                </div>
+                <div class="rowAction js-edit-description pull-left m-r-2" tabindex="1">
+                    <svg class="edit-icon">
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-measurements-additional"}}></use>
+                    </svg>
+                    Description
                 </div>
                 <div class="rowAction js-delete pull-left" tabindex="1">
                     <svg class="close-icon">

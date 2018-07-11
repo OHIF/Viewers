@@ -4,6 +4,13 @@ import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 
+const getPosition = event => {
+    return {
+        x: event.clientX,
+        y: event.clientY
+    };
+};
+
 Template.measurementLightTableRow.helpers({
     displayData() {
         const instance = Template.instance();
@@ -31,6 +38,8 @@ Template.measurementLightTableRow.events({
         const rowItem = instance.data.rowItem;
         const timepoints = instance.data.timepointApi.all();
 
+        if($row.hasClass('active')) return;
+
         $row.closest('.measurementLightTableView').find('.measurementLightTableRow').not($row).removeClass('active');
         $row.toggleClass('active');
 
@@ -38,22 +47,29 @@ Template.measurementLightTableRow.events({
         OHIF.measurements.jumpToRowItem(rowItem, timepoints, childToolKey);
     },
 
-    'click .js-rename'(event, instance) {
+    'click .js-edit-label'(event, instance) {
         event.stopPropagation();
         const rowItem = instance.data.rowItem;
         const entry = rowItem.entries[0];
 
         // Show the measure flow for measurements
-        OHIF.measurements.toggleLabelButton({
+        OHIF.measurements.openLocationModal({
             measurement: entry,
-            oldValue: {},
             element: document.body,
             measurementApi: instance.data.measurementApi,
-            position: {
-                x: event.clientX,
-                y: event.clientY
-            },
+            position: getPosition(event),
             autoClick: true
+        });
+    },
+
+    'click .js-edit-description'(event, instance) {
+        const rowItem = instance.data.rowItem;
+        const entry = rowItem.entries[0];
+        OHIF.ui.showDialog('measurementEditDescription', {
+            event,
+            title: 'Edit Description',
+            element: event.element,
+            measurementData: entry
         });
     },
 
@@ -62,11 +78,8 @@ Template.measurementLightTableRow.events({
         const dialogSettings = {
             class: 'themed',
             title: 'Delete measurements',
-            message: 'Are you sure you want to delete the measurement across all timepoints?',
-            position: {
-                x: event.clientX,
-                y: event.clientY
-            }
+            message: 'Are you sure you want to delete the measurement?',
+            position: getPosition(event)
         };
 
         OHIF.ui.showDialog('dialogConfirm', dialogSettings).then(formData => {

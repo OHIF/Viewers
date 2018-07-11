@@ -1,0 +1,13 @@
+<template name="measurementEditDescription">
+    {{#dialogForm (extend this
+        dialogClass='modal-sm'
+        api=instance.api
+    )}}
+        {{>inputText 
+            labelClass='form-group' 
+            key='description' 
+            hideSearch=true
+            options=(clone placeholder='Add a description')
+        }}
+    {{/dialogForm}}
+</template>
