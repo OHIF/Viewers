@@ -1,33 +1,15 @@
 import { OHIF } from 'meteor/ohif:core';
-import { handleSR } from "../utils/handleSR";
-
-const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22'];
+import { handleSR, getLatestSRSeries } from "../utils/handleSR";
 
 export const retrieveMeasurements = (patientId, timepointIds) => {
     OHIF.log.info('retrieveMeasurements');
 
-    const srSeries = [];
-    const allStudies = OHIF.viewer.StudyMetadataList.all();
-    allStudies.forEach(study => {
-        study.getSeries().forEach(series => {
-            const firstInstance = series.getFirstInstance();
-            const sopClassUid = firstInstance._instance.sopClassUid;
+    const latestSeries = getLatestSRSeries();
 
-            if (supportedSopClassUIDs.includes(sopClassUid)) {
-                srSeries.push(series);
-            }
-        });
-    });
-
-    const promises = srSeries.map(handleSR);
-
-    return Promise.all(promises).then((values) => {
-        // Concatenate the measurements retrieved from each SR
-        const combined = [].concat.apply([], [...values]);
-
+    return handleSR(latestSeries).then((value) => {
         return {
-            length: combined
-        };
+            length: value
+        }
     });
 };
 

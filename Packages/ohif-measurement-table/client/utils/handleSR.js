@@ -2,6 +2,8 @@ import { OHIF } from 'meteor/ohif:core';
 import { dcmjs } from 'meteor/ohif:cornerstone';
 import getLengthMeasurementData from './getLengthMeasurementData';
 
+const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22'];
+
 const toArray = function(x) {
     return (x.constructor.name === "Array" ? x : [x]);
 };
@@ -49,6 +51,29 @@ const retrieveDataFromSR = (Part10SRArrayBuffer) => {
 
     // Convert the SR into the kind of object the Measurements package is expecting
     return imagingMeasurementsToMeasurementData(dataset, allDisplaySets);
+};
+
+export const getLatestSRSeries = () => {
+    const allStudies = OHIF.viewer.StudyMetadataList.all();
+    let latestSeries;
+
+    allStudies.forEach(study => {
+        study.getSeries().forEach(series => {
+            const firstInstance = series.getFirstInstance();
+            const sopClassUid = firstInstance._instance.sopClassUid;
+
+            if (supportedSopClassUIDs.includes(sopClassUid)) {
+                if(!latestSeries) {
+                    latestSeries = series;
+                } else if (series._data.seriesDate > latestSeries._data.seriesDate || 
+                    (series._data.seriesDate === latestSeries._data.seriesDate && series._data.seriesTime > latestSeries._data.seriesTime)) {
+                     latestSeries = series;
+                }
+            }
+        });
+    });
+
+    return latestSeries;
 };
 
 export const handleSR = (series) => {
