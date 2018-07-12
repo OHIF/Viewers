@@ -16,7 +16,7 @@
 		        "wadoRoot": "http://pacsIP:8042/dicom-web",
 		        "qidoSupportsIncludeField": false,
 		        "imageRendering": "wadouri",
-		        "thumbnailRendering": "wadors",
+		        "thumbnailRendering": "wadouri",
 		        "requestOptions": {
 		          "auth": "orthanc:orthanc",
 		          "logRequests": true,
