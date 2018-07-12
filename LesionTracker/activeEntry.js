@@ -1,3 +1,5 @@
+import { Session } from 'meteor/session';
+
 if (Meteor.isClient){
     ActiveEntry.configure({
         logo: {
@@ -23,6 +25,16 @@ if (Meteor.isClient){
         }
 
     });
+
+  Session.set('ThemeConfig', {
+    palette: {
+      colorA: "",
+      colorB: "",
+      colorC: "",
+      colorD: "",
+      colorE: ""
+    }
+  });
 }
 
 /*

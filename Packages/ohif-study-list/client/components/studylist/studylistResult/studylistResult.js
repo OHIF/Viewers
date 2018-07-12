@@ -276,12 +276,7 @@ Template.studylistResult.onRendered(() => {
         }
     }).data('daterangepicker');
 
-    if (startDate && endDate) {
-        instance.datePicker.updateInputText();
-    } else {
-        // Retrieve all studies
-        search();
-    }
+    search();
 });
 
 Template.studylistResult.onDestroyed(() => {

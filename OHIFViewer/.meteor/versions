@@ -59,7 +59,7 @@ lmieulet:meteor-coverage@1.1.4
 localstorage@1.2.0
 logging@1.1.20
 mdg:validation-error@0.5.1
-meteor@1.9.0
+meteor@1.9.2
 meteor-base@1.4.0
 meteor-platform@1.2.6
 meteorhacks:picker@1.0.3
@@ -70,8 +70,8 @@ minifier-js@2.3.5
 minimongo@1.4.4
 mobile-experience@1.0.5
 mobile-status-bar@1.0.14
-modern-browsers@0.1.1
-modules@0.12.1
+modern-browsers@0.1.2
+modules@0.12.2
 modules-runtime@0.10.2
 momentjs:moment@2.22.2
 mongo@1.5.1

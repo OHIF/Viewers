@@ -83,3 +83,5 @@ organGroups.forEach(function(organGroup) {
         isNodal: isNodal
     });
 });
+
+export { LesionLocations };
