@@ -151,9 +151,6 @@ function search() {
     // returned as 'undefined'
     const modality = replaceUndefinedColumnValue($('input#modality').val());
 
-    // Clear all current studies
-    OHIF.studylist.collections.Studies.remove({});
-
     Meteor.call('StudyListSearch', filter, (error, studies) => {
         OHIF.log.info('StudyListSearch');
         // Hide loading text
@@ -181,6 +178,9 @@ function search() {
             OHIF.log.warn('No studies found');
             return;
         }
+
+        // Clear all current studies
+        OHIF.studylist.collections.Studies.remove({});
 
         // Loop through all identified studies
         studies.forEach(study => {
