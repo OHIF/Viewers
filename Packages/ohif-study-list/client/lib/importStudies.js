@@ -104,7 +104,7 @@ const importStudiesInternal = (studiesToImport, dialog) => {
                     const { numberOfStudiesImported, numberOfStudiesFailed } = studyImportStatus;
                     dialog.update(numberOfStudiesImported);
 
-                    if (numberOfStudiesImported === numberOfStudies) {
+                    if ((numberOfStudiesImported + numberOfStudiesFailed) === numberOfStudies) {
                         //  The entire import operation is completed, so remove the study import status item
                         Meteor.call('removeStudyImportStatus', studyImportStatus._id);
 
