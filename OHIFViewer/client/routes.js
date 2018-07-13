@@ -3,7 +3,13 @@ import { OHIF } from 'meteor/ohif:core';
 
 Router.configure({
     layoutTemplate: 'layout',
-    loadingTemplate: 'layout'
+});
+
+Router.waitOn(function() {
+    return [
+        Meteor.subscribe('servers'),
+        Meteor.subscribe('currentServer')
+    ];
 });
 
 Router.onBeforeAction('loading');

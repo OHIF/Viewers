@@ -4,7 +4,7 @@
  * @param [defaultValue] - The default value to return if the element does not exist
  * @returns {*}
  */
-DICOMWeb.getNumber = function(element, defaultValue) {
+export default function getNumber(element, defaultValue) {
     if (!element) {
         return defaultValue;
     }

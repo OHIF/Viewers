@@ -15,13 +15,19 @@ OHIF.studies.searchStudies = filter => {
         return studySearchPromises.get(promiseKey);
     } else {
         const promise = new Promise((resolve, reject) => {
-            Meteor.call('StudyListSearch', filter, (error, studiesData) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(studiesData);
-                }
-            });
+            const server = OHIF.servers.getCurrentServer();
+
+            if (server.type === 'dicomWeb' && server.requestOptions.requestFromBrowser === true) {
+                OHIF.studies.services.QIDO.Studies(server, filter).then(resolve, reject);
+            } else {
+                Meteor.call('StudyListSearch', filter, (error, studiesData) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(studiesData);
+                    }
+                });
+            }
         });
         studySearchPromises.set(promiseKey, promise);
         return promise;

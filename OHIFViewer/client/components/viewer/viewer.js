@@ -120,7 +120,7 @@ Template.viewer.onCreated(() => {
         const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
         let displaySets = study.displaySets;
 
-        if(!study.displaySets) {
+        if (!study.displaySets) {
             displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
             study.displaySets = displaySets;
         }
@@ -131,6 +131,9 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.Studies.insert(study);
         OHIF.viewer.StudyMetadataList.insert(studyMetadata);
         OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
+
+        // Updates WADO-RS metaDataManager
+        OHIF.viewerbase.updateMetaDataManager(study);
     });
 });
 

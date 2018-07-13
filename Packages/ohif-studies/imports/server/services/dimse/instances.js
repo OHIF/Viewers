@@ -5,6 +5,7 @@ import { OHIF } from 'meteor/ohif:core';
  * an array of series that are present in the study
  *
  * @param resultData
+ * @param studyInstanceUid
  * @returns {Array} Series List
  */
 function resultDataToStudyMetadata(resultData, studyInstanceUid) {

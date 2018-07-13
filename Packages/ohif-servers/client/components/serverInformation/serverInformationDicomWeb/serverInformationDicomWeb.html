@@ -4,11 +4,11 @@
             {{>inputText labelClass='form-group' key='wadoUriRoot'}}
         </div>
         <div class="col-lg-6">
-            {{>inputText labelClass='form-group' key='wadoRoot'}}
+            {{>inputSelect labelClass='form-group' key='imageRendering' hideSearch=true
+                    options=(clone placeholder='Select an option')}}
         </div>
         <div class="col-lg-6">
-            {{>inputSelect labelClass='form-group' key='imageRendering' hideSearch=true
-                options=(clone placeholder='Select an option')}}
+            {{>inputText labelClass='form-group' key='wadoRoot'}}
         </div>
         <div class="col-lg-6">
             {{>inputSelect labelClass='form-group' key='thumbnailRendering' hideSearch=true
@@ -30,9 +30,12 @@
     </div>
     <hr>
     <h4>Request options</h4>
-    {{#group class='row' key='requestOptions'}}
+    {{#group class='row p-y-1' key='requestOptions'}}
         <div class="col-lg-6">
             {{>inputText labelClass='form-group' key='auth'}}
+            <div class="checkbox pull-left">
+                {{>inputCheckbox key='requestFromBrowser'}}
+            </div>
         </div>
         <div class="col-lg-6">
             <strong>Logging options</strong>

@@ -29,6 +29,12 @@ export const DICOMWebRequestOptions = new SimpleSchema({
         defaultValue: 'orthanc:orthanc',
         optional: true
     },
+    requestFromBrowser: {
+        type: Boolean,
+        label: 'Make DICOMWeb requests from the Browser',
+        defaultValue: false,
+        optional: true
+    },
     logRequests: {
         type: Boolean,
         defaultValue: true,
@@ -76,7 +82,7 @@ export const DICOMWebServer = new SimpleSchema({
     },
     qidoSupportsIncludeField: {
         type: Boolean,
-        label: 'QIDO supports including fields',
+        label: 'QIDO supports "includefield" query key',
         defaultValue: false
     },
     requestOptions: {

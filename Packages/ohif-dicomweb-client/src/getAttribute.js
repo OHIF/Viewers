@@ -5,7 +5,7 @@
  * @param [defaultValue] - The value to return if the element is not present
  * @returns {*}
  */
-DICOMWeb.getAttribute = function(element, defaultValue) {
+const getAttribute = function(element, defaultValue) {
     if (!element) {
         return defaultValue;
     }
@@ -42,3 +42,5 @@ function convertToInt(input) {
 
     return parseInt(output, 16);
 }
+
+export default getAttribute;

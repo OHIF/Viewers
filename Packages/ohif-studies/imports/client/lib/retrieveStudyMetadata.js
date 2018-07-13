@@ -7,6 +7,18 @@ import 'meteor/ohif:viewerbase';
 const StudyMetaDataPromises = new Map();
 
 /**
+ * Delete the study promise cached to ensure next retrieve will get it retrieved by server call
+ *
+ * @param {String} studyInstanceUid The UID of the Study to be removed from cache
+ *
+ */
+OHIF.studies.deleteStudyMetadataPromise = (studyInstanceUid) => {
+    if (StudyMetaDataPromises.has(studyInstanceUid)) {
+        StudyMetaDataPromises.delete(studyInstanceUid);
+    }
+};
+
+/**
  * Retrieves study metadata using a server call
  *
  * @param {String} studyInstanceUid The UID of the Study to be retrieved
@@ -30,70 +42,50 @@ OHIF.studies.retrieveStudyMetadata = (studyInstanceUid, seriesInstanceUids) => {
 
     // Create a promise to handle the data retrieval
     const promise = new Promise((resolve, reject) => {
+        const server = OHIF.servers.getCurrentServer();
+
         // If no study metadata is in the cache variable, we need to retrieve it from
         // the server with a call.
-        Meteor.call('GetStudyMetadata', studyInstanceUid, function(error, study) {
-            OHIF.log.timeEnd(timingKey);
+        if (server.type === 'dicomWeb' && server.requestOptions.requestFromBrowser === true) {
+            OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid).then(function (data) {
+                resolve(data)
+            }, reject);
+        } else {
+            Meteor.call('GetStudyMetadata', studyInstanceUid, function (error, study) {
+                OHIF.log.timeEnd(timingKey);
 
-            if (error) {
-                const errorType = error.error;
-                let errorMessage = '';
+                if (error) {
+                    const errorType = error.error;
+                    let errorMessage = '';
 
-                if (errorType === 'server-connection-error') {
-                    errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.';
-                } else if (errorType === 'server-internal-error') {
-                    errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
-                } else {
-                    errorMessage = `For some reason we could not retrieve the study\'s metadata for ${studyInstanceUid}.`;
+                    if (errorType === 'server-connection-error') {
+                        errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.';
+                    } else if (errorType === 'server-internal-error') {
+                        errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
+                    } else {
+                        errorMessage = `For some reason we could not retrieve the study\'s metadata for ${studyInstanceUid}.`;
+                    }
+
+                    OHIF.log.error(errorMessage);
+                    OHIF.log.error(error.stack);
+                    reject(`GetStudyMetadata: ${errorMessage}`);
+                    return;
                 }
 
-                OHIF.log.error(errorMessage);
-                OHIF.log.error(error.stack);
-                reject(`GetStudyMetadata: ${errorMessage}`);
-                return;
-            }
+                // Filter series if seriesInstanceUid exists
+                if (seriesInstanceUids && seriesInstanceUids.length) {
+                    study.seriesList = study.seriesList.filter(series => seriesInstanceUids.indexOf(series.seriesInstanceUid) > -1);
+                }
 
-            // Filter series if seriesInstanceUid exists
-            if (seriesInstanceUids && seriesInstanceUids.length) {
-                study.seriesList = study.seriesList.filter(series => seriesInstanceUids.indexOf(series.seriesInstanceUid) > -1);
-            }
+                if (!study) {
+                    reject(`GetStudyMetadata: No study data returned from server: ${studyInstanceUid}`);
+                    return;
+                }
 
-            if (!study) {
-                reject(`GetStudyMetadata: No study data returned from server: ${studyInstanceUid}`);
-                return;
-            }
-
-            if (window.HipaaLogger && Meteor.user && Meteor.user()) {
-                window.HipaaLogger.logEvent({
-                    eventType: 'viewed',
-                    userId: Meteor.userId(),
-                    userName: Meteor.user().profile.fullName,
-                    collectionName: 'Study',
-                    recordId: studyInstanceUid,
-                    patientId: study.patientId,
-                    patientName: study.patientName
-                });
-            }
-
-            // Once the data was retrieved, the series are sorted by series and instance number
-            OHIF.viewerbase.sortStudy(study);
-
-            // Updates WADO-RS metaDataManager
-            OHIF.viewerbase.updateMetaDataManager(study);
-
-            // Transform the study in a StudyMetadata object
-            const studyMetadata = new OHIF.metadata.StudyMetadata(study);
-
-            // Add the display sets to the study
-            study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
-            study.displaySets.forEach(displaySet => {
-                OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
-                studyMetadata.addDisplaySet(displaySet);
+                // Resolve the promise with the final study metadata object
+                resolve(study);
             });
-
-            // Resolve the promise with the final study metadata object
-            resolve(study);
-        });
+        }
     });
 
     // Store the promise in cache

@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.6');
 
     api.use([
         'ecmascript',
@@ -21,6 +21,7 @@ Package.onUse(function(api) {
         'ohif:log',
         'ohif:servers',
         'ohif:dicom-services',
+        'ohif:dicomweb-client',
         'ohif:viewerbase',
         'ohif:wadoproxy'
     ]);

@@ -1,11 +1,11 @@
 /**
- * Returns the Alphabetic version of a PN
+ * Returns the specified element as a string.  Multi-valued elements will be separated by a backslash
  *
  * @param element - The group/element of the element (e.g. '00200013')
- * @param [defaultValue] - The default value to return if the element is not found
+ * @param [defaultValue] - The value to return if the element is not present
  * @returns {*}
  */
-DICOMWeb.getName = function(element, defaultValue) {
+export default function getString(element, defaultValue) {
     if (!element) {
         return defaultValue;
     }
@@ -17,10 +17,7 @@ DICOMWeb.getName = function(element, defaultValue) {
     if (!element.Value.length) {
         return defaultValue;
     }
-    // Return the Alphabetic component group
-    if (element.Value[0].Alphabetic) {
-        return element.Value[0].Alphabetic;
-    }
-    // Orthanc does not return PN properly so this is a temporary workaround
-    return element.Value[0];
+    // Join the array together separated by backslash
+    // NOTE: Orthanc does not correctly split values into an array so the join is a no-op
+    return element.Value.join('\\');
 };

@@ -1,6 +1,7 @@
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
+import { Meteor } from "meteor/meteor";
 
 // Create a studies loaded state dictionary to enable reactivity. Values: loading|loaded|failed
 OHIF.studies.loadingDict = new ReactiveDict();
@@ -24,15 +25,33 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
     }
 
     return OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
-        // Add the display sets to the study if not present
-        if (!study.displaySets) {
-            const displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(study);
-            study.displaySets = displaySets;
-            study.setDisplaySets(displaySets);
-            study.forEachDisplaySet(displaySet => {
-                OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
+        if (window.HipaaLogger && Meteor.user && Meteor.user()) {
+            window.HipaaLogger.logEvent({
+                eventType: 'viewed',
+                userId: Meteor.userId(),
+                userName: Meteor.user().profile.fullName,
+                collectionName: 'Study',
+                recordId: studyInstanceUid,
+                patientId: study.patientId,
+                patientName: study.patientName
             });
         }
+
+        // Once the data was retrieved, the series are sorted by series and instance number
+        OHIF.viewerbase.sortStudy(study);
+
+        // Updates WADO-RS metaDataManager
+        OHIF.viewerbase.updateMetaDataManager(study);
+
+        // Transform the study in a StudyMetadata object
+        const studyMetadata = new OHIF.metadata.StudyMetadata(study);
+
+        // Add the display sets to the study
+        study.displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
+        study.displaySets.forEach(displaySet => {
+            OHIF.viewerbase.stackManager.makeAndAddStack(study, displaySet);
+            studyMetadata.addDisplaySet(displaySet);
+        });
 
         // Double check to make sure this study wasn't already inserted into OHIF.viewer.Studies
         // so we don't cause duplicate entry errors
