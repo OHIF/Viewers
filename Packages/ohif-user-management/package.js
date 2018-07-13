@@ -26,15 +26,8 @@ Package.onUse(function(api) {
     api.use('ohif:user');
     api.use('ohif:study-list');
 
-    api.addFiles('both/collections.js', ['client', 'server']);
-    //api.addFiles('both/schema/reviewers.js', ['client', 'server']);
-
     // Client imports
     api.addFiles('client/index.js', 'client');
 
     api.addFiles('server/createDemoUser.js', [ 'server' ]);
-    api.addFiles('server/reviewers.js', [ 'server' ]);
-    api.addFiles('server/publications.js', [ 'server' ]);
-
-    api.export('Reviewers', [ 'client', 'server' ]);
 });
