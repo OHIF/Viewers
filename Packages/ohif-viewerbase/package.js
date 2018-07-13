@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 
     const assets = [
         'assets/icons.svg',
+        'assets/user-menu-icons.svg',
         'assets/fonts/Roboto-Black-latin-ext.woff',
         'assets/fonts/Roboto-Black-latin-ext.woff2',
         'assets/fonts/Roboto-Black-latin.woff',

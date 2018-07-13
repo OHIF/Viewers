@@ -255,6 +255,11 @@ export const PublicServerConfig = new SimpleSchema({
         label: 'Creates demo user on startup and show TestDrive button',
         defaultValue: true
     },
+    userAuthenticationRoutesEnabled: {
+        type: Boolean,
+        label: 'Enables routing to /login page.',
+        defaultValue: false,
+    },
     ui: {
         type: UISettings,
         label: 'UI Settings'

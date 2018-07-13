@@ -25,7 +25,9 @@ reactive-var@1.0.11
 reactive-dict@1.2.0
 standard-minifier-css@1.4.1
 standard-minifier-js@2.3.4
-
+accounts-base
+accounts-oauth
+oauth-encryption
 
 # OHIF Packages
 ohif:polyfill
@@ -42,6 +44,8 @@ ohif:dicom-services
 ohif:dicomweb-client
 ohif:hanging-protocols
 ohif:metadata
+ohif:user
+ohif:user-keycloak
 
 fortawesome:fontawesome
 momentjs:moment@2.15.1
