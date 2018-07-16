@@ -15,7 +15,8 @@ const Measurement = new SimpleSchema({
     },
     patientId: {
         type: String,
-        label: 'Patient ID'
+        label: 'Patient ID',
+        optional: true
     },
     measurementNumber: {
         type: Number,

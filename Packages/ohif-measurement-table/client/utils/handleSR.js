@@ -77,6 +77,10 @@ export const getLatestSRSeries = () => {
 };
 
 export const handleSR = (series) => {
+    if (!series) {
+        return Promise.reject();
+    }
+
     const instance = series.getFirstInstance();
 
     return new Promise((resolve, reject) => {

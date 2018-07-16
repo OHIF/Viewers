@@ -1,6 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Session } from 'meteor/session';
 import { configureApis } from './configuration/configuration'
+import { $ } from 'meteor/jquery';
 
 class MeasurementTable {
     constructor() {
@@ -73,12 +74,30 @@ class MeasurementTable {
                 return;
             }
             
+            jumpToFirstMeasurement();
             
         });
         
         instance.measurementModifiedHandler = _.throttle((event, instance) => {
             OHIF.measurements.MeasurementHandlers.onModified(event, instance);
         }, 300);
+    }
+
+    onRendered(instance) {
+        $('.imageViewerViewport').on('cornerstonetoolsmeasurementadded', function(event) {
+                const originalEvent = event.originalEvent;
+                OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
+        });
+    
+        $('.imageViewerViewport').on('cornerstonetoolsmeasurementmodified', function(event) {
+            const originalEvent = event.originalEvent;
+            instance.measurementModifiedHandler(originalEvent, instance);
+        });
+    
+        $('.imageViewerViewport').on('cornerstonemeasurementremoved', function(event) {
+            const originalEvent = event.originalEvent;
+            OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
+        });
     }
 
     events() {
@@ -105,7 +124,7 @@ class MeasurementTable {
         Session.set('MeasurementsReady', false);
     }
 
-    junpToFirstMeasurement() {
+    jumpToFirstMeasurement() {
         // Find and activate the first measurement by Lesion Number
         // NOTE: This is inefficient, we should be using a hanging protocol
         // to hang the first measurement's imageId immediately, rather

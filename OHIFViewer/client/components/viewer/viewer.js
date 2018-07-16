@@ -146,7 +146,7 @@ Template.viewer.onCreated(() => {
 });
 
 Template.viewer.onRendered(function() {
-
+    const instance = Template.instance();
     this.autorun(function() {
         // To make sure ohif viewerMain is rendered before initializing Hanging Protocols
         const isOHIFViewerMainRendered = Session.get('OHIFViewerMainRendered');
@@ -161,32 +161,23 @@ Template.viewer.onRendered(function() {
 
     // Call Viewer plugins onRendered functions 
     if(typeof OHIF.viewer.measurementTable.onRendered === 'function') {
-        OHIF.viewer.measurementTable.onRendered();
+        OHIF.viewer.measurementTable.onRendered(instance);
     }
 
 });
 
-Template.viewer.events(function() {
-    const events = {
-        'click .js-toggle-studies'() {
-            const instance = Template.instance();
-            const current = instance.state.get('leftSidebar');
-            instance.state.set('leftSidebar', !current);
-        },
+Template.viewer.events({
+    'click .js-toggle-studies'() {
+        const instance = Template.instance();
+        const current = instance.state.get('leftSidebar');
+        instance.state.set('leftSidebar', !current);
+    },
 
-        'click .js-toggle-protocol-editor'() {
-            const instance = Template.instance();
-            const current = instance.state.get('rightSidebar');
-            instance.data.state.set('rightSidebar', !current);
-        }
-    };
-
-    // Appending possible events coming from Viewer plugins
-    if (typeof OHIF.viewer.measurementTable.events === 'function') {
-        Object.assign(events, OHIF.viewer.measurementTable.events());
+    'click .js-toggle-protocol-editor'() {
+        const instance = Template.instance();
+        const current = instance.state.get('rightSidebar');
+        instance.data.state.set('rightSidebar', !current);
     }
-
-    return events;
 });
 
 Template.viewer.onDestroyed(function() {

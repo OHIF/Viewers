@@ -242,6 +242,8 @@ class MeasurementApi {
                 });
 
                 resolve();
+            }).catch(error => {
+                resolve({});
             });
         });
     }
