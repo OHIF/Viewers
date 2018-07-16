@@ -83,11 +83,15 @@ ohif:cornerstone-settings@0.0.1
 ohif:design@0.0.1
 ohif:dicom-services@0.0.1
 ohif:dicomweb-client@0.0.1
+ohif:hanging-protocols@0.0.1
 ohif:header@0.0.1
 ohif:hotkeys@0.0.1
 ohif:log@0.0.1
+ohif:measurement-table@0.0.1
+ohif:measurements@0.0.1
 ohif:metadata@0.0.1
 ohif:polyfill@0.0.1
+ohif:select-tree@0.0.1
 ohif:servers@0.0.1
 ohif:studies@0.0.1
 ohif:study-list@0.0.1

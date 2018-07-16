@@ -13,5 +13,8 @@ Template.flexboxLayout.events({
 Template.flexboxLayout.helpers({
     leftSidebarOpen() {
         return Template.instance().data.state.get('leftSidebar');
+    },
+    rightSidebarOpen() {
+        return Template.instance().data.state.get('rightSidebar');
     }
 });

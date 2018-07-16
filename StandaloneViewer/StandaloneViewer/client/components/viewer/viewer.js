@@ -48,6 +48,9 @@ const initHangingProtocol = () => {
 };
 
 Template.viewer.onCreated(() => {
+
+    OHIF.viewer.measurementTable = new OHIF.measurementTable();
+
     const instance = Template.instance();
 
     instance.state = new ReactiveDict();
@@ -98,10 +101,15 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.StudyMetadataList.insert(studyMetadata);
         OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
     });
+
+    // Call Viewer plugins onCreated functions
+    if(typeof OHIF.viewer.measurementTable.onCreated === 'function') {
+        OHIF.viewer.measurementTable.onCreated(instance);
+    }
 });
 
 Template.viewer.onRendered(function() {
-
+    const instance = Template.instance();
     this.autorun(function() {
         // To make sure ohif viewerMain is rendered before initializing Hanging Protocols
         const isOHIFViewerMainRendered = Session.get('OHIFViewerMainRendered');
@@ -114,9 +122,13 @@ Template.viewer.onRendered(function() {
         }
     });
 
+    // Call Viewer plugins onRendered functions
+    if(typeof OHIF.viewer.measurementTable.onRendered === 'function') {
+        OHIF.viewer.measurementTable.onRendered(instance);
+    }
 });
 
-Template.viewer.events({
+Template.viewer.events( {
     'click .js-toggle-studies'() {
         const instance = Template.instance();
         const current = instance.state.get('leftSidebar');

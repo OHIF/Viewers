@@ -28,6 +28,7 @@ ohif:viewerbase
 ohif:metadata
 ohif:study-list
 ohif:dicomweb-client
+ohif:measurement-table
 
 aldeed:template-extension
 aldeed:simple-schema@1.5.3

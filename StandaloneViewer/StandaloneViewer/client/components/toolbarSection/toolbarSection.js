@@ -27,6 +27,22 @@ Template.toolbarSection.helpers({
         };
     },
 
+    rightSidebarToggleButtonData() {
+        const instance = Template.instance();
+        return {
+            toggleable: true,
+            key: 'rightSidebar',
+            value: instance.data.state,
+            options: [{
+                value: 'measurements',
+                svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-measurements-lesions',
+                svgWidth: 18,
+                svgHeight: 10,
+                bottomLabel: 'Measurements'
+            }]
+        };
+    },
+
     toolbarButtons() {
         const extraTools = [];
 
