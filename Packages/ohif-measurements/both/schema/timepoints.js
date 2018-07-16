@@ -4,6 +4,7 @@ export const schema = new SimpleSchema({
     patientId: {
         type: String,
         label: 'Patient ID',
+        optional: true
     },
     timepointId: {
         type: String,
