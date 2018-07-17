@@ -18,13 +18,13 @@ class MeasurementTable {
         
         const timepointApi = new TimepointApi(OHIF.viewer.data.currentTimepointId);
         const measurementApi = new MeasurementApi(timepointApi);
-        this.apis = {
+        const apis = {
             timepointApi,
             measurementApi
         };
         
-        Object.assign(OHIF.viewer, this.apis);
-        Object.assign(instance.data, this.apis);
+        Object.assign(OHIF.viewer, apis);
+        Object.assign(instance.data, apis);
         
         const patientId = instance.data.studies[0].patientId;
         
@@ -74,7 +74,7 @@ class MeasurementTable {
                 return;
             }
             
-            jumpToFirstMeasurement();
+            this.jumpToFirstMeasurement();
             
         });
         
@@ -129,12 +129,12 @@ class MeasurementTable {
         // NOTE: This is inefficient, we should be using a hanging protocol
         // to hang the first measurement's imageId immediately, rather
         // than changing images after initial loading...
-        const config = this.apis.MeasurementApi.getConfiguration();
+        const config = OHIF.measurements.MeasurementApi.getConfiguration();
         const tools = config.measurementTools[0].childTools;
         const firstTool = tools[Object.keys(tools)[0]];
         const measurementTypeId = firstTool.id;
         
-        const collection = measurementApi.tools[measurementTypeId];
+        const collection = OHIF.viewer.measurementApi.tools[measurementTypeId];
         const sorting = {
             sort: {
                 measurementNumber: -1
@@ -155,7 +155,6 @@ class MeasurementTable {
         
         const rowItem = rows[0];
         
-        // Activate the first lesion
         if (rowItem) {
             OHIF.measurements.jumpToRowItem(rowItem, [OHIF.viewer.data.currentTimepointId]);
         }

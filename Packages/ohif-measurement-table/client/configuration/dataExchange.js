@@ -6,6 +6,8 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
 
     const latestSeries = getLatestSRSeries();
 
+    if(!latestSeries) return Promise.resolve({});
+
     return handleSR(latestSeries).then((value) => {
         return {
             length: value
