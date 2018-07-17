@@ -8,6 +8,7 @@ FROM node:8.10.0-slim as builder
 RUN apt-get update && apt-get install -y \
 	curl \
 	g++ \
+	git \
 	build-essential
 
 RUN curl https://install.meteor.com/ | sh
