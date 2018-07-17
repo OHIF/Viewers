@@ -18,27 +18,27 @@ import 'meteor/ohif:metadata';
 const initHangingProtocol = () => {
     // When Hanging Protocol is ready
     HP.ProtocolStore.onReady(() => {
-        
+
         // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
         const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
-        
+
         // Caches Layout Manager: Hanging Protocol uses it for layout management according to current protocol
         const layoutManager = OHIF.viewerbase.layoutManager;
-        
+
         // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
         const studyMetadataSource = new OHIF.studies.classes.OHIFStudyMetadataSource();
-        
+
         // Get prior studies map
         const studyPriorsMap = OHIF.studylist.functions.getStudyPriorsMap(studyMetadataList);
-        
+
         // Creates Protocol Engine object with required arguments
         const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, studyPriorsMap, studyMetadataSource);
-        
+
         // Sets up Hanging Protocol engine
         HP.setEngine(ProtocolEngine);
-        
+
         Session.set('ViewerReady', true);
-        
+
         Session.set('activeViewport', 0);
     });
 };
@@ -47,16 +47,16 @@ Meteor.startup(() => {
     Session.setDefault('activeViewport', false);
     Session.setDefault('leftSidebar', false);
     Session.setDefault('rightSidebar', false);
-    
+
     OHIF.viewer.defaultTool = 'wwwc';
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.cine = {
         framesPerSecond: 24,
         loop: true
     };
-    
+
     const viewportUtils = OHIF.viewerbase.viewportUtils;
-    
+
     OHIF.viewer.functionList = {
         toggleCineDialog: viewportUtils.toggleCineDialog,
         toggleCinePlay: viewportUtils.toggleCinePlay,
@@ -64,25 +64,25 @@ Meteor.startup(() => {
         resetViewport: viewportUtils.resetViewport,
         invert: viewportUtils.invert
     };
-    
+
     OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
-    
+
     // Create the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);
-    
+
     OHIF.viewer.metadataProvider = new OHIF.cornerstone.MetadataProvider();
-    
+
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
     cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
-    
+
     // Instanciate viewer plugins
     OHIF.viewer.measurementTable = new MeasurementTable();  
 });
 
 Template.viewer.onCreated(() => {
     Session.set('ViewerReady', false);
-    
+
     const instance = Template.instance();
 
     // Define the OHIF.viewer.data global object
