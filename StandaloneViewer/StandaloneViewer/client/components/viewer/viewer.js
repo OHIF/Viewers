@@ -3,6 +3,8 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { OHIF } from 'meteor/ohif:core';
+import { MeasurementTable } from 'meteor/ohif:measurement-table';
+
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
@@ -49,7 +51,7 @@ const initHangingProtocol = () => {
 
 Template.viewer.onCreated(() => {
 
-    OHIF.viewer.measurementTable = new OHIF.measurementTable();
+    OHIF.viewer.measurementTable = new MeasurementTable();
 
     const instance = Template.instance();
 
