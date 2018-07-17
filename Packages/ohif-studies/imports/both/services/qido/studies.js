@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { DICOMWeb } from 'meteor/ohif:dicomweb-client';
 
 /**
  * Creates a QIDO date string for a date range query
@@ -99,13 +100,13 @@ function resultDataToStudies(resultData) {
 OHIF.studies.services.QIDO.Studies = (server, filter) => {
     const url = filterToQIDOURL(server, filter);
 
-    try {
-        const result = DICOMWeb.getJSON(url, server.requestOptions);
+    return new Promise((resolve, reject) => {
+        console.warn(DICOMWeb);
 
-        return resultDataToStudies(result.data);
-    } catch (error) {
-        OHIF.log.trace();
+        DICOMWeb.getJSON(url, server.requestOptions).then(result => {
+            const studies = resultDataToStudies(result);
 
-        throw error;
-    }
+            resolve(studies);
+        }, reject);
+    });
 };

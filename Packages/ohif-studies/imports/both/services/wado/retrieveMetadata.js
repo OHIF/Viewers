@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { DICOMWeb } from 'meteor/ohif:dicomweb-client';
 import { parseFloatArray } from '../../lib/parseFloatArray';
 
 /**
@@ -67,9 +68,8 @@ function buildInstanceWadoUrl(server, studyInstanceUid, seriesInstanceUid, sopIn
     params.push('transferSyntax=*');
 
     const paramString = params.join('&');
-    const uri = encodeURIComponent(paramString);
 
-    return `${server.wadoUriRoot}?${uri}`;
+    return `${server.wadoUriRoot}?${paramString}`;
 }
 
 function buildInstanceWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid) {
@@ -106,17 +106,19 @@ function getPaletteColor(server, instance, tag, lutDescriptor) {
     const numLutEntries = lutDescriptor[0];
     const bits = lutDescriptor[2];
     const uri = WADOProxy.convertURL(instance[tag].BulkDataURI, server)
-    const data = DICOMWeb.getBulkData(uri);
+    const bulkDataPromise = DICOMWeb.getBulkData(uri);
 
-    for (var i = 0; i < numLutEntries; i++) {
-        if(bits === 16) {
-            lut[i] = data.readUInt16LE(i*2);
-        } else {
-            lut[i] = data.readUInt8(i);
+    return bulkDataPromise.then(data => {
+        for (var i = 0; i < numLutEntries; i++) {
+            if(bits === 16) {
+                lut[i] = data[i * 65536] + data[i + 1];
+            } else {
+                lut[i] = data[i];
+            }
         }
-    }
 
-    return lut;
+        return lut;
+    })
 }
 
 /**
@@ -126,38 +128,33 @@ function getPaletteColor(server, instance, tag, lutDescriptor) {
  * @param instance {Object} The retrieved instance metadata;
  * @returns {String} The ReferenceSOPInstanceUID
  */
-function getPaletteColors(server, instance, lutDescriptor) {
+async function getPaletteColors(server, instance, lutDescriptor) {
+    let entry = null;
+    let paletteUID = DICOMWeb.getString(instance['00281199']);
 
-    let entry = null,
-        paletteUID = DICOMWeb.getString(instance['00281199']);
-
-    if (paletteColorCache.isValidUID(paletteUID)) {
-        entry = paletteColorCache.get(paletteUID);
-    } else {
-        paletteUID = null;
-    }
-
-    if (!entry) {
-        // no entry on cache... Fetch remote data.
-        try {
-            let r, g, b;
-            r = getPaletteColor(server, instance, '00281201', lutDescriptor);
-            g = getPaletteColor(server, instance, '00281202', lutDescriptor);;
-            b = getPaletteColor(server, instance, '00281203', lutDescriptor);;
-
-            entry = { red: r, green: g, blue: b };
-            if (paletteUID !== null) {
-                // when paletteUID is present, the entry can be cached...
-                entry.uid = paletteUID;
-                paletteColorCache.add(entry);
-            }
-        } catch (error) {
-            OHIF.log.error(`(${error.name}) ${error.message}`);
+    return new Promise((resolve, reject) => {
+        if (paletteColorCache.isValidUID(paletteUID)) {
+            entry = paletteColorCache.get(paletteUID);
+            return resolve(entry);
         }
-    }
 
-    return entry;
+        // no entry in cache... Fetch remote data.
+        const r = getPaletteColor(server, instance, '00281201', lutDescriptor);
+        const g = getPaletteColor(server, instance, '00281202', lutDescriptor);;
+        const b = getPaletteColor(server, instance, '00281203', lutDescriptor);;
 
+        const promises = [r, g, b];
+
+        Promise.all(promises).then((args) => {
+            entry = { red: r, green: g, blue: b };
+
+            // when paletteUID is present, the entry can be cached...
+            entry.uid = paletteUID;
+            paletteColorCache.add(entry);
+
+            resolve(entry);
+        });
+    });
 }
 
 function getFrameIncrementPointer(element) {
@@ -204,21 +201,27 @@ function getRadiopharmaceuticalInfo(instance) {
  * @param resultData
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
-function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
-    var seriesMap = {};
-    var seriesList = [];
+async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
+    const seriesMap = {};
+    const seriesList = [];
+
+    if (!WADOProxy) {
+        WADOProxy = {
+            convertURL: (a => a)
+        };
+    }
 
     if (!resultData.length) {
         return;
     }
 
-    var anInstance = resultData[0];
+    const anInstance = resultData[0];
     if (!anInstance) {
         return;
     }
 
-    var studyData = {
-        seriesList: seriesList,
+    const studyData = {
+        seriesList,
         patientName: DICOMWeb.getName(anInstance['00100010']),
         patientId: DICOMWeb.getString(anInstance['00100020']),
         patientAge: DICOMWeb.getNumber(anInstance['00101010']),
@@ -233,7 +236,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         institutionName: DICOMWeb.getString(anInstance['00080080'])
     };
 
-    resultData.forEach(function(instance) {
+    await Promise.all(resultData.map(async function(instance) {
         var seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
         var series = seriesMap[seriesInstanceUid];
         if (!series) {
@@ -250,17 +253,16 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             seriesList.push(series);
         }
 
-        var sopInstanceUid = DICOMWeb.getString(instance['00080018']);
-
+        const sopInstanceUid = DICOMWeb.getString(instance['00080018']);
         const wadouri = buildInstanceWadoUrl(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
         const baseWadoRsUri = buildInstanceWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
         const wadorsuri = buildInstanceFrameWadoRsUri(server, studyInstanceUid, seriesInstanceUid, sopInstanceUid);
 
-        var instanceSummary = {
+        const instanceSummary = {
             imageType: DICOMWeb.getString(instance['00080008']),
             sopClassUid: DICOMWeb.getString(instance['00080016']),
             modality: DICOMWeb.getString(instance['00080060']),
-            sopInstanceUid: sopInstanceUid,
+            sopInstanceUid,
             instanceNumber: DICOMWeb.getNumber(instance['00200013']),
             imagePositionPatient: DICOMWeb.getString(instance['00200032']),
             imageOrientationPatient: DICOMWeb.getString(instance['00200037']),
@@ -312,12 +314,13 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             const redPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281101']));
             const greenPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281102']));
             const bluePaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281103']));
-            const palettes = getPaletteColors(server, instance, redPaletteColorLookupTableDescriptor);
+            const palettes = await getPaletteColors(server, instance, redPaletteColorLookupTableDescriptor);
 
             if (palettes) {
                 if (palettes.uid) {
                     instanceSummary.paletteColorLookupTableUID = palettes.uid;
                 }
+
                 instanceSummary.redPaletteColorLookupTableData = palettes.red;
                 instanceSummary.greenPaletteColorLookupTableData = palettes.green;
                 instanceSummary.bluePaletteColorLookupTableData = palettes.blue;
@@ -328,8 +331,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         }
 
         series.instances.push(instanceSummary);
-
-    });
+    }));
 
     return studyData;
 }
@@ -338,26 +340,19 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * Retrieved Study MetaData from a DICOM server using a WADO call
  * @param server
  * @param studyInstanceUid
- * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
+ * @returns {Promise}
  */
-OHIF.studies.services.WADO.RetrieveMetadata = function(server, studyInstanceUid) {
-    var url = buildUrl(server, studyInstanceUid);
+OHIF.studies.services.WADO.RetrieveMetadata = async function(server, studyInstanceUid) {
+    const url = buildUrl(server, studyInstanceUid);
 
-    try {
-        var result = DICOMWeb.getJSON(url, server.requestOptions);
+    return new Promise((resolve, reject) => {
+        DICOMWeb.getJSON(url, server.requestOptions).then(result => {
+            resultDataToStudyMetadata(server, studyInstanceUid, result).then((study) => {
+                study.wadoUriRoot = server.wadoUriRoot;
+                study.studyInstanceUid = studyInstanceUid;
 
-        var study = resultDataToStudyMetadata(server, studyInstanceUid, result.data);
-        if (!study) {
-            study = {};
-        }
-
-        study.wadoUriRoot = server.wadoUriRoot;
-        study.studyInstanceUid = studyInstanceUid;
-
-        return study;
-    } catch (error) {
-        OHIF.log.trace();
-
-        throw error;
-    }
+                resolve(study);
+            }, reject);
+        }, reject);
+    });
 };

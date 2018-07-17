@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { parseFloatArray } from 'meteor/ohif:studies/imports/server/lib/parseFloatArray';
+import { parseFloatArray } from 'meteor/ohif:studies/imports/both/lib/parseFloatArray';
 
 /**
  * Returns the value of the element (e.g. '00280009')

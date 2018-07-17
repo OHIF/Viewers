@@ -151,28 +151,11 @@ function search() {
     // returned as 'undefined'
     const modality = replaceUndefinedColumnValue($('input#modality').val());
 
-    Meteor.call('StudyListSearch', filter, (error, studies) => {
+    OHIF.studies.searchStudies(filter).then((studies) => {
         OHIF.log.info('StudyListSearch');
         // Hide loading text
 
         Session.set('showLoadingText', false);
-
-        if (error) {
-            Session.set('serverError', true);
-
-            const errorType = error.error;
-
-            if (errorType === 'server-connection-error') {
-                OHIF.log.error('There was an error connecting to the DICOM server, please verify if it is up and running.');
-            } else if (errorType === 'server-internal-error') {
-                OHIF.log.error('There was an internal error with the DICOM server');
-            } else {
-                OHIF.log.error('For some reason we could not list the studies.')
-            }
-
-            OHIF.log.error(error.stack);
-            return;
-        }
 
         if (!studies) {
             OHIF.log.warn('No studies found');
@@ -196,6 +179,20 @@ function search() {
                 OHIF.studylist.collections.Studies.insert(study);
             }
         });
+    }, (error) => {
+        Session.set('serverError', true);
+
+        const errorType = error.error;
+
+        if (errorType === 'server-connection-error') {
+            OHIF.log.error('There was an error connecting to the DICOM server, please verify if it is up and running.');
+        } else if (errorType === 'server-internal-error') {
+            OHIF.log.error('There was an internal error with the DICOM server');
+        } else {
+            OHIF.log.error('For some reason we could not list the studies.')
+        }
+
+        OHIF.log.error(error.stack);
     });
 }
 

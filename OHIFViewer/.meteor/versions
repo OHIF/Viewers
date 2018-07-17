@@ -86,6 +86,7 @@ ohif:cornerstone@0.0.1
 ohif:cornerstone-settings@0.0.1
 ohif:design@0.0.1
 ohif:dicom-services@0.0.1
+ohif:dicomweb-client@0.0.1
 ohif:hanging-protocols@0.0.1
 ohif:header@0.0.1
 ohif:hotkeys@0.0.1

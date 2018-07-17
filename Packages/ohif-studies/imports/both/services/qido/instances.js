@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { DICOMWeb } from 'meteor/ohif:dicomweb-client';
 
 /**
  * Creates a QIDO URL given the server settings and a study instance UID

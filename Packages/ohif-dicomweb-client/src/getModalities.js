@@ -1,4 +1,4 @@
-DICOMWeb.getModalities = function(modality, modalitiesInStudy) {
+const getModalities = function(modality, modalitiesInStudy) {
     var modalities = {};
     if (modality) {
         modalities = modality;
@@ -19,3 +19,5 @@ DICOMWeb.getModalities = function(modality, modalitiesInStudy) {
     }
     return modalities;
 };
+
+export default getModalities;
