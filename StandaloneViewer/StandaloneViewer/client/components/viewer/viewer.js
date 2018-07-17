@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { OHIF } from 'meteor/ohif:core';
-import { MeasurementTable } from 'meteor/ohif:measurement-table';
+import { MeasurementTable, measurementEvents } from 'meteor/ohif:measurement-table';
 
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
@@ -130,13 +130,15 @@ Template.viewer.onRendered(function() {
     }
 });
 
-Template.viewer.events( {
-    'click .js-toggle-studies'() {
-        const instance = Template.instance();
-        const current = instance.state.get('leftSidebar');
-        instance.state.set('leftSidebar', !current);
-    }
-});
+Template.viewer.events( Object.assign({
+        'click .js-toggle-studies'() {
+            const instance = Template.instance();
+            const current = instance.state.get('leftSidebar');
+            instance.state.set('leftSidebar', !current);
+        }
+    },
+    measurementEvents
+));
 
 Template.viewer.helpers({
     state() {

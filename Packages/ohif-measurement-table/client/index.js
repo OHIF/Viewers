@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { configureApis } from './configuration/configuration'
 import { $ } from 'meteor/jquery';
 
-export class MeasurementTable {
+class MeasurementTable {
     constructor() {
         configureApis();
 
@@ -83,42 +83,6 @@ export class MeasurementTable {
         }, 300);
     }
 
-    onRendered(instance) {
-        $('.imageViewerViewport').on('cornerstonetoolsmeasurementadded', function(event) {
-                const originalEvent = event.originalEvent;
-                OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
-        });
-    
-        $('.imageViewerViewport').on('cornerstonetoolsmeasurementmodified', function(event) {
-            const originalEvent = event.originalEvent;
-            instance.measurementModifiedHandler(originalEvent, instance);
-        });
-    
-        $('.imageViewerViewport').on('cornerstonemeasurementremoved', function(event) {
-            const originalEvent = event.originalEvent;
-            OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
-        });
-    }
-
-    events() {
-        return {
-            'cornerstonetoolsmeasurementadded .imageViewerViewport'(event, instance) {
-                const originalEvent = event.originalEvent;
-                OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
-            },
-        
-            'cornerstonetoolsmeasurementmodified .imageViewerViewport'(event, instance) {
-                const originalEvent = event.originalEvent;
-                instance.measurementModifiedHandler(originalEvent, instance);
-            },
-        
-            'cornerstonemeasurementremoved .imageViewerViewport'(event, instance) {
-                const originalEvent = event.originalEvent;
-                OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
-            }
-        }
-    }
-
     onDestroyed() {
         Session.set('TimepointsReady', false);
         Session.set('MeasurementsReady', false);
@@ -161,4 +125,26 @@ export class MeasurementTable {
         
         this.firstMeasurementActivated = true;
     }
+};
+
+const measurementEvents = {
+    'cornerstonetoolsmeasurementadded .imageViewerViewport'(event, instance) {
+        const originalEvent = event.originalEvent;
+        OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
+    },
+
+    'cornerstonetoolsmeasurementmodified .imageViewerViewport'(event, instance) {
+        const originalEvent = event.originalEvent;
+        instance.measurementModifiedHandler(originalEvent, instance);
+    },
+
+    'cornerstonemeasurementremoved .imageViewerViewport'(event, instance) {
+        const originalEvent = event.originalEvent;
+        OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
+    }
+};
+
+export {
+    MeasurementTable,
+    measurementEvents
 }
