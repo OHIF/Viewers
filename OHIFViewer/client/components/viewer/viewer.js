@@ -4,6 +4,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
+import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
@@ -76,7 +77,7 @@ Meteor.startup(() => {
     cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 
     // Instanciate viewer plugins
-    OHIF.viewer.measurementTable = new OHIF.measurementTable();
+    OHIF.viewer.measurementTable = new MeasurementTable();
 });
 
 Template.viewer.onCreated(() => {

@@ -17,5 +17,5 @@ Package.onUse(function(api) {
     api.use('ohif:studies');
     api.use('ohif:measurements');
 
-    api.addFiles('client/index.js', 'client');
+    api.mainModule('client/index.js', 'client');
 });

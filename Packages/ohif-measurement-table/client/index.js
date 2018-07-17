@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { configureApis } from './configuration/configuration'
 import { $ } from 'meteor/jquery';
 
-class MeasurementTable {
+export class MeasurementTable {
     constructor() {
         configureApis();
 
@@ -162,7 +162,3 @@ class MeasurementTable {
         this.firstMeasurementActivated = true;
     }
 }
-
-
-
-OHIF.measurementTable = MeasurementTable;
