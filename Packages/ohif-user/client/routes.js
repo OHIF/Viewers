@@ -1,4 +1,4 @@
-import { Router } from 'meteor/iron:router';
+import { Router } from 'meteor/clinical:router';
 
 Router.route('/login', function() {
     this.layout('mainLayout', { data: {} });

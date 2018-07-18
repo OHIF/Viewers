@@ -27,12 +27,12 @@ ohif:cornerstone-settings
 ohif:viewerbase
 ohif:metadata
 ohif:study-list
-ohif:dicom-services
+ohif:dicomweb-client
 
 aldeed:template-extension
 aldeed:simple-schema@1.5.3
 stylus@2.513.9
-iron:router
+clinical:router
 session@1.1.7
 cultofcoders:persistent-session
 reactive-dict@1.2.0

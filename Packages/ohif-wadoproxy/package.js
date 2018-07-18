@@ -13,7 +13,7 @@ Package.onUse(function(api) {
 
     api.use('ecmascript');
     api.use('standard-app-packages');
-    api.use('iron:router@1.0.13');
+    api.use('clinical:router@2.0.19');
 
     api.use('ohif:core');
     api.use('ohif:servers');

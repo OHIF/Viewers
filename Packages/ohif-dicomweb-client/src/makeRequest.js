@@ -30,13 +30,15 @@ async function makeRequest(url, options) {
 
     return new Promise((resolve, reject) => {
         // TODO: Kept getting weird build errors from RegExp
-        const isAbsolute = parsed.href.indexOf('http://') === 0 || parsed.href.indexOf('https://');
+        const isAbsolute = parsed.href.indexOf('http://') === 0 || parsed.href.indexOf('https://') === 0;
 
         let url = parsed.href;
 
         if (isAbsolute === false) {
             url = Meteor.absoluteUrl(parsed.href);
         }
+
+        console.warn(url);
 
         fetch(url, requestOpt).then((response) => {
             if (response.status >= 400) {

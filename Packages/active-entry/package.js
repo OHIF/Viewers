@@ -12,7 +12,7 @@ Package.onUse(function (api) {
   api.use([
     'meteor-platform',
     'templating',
-    'iron:router@1.0.13',
+    'clinical:router@2.0.19',
     'grove:less@0.1.1',
     'session',
     'reactive-dict'
@@ -77,7 +77,7 @@ Package.onUse(function (api) {
 Package.onTest(function (api) {
   api.use([
     'templating',
-    'iron:router@1.0.13',
+    'clinical:router@2.0.19',
     'grove:less@0.1.1',
     'standard-app-packages'
   ], ['client']);

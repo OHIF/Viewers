@@ -18,7 +18,7 @@ Package.onUse(function(api) {
     api.use([
         'templating',
         'stylus',
-        'iron:router'
+        'clinical:router'
     ], 'client');
 
     // OHIF dependencies

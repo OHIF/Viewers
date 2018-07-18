@@ -1,4 +1,4 @@
-import { Router } from 'meteor/iron:router';
+import { Router } from 'meteor/clinical:router';
 import { Session } from 'meteor/session';
 import { hotkeys } from 'meteor/ohif:hotkeys';
 

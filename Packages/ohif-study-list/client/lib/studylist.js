@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { Router } from 'meteor/iron:router';
+import { Router } from 'meteor/clinical:router';
 
 // Functions
 import { getStudyPriors } from './getStudyPriors';

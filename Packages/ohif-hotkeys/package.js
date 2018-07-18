@@ -18,7 +18,7 @@ Package.onUse(function(api) {
         'stylus',
         'reactive-var',
         'session',
-        'iron:router',
+        'clinical:router',
         'cultofcoders:persistent-session'
     ]);
 
