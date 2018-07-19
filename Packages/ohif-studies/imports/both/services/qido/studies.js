@@ -101,8 +101,6 @@ OHIF.studies.services.QIDO.Studies = (server, filter) => {
     const url = filterToQIDOURL(server, filter);
 
     return new Promise((resolve, reject) => {
-        console.warn(DICOMWeb);
-
         DICOMWeb.getJSON(url, server.requestOptions).then(result => {
             const studies = resultDataToStudies(result);
 

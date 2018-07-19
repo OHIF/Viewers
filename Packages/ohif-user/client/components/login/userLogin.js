@@ -33,3 +33,9 @@ Template.userLogin.onCreated(() => {
 
     instance.schema = OHIF.user.schema;
 });
+
+Template.userLogin.helpers({
+    additionalLoginButtons() {
+        return OHIF.user.additionalLoginButtons || [];
+    }
+})

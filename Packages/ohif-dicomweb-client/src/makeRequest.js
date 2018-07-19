@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import URL from 'url-parse';
 import 'isomorphic-fetch';
+import getAccessToken from './getAccessToken.js';
 
 async function makeRequest(url, options) {
     const parsed = new URL(url);
@@ -10,8 +11,7 @@ async function makeRequest(url, options) {
         headers: {}
     };
 
-    // TODO: Clean this up
-    const accessToken = false //Meteor.user().services.keycloak.accessToken;
+    const accessToken = getAccessToken();
     if (accessToken) {
         requestOpt.headers = {
             Authorization: `Bearer ${accessToken}`

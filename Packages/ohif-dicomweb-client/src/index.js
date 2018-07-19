@@ -6,6 +6,7 @@ import getModalities from './getModalities.js';
 import getName from './getName.js';
 import getNumber from './getNumber.js';
 import getString from './getString.js';
+import getAccessToken from './getAccessToken.js';
 import makeRequest from './makeRequest.js';
 
 const DICOMWeb = {
@@ -17,6 +18,7 @@ const DICOMWeb = {
     getName,
     getNumber,
     getString,
+    getAccessToken,
     makeRequest
 };
 

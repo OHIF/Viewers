@@ -12,6 +12,10 @@
                 {{>section 'userLoginFieldsAfter'}}
                 <hr class="m-t-0 m-b-2">
                 {{#button action='login' class='form-control btn btn-primary'}}Enter{{/button}}
+
+                {{ #each additionalLoginButtons }}
+                    {{>Template.dynamic template=template}}
+                {{ /each }}
             {{/form}}
         </div>
         {{>section 'userLoginAfter'}}
