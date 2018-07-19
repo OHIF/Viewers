@@ -1,5 +1,6 @@
 Npm.depends({
     ajv: '4.10.4',
+    url: '0.11.0',
     jspdf: '1.3.3'
 });
 
