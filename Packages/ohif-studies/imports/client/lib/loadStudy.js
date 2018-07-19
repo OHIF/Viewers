@@ -24,6 +24,13 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
         OHIF.studies.loadingDict.set(studyInstanceUid, 'loading');
     }
 
+    const studyLoaded = OHIF.viewer.Studies.findBy({ studyInstanceUid: studyInstanceUid });
+    if (studyLoaded) {
+        OHIF.studies.loadingDict.set(studyInstanceUid, 'loaded');
+        resolve(studyLoaded);
+        return;
+    }
+
     return OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
         if (window.HipaaLogger && Meteor.user && Meteor.user()) {
             window.HipaaLogger.logEvent({
@@ -53,13 +60,9 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
             studyMetadata.addDisplaySet(displaySet);
         });
 
-        // Double check to make sure this study wasn't already inserted into OHIF.viewer.Studies
-        // so we don't cause duplicate entry errors
-        const loaded = OHIF.viewer.Studies.findBy({ studyInstanceUid: study.studyInstanceUid });
-        if (!loaded) {
-            OHIF.viewer.Studies.insert(study);
-            OHIF.viewer.StudyMetadataList.insert(study);
-        }
+        // Persist study data into OHIF.viewer
+        OHIF.viewer.Studies.insert(study);
+        OHIF.viewer.StudyMetadataList.insert(study);
 
         // Add the study to the loading listener to allow loading progress handling
         const studyLoadingListener = OHIF.viewerbase.StudyLoadingListener.getInstance();
