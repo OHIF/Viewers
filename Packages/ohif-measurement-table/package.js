@@ -14,7 +14,6 @@ Package.onUse(function(api) {
     api.use('ohif:core');
     api.use('ohif:cornerstone-settings');
     api.use('ohif:viewerbase');
-    api.use('ohif:studies');
     api.use('ohif:measurements');
 
     api.mainModule('client/index.js', 'client');
