@@ -131,11 +131,7 @@ Template.viewer.onRendered(function() {
 });
 
 Template.viewer.events( Object.assign({
-        'click .js-toggle-studies'() {
-            const instance = Template.instance();
-            const current = instance.state.get('leftSidebar');
-            instance.state.set('leftSidebar', !current);
-        }
+    // Viewer Events
     },
     measurementEvents
 ));

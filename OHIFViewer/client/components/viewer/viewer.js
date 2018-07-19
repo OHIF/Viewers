@@ -168,17 +168,7 @@ Template.viewer.onRendered(function() {
 });
 
 Template.viewer.events( Object.assign({
-        'click .js-toggle-studies'() {
-            const instance = Template.instance();
-            const current = instance.state.get('leftSidebar');
-            instance.state.set('leftSidebar', !current);
-        },
-
-        'click .js-toggle-protocol-editor'() {
-            const instance = Template.instance();
-            const current = instance.state.get('rightSidebar');
-            instance.data.state.set('rightSidebar', !current);
-        }
+    // Viewer Events
     },
     measurementEvents
 ));
