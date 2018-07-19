@@ -7,6 +7,7 @@ Package.describe({
 Npm.depends({
     'url-parse': '1.4.1',
     'isomorphic-fetch': '2.2.1',
+    'isomorphic-base64': '1.0.2'
 });
 
 Package.onUse(function(api) {

@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import URL from 'url-parse';
 import 'isomorphic-fetch';
+import { btoa } from 'isomorphic-base64';
 import getAccessToken from './getAccessToken.js';
 
 async function makeRequest(url, options) {
@@ -16,9 +17,9 @@ async function makeRequest(url, options) {
         requestOpt.headers = {
             Authorization: `Bearer ${accessToken}`
         };
-    } else if (requestOpt.auth) {
+    } else if (options.auth) {
         requestOpt.headers = {
-            Authorization: requestOpt.auth
+            Authorization: `Basic ${btoa(options.auth)}`
         };
     }
 
@@ -37,8 +38,6 @@ async function makeRequest(url, options) {
         if (isAbsolute === false) {
             url = Meteor.absoluteUrl(parsed.href);
         }
-
-        console.warn(url);
 
         fetch(url, requestOpt).then((response) => {
             if (response.status >= 400) {
