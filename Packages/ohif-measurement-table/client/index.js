@@ -9,9 +9,11 @@ class MeasurementTable {
 
         Session.set('TimepointsReady', false);
         Session.set('MeasurementsReady', false);
+
+        this.firstMeasurementActivated = false;
     }
 
-    onCreated(instance) {
+    async onCreated(instance) {
         const { TimepointApi, MeasurementApi } = OHIF.measurements;
         
         OHIF.viewer.data.currentTimepointId = 'TimepointId';
@@ -28,49 +30,19 @@ class MeasurementTable {
         
         const patientId = instance.data.studies[0].patientId;
         
-        // LT-382: Preventing HP to keep identifying studies in timepoints that might be removed
-        instance.data.studies.forEach(study => (delete study.timepointType));
-        
-        // TODO: Consider combining the retrieval calls into one?
-        const timepointsPromise = timepointApi.retrieveTimepoints({ patientId });
-        timepointsPromise.then(() => {
-            const timepoints = timepointApi.all();
-            
-            //  Set timepointType in studies to be used in hanging protocol engine
-            timepoints.forEach(timepoint => {
-                timepoint.studyInstanceUids.forEach(studyInstanceUid => {
-                    const study = _.find(instance.data.studies, element => {
-                        return element.studyInstanceUid === studyInstanceUid;
-                    });
+        await timepointApi.retrieveTimepoints({ patientId });
+        Session.set('TimepointsReady', true);
+           
+        await measurementApi.retrieveMeasurements(patientId, [OHIF.viewer.data.currentTimepointId]);
+        Session.set('MeasurementsReady', true);
 
-                    if (!study) {
-                        return;
-                    }
+        measurementApi.syncMeasurementsAndToolData();
 
-                    study.timepointType = timepoint.timepointType;
-                });
-            });
-            
-            Session.set('TimepointsReady', true);
-            
-            const timepointIds = timepoints.map(t => t.timepointId);
-            
-            const measurementsPromise = measurementApi.retrieveMeasurements(patientId, timepointIds);
-            measurementsPromise.then(() => {
-                Session.set('MeasurementsReady', true);
-                
-                measurementApi.syncMeasurementsAndToolData();
-            });
-        });
-        
-        measurementApi.priorTimepointId = OHIF.viewer.data.currentTimepointId;
-
-        let firstMeasurementActivated = false;
         instance.autorun(() => {
             if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||
             !Session.get('ViewerReady') ||
-            firstMeasurementActivated) {
+            this.firstMeasurementActivated) {
                 return;
             }
             
@@ -118,9 +90,12 @@ class MeasurementTable {
         }));
         
         const rowItem = rows[0];
-        
+        const timepoints = [
+            OHIF.viewer.timepointApi.current()
+        ];
+
         if (rowItem) {
-            OHIF.measurements.jumpToRowItem(rowItem, [OHIF.viewer.data.currentTimepointId]);
+            OHIF.measurements.jumpToRowItem(rowItem, timepoints);
         }
         
         this.firstMeasurementActivated = true;
