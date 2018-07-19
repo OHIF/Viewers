@@ -126,11 +126,11 @@ const handleRequest = function() {
       const proxyReqTime = end - start;
       const totalProxyTime = authenticationTime + prepRequestTime + proxyReqTime;
       const serverTimingHeaders = `
-          auth=${authenticationTime}; "Authenticate User",
-          prep-req=${prepRequestTime}; "Prepare Request Headers",
-          proxy-req=${proxyReqTime}; "Request to WADO URI",
-          total-proxy=${totalProxyTime}; "Total",
-      `.replace(/\n/g, '');
+        auth;dur=${authenticationTime};desc="Authenticate User";,
+		prep-req;dur=${prepRequestTime};desc="Prepare Request Headers",
+	    proxy-req;dur=${proxyReqTime};desc="Request to WADO server",
+        total-proxy;dur=${totalProxyTime};desc="Total"
+        `.replace(/\n/g, '')
 
       proxyResponse.headers['Server-Timing'] = serverTimingHeaders;
 
@@ -149,12 +149,13 @@ const handleRequest = function() {
       const proxyReqTime = end - start;
       const totalProxyTime = authenticationTime + prepRequestTime + proxyReqTime;
       console.timeEnd(request.url);
+
       const serverTimingHeaders = {
           'Server-Timing': `
-              auth=${authenticationTime}; "Authenticate User",
-              prep-req=${prepRequestTime}; "Prepare Request Headers",
-              proxy-req=${proxyReqTime}; "Request to WADO URI",
-              total-proxy=${totalProxyTime}; "Total",
+              auth;dur=${authenticationTime};desc="Authenticate User";,
+              prep-req;dur=${prepRequestTime};desc="Prepare Request Headers",
+              proxy-req;dur=${proxyReqTime};desc="Request to WADO server",
+              total-proxy;dur=${totalProxyTime};desc="Total"
           `.replace(/\n/g, '')
       };
 
