@@ -62,7 +62,7 @@ export function setActiveViewport(element) {
 
         // @TODO Add this to OHIFAfterActivateViewport handler...
         const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
-        if (synchronizer) { return; }
+        if (!synchronizer) { return; }
 
         synchronizer.update();
     }
