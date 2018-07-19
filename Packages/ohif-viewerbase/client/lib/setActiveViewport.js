@@ -61,9 +61,10 @@ export function setActiveViewport(element) {
         StudyPrefetcher.getInstance().prefetch();
 
         // @TODO Add this to OHIFAfterActivateViewport handler...
-        if (OHIF.viewer.stackImagePositionOffsetSynchronizer) {
-            OHIF.viewer.stackImagePositionOffsetSynchronizer.update();
-        }
+        const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+        if (synchronizer) { return; }
+
+        synchronizer.update();
     }
 
     // Set the div to focused, so keypress events are handled

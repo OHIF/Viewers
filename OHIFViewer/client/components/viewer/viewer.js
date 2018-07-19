@@ -65,8 +65,6 @@ Meteor.startup(() => {
         invert: viewportUtils.invert
     };
 
-    OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();
-
     // Create the synchronizer used to update reference lines
     OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);
 

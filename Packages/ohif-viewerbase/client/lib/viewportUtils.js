@@ -171,9 +171,7 @@ const clearTools = () => {
 const linkStackScroll = () => {
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
-    if (!synchronizer) {
-        return;
-    }
+    if (!synchronizer) { return; }
 
     if (synchronizer.isActive()) {
         synchronizer.deactivate();
@@ -348,6 +346,9 @@ const isStackScrollLinkingActive = () => {
     Session.get('LayoutManagerUpdated');
 
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+
+    if (!synchronizer) { return; }
+
     const syncedElements = _.pluck(synchronizer.syncedViewports, 'element');
     const $renderedViewports = $('.imageViewerViewport');
     $renderedViewports.each((index, element) => {
