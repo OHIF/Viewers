@@ -3,8 +3,11 @@
         <div class="sidebarMenu sidebar-left {{#if leftSidebarOpen}}sidebar-open{{/if}}">
             {{>studyBrowser (clone this)}}
         </div>
-        <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}}">
+        <div class="mainContent {{#if leftSidebarOpen}}sidebar-left-open{{/if}} {{#if rightSidebarOpen}}sidebar-right-open{{/if}}">
             {{>standaloneViewerMain (clone this)}}
+        </div>
+        <div class="sidebarMenu sidebar-right {{#if rightSidebarOpen}}sidebar-open{{/if}}">
+            {{> measurementLightTable (clone this)}}
         </div>
     </div>
 </template>

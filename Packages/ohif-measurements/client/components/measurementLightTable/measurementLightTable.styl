@@ -1,0 +1,40 @@
+@require '{ohif:design}/app'
+
+#measurementLightTableContainer
+  theme('background-color', '$primaryBackgroundColor')
+  height: 100%
+  width: 100%
+
+.measurementLightTableHeaderContainer
+  display: flex
+  padding: 0 2px 0 44px
+  position: relative
+
+  .measurementLightTableHeader
+    flex: 1
+    justify-content: space-around
+    padding-top: 2px
+    position: relative
+    margin: 0.4em 0
+
+    .studyDateLabel, .studyDate
+      theme('border-left', '%s solid $uiBorderColor' % $uiBorderThickness)
+      font-weight: 400
+      padding-left: 12px
+      text-align: left
+
+    .studyDateLabel
+      theme('color', '$textSecondaryColor')
+      font-size: 12px
+      line-height: 12px
+
+    .studyDate
+      theme('color', '$textPrimaryColor')
+      font-size: 14px
+      line-height: 20px
+      padding-bottom: 6px
+
+.measurementLightTableLayoutChanger
+  margin: 0 auto
+  padding: 20px
+  text-align: center

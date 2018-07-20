@@ -1,0 +1,55 @@
+<template name="measurementLightTableRow">
+    <div class="measurementLightTableRow" data-measurementid="{{_id}}">
+        <div class='measurementRowSidebar'>
+            <div class="measurementNumber">
+                {{rowItem.measurementNumber}}
+            </div>
+            {{#if rowItem.responseStatus}}
+                <div class="response-status-icon">
+                    {{rowItem.responseStatus}}
+                </div>
+            {{/if}}
+        </div>
+        <div class="measurementRowContent">
+            <div class="measurementDetails">
+                <label class="location">
+                    {{#if rowItem.location}}
+                        {{rowItem.location}}
+                    {{else}}
+                        (No Location)
+                    {{/if}}
+                    {{#if rowItem.description}}
+                        ({{rowItem.description}})
+                    {{/if}}
+                </label>
+                <div class="value">
+                    {{#if displayData}}
+                        {{{displayData}}}
+                    {{else}}
+                        ...
+                    {{/if}}
+                </div>
+            </div>
+            <div class="rowOptions">
+                <div class="rowAction js-edit-label pull-left m-r-2" tabindex="1">
+                    <svg class="edit-icon">
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-measurements-additional"}}></use>
+                    </svg>
+                    Relabel
+                </div>
+                <div class="rowAction js-edit-description pull-left m-r-2" tabindex="1">
+                    <svg class="edit-icon">
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-measurements-additional"}}></use>
+                    </svg>
+                    Description
+                </div>
+                <div class="rowAction js-delete pull-left" tabindex="1">
+                    <svg class="close-icon">
+                        <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ui-close"}}></use>
+                    </svg>
+                    Delete
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

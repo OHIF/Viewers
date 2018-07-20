@@ -1,0 +1,12 @@
+<template name="measurementLightTableView">
+    {{#let config=measurementConfiguration groups=measurementGroups.get}}
+        {{#each measurementGroup in groups}}
+            {{>measurementLightTableHeaderRow (clone this
+                toolGroup=measurementGroup.toolGroup
+                measurementRows=measurementGroup.measurementRows)}}
+            {{#each rowItem in measurementGroup.measurementRows}}
+                {{>measurementLightTableRow (clone this rowItem=rowItem)}}
+            {{/each}}
+        {{/each}}
+    {{/let}}
+</template>

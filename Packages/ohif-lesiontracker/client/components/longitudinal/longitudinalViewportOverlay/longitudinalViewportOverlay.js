@@ -30,7 +30,7 @@ Template[defaultTemplate].onRendered(() => {
     const instance = Template.instance();
     const { studyInstanceUid, seriesInstanceUid } = instance.data;
 
-    Tracker.autorun(computation => {
+    instance.autorun(computation => {
         Session.get('CornerstoneNewImage' + instance.data.viewportIndex);
         if (computation.firstRun) return;
         computation.stop();

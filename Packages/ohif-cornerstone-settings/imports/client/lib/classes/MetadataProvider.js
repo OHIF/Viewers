@@ -118,7 +118,7 @@ export class MetadataProvider {
             value = image.instance[attrName];
         }
 
-        return value == null ? defaultValue : value;
+        return value === null ? defaultValue : value;
     }
 
     getFromDataSet(dataSet, type, tag) {

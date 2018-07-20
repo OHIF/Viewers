@@ -55,6 +55,9 @@ function renderIntoViewport(measurementData, enabledElement, viewportIndex) {
 
 function syncViewports(viewportsIndexes) {
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+
+    if(!synchronizer) { return; }
+
     const linkableViewports = synchronizer.getLinkableViewports();
     if (linkableViewports.length) {
         const linkableViewportsIndexes = _.pluck(linkableViewports, 'index');
@@ -141,7 +144,10 @@ OHIF.measurements.jumpToRowItem = (rowItem, timepoints, childToolKey) => {
         const activatedViewportIndexes = [];
 
         // Deactivate stack synchronizer because it will be re-activated later
-        OHIF.viewer.stackImagePositionOffsetSynchronizer.deactivate();
+        const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
+        if(synchronizer) {
+            synchronizer.deactivate();
+        }
 
         const renderPromises = [];
         for (let viewportIndex = 0; viewportIndex < numViewportsToUpdate; viewportIndex++) {

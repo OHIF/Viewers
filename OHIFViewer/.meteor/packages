@@ -46,6 +46,7 @@ ohif:hanging-protocols
 ohif:metadata
 ohif:user
 ohif:user-keycloak
+ohif:measurement-table
 
 fortawesome:fontawesome
 momentjs:moment@2.15.1
