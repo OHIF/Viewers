@@ -38,8 +38,6 @@ Template.measurementLightTableRow.events({
         const rowItem = instance.data.rowItem;
         const timepoints = instance.data.timepointApi.all();
 
-        if($row.hasClass('active')) return;
-
         $row.closest('.measurementLightTableView').find('.measurementLightTableRow').not($row).removeClass('active');
         $row.toggleClass('active');
 
