@@ -4,7 +4,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
-import { MeasurementTable, measurementEvents } from 'meteor/ohif:measurement-table';
+import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
@@ -168,7 +168,7 @@ Template.viewer.onRendered(function() {
 Template.viewer.events( Object.assign({
     // Viewer Events
     },
-    measurementEvents
+    MeasurementTable.measurementEvents
 ));
 
 Template.viewer.onDestroyed(function() {

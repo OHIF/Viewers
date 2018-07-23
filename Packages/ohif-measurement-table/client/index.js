@@ -1,7 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Session } from 'meteor/session';
 import { configureApis } from './configuration/configuration'
-import { $ } from 'meteor/jquery';
 
 class MeasurementTable {
     constructor() {
@@ -100,26 +99,25 @@ class MeasurementTable {
         
         this.firstMeasurementActivated = true;
     }
-};
-
-const measurementEvents = {
-    'cornerstonetoolsmeasurementadded .imageViewerViewport'(event, instance) {
-        const originalEvent = event.originalEvent;
-        OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
-    },
-
-    'cornerstonetoolsmeasurementmodified .imageViewerViewport'(event, instance) {
-        const originalEvent = event.originalEvent;
-        instance.measurementModifiedHandler(originalEvent, instance);
-    },
-
-    'cornerstonemeasurementremoved .imageViewerViewport'(event, instance) {
-        const originalEvent = event.originalEvent;
-        OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
-    }
+    
+    static measurementEvents = {
+        'cornerstonetoolsmeasurementadded .imageViewerViewport'(event, instance) {
+            const originalEvent = event.originalEvent;
+            OHIF.measurements.MeasurementHandlers.onAdded(originalEvent, instance);
+        },
+    
+        'cornerstonetoolsmeasurementmodified .imageViewerViewport'(event, instance) {
+            const originalEvent = event.originalEvent;
+            instance.measurementModifiedHandler(originalEvent, instance);
+        },
+    
+        'cornerstonemeasurementremoved .imageViewerViewport'(event, instance) {
+            const originalEvent = event.originalEvent;
+            OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
+        }
+    };
 };
 
 export {
-    MeasurementTable,
-    measurementEvents
+    MeasurementTable
 }
