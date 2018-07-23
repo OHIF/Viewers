@@ -35,6 +35,10 @@ const getLatestSRSeries = () => {
     return latestSeries;
 };
 
+const stringToArray = (string) =>  {
+    return Uint8Array.from(Array.from(string).map(letter => letter.charCodeAt(0)))
+};
+
 const multipartEncode = (dataset, boundary) => {
     
     const denaturalizedMetaheader = dcmjs.data.DicomMetaDictionary.denaturalizeDataset(dataset._meta);
@@ -46,8 +50,6 @@ const multipartEncode = (dataset, boundary) => {
     
     const header = `\r\n--${boundary}\r\nContent-Type: application/dicom\r\n\r\n`;
     const footer = `\r\n--${boundary}--`;
-    
-    const stringToArray = (string) => Uint8Array.from(Array.from(string).map(letter => letter.charCodeAt(0)));
     
     headerArray = stringToArray(header);
     contentArray = new Uint8Array(part10Buffer);

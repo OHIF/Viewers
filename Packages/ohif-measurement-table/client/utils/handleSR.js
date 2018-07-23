@@ -1,62 +1,49 @@
 import { dcmjs } from 'meteor/ohif:cornerstone';
 import retrieveDataFromSR from './retrieveDataFromSR';
 import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
+import Request from './request';
 import {
     multipartEncode,
     getWADOProxyUrl
 } from './srUtils';
 
-const retrieveMeasurementFromSR = (series) => {
+const retrieveMeasurementFromSR = async (series) => {
     const instance = series.getFirstInstance();
+    const options  = {
+        method: 'GET',
+        url: instance.getDataProperty('wadouri'),
+        responseType: 'arraybuffer',
+    };
 
-    return new Promise((resolve, reject) => {
-        const request = new XMLHttpRequest();
-
-        request.responseType = 'arraybuffer';
-        request.open('GET', instance.getDataProperty('wadouri'));
-
-        request.onload = function (progressEvent) {
-            const data = retrieveDataFromSR(progressEvent.currentTarget.response);
-
-            resolve(data);
-        };
-
-        request.onerror = function(error) {
-            reject(error);
-        };
-
-        request.send();
-    });
+    try {
+        const result = await Request(options);
+        const measurementData = retrieveDataFromSR(result);
+        return Promise.resolve(measurementData);
+    } catch(error) {
+        return Promise.reject(error);
+    }
 };
 
-const stowSRFromMeasurements = (measurements) => {
+const stowSRFromMeasurements = async (measurements) => {
     const wadoProxyURL = getWADOProxyUrl();
     const reportDataset = retrieveDataFromMeasurements(measurements);
     const boundary = dcmjs.data.DicomMetaDictionary.uid();
-    const multipartBuffer = multipartEncode(reportDataset, boundary);
-    
-    console.log(reportDataset);
-    
-    return new Promise((resolve, reject) => {
-        const request = new XMLHttpRequest();
-        request.open("POST", wadoProxyURL);
-        request.onload = () => {
-            resolve();
-        };
-        
-        request.onerror = () => {
-            reject();
+    const options = {
+        method: 'POST',
+        url: wadoProxyURL,
+        body: multipartEncode(reportDataset, boundary),
+        headers: {
+            'Content-Type': `multipart/related; type=application/dicom; boundary=${boundary}`
         }
-        
-        request.setRequestHeader(
-            'Content-Type',
-            `multipart/related; type=application/dicom; boundary=${boundary}`
-        );
-        
-        request.send(multipartBuffer);
-    });
+    };
+    
+    try {
+        await Request(options);
+        return Promise.resolve();
+    } catch(error) {
+        return Promise.reject(error);
+    }
 };
-
 
 export {
     retrieveMeasurementFromSR,
