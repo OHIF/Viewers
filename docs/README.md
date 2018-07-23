@@ -1,3 +1,5 @@
+##### Looking for your Deploy Preview? - <a onclick="function redirect() { window.location.href='/viewer/?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/sampleDICOM.json'; } redirect();">Deploy Preview for Viewer</a>
+
 # Introduction
 
 The [Open Health Imaging Foundation](https://www.ohif.org) is developing an open source framework for constructing web-based medical imaging applications. The application framework is built using modern HTML / CSS / JavaScript and uses [Cornerstone](https://cornerstonejs.org/) at its core to display and manipulate medical images. It is built with Meteor, a Node.js-based full-stack JavaScript platform.

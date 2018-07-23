@@ -9,7 +9,8 @@
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
-    "test": "./test/testApp.sh"
+    "test": "./test/testApp.sh",
+    "staticDeploy": "./generateStaticSite.sh"
   },
   "repository": {
     "type": "git",
