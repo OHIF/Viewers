@@ -6,6 +6,19 @@ import 'meteor/ohif:viewerbase';
 // promises and prevent unnecessary subsequent calls to the server
 const StudyMetaDataPromises = new Map();
 
+
+/**
+ * Delete the study promise cached to ensure next retrieve will get it retrieved by server call
+ *
+ * @param {String} studyInstanceUid The UID of the Study to be removed from cache
+ * 
+ */
+OHIF.studies.deleteStudyMetadataPromise = (studyInstanceUid) => {
+    if (StudyMetaDataPromises.has(studyInstanceUid)) {
+        StudyMetaDataPromises.delete(studyInstanceUid);
+    }
+};
+
 /**
  * Delete the study promise cached to ensure next retrieve will get it retrieved by server call
  *

@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
-import { handleSR, getLatestSRSeries } from "../utils/handleSR";
+import { retrieveMeasurementFromSR, stowSRFromMeasurements } from '../utils/handleSR';
+import { getLatestSRSeries } from '../utils/srUtils';
 
 export const retrieveMeasurements = (patientId, timepointIds) => {
     OHIF.log.info('retrieveMeasurements');
@@ -8,7 +9,7 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
 
     if(!latestSeries) return Promise.resolve({});
 
-    return handleSR(latestSeries).then((value) => {
+    return retrieveMeasurementFromSR(latestSeries).then((value) => {
         return {
             length: value
         }
@@ -18,10 +19,11 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
 export const storeMeasurements = (measurementData, timepointIds) => {
     OHIF.log.info('storeMeasurements');
 
-    // Here is where we should do any required data transformation and API calls
+    const studyInstanceUid = measurementData[Object.keys(measurementData)[0]][0].studyInstanceUid
 
-    // TODO: Write SR, STOW back to PACS
-    return Promise.resolve();
+    return stowSRFromMeasurements(measurementData).then( () => {
+        OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
+    });
 };
 
 export const retrieveTimepoints = filter => {

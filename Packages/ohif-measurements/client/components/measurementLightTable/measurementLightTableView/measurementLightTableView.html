@@ -9,4 +9,17 @@
             {{/each}}
         {{/each}}
     {{/let}}
+    {{#if hasAnyMeasurement}}
+    <div class="report-area">
+        {{#unless noUnsavedChanges}}
+        <div class="unsaved-changes-alert">
+            You have unsaved changes
+        </div>
+        {{/unless}}
+        {{#form (extend api=instance.api)}}
+            {{#button class='btn p-x-2' action='exportCSV'}}Export CSV{{/button}}
+            {{#button class='btn p-x-2' action='save' disabled=(noUnsavedChanges)}}Save to SR{{/button}}
+        {{/form}}
+    </div>
+    {{/if}}
 </template>
