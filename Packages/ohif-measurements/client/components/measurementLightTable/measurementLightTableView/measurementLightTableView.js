@@ -66,5 +66,9 @@ Template.measurementLightTableView.helpers({
 
         const group = _.find(groups, item => item.measurementRows.length > 0);
         return group;
+    },
+
+    saveEnabled() {
+        return !!OHIF.servers.getCurrentServer();
     }
 });
