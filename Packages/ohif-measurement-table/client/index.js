@@ -8,8 +8,6 @@ class MeasurementTable {
 
         Session.set('TimepointsReady', false);
         Session.set('MeasurementsReady', false);
-
-        this.firstMeasurementActivated = false;
     }
 
     async onCreated(instance) {
@@ -36,6 +34,8 @@ class MeasurementTable {
         Session.set('MeasurementsReady', true);
 
         measurementApi.syncMeasurementsAndToolData();
+
+        this.firstMeasurementActivated = false;
 
         instance.autorun(() => {
             if (!Session.get('TimepointsReady') ||
