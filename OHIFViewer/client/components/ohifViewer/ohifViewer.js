@@ -32,7 +32,7 @@ Template.ohifViewer.onCreated(() => {
     }];
 
     if (Meteor.user()) {
-        items.push({
+        headerItems.push({
             action: OHIF.user.logout,
             text: 'Logout',
             iconClasses: 'logout',
