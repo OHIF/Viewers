@@ -103,7 +103,8 @@ const match = (metadataInstance, rules) => {
 
     return {
         score,
-        details
+        details,
+        requiredFailed
     };
 };
 
