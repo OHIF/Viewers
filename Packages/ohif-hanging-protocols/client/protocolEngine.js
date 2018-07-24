@@ -274,8 +274,6 @@ HP.ProtocolEngine = class ProtocolEngine {
 
         let highestStudyMatchingScore = 0;
         let highestSeriesMatchingScore = 0;
-        let highestImageMatchingScore = 0;
-        let bestMatch;
 
         // Set custom attribute for study metadata and it's first instance
         currentStudy.setCustomAttribute(ABSTRACT_PRIOR_VALUE, 0);
@@ -349,8 +347,9 @@ HP.ProtocolEngine = class ProtocolEngine {
 
         this.studies.forEach(study => {
             const studyMatchDetails = HPMatcher.match(study.getFirstInstance(), studyMatchingRules);
-            if ((studyMatchingRules.length && !studyMatchDetails.score) ||
-                studyMatchDetails.score < highestStudyMatchingScore) {
+
+            // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
+            if (studyMatchDetails.requiredFailed === true || studyMatchDetails.score < highestStudyMatchingScore) {
                 return;
             }
 
@@ -358,8 +357,9 @@ HP.ProtocolEngine = class ProtocolEngine {
 
             study.forEachSeries(series => {
                 const seriesMatchDetails = HPMatcher.match(series.getFirstInstance(), seriesMatchingRules);
-                if ((seriesMatchingRules.length && !seriesMatchDetails.score) ||
-                    seriesMatchDetails.score < highestSeriesMatchingScore) {
+
+                // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
+                if (seriesMatchDetails.requiredFailed === true || seriesMatchDetails.score < highestSeriesMatchingScore) {
                     return;
                 }
 
@@ -376,6 +376,11 @@ HP.ProtocolEngine = class ProtocolEngine {
                     }
 
                     const instanceMatchDetails = HPMatcher.match(instance, instanceMatchingRules);
+
+                    // Prevent bestMatch from being updated if the matchDetails' required attribute check has failed
+                    if (instanceMatchDetails.requiredFailed === true) {
+                        return;
+                    }
 
                     const matchDetails = {
                         passed: [],
@@ -417,11 +422,6 @@ HP.ProtocolEngine = class ProtocolEngine {
                         imageDetails.imageId = instance.getImageId();
                     }
 
-                    if ((totalMatchScore > highestImageMatchingScore) || !bestMatch) {
-                        highestImageMatchingScore = totalMatchScore;
-                        bestMatch = imageDetails;
-                    }
-
                     matchingScores.push(imageDetails);
                 });
             });
@@ -440,6 +440,8 @@ HP.ProtocolEngine = class ProtocolEngine {
             name: 'series'
         });
         matchingScores.sort((a, b) => sortingFunction(a.sortingInfo, b.sortingInfo));
+
+        const bestMatch = matchingScores[0];
 
         OHIF.log.info('ProtocolEngine::matchImages bestMatch', bestMatch);
 
