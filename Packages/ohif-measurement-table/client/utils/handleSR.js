@@ -3,8 +3,7 @@ import retrieveDataFromSR from './retrieveDataFromSR';
 import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
 import Request from './request';
 import {
-    multipartEncode,
-    getWADOProxyUrl
+    multipartEncode
 } from './srUtils';
 
 const retrieveMeasurementFromSR = async (series) => {
@@ -25,7 +24,7 @@ const retrieveMeasurementFromSR = async (series) => {
 };
 
 const stowSRFromMeasurements = async (measurements) => {
-    const wadoProxyURL = getWADOProxyUrl();
+    const wadoProxyURL = OHIF.servers.getWADOProxyUrl();
     const reportDataset = retrieveDataFromMeasurements(measurements);
     const boundary = dcmjs.data.DicomMetaDictionary.uid();
     const options = {

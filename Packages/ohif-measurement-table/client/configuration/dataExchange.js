@@ -18,6 +18,11 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
 
 export const storeMeasurements = (measurementData, timepointIds) => {
     OHIF.log.info('storeMeasurements');
+    
+    const server = OHIF.servers.getCurrentServer();
+    if (!server || server.type !== 'dicomWeb') {
+        return Promise.resolve({});
+    }
 
     const studyInstanceUid = measurementData[Object.keys(measurementData)[0]][0].studyInstanceUid
 

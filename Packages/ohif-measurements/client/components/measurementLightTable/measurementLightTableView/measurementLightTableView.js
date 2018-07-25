@@ -28,7 +28,7 @@ Template.measurementLightTableView.onCreated(() => {
             promise.then(successHandler).catch(errorHandler);
             OHIF.ui.showDialog('dialogLoading', {
                 promise,
-                text: 'STOW SR Completed! '
+                text: 'Measurements saved.'
             });
     
             return promise;
@@ -47,13 +47,13 @@ Template.measurementLightTableView.onCreated(() => {
 });
 
 Template.measurementLightTableView.helpers({
-    noUnsavedChanges() {
+    hasUnsavedChanges() {
         const instance = Template.instance();
         // Run this computation on save or every time any measurement / timepoint suffer changes
         OHIF.ui.unsavedChanges.depend();
         instance.saveObserver.depend();
     
-        return OHIF.ui.unsavedChanges.probe('viewer.*') === 0;
+        return OHIF.ui.unsavedChanges.probe('viewer.*') !== 0;
     },
 
     hasAnyMeasurement() {
@@ -64,11 +64,12 @@ Template.measurementLightTableView.helpers({
             return false;
         }
 
-        const group = _.find(groups, item => item.measurementRows.length > 0);
+        const group = groups.find(item => item.measurementRows.length > 0);
         return group;
     },
 
     saveEnabled() {
-        return !!OHIF.servers.getCurrentServer();
+        const server = OHIF.servers.getCurrentServer();
+        return (server && server.type === 'dicomWeb');
     }
 });

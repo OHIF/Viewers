@@ -12,6 +12,37 @@ const codeMeaningEquals = (codeMeaningName) => {
     };
 };
 
+const getAllDisplaySets = () => {
+    const allStudies = OHIF.viewer.Studies.all();
+    let allDisplaySets = [];
+
+    allStudies.forEach(study => {
+        allDisplaySets = allDisplaySets.concat(study.displaySets);
+    });
+
+    return allDisplaySets;
+};
+
+
+const getInstanceMetadata = (displaySets, sopInstanceUid) => {
+    let instance;
+
+    // Use Array.some so that this loop stops when the internal loop
+    // has found the correct instance
+    displaySets.some(displaySet => {
+        // Search the display set to find the instance metadata for
+        return displaySet.images.find(instanceMetadata => {
+            if (instanceMetadata._sopInstanceUID === sopInstanceUid) {
+                instance = instanceMetadata;
+
+                return true;
+            }
+        });
+    });
+
+    return instance;
+};
+
 const getLatestSRSeries = () => {
     const allStudies = OHIF.viewer.StudyMetadataList.all();
     let latestSeries;
@@ -64,18 +95,11 @@ const multipartEncode = (dataset, boundary) => {
     return(multipartArray.buffer);
 };
 
-const getWADOProxyUrl = () => {
-    const server = OHIF.servers.getCurrentServer();
-    const stowURL = `${server.wadoRoot}/studies`;
-    const serverId = server._id;
-
-    return `/__wado_proxy?url=${stowURL}&serverId=${serverId}`;
-};
-
 export {
     codeMeaningEquals,
+    getAllDisplaySets,
+    getInstanceMetadata,
     getLatestSRSeries,
-    getWADOProxyUrl,
     multipartEncode,
     toArray
 }

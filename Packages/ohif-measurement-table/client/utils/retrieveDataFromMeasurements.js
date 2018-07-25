@@ -1,90 +1,15 @@
 import { dcmjs } from 'meteor/ohif:cornerstone';
+import { getInstanceMetadata, getAllDisplaySets } from './srUtils';
+import getLengthMeasurementGroupContentItem from './getLengthMeasurementGroupContentItem';
 
-const sopClassUid = dcmjs.data.DicomMetaDictionary.sopClassUIDsByName["CTImage"];
-
-const measurementGroupContentItem = (measurement) => {
-    const {
-        handles,
-        length,
-        frameIndex,
-        sopInstanceUid
-    } = measurement;
-    const measurementContentItem = [
-        {
-            RelationshipType: 'HAS OBS CONTEXT',
-            ValueType: 'TEXT',
-            ConceptNameCodeSequence: {
-                CodeValue: '112039',
-                CodingSchemeDesignator: 'DCM',
-                CodeMeaning: 'Tracking Identifier',
-            },
-            TextValue: 'web annotation',
-        },
-        {
-            RelationshipType: 'HAS OBS CONTEXT',
-            ValueType: 'UIDREF',
-            ConceptNameCodeSequence: {
-                CodeValue: '112040',
-                CodingSchemeDesignator: 'DCM',
-                CodeMeaning: 'Tracking Unique Identifier',
-            },
-            UID: dcmjs.data.DicomMetaDictionary.uid(),
-        },
-        {
-            RelationshipType: 'CONTAINS',
-            ValueType: 'CODE',
-            ConceptNameCodeSequence: {
-                CodeValue: '121071',
-                CodingSchemeDesignator: 'DCM',
-                CodeMeaning: 'Finding',
-            },
-            ConceptCodeSequence: {
-                CodeValue: 'SAMPLEFINDING',
-                CodingSchemeDesignator: '99dcmjs',
-                CodeMeaning: 'Sample Finding',
-            },
-        },
-        {
-            RelationshipType: 'CONTAINS',
-            ValueType: 'NUM',
-            ConceptNameCodeSequence: {
-                CodeValue: 'G-D7FE',
-                CodingSchemeDesignator: 'SRT',
-                CodeMeaning: 'Length',
-            },
-            MeasuredValueSequence: {
-                MeasurementUnitsCodeSequence: {
-                    CodeValue: 'mm',
-                    CodingSchemeDesignator: 'UCUM',
-                    CodingSchemeVersion: '1.4',
-                    CodeMeaning: 'millimeter',
-                },
-                NumericValue: length,
-            },
-            ContentSequence: {
-                RelationshipType: 'INFERRED FROM',
-                ValueType: 'SCOORD',
-                GraphicType: 'POLYLINE',
-                GraphicData: [ handles.start.x, handles.start.y, handles.end.x, handles.end.y ],
-                ContentSequence: {
-                    RelationshipType: 'SELECTED FROM',
-                    ValueType: 'IMAGE',
-                    ReferencedSOPSequence: {
-                        ReferencedSOPClassUID: sopClassUid,
-                        ReferencedSOPInstanceUID: sopInstanceUid,
-                        ReferencedFrameNumber: frameIndex,
-                    }
-                },
-            },
-        },
-    ];
-    
-    return measurementContentItem;
-};
 
 export default retrieveDataFromMeasurements = (measurements) => {
     
     const { studyInstanceUid, seriesInstanceUid, sopInstanceUid } = measurements.allTools[0];
+    
+    const displaySets = getAllDisplaySets();
+    const instanceMetadata = getInstanceMetadata(displaySets, sopInstanceUid);
+    const sopClassUid = instanceMetadata._data.sopClassUid;
     
     // TODO: figure out what is needed to make a dcmjs dataset from
     // information available in the viewer.  Apparently the raw dicom is not available
@@ -116,9 +41,10 @@ export default retrieveDataFromMeasurements = (measurements) => {
     // the example and in the Viewer
     const measurementGroupContentSequence = [];
     for (measurement of measurements.allTools) {
-        measurementGroupContentSequence.push.apply(measurementGroupContentSequence, measurementGroupContentItem(measurement));
+        if (measurement.toolType === 'length') {
+            measurementGroupContentSequence.push.apply(measurementGroupContentSequence, getLengthMeasurementGroupContentItem(measurement, sopClassUid));
+        }
     }
-    
     
     // TODO: make a TID1550 derivation as an SR subclass
     dataset = Object.assign(dataset, {

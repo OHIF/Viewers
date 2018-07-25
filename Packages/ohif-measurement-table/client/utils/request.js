@@ -6,6 +6,7 @@
  * @param obj.url - request url
  * @param obj.headers - request headers to be set
  * @param obj.body - request body to be sent
+ * @param obj.responseType - type of expected request
  * 
  * @returns {Promise} Promise handling success and error status
  */

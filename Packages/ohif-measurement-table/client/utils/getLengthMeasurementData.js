@@ -1,26 +1,8 @@
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
+import { getInstanceMetadata } from './srUtils';
 
-function getInstanceMetadata (displaySets, sopInstanceUid) {
-    let instance;
-
-    // Use Array.some so that this loop stops when the internal loop
-    // has found the correct instance
-    displaySets.some(displaySet => {
-        // Search the display set to find the instance metadata for
-        return displaySet.images.find(instanceMetadata => {
-            if (instanceMetadata._sopInstanceUID === sopInstanceUid) {
-                instance = instanceMetadata;
-
-                return true;
-            }
-        });
-    });
-
-    return instance;
-};
-
-export default function getLengthMeasurementData(lengthMeasurementContent, displaySets) {
+export default getLengthMeasurementData = (lengthMeasurementContent, displaySets) => {
     let lengthStates = [];
 
     lengthMeasurementContent.forEach(groupItemContent => {

@@ -8,22 +8,11 @@ const StudyMetaDataPromises = new Map();
 
 
 /**
- * Delete the study promise cached to ensure next retrieve will get it retrieved by server call
+ * Delete the cached study metadata retrieval promise to ensure that the browser will 
+ * re-retrieve the study metadata when it is next requested
  *
  * @param {String} studyInstanceUid The UID of the Study to be removed from cache
  * 
- */
-OHIF.studies.deleteStudyMetadataPromise = (studyInstanceUid) => {
-    if (StudyMetaDataPromises.has(studyInstanceUid)) {
-        StudyMetaDataPromises.delete(studyInstanceUid);
-    }
-};
-
-/**
- * Delete the study promise cached to ensure next retrieve will get it retrieved by server call
- *
- * @param {String} studyInstanceUid The UID of the Study to be removed from cache
- *
  */
 OHIF.studies.deleteStudyMetadataPromise = (studyInstanceUid) => {
     if (StudyMetaDataPromises.has(studyInstanceUid)) {

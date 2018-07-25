@@ -1,6 +1,6 @@
 import { dcmjs } from 'meteor/ohif:cornerstone';
 import getLengthMeasurementData from './getLengthMeasurementData';
-import { toArray, codeMeaningEquals } from './srUtils'
+import { toArray, codeMeaningEquals, getAllDisplaySets } from './srUtils'
 
 const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
     // Identify the Imaging Measurements
@@ -26,12 +26,7 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
 };
 
 export default retrieveDataFromSR = (Part10SRArrayBuffer) => {
-    const allStudies = OHIF.viewer.Studies.all();
-    let allDisplaySets = [];
-
-    allStudies.forEach(study => {
-        allDisplaySets = allDisplaySets.concat(study.displaySets);
-    });
+    const allDisplaySets = getAllDisplaySets();
 
     // get the dicom data as an Object
     let dicomData = dcmjs.data.DicomMessage.readFile(Part10SRArrayBuffer);
