@@ -57,6 +57,91 @@ Template.ohifViewer.onCreated(() => {
         // Set the viewer open state on session
         Session.set('ViewerOpened', isViewer);
     });
+
+    // Add plugin reloader
+    class OHIFPlugin {
+        // TODO: this class is here for development purposes.
+        // Once it is fleshed out it would go in the OHIF
+        // base deployment and be available for plugins
+        // to inherit from.
+
+        constructor () {
+            this.name = "Unnamed plugin";
+            this.description = "No description available";
+        }
+
+        // load an individual script URL
+        static loadScript(scriptURL) {
+            const script = document.createElement("script");
+            script.src = scriptURL;
+            script.type = "text/javascript";
+            script.async = false;
+            const head = document.getElementsByTagName("head")[0];
+            head.appendChild(script);
+            head.removeChild(script);
+            return (script)
+        }
+
+        // reload all the dependency scripts and also
+        // the main plugin script url.
+        static reloadPlugin(plugin) {
+            plugin.scriptURLs = plugin.scriptURLs || {};
+            plugin.scriptURLs.forEach(scriptURL => {
+                this.loadScript(scriptURL).onload = function() {
+                }
+            });
+            let scriptURL = plugin.url;
+            if (!plugin.allowCaching) {
+                scriptURL += "?" + performance.now();
+            }
+            this.loadScript(scriptURL).onload = function() {
+                if (OHIFPlugin.entryPoints[plugin.name]) {
+                    OHIFPlugin.entryPoints[plugin.name]();
+                }
+            }
+        }
+    }
+
+    // each plugin registers an entry point function to be called
+    // when the loading is complete (called above in reloadPlugin).
+    OHIFPlugin.entryPoints = {};
+
+    window.OHIFPlugin = OHIFPlugin;
+
+    // TODO: this information should come from a plug registry
+    let volumeRenderingPlugin = {
+        name: "VolumeRenderingPlugin",
+        url:"https://rawgit.com/OHIF/VTKPlugin/master/vtkVolumeRendering/volumeRendering.js",
+        allowCaching: false,
+        scriptURLs: [
+            "https://unpkg.com/vtk.js",
+        ]
+    };
+
+    // // TODO: this information should come from a plug registry
+    // let mprPlugin = {
+    //     name: "MPRPlugin",
+    //     url:"http://localhost/pluginsource/mprplugin.js",
+    //     allowCaching: false,
+    //     scriptURLs: [
+    //         "https://unpkg.com/vtk.js",
+    //     ]
+    // };
+
+    OHIF.commands.contexts.viewer.reloadVolumeRendering = {
+         name: "reloadVolumeRendering",
+        action: function(event) {
+            OHIFPlugin.reloadPlugin(volumeRenderingPlugin);
+         }
+    }
+
+    // OHIF.commands.contexts.viewer.reloadVolumeRendering = {
+    //     name: "reloadMPR",
+    //     action: function(event) {
+    //         OHIFPlugin.reloadPlugin(mprPlugin);
+    //     }
+    // }
+
 });
 
 Template.ohifViewer.events({

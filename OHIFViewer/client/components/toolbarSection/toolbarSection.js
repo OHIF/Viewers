@@ -85,6 +85,13 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-bars'
+        });
+
+        extraTools.push({
             id: 'magnify',
             title: 'Magnify',
             classes: 'imageViewerTool toolbarSectionButton',
@@ -164,11 +171,13 @@ Template.toolbarSection.helpers({
 
         const buttonData = [];
 
+        // TODO: this is just a temp hook for the volume rendering
+        // There needs to be a way for plugins to register new tools
         buttonData.push({
-            id: 'stackScroll',
-            title: 'Stack Scroll',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-bars'
+            id: 'reloadVolumeRendering',
+            title: 'Volume Renderin',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-undo'
         });
 
         buttonData.push({
