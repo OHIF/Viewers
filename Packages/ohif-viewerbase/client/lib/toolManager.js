@@ -7,7 +7,7 @@ let activeTool;
 let tools = {};
 let initialized = false;
 let defaultTool = {
-    left: 'wwwc',
+    left: 'wwwcTool',
     right: 'zoom',
     middle: 'pan'
 };

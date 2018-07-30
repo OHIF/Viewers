@@ -280,6 +280,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Instantiate the tools
         toolManager.instantiateTools();
 
+        toolManager.instantiateTools(element);
+
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
         toolManager.setActiveTool();
