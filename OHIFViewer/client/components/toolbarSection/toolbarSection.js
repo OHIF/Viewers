@@ -304,6 +304,7 @@ Template.toolbarSection.onRendered(function() {
     }
 
     // Set disabled/enabled tool buttons that are set in toolManager
+    
     const states = OHIF.viewerbase.toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
     const allToolbarButtons = $('#toolbar').find('button');
