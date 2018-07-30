@@ -277,11 +277,15 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             cornerstoneTools.playClip(element);
         }
 
-        // Enable mouse, mouseWheel, touch, and keyboard input on the element
+        // Enabling new eventDispatches form cornerstoneTools v3
         cornerstoneTools.mouseInput.enable(element);
+        cornerstoneTools.mouseToolEventDispatcher.enable(element);
         cornerstoneTools.touchInput.enable(element);
+        cornerstoneTools.touchToolEventDispatcher.enable(element);
         cornerstoneTools.mouseWheelInput.enable(element);
         cornerstoneTools.keyboardInput.enable(element);
+
+        toolManager.instantiateTools(element);
 
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
