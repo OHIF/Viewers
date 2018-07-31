@@ -18,10 +18,12 @@ Package.onUse(function(api) {
     api.use('ohif:core');
     api.use('ohif:servers');
 
-    api.addFiles('server/namespace.js', 'server');
-    api.addFiles('server/initialize.js', 'server');
+    api.addFiles('both/namespace.js', ['client', 'server']);
+    api.addFiles('both/convertURL.js', ['client', 'server']);
+    api.addFiles('both/initialize.js', ['client', 'server']);
     api.addFiles('server/routes.js', 'server');
-    api.addFiles('server/convertURL.js', 'server');
+
+    api.addFiles('client/getServerUrl.js', 'client');
 
     // Global exports
     api.export('WADOProxy');

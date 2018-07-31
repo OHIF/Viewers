@@ -15,6 +15,7 @@ Package.onUse(function(api) {
     api.use('ohif:cornerstone-settings');
     api.use('ohif:viewerbase');
     api.use('ohif:measurements');
+    api.use('ohif:wadoproxy');
 
     api.mainModule('client/index.js', 'client');
 });

@@ -24,7 +24,7 @@ const retrieveMeasurementFromSR = async (series) => {
 };
 
 const stowSRFromMeasurements = async (measurements) => {
-    const wadoProxyURL = OHIF.servers.getWADOProxyUrl();
+    const serverUrl = WADOProxy.getServerUrl();
     const reportDataset = retrieveDataFromMeasurements(measurements);
     const boundary = dcmjs.data.DicomMetaDictionary.uid();
     const options = {
