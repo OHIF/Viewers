@@ -3,6 +3,7 @@ import './activateMeasurements';
 import './clearCornerstoneToolState';
 import './deactivateAllToolData';
 import './exportPdf';
+import './exportToCsv';
 import './findAndRenderDisplaySet';
 import './getActiveTimepoint';
 import './getImageDataUrl';
