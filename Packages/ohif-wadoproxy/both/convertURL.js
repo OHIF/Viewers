@@ -1,7 +1,9 @@
-const querystring = require("querystring");
+import queryString from 'query-string';
 
 WADOProxy.convertURL = (url, serverConfiguration) => {
-    if (!Settings.enabled) {
+    const { settings } = WADOProxy;
+
+    if (!settings.enabled) {
         return url;
     }
 
@@ -10,6 +12,6 @@ WADOProxy.convertURL = (url, serverConfiguration) => {
     }
 
     const serverId = serverConfiguration._id;
-    const query = querystring.stringify({url, serverId});
-    return `${Settings.uri}?${query}`;
+    const query = queryString.stringify({url, serverId});
+    return `${settings.uri}?${query}`;
 }

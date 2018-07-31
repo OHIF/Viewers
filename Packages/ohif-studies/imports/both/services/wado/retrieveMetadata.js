@@ -205,12 +205,6 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
     const seriesMap = {};
     const seriesList = [];
 
-    if (!WADOProxy) {
-        WADOProxy = {
-            convertURL: (a => a)
-        };
-    }
-
     if (!resultData.length) {
         return;
     }

@@ -23,8 +23,22 @@ const retrieveMeasurementFromSR = async (series) => {
     }
 };
 
+/**
+ * Retrieve the DICOMWeb STOW-RS URL for the current server.
+ *
+ * See ftp://medical.nema.org/medical/dicom/current/output/html/part18.html#sect_6.6.1.1
+ *
+ * @return {string|null} The URL, rerouted to the proxy if the WADOProxy is enabled.
+ */
+function getStowRsUrl() {
+    const server = OHIF.servers.getCurrentServer();
+    const url = `${server.wadoRoot}/studies`;
+
+    return WADOProxy.convertURL(url, server);
+}
+
 const stowSRFromMeasurements = async (measurements) => {
-    const serverUrl = WADOProxy.getServerUrl();
+    const serverUrl = getStowRsUrl();
     const reportDataset = retrieveDataFromMeasurements(measurements);
     const boundary = dcmjs.data.DicomMetaDictionary.uid();
     const options = {
@@ -34,7 +48,7 @@ const stowSRFromMeasurements = async (measurements) => {
             'Content-Type': `multipart/related; type=application/dicom; boundary=${boundary}`
         }
     };
-    
+
     try {
         await DICOMWeb.makeRequest(serverUrl, options);
         return Promise.resolve();

@@ -170,4 +170,4 @@ const handleRequest = function() {
 
 // Setup a Route using Iron Router to avoid Cross-origin resource sharing
 // (CORS) errors. We only handle this route on the Server.
-Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), handleRequest, { where: 'server' });
+Router.route(WADOProxy.settings.uri.replace(OHIF.utils.absoluteUrl(), ''), handleRequest, { where: 'server' });
