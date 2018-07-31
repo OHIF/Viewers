@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.51",
+    "bcrypt": "^2.0.0",
     "loglevel": "^1.6.1"
   },
   "devDependencies": {

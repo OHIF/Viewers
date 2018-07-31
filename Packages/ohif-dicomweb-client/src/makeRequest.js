@@ -29,6 +29,14 @@ async function makeRequest(url, options) {
         });
     }
 
+    if(options.method) {
+        requestOpt.method = options.method;
+    }
+
+    if (options.method === 'POST' && options.body) {
+        requestOpt.body = options.body;
+    }
+
     return new Promise((resolve, reject) => {
         // TODO: Kept getting weird build errors from RegExp
         const isAbsolute = parsed.href.indexOf('http://') === 0 || parsed.href.indexOf('https://') === 0;

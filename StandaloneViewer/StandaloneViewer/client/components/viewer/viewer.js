@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { OHIF } from 'meteor/ohif:core';
-import { MeasurementTable, measurementEvents } from 'meteor/ohif:measurement-table';
+import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
@@ -133,7 +133,7 @@ Template.viewer.onRendered(function() {
 Template.viewer.events( Object.assign({
     // Viewer Events
     },
-    measurementEvents
+    MeasurementTable.measurementEvents
 ));
 
 Template.viewer.helpers({
