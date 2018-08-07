@@ -38,18 +38,6 @@ export function setActiveViewport(element) {
     // with the viewport index that it was fired from.
     Session.set('activeViewport', viewportIndex);
 
-    const randomId = Random.id();
-
-    // Update the Session variable to inform that a viewport is active
-    Session.set('viewportActivated', randomId);
-
-    // Update the Session variable to the UI re-renders
-    Session.set('LayoutManagerUpdated', randomId);
-
-    // Add the 'active' class to the parent container to highlight the active viewport
-    $('#imageViewerViewports .viewportContainer').removeClass('active');
-    $element.parents('.viewportContainer').addClass('active');
-
     // Finally, enable stack prefetching and hide the reference lines from
     // the newly activated viewport that has a canvas
 

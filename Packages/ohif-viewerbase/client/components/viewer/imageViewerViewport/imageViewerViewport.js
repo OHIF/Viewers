@@ -21,6 +21,8 @@ const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstone
     'cornerstonetoolsmousewheel', 'cornerstonetoolsdoubletap', 'cornerstonetoolstouchpress',
     'cornerstonetoolsmultitouchstart', 'cornerstonetoolsmultitouchstartactive', 'cornerstonetoolsmultitouchdrag'];
 
+const PLUGIN_CORNERSTONE = 'cornerstone';
+
 /**
  * This function loads a study series into a viewport element.
  *
@@ -40,7 +42,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     // Get the current element and it's index in the list of all viewports
     // The viewport index is often used to store information about a viewport element
     const element = data.element;
-    const viewportIndex = $('.imageViewerViewport').index(element);
+    const viewportIndex = templateData.viewportIndex;
 
     const layoutManager = OHIF.viewerbase.layoutManager;
     layoutManager.viewportData = layoutManager.viewportData || {};
@@ -115,7 +117,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         displaySetInstanceUid,
         currentImageIdIndex,
         viewport: viewport || data.viewport,
-        viewportIndex
+        viewportIndex,
+        plugin: PLUGIN_CORNERSTONE
     };
 
     // Handle the case where the imageId isn't loaded correctly and the
@@ -624,7 +627,7 @@ Template.imageViewerViewport.onRendered(function() {
                 viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
             }
             // Set zoomed viewport as active...
-            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
+            const element = $('.viewportContainer').get(viewportIndexToZoom);
             setActiveViewport(element);
         });
     }

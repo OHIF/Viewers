@@ -227,8 +227,11 @@ import { InstanceMetadata } from './lib/classes/metadata/InstanceMetadata';
 import { StudySummary } from './lib/classes/metadata/StudySummary';
 Viewerbase.metadata = { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary };
 
-import { OHIFPlugin } from './lib/classes/OHIFPlugin';
+import { OHIFPlugin } from './lib/classes/plugins/OHIFPlugin';
 Viewerbase.OHIFPlugin = OHIFPlugin;
+
+import { ViewportPlugin } from './lib/classes/plugins/ViewportPlugin';
+Viewerbase.ViewportPlugin = ViewportPlugin;
 
 // TypeSafeCollection
 import { TypeSafeCollection } from './lib/classes/TypeSafeCollection';

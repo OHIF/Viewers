@@ -1,10 +1,16 @@
 <template name="gridLayout">
     <div id='imageViewerViewports'>
         {{#each viewport in viewports}}
-            <div class="viewportContainer {{getClass @index}}" style="height:{{height}}%;width:{{width}}%;">
-                <div class="removable">
-                    {{>imageViewerViewport (clone viewport)}}
-                </div>
+            <div class="viewportContainer {{getClass @index}} {{ activeClass @index }}" style="height:{{height}}%;width:{{width}}%;">
+                {{ #if eq viewport.plugin 'cornerstone'}}
+                    <div class="removable">
+                        {{>imageViewerViewport (clone viewport)}}
+                    </div>
+                {{ else }}
+                    <div class="viewport-plugin-{{viewport.plugin}}"
+                        style="height:100%; width: 100%">
+                    </div>
+                {{ /if }}
                 {{>seriesQuickSwitch (clone this viewport=viewport viewportIndex=@index)}}
             </div>
         {{/each}}

@@ -30,7 +30,7 @@ Template.gridLayout.helpers({
         }
 
         const actualRow = Math.floor(index / columns);
-            
+
         if ( actualRow === 0 ) {
             return TOP_CLASS;
         }
@@ -40,7 +40,13 @@ Template.gridLayout.helpers({
 
         return MIDDLE_CLASS;
     },
-    
+
+    activeClass(index) {
+        if (Session.get('activeViewport') === index) {
+            return 'active';
+        };
+    },
+
     // Return the viewports list
     viewports() {
         const instance = Template.instance();
