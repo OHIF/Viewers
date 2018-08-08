@@ -44,11 +44,16 @@ export class LayoutManager {
 
         this.isZoomed = false;
 
-        const updateSessionFn = () => Tracker.afterFlush(() => {
-            Session.set('LayoutManagerUpdated', Math.random());
+        const updateSessionFn = () => {
+            const random = Math.random();
+            Session.set('LayoutManagerUpdated', random);
             this.observer.changed();
+        };
+
+        this.updateSession = _.throttle(updateSessionFn, 300, {
+            leading: true,
+            trailing: false
         });
-        this.updateSession = _.throttle(updateSessionFn, 300);
     }
 
     /**
@@ -253,6 +258,8 @@ export class LayoutManager {
         // Render and insert the template
         if (plugin === PLUGIN_CORNERSTONE) {
             // Remove the hover styling
+            const element = $(container).find('.imageViewerViewport');
+
             element.find('canvas').not('.magnifyTool').removeClass('faded');
 
             // Remove the whole template, add in the new one
@@ -275,7 +282,7 @@ export class LayoutManager {
             container.innerHTML = '';
             container.appendChild(newViewportContainer);
         }
-
+        
         this.updateSession();
     }
 

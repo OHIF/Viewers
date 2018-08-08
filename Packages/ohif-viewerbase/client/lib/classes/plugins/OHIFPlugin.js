@@ -24,6 +24,7 @@ export class OHIFPlugin {
     // reload all the dependency scripts and also
     // the main plugin script url.
     static reloadPlugin(plugin) {
+        console.warn(`reloadPlugin: ${plugin.name}`);
         if (plugin.scriptURLs && plugin.scriptURLs.length) {
             plugin.scriptURLs.forEach(scriptURL => {
                 this.loadScript(scriptURL).onload = function() {}

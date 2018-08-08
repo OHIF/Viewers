@@ -61,34 +61,56 @@ export class ViewportPlugin extends OHIFPlugin {
         }
 
         const { layoutManager } = OHIF.viewerbase;
+        const viewportData = layoutManager.viewportData[viewportIndex];
+        if (viewportData.plugin === this.name) {
+            OHIF.log.info(`setViewportToPlugin: Viewport ${viewportIndex} already set to plugin ${this.name}`);
+            return;
+        }
 
-        layoutManager.viewportData[viewportIndex].plugin = this.name;
-        layoutManager.updateViewports();
+        viewportData.plugin = this.name;
+
+        layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, viewportData);
     }
 
     /**
      * Runs 'setupViewport' for the ViewportPlugin on all viewports which should
-     * be rendered by this plugin.
+     * be rendered by this plugin, but have not yet been initialized. Viewports
+     * which already contain contents are skipped.
      *
      * @private
      */
-    _setupAllPluginViewports() {
+    _initEmptyPluginViewports() {
         if (!this.name) {
             throw new Error('ViewportPlugin subclasses must have a name');
         }
 
-        const pluginDivs = document.querySelectorAll(`.viewport-plugin-${this.name}`);
+        // Find all Viewport HTMLElements currently using this plugin
+        const pluginDivs = Array.from(document.querySelectorAll(`.viewport-plugin-${this.name}`));
+
+        // If there are no Viewports using this plugin, stop here
+        if (!pluginDivs.length) {
+            return;
+        }
+
+        const emptyPluginDivs = pluginDivs.filter(div => {
+            // Keep only divs owned by the plugin which have no contents
+            return div.innerHTML.trim() === '';
+        });
+
+        OHIF.log.info(`${this.name}: Initializing ${emptyPluginDivs.length} viewports`);
+
+        // Retrieve the list of all viewports, so we can figure out the viewport details
         const allViewports = Array.from(document.querySelectorAll('.viewportContainer'));
 
-        pluginDivs.forEach(div => {
-            if (div.innerText !== '') {
-                return;
-            }
-
+        emptyPluginDivs.forEach(div => {
+            // Identify the Viewport index, and any display set that is currently
+            // hung in the viewport
             const viewportIndex = allViewports.indexOf(div.parentNode);
             const viewportDetails = { viewportIndex };
             const displaySet = ViewportPlugin.getDisplaySet(viewportIndex);
 
+            // Use the plugin's setupViewport function to render the contents
+            // of this viewport.
             this.setupViewport(div, viewportDetails, displaySet);
         });
     }
@@ -105,9 +127,22 @@ export class ViewportPlugin extends OHIFPlugin {
             throw new Error('ViewportPlugin subclasses must have a name');
         }
 
+        console.warn(`_setupListeners: ${this.name}`);
+
         // TODO: Stop using Meteor's reactivity here
         Tracker.autorun((computation) => {
-            Session.get('LayoutManagerUpdated');
+            const random = Session.get('LayoutManagerUpdated');
+            console.warn(`LayoutManagerUpdated: ${this.name}: ${random}`);
+
+            // Bail out if this is the first time the autorun
+            // executes (i.e. when it is being defined).
+            //
+            // Note: This has to be checked after the dependency on the
+            // Session variable above, or the reactive dependency will not
+            // be established.
+            if (computation.firstRun === true) {
+                return;
+            }
 
             // In case we need to disable the use
             // of this plugin, we can also stop the
@@ -117,13 +152,10 @@ export class ViewportPlugin extends OHIFPlugin {
                 computation.stop();
             }
 
-            // After the template rendering has finished,
-            // identify all viewports which should be
+            // Identify all viewports which should be
             // rendered by the ViewportPlugin, and render
             // them.
-            Tracker.afterFlush(() => {
-                this._setupAllPluginViewports();
-            });
+            this._initEmptyPluginViewports();
         });
     }
 
