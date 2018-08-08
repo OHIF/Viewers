@@ -7,11 +7,11 @@ export class OHIFPlugin {
     }
 
     // load an individual script URL
-    static loadScript(scriptURL) {
+    static loadScript(scriptURL, type = "text/javascript") {
         const script = document.createElement("script");
 
         script.src = scriptURL;
-        script.type = "text/javascript";
+        script.type = type;
         script.async = false;
 
         const head = document.getElementsByTagName("head")[0];
@@ -24,10 +24,16 @@ export class OHIFPlugin {
     // reload all the dependency scripts and also
     // the main plugin script url.
     static reloadPlugin(plugin) {
-        console.warn(`reloadPlugin: ${plugin.name}`);
         if (plugin.scriptURLs && plugin.scriptURLs.length) {
             plugin.scriptURLs.forEach(scriptURL => {
                 this.loadScript(scriptURL).onload = function() {}
+            });
+        }
+
+        // TODO: Later we should probably merge script and module URLs
+        if (plugin.moduleURLs && plugin.moduleURLs.length) {
+            plugin.moduleURLs.forEach(moduleURLs => {
+                this.loadScript(moduleURLs, "module").onload = function() {}
             });
         }
 
