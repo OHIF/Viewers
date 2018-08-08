@@ -327,7 +327,7 @@ const isStackScrollLinkingDisabled = () => {
     let linkableViewportsCount = 0;
 
     // Its called everytime active viewport and/or layout change
-    Session.get('viewportActivated');
+    Session.get('activeViewport');
     Session.get('LayoutManagerUpdated');
 
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;

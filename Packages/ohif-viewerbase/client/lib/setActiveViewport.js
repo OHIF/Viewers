@@ -6,21 +6,17 @@ import { OHIF } from 'meteor/ohif:core';
 import { StudyPrefetcher } from './classes/StudyPrefetcher';
 import { displayReferenceLines } from './displayReferenceLines';
 
+const PLUGIN_CORNERSTONE = 'cornerstone';
+
 /**
  * Sets a viewport element active
  * @param  {node} element DOM element to be activated or viewportIndex
  */
 export function setActiveViewport(element) {
-    const $viewerports = $('.imageViewerViewport');
+    const $viewports = $('.viewportContainer');
+    const viewportIndex = $viewports.index(element);
 
-    let viewportIndex;
-    if (typeof element === 'number') {
-        viewportIndex = element;
-    } else {
-        viewportIndex = $viewerports.index(element);
-    }
-
-    const $element = $viewerports.eq(viewportIndex);
+    const $element = $viewports.eq(viewportIndex);
     if (!$element.length) {
         OHIF.log.info('setActiveViewport element does not exist');
         return;
@@ -38,25 +34,16 @@ export function setActiveViewport(element) {
     // with the viewport index that it was fired from.
     Session.set('activeViewport', viewportIndex);
 
-    const randomId = Random.id();
-
-    // Update the Session variable to inform that a viewport is active
-    Session.set('viewportActivated', randomId);
-
-    // Update the Session variable to the UI re-renders
-    Session.set('LayoutManagerUpdated', randomId);
-
-    // Add the 'active' class to the parent container to highlight the active viewport
-    $('#imageViewerViewports .viewportContainer').removeClass('active');
-    $element.parents('.viewportContainer').addClass('active');
-
     // Finally, enable stack prefetching and hide the reference lines from
     // the newly activated viewport that has a canvas
+    const { layoutManager } = OHIF.viewerbase;
+    const viewportData = layoutManager.viewportData[viewportIndex];
 
-    if ($element.find('canvas').length) {
+    if (viewportData.plugin === PLUGIN_CORNERSTONE &&
+        $element.find('canvas').length) {
         // Cornerstone Tools compare DOM elements (check getEnabledElement cornerstone function)
         // so we can't pass a jQuery object as an argument, otherwise it throws an excepetion
-        const domElement = $element.get(0);
+        const domElement = $element.find('.imageViewerViewport').get(0);
         displayReferenceLines(domElement);
         StudyPrefetcher.getInstance().prefetch();
 

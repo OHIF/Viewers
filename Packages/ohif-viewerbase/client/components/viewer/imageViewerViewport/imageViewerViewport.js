@@ -21,6 +21,8 @@ const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstone
     'cornerstonetoolsmousewheel', 'cornerstonetoolsdoubletap', 'cornerstonetoolstouchpress',
     'cornerstonetoolsmultitouchstart', 'cornerstonetoolsmultitouchstartactive', 'cornerstonetoolsmultitouchdrag'];
 
+const PLUGIN_CORNERSTONE = 'cornerstone';
+
 /**
  * This function loads a study series into a viewport element.
  *
@@ -40,7 +42,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
     // Get the current element and it's index in the list of all viewports
     // The viewport index is often used to store information about a viewport element
     const element = data.element;
-    const viewportIndex = $('.imageViewerViewport').index(element);
+    const viewportIndex = templateData.viewportIndex;
 
     const layoutManager = OHIF.viewerbase.layoutManager;
     layoutManager.viewportData = layoutManager.viewportData || {};
@@ -115,7 +117,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         displaySetInstanceUid,
         currentImageIdIndex,
         viewport: viewport || data.viewport,
-        viewportIndex
+        viewportIndex,
+        plugin: PLUGIN_CORNERSTONE
     };
 
     // Handle the case where the imageId isn't loaded correctly and the
@@ -461,16 +464,15 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // This is done to ensure that the active element has the current
         // focus, so that keyboard events are triggered.
         if (viewportIndex === Session.get('activeViewport')) {
-            setActiveViewport(element);
+            const viewportContainer = $element.parents('.viewportContainer');
+
+            setActiveViewport(viewportContainer);
         }
 
         // Run any renderedCallback that exists in the data context
         if (data.renderedCallback && typeof data.renderedCallback === 'function') {
             data.renderedCallback(element);
         }
-
-        // Update the LayoutManagerUpdated session key
-        layoutManager.updateSession();
 
         // Check if it has after loadAndCacheImage callback
         if (typeof callbacks.after === 'function') {
@@ -624,8 +626,8 @@ Template.imageViewerViewport.onRendered(function() {
                 viewportIndexToZoom = layoutManager.zoomedViewportIndex || 0;
             }
             // Set zoomed viewport as active...
-            const element = $('.imageViewerViewport').get(viewportIndexToZoom);
-            setActiveViewport(element);
+            const viewportContainer = $('.viewportContainer').get(viewportIndexToZoom);
+            setActiveViewport(viewportContainer);
         });
     }
 
@@ -682,6 +684,8 @@ Template.imageViewerViewport.onDestroyed(function() {
 Template.imageViewerViewport.events({
     'OHIFActivateViewport .imageViewerViewport'(event) {
         OHIF.log.info('imageViewerViewport OHIFActivateViewport');
-        setActiveViewport(event.currentTarget);
+
+        const viewportContainer = $(event.currentTarget).parents('.viewportContainer').get(0);
+        setActiveViewport(viewportContainer);
     }
 });

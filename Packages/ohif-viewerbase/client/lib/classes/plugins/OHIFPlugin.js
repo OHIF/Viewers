@@ -1,5 +1,4 @@
-// TODO: Add plugin reloader
-class OHIFPlugin {
+export class OHIFPlugin {
     // TODO: this class is still under development and will
     // likely change in the near future
     constructor () {
@@ -25,10 +24,12 @@ class OHIFPlugin {
     // reload all the dependency scripts and also
     // the main plugin script url.
     static reloadPlugin(plugin) {
-        plugin.scriptURLs = plugin.scriptURLs || {};
-        plugin.scriptURLs.forEach(scriptURL => {
-            this.loadScript(scriptURL).onload = function() {}
-        });
+        console.warn(`reloadPlugin: ${plugin.name}`);
+        if (plugin.scriptURLs && plugin.scriptURLs.length) {
+            plugin.scriptURLs.forEach(scriptURL => {
+                this.loadScript(scriptURL).onload = function() {}
+            });
+        }
 
         let scriptURL = plugin.url;
 
@@ -37,20 +38,11 @@ class OHIFPlugin {
         }
 
         this.loadScript(scriptURL).onload = function() {
-            if (OHIFPlugin.entryPoints[plugin.name]) {
-                OHIFPlugin.entryPoints[plugin.name]();
+            const entryPointFunction = OHIF.plugins.entryPoints[plugin.name];
+
+            if (entryPointFunction) {
+                entryPointFunction();
             }
         }
     }
 }
-
-// each plugin registers an entry point function to be called
-// when the loading is complete (called above in reloadPlugin).
-
-// TODO: Move to OHIF.plugins.entryPoints?
-OHIFPlugin.entryPoints = {};
-
-export { OHIFPlugin };
-
-// TODO: Should we remove this? Authors should be able to use new 'OHIF.viewerbase.OHIFPlugin()'
-window.OHIFPlugin = OHIFPlugin;

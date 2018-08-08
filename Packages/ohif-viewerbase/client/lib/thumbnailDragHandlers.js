@@ -161,15 +161,15 @@ const thumbnailDragHandler = event => {
     }
 
     // Remove any current faded effects on viewports
-    $('.imageViewerViewport canvas').removeClass('faded');
+    $('.viewportContainer canvas').removeClass('faded');
 
     // Figure out what to do depending on what we're dragging over
-    const $viewportsDraggedOver = $(elemBelow).parents('.imageViewerViewport');
+    const $viewportsDraggedOver = $(elemBelow).parents('.viewportContainer');
     if ($viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, fade it and change the cursor style
         $viewportsDraggedOver.find('canvas').not('.magnifyTool').addClass('faded');
         document.body.style.cursor = 'copy';
-    } else if (elemBelow.classList.contains('imageViewerViewport') && elemBelow.classList.contains('empty')) {
+    } else if (elemBelow.classList.contains('viewportContainer') && elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, just change the cursor style
         document.body.style.cursor = 'copy';
     } else {
@@ -207,7 +207,7 @@ const thumbnailDragEndHandler = (event, data, handlers) => {
     $('.imageThumbnailClone').remove();
 
     // Remove any current faded effects on viewports
-    $('.imageViewerViewport canvas').removeClass('faded');
+    $('.viewportContainer canvas').removeClass('faded');
 
     // If none exists, stop here
     if (!elemBelow) {
@@ -218,12 +218,12 @@ const thumbnailDragEndHandler = (event, data, handlers) => {
     elemBelow.classList.remove('faded');
 
     let element;
-    const $viewportsDraggedOver = $(elemBelow).closest('.imageViewerViewport');
+    const $viewportsDraggedOver = $(elemBelow).closest('.viewportContainer');
 
     if ($viewportsDraggedOver.length) {
         // If we're dragging over a non-empty viewport, retrieve it
         element = $viewportsDraggedOver.get(0);
-    } else if (elemBelow.classList.contains('imageViewerViewport') &&
+    } else if (elemBelow.classList.contains('viewportContainer') &&
                elemBelow.classList.contains('empty')) {
         // If we're dragging over an empty viewport, retrieve that instead
         element = elemBelow;
@@ -238,7 +238,7 @@ const thumbnailDragEndHandler = (event, data, handlers) => {
     }
 
     // Get the dropped viewport index
-    const viewportIndex = $('.imageViewerViewport').index(element);
+    const viewportIndex = $('.viewportContainer').index(element);
 
     // Rerender the viewport using the dragged thumbnail data
     OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, data);

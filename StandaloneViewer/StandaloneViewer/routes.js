@@ -52,6 +52,38 @@ if (Meteor.isClient) {
                 OHIF.log.info(JSON.stringify(oReq.responseText, null, 2));
                 this.data = JSON.parse(oReq.responseText);
 
+                if (this.data.servers && query.studyInstanceUids) {
+                    console.warn('Using Server Definition!');
+
+                    const server = this.data.servers.dicomWeb[0];
+                    server.type = 'dicomWeb';
+
+                    const serverId = OHIF.servers.collections.servers.insert(server);
+
+                    OHIF.servers.collections.currentServer.insert({
+                        serverId
+                    });
+
+                    studyInstanceUids = query.studyInstanceUids.split(';');
+                    const seriesInstanceUids = [];
+
+                    const viewerData = {
+                        studyInstanceUids,
+                        seriesInstanceUids
+                    };
+
+                    OHIF.studies.retrieveStudiesMetadata(studyInstanceUids, seriesInstanceUids).then(studies => {
+                        this.data = {
+                            studies,
+                            viewerData
+                        };
+
+                        next();
+                    });
+
+                    return;
+                }
+
                 next();
             });
 

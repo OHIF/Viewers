@@ -8,18 +8,18 @@ const loadPreviousActivePanel = () => {
     let currentIndex = Session.get('activeViewport');
     currentIndex--;
 
-    const $viewports = $('.imageViewerViewport');
+    const $viewports = $('.viewportContainer');
     const numViewports = $viewports.length;
     if (currentIndex < 0) {
         currentIndex = numViewports - 1;
     }
 
-    const element = $viewports.get(currentIndex);
-    if (!element) {
+    const viewportContainer = $viewports.get(currentIndex);
+    if (!viewportContainer) {
         return;
     }
 
-    setActiveViewport(element);
+    setActiveViewport(viewportContainer);
 };
 
 const loadNextActivePanel = () => {
@@ -27,18 +27,18 @@ const loadNextActivePanel = () => {
     let currentIndex = Session.get('activeViewport');
     currentIndex++;
 
-    const $viewports = $('.imageViewerViewport');
+    const $viewports = $('.viewportContainer');
     const numViewports = $viewports.length;
     if (currentIndex >= numViewports) {
         currentIndex = 0;
     }
 
-    const element = $viewports.get(currentIndex);
-    if (!element) {
+    const viewportContainer = $viewports.get(currentIndex);
+    if (!viewportContainer) {
         return;
     }
 
-    setActiveViewport(element);
+    setActiveViewport(viewportContainer);
 };
 
 /**
