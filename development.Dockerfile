@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	g++ \
 	git \
+	python \
 	build-essential
 
 RUN curl https://install.meteor.com/ | sh
