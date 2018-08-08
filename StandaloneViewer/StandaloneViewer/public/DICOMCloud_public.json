@@ -1,0 +1,21 @@
+{
+  "servers": {
+    "dicomWeb": [
+      {
+        "name": "DICOMCloud Public Server",
+        "wadoUriRoot": "https://dicomcloud.azurewebsites.net/WadoUri",
+        "qidoRoot": "https://dicomcloud.azurewebsites.net/qidors",
+        "wadoRoot": "https://dicomcloud.azurewebsites.net/wadors",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadouri",
+        "thumbnailRendering": "wadouri",
+        "requestOptions": {
+          "requestFromBrowser": true,
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+        }
+      }]
+  },
+  "defaultServiceType": "dicomWeb"
+}
