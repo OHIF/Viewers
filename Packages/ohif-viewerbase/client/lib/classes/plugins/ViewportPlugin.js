@@ -10,7 +10,9 @@ export class ViewportPlugin extends OHIFPlugin {
         super();
 
         this.name = name;
-        this.destroyed = false;
+        this._destroyed = false;
+
+        this._setupListeners();
     }
 
     /**
@@ -95,8 +97,10 @@ export class ViewportPlugin extends OHIFPlugin {
      * Listen for changes to the viewport layout which would necessitate a
      * rerendering of the viewports. When this happens, re-render all viewports
      * which are using this plugin.
+     *
+     * @private
      */
-    setupListeners() {
+    _setupListeners() {
         if (!this.name) {
             throw new Error('ViewportPlugin subclasses must have a name');
         }
@@ -109,7 +113,7 @@ export class ViewportPlugin extends OHIFPlugin {
             // of this plugin, we can also stop the
             // reactive computation by setting
             // this.destroyed to true.
-            if (this.destroyed === true) {
+            if (this._destroyed === true) {
                 computation.stop();
             }
 
@@ -128,8 +132,6 @@ export class ViewportPlugin extends OHIFPlugin {
      * automatically rerender viewports setup for use by this plugin.
      */
     stopListeners() {
-        this.destroyed = true;
+        this._destroyed = true;
     }
 }
-
-window.ViewportPlugin = ViewportPlugin;

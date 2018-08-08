@@ -37,18 +37,11 @@ export class OHIFPlugin {
         }
 
         this.loadScript(scriptURL).onload = function() {
-            if (OHIFPlugin.entryPoints[plugin.name]) {
-                OHIFPlugin.entryPoints[plugin.name]();
+            const entryPointFunction = OHIF.plugins.entryPoints[plugin.name];
+
+            if (entryPointFunction) {
+                entryPointFunction();
             }
         }
     }
 }
-
-// each plugin registers an entry point function to be called
-// when the loading is complete (called above in reloadPlugin).
-
-// TODO: Move to OHIF.plugins.entryPoints?
-OHIFPlugin.entryPoints = {};
-
-// TODO: Should we remove this? Authors should be able to use new 'OHIF.viewerbase.OHIFPlugin()'
-window.OHIFPlugin = OHIFPlugin;
