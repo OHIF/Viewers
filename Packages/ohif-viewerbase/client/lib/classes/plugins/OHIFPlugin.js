@@ -9,18 +9,21 @@ export class OHIFPlugin {
     // load an individual script URL
     static loadScript(scriptURL, type = "text/javascript") {
         return new Promise((resolve, reject) => {
+            const head = document.getElementsByTagName("head")[0];
             const script = document.createElement("script");
 
-            script.onload = resolve;
+            script.onload = () => {
+                head.removeChild(script);
+                resolve();
+            };
+
             script.onerror = reject;
 
             script.src = scriptURL;
             script.type = type;
             script.async = false;
 
-            const head = document.getElementsByTagName("head")[0];
             head.appendChild(script);
-            head.removeChild(script);
         });
     }
 
@@ -48,11 +51,16 @@ export class OHIFPlugin {
 
         const type = plugin.module === true ? 'module' : 'text/javascript'
 
-        this.loadScript(scriptURL, type).then(function() {
+        console.warn(`Calling loadScript for ${plugin.name}`);
+        console.time(`loadScript ${plugin.name}`);
+        this.loadScript(scriptURL, type).then((script) => {
+            console.timeEnd(`loadScript ${plugin.name}`);
             const entryPointFunction = OHIF.plugins.entryPoints[plugin.name];
 
             if (entryPointFunction) {
                 entryPointFunction();
+            } else {
+                throw new Error(`No entry point found for ${plugin.name}`);
             }
         }, error => {
             throw new Error(error);
