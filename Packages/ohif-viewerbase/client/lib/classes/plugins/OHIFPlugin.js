@@ -8,17 +8,20 @@ export class OHIFPlugin {
 
     // load an individual script URL
     static loadScript(scriptURL, type = "text/javascript") {
-        const script = document.createElement("script");
+        return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
 
-        script.src = scriptURL;
-        script.type = type;
-        script.async = false;
+            script.onload = resolve;
+            script.onerror = reject;
 
-        const head = document.getElementsByTagName("head")[0];
-        head.appendChild(script);
-        head.removeChild(script);
+            script.src = scriptURL;
+            script.type = type;
+            script.async = false;
 
-        return script;
+            const head = document.getElementsByTagName("head")[0];
+            head.appendChild(script);
+            head.removeChild(script);
+        });
     }
 
     // reload all the dependency scripts and also
@@ -26,14 +29,14 @@ export class OHIFPlugin {
     static reloadPlugin(plugin) {
         if (plugin.scriptURLs && plugin.scriptURLs.length) {
             plugin.scriptURLs.forEach(scriptURL => {
-                this.loadScript(scriptURL).onload = function() {}
+                this.loadScript(scriptURL);
             });
         }
 
         // TODO: Later we should probably merge script and module URLs
         if (plugin.moduleURLs && plugin.moduleURLs.length) {
             plugin.moduleURLs.forEach(moduleURLs => {
-                this.loadScript(moduleURLs, "module").onload = function() {}
+                this.loadScript(moduleURLs, "module");
             });
         }
 
@@ -45,12 +48,14 @@ export class OHIFPlugin {
 
         const type = plugin.module === true ? 'module' : 'text/javascript'
 
-        this.loadScript(scriptURL, type).onload = function() {
+        this.loadScript(scriptURL, type).then(function() {
             const entryPointFunction = OHIF.plugins.entryPoints[plugin.name];
 
             if (entryPointFunction) {
                 entryPointFunction();
             }
-        }
+        }, error => {
+            throw new Error(error);
+        });
     }
 }
