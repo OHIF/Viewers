@@ -131,7 +131,18 @@ export class StudyPrefetcher {
     }
 
     prefetchDisplaySets() {
-        const config = Meteor.settings.public.prefetch;
+        let config;
+        if (Meteor.settings &&
+            Meteor.settings.public &&
+            Meteor.settings.prefetch) {
+            config = Meteor.settings.public.prefetch;
+        } else {
+            config = {
+                order: 'closest',
+                displaySetCount: 1
+            };
+        }
+
         const displaySetsToPrefetch = this.getDisplaySetsToPrefetch(config);
         const imageIds = this.getImageIdsFromDisplaySets(displaySetsToPrefetch);
 
