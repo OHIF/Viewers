@@ -5,12 +5,12 @@ import { $ } from 'meteor/jquery';
 import { EffectController } from "./EffectController";
 
 var scene, camera, renderer, controls;
-var geometry, material, sphere, geometry2, material2, sphere2, edges;
+var texture, geometry, material, plane, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
 var objects = [];
 var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
-var canvas, raycaster, effectController, gui_initialized, gui;
-var lengthX, lengthY, lengthZ, originX, originY, originZ, centerX, centerY;
+var canvas, raycaster, effectController, gui_initialized, gui, hasGeometry;
+var lengthX, lengthY, lengthZ, originX, originY, originZ;
 var arrowHelper_x, arrowHelper_y, arrowHelper_z;
 
 var Detector = {
@@ -89,8 +89,8 @@ if ( typeof module === 'object' ) {
 
 function setArrowHelper() {
     var dir_x = new THREE.Vector3( 1, 0, 0 ); dir_x.normalize();
-    var dir_y = new THREE.Vector3( 0, 1, 0 ); dir_y.normalize();
-    var dir_z = new THREE.Vector3( 0, 0, 1 ); dir_z.normalize();
+    var dir_y = new THREE.Vector3( 0, -1, 0 ); dir_y.normalize();
+    var dir_z = new THREE.Vector3( 0, 0, -1 ); dir_z.normalize();
 
     var origin = new THREE.Vector3( originX, originY, originZ );
     origin.subScalar(2);
@@ -121,8 +121,8 @@ function computeScale(geometry) {
     originX = Math.min(originX, geometry.boundingBox.min.x);
     originY = Math.min(originY, geometry.boundingBox.min.y);
     originZ = Math.min(originZ, geometry.boundingBox.min.z);
-    camera.position.x = originX + (lengthX);
-    camera.position.y = originY + (lengthY);
+    camera.position.x = (originX + (lengthX)) * 1;
+    camera.position.y = (originY + (lengthY)) * 1;
     camera.updateProjectionMatrix();
     setArrowHelper();
 }
@@ -204,15 +204,60 @@ function onMouseMove(event) {
     }
 }
 
+function onImage2DRendered(e) {
+    if (hasGeometry) {
+        const eventData = e.detail;
+
+        // set the canvas context to the image coordinate system
+        cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
+
+        // NOTE: The coordinate system of the canvas is in image pixel space.  Drawing
+        // to location 0,0 will be the top left of the image and rows,columns is the bottom
+        // right.
+        const context = eventData.canvasContext;
+
+        const image = eventData.image;
+
+        texture = new THREE.DataTexture(image.getPixelData(), image.width, image.height, THREE.LuminanceFormat, THREE.UnsignedByteType);
+        texture.magFilter = THREE.NearestFilter;
+        texture.needsUpdate = true;
+
+        geometry = new THREE.PlaneGeometry(image.width, image.height, image.width, image.height);
+        // geometry.center();
+
+        //geometry.applyMatrix(mS);
+        //mesh.applyMatrix(mS);
+        //object.applyMatrix(mS);
+
+        material = new THREE.MeshBasicMaterial({color: 0xff0000, map: texture, side: THREE.DoubleSide});
+         material.transparent = true;
+         material.opacity = 0.5;
+        scene.remove(plane);
+
+
+        plane = new THREE.Mesh( geometry, material );
+        console.log('Original:' + plane.position);
+        var obj = scene.getObjectByName("volume3D");
+        obj.geometry.computeBoundingBox();
+        obj.geometry.boundingBox.center(plane.position);
+        plane.position.setZ(0);
+        console.log('Nueva:' + plane.position);
+        scene.add(plane);
+        camera.updateProjectionMatrix();
+        plane.updateMatrixWorld();
+    }
+}
+
 function init() {
     //Initialize vars
     mouse = new THREE.Vector2();
     raycaster =  new THREE.Raycaster();
     effectController = new EffectController(0, false, 1.0, 1);
     selectionMode = false;
+    hasGeometry = true;
     lengthX = lengthY = lengthZ = 0.0;
-    centerX = centerY = 0.0;
     originX = originY = originZ = Number.POSITIVE_INFINITY;
+
 
 
     //Scene
@@ -259,12 +304,12 @@ function init() {
         selectionMode = !selectionMode;
     });
 
-    // geometry = new THREE.SphereGeometry(1, 64, 64, 3 * Math.PI / 2, Math.PI / 2);
+      geometry = new THREE.PlaneGeometry();
     // geometry.center();
-    // material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+      material = new THREE.MeshBasicMaterial({color: 0xff0000});
     // material.transparent = false;
     // material.opacity = 0.5;
-    // sphere = new THREE.Mesh( geometry, material );
+      plane = new THREE.Mesh( geometry, material );
     // sphere.scale.set(1, 1, 1);
     // edges = new THREE.EdgesHelper(sphere);
     // geometry2 = new THREE.SphereGeometry(2, 64, 64, 0, 3 * Math.PI / 2);
@@ -276,15 +321,15 @@ function init() {
     // sphere2 = new THREE.Mesh( geometry2, material2 );
     // sphere2.scale.set(1, 1, 1);
 
-    // scene.add(sphere);
+     scene.add(plane);
     // objects.push(sphere);
     // scene.add(sphere2);
     // objects.push(sphere2);
 
     var loader = new THREE.VTKLoader();
-    loader.load("/pancreas.vtk", function (geometry) {
+    loader.load("/artery.vtk", function (geometry) {
         geometry.computeVertexNormals();
-        console.log("pancreas");
+        //geometry.applyMatrix(mS);
         //geometry.center();
         computeScale(geometry);
         var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
@@ -294,45 +339,52 @@ function init() {
         // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
         // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
         // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
+        mesh.name = "volume3D";
         scene.add(mesh);
         objects.push(mesh);
+        hasGeometry = hasGeometry || true;
+        geometry.computeBoundingBox();
+        var helper = new THREE.BoxHelper( mesh, 0xffff00 );
+        scene.add( helper );
     });
 
-    loader.load("/colon.vtk", function (geometry) {
-        geometry.computeVertexNormals();
-        console.log("colon");
-
-        //geometry.center();
-        computeScale(geometry);
-        var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.updateMatrixWorld();
-        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
-        // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
-        // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
-        // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
-        scene.add(mesh);
-        objects.push(mesh);
-    });
-
-    loader.load("/heart.vtk", function (geometry) {
-        geometry.computeVertexNormals();
-        console.log("heart");
-
-        //geometry.center();
-        computeScale(geometry);
-        var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.updateMatrixWorld();
-        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
-        // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
-        // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
-        // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
-        scene.add(mesh);
-        objects.push(mesh);
-    });
+    // loader.load("/colon.vtk", function (geometry) {
+    //     geometry.computeVertexNormals();
+    //     console.log("colon");
+    //
+    //     //geometry.center();
+    //     computeScale(geometry);
+    //     var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
+    //     var mesh = new THREE.Mesh(geometry, material);
+    //     mesh.updateMatrixWorld();
+    //     mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
+    //     // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
+    //     // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
+    //     // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
+    //     scene.add(mesh);
+    //     objects.push(mesh);
+    //     hasGeometry = hasGeometry || true;
+    // });
+    //
+    // loader.load("/heart.vtk", function (geometry) {
+    //     geometry.computeVertexNormals();
+    //     console.log("heart");
+    //
+    //     //geometry.center();
+    //     computeScale(geometry);
+    //     var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
+    //     var mesh = new THREE.Mesh(geometry, material);
+    //     mesh.updateMatrixWorld();
+    //     mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
+    //     // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
+    //     // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
+    //     // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
+    //     scene.add(mesh);
+    //     objects.push(mesh);
+    // });
 
     setArrowHelper();
+    document.getElementsByClassName("imageViewerViewport").item(0).addEventListener('cornerstoneimagerendered', onImage2DRendered);
 }
 
 function animate() {
