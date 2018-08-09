@@ -98,6 +98,8 @@ Template.viewer.onCreated(() => {
             study.displaySets = displaySets;
         }
 
+        studyMetadata.setDisplaySets(displaySets);
+
         study.selected = true;
         OHIF.viewer.Studies.insert(study);
         OHIF.viewer.StudyMetadataList.insert(studyMetadata);
