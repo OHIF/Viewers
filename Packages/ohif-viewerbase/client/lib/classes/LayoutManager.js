@@ -241,16 +241,18 @@ export class LayoutManager {
         // If we have been provided with a plugin to use, use it.
         // Otherwise, use whichever plugin is currently in use in this viewport.
         const plugin = data.plugin || this.viewportData[viewportIndex].plugin;
+        const pluginData = data.pluginData || this.viewportData[viewportIndex].pluginData;
 
         // Update the dictionary of loaded displaySet for the specified viewport
         this.viewportData[viewportIndex] = {
-            viewportIndex: viewportIndex,
+            viewportIndex,
             displaySetInstanceUid: data.displaySetInstanceUid,
             seriesInstanceUid: data.seriesInstanceUid,
             studyInstanceUid: data.studyInstanceUid,
             renderedCallback: data.renderedCallback,
             currentImageIdIndex: data.currentImageIdIndex || 0,
             plugin,
+            pluginData,
         };
 
         const newViewportContainer = document.createElement('div');
@@ -282,7 +284,7 @@ export class LayoutManager {
             container.innerHTML = '';
             container.appendChild(newViewportContainer);
         }
-        
+
         this.updateSession();
     }
 

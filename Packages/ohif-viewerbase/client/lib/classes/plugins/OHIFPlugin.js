@@ -43,7 +43,9 @@ export class OHIFPlugin {
             scriptURL += "?" + performance.now();
         }
 
-        this.loadScript(scriptURL).onload = function() {
+        const type = plugin.module === true ? 'module' : 'text/javascript'
+
+        this.loadScript(scriptURL, type).onload = function() {
             const entryPointFunction = OHIF.plugins.entryPoints[plugin.name];
 
             if (entryPointFunction) {

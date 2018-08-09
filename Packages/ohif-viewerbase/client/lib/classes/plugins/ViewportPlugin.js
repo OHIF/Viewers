@@ -64,7 +64,6 @@ export class ViewportPlugin extends OHIFPlugin {
         const viewportData = layoutManager.viewportData[viewportIndex];
         if (viewportData.plugin === this.name) {
             OHIF.log.info(`setViewportToPlugin: Viewport ${viewportIndex} already set to plugin ${this.name}`);
-            return;
         }
 
         viewportData.plugin = this.name;
@@ -102,16 +101,18 @@ export class ViewportPlugin extends OHIFPlugin {
         // Retrieve the list of all viewports, so we can figure out the viewport details
         const allViewports = Array.from(document.querySelectorAll('.viewportContainer'));
 
+        const { layoutManager } = OHIF.viewerbase;
+
         emptyPluginDivs.forEach(div => {
             // Identify the Viewport index, and any display set that is currently
             // hung in the viewport
             const viewportIndex = allViewports.indexOf(div.parentNode);
-            const viewportDetails = { viewportIndex };
+            const viewportData = layoutManager.viewportData[viewportIndex];
             const displaySet = ViewportPlugin.getDisplaySet(viewportIndex);
 
             // Use the plugin's setupViewport function to render the contents
             // of this viewport.
-            this.setupViewport(div, viewportDetails, displaySet);
+            this.setupViewport(div, viewportData, displaySet);
         });
     }
 
