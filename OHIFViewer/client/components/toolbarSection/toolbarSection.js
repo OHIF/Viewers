@@ -141,46 +141,56 @@ Template.toolbarSection.helpers({
 
         const buttonData = [];
 
-        buttonData.push({
+        const mainTools = [];
+
+        mainTools.push({
             id: 'zoom',
             title: 'Zoom',
             classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-zoom'
         });
 
-        buttonData.push({
+        mainTools.push({
             id: 'wwwc',
             title: 'Levels',
             classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-levels'
         });
 
-        buttonData.push({
+        mainTools.push({
             id: 'pan',
             title: 'Pan',
             classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
         });
 
-        buttonData.push({
+        mainTools.push({
             id: 'length',
             title: 'Length',
             classes: 'imageViewerTool toolbarSectionButton',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
 
-        buttonData.push({
+        mainTools.push({
             id: 'annotate',
             title: 'Annotate',
             classes: 'imageViewerTool',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
         });
 
-        buttonData.push({
+        mainTools.push({
             id: 'angle',
             title: 'Angle',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-angle-left'
+        });
+
+        buttonData.push({
+            id: 'main-tools',
+            title: 'Main tools',
+            classes: 'rp-x-1 rm-l-3',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-toolbox',
+            subTools: mainTools
         });
 
         buttonData.push({
