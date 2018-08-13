@@ -18,7 +18,7 @@ calcLength = function(type, value) {
     case C.TYPE_DOUBLE : size = 8; break;
     case C.TYPE_INT8 : size = 1; break;
     case C.TYPE_INT16 : size = 2; break;
-    case C.TYPE_INT32 : size = 4; break;    
+    case C.TYPE_INT32 : size = 4; break;
     default :break;
 }
     return size;
@@ -28,7 +28,7 @@ var RWStream = function() {
     this.endian = C.BIG_ENDIAN;
 };
 
-RWStream.prototype.setEndian = function(endian) {   
+RWStream.prototype.setEndian = function(endian) {
     this.endian = endian;
 };
 
@@ -42,12 +42,12 @@ RWStream.prototype.getWriteType = function(type) {
 
 RWStream.prototype.getReadType = function(type) {
     return RWStream.reads[this.endian][type];
-};  
+};
 
 WriteStream = function() {
     RWStream.call(this);
     this.defaultBufferSize = 512; //512 bytes
-    this.rawBuffer = new Buffer(this.defaultBufferSize);
+    this.rawBuffer = Buffer.alloc(this.defaultBufferSize);
     this.offset = 0;
     this.contentSize = 0;
 };
@@ -72,8 +72,8 @@ WriteStream.prototype.skip = function(amount) {
 WriteStream.prototype.checkSize = function(length) {
     if (this.offset + length > this.rawBuffer.length) {
         // we need more size, copying old one to new buffer
-        var oldLength = this.rawBuffer.length, 
-            newBuffer = new Buffer(oldLength + length + (oldLength / 2));
+        var oldLength = this.rawBuffer.length,
+            newBuffer = Buffer.alloc(oldLength + length + (oldLength / 2));
         this.rawBuffer.copy(newBuffer, 0, 0, this.contentSize);
         this.rawBuffer = newBuffer;
     }
@@ -81,7 +81,7 @@ WriteStream.prototype.checkSize = function(length) {
 
 WriteStream.prototype.writeToBuffer = function(type, value, length) {
     if (value === '' || value === null) return;
-  
+
     this.checkSize(length);
     this.rawBuffer[this.getWriteType(type)](value, this.offset);
     this.increment(length);
@@ -138,7 +138,7 @@ ReadStream.prototype.size = function() {
 
 ReadStream.prototype.increment = function(add) {
     this.offset += add;
-};  
+};
 
 ReadStream.prototype.more = function(length) {
     var newBuf = this.rawBuffer.slice(this.offset, this.offset + length);
@@ -161,7 +161,7 @@ ReadStream.prototype.readFromBuffer = function(type, length) {
     var value = this.rawBuffer[this.getReadType(type)](this.offset);
     this.increment(length);
     return value;
-};  
+};
 
 ReadStream.prototype.read = function(type, length) {
     var value = null;
@@ -175,11 +175,11 @@ ReadStream.prototype.read = function(type, length) {
 };
 
 ReadStream.prototype.readString = function(length, type) {
-    var encoding = this.getEncoding(type), 
+    var encoding = this.getEncoding(type),
         str = this.rawBuffer.toString(encoding, this.offset, this.offset + length);
     this.increment(length);
     return str;
-};  
+};
 
 ReadStream.prototype.buffer = function() {
     return this.rawBuffer;
@@ -190,7 +190,7 @@ ReadStream.prototype.concat = function(newStream) {
     this.rawBuffer = Buffer.concat([this.buffer(), newStream.buffer()], newSize);
     this.contentSize = newSize;
     this.offset = newSize;
-};  
+};
 
 RWStream.writes = {};
 RWStream.writes[C.BIG_ENDIAN] = {};
@@ -209,7 +209,7 @@ RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_UINT16] = 'writeUInt16LE';
 RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_UINT32] = 'writeUInt32LE';
 RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_INT8] = 'writeInt8';
 RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_INT16] = 'writeInt16LE';
-RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_INT32] = 'writeInt32LE'; 
+RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_INT32] = 'writeInt32LE';
 RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_FLOAT] = 'writeFloatLE';
 RWStream.writes[C.LITTLE_ENDIAN][C.TYPE_DOUBLE] = 'writeDoubleLE';
 

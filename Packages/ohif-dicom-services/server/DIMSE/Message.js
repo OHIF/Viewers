@@ -282,7 +282,7 @@ DicomMessage.readMetaHeader = function(bufferOrFile, callback) {
                 return quitWithError('Cannot open file', callback);
             }
 
-            var buffer = new Buffer(16);
+            var buffer = Buffer.alloc(16);
             fs.read(fd, buffer, 0, 16, 128, function(err, bytesRead) {
                 if (err || bytesRead != 16) {
                     fs.closeSync(fd);
@@ -297,7 +297,7 @@ DicomMessage.readMetaHeader = function(bufferOrFile, callback) {
 
                 var el = readAElement(stream, useSyntax), 
                     metaLength = el.value,
-                    metaBuffer = new Buffer(metaLength);
+                    metaBuffer = Buffer.alloc(metaLength);
 
                 fs.read(fd, metaBuffer, 0, metaLength, 144, function(err, bytesRead) {
                     fs.closeSync(fd);
