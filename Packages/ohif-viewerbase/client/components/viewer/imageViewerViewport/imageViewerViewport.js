@@ -268,7 +268,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         }
 
         // Enabling new eventDispatches form cornerstoneTools v3
-        åtoolManager.cTools.addCanvas(element);
+        toolManager.cTools.addCanvas(element);
 
         toolManager.instantiateTools(element);
 
