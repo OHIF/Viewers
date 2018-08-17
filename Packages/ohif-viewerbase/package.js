@@ -13,7 +13,6 @@ Package.onUse(function(api) {
         'jquery',
         'stylus',
         'momentjs:moment',
-        'validatejs',
         'cultofcoders:persistent-session'
     ]);
 
@@ -230,7 +229,6 @@ Package.onTest(function(api) {
         'jquery',
         'mongo',
         'momentjs:moment',
-        'validatejs',
         'cultofcoders:persistent-session'
     ], 'client');
 

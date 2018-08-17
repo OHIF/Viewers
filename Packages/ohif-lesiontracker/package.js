@@ -13,8 +13,6 @@ Package.onUse(function(api) {
     api.use('stylus');
     api.use('random');
 
-    api.use('validatejs');
-
     // Template overriding
     api.use('aldeed:template-extension@4.0.0');
 

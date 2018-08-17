@@ -2,6 +2,7 @@
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 // Local imports
+import { validate } from '../lib/validate.js';
 import '../customAttributes';
 
 /**
