@@ -32,11 +32,14 @@ export const toolManager = {
             this.setDefaultTool(OHIF.viewer.defaultTool);
         }
 
+        this.cTools = cornerstoneTools.init();
+
         tools = [
             'length',
 			'angle',
 			'wwwc',
-			'zoom',
+            'zoom',
+            'pan',
 			'zoomTouchPinch',
 			'zoomMouseWheel',
 			'ellipticalRoi',
@@ -85,12 +88,12 @@ export const toolManager = {
 
     setActiveToolForElement(toolId, element) {
         this.setAllToolsPassive(element);
-        cornerstoneTools.setToolActive(element, toolId, { mouseButtonMask: 1 });
+        this.cTools.setToolActive(element, toolId, { mouseButtonMask: 1 });
     },
 
     setAllToolsPassive(element) {
-		cornerstoneTools.store.state.tools.forEach((tool) => {
-			cornerstoneTools.setToolPassive(element, tool.name)
+		this.cTools.store.state.tools.forEach((tool) => {
+			this.cTools.setToolPassive(element, tool.name)
 		})
     },
     
@@ -100,7 +103,7 @@ export const toolManager = {
             const apiTool = cornerstoneTools[`${toolName}Tool`];
             if (apiTool) {
                 const tool = new apiTool();
-                cornerstoneTools.addTool(element, tool);
+                this.cTools.addTool(element, tool);
             }
         });
     },
