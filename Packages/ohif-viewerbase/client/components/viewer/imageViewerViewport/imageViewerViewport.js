@@ -278,19 +278,14 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         }
 
         // Enabling new eventDispatches form cornerstoneTools v3
-        cornerstoneTools.mouseInput.enable(element);
-        cornerstoneTools.mouseToolEventDispatcher.enable(element);
-        cornerstoneTools.touchInput.enable(element);
-        cornerstoneTools.touchToolEventDispatcher.enable(element);
-        cornerstoneTools.mouseWheelInput.enable(element);
-        cornerstoneTools.keyboardInput.enable(element);
+        åtoolManager.cTools.addCanvas(element);
 
         toolManager.instantiateTools(element);
 
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
         const activeTool = toolManager.getActiveTool();
-        toolManager.setActiveTool(activeTool, [element]);
+        toolManager.cTools.setToolActive(element, activeTool);
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
