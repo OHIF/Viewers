@@ -72,7 +72,7 @@ Template.timepointBrowserQuickSwitch.onRendered(() => {
 });
 
 Template.timepointBrowserQuickSwitch.events({
-    'ohif.lesiontracker.timepoint.click'(event, instance) {
+    'ohif.measurements.timepoint.click'(event, instance) {
         const $element = $(event.currentTarget);
         $element.toggleClass('active');
         instance.updateActiveStudy();
