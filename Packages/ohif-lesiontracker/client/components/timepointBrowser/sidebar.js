@@ -19,7 +19,7 @@ Template.timepointBrowserSidebar.onRendered(() => {
         // Runs this computation every time the timepointViewType is changed
         const type = instance.timepointViewType.get();
         if (type !== instance.lastType) {
-            const eventKey = 'ohif.lesiontracker.timepoint.changeViewType';
+            const eventKey = 'ohif.measurements.timepoint.changeViewType';
             instance.$browserList.trigger(eventKey, type);
         }
 
@@ -49,7 +49,7 @@ Template.timepointBrowserSidebar.events({
         });
     },
 
-    'ohif.lesiontracker.timepoint.click'(event, instance) {
+    'ohif.measurements.timepoint.click'(event, instance) {
         const $element = $(event.currentTarget);
 
         // Defer the active class toggling to wait for child template rendering

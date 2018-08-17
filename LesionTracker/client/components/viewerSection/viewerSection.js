@@ -32,7 +32,7 @@ Template.viewerSection.events({
         window.ResizeViewportManager.handleResize();
     },
 
-    'ohif.lesiontracker.timepoint.changeViewType .timepoint-browser-list'(event, instance, viewType) {
+    'ohif.measurements.timepoint.changeViewType .timepoint-browser-list'(event, instance, viewType) {
         const $browserList = $(event.currentTarget);
         const $allBrowserItems = $browserList.find('.timepoint-browser-item');
 
@@ -43,7 +43,7 @@ Template.viewerSection.events({
             const { timepointIds, currentTimepointId } = OHIF.viewer.data;
             timepointIds.forEach(timepointId => {
                 const $browserItem = $allBrowserItems.filter(`[data-id=${timepointId}]`);
-                $browserItem.find('.timepoint-item').trigger('ohif.lesiontracker.timepoint.load');
+                $browserItem.find('.timepoint-item').trigger('ohif.measurements.timepoint.load');
             });
 
             // Show only current timepoint expanded on key timepoints tab
