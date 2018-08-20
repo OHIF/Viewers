@@ -12,7 +12,7 @@ import { textMarkerUtils } from './textMarkerUtils';
 import { isTouchDevice } from './helpers/isTouchDevice';
 
 let defaultTool = {
-    left: 'wwwcTool',
+    left: 'wwwc',
     right: 'zoom',
     middle: 'pan'
 };
@@ -29,10 +29,10 @@ export const toolManager = {
     init() {
         // if a default tool is globally defined, make it the default tool...
         if (OHIF.viewer.defaultTool) {
-            this.setDefaultTool(OHIF.viewer.defaultTool);
+            toolManager.setDefaultTool(OHIF.viewer.defaultTool);
         }
 
-        this.cTools = cornerstoneTools.init();
+        toolManager.cTools = cornerstoneTools.init();
 
         tools = [
             'length',
@@ -41,9 +41,10 @@ export const toolManager = {
 			'wwwc',
             'zoom',
             'pan',
-            'probe',
+            'dragProbe',
             'magnify',
             'crosshairs',
+            'stackScroll',
             'stackScrollMouseWheel',
 			'zoomTouchPinch',
 			'zoomMouseWheel',
@@ -91,14 +92,20 @@ export const toolManager = {
         return tools;
     },
 
-    setActiveToolForElement(toolName) {
-        this.setAllToolsPassive();
-        this.cTools.setToolActive(toolName, { mouseButtonMask: 1 });
+    setActiveTool(toolName, button = 1) {
+        toolManager.setAllToolsPassive();
+        toolManager.cTools.setToolActive(toolName, { mouseButtonMask: button });
+
+        // TODO: add the active tool with the correct button
+        activeTool['left'] = toolName;
+
+        // Enable reactivity
+        Session.set('ToolManagerActiveToolUpdated', Random.id());
     },
 
     setAllToolsPassive() {
-		this.cTools.store.state.tools.forEach((tool) => {
-			this.cTools.setToolPassive(tool.name)
+		toolManager.cTools.store.state.tools.forEach((tool) => {
+			toolManager.cTools.setToolPassive(tool.name)
 		})
     },
     
@@ -106,43 +113,10 @@ export const toolManager = {
         Array.from(tools).forEach(toolName => {
             const apiTool = cornerstoneTools[`${toolName}Tool`];
             if (apiTool) {
-                this.cTools.addTool(apiTool);
+                toolManager.cTools.addTool(apiTool);
             }
         });
-    },
-
-    setActiveTool(toolId, elements, button) {
-        let $elements;
-        if (!elements || !elements.length) {
-            $elements = $('.imageViewerViewport');
-        } else {
-            $elements = $(elements);
-        }
-
-        const checkElementEnabled = function(allElementsEnabled, element) {
-            try {
-                cornerstone.getEnabledElement(element);
-
-                return allElementsEnabled;
-            } catch (error) {
-                return true;
-            }
-        };
-
-
-        // Otherwise, set the active tool for all viewport elements
-        $elements.each((index, element) => {
-            if (checkElementEnabled(element) === false) {
-                return;
-            }
-
-            toolManager.setActiveToolForElement(toolId, element);
-        });
-
-        activeTool['left'] = toolId;
-
-        // Enable reactivity
-        Session.set('ToolManagerActiveToolUpdated', Random.id());
+        toolManager.setAllToolsPassive();
     },
 
     getNearbyToolData(element, coords, toolTypes) {
