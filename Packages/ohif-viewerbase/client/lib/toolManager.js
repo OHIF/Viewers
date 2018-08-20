@@ -36,10 +36,15 @@ export const toolManager = {
 
         tools = [
             'length',
-			'angle',
+            'angle',
+            'arrowAnnotate',
 			'wwwc',
             'zoom',
             'pan',
+            'probe',
+            'magnify',
+            'crosshairs',
+            'stackScrollMouseWheel',
 			'zoomTouchPinch',
 			'zoomMouseWheel',
 			'ellipticalRoi',
@@ -86,24 +91,22 @@ export const toolManager = {
         return tools;
     },
 
-    setActiveToolForElement(toolId, element) {
-        this.setAllToolsPassive(element);
-        this.cTools.setToolActive(element, toolId, { mouseButtonMask: 1 });
+    setActiveToolForElement(toolName) {
+        this.setAllToolsPassive();
+        this.cTools.setToolActive(toolName, { mouseButtonMask: 1 });
     },
 
-    setAllToolsPassive(element) {
+    setAllToolsPassive() {
 		this.cTools.store.state.tools.forEach((tool) => {
-			this.cTools.setToolPassive(element, tool.name)
+			this.cTools.setToolPassive(tool.name)
 		})
     },
     
-    instantiateTools(element) {
+    instantiateTools() {
         Array.from(tools).forEach(toolName => {
-            // Add the tool
             const apiTool = cornerstoneTools[`${toolName}Tool`];
             if (apiTool) {
-                const tool = new apiTool();
-                this.cTools.addTool(element, tool);
+                this.cTools.addTool(apiTool);
             }
         });
     },
