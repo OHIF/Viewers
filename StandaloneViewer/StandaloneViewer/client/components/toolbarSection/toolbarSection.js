@@ -68,7 +68,7 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
-            id: 'probe',
+            id: 'dragProbe',
             title: 'Probe',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-dot-circle-o'
@@ -126,7 +126,7 @@ Template.toolbarSection.helpers({
         const buttonData = [];
 
         buttonData.push({
-            id: 'stackScrollMouseWheel',
+            id: 'stackScroll',
             title: 'Stack Scroll',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'
