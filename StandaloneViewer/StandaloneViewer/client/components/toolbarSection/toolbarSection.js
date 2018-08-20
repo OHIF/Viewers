@@ -68,7 +68,7 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
-            id: 'dragProbe',
+            id: 'probe',
             title: 'Probe',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-dot-circle-o'
@@ -126,7 +126,7 @@ Template.toolbarSection.helpers({
         const buttonData = [];
 
         buttonData.push({
-            id: 'stackScroll',
+            id: 'stackScrollMouseWheel',
             title: 'Stack Scroll',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'
@@ -161,7 +161,7 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'annotate',
+            id: 'arrowAnnotate',
             title: 'Annotate',
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
