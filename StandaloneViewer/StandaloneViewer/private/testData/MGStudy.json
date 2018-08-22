@@ -21,22 +21,6 @@
             {
               "columns": 1914,
               "rows": 2294,
-              "instanceNumber": "4",
-              "photometricInterpretation": "MONOCHROME1",
-              "bitAllocated": 16,
-              "bitsStored": 14,
-              "pixelRepresentation": 0,
-              "samplesPerPixel": 1,
-              "highBit": 13,
-              "rescaleSlope": "1",
-              "rescaleIntercept": "0",
-              "imageType": "ORIGINAL\\PRIMARY\\",
-              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110601.7",
-              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110601.7.dcm"
-            },
-            {
-              "columns": 1914,
-              "rows": 2294,
               "instanceNumber": "2",
               "photometricInterpretation": "MONOCHROME1",
               "bitAllocated": 16,
@@ -53,22 +37,6 @@
             {
               "columns": 1914,
               "rows": 2294,
-              "instanceNumber": "1",
-              "photometricInterpretation": "MONOCHROME1",
-              "bitAllocated": 16,
-              "bitsStored": 14,
-              "pixelRepresentation": 0,
-              "samplesPerPixel": 1,
-              "highBit": 13,
-              "rescaleSlope": "1",
-              "rescaleIntercept": "0",
-              "imageType": "ORIGINAL\\PRIMARY\\",
-              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110250.1",
-              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110250.1.dcm"
-            },
-            {
-              "columns": 1914,
-              "rows": 2294,
               "instanceNumber": "3",
               "photometricInterpretation": "MONOCHROME1",
               "bitAllocated": 16,
@@ -81,6 +49,38 @@
               "imageType": "ORIGINAL\\PRIMARY\\",
               "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110513.5",
               "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110513.5.dcm"
+            },
+            {
+              "columns": 1914,
+              "rows": 2294,
+              "instanceNumber": "4",
+              "photometricInterpretation": "MONOCHROME1",
+              "bitAllocated": 16,
+              "bitsStored": 14,
+              "pixelRepresentation": 0,
+              "samplesPerPixel": 1,
+              "highBit": 13,
+              "rescaleSlope": "1",
+              "rescaleIntercept": "0",
+              "imageType": "ORIGINAL\\PRIMARY\\",
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110601.7",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110601.7.dcm"
+            },
+            {
+              "columns": 1914,
+              "rows": 2294,
+              "instanceNumber": "1",
+              "photometricInterpretation": "MONOCHROME1",
+              "bitAllocated": 16,
+              "bitsStored": 14,
+              "pixelRepresentation": 0,
+              "samplesPerPixel": 1,
+              "highBit": 13,
+              "rescaleSlope": "1",
+              "rescaleIntercept": "0",
+              "imageType": "ORIGINAL\\PRIMARY\\",
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.16050010109110250.1",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.16050010109110250.1.dcm"
             }
           ]
         },
@@ -108,22 +108,6 @@
               "imageType": "ORIGINAL\\PRIMARY\\",
               "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110300.85",
               "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110300.85.dcm"
-            },
-            {
-              "columns": 1914,
-              "rows": 2294,
-              "instanceNumber": "3",
-              "photometricInterpretation": "MONOCHROME2",
-              "bitAllocated": 16,
-              "bitsStored": 12,
-              "pixelRepresentation": 0,
-              "samplesPerPixel": 1,
-              "highBit": 11,
-              "rescaleSlope": "1",
-              "rescaleIntercept": "0",
-              "imageType": "ORIGINAL\\PRIMARY\\",
-              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110523.89",
-              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110523.89.dcm"
             },
             {
               "columns": 1914,
@@ -156,6 +140,22 @@
               "imageType": "ORIGINAL\\PRIMARY\\",
               "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110610.91",
               "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110610.91.dcm"
+            },
+            {
+              "columns": 1914,
+              "rows": 2294,
+              "instanceNumber": "3",
+              "photometricInterpretation": "MONOCHROME2",
+              "bitAllocated": 16,
+              "bitsStored": 12,
+              "pixelRepresentation": 0,
+              "samplesPerPixel": 1,
+              "highBit": 11,
+              "rescaleSlope": "1",
+              "rescaleIntercept": "0",
+              "imageType": "ORIGINAL\\PRIMARY\\",
+              "sopInstanceUid": "1.2.840.113619.2.66.2158408118.2683010109110523.89",
+              "url": "dicomweb://s3.amazonaws.com/lury/MGStudy/1.2.840.113619.2.66.2158408118.2683010109110523.89.dcm"
             }
           ]
         }
