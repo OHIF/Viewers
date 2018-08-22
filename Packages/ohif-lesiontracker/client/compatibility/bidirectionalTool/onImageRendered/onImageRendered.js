@@ -65,10 +65,16 @@ export default function(event) {
             color = cornerstoneTools.toolColors.getToolColor();
         }
 
-        // draw the line
-        const handleStartCanvas = cornerstone.pixelToCanvas(element, start);
-        const handleEndCanvas = cornerstone.pixelToCanvas(element, end);
-        const canvasTextLocation = cornerstone.pixelToCanvas(element, textBox);
+        // Update the perpendicular handles to draw it correctly
+        updatePerpendicularLineHandles(eventData, data);
+
+        // Draw the line
+        const { pixelToCanvas } = cornerstone;
+        const handleStartCanvas = pixelToCanvas(element, start);
+        const handleEndCanvas = pixelToCanvas(element, end);
+        const handlePerpendicularStartCanvas = pixelToCanvas(element, perpendicularStart);
+        const handlePerpendicularEndCanvas = pixelToCanvas(element, perpendicularEnd);
+        const canvasTextLocation = pixelToCanvas(element, textBox);
 
         context.beginPath();
         context.strokeStyle = color;
@@ -78,7 +84,6 @@ export default function(event) {
         context.stroke();
 
         // Draw perpendicular line
-        updatePerpendicularLineHandles(eventData, data);
         drawPerpendicularLine(context, element, data, color, strokeWidth);
 
         // Draw the handles
@@ -144,7 +149,29 @@ export default function(event) {
                 y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
             };
 
-            const points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
+            // Check if the perpendicular line has some length (start and end are not equal)
+            // Note: this check is needed to prevent NaN value on the intersection result
+            const { distance } = cornerstoneMath.point;
+            const lineHasLength = distance(perpendicularLine.start, perpendicularLine.end) > 0;
+
+            // Define the lines intersection point
+            let linesIntersection;
+            if (lineHasLength) {
+                // As the line has length, define it as the intersection between the lines
+                const { intersectLine } = cornerstoneMath.lineSegment;
+                linesIntersection = intersectLine(longLine, perpendicularLine);
+            } else {
+                // As the line has no length, the tool is in its start position
+                linesIntersection = longLine.start;
+            }
+
+            const points = [
+                handleStartCanvas,
+                handleEndCanvas,
+                handlePerpendicularStartCanvas,
+                handlePerpendicularEndCanvas,
+                linesIntersection
+            ];
 
             link.end.x = canvasTextLocation.x;
             link.end.y = canvasTextLocation.y;
