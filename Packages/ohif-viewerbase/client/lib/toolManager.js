@@ -1,26 +1,21 @@
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
-import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
-import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
-import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
-import { crosshairsSynchronizers } from './crosshairsSynchronizers';
-import { annotateTextUtils } from './annotateTextUtils';
-import { textMarkerUtils } from './textMarkerUtils';
-import { isTouchDevice } from './helpers/isTouchDevice';
 
+let activeTool;
+let tools = [];
+let initialized = false;
 let defaultTool = {
     left: 'wwwc',
     right: 'zoom',
     middle: 'pan'
 };
-let activeTool;
-
-let tools = [];
-
-let initialized = false;
+const buttonNum = {
+    'left': 1,
+    'right': 4,
+    'middle': 2
+};
 
 /**
  * Exported "toolManager" Singleton
@@ -68,6 +63,10 @@ export const toolManager = {
         return Object.keys(object).filter(key => object[key] === value);
     },
 
+    getMouseButtonMask(button) {
+        return buttonNum[button] || undefined;
+    },
+
     configureLoadProcess() {
         // Whenever CornerstoneImageLoadProgress is fired, identify which viewports
         // the "in-progress" image is to be displayed in. Then pass the percent complete
@@ -92,12 +91,20 @@ export const toolManager = {
         return tools;
     },
 
-    setActiveTool(toolName, button = 1) {
+    setActiveTool(toolName, button = 'left') {
+        let options = {};
+        const mouseButtonMask = toolManager.getMouseButtonMask(button);
+        if (mouseButtonMask) {
+            options = {
+                mouseButtonMask
+            }
+        }
+
         toolManager.setAllToolsPassive();
-        toolManager.cTools.setToolActive(toolName, { mouseButtonMask: button });
+        toolManager.cTools.setToolActive(toolName, options);
 
         // TODO: add the active tool with the correct button
-        activeTool['left'] = toolName;
+        activeTool[button] = toolName;
 
         // Enable reactivity
         Session.set('ToolManagerActiveToolUpdated', Random.id());
@@ -119,11 +126,11 @@ export const toolManager = {
         toolManager.setAllToolsPassive();
     },
 
-    getNearbyToolData(element, coords, toolTypes) {
+    getNearbyToolData() {
         return undefined;
     },
 
-    getActiveTool(button) {
+    getActiveTool(button = 'left') {
         if (!initialized) {
             toolManager.init();
         }
@@ -133,29 +140,14 @@ export const toolManager = {
             activeTool = defaultTool;
         }
 
-        // If button is not defined, we should consider it left
-        if (!button) {
-            button = 'left';
-        }
-
         return activeTool[button];
     },
 
-    setDefaultTool(tool, button) {
-        // If button is not defined, we should consider it left
-        if (!button) {
-            button = 'left';
-        }
-
+    setDefaultTool(tool, button = 'left') {
         defaultTool[button] = tool;
     },
 
-    getDefaultTool(button) {
-        // If button is not defined, we should consider it left
-        if (!button) {
-            button = 'left';
-        }
-
+    getDefaultTool(button = 'left') {
         return defaultTool[button];
     },
 
