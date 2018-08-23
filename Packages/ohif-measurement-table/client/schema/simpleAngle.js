@@ -8,6 +8,10 @@ const handlesSchema = new SimpleSchema({
         type: CornerstoneHandleSchema,
         label: 'Start'
     },
+    middle: {
+        type: CornerstoneHandleSchema,
+        label: 'Middle'
+    },
     end: {
         type: CornerstoneHandleSchema,
         label: 'End'
@@ -40,29 +44,29 @@ const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasu
     toolType: {
         type: String,
         label: 'Measurement Tool Type',
-        defaultValue: 'length'
+        defaultValue: 'simpleAngle'
     },
-    length: {
+    rAngle: {
         type: Number,
-        label: 'Length',
+        label: 'Angle',
         optional: true,
         decimal: true
     }
 }]);
 
 const displayFunction = data => {
-    let lengthValue = '';
-    if (data.length) {
-        lengthValue = data.length.toFixed(2) + ' mm';
+    let text = '';
+    if (data.rAngle) {
+        text = data.rAngle.toFixed(2) + ' t';
     }
-    return lengthValue;
+    return text;
 };
 
 export default {
-    id: 'length',
-    name: 'Length',
+    id: 'simpleAngle',
+    name: 'SimpleAngle',
     toolGroup: 'allTools',
-    cornerstoneToolType: 'length',
+    cornerstoneToolType: 'simpleAngle',
     schema: toolSchema,
     options: {
         measurementTable: {
