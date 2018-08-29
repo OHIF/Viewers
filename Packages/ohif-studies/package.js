@@ -4,6 +4,10 @@ Package.describe({
     version: '0.0.1'
 });
 
+Npm.depends({
+    dimse: '0.0.1'
+})
+
 Package.onUse(function(api) {
     api.versionsFrom('1.6');
 
@@ -20,7 +24,6 @@ Package.onUse(function(api) {
         'ohif:core',
         'ohif:log',
         'ohif:servers',
-        'ohif:dicom-services',
         'ohif:dicomweb-client',
         'ohif:viewerbase',
         'ohif:wadoproxy'
