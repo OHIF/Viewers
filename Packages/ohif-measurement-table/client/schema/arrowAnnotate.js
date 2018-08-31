@@ -40,29 +40,24 @@ const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasu
     toolType: {
         type: String,
         label: 'Measurement Tool Type',
-        defaultValue: 'length'
+        defaultValue: 'arrowAnnotate'
     },
-    length: {
-        type: Number,
-        label: 'Length',
-        optional: true,
-        decimal: true
+    text: {
+        type: String,
+        label: 'text',
+        optional: true
     }
 }]);
 
 const displayFunction = data => {
-    let lengthValue = '';
-    if (data.length) {
-        lengthValue = data.length.toFixed(2) + ' mm';
-    }
-    return lengthValue;
+    return data.text || '';
 };
 
 export default {
-    id: 'length',
-    name: 'Length',
+    id: 'arrowAnnotate',
+    name: 'ArrowAnnotate',
     toolGroup: 'allTools',
-    cornerstoneToolType: 'length',
+    cornerstoneToolType: 'arrowAnnotate',
     schema: toolSchema,
     options: {
         measurementTable: {
