@@ -400,7 +400,6 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             const element = (eventData && eventData.element) || (event && event.currentTarget);
             if (!element) return;
             const $element = $(element);
-            $element.focus();
 
             // Stop here if we don't have eventData set
             if (!eventData) return;
@@ -410,6 +409,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // If it was, no changes are necessary, so stop here.
             const activeViewportIndex = Session.get('activeViewport');
             if (viewportIndex === activeViewportIndex) return;
+            
+            $element.focus();
 
             OHIF.log.info('imageViewerViewport sendActivationTrigger');
 
