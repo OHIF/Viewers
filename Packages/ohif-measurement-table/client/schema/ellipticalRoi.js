@@ -3,7 +3,7 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
-const EllipticalRoiHandlesSchema = new SimpleSchema({
+const handlesSchema = new SimpleSchema({
     start: {
         type: CornerstoneHandleSchema,
         label: 'Start'
@@ -42,9 +42,9 @@ const MeanStdDevSchema = new SimpleSchema({
 
 });
 
-const EllipticalRoiSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
+const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
     handles: {
-        type: EllipticalRoiHandlesSchema,
+        type: handlesSchema,
         label: 'Handles'
     },
     measurementNumber: {
@@ -90,12 +90,12 @@ const displayFunction = data => {
     //return data.meanStdDev.mean.toFixed(2);
 };
 
-export const ellipticalRoi = {
+export default {
     id: 'ellipticalRoi',
     name: 'Ellipse',
     toolGroup: 'allTools',
     cornerstoneToolType: 'ellipticalRoi',
-    schema: EllipticalRoiSchema,
+    schema: toolSchema,
     options: {
         measurementTable: {
             displayFunction

@@ -3,7 +3,7 @@ import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/both/schema/mea
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;
 
-const RectangleRoiHandlesSchema = new SimpleSchema({
+const handlesSchema = new SimpleSchema({
     start: {
         type: CornerstoneHandleSchema,
         label: 'Start'
@@ -42,9 +42,9 @@ const MeanStdDevSchema = new SimpleSchema({
 
 });
 
-const RectangleRoiSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
+const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
     handles: {
-        type: RectangleRoiHandlesSchema,
+        type: handlesSchema,
         label: 'Handles'
     },
     measurementNumber: {
@@ -87,12 +87,12 @@ const displayFunction = data => {
     return meanValue;
 };
 
-export const rectangleRoi = {
+export default {
     id: 'rectangleRoi',
     name: 'Rectangle',
     toolGroup: 'allTools',
     cornerstoneToolType: 'rectangleRoi',
-    schema: RectangleRoiSchema,
+    schema: toolSchema,
     options: {
         measurementTable: {
             displayFunction
