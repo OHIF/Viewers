@@ -5,6 +5,8 @@ Router.configure({
     layoutTemplate: 'layout',
 });
 
+// TODO: Allow client-only use of the viewer
+// by removing this.
 Router.waitOn(function() {
     return [
         Meteor.subscribe('servers'),

@@ -47,8 +47,8 @@ ohif:metadata
 
 # Necessary for Lesion Trakcer
 ohif:lesiontracker
-ohif:user
 ohif:user-management
+ohif:user-meteor-accounts
 ohif:select-tree
 
 accounts-base@1.4.2

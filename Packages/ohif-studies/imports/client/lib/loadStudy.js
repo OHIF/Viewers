@@ -32,11 +32,14 @@ OHIF.studies.loadStudy = studyInstanceUid => new Promise((resolve, reject) => {
     }
 
     return OHIF.studies.retrieveStudyMetadata(studyInstanceUid).then(study => {
-        if (window.HipaaLogger && Meteor.user && Meteor.user()) {
+        if (window.HipaaLogger &&
+            OHIF.user &&
+            OHIF.user.userLoggedIn &&
+            OHIF.user.userLoggedIn()) {
             window.HipaaLogger.logEvent({
                 eventType: 'viewed',
-                userId: Meteor.userId(),
-                userName: Meteor.user().profile.fullName,
+                userId: OHIF.user.getUserId(),
+                userName: OHIF.user.getName(),
                 collectionName: 'Study',
                 recordId: studyInstanceUid,
                 patientId: study.patientId,

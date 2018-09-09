@@ -3,7 +3,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 // Throw error if there is no user logged in
 OHIF.user.validate = () => {
-    if (!Meteor.userId()) {
+    if (!OHIF.user.userLoggedIn()) {
         throw new Meteor.Error('not-authorized');
     }
 };

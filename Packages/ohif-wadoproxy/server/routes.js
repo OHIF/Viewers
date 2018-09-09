@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/clinical:router';
-import { Accounts } from 'meteor/accounts-base';
 import { OHIF } from 'meteor/ohif:core';
 import { Servers } from 'meteor/ohif:servers/both/collections';
 
@@ -9,23 +8,17 @@ const http = require('http');
 const https = require('https');
 const now = require('performance-now');
 
-const doAuth = Meteor.users.find().count() ? true : false;
+// The WADO Proxy can perform user authentication if desired.
+// In order to use this, create a function to override
+// OHIF.user.authenticateUser(request), which returns a Boolean.
+let doAuth = false;
+let authenticateUser = null;
 
-const authenticateUser = request => {
-    // Only allow logged-in users to access this route
-    const userId = request.headers['x-user-id'];
-    const loginToken = request.headers['x-auth-token'];
-    if (!userId || !loginToken) {
-        return;
-    }
-
-    const hashedToken = Accounts._hashLoginToken(loginToken);
-
-    return Meteor.users.findOne({
-        _id: userId,
-        'services.resume.loginTokens.hashedToken': hashedToken
-    });
-};
+if (OHIF.user &&
+    OHIF.user.authenticateUser) {
+    doAuth = true;
+    authenticateUser = OHIF.user.authenticateUser;
+}
 
 const handleRequest = function() {
   const request = this.request;

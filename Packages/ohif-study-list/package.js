@@ -14,17 +14,16 @@ Package.onUse(function(api) {
 
     api.use('ecmascript');
     api.use('standard-app-packages');
-    api.use('jquery');
-    api.use('stylus');
-    api.use('http');
-    api.use('random');
-    api.use('silentcicero:jszip');
+    api.use('jquery', 'client');
+    api.use('stylus', 'client');
+    api.use('http', 'client');
+    api.use('random', 'client');
+    api.use('silentcicero:jszip', 'client');
     api.use('aldeed:simple-schema');
-    api.use('accounts-base');
     api.use('aldeed:collection2');
 
     // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
-    api.use('momentjs:moment');
+    api.use('momentjs:moment', 'client');
 
     // Our custom packages
     api.use('ohif:design');

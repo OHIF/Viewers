@@ -42,9 +42,6 @@ Package.onUse(function(api) {
     // Client imports and routes
     api.addFiles('client/index.js', 'client');
 
-    // Server imports and methods
-    api.addFiles('server/index.js', 'server');
-
     // Client and server imports
     api.addFiles('both/index.js', ['client', 'server']);
 

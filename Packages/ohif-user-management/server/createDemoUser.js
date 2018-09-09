@@ -41,4 +41,3 @@ Meteor.startup(function() {
     createDemoUser();
 
 });
-
