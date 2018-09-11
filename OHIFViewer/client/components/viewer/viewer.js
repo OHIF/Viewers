@@ -64,7 +64,8 @@ Meteor.startup(() => {
         invert: viewportUtils.invert,
         seed: () => {
             OHIF.viewerbase.toolManager.setActiveTool('seed');
-        }
+        },
+        render3D: viewportUtils.render3D
     };
 
     OHIF.viewer.stackImagePositionOffsetSynchronizer = new OHIF.viewerbase.StackImagePositionOffsetSynchronizer();

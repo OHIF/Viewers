@@ -3,6 +3,10 @@ import 'meteor/fds:threejs';
 import 'meteor/polguixe:meteor-datgui';
 import { $ } from 'meteor/jquery';
 import { EffectController } from "./EffectController";
+import { Meteor } from 'meteor/meteor';
+import { OHIF } from 'meteor/ohif:core';
+import {Session} from "meteor/session";
+import { getElementIfNotEmpty } from "../../../lib/getElementIfNotEmpty";
 
 var scene, camera, renderer, controls;
 var texture, geometry, material, plane, geometry2, material2, sphere2, edges;
@@ -206,7 +210,7 @@ function onMouseMove(event) {
 
 function onImage2DRendered(e) {
     if (hasGeometry) {
-        const eventData = e.detail;
+        const eventData = e.originalEvent.detail;
 
         // set the canvas context to the image coordinate system
         cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
@@ -254,7 +258,7 @@ function init() {
     raycaster =  new THREE.Raycaster();
     effectController = new EffectController(0, false, 1.0, 1);
     selectionMode = false;
-    hasGeometry = true;
+    hasGeometry = false;
     lengthX = lengthY = lengthZ = 0.0;
     originX = originY = originZ = Number.POSITIVE_INFINITY;
 
@@ -326,28 +330,6 @@ function init() {
     // scene.add(sphere2);
     // objects.push(sphere2);
 
-    var loader = new THREE.VTKLoader();
-    loader.load("/artery.vtk", function (geometry) {
-        geometry.computeVertexNormals();
-        //geometry.applyMatrix(mS);
-        //geometry.center();
-        computeScale(geometry);
-        var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.updateMatrixWorld();
-        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
-        // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
-        // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
-        // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
-        mesh.name = "volume3D";
-        scene.add(mesh);
-        objects.push(mesh);
-        hasGeometry = hasGeometry || true;
-        geometry.computeBoundingBox();
-        var helper = new THREE.BoxHelper( mesh, 0xffff00 );
-        scene.add( helper );
-    });
-
     // loader.load("/colon.vtk", function (geometry) {
     //     geometry.computeVertexNormals();
     //     console.log("colon");
@@ -384,7 +366,7 @@ function init() {
     // });
 
     setArrowHelper();
-    document.getElementsByClassName("imageViewerViewport").item(0).addEventListener('cornerstoneimagerendered', onImage2DRendered);
+    //document.getElementsByClassName("imageViewerViewport").item(0).addEventListener('cornerstoneimagerendered', onImage2DRendered);
 }
 
 function animate() {
@@ -397,7 +379,96 @@ function render() {
     renderer.render( scene, camera );
 }
 
-Template.viewer3D.onRendered(() => {
+function parentTemplate(v, levels) {
+    var view = v;
+    if (typeof levels === "undefined") {
+        levels = 1;
+    }
+    while (view) {
+        if (view.name.substring(0, 9) === "Template." && !(levels--)) {
+            return view.templateInstance();
+        }
+        view = view.parentView;
+    }
+}
+
+function parseResponse( data ) {
+
+    var indices = [];
+    var positions = [];
+
+    var result;
+
+    // float float float
+
+    var pat3Floats = /([\-]?[\d]+[\.]?[\d|\-|e]*)[ ]+([\-]?[\d]+[\.]?[\d|\-|e]*)[ ]+([\-]?[\d]+[\.]?[\d|\-|e]*)/g;
+    var patTriangle = /^3[ ]+([\d]+)[ ]+([\d]+)[ ]+([\d]+)/;
+    var patQuad = /^4[ ]+([\d]+)[ ]+([\d]+)[ ]+([\d]+)[ ]+([\d]+)/;
+    var patPOINTS = /^POINTS /;
+    var patPOLYGONS = /^POLYGONS /;
+    var inPointsSection = false;
+    var inPolygonsSection = false;
+
+    var lines = data.split('\n');
+    for ( var i = 0; i < lines.length; ++i ) {
+
+        line = lines[i];
+
+        if ( inPointsSection ) {
+
+            // get the vertices
+
+            while ( ( result = pat3Floats.exec( line ) ) !== null ) {
+                positions.push( parseFloat( result[ 1 ] ), parseFloat( result[ 2 ] ), parseFloat( result[ 3 ] ) );
+            }
+        }
+        else if ( inPolygonsSection ) {
+
+            result = patTriangle.exec(line);
+
+            if ( result !== null ) {
+
+                // 3 int int int
+                // triangle
+
+                indices.push( parseInt( result[ 1 ] ), parseInt( result[ 2 ] ), parseInt( result[ 3 ] ) );
+            }
+            else {
+
+                result = patQuad.exec(line);
+
+                if ( result !== null ) {
+
+                    // 4 int int int int
+                    // break quad into two triangles
+
+                    indices.push( parseInt( result[ 1 ] ), parseInt( result[ 2 ] ), parseInt( result[ 4 ] ) );
+                    indices.push( parseInt( result[ 2 ] ), parseInt( result[ 3 ] ), parseInt( result[ 4 ] ) );
+                }
+
+            }
+
+        }
+
+        if ( patPOLYGONS.exec(line) !== null ) {
+            inPointsSection = false;
+            inPolygonsSection = true;
+        }
+        if ( patPOINTS.exec(line) !== null ) {
+            inPolygonsSection = false;
+            inPointsSection = true;
+        }
+    }
+
+    var geometry = new THREE.BufferGeometry();
+    geometry.setIndex( new THREE.BufferAttribute( new ( indices.length > 65535 ? Uint32Array : Uint16Array )( indices ), 1 ) );
+    geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( positions ), 3 ) );
+
+    return geometry;
+
+}
+
+Template.viewer3D.onRendered(function () {
 
     if ( ! Detector.webgl ) {
         Detector.addGetWebGLMessage();
@@ -405,6 +476,72 @@ Template.viewer3D.onRendered(() => {
         init();
         animate();
     }
+
+    var element = parentTemplate(this.view);
+    element = element.findAll('.imageViewerViewport');
+    var $element = $(element);
+
+    $element.off('cornerstoneimagerendered', onImage2DRendered);
+    $element.on('cornerstoneimagerendered', onImage2DRendered);
+
+    $element.on('OHIFActivateViewport', function (event) {
+        const element = event.currentTarget;
+        const $element = $(element);
+        $element.off('cornerstoneimagerendered', onImage2DRendered);
+        $element.on('cornerstoneimagerendered', onImage2DRendered);
+    });
+
+    const viewportIndex = Session.get('activeViewport') || 0;
+    let activeElement = getElementIfNotEmpty(viewportIndex)
+
+    $element = $(activeElement);
+
+    $element.on('Render3D', function (event) {
+
+        Meteor.call('RenderSerie', event.studyId, event.serieId, function (error, response) {
+
+            if (error) {
+                const errorType = error.error;
+                let errorMessage = '';
+
+                if (errorType === 'server-connection-error') {
+                    errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.';
+                } else if (errorType === 'server-internal-error') {
+                    errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
+                } else {
+                    errorMessage = `For some reason we could not retrieve the study\'s metadata for ${event.studyId}.`;
+                }
+
+                OHIF.log.error(errorMessage);
+                OHIF.log.error(error.stack);
+                return;
+            }
+
+            let geometry = parseResponse( response.content );
+
+
+            geometry.computeVertexNormals();
+            //geometry.applyMatrix(mS);
+            //geometry.center();
+            computeScale(geometry);
+            var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
+            scene.remove(scene.getObjectByName("volume3D"));
+            var mesh = new THREE.Mesh(geometry, material);
+            mesh.updateMatrixWorld();
+            mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
+            // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
+            // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
+            // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
+            mesh.name = "volume3D";
+
+            scene.add(mesh);
+            objects.push(mesh);
+            hasGeometry = hasGeometry || true;
+            geometry.computeBoundingBox();
+            var helper = new THREE.BoxHelper( mesh, 0xffff00 );
+            scene.add( helper );
+        });
+    });
 
     canvas.addEventListener('mousemove', onMouseMove, false);
     canvas.addEventListener('click', onMouseClick, false);

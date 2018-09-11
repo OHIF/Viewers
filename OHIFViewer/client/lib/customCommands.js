@@ -8,10 +8,17 @@ Meteor.startup(() => {
     const contextName = 'viewer';
 
     // Enable the custom tools
-    const customTools = [{
-        id: 'seed',
-        name: 'Seed'
-    }];
+    const customTools = [
+        {
+            id: 'seed',
+            name: 'Seed'
+        },
+        {
+            id: 'render3D',
+            name: 'render3D',
+            action: OHIF.viewerbase.viewportOverlayUtils.render3D
+        }
+    ];
     customTools.forEach(tool => {
         _.defaults(OHIF.hotkeys.defaults.viewer, { [tool.id]: '' });
         OHIF.commands.register(contextName, tool.id, {

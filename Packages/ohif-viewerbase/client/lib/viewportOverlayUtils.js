@@ -1,4 +1,7 @@
 import { getElementIfNotEmpty } from './getElementIfNotEmpty';
+import { OHIF } from 'meteor/ohif:core';
+import {Session} from "meteor/session";
+import { $ } from 'meteor/jquery';
 
 const getPatient = function(property) {
     if (!this.imageId) {
@@ -85,6 +88,26 @@ const getImage = function(viewportIndex) {
     return enabledElement.image;
 };
 
+const render3D = () => {
+    const viewportIndex = Session.get('activeViewport') || 0;
+    let activeElement = getElementIfNotEmpty(viewportIndex)
+    let element = OHIF.viewerbase.viewportUtils.getEnabledElement(activeElement);
+    let e = {imageId: element.image.imageId};
+    let serieInstanceUid = getSeries.call(e, 'seriesInstanceUid');
+    let studyInstanceUid = getStudy.call(e, 'studyInstanceUid');
+
+    let eventData = {studyId: studyInstanceUid, serieId: serieInstanceUid};
+
+    const customEvent = $.Event("Render3D", eventData);
+
+    customEvent.type = 'Render3D';
+
+    const $element = $(activeElement);
+    $element.trigger(customEvent, eventData);
+}
+
+
+
 const formatDateTime = (date, time) => `${date} ${time}`;
 
 const viewportOverlayUtils = {
@@ -94,7 +117,8 @@ const viewportOverlayUtils = {
     getInstance,
     getTagDisplay,
     getImage,
-    formatDateTime
+    formatDateTime,
+    render3D
 };
 
 export { viewportOverlayUtils };

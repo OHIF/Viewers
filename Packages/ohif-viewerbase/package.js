@@ -209,6 +209,7 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/viewer/windowLevelPresets/form.html', 'client');
     api.addFiles('client/components/viewer/windowLevelPresets/form.js', 'client');
+    api.addFiles('server/components/viewer/viewer3D/viewer3D.js', 'server');
 
     api.export('dialogPolyfill', 'client');
 

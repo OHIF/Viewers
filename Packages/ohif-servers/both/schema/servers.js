@@ -55,6 +55,11 @@ export const DICOMWebServer = new SimpleSchema({
         label: 'WADO root',
         max: 1000
     },
+    vtkRoot: {
+        type: String,
+        label: 'VTK root',
+        max: 1000
+    },
     imageRendering: {
         type: String,
         label: 'Image rendering',

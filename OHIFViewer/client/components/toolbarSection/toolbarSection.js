@@ -185,6 +185,20 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-angle-left'
         });
 
+        mainTools.push({
+            id: 'seed',
+            title: 'Seed',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-paint-brush'
+        });
+
+        mainTools.push({
+            id: 'resetViewport',
+            title: 'Reset',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-undo'
+        });
+
         buttonData.push({
             id: 'main-tools',
             title: 'Main tools',
@@ -193,19 +207,6 @@ Template.toolbarSection.helpers({
             subTools: mainTools
         });
 
-        buttonData.push({
-            id: 'resetViewport',
-            title: 'Reset',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-undo'
-        });
-
-        buttonData.push({
-            id: 'seed',
-            title: 'Seed',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-paint-brush'
-        });
 
         if (!OHIF.uiSettings.displayEchoUltrasoundWorkflow) {
 
@@ -254,6 +255,13 @@ Template.toolbarSection.helpers({
             classes: 'rp-x-1 rm-l-3',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-more',
             subTools: extraTools
+        });
+
+        buttonData.push({
+           id: 'render3D',
+           title: 'View 3D',
+           iconClasses: 'fa fa-eye',
+           classes: 'imageViewerCommand'
         });
 
         return buttonData;
