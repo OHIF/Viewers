@@ -49,8 +49,6 @@ Template.timeoutCountdownDialog.onRendered(() => {
     instance.interval = setInterval(() => {
         Session.set('countdownDialogTimeLeft', --timeLeft);
         if (!timeLeft) {
-            // Remove reviewer info for the user
-            Meteor.call('removeUserFromReviewers', Meteor.userId());
             instance.close(instance.data.promiseReject);
         }
     }, 1000);
