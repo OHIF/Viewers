@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
 
-const { oidcUserManager } = OHIF;
+import oidcUserManager from './oidcUserManager.js';
 
 function signIn() {
     return oidcUserManager.signinRedirect();
@@ -31,7 +31,7 @@ function urlHasSignInResponse() {
     const params = {};
 
     hash.split('&').map(hk => {
-        let temp = hk.split('=');
+        const temp = hk.split('=');
         params[temp[0]] = temp[1]
     });
 
@@ -39,8 +39,6 @@ function urlHasSignInResponse() {
 }
 
 Router.onRun(function() {
-    console.warn('Router onBeforeAction');
-
     const next = this.next;
     getUser().then((user) => {
         const loggedIn = !!user;
@@ -53,7 +51,6 @@ Router.onRun(function() {
             sessionStorage.token = user.access_token;
         }
 
-        console.warn('loggedIn', loggedIn, user);
         const hasSignInResponse = urlHasSignInResponse();
         const hasSignOutResponse = false; //window.location.href.indexOf("?") >= 0;
 
@@ -72,7 +69,6 @@ Router.onRun(function() {
             next();
         }
     }).catch(error => {
-        console.warn(error);
         throw new Error(error);
     })
 });

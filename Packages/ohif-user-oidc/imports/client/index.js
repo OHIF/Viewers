@@ -1,3 +1,3 @@
 import './handlers';
-import './oidcClient.js';
+import './oidcUserManager.js';
 import './routes.js';

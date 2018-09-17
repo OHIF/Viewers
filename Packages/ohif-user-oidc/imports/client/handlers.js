@@ -1,6 +1,8 @@
 import { Meteor } from "meteor/meteor";
 import { OHIF } from 'meteor/ohif:core';
 
+import oidcUserManager from './oidcUserManager.js';
+
 OHIF.user.getAccessToken = async function() {
     const { oidcUserManager } = OHIF;
 
@@ -15,9 +17,9 @@ OHIF.user.getAccessToken = async function() {
 OHIF.user.logout = function oidcLogout() {
     const { oidcUserManager } = OHIF;
 
-    oidcUserManager.signoutRedirect();
-
     delete sessionStorage.token;
+
+    oidcUserManager.signoutRedirect();
 }
 
 OHIF.user.userLoggedIn = () => !!sessionStorage.token;
