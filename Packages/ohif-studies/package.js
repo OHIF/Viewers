@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Npm.depends({
-    dimse: '0.0.1'
+    dimse: '0.0.2'
 })
 
 Package.onUse(function(api) {
