@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { OHIF } from 'meteor/ohif:core';
 import loglevel from 'loglevel';
 
 const defaultLevel = Meteor.isProduction ? 'ERROR' : 'TRACE';
