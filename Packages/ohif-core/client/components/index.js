@@ -1,8 +1,9 @@
 import './base';
 import './bootstrap';
+import './header';
+import './hotkeys';
 import './pages';
 import './paginationArea';
-import './playground/playground.html';
-import './playground/playground.styl';
-import './playground/playground.js';
+import './playground';
 import './scrollArea';
+import './userLogin';

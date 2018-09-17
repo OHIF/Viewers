@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import './log.js';
 
 /*
  * Defines the base OHIF object

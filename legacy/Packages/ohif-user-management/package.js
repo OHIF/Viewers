@@ -27,6 +27,4 @@ Package.onUse(function(api) {
 
     // Client imports
     api.addFiles('client/index.js', 'client');
-
-    api.addFiles('server/createDemoUser.js', [ 'server' ]);
 });
