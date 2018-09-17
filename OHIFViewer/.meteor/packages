@@ -30,15 +30,11 @@ standard-minifier-js@2.3.4
 ohif:polyfill
 ohif:design
 ohif:core
-ohif:commands
-ohif:hotkeys
-ohif:header
 ohif:cornerstone
 ohif:cornerstone-settings
 ohif:viewerbase
 ohif:study-list
 ohif:hanging-protocols
-ohif:metadata
 ohif:user-oidc
 ohif:measurement-table
 

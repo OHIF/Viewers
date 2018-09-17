@@ -16,7 +16,6 @@ Package.onUse(function(api) {
 
     // Our custom packages
     api.use('ohif:core');
-    api.use('ohif:log');
 
     // Client and server imports
     api.addFiles('both/index.js', [ 'client', 'server' ]);
