@@ -36,7 +36,7 @@ export class HotkeysManager {
         return new Promise((resolve, reject) => {
             if (this.storeFunction) {
                 this.storeFunction.call(this, storageKey, definitions).then(resolve).catch(reject);
-            } else if (Meteor.userId()) {
+            } else if (OHIF.user.userLoggedIn()) {
                 OHIF.user.setData(storageKey, definitions).then(resolve).catch(reject);
             } else {
                 Session.setPersistent(storageKey, definitions);
