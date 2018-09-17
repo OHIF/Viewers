@@ -1,6 +1,6 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
-import { CommandsManager } from 'meteor/ohif:commands/client/classes/CommandsManager';
+import { CommandsManager } from './classes/CommandsManager';
 
 // Create context namespace using a ReactiveVar
 const context = new ReactiveVar(null);
