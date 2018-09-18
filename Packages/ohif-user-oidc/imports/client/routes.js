@@ -4,12 +4,36 @@ import { OHIF } from 'meteor/ohif:core';
 
 import oidcUserManager from './oidcUserManager.js';
 
-function signIn() {
-    return oidcUserManager.signinRedirect();
+/**
+ * Trigger a redirect to the OpenID Connect client Sign In page.
+ *
+ * @param {Object} args Arguments to UserManager.signinRedirect
+ * @return {Promise}
+ */
+function signIn(args) {
+    return oidcUserManager.signinRedirect(args);
 }
 
-function processSignInResponse() {
+/**
+ *
+ */
+function removeHash () {
+    history.pushState("", document.title, window.location.pathname
+        + window.location.search);
+}
+
+
+/**
+ * Handle the response from an OpenID Connect client Sign In page.
+ *
+ * Upon completion, store the user access token in Session Storage
+ * for easy access from the rest of the application.
+ *
+ * @return {Promise}
+ */
+function processSignInResponse(redirect_uri) {
     return oidcUserManager.signinRedirectCallback().then(user => {
+        removeHash();
 
         // TODO: The ohif-dicomweb-client is still looking
         // directly in sessionStorage for the token. We should
@@ -18,14 +42,22 @@ function processSignInResponse() {
     });
 }
 
-function processSignOutResponse() {
-    return oidcUserManager.signoutRedirectCallback();
-}
-
+/**
+ * Retrieve the current User from the oidc-client-js UserManager.
+ *
+ * @return {Promise}
+ */
 function getUser() {
     return oidcUserManager.getUser();
 }
 
+/**
+ * Check if the current window location contains an OAuth
+ * sign-in response.
+ *
+ * @return {boolean} True if the URL contains an OAuth
+ *                   sign-in response (e.g. &state=...)
+ */
 function urlHasSignInResponse() {
     const hash = window.location.hash.substring(1);
     const params = {};
@@ -40,35 +72,13 @@ function urlHasSignInResponse() {
 
 Router.onRun(function() {
     const next = this.next;
-    getUser().then((user) => {
-        const loggedIn = !!user;
+    const redirect_uri = Meteor.absoluteUrl(this.request.url);
 
-        // TODO: This is weird and shouldn't be happening
-        if (loggedIn && !sessionStorage.token) {
-            // TODO: The ohif-dicomweb-client is still looking
-            // directly in sessionStorage for the token. We should
-            // probably stop doing that
-            sessionStorage.token = user.access_token;
-        }
-
-        const hasSignInResponse = urlHasSignInResponse();
-        const hasSignOutResponse = false; //window.location.href.indexOf("?") >= 0;
-
-        // Check if user is signed in
-        if (!loggedIn) {
-            if (hasSignInResponse) {
-                processSignInResponse().then(() => {
-                    next();
-                });
-            } else {
-                signIn();
-            }
-        } else if (loggedIn && hasSignOutResponse) {
-            processSignOutResponse();
-        } else {
-            next();
-        }
-    }).catch(error => {
-        throw new Error(error);
-    })
+    if (OHIF.user.userLoggedIn()) {
+        next()
+    } else if (urlHasSignInResponse() === true) {
+        processSignInResponse().then(next);
+    } else {
+        signIn({ redirect_uri });
+    }
 });
