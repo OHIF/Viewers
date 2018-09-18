@@ -33,13 +33,8 @@ function removeHash () {
  */
 function processSignInResponse(redirect_uri) {
     return oidcUserManager.signinRedirectCallback().then(user => {
-        console.warn(user);
-
         removeHash();
 
-        // TODO: The ohif-dicomweb-client is still looking
-        // directly in sessionStorage for the token. We should
-        // probably stop doing that
         sessionStorage.token = user.access_token;
     });
 }
