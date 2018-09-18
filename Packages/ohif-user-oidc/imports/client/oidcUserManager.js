@@ -13,10 +13,13 @@ if (oidc.length > 1) {
 
 const oidcClient = oidc[0];
 
+const redirect_uri =  Meteor.absoluteUrl(oidcClient.authRedirectUri);
+
 const settings = {
     authority: oidcClient.authServerUrl,
     client_id: oidcClient.clientId,
-    redirect_uri: Meteor.absoluteUrl(oidcClient.authRedirectUri),
+    redirect_uri,
+    silent_redirect_uri: Meteor.absoluteUrl(oidcClient.silentRedirectUri) || redirect_uri,
     post_logout_redirect_uri: Meteor.absoluteUrl(oidcClient.postLogoutRedirectUri),
     response_type: oidcClient.responseType || 'id_token token',
     scope: oidc.scope || 'email profile openid', // Note: Request must have scope 'openid' to be considered an OpenID Connect request

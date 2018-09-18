@@ -9,7 +9,6 @@ OHIF.user.userLoggedIn = () => false;
 OHIF.user.getUserId = () => null;
 OHIF.user.getName = () => null;
 OHIF.user.getAccessToken = () => null;
-OHIF.user.getAccessToken = () => null;
 OHIF.user.login = () => new Promise((resolve, reject) => reject());
 OHIF.user.logout = () => new Promise((resolve, reject) => reject());
 OHIF.user.getData = (key) => null;

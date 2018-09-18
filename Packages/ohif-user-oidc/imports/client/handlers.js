@@ -3,13 +3,12 @@ import { OHIF } from 'meteor/ohif:core';
 
 import oidcUserManager from './oidcUserManager.js';
 
-OHIF.user.getAccessToken = async function() {
-    const user = await oidcUserManager.getUser();
-    if (!user) {
+OHIF.user.getAccessToken = function oidcGetAccessToken() {
+    if (!OHIF.user.userLoggedIn) {
         throw new Error('User is not logged in.');
     }
 
-    return user.accessToken;
+    return sessionStorage.token;
 };
 
 OHIF.user.logout = function oidcLogout() {

@@ -33,6 +33,8 @@ function removeHash () {
  */
 function processSignInResponse(redirect_uri) {
     return oidcUserManager.signinRedirectCallback().then(user => {
+        console.warn(user);
+
         removeHash();
 
         // TODO: The ohif-dicomweb-client is still looking

@@ -22,11 +22,7 @@ Meteor.startup(function() {
 
     cornerstoneWADOImageLoader.configure({
         beforeSend: function(xhr) {
-            const userId = OHIF.user.getUserId();
-
-            // TODO: This is async, but this function is run synchronously
-            //const accessToken = OHIF.user.getAccessToken();
-            const accessToken = sessionStorage.token;
+            const accessToken = OHIF.user.getAccessToken();
 
             if (accessToken) {
                 xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
