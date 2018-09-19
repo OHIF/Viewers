@@ -11,7 +11,8 @@ export class ViewportPlugin extends OHIFPlugin {
 
         this.name = name;
         this._destroyed = false;
-
+        // callbacks for rendering image loading progress.
+        this.callbacks = [];
         this._setupListeners();
     }
 
