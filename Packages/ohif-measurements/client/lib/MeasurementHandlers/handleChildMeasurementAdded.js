@@ -22,13 +22,13 @@ export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) 
     const measurement = {
         toolType: tool.parentTool,
         measurementNumber: measurementData.measurementNumber,
-        userId: Meteor.userId(),
+        userId: OHIF.user.getUserId(),
         patientId: imageAttributes.patientId,
         studyInstanceUid: imageAttributes.studyInstanceUid
     };
 
     const additionalProperties = _.extend(imageAttributes, {
-        userId: Meteor.userId()
+        userId: OHIF.user.getUserId()
     });
 
     const childMeasurement = _.extend({}, measurementData, additionalProperties);

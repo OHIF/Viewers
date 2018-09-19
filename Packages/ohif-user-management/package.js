@@ -23,7 +23,6 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('ohif:design');
     api.use('ohif:core');
-    api.use('ohif:user');
     api.use('ohif:study-list');
 
     // Client imports

@@ -130,8 +130,8 @@ Template.dialogStudyAssociation.onCreated(() => {
             // Log
             hipaaEvent = {
                 eventType: hipaaEventType,
-                userId: Meteor.userId(),
-                userName: Meteor.user().profile.fullName,
+                userId: OHIF.user.getUserId(),
+                userName: OHIF.user.getName(),
                 collectionName: 'Timepoints',
                 recordId: timepointId,
                 patientId: relatedStudies[0].patientId,

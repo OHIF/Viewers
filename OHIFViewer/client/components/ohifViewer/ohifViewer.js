@@ -31,7 +31,7 @@ Template.ohifViewer.onCreated(() => {
         icon: 'fa fa-info'
     }];
 
-    if (Meteor.user()) {
+    if (OHIF.user.userLoggedIn() === true) {
         headerItems.push({
             action: OHIF.user.logout,
             text: 'Logout',

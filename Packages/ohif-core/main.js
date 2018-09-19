@@ -9,7 +9,8 @@ const OHIF = {
     ui: {},
     utils: {},
     viewer: {},
-    cornerstone: {}
+    cornerstone: {},
+    user: {},
 };
 
 // Expose the OHIF object to the client if it is on development mode
