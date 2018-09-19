@@ -5,14 +5,21 @@ Router.configure({
     layoutTemplate: 'layout',
 });
 
-// TODO: Allow client-only use of the viewer
-// by removing this.
-Router.waitOn(function() {
-    return [
-        Meteor.subscribe('servers'),
-        Meteor.subscribe('currentServer')
-    ];
-});
+
+// If we are running a disconnect client similar to the StandaloneViewer
+// (see https://docs.ohif.org/standalone-viewer/usage.html) we don't want
+// our routes to get stuck while waiting for Pub / Sub.
+//
+// In this case, the developer is required to add Servers and specify
+// a CurrentServer with some other approach (e.g. a separate script).
+if (Meteor.status().connected === true) {
+    Router.waitOn(function() {
+        return [
+            Meteor.subscribe('servers'),
+            Meteor.subscribe('currentServer')
+        ];
+    });
+}
 
 Router.onBeforeAction('loading');
 
