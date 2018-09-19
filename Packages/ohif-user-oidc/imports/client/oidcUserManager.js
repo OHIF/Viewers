@@ -59,10 +59,20 @@ OHIF.user.userLoggedIn = () => !!getTokenFromStorage();
 // See https://github.com/IdentityModel/oidc-client-js/wiki for more information
 const oidcUserManager = new Oidc.UserManager(settings);
 
-oidcUserManager.events.addSilentRenewError(function handleSilentRenew(error) {
+const LOGIN_REQUIRED = 'login_required'
+
+function handleSilentRenewError(error) {
     console.error(error);
-    console.warn('silentRenewError')
-    //OHIF.user.logout();
+
+    if (error.error === LOGIN_REQUIRED) {
+        OHIF.user.logout();
+    }
+}
+
+oidcUserManager.events.addSilentRenewError(handleSilentRenewError);
+
+oidcUserManager.events.addAccessTokenExpired(function(){
+    OHIF.user.logout();
 });
 
 export default oidcUserManager;
