@@ -32,10 +32,8 @@ function removeHash () {
  * @return {Promise}
  */
 function processSignInResponse(redirect_uri) {
-    return oidcUserManager.signinRedirectCallback().then(user => {
+    return oidcUserManager.signinRedirectCallback().then(() => {
         removeHash();
-
-        sessionStorage.token = user.access_token;
     });
 }
 

@@ -18,4 +18,8 @@ Package.onUse(function(api) {
 
     // Client imports
     api.mainModule('client/main.js', 'client');
+
+    api.addAssets('public/js/oidc-client.min.js', 'client');
+    api.addAssets('public/js/silentRefresh.js', 'client');
+    api.addAssets('public/silent-refresh.html', 'client');
 });
