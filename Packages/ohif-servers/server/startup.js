@@ -5,30 +5,35 @@ import { Servers } from 'meteor/ohif:servers/both/collections';
 import { ServerConfiguration } from 'meteor/ohif:servers/both/schema/servers.js';
 
 // Check the servers on meteor startup
-Meteor.startup(function() {
-    OHIF.log.info('Updating servers information from JSON configuration');
+if (Meteor.settings &&
+    Meteor.settings.public &&
+    Meteor.settings.public.clientOnly !== true) {
 
-    _.each(Meteor.settings.servers, function(endpoints, serverType) {
-        _.each(endpoints, function(endpoint) {
-            const server = _.clone(endpoint);
-            server.origin = 'json';
-            server.type = serverType;
+    Meteor.startup(function() {
+        OHIF.log.info('Updating servers information from JSON configuration');
 
-            // Try to find a server with the same name/type/origin combination
-            const existingServer = Servers.findOne({
-                name: server.name,
-                type: server.type,
-                origin: server.origin
+        _.each(Meteor.settings.servers, function(endpoints, serverType) {
+            _.each(endpoints, function(endpoint) {
+                const server = _.clone(endpoint);
+                server.origin = 'json';
+                server.type = serverType;
+
+                // Try to find a server with the same name/type/origin combination
+                const existingServer = Servers.findOne({
+                    name: server.name,
+                    type: server.type,
+                    origin: server.origin
+                });
+
+                // Check if server was already added. Update it if so and insert if not
+                if (existingServer) {
+                    Servers.update(existingServer._id, { $set: server });
+                } else {
+                    Servers.insert(server);
+                }
             });
-
-            // Check if server was already added. Update it if so and insert if not
-            if (existingServer) {
-                Servers.update(existingServer._id, { $set: server });
-            } else {
-                Servers.insert(server);
-            }
         });
-    });
 
-    OHIF.servers.control.resetCurrentServer();
-});
+        OHIF.servers.control.resetCurrentServer();
+    });
+}

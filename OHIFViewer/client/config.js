@@ -30,3 +30,9 @@ Meteor.startup(function() {
         }
     });
 });
+
+if (Meteor.settings &&
+    Meteor.settings.public &&
+    Meteor.settings.public.clientOnly === true) {
+    Meteor.disconnect();
+}

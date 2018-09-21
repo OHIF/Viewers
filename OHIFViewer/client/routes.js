@@ -1,3 +1,4 @@
+import { Meteor } from "meteor/meteor";
 import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -12,7 +13,9 @@ Router.configure({
 //
 // In this case, the developer is required to add Servers and specify
 // a CurrentServer with some other approach (e.g. a separate script).
-if (Meteor.settings.public && Meteor.settings.public.clientOnly !== true) {
+if (Meteor.settings &&
+    Meteor.settings.public &&
+    Meteor.settings.public.clientOnly !== true) {
     Router.waitOn(function() {
         return [
             Meteor.subscribe('servers'),
