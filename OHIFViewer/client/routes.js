@@ -6,13 +6,13 @@ Router.configure({
 });
 
 
-// If we are running a disconnect client similar to the StandaloneViewer
+// If we are running a disconnected client similar to the StandaloneViewer
 // (see https://docs.ohif.org/standalone-viewer/usage.html) we don't want
 // our routes to get stuck while waiting for Pub / Sub.
 //
 // In this case, the developer is required to add Servers and specify
 // a CurrentServer with some other approach (e.g. a separate script).
-if (Meteor.status().connected === true) {
+if (Meteor.settings.public && Meteor.settings.public.clientOnly !== true) {
     Router.waitOn(function() {
         return [
             Meteor.subscribe('servers'),

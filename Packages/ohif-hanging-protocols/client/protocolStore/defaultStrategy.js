@@ -303,9 +303,9 @@ var clientOnlyStrategy = (function () {
 // If we are running a disconnect client similar to the StandaloneViewer
 // (see https://docs.ohif.org/standalone-viewer/usage.html) we don't want
 // our HangingProtocol strategy to try to use Meteor methods or Pub / Sub
-if (Meteor.status().connected === true) {
-    HP.ProtocolStore.setStrategy(defaultStrategy);
-} else {
+if (Meteor.settings.public && Meteor.settings.public.clientOnly === true) {
     HP.ProtocolStore.setStrategy(clientOnlyStrategy);
+} else {
+    HP.ProtocolStore.setStrategy(defaultStrategy);
 }
 
