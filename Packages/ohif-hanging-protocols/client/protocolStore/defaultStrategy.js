@@ -1,5 +1,4 @@
 import { Meteor } from "meteor/meteor";
-q
 // The ProtocolStore default strategy is used to persist hanging protocols in
 // the MongoDB collection 'HangingProtocols' in the application server.
 
@@ -11,11 +10,6 @@ var defaultStrategy = (function () {
         console.log('Inserting default protocols');
 
         addProtocol(HP.defaultProtocol);
-
-        //addProtocol(HP.testProtocol);
-        /* HP.demoProtocols.forEach(protocol => {
-            addProtocol(protocol);
-        });*/
     }
 
     function getDatabaseIdByProtocolId(protocolId) {
