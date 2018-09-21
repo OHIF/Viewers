@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
+import { TAPi18n } from 'meteor/tap:i18n';
 
 if (Meteor.isClient) {
     // Disconnect from the Meteor Server since we don't need it
@@ -12,6 +13,7 @@ if (Meteor.isClient) {
     });
 
     Router.onBeforeAction('loading');
+    TAPi18n.setLanguage('es');
 
     Router.route('/:id?', {
         onRun: function() {

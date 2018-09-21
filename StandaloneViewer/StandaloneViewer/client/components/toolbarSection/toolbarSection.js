@@ -22,7 +22,7 @@ Template.toolbarSection.helpers({
                 svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-studies',
                 svgWidth: 15,
                 svgHeight: 13,
-                bottomLabel: 'Series'
+                bottomLabel: TAPi18n.__('Series')
             }]
         };
     },
@@ -38,7 +38,7 @@ Template.toolbarSection.helpers({
                 svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-measurements-lesions',
                 svgWidth: 18,
                 svgHeight: 10,
-                bottomLabel: 'Measurements'
+                bottomLabel: TAPi18n.__('Measurements')
             }]
         };
     },
@@ -48,77 +48,77 @@ Template.toolbarSection.helpers({
 
         extraTools.push({
             id: 'crosshairs',
-            title: 'Crosshairs',
+            title: TAPi18n.__('Crosshairs'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-crosshairs'
         });
 
         extraTools.push({
             id: 'magnify',
-            title: 'Magnify',
+            title: TAPi18n.__('Magnify'),
             classes: 'imageViewerTool toolbarSectionButton',
             iconClasses: 'fa fa-circle'
         });
 
         extraTools.push({
             id: 'wwwcRegion',
-            title: 'ROI Window',
+            title: TAPi18n.__('ROI Window'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-square'
         });
 
         extraTools.push({
             id: 'dragProbe',
-            title: 'Probe',
+            title: TAPi18n.__('Probe'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-dot-circle-o'
         });
 
         extraTools.push({
             id: 'ellipticalRoi',
-            title: 'Ellipse',
+            title: TAPi18n.__('Ellipse'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-circle-o'
         });
 
         extraTools.push({
             id: 'rectangleRoi',
-            title: 'Rectangle',
+            title: TAPi18n.__('Rectangle'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-square-o'
         });
 
         extraTools.push({
             id: 'invert',
-            title: 'Invert',
+            title: TAPi18n.__('Invert'),
             classes: 'imageViewerCommand',
             iconClasses: 'fa fa-adjust'
         });
 
         extraTools.push({
             id: 'rotateR',
-            title: 'Rotate Right',
+            title: TAPi18n.__('Rotate Right'),
             classes: 'imageViewerCommand',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-rotate-right'
         });
 
         extraTools.push({
             id: 'flipH',
-            title: 'Flip H',
+            title: TAPi18n.__('Flip H'),
             classes: 'imageViewerCommand',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-horizontal'
         });
 
         extraTools.push({
             id: 'flipV',
-            title: 'Flip V',
+            title: TAPi18n.__('Flip V'),
             classes: 'imageViewerCommand',
             svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-flip-vertical'
         });
 
         extraTools.push({
             id: 'clearTools',
-            title: 'Clear',
+            title: TAPi18n.__('Clear'),
             classes: 'imageViewerCommand',
             iconClasses: 'fa fa-trash'
         });
@@ -127,56 +127,56 @@ Template.toolbarSection.helpers({
 
         buttonData.push({
             id: 'stackScroll',
-            title: 'Stack Scroll',
+            title: TAPi18n.__('Stack Scroll'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'
         });
 
         buttonData.push({
             id: 'zoom',
-            title: 'Zoom',
+            title: TAPi18n.__('Zoom'),
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-zoom'
         });
 
         buttonData.push({
             id: 'wwwc',
-            title: 'Levels',
+            title: TAPi18n.__('Levels'),
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-levels'
         });
 
         buttonData.push({
             id: 'pan',
-            title: 'Pan',
+            title: TAPi18n.__('Pan'),
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
         });
 
         buttonData.push({
             id: 'length',
-            title: 'Length',
+            title: TAPi18n.__('Length'),
             classes: 'imageViewerTool toolbarSectionButton',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
 
         buttonData.push({
             id: 'annotate',
-            title: 'Annotate',
+            title: TAPi18n.__('Annotate'),
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
         });
 
         buttonData.push({
             id: 'angle',
-            title: 'Angle',
+            title: TAPi18n.__('Angle'),
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-angle-left'
         });
 
         buttonData.push({
             id: 'resetViewport',
-            title: 'Reset',
+            title: TAPi18n.__('Reset'),
             classes: 'imageViewerCommand',
             iconClasses: 'fa fa-undo'
         });
@@ -185,14 +185,14 @@ Template.toolbarSection.helpers({
 
             buttonData.push({
                 id: 'previousDisplaySet',
-                title: 'Previous',
+                title: TAPi18n.__('Previous'),
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-toggle-up fa-fw'
             });
 
             buttonData.push({
                 id: 'nextDisplaySet',
-                title: 'Next',
+                title: TAPi18n.__('Next'),
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-toggle-down fa-fw'
             });
@@ -200,7 +200,7 @@ Template.toolbarSection.helpers({
             const { isPlaying } = OHIF.viewerbase.viewportUtils;
             buttonData.push({
                 id: 'toggleCinePlay',
-                title: () => isPlaying() ? 'Stop' : 'Play',
+                title: () => isPlaying() ? TAPi18n.__('Stop') : TAPi18n.__('Play'),
                 classes: 'imageViewerCommand',
                 iconClasses: () => ('fa fa-fw ' + (isPlaying() ? 'fa-stop' : 'fa-play')),
                 active: isPlaying
@@ -208,7 +208,7 @@ Template.toolbarSection.helpers({
 
             buttonData.push({
                 id: 'toggleCineDialog',
-                title: 'CINE',
+                title: TAPi18n.__('CINE'),
                 classes: 'imageViewerCommand',
                 iconClasses: 'fa fa-youtube-play',
                 active: () => $('#cineDialog').is(':visible')
@@ -217,14 +217,14 @@ Template.toolbarSection.helpers({
 
         buttonData.push({
             id: 'layout',
-            title: 'Layout',
+            title: TAPi18n.__('Layout'),
             iconClasses: 'fa fa-th-large',
             buttonTemplateName: 'layoutButton'
         });
 
         buttonData.push({
             id: 'toggleMore',
-            title: 'More',
+            title: TAPi18n.__('More'),
             classes: 'rp-x-1 rm-l-3',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-more',
             subTools: extraTools
@@ -238,14 +238,14 @@ Template.toolbarSection.helpers({
 
         buttonData.push({
             id: 'previousPresentationGroup',
-            title: 'Prev. Stage',
+            title: TAPi18n.__('Prev. Stage'),
             iconClasses: 'fa fa-step-backward',
             buttonTemplateName: 'previousPresentationGroupButton'
         });
 
         buttonData.push({
             id: 'nextPresentationGroup',
-            title: 'Next Stage',
+            title: TAPi18n.__('Next Stage'),
             iconClasses: 'fa fa-step-forward',
             buttonTemplateName: 'nextPresentationGroupButton'
         });
