@@ -3,7 +3,7 @@ import { OHIF } from 'meteor/ohif:core';
 // import { Servers as ServerSchema } from 'meteor/ohif:servers/both/schema/servers.js';
 
 let collectionName = 'servers';
-if (Meteor.settings.public && Meteor.settings.public.clientOnly === true) {
+if (Meteor.settings && Meteor.settings.public && Meteor.settings.public.clientOnly === true) {
     collectionName = null;
 }
 

@@ -2,7 +2,8 @@
 import { Meteor } from "meteor/meteor";
 import { Servers, CurrentServer } from 'meteor/ohif:servers/both/collections';
 
-if (Meteor.settings.public &&
+if (Meteor.settings &&
+    Meteor.settings.public &&
     Meteor.settings.public.clientOnly === true &&
     Meteor.settings.public.servers) {
     OHIF.log.info('Updating servers information from JSON configuration');

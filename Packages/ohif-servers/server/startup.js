@@ -5,7 +5,8 @@ import { Servers } from 'meteor/ohif:servers/both/collections';
 import { ServerConfiguration } from 'meteor/ohif:servers/both/schema/servers.js';
 
 // Check the servers on meteor startup
-if (Meteor.settings.public &&
+if (Meteor.settings &&
+    Meteor.settings.public &&
     Meteor.settings.public.clientOnly !== true) {
 
     Meteor.startup(function() {

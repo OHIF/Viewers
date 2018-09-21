@@ -1,3 +1,5 @@
+import { Meteor } from "meteor/meteor";
+q
 // The ProtocolStore default strategy is used to persist hanging protocols in
 // the MongoDB collection 'HangingProtocols' in the application server.
 
@@ -303,7 +305,9 @@ var clientOnlyStrategy = (function () {
 // If we are running a disconnect client similar to the StandaloneViewer
 // (see https://docs.ohif.org/standalone-viewer/usage.html) we don't want
 // our HangingProtocol strategy to try to use Meteor methods or Pub / Sub
-if (Meteor.settings.public && Meteor.settings.public.clientOnly === true) {
+if (Meteor.settings &&
+    Meteor.settings.public &&
+    Meteor.settings.public.clientOnly === true) {
     HP.ProtocolStore.setStrategy(clientOnlyStrategy);
 } else {
     HP.ProtocolStore.setStrategy(defaultStrategy);
