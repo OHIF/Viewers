@@ -1,2 +1,2 @@
-import './collections';
+import './startup.js';
 import './components';
