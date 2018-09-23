@@ -15,7 +15,6 @@ Template.studylistResult.helpers({
      */
     studies() {
         const instance = Template.instance();
-        let studies;
         let sortOption = {
             patientName: 1,
             studyDate: 1
@@ -32,7 +31,7 @@ Template.studylistResult.helpers({
         const offset = rowsPerPage * currentPage;
         const limit = offset + rowsPerPage;
 
-        studies = OHIF.studylist.collections.Studies.find({}, {
+        const studies = OHIF.studylist.collections.Studies.find({}, {
             sort: sortOption
         }).fetch();
 
@@ -88,17 +87,6 @@ function getFilter(filter) {
     }
 
     return filter;
-}
-
-/**
- * Search for a value in a string
- */
-function isIndexOf(mainVal, searchVal) {
-    if (mainVal === undefined || mainVal === '' || mainVal.indexOf(searchVal) > -1){
-        return true;
-    }
-
-    return false;
 }
 
 /**
@@ -167,10 +155,21 @@ function search() {
 
         // Loop through all identified studies
         studies.forEach(study => {
+            // TODO: Why is this Modality filter different from QIDO?
+            if (modality !== "" && study.modalities.includes(modality)) {
+                return;
+            }
+
+            // Sometimes DICOM studies have incorrect Date entries with
+            // periods such as '1990.10.04'
+            let studyDate = study.studyDate;
+            if (studyDate && studyDate.includes('.')) {
+                studyDate = studyDate.replace('.', '');
+            }
+
             // Search the rest of the parameters that aren't done via the server call
-            if (isIndexOf(study.modalities, modality) &&
-                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === '') &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
+            if ((new Date(studyDateFrom).setHours(0, 0, 0, 0) <= studyDate || !studyDateFrom ) &&
+                (studyDate <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : undefined;

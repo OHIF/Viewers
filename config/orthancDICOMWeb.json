@@ -6,7 +6,7 @@
         "wadoUriRoot": "http://localhost:8042/wado",
         "qidoRoot": "http://localhost:8042/dicom-web",
         "wadoRoot": "http://localhost:8042/dicom-web",
-        "qidoSupportsIncludeField": false,
+        "qidoSupportsIncludeField": true,
         "imageRendering": "wadouri",
         "thumbnailRendering": "wadouri",
         "requestOptions": {

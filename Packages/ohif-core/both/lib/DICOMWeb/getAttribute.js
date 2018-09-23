@@ -5,7 +5,7 @@
  * @param [defaultValue] - The value to return if the element is not present
  * @returns {*}
  */
-const getAttribute = function(element, defaultValue) {
+export default function getAttribute(element, defaultValue) {
     if (!element) {
         return defaultValue;
     }
@@ -42,5 +42,3 @@ function convertToInt(input) {
 
     return parseInt(output, 16);
 }
-
-export default getAttribute;

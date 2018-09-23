@@ -9,7 +9,7 @@ Npm.depends({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
     api.use('standard-app-packages');

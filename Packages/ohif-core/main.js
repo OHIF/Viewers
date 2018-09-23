@@ -11,6 +11,7 @@ const OHIF = {
     viewer: {},
     cornerstone: {},
     user: {},
+    DICOMWeb: {}, // Temporarily added
 };
 
 // Expose the OHIF object to the client if it is on development mode
