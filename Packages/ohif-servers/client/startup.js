@@ -14,7 +14,6 @@ if (Meteor.settings &&
         const endpoints = servers[serverType];
         endpoints.forEach((endpoint) => {
             const server = Object.assign({}, endpoint);
-            server.origin = 'json';
             server.type = serverType;
 
             Servers.insert(server);

@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     api.use(['ecmascript',
         'standard-app-packages',
@@ -219,7 +219,7 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     /*
    * Really important dependencies to the project

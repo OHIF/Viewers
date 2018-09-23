@@ -5,11 +5,13 @@ Package.describe({
 });
 
 Npm.depends({
-    dimse: '0.0.2'
-})
+    dimse: '0.0.2',
+    'dicomweb-client': '0.3.2',
+    'xhr2': '0.1.4'
+});
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.6');
+    api.versionsFrom('1.7');
 
     api.use([
         'ecmascript',
@@ -24,7 +26,6 @@ Package.onUse(function(api) {
         'ohif:core',
         'ohif:log',
         'ohif:servers',
-        'ohif:dicomweb-client',
         'ohif:viewerbase',
         'ohif:wadoproxy'
     ]);

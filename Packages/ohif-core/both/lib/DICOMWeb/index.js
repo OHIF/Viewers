@@ -1,25 +1,19 @@
-import get from './get.js';
+import { OHIF } from 'meteor/ohif:core';
+
 import getAttribute from './getAttribute.js';
-import getBulkData from './getBulkData.js';
-import getJSON from './getJSON.js';
+import getAuthorizationHeader from './getAuthorizationHeader.js';
 import getModalities from './getModalities.js';
 import getName from './getName.js';
 import getNumber from './getNumber.js';
 import getString from './getString.js';
-import getAccessToken from './getAccessToken.js';
-import makeRequest from './makeRequest.js';
 
 const DICOMWeb = {
-    get,
     getAttribute,
-    getBulkData,
-    getJSON,
+    getAuthorizationHeader,
     getModalities,
     getName,
     getNumber,
     getString,
-    getAccessToken,
-    makeRequest
 };
 
-export { DICOMWeb };
+OHIF.DICOMWeb = DICOMWeb;
