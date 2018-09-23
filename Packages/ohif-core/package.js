@@ -1,5 +1,6 @@
 Npm.depends({
-    'twbs-pagination': '1.4.1'
+    'twbs-pagination': '1.4.1',
+    'isomorphic-base64': '1.0.2',
 });
 
 Package.describe({
@@ -9,7 +10,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -44,5 +45,4 @@ Package.onUse(function(api) {
 
     // Client and server imports
     api.addFiles('both/index.js', ['client', 'server']);
-
 });

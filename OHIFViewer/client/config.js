@@ -22,10 +22,10 @@ Meteor.startup(function() {
 
     cornerstoneWADOImageLoader.configure({
         beforeSend: function(xhr) {
-            const accessToken = OHIF.user.getAccessToken();
+            const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
-            if (accessToken) {
-                xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+            if (headers.Authorization) {
+                xhr.setRequestHeader("Authorization", headers.Authorization);
             }
         }
     });

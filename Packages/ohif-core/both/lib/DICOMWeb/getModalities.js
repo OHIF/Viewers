@@ -1,4 +1,4 @@
-const getModalities = function(modality, modalitiesInStudy) {
+export default function getModalities(modality, modalitiesInStudy) {
     var modalities = {};
     if (modality) {
         modalities = modality;
@@ -19,5 +19,3 @@ const getModalities = function(modality, modalitiesInStudy) {
     }
     return modalities;
 };
-
-export default getModalities;

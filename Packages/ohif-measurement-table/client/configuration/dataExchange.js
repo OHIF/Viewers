@@ -18,7 +18,7 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
 
 export const storeMeasurements = (measurementData, timepointIds) => {
     OHIF.log.info('storeMeasurements');
-    
+
     const server = OHIF.servers.getCurrentServer();
     if (!server || server.type !== 'dicomWeb') {
         return Promise.resolve({});
@@ -28,6 +28,8 @@ export const storeMeasurements = (measurementData, timepointIds) => {
 
     return stowSRFromMeasurements(measurementData).then( () => {
         OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
+    }, error => {
+        throw new Error(error);
     });
 };
 

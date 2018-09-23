@@ -1,5 +1,14 @@
 import { OHIF } from 'meteor/ohif:core';
-import { DICOMWeb } from 'meteor/ohif:dicomweb-client';
+import DICOMwebClient from 'dicomweb-client';
+
+const { DICOMWeb } = OHIF;
+
+// TODO: Is there an easier way to do this?
+if (Meteor.isServer) {
+    var XMLHttpRequest = require('xhr2');
+
+    global.XMLHttpRequest = XMLHttpRequest;
+}
 
 /**
  * Creates a QIDO date string for a date range query
@@ -27,7 +36,7 @@ function dateToString(date) {
  * @param filter
  * @returns {string} The URL with encoded filter query data
  */
-function filterToQIDOURL(server, filter) {
+function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
     const commaSeparatedFields = [
         '00081030', // Study Description
         '00080060' //Modality
@@ -41,7 +50,7 @@ function filterToQIDOURL(server, filter) {
         StudyDescription: filter.studyDescription,
         ModalitiesInStudy: filter.modalitiesInStudy,
         limit: filter.limit,
-        includefield: server.qidoSupportsIncludeField ? 'all' : commaSeparatedFields
+        includefield: serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all'
     };
 
     // build the StudyDate range parameter
@@ -59,7 +68,16 @@ function filterToQIDOURL(server, filter) {
         parameters.StudyInstanceUID = studyUids;
     }
 
-    return server.qidoRoot + '/studies?' + encodeQueryData(parameters);
+    // Clean query params of undefined values.
+    const params = {};
+    Object.keys(parameters).forEach(key => {
+        if (parameters[key] !== undefined &&
+            parameters[key] !== "") {
+            params[key] = parameters[key];
+        }
+    });
+
+    return params;
 }
 
 /**
@@ -98,13 +116,16 @@ function resultDataToStudies(resultData) {
 }
 
 OHIF.studies.services.QIDO.Studies = (server, filter) => {
-    const url = filterToQIDOURL(server, filter);
+    const config = {
+        url: server.qidoRoot,
+        headers: OHIF.DICOMWeb.getAuthorizationHeader()
+    };
 
-    return new Promise((resolve, reject) => {
-        DICOMWeb.getJSON(url, server.requestOptions).then(result => {
-            const studies = resultDataToStudies(result);
+    const dicomWeb = new DICOMwebClient.api.DICOMwebClient(config);
+    const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
+    const options = {
+        queryParams
+    };
 
-            resolve(studies);
-        }, reject);
-    });
+    return dicomWeb.searchForStudies(options).then(resultDataToStudies);
 };
