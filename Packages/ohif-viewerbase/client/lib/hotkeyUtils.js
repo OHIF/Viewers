@@ -30,17 +30,17 @@ Meteor.startup(function() {
     OHIF.viewer.defaultHotkeys = {
         // Tool hotkeys
         defaultTool: 'ESC',
-        zoom: 'Z',
-        wwwc: 'W',
-        pan: 'P',
-        angle: 'A',
-        stackScroll: 'S',
-        magnify: 'M',
-        length: '',
-        annotate: '',
-        dragProbe: '',
-        ellipticalRoi: '',
-        rectangleRoi: '',
+        Zoom: 'Z',
+        Wwwc: 'W',
+        Pan: 'P',
+        Angle: 'A',
+        StackScroll: 'S',
+        Magnify: 'M',
+        Length: '',
+        Annotate: '',
+        DragProbe: '',
+        EllipticalRoi: '',
+        RectangleRoi: '',
 
         // Viewport hotkeys
         flipH: 'H',
