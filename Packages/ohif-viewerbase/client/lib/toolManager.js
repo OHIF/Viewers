@@ -7,9 +7,9 @@ let activeTool;
 let tools = [];
 let initialized = false;
 let defaultTool = {
-    left: 'wwwc',
-    right: 'zoom',
-    middle: 'pan'
+    left: 'Wwwc',
+    right: 'Zoom',
+    middle: 'Pan'
 };
 const buttonNum = {
     'left': 1,
@@ -30,22 +30,22 @@ export const toolManager = {
         toolManager.cTools = cornerstoneTools.init();
 
         tools = [
-            'length',
-            'angle',
-            'arrowAnnotate',
-			'wwwc',
-            'zoom',
-            'pan',
-            'dragProbe',
-            'magnify',
-            'crosshairs',
-            'stackScroll',
-            'stackScrollMouseWheel',
-			'zoomTouchPinch',
-			'zoomMouseWheel',
-			'ellipticalRoi',
-			'rectangleRoi',
-			'wwwcRegion'
+            'Length',
+            'Angle',
+            'ArrowAnnotate',
+			'Wwwc',
+            'Zoom',
+            'Pan',
+            'DragProbe',
+            'Magnify',
+            'Crosshairs',
+            'StackScroll',
+            'StackScrollMouseWheel',
+			'ZoomTouchPinch',
+			'ZoomMouseWheel',
+			'EllipticalRoi',
+			'RectangleRoi',
+			'WwwcRegion'
         ];
 
         initialized = true;
