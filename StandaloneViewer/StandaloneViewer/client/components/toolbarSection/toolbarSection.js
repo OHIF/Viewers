@@ -47,42 +47,42 @@ Template.toolbarSection.helpers({
         const extraTools = [];
 
         extraTools.push({
-            id: 'crosshairs',
+            id: 'Crosshairs',
             title: 'Crosshairs',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-crosshairs'
         });
 
         extraTools.push({
-            id: 'magnify',
+            id: 'Magnify',
             title: 'Magnify',
             classes: 'imageViewerTool toolbarSectionButton',
             iconClasses: 'fa fa-circle'
         });
 
         extraTools.push({
-            id: 'wwwcRegion',
+            id: 'WwwcRegion',
             title: 'ROI Window',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-square'
         });
 
         extraTools.push({
-            id: 'dragProbe',
+            id: 'DragProbe',
             title: 'Probe',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-dot-circle-o'
         });
 
         extraTools.push({
-            id: 'ellipticalRoi',
+            id: 'EllipticalRoi',
             title: 'Ellipse',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-circle-o'
         });
 
         extraTools.push({
-            id: 'rectangleRoi',
+            id: 'RectangleRoi',
             title: 'Rectangle',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-square-o'
@@ -133,42 +133,42 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'zoom',
+            id: 'Zoom',
             title: 'Zoom',
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-zoom'
         });
 
         buttonData.push({
-            id: 'wwwc',
+            id: 'Wwwc',
             title: 'Levels',
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-levels'
         });
 
         buttonData.push({
-            id: 'pan',
+            id: 'Pan',
             title: 'Pan',
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-pan'
         });
 
         buttonData.push({
-            id: 'length',
+            id: 'Length',
             title: 'Length',
             classes: 'imageViewerTool toolbarSectionButton',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-temp'
         });
 
         buttonData.push({
-            id: 'arrowAnnotate',
+            id: 'ArrowAnnotate',
             title: 'Annotate',
             classes: 'imageViewerTool',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-tools-measure-non-target'
         });
 
         buttonData.push({
-            id: 'angle',
+            id: 'Angle',
             title: 'Angle',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-angle-left'
