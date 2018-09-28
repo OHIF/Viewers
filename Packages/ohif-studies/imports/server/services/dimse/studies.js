@@ -1,5 +1,6 @@
 import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
+import DIMSE from 'dimse';
 
 /**
  * Parses resulting data from a QIDO call into a set of Study MetaData

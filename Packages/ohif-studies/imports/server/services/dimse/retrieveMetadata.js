@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { parseFloatArray } from 'meteor/ohif:studies/imports/both/lib/parseFloatArray';
+import DIMSE from 'dimse';
 
 /**
  * Returns the value of the element (e.g. '00280009')
