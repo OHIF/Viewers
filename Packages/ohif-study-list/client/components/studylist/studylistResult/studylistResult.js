@@ -101,17 +101,6 @@ function replaceUndefinedColumnValue(text) {
 }
 
 /**
- * Convert string to study date
- */
-function convertStringToStudyDate(dateStr) {
-    const y = dateStr.substring(0, 4);
-    const m = dateStr.substring(4, 6);
-    const d = dateStr.substring(6, 8);
-    const newDateStr = m + '/' + d + '/' + y;
-    return new Date(newDateStr);
-}
-
-/**
  * Runs a search for studies matching the studylist query parameters
  * Inserts the identified studies into the Studies Collection
  */
@@ -168,12 +157,10 @@ function search() {
             }
 
             // Search the rest of the parameters that aren't done via the server call
-            if ((new Date(studyDateFrom).setHours(0, 0, 0, 0) <= studyDate || !studyDateFrom ) &&
-                (studyDate <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
-
+            if ((moment(studyDateFrom, "MM/DD/YYYY").isBefore(moment(studyDate, "YYYYMMDD")) || !studyDateFrom ) &&
+                (moment(studyDate, "YYYYMMDD").isBefore(moment(studyDateTo, "MM/DD/YYYY")) || !studyDateTo || studyDateTo === '')) {
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : undefined;
-
                 // Insert any matching studies into the Studies Collection
                 OHIF.studylist.collections.Studies.insert(study);
             }
