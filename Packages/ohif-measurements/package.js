@@ -21,8 +21,6 @@ Package.onUse(function(api) {
 
     api.use('momentjs:moment');
 
-    api.use('validatejs');
-
     // Schema for Data Models
     api.use('aldeed:simple-schema');
     api.use('aldeed:collection2');
