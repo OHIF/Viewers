@@ -40,3 +40,20 @@ docker run --rm -p 4242:4242 -p 8042:8042 jodogne/orthanc-plugins
     ````
 
 3. Upload your data and it will be persisted
+
+#### Additional Information (Meteor)
+Issue (Windows):
+    error: unknown package in top-level dependencies: ohif:polyfill
+    
+Solution (Windows):
+1. Open Command Prompt and go to project dir
+2. Enter the following:
+    ````
+    set METEOR_PACKAGE_DIRS=../Packages
+    ````
+    **Note: ../Packages can be changed to ../../Packages depends on the project dir**
+3. Run Orthanc from meteor
+
+    ````
+    meteor --settings ../config/orthancDICOMWeb.json
+    ````
