@@ -11,9 +11,9 @@ import { getElementIfNotEmpty } from "../../../lib/getElementIfNotEmpty";
 var scene, camera, renderer, controls;
 var texture, geometry, material, plane, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
-var objects = [];
+var objects = new Map();
 var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
-var canvas, raycaster, effectController, gui_initialized, gui, hasGeometry;
+var canvas, raycaster, effectController, textureMagFilter, textureMinFilter, ftexture, ftextureMagFilter, ftextureMinFilter, gui, hasGeometry;
 var lengthX, lengthY, lengthZ, originX, originY, originZ;
 var arrowHelper_x, arrowHelper_y, arrowHelper_z;
 
@@ -133,47 +133,50 @@ function computeScale(geometry) {
 
 function initializeGUI() {
 
-        gui = new dat.GUI({autoPlace: false, domElement: document.getElementsByClassName('dg').item(0)});
-        gui.close();
+    gui = new dat.GUI({autoPlace: false});
+    gui.close();
+    gui.domElement.style.display = 'none';
+    document.getElementsByClassName('dg').item(0).appendChild(gui.domElement);
 
-        var colorController, opacityController, transparentController, positionController;
+    var colorController, opacityController, transparentController, positionController;
 
-        colorController = gui.addColor(effectController, 'color');
-        colorController.onChange(function (value) {
-            if (SELECTED_OBJECT) {
-                SELECTED_OBJECT.material.color.setStyle('#' + value.toString(16));
-                SELECTED_OBJECT.effectController.color = SELECTED_OBJECT.material.color.getHex();
-            }
-        }).listen();
+    colorController = gui.addColor(effectController, 'color');
+    colorController.onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.material.color.setStyle('#' + value.toString(16));
+            SELECTED_OBJECT.effectController.color = SELECTED_OBJECT.material.color.getHex();
+        }
+    }).listen();
 
-        transparentController = gui.add(effectController, 'transparent');
-        transparentController.onChange(function (value) {
-            if (SELECTED_OBJECT) {
-                SELECTED_OBJECT.material.transparent = value;
-                SELECTED_OBJECT.effectController.transparent = SELECTED_OBJECT.material.transparent;
-            }
-        }).listen();
+    transparentController = gui.add(effectController, 'transparent');
+    transparentController.onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.material.transparent = value;
+            SELECTED_OBJECT.effectController.transparent = SELECTED_OBJECT.material.transparent;
+        }
+    }).listen();
 
-        opacityController = gui.add(effectController, 'opacity', 0.0, 1.0, 0.1);
-        opacityController.listen().onChange(function (value) {
-            if (SELECTED_OBJECT) {
-                SELECTED_OBJECT.material.opacity = value;
-                SELECTED_OBJECT.effectController.opacity = SELECTED_OBJECT.material.opacity;
-            }
-        });
-        positionController = gui.add(effectController, 'position').min(0).max(10).step(1.0);
-        positionController.onChange(function (value) {
-            if (SELECTED_OBJECT) {
-                SELECTED_OBJECT.effectController.setPosition(value);
-                SELECTED_OBJECT.renderOrder = value;
-            }
-        });
-        positionController.listen();
+    opacityController = gui.add(effectController, 'opacity', 0.0, 1.0, 0.1);
+    opacityController.listen().onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.material.opacity = value;
+            SELECTED_OBJECT.effectController.opacity = SELECTED_OBJECT.material.opacity;
+        }
+    });
+    positionController = gui.add(effectController, 'position').min(0).max(10).step(1.0);
+    positionController.onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.effectController.setPosition(value);
+            SELECTED_OBJECT.renderOrder = value;
+        }
+    });
+    positionController.listen();
 
-        var fcam = gui.addFolder("Camera");
-        fcam.add(camera.position, 'x').min(-1200).max(1200).step(1.0).listen();
-        fcam.add(camera.position, 'y').min(-1200).max(1200).step(1.0).listen();
-        fcam.add(camera.position, 'z').min(-1200).max(1200).step(1.0).listen();
+    var fcam = gui.addFolder("Camera");
+    fcam.add(camera.position, 'x').min(-1200).max(1200).step(1.0).listen();
+    fcam.add(camera.position, 'y').min(-1200).max(1200).step(1.0).listen();
+    fcam.add(camera.position, 'z').min(-1200).max(1200).step(1.0).listen();
+    ftexture = gui.addFolder("Texture");
 }
 
 function onMouseClick(event) {
@@ -192,7 +195,7 @@ function onMouseMove(event) {
     mouse.x = ( event.offsetX / renderer.domElement.width ) * 2 - 1;
     mouse.y = - ( event.offsetY / renderer.domElement.height ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObjects( objects );
+    var intersects = raycaster.intersectObjects( Array.from(objects.values()) );
 
     if (intersects.length > 0) {
         if (INTERSECTED != intersects[0].object) {
@@ -203,28 +206,50 @@ function onMouseMove(event) {
             if (selectionMode) INTERSECTED.material.emissive.setHex( 0xff0000 );
         }
     } else {
-        if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+        if (INTERSECTED && INTERSECTED.material.emissive !== undefined) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
         INTERSECTED = null;
     }
 }
 
 function onImage2DRendered(e) {
     if (hasGeometry) {
+        if (texture === undefined) {
+            ftextureMagFilter !== undefined ? ftexture.remove(ftextureMagFilter) : null;
+            ftextureMinFilter !== undefined ? ftexture.remove(ftextureMinFilter) : null;
+        }
+
         const eventData = e.originalEvent.detail;
 
         // set the canvas context to the image coordinate system
-        cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
-
-        // NOTE: The coordinate system of the canvas is in image pixel space.  Drawing
-        // to location 0,0 will be the top left of the image and rows,columns is the bottom
-        // right.
-        const context = eventData.canvasContext;
+        //cornerstone.setToPixelCoordinateSystem(eventData.enabledElement, eventData.canvasContext);
 
         const image = eventData.image;
 
         texture = new THREE.DataTexture(image.getPixelData(), image.width, image.height, THREE.LuminanceFormat, THREE.UnsignedByteType);
-        texture.magFilter = THREE.NearestFilter;
         texture.needsUpdate = true;
+
+        if (ftextureMagFilter === undefined) {
+            ftextureMagFilter = ftexture.add(texture, 'magFilter', {
+                'Nearest': THREE.NearestFilter,
+                'Linear': THREE.LinearFilter
+            }).listen();
+            ftextureMagFilter.onFinishChange(function (value) {
+                texture.needsUpdate = true;
+            });
+        }
+        if (ftextureMinFilter === undefined) {
+            ftextureMinFilter = ftexture.add(texture, 'minFilter', {
+                'Nearest': THREE.NearestFilter,
+                'NearestMipMapNearestFilter': THREE.NearestMipMapNearestFilter,
+                'NearestMipMapLinearFilter': THREE.NearestMipMapLinearFilter,
+                'Linear': THREE.LinearFilter,
+                'LinearMipMapNearestFilter': THREE.LinearMipMapNearestFilter,
+                'LinearMipMapLinearFilter': THREE.LinearMipMapLinearFilter
+            }).listen();
+            ftextureMinFilter.onFinishChange(function (value) {
+                texture.needsUpdate = true;
+            });
+        }
 
         geometry = new THREE.PlaneGeometry(image.width, image.height, image.width, image.height);
         // geometry.center();
@@ -234,12 +259,14 @@ function onImage2DRendered(e) {
         //object.applyMatrix(mS);
 
         material = new THREE.MeshBasicMaterial({color: 0xff0000, map: texture, side: THREE.DoubleSide});
-         material.transparent = true;
+         material.transparent = false;
          material.opacity = 0.5;
         scene.remove(plane);
+        objects.delete(plane.uuid);
 
 
         plane = new THREE.Mesh( geometry, material );
+        plane.effectController = new EffectController(plane.material.color.getHex(), plane.material.transparent, plane.material.opacity, 1);
         console.log('Original:' + plane.position);
         var obj = scene.getObjectByName("volume3D");
         obj.geometry.computeBoundingBox();
@@ -247,6 +274,7 @@ function onImage2DRendered(e) {
         plane.position.setZ(0);
         console.log('Nueva:' + plane.position);
         scene.add(plane);
+        objects.set(plane.uuid, plane);
         camera.updateProjectionMatrix();
         plane.updateMatrixWorld();
     }
@@ -261,6 +289,8 @@ function init() {
     hasGeometry = false;
     lengthX = lengthY = lengthZ = 0.0;
     originX = originY = originZ = Number.POSITIVE_INFINITY;
+    textureMagFilter = THREE.LinearFilter;
+    textureMinFilter = THREE.LinearMipMapLinearFilter;
 
 
 
@@ -269,7 +299,7 @@ function init() {
 
     //Renderer
     canvas = document.getElementById('wglcanvas');
-    renderer = new THREE.WebGLRenderer({canvas: canvas});
+    renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( renderer.domElement.offsetWidth, renderer.domElement.offsetHeight );
 
@@ -535,11 +565,12 @@ Template.viewer3D.onRendered(function () {
             mesh.name = "volume3D";
 
             scene.add(mesh);
-            objects.push(mesh);
+            objects.set(mesh.name, mesh);
             hasGeometry = hasGeometry || true;
             geometry.computeBoundingBox();
             var helper = new THREE.BoxHelper( mesh, 0xffff00 );
             scene.add( helper );
+            gui.domElement.style.display = '';
         });
     });
 
