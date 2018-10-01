@@ -40,7 +40,8 @@ Template[defaultTemplate].onRendered(() => {
           return;
         }
 
-        OHIF.studies.loadStudy(studyInstanceUid).then(studyMetadata => {
+        OHIF.studies.loadStudy(studyInstanceUid).then(study => {
+            const studyMetadata = OHIF.viewerbase.getStudyMetadata(study);
             const seriesMetadata = studyMetadata.getSeriesByUID(seriesInstanceUid);
             const instanceMetadata = seriesMetadata.getInstanceByIndex(imageIndex);
             if (!instanceMetadata) return;
