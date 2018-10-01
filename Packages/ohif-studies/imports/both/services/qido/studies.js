@@ -29,8 +29,8 @@ function dateToString(date) {
  */
 function filterToQIDOURL(server, filter) {
     const commaSeparatedFields = [
-        '00081030', // Study Description
-        '00080060' //Modality
+     // this is temp  '00081030', // Study Description
+     //   '00080060' //Modality
         // Add more fields here if you want them in the result
     ].join(',');
 
