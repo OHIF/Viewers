@@ -5,9 +5,11 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.6');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
+    api.use('templating');
+    api.use('stylus');
 
     api.use('accounts-base');
     api.use('accounts-password');

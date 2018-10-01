@@ -7,4 +7,4 @@ import './logout';
 import './schema';
 import './userLoggedIn';
 
-import './userLogin'
+import './userLogin/'
