@@ -9,7 +9,9 @@
       "dicomWeb": [
         {
           "name": "dcm4chee-oidc-Client",
+          "wadoUriRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
           "qidoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
+          "wadoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
           "qidoSupportsIncludeField": false,
           "imageRendering": "wadors",
           "thumbnailRendering": "wadors",
