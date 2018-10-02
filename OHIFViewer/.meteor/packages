@@ -43,6 +43,7 @@ ohif:hanging-protocols
 ohif:metadata
 ohif:user-oidc
 ohif:measurement-table
+ohif:google-cloud
 
 fortawesome:fontawesome
 momentjs:moment@2.15.1

@@ -23,6 +23,8 @@
             </div>
         {{/section}}
     {{/header}}
-
-    {{>Template.dynamic template=(choose this.template 'studylist') data=this}}
+    
+    {{#if instance.isStudyListReady.get}}
+        {{>Template.dynamic template=(choose this.template 'studylist') data=this}}
+    {{/if}}
 </template>

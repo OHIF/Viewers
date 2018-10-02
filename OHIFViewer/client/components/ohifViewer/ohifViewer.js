@@ -7,6 +7,7 @@ import { OHIF } from 'meteor/ohif:core';
 
 Template.ohifViewer.onCreated(() => {
     const instance = Template.instance();
+    instance.isStudyListReady = new ReactiveVar(true);
     instance.headerClasses = new ReactiveVar('');
 
     const headerItems = [{
@@ -57,6 +58,21 @@ Template.ohifViewer.onCreated(() => {
         // Set the viewer open state on session
         Session.set('ViewerOpened', isViewer);
     });
+
+    if (OHIF.gcloud){
+        const gcpConfig = OHIF.gcloud.getConfig();
+        if (gcpConfig) {
+            // TODO Egor: use the config to load studylist
+        }
+        else {
+            instance.isStudyListReady.set(false);
+            OHIF.gcloud.showDicomStorePicker().then(config => {
+                // TODO Egor: use the config to load studylist
+                alert(JSON.stringify(config, null, '  '));
+                instance.isStudyListReady.set(true);
+            });
+        }
+    }
 });
 
 Template.ohifViewer.events({
@@ -72,7 +88,8 @@ Template.ohifViewer.events({
                 Router.go('viewerStudies', { studyInstanceUids });
             }
         }
-    }
+    },
+    
 });
 
 Template.ohifViewer.helpers({
@@ -86,5 +103,5 @@ Template.ohifViewer.helpers({
         }
 
         return instance.hasViewerData ? 'Back to viewer' : '';
-    }
+    },
 });

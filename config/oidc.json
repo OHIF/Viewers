@@ -1,26 +1,26 @@
 {
   "public": {
     "clientOnly": true,
+    "googleCloud": true,
     "ui": {
-        "studyListFunctionsEnabled": true,
-        "studyListDateFilterNumDays": 10000
+      "studyListFunctionsEnabled": true,
+      "studyListDateFilterNumDays": 10000
     },
     "servers": {
-      "dicomWeb": [
-        {
-          "name": "dcm4chee-oidc-Client",
-          "wadoUriRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
-          "qidoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
-          "wadoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
-          "qidoSupportsIncludeField": false,
-          "imageRendering": "wadors",
-          "thumbnailRendering": "wadors",
-          "requestOptions": {
-            "requestFromBrowser": true,
-            "logRequests": true,
-            "logResponses": false,
-            "logTiming": true
-          }
+      "dicomWeb": [{
+        "name": "dcm4chee-oidc-Client",
+        "wadoUriRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
+        "qidoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
+        "wadoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadors",
+        "thumbnailRendering": "wadors",
+        "requestOptions": {
+          "requestFromBrowser": true,
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+        }
       }]
     },
     "custom": {
@@ -29,7 +29,7 @@
         "authRedirectUri": "/o/oauth2/v2/auth",
         "postLogoutRedirectUri": "/",
         "clientId": "570420945968-pmtd0sjm7mmf3i5m7ld09aos1op3qva1.apps.googleusercontent.com",
-	    "scope":"email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare"
+        "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare"
       }]
     },
     "userAuthenticationRoutesEnabled": true

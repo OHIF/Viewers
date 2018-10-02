@@ -1,0 +1,10 @@
+<template name="dicomStorePicker">
+    {{#gcloudDialog (extend this
+    id='dicomStorePicker' dialogClass='themed modal-lg' confirmLabel='Select'
+    )}}
+    <div class="dicom-store-picker">
+        <h1>Select test dicom store</h1>
+        <button id="selectDicomStore" class="btn btn-primary btn-confirm">Select</button>
+    </div>
+    {{/gcloudDialog}}
+</template>
