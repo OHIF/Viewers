@@ -15,7 +15,4 @@ Template.gcloudDialog.onRendered(() => {
 
     // Create the bootstrap modal
     $modal.modal(modalOptions);
-
-    // Resolve the promise as soon as the modal is closed
-    $modal.one('hidden.bs.modal', () => instance.data.promiseResolve());
 });
