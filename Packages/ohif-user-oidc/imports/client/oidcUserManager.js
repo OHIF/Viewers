@@ -24,7 +24,7 @@ const settings = {
     silent_redirect_uri,
     post_logout_redirect_uri: Meteor.absoluteUrl(oidcClient.postLogoutRedirectUri),
     response_type: oidcClient.responseType || 'id_token token',
-    scope: oidc.scope || 'email profile openid https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare', // seems like scope is not loaded from settings Note: Request must have scope 'openid' to be considered an OpenID Connect request
+    scope: oidcClient.scope || 'email profile openid https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare', // seems like scope is not loaded from settings Note: Request must have scope 'openid' to be considered an OpenID Connect request
     automaticSilentRenew: true,
     revokeAccessTokenOnSignout: true,
 };
@@ -70,7 +70,7 @@ function handleSilentRenewError(error) {
 }
 
 oidcUserManager.events.addSilentRenewError(handleSilentRenewError);
-
+oidcUserManager.startSilentRenew();
 oidcUserManager.events.addAccessTokenExpired(function(){
     OHIF.user.logout();
 });
