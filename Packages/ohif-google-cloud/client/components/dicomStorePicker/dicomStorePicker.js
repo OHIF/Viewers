@@ -1,15 +1,24 @@
-import { Meteor } from 'meteor/meteor';
+import {
+  Meteor
+} from 'meteor/meteor';
 
-Template.dicomStorePicker.events({
-  'click #selectDicomStore': function () {
-    const result = {
-      "wadoUriRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
-      "qidoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
-      "wadoRoot": "https://healthcare.googleapis.com/v1alpha/projects/healthcare-api-215503/locations/us-central1/datasets/mydataset/dicomStores/mydicomstore/dicomWeb",
-    };
-    const instance = Template.instance();
+const DATASET_PICKER_ID = 'gcp-dataset-picker';
+const EVENT_NAME = 'onSelect';
+
+Template.dicomStorePicker.onRendered(() => {
+  const instance = Template.instance();
+  instance.$('#' + DATASET_PICKER_ID).on(EVENT_NAME, (event, data) => {
     instance.$('.modal').one('hidden.bs.modal', event => {
-      instance.data.promiseResolve(result);
+      instance.data.promiseResolve(data);
     }).modal('hide');
+  });
+});
+
+Template.dicomStorePicker.helpers({
+  datasetPickerId() {
+    return DATASET_PICKER_ID;
+  },
+  eventName() {
+    return EVENT_NAME;
   }
 });

@@ -5,10 +5,6 @@ Package.describe({
   documentation: 'README.md',
 });
 
-// Npm.depends({
-//   'google-healthcare-api': 'git+https://github.com/quantumsoftgroup/healthcare-api-adapter#master',
-// });
-
 Package.onUse(function(api) {
   api.versionsFrom('1.4');
 
