@@ -1,6 +1,4 @@
-import {
-  Meteor
-} from 'meteor/meteor';
+import { Meteor } from 'meteor/meteor';
 
 const DATASET_PICKER_ID = 'gcp-dataset-picker';
 const EVENT_NAME = 'onSelect';
@@ -8,9 +6,12 @@ const EVENT_NAME = 'onSelect';
 Template.dicomStorePicker.onRendered(() => {
   const instance = Template.instance();
   instance.$('#' + DATASET_PICKER_ID).on(EVENT_NAME, (event, data) => {
-    instance.$('.modal').one('hidden.bs.modal', event => {
-      instance.data.promiseResolve(data);
-    }).modal('hide');
+    instance
+      .$('.modal')
+      .one('hidden.bs.modal', event => {
+        instance.data.promiseResolve(data);
+      })
+      .modal('hide');
   });
 });
 
@@ -20,5 +21,8 @@ Template.dicomStorePicker.helpers({
   },
   eventName() {
     return EVENT_NAME;
-  }
+  },
+  authToken() {
+    return OHIF.user.getAccessToken();
+  },
 });

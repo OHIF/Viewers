@@ -1,9 +1,9 @@
 <template name="dicomStorePicker">
     {{#gcloudDialog (extend this
-    id='dicomStorePicker' dialogClass='themed modal-lg' confirmLabel='Select'
+    id='dicomStorePicker' dialogClass='themed modal-lg'
     )}}
     <div class="dicom-store-picker">
-        <gcp-dataset-picker id={{datasetPickerId}} event={{eventName}}></gcp-dataset-picker>
+        <gcp-dataset-picker id={{datasetPickerId}} event={{eventName}} token={{authToken}}></gcp-dataset-picker>
     </div>
     {{/gcloudDialog}}
 </template>
