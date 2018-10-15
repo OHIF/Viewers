@@ -69,7 +69,7 @@ Template.ohifViewer.onCreated(() => {
             instance.isStudyListReady.set(false);
             OHIF.gcloud.showDicomStorePicker().then(config => {
                 Template.ohifViewer.setActive(config);
-                alert(JSON.stringify(config, null, '  '));
+               // alert(JSON.stringify(config, null, '  '));
                 instance.isStudyListReady.set(true);
             });
         }
@@ -77,7 +77,13 @@ Template.ohifViewer.onCreated(() => {
 });
 
 Template.ohifViewer.setActive = function(config) {
-    config.name = "dc4m";
+    config.name = "gcs";
+    config.imageRendering = "wadors";
+    config.origin = "json";
+    config.thumbnailRendering = "wadors";
+    config.qidoSupportsIncludeField = false;
+    config.type = "dicomweb";
+    config.metadataSource = "qido";
     config.requestOptions = {};
     config.requestOptions.requestFromBrowser = true;
     config.origin = 'json';

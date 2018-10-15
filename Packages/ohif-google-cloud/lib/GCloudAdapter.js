@@ -15,7 +15,7 @@ GCloudAdapter.setConfig = function(config) {
 
 GCloudAdapter.showDicomStorePicker = function() {
   return OHIF.ui.showDialog('dicomStorePicker').then(config => {
-    //if (config) OHIF.gcloud.setConfig(config);
+    if (config) OHIF.gcloud.setConfig(config);
     return config;
   });
 };

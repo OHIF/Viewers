@@ -15,6 +15,7 @@
         "qidoSupportsIncludeField": false,
         "imageRendering": "wadors",
         "thumbnailRendering": "wadors",
+        "metadataSource": "qido",
         "requestOptions": {
           "requestFromBrowser": true,
           "logRequests": true,

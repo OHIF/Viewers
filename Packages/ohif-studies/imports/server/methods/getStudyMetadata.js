@@ -19,7 +19,12 @@ Meteor.methods({
 
         try {
             if (server.type === 'dicomWeb') {
-                return OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid);
+                if(server.metadataSource ==='qido') {
+                    return OHIF.studies.services.QIDO.RetrieveMetadata(server, studyInstanceUid);
+                }
+                else{
+                    return OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid);
+                }
             } else if (server.type === 'dimse') {
                 return OHIF.studies.services.DIMSE.RetrieveMetadata(studyInstanceUid);
             }
