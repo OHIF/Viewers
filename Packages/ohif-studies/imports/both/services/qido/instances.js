@@ -140,7 +140,6 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                 contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
                 radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
             };
-            debugger;
             if (instanceSummary.photometricInterpretation === 'PALETTE COLOR') {
                 seriesList =null;
                 return false;
@@ -211,7 +210,6 @@ OHIF.studies.services.QIDO.Instances = function (server, studyInstanceUid) {
     var url = buildUrl(server, studyInstanceUid);
     return new Promise((resolve, reject) => {
         DICOMWeb.getJSON(url, server.requestOptions).then(result => {
-            debugger;
             const seriesList = resultDataToStudyMetadata(server, studyInstanceUid, result);
             console.error(seriesList);
             if (seriesList === null) {
