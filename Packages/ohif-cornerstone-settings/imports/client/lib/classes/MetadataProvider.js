@@ -42,8 +42,9 @@ export class MetadataProvider {
         const seriesMetadata = data.series;
         const studyMetadata = data.study;
         const numImages = data.numImages;
-
         const metadata = {};
+
+        metadata.frameNumber = data.frameNumber;
 
         metadata.study = {
             accessionNumber: studyMetadata.accessionNumber,
