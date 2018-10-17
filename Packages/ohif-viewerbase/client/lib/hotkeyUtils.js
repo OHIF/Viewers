@@ -35,6 +35,7 @@ Meteor.startup(function() {
         dragProbe: '',
         ellipticalRoi: '',
         rectangleRoi: '',
+        freehand: '',
 
         // Viewport hotkeys
         flipH: 'H',
@@ -119,7 +120,8 @@ Meteor.startup(function() {
         pan: 'Pan',
         length: 'Length Measurement',
         wwwcRegion: 'W/L by Region',
-        crosshairs: 'Crosshairs'
+        crosshairs: 'Crosshairs',
+        freehand: 'Polygon',
     });
 
     // Functions to register the viewport commands

@@ -115,6 +115,11 @@
       <circle id="icon-tools-zoom-circle" cx="7" cy="7" r="6" />
     </g>
   </symbol>
+  <symbol id="icon-tools-polygon" viewBox="0 0 24 14">
+    <title>Polygon</title>
+    <!--https://codepen.io/winkerVSbecks/pen/wrZQQm!-->
+    <polygon fill="none" stroke-width="3px" points="17.794228634059948,12.5 10,17 2.2057713659400537,12.500000000000004 2.20577136594005,3.5000000000000027 9.999999999999998,-1 17.794228634059948,3.5000000000000027" />
+  </symbol>
   <symbol id="icon-tools-invert" viewBox="0 0 24 28">
     <title>Invert</title>
     <path d="M12 22.5v-17c-4.688 0-8.5 3.813-8.5 8.5s3.813 8.5 8.5 8.5zM24 14c0 6.625-5.375 12-12 12s-12-5.375-12-12 5.375-12 12-12 12 5.375 12 12z"></path>

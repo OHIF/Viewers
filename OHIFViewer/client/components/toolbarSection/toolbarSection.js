@@ -59,7 +59,7 @@ Template.toolbarSection.helpers({
         //         bottomLabel: 'Hanging'
         //     }]
         // };
-        
+
         return {
             toggleable: true,
             key: 'rightSidebar',
@@ -96,6 +96,13 @@ Template.toolbarSection.helpers({
             title: 'ROI Window',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-square'
+        });
+
+        extraTools.push({
+            id: 'freehand',
+            title: 'Polygon',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-polygon'
         });
 
         extraTools.push({

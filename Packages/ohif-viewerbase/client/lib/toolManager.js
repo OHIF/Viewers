@@ -128,6 +128,11 @@ export const toolManager = {
             touch: cornerstoneTools.crosshairsTouch
         });
 
+        toolManager.addTool('freehand', {
+            mouse: cornerstoneTools.freehand,
+            // TODO: Make a touch version of this tool
+        });
+
         toolManager.addTool('scaleOverlayTool', {
           mouse: cornerstoneTools.scaleOverlayTool,
         });
