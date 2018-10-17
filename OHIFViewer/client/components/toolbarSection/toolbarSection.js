@@ -99,13 +99,6 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
-            id: 'freehand',
-            title: 'Polygon',
-            classes: 'imageViewerTool',
-            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-polygon'
-        });
-
-        extraTools.push({
             id: 'dragProbe',
             title: 'Probe',
             classes: 'imageViewerTool',
@@ -124,6 +117,13 @@ Template.toolbarSection.helpers({
             title: 'Rectangle',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-square-o'
+        });
+
+        extraTools.push({
+            id: 'freehand',
+            title: 'Polygon',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-polygon'
         });
 
         extraTools.push({

@@ -89,6 +89,13 @@ Template.toolbarSection.helpers({
         });
 
         extraTools.push({
+            id: 'freehand',
+            title: 'Polygon',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-tools-polygon'
+        });
+
+        extraTools.push({
             id: 'invert',
             title: 'Invert',
             classes: 'imageViewerCommand',
