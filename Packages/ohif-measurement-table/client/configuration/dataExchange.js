@@ -9,11 +9,7 @@ export const retrieveMeasurements = (patientId, timepointIds) => {
 
     if(!latestSeries) return Promise.resolve({});
 
-    return retrieveMeasurementFromSR(latestSeries).then((value) => {
-        return {
-            length: value
-        }
-    });
+    return retrieveMeasurementFromSR(latestSeries);
 };
 
 export const storeMeasurements = (measurementData, timepointIds) => {

@@ -4,11 +4,12 @@ import {getAllDisplaySets, getInstanceMetadata} from './srUtils'
 const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
     const { MeasurementReport } = dcmjs.adapters.Cornerstone;
     const storedMeasurementByToolType = MeasurementReport.generateToolState(dataset);
-    const measurementData = [];
+    const measurementData = {};
     let measurementNumber = 0;
 
     Object.keys(storedMeasurementByToolType).forEach(toolType => {
         const measurements = storedMeasurementByToolType[toolType];
+        measurementData[toolType] = [];
 
         measurements.forEach(measurement => {
             const instanceMetadata = getInstanceMetadata(displaySets, measurement.sopInstanceUid);
@@ -39,7 +40,7 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
                 _id: imageId + measurementNumber,
             });
 
-            measurementData.push(toolData);
+            measurementData[toolType].push(toolData);
         });
     })
 
