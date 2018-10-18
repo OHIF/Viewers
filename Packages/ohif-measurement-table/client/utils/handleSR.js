@@ -28,13 +28,25 @@ const retrieveMeasurementFromSR = async (series) => {
 const stowSRFromMeasurements = async (measurements) => {
     const server = OHIF.servers.getCurrentServer();
     const url = WADOProxy.convertURL(server.wadoRoot, server);
-    const reportDataset = retrieveDataFromMeasurements(measurements);
-    const denaturalizedMetaheader = dcmjs.data.DicomMetaDictionary.denaturalizeDataset(dataset._meta);
-    const dicomDict = new dcmjs.data.DicomDict(denaturalizedMetaheader);
+    const dataset = retrieveDataFromMeasurements(measurements);
+    const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
-    dicomDict.dict = dcmjs.data.DicomMetaDictionary.denaturalizeDataset(dataset);
+    const meta = {
+        FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
+        MediaStorageSOPClassUID: dataset.SOPClassUID,
+        MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+        TransferSyntaxUID: "1.2.840.10008.1.2.1",
+        ImplementationClassUID: DicomMetaDictionary.uid(),
+        ImplementationVersionName: "dcmjs-0.0",
+    };
+
+    const denaturalized = DicomMetaDictionary.denaturalizeDataset(meta);
+    const dicomDict = new DicomDict(denaturalized);
+
+    dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
 
     const part10Buffer = dicomDict.write();
+
     const config = {
         url,
         headers: OHIF.DICOMWeb.getAuthorizationHeader()

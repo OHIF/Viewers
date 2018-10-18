@@ -25,7 +25,5 @@ if (Meteor.settings &&
     CurrentServer.insert({
         serverId: newServer._id
     });
-
-    console.log('test');
 }
 

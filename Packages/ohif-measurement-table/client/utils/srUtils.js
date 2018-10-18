@@ -2,16 +2,6 @@ import { dcmjs } from 'meteor/ohif:cornerstone';
 
 const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22'];
 
-const toArray = function(x) {
-    return (x.constructor.name === "Array" ? x : [x]);
-};
-
-const codeMeaningEquals = (codeMeaningName) => {
-    return (contentItem) => {
-        return contentItem.ConceptNameCodeSequence.CodeMeaning === codeMeaningName;
-    };
-};
-
 const getAllDisplaySets = () => {
     const allStudies = OHIF.viewer.Studies.all();
     let allDisplaySets = [];
@@ -66,14 +56,8 @@ const getLatestSRSeries = () => {
     return latestSeries;
 };
 
-const stringToArray = (string) =>  {
-    return Uint8Array.from(Array.from(string).map(letter => letter.charCodeAt(0)))
-};
-
 export {
-    codeMeaningEquals,
     getAllDisplaySets,
     getInstanceMetadata,
     getLatestSRSeries,
-    toArray
 }
