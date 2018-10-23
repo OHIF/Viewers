@@ -45,7 +45,9 @@ export const toolManager = {
     			'ZoomMouseWheel',
     			'EllipticalRoi',
     			'RectangleRoi',
-    			'WwwcRegion'
+    			'WwwcRegion',
+          'FreehandMouse',
+          'FreehandSculpterMouse'
         ];
 
         initialized = true;

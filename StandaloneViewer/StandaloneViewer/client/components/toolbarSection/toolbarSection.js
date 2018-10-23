@@ -174,6 +174,29 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-angle-left'
         });
 
+        const freehandTools = [
+          {
+              id: 'FreehandMouse',
+              title: 'Draw',
+              classes: 'imageViewerTool',
+              svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-freehand-draw'
+          },
+          {
+              id: 'FreehandSculpterMouse',
+              title: 'Sculpt',
+              classes: 'imageViewerTool',
+              svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-freehand-sculpt'
+          }
+        ];
+
+        buttonData.push({
+            id: 'ROI',
+            title: 'ROI',
+            classes: 'rp-x-1 rm-l-3',
+            svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-freehand-menu',
+            subTools: freehandTools
+        });
+
         buttonData.push({
             id: 'resetViewport',
             title: 'Reset',
