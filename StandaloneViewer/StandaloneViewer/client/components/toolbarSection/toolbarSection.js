@@ -126,7 +126,7 @@ Template.toolbarSection.helpers({
         const buttonData = [];
 
         buttonData.push({
-            id: 'stackScroll',
+            id: 'StackScroll',
             title: 'Stack Scroll',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'

@@ -113,20 +113,20 @@ Meteor.startup(function() {
 
     // Register the tool switching commands
     registerToolCommands({
-        wwwc: 'W/L',
-        zoom: 'Zoom',
-        angle: 'Angle Measurement',
-        probe: 'Pixel Probe',
-        stackScroll: 'Stack Scroll',
-        ellipticalRoi: 'Elliptical ROI',
-        rectangleRoi: 'Rectangle ROI',
-        magnify: 'Magnify',
-        arrowAnnotate: 'Annotate',
+        Wwwc: 'W/L',
+        Zoom: 'Zoom',
+        Angle: 'Angle Measurement',
+        DragProbe: 'Pixel Probe',
+        StackScroll: 'Stack Scroll',
+        EllipticalRoi: 'Elliptical ROI',
+        RectangleRoi: 'Rectangle ROI',
+        Magnify: 'Magnify',
+        ArrowAnnotate: 'Annotate',
         stackScrollMouseWheel: 'Scroll Stack Mouse Wheel',
-        pan: 'Pan',
-        length: 'Length Measurement',
-        wwwcRegion: 'W/L by Region',
-        crosshairs: 'Crosshairs'
+        Pan: 'Pan',
+        Length: 'Length Measurement',
+        WwwcRegion: 'W/L by Region',
+        Crosshairs: 'Crosshairs'
     });
 
     // Functions to register the viewport commands
