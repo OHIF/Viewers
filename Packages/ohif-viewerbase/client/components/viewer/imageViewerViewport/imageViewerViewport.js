@@ -268,7 +268,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         }
 
         // Enabling new eventDispatches form cornerstoneTools v3
-        toolManager.cTools.addEnabledElement(element);
+        //cornerstoneTools.addEnabledElement(element);
         toolManager.instantiateTools(element);
 
         // Use the tool manager to enable the currently active tool for this
@@ -407,7 +407,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // If it was, no changes are necessary, so stop here.
             const activeViewportIndex = Session.get('activeViewport');
             if (viewportIndex === activeViewportIndex) return;
-            
+
             $element.focus();
 
             OHIF.log.info('imageViewerViewport sendActivationTrigger');

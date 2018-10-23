@@ -27,25 +27,25 @@ export const toolManager = {
             toolManager.setDefaultTool(OHIF.viewer.defaultTool);
         }
 
-        toolManager.cTools = cornerstoneTools.init();
+        cornerstoneTools.init();
 
         tools = [
-            'Length',
-            'Angle',
-            'ArrowAnnotate',
-			'Wwwc',
-            'Zoom',
-            'Pan',
-            'DragProbe',
-            'Magnify',
-            'Crosshairs',
-            'StackScroll',
-            'StackScrollMouseWheel',
-			'ZoomTouchPinch',
-			'ZoomMouseWheel',
-			'EllipticalRoi',
-			'RectangleRoi',
-			'WwwcRegion'
+          'Length',
+          'Angle',
+          'ArrowAnnotate',
+    			'Wwwc',
+          'Zoom',
+          'Pan',
+          'DragProbe',
+          'Magnify',
+          'Crosshairs',
+          'StackScroll',
+          'StackScrollMouseWheel',
+    			'ZoomTouchPinch',
+    			'ZoomMouseWheel',
+    			'EllipticalRoi',
+    			'RectangleRoi',
+    			'WwwcRegion'
         ];
 
         initialized = true;
@@ -101,7 +101,7 @@ export const toolManager = {
         }
 
         toolManager.setAllToolsPassive();
-        toolManager.cTools.setToolActive(toolName, options);
+        cornerstoneTools.setToolActive(toolName, options);
 
         // TODO: add the active tool with the correct button
         activeTool[button] = toolName;
@@ -111,16 +111,16 @@ export const toolManager = {
     },
 
     setAllToolsPassive() {
-		toolManager.cTools.store.state.tools.forEach((tool) => {
-			toolManager.cTools.setToolPassive(tool.name)
-		})
+  		cornerstoneTools.store.state.tools.forEach((tool) => {
+  			cornerstoneTools.setToolPassive(tool.name)
+  		});
     },
-    
+
     instantiateTools() {
         Array.from(tools).forEach(toolName => {
             const apiTool = cornerstoneTools[`${toolName}Tool`];
             if (apiTool) {
-                toolManager.cTools.addTool(apiTool);
+                cornerstoneTools.addTool(apiTool);
             }
         });
         toolManager.setAllToolsPassive();
@@ -152,10 +152,10 @@ export const toolManager = {
     },
 
     activateCommandButton(button) {
-        // 
+        //
     },
 
     deactivateCommandButton(button) {
-        // 
+        //
     }
 };
