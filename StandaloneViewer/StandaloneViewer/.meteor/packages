@@ -32,7 +32,7 @@ ohif:measurement-table
 
 aldeed:template-extension
 aldeed:simple-schema@1.5.3
-stylus@2.513.9
+stylus@=2.513.14
 clinical:router
 session@1.1.7
 cultofcoders:persistent-session
