@@ -29,6 +29,8 @@ export const toolManager = {
             toolManager.setDefaultTool(OHIF.viewer.defaultTool.middle, 'middle');
         }
 
+        console.log('======INITIALIZING CORNERSTONETOOLS======');
+
         cornerstoneTools.init();
 
         tools = {
@@ -189,6 +191,8 @@ export const toolManager = {
         if (!initialized) {
             toolManager.init();
         }
+
+        console.log("toolManager.getActiveTool");
 
         // If activeTool is not defined, we should set as defaultTool
         if (!activeTool) {
