@@ -277,9 +277,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             cornerstoneTools.playClip(element);
         }
 
-        // Enabling new eventDispatches form cornerstoneTools v3
-        //cornerstoneTools.addEnabledElement(element); NOTE: This should be done by cTools internally now, no?
-        console.log('====imageViewerViewport, instantiateTools');
+        // InstantiateTools on the new element.
         toolManager.instantiateTools(element);
 
         // Use the tool manager to enable the currently active tool for this

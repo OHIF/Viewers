@@ -126,7 +126,7 @@ Template.toolbarSection.helpers({
         const buttonData = [];
 
         buttonData.push({
-            id: 'stackScroll',
+            id: 'StackScroll',
             title: 'Stack Scroll',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'
@@ -260,9 +260,9 @@ Template.toolbarSection.onRendered(function() {
 
     instance.$('#layout').dropdown();
 
-    // TODO: Figure out a way to disable/enable the buttons with each status from 
+    // TODO: Figure out a way to disable/enable the buttons with each status from
     // New API
-    
+
     // const states = OHIF.viewerbase.toolManager.getToolDefaultStates();
     // const disabledToolButtons = states.disabledToolButtons;
     // const allToolbarButtons = $('#toolbar').find('button');
