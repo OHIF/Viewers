@@ -43,7 +43,7 @@ OHIF.measurements.getImageDataUrl = ({
                 });
 
                 cornerstoneTools.addToolState(element, measurement.toolType, state);
-                OHIF.viewerbase.toolManager.cTools.setToolEnabled(measurement.toolType);
+                cornerstoneTools.setToolEnabled(measurement.toolType);
             }
 
             // Set the viewport voi if present
@@ -59,7 +59,7 @@ OHIF.measurements.getImageDataUrl = ({
 
                 // Disable the tool and clear the measurement state if a measurement was given
                 if (measurement) {
-                    OHIF.viewerbase.toolManager.cTools.setToolDisabled(measurement.toolType);
+                    cornerstoneTools.setToolDisabled(measurement.toolType);
                     cornerstoneTools.clearToolState(element, measurement.toolType);
                 }
 
