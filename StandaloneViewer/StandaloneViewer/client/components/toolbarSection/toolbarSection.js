@@ -190,8 +190,8 @@ Template.toolbarSection.helpers({
         ];
 
         buttonData.push({
-            id: 'ROI',
-            title: 'ROI',
+            id: 'Freehand',
+            title: 'Freehand',
             classes: 'rp-x-1 rm-l-3',
             svgLink: 'packages/ohif_viewerbase/assets/icons.svg#icon-freehand-menu',
             subTools: freehandTools
