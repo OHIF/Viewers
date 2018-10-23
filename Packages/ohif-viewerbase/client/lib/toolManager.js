@@ -27,11 +27,7 @@ export const toolManager = {
             toolManager.setDefaultTool(OHIF.viewer.defaultTool);
         }
 
-        console.log('======INITIALIZING CORNERSTONETOOLS======');
-
         cornerstoneTools.init();
-
-        console.log('======CORNERSTONETOOLS INITIALIZED======');
 
         tools = [
           'Length',
@@ -138,8 +134,6 @@ export const toolManager = {
         if (!initialized) {
             toolManager.init();
         }
-
-        console.log("toolManager.getActiveTool");
 
         // If activeTool is not defined, we should set as defaultTool
         if (!activeTool) {
