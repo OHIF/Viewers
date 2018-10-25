@@ -25,6 +25,7 @@ Meteor.startup(function() {
             const accessToken = OHIF.user.getAccessToken();
 
             if (accessToken) {
+                xhr.setRequestHeader("Accept", 'multipart/related; type="application/octet-stream"; transfer-syntax=*');
                 xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
             }
         }
