@@ -1,0 +1,16 @@
+## download
+```bash
+git clone https://github.com/quantumsoftgroup/ViewersClone.git
+cd ViewersClone
+git checkout dev
+git submodule update --init --recursive
+```
+## build
+```bash
+cd OHIFViewer/
+METEOR_PACKAGE_DIRS="../Packages" meteor-build-client ../clientImage/build -s ../config/oidc.json
+cd ../clientImage
+docker build -t ohif-ghc .
+docker run --env CLIENT_ID={$someID}.apps.googleusercontent.com --publish 3000:80 ohif-ghc
+
+```
