@@ -22,7 +22,7 @@ Template.dicomStorePicker.helpers({
   eventName() {
     return EVENT_NAME;
   },
-  authToken() {
-    return OHIF.user.getAccessToken();
+  oidcStorageKey() {
+    return OHIF.user.getOidcStorageKey();
   },
 });

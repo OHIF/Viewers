@@ -20,4 +20,8 @@ GCloudAdapter.showDicomStorePicker = function() {
   });
 };
 
+GCloudAdapter.showUploadStudiesDialog = function() {
+  return OHIF.ui.showDialog('uploadStudiesDialog')
+};
+
 export default GCloudAdapter;
