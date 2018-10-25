@@ -130,22 +130,22 @@ function search() {
 
     OHIF.studies.searchStudies(filter).then((studies) => {
         OHIF.log.info('StudyListSearch');
-        // Hide loading text
 
+        // Hide loading text
         Session.set('showLoadingText', false);
+
+        // Clear all current studies
+        OHIF.studylist.collections.Studies.remove({});
 
         if (!studies) {
             OHIF.log.warn('No studies found');
             return;
         }
 
-        // Clear all current studies
-        OHIF.studylist.collections.Studies.remove({});
-
         // Loop through all identified studies
         studies.forEach(study => {
             // TODO: Why is this Modality filter different from QIDO?
-            if (modality !== "" && study.modalities.includes(modality)) {
+            if (!modality && !study.modalities.includes(modality)) {
                 return;
             }
 
