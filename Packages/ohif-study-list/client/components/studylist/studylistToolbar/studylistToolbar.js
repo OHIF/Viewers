@@ -25,6 +25,10 @@ Template.studylistToolbar.events({
     'click .js-import-files'(event) {
         // Reset file input
         $(event.currentTarget).val('');
+    },
+
+    'click .uploadStudiesBtn'() {
+        OHIF.gcloud.showUploadStudiesDialog();
     }
 });
 
@@ -32,5 +36,8 @@ Template.studylistToolbar.helpers({
     importSupported() {
         const importSupported = Session.get('importSupported');
         return (importSupported && OHIF.uiSettings.studyListFunctionsEnabled);
+    },
+    uploadSupported() {
+        return true;
     }
 });

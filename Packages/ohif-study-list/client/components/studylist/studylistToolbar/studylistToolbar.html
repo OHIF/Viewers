@@ -8,5 +8,8 @@
                 <input id="btnImport" class='js-import-files' type="file" webkitdirectory directory multiple>
             </div>
         {{/if}}
+        {{#if uploadSupported}}
+            {{#button class='btn btn-primary uploadStudiesBtn'}}Upload studies{{/button}}
+        {{/if}}
     </div>
 </template>

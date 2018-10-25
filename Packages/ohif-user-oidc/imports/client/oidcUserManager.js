@@ -57,6 +57,10 @@ OHIF.user.getAccessToken = function oidcGetAccessToken() {
     return getTokenFromStorage();
 };
 
+OHIF.user.getOidcStorageKey = function () {
+    return itemName;
+}
+
 OHIF.user.logout = function oidcLogout() {
     oidcUserManager.signoutRedirect();
 }
