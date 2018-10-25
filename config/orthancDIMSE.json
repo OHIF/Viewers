@@ -20,7 +20,7 @@
         {
           "host": "0.0.0.0",
           "port": 11112,
-          "aeTitle": "OHIFDCM",
+          "aeTitle": "ORTHANC",
           "default": true,
           "server": true
         }

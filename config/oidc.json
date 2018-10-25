@@ -29,8 +29,7 @@
         "authServerUrl": "https://accounts.google.com",
         "authRedirectUri": "/o/oauth2/v2/auth",
         "postLogoutRedirectUri": "/",
-        "clientId": "570420945968-pmtd0sjm7mmf3i5m7ld09aos1op3qva1.apps.googleusercontent.com",
-        "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare"
+          "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare"
       }]
     },
     "userAuthenticationRoutesEnabled": true

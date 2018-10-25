@@ -16,10 +16,17 @@ const oidcClient = oidc[0];
 const redirect_uri = Meteor.absoluteUrl(oidcClient.authRedirectUri);
 const silent_redirect_uri = Meteor.absoluteUrl('/packages/ohif_user-oidc/public/silent-refresh.html');
 
-
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+const id = httpGet( Meteor.absoluteUrl('/clientId'));
 const settings = {
     authority: oidcClient.authServerUrl,
-    client_id: oidcClient.clientId,
+    client_id: id,
     redirect_uri,
     silent_redirect_uri,
     post_logout_redirect_uri: Meteor.absoluteUrl(oidcClient.postLogoutRedirectUri),
@@ -29,7 +36,7 @@ const settings = {
     revokeAccessTokenOnSignout: true,
 };
 
-const itemName = `oidc.user:${oidcClient.authServerUrl}:${oidcClient.clientId}`;
+const itemName = `oidc.user:${oidcClient.authServerUrl}:${id}`;
 
 function getTokenFromStorage() {
     const userDataJSON = sessionStorage.getItem(itemName);
