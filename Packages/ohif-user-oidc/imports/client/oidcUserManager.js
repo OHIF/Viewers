@@ -16,14 +16,16 @@ const oidcClient = oidc[0];
 const redirect_uri = Meteor.absoluteUrl(oidcClient.authRedirectUri);
 const silent_redirect_uri = Meteor.absoluteUrl('/packages/ohif_user-oidc/public/silent-refresh.html');
 
-function httpGet(theUrl)
+function httpGetSync(theUrl)
 {
+    // TODO: consider making it async somehow
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
     xmlHttp.send( null );
     return xmlHttp.responseText;
 }
-const id = httpGet( Meteor.absoluteUrl('/clientId'));
+
+const id = oidcClient.clientId || httpGetSync( Meteor.absoluteUrl('/gcloud-client-id'));
 const settings = {
     authority: oidcClient.authServerUrl,
     client_id: id,
