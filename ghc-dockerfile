@@ -1,5 +1,4 @@
 # First stage of multi-stage build
-# Installs Meteor and builds node.js version
 # This stage is named 'builder'
 # The data for this intermediary image is not included
 # in the final image.
@@ -25,15 +24,11 @@ WORKDIR /home/user/Viewers/OHIFViewer
 
 ENV METEOR_PACKAGE_DIRS=../Packages
 ENV METEOR_PROFILE=1
-#RUN meteor npm install
-#RUN meteor build --directory /home/user/app
+RUN meteor npm install
 RUN meteor-build-client /home/user/app/ -s ../config/oidc.json
 RUN ls /home/user/app/ 
-#WORKDIR /home/user/app/bundle/programs/server
-#RUN npm install --production
 
 # Second stage of multi-stage build
-# Creates a slim production image for the node.js application
 FROM nginx:stable-alpine-perl
 COPY ./clientImage/default.conf /etc/nginx/nginx.conf
 COPY --from=builder /home/user/app /usr/share/nginx/html/
