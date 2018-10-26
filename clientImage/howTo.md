@@ -1,3 +1,5 @@
+## environment
+[install meteor](https://www.meteor.com/install)
 ## download
 ```bash
 git clone https://github.com/quantumsoftgroup/ViewersClone.git
