@@ -303,20 +303,20 @@ Template.toolbarSection.onRendered(function() {
         OHIF.viewerbase.viewportUtils.toggleCineDialog();
     }
 
-    // Set disabled/enabled tool buttons that are set in toolManager
-    
-    const states = OHIF.viewerbase.toolManager.getToolDefaultStates();
-    const disabledToolButtons = states.disabledToolButtons;
-    const allToolbarButtons = $('#toolbar').find('button');
-    if (disabledToolButtons && disabledToolButtons.length > 0) {
-        for (let i = 0; i < allToolbarButtons.length; i++) {
-            const toolbarButton = allToolbarButtons[i];
-            $(toolbarButton).prop('disabled', false);
-
-            const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
-            if (index !== -1) {
-                $(toolbarButton).prop('disabled', true);
-            }
-        }
-    }
+    // TODO: Figure out a way to disable/enable the buttons with each status from New API
+    // // Set disabled/enabled tool buttons that are set in toolManager
+    // const states = OHIF.viewerbase.toolManager.getToolDefaultStates();
+    // const disabledToolButtons = states.disabledToolButtons;
+    // const allToolbarButtons = $('#toolbar').find('button');
+    // if (disabledToolButtons && disabledToolButtons.length > 0) {
+    //     for (let i = 0; i < allToolbarButtons.length; i++) {
+    //         const toolbarButton = allToolbarButtons[i];
+    //         $(toolbarButton).prop('disabled', false);
+    //
+    //         const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
+    //         if (index !== -1) {
+    //             $(toolbarButton).prop('disabled', true);
+    //         }
+    //     }
+    // }
 });

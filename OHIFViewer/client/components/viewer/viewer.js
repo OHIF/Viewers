@@ -48,7 +48,12 @@ Meteor.startup(() => {
     Session.setDefault('leftSidebar', false);
     Session.setDefault('rightSidebar', false);
 
-    OHIF.viewer.defaultTool = 'wwwc';
+    OHIF.viewer.defaultTool = {
+        left: 'wwwc',
+        right: 'zoom',
+        middle: 'pan'
+    };
+
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.cine = {
         framesPerSecond: 24,

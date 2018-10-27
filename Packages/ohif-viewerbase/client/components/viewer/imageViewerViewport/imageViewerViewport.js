@@ -282,8 +282,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
-        const activeTool = toolManager.getActiveTool();
-        toolManager.setActiveTool(activeTool);
+        toolManager.setActiveTool();
 
         // Define a function to run whenever the Cornerstone viewport is rendered
         // (e.g. following a change of window or zoom)
@@ -463,6 +462,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // that is used for its synchronized viewport updating.
             // This is necessary if this new image shares a frame of reference
             // with currently displayed images
+            const activeTool = toolManager.getActiveTool();
             if (activeTool === 'crosshairs') {
                 updateCrosshairsSynchronizer(imagePlane.frameOfReferenceUID);
             }
