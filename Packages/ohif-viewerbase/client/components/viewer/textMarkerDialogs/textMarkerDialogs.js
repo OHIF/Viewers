@@ -50,10 +50,10 @@ Template.textMarkerDialogs.events({
         cornerstone.updateImage(element);
     },
     'click .closeTextMarkerDialogs'() {
-        const defaultTool = toolManager.getDefaultTool();
-        toolManager.setActiveTool(defaultTool);
+        toolManager.setActiveTool();
         document.getElementById('textMarkerOptionsDialog').close();
         $('#spine').removeClass('active');
+        const defaultTool = toolManager.getDefaultTool();
         $('#' + defaultTool).addClass('active');
     }
 

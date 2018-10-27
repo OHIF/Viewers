@@ -288,28 +288,29 @@ Template.toolbarSection.onCreated( function() {
 });
 
 Template.toolbarSection.onRendered(function() {
-    // Set disabled/enabled tool buttons that are set in toolManager
-    const states = Viewerbase.toolManager.getToolDefaultStates();
-    const disabledToolButtons = states.disabledToolButtons;
-    const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton:not(.nonAutoDisableState)');
-
-    // Additional toolbar buttons whose classes are not toolbarSectionButton
-    allToolbarButtons.push($('#toolbarSectionEntry')[0]);
-    allToolbarButtons.push($('#toggleMeasurements')[0]);
-
-    if (disabledToolButtons && disabledToolButtons.length > 0) {
-        for (let i = 0; i < allToolbarButtons.length; i++) {
-            const toolbarButton = allToolbarButtons[i];
-            const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
-            if (index !== -1) {
-                $(toolbarButton).addClass('disabled');
-                $(toolbarButton).find('*').addClass('disabled');
-            } else {
-                $(toolbarButton).removeClass('disabled');
-                $(toolbarButton).find('*').removeClass('disabled');
-            }
-        }
-    }
+    // TODO: Figure out a way to disable/enable the buttons with each status from New API
+    // // Set disabled/enabled tool buttons that are set in toolManager
+    // const states = Viewerbase.toolManager.getToolDefaultStates();
+    // const disabledToolButtons = states.disabledToolButtons;
+    // const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton:not(.nonAutoDisableState)');
+    //
+    // // Additional toolbar buttons whose classes are not toolbarSectionButton
+    // allToolbarButtons.push($('#toolbarSectionEntry')[0]);
+    // allToolbarButtons.push($('#toggleMeasurements')[0]);
+    //
+    // if (disabledToolButtons && disabledToolButtons.length > 0) {
+    //     for (let i = 0; i < allToolbarButtons.length; i++) {
+    //         const toolbarButton = allToolbarButtons[i];
+    //         const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
+    //         if (index !== -1) {
+    //             $(toolbarButton).addClass('disabled');
+    //             $(toolbarButton).find('*').addClass('disabled');
+    //         } else {
+    //             $(toolbarButton).removeClass('disabled');
+    //             $(toolbarButton).find('*').removeClass('disabled');
+    //         }
+    //     }
+    // }
 });
 
 Template.caseProgress.onDestroyed(() => {
