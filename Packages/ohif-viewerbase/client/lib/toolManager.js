@@ -7,9 +7,9 @@ let activeTool;
 let tools = {};
 let initialized = false;
 let defaultTool = {
-    left: 'Wwwc',
-    right: 'Zoom',
-    middle: 'Pan'
+    left: 'wwwc',
+    right: 'zoom',
+    middle: 'pan'
 };
 const buttonNum = {
     'left': 1,
