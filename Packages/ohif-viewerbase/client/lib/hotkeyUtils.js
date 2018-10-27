@@ -13,7 +13,13 @@ import { WLPresets } from './WLPresets';
 // TODO: add this to namespace definitions
 Meteor.startup(function() {
     OHIF.viewer.loadIndicatorDelay = 200;
-    OHIF.viewer.defaultTool = 'Wwwc';
+
+    OHIF.viewer.defaultTool = {
+        left: 'wwwc',
+        right: 'zoom',
+        middle: 'pan'
+    };
+
     OHIF.viewer.refLinesEnabled = true;
     OHIF.viewer.isPlaying = {};
     OHIF.viewer.cine = {
@@ -24,17 +30,17 @@ Meteor.startup(function() {
     OHIF.viewer.defaultHotkeys = {
         // Tool hotkeys
         defaultTool: 'ESC',
-        Zoom: 'Z',
-        Wwwc: 'W',
-        Pan: 'P',
-        Angle: 'A',
-        StackScroll: 'S',
-        Magnify: 'M',
-        Length: '',
-        Annotate: '',
-        DragProbe: '',
-        EllipticalRoi: '',
-        RectangleRoi: '',
+        zoom: 'Z',
+        wwwc: 'W',
+        pan: 'P',
+        angle: 'A',
+        stackScroll: 'S',
+        magnify: 'M',
+        length: '',
+        annotate: '',
+        dragProbe: '',
+        ellipticalRoi: '',
+        rectangleRoi: '',
 
         // Viewport hotkeys
         flipH: 'H',
@@ -102,25 +108,24 @@ Meteor.startup(function() {
     // Register the default tool command
     OHIF.commands.register(contextName, 'defaultTool', {
         name: 'Default Tool',
-        action: () => toolManager.setActiveTool(toolManager.getDefaultTool())
+        action: () => toolManager.setActiveTool()
     });
 
     // Register the tool switching commands
     registerToolCommands({
-        Wwwc: 'W/L',
-        Zoom: 'Zoom',
-        Angle: 'Angle Measurement',
-        DragProbe: 'Pixel Probe',
-        StackScroll: 'Stack Scroll',
-        EllipticalRoi: 'Elliptical ROI',
-        RectangleRoi: 'Rectangle ROI',
-        Magnify: 'Magnify',
-        ArrowAnnotate: 'Annotate',
-        stackScrollMouseWheel: 'Scroll Stack Mouse Wheel',
-        Pan: 'Pan',
-        Length: 'Length Measurement',
-        WwwcRegion: 'W/L by Region',
-        Crosshairs: 'Crosshairs'
+        wwwc: 'W/L',
+        zoom: 'Zoom',
+        angle: 'Angle Measurement',
+        dragProbe: 'Pixel Probe',
+        ellipticalRoi: 'Elliptical ROI',
+        rectangleRoi: 'Rectangle ROI',
+        magnify: 'Magnify',
+        annotate: 'Annotate',
+        stackScroll: 'Scroll Stack',
+        pan: 'Pan',
+        length: 'Length Measurement',
+        wwwcRegion: 'W/L by Region',
+        crosshairs: 'Crosshairs'
     });
 
     // Functions to register the viewport commands
