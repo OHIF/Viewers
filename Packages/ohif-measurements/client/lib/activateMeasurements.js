@@ -2,6 +2,8 @@ import { $ } from 'meteor/jquery';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { OHIF } from 'meteor/ohif:core';
 
+const scrollToIndex = cornerstoneTools.import('util/scrollToIndex');
+
 /**
  * Activates a specific tool data instance and deactivates all other
  * target and non-target measurement data
@@ -76,7 +78,7 @@ OHIF.measurements.activateMeasurements = (element, measurementData) => {
     // If we aren't currently displaying the image that this tool is on,
     // scroll to it now.
     if (currentImageId !== imageId) {
-        cornerstoneTools.scrollToIndex(element, imageIdIndex);
+        scrollToIndex(element, imageIdIndex);
     }
 
     const $element = $(element);

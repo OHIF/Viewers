@@ -42,11 +42,12 @@ export const toolManager = {
             magnify: 'MagnifyTool',
             crosshairs: 'CrosshairsTool',
             stackScroll: 'StackScrollTool',
-            zoomTouchPinch: 'ZoomTouchPinchTool',
-            zoomMouseWheel: 'ZoomMouseWheelTool',
             ellipticalRoi: 'EllipticalRoiTool',
             rectangleRoi: 'RectangleRoiTool',
-            wwwcRegion: 'WwwcRegionTool'
+            wwwcRegion: 'WwwcRegionTool',
+            zoomTouchPinch: 'ZoomTouchPinchTool',
+            panMultiTouch: 'PanMultiTouchTool',
+            stackScrollMouseWheel: 'StackScrollMouseWheelTool'
         };
 
         initialized = true;
@@ -109,8 +110,6 @@ export const toolManager = {
             }
         }
 
-        toolManager.setAllToolsPassive();
-
         // Set active tools for the other buttons than this one
         switch(button) {
             case 'left':
@@ -146,20 +145,38 @@ export const toolManager = {
         Session.set('ToolManagerActiveToolUpdated', Random.id());
     },
 
-    setAllToolsPassive() {
-        cornerstoneTools.store.state.tools.forEach((tool) => {
-            cornerstoneTools.setToolPassive(tool.name)
-        });
-    },
-
     instantiateTools() {
+        // Instantiate all cornerstone tools for all enabled elements
         Object.keys(tools).forEach(toolName => {
             const apiTool = cornerstoneTools[tools[toolName]];
             if (apiTool) {
                 cornerstoneTools.addTool(apiTool, { name: toolName });
             }
         });
-        toolManager.setAllToolsPassive();
+
+        // Activate pinch zoom
+        cornerstoneTools.setToolActive('zoomTouchPinch', {
+            mouseButtonMask: 0,
+            isTouchActive: true
+        });
+
+        // Activate two-finger pan
+        cornerstoneTools.setToolActive('panMultiTouch', {
+            mouseButtonMask: 0,
+            isTouchActive: true
+        });
+
+        // Activate mouse wheel and three (or more) finger stack scroll
+        cornerstoneTools.setToolActive('stackScrollMouseWheel', {
+            mouseButtonMask: 0,
+            isTouchActive: true
+        });
+    },
+
+    removeToolsForElement(element) {
+        Object.keys(tools).forEach(toolName => {
+            cornerstoneTools.removeToolForElement(element, toolName);
+        });
     },
 
     getNearbyToolData() {
