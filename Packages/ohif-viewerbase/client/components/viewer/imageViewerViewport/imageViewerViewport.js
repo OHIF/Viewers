@@ -277,8 +277,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             cornerstoneTools.playClip(element);
         }
 
-        // InstantiateTools on the new element.
-        toolManager.instantiateTools(element);
+        // Instantiate the tools
+        toolManager.instantiateTools();
 
         // Use the tool manager to enable the currently active tool for this
         // newly rendered element
@@ -656,17 +656,13 @@ Template.imageViewerViewport.onDestroyed(function() {
         return;
     }
 
-    // Disable mouse functions
-    cornerstoneTools.mouseInput.disable(element);
-    cornerstoneTools.touchInput.disable(element);
-    cornerstoneTools.mouseWheelInput.disable(element);
+    // Remove all tools for the destroyed element
+    toolManager.removeToolsForElement(element);
 
     OHIF.viewer.updateImageSynchronizer.remove(element);
 
     // Clear the stack prefetch data
-    let stackPrefetchData = cornerstoneTools.getToolState(element, 'stackPrefetch');
-    stackPrefetchData = [];
-    cornerstoneTools.stackPrefetch.disable(element);
+    cornerstoneTools.clearToolState(element, 'stackPrefetch');
 
     // Try to stop any currently playing clips
     // Otherwise the interval will continuously throw errors

@@ -1,4 +1,7 @@
 import { viewportUtils } from './viewportUtils';
+import { cornerstoneTools } from 'meteor/ohif:cornerstone';
+
+const scrollToIndex = cornerstoneTools.import('util/scrollToIndex');
 
 /**
  * This function switches to an image given an element and the index of the image in the current stack
@@ -11,5 +14,5 @@ import { viewportUtils } from './viewportUtils';
  */
 export function switchToImageByIndex(newImageIdIndex) {
     var element = viewportUtils.getActiveViewportElement();
-    cornerstoneTools.scrollToIndex(element, newImageIdIndex);
+    scrollToIndex(element, newImageIdIndex);
 }
