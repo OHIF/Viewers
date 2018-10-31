@@ -5,15 +5,27 @@ services:
     ports:
       - "27017:27017"
 
+  orthanc:
+    image: jodogne/orthanc-plugins:latest
+    ports:
+      - "8042:8042"
+      - "4242:4242"
+    volumes:
+      - orthanc-data:/var/lib/orthanc/db/
+
   viewer:
     image: ohif/viewer:latest
     ports:
       - "3000:3000"
     links:
       - mongo
+      - orthanc
+      - "orthanc:pacsIP"
+      - "orthanc:pacsip"
     environment:
       - MONGO_URL=mongodb://mongo:27017/ohif
-    extra_hosts:
-      - "pacsIP:192.168.0.2"
     volumes:
       - ./dockersupport/app.json:/app/app.json
+
+volumes:
+  orthanc-data:

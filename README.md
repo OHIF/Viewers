@@ -13,7 +13,26 @@ Community
 
 Have questions?  Try posting on our [google groups forum](https://groups.google.com/forum/#!forum/cornerstone-platform).
 
-### Docker usage
+
+### Run the viewer
+
+Easiest way to run the OHIF viewer is to use `docker-compose`. Here are the instructions:
+
+````
+git clone https://github.com/OHIF/Viewers.git
+
+# alternatively you can just download the required files.
+wget https://raw.githubusercontent.com/OHIF/Viewers/master/docker-compose.yml -O docker-compose.yml
+mkdir dockersupport && https://raw.githubusercontent.com/OHIF/Viewers/master/dockersupport/app.json -O dockersupport/app.json
+
+docker-compose up
+````
+
+This runs
+1. Orthanc web interface at `http://0.0.0.0:8042/` (username: `orthanc`, password: `orthanc`). Orthanc dicom server is run on port 4242. You can use the web interface to upload dicoms.
+2. OHIF viewer itself at `http://0.0.0.0:3000/`. You should be able to query and open the dicoms uploaded to orthanc.
+
+### Orthanc Docker usage
 Following the instructions below, the docker image will listen for DICOM connections on port 4242, and for web traffic on port 8042. The default username for the web interface is `orthanc`, and the password is `orthanc`.
 #### Temporary data storage
 ````
