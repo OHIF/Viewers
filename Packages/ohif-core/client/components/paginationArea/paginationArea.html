@@ -8,13 +8,22 @@
                     <span>rows per page</span>
                 </div>
             </div>
-            <div class="col-xs-8 col-sm-9 col-md-9">
-                <div class="form-inline form-group page-number">
-                    <label>
-                        <ul class="pagination-control no-margins"></ul>
-                    </label>
+            {{#if paginationButtonsEnabled}}
+                <div class="col-xs-8 col-sm-9 col-md-9">
+                    <div class="form-inline form-group page-buttons noselect">
+                        <label>
+                            <ul class="pagination-control no-margins">
+                                <li class="page-item prev disabled">
+                                    <a href="#" class="page-link">Previous</a>
+                                </li>
+                                <li class="page-item next disabled">
+                                    <a href="#" class="page-link">Next</a>
+                                </li>
+                            </ul>
+                        </label>
+                    </div>
                 </div>
-            </div>
+            {{/if}}
         </div>
     {{/form}}
 </template>

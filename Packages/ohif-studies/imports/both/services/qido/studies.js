@@ -32,8 +32,8 @@ function dateToString(date) {
  * Produces a QIDO URL given server details and a set of specified search filter
  * items
  *
- * @param server
  * @param filter
+ * @param serverSupportsQIDOIncludeField
  * @returns {string} The URL with encoded filter query data
  */
 function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
@@ -50,6 +50,7 @@ function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
         StudyDescription: filter.studyDescription,
         ModalitiesInStudy: filter.modalitiesInStudy,
         limit: filter.limit,
+        offset: filter.offset,
         includefield: serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all'
     };
 

@@ -1,5 +1,4 @@
 Npm.depends({
-    'twbs-pagination': '1.4.1',
     'isomorphic-base64': '1.0.2',
 });
 

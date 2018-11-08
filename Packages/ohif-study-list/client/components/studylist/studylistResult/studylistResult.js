@@ -25,12 +25,6 @@ Template.studylistResult.helpers({
             sortOption = Session.get('sortOption');
         }
 
-        // Pagination parameters
-        const rowsPerPage = instance.paginationData.rowsPerPage.get();
-        const currentPage = instance.paginationData.currentPage.get();
-        const offset = rowsPerPage * currentPage;
-        const limit = offset + rowsPerPage;
-
         const studies = OHIF.studylist.collections.Studies.find({}, {
             sort: sortOption
         }).fetch();
@@ -42,8 +36,7 @@ Template.studylistResult.helpers({
         // Update record count
         instance.paginationData.recordCount.set(studies.length);
 
-        // Limit studies
-        return studies.slice(offset, limit);
+        return studies;
     },
 
     numberOfStudies() {
@@ -104,7 +97,7 @@ function replaceUndefinedColumnValue(text) {
  * Runs a search for studies matching the studylist query parameters
  * Inserts the identified studies into the Studies Collection
  */
-function search() {
+function search(instance) {
     OHIF.log.info('search()');
 
     // Show loading message
@@ -113,8 +106,14 @@ function search() {
     // Hiding error message
     Session.set('serverError', false);
 
+    // Pagination parameters
+    const rowsPerPage = instance.paginationData.rowsPerPage.get();
+    const currentPage = instance.paginationData.currentPage.get();
+
     // Create the filters to be used for the StudyList Search
     filter = {
+        offset: rowsPerPage * currentPage,
+        limit: rowsPerPage,
         patientName: getFilter($('input#patientName').val()),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
@@ -259,7 +258,20 @@ Template.studylistResult.onRendered(() => {
         }
     }).data('daterangepicker');
 
-    search();
+    search(instance);
+
+    // Search when rowsPerPage or currentPage is changed
+    instance.autorun(computation => {
+        instance.paginationData.rowsPerPage.dep.depend();
+        instance.paginationData.currentPage.dep.depend();
+
+        // Stop here if it is the first run
+        if (computation.firstRun) {
+            return;
+        }
+
+        search(instance);
+    });
 });
 
 Template.studylistResult.onDestroyed(() => {
@@ -278,17 +290,17 @@ function resetSortingColumns(instance, sortingColumn) {
 }
 
 Template.studylistResult.events({
-    'keydown input'(event) {
+    'keydown input'(event, instance) {
         if (event.which === 13) { //  Enter
-            search();
+            search(instance);
         }
     },
 
-    'onsearch input'() {
-        search();
+    'onsearch input'(event, instance) {
+        search(instance);
     },
 
-    'change #studyDate'(event) {
+    'change #studyDate'(event, instance) {
         let dateRange = $(event.currentTarget).val();
 
         // Remove all space chars
@@ -300,7 +312,7 @@ Template.studylistResult.events({
         studyDateTo = dates[1];
 
         if (dateRange !== '') {
-            search();
+            search(instance);
         }
     },
 
