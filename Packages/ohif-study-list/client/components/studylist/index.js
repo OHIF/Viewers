@@ -1,4 +1,5 @@
 import './studylist.html';
+import './studylist.js';
 import './studylist.styl';
 
 import './studylistStudy/studylistStudy.html';

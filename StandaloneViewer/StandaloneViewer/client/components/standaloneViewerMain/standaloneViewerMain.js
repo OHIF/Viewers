@@ -18,6 +18,9 @@ Template.standaloneViewerMain.onCreated(() => {
     // Metadata configuration
     const metadataProvider = OHIF.viewer.metadataProvider;
     cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+
+    // Set the current context
+    OHIF.context.set('viewer');
 });
 
 Template.standaloneViewerMain.onRendered(() => {
@@ -58,4 +61,7 @@ Template.standaloneViewerMain.onDestroyed(() => {
 
     // Clear references to all stacks in the StackManager
     OHIF.viewerbase.stackManager.clearStacks();
+
+    // Reset the current context
+    OHIF.context.set(null);
 });
