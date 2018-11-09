@@ -47,6 +47,112 @@ const paletteColorCache = {
     }
 };
 
+function getRelationshipString (data) {
+    const relationshipType = DICOMWeb.getString(data['0040A010'])
+
+    switch (relationshipType) {
+        case 'HAS CONCEPT MOD':
+            return 'Concept modifier: ';
+        case 'HAS OBS CONTEXT':
+           return 'Observation context: ';
+        default:
+            return '';
+    }
+}
+
+const getNestedObject = (data) => data.Value[0] || {}
+
+const getMeaningString = (data) => (data['0040A043'] && `${DICOMWeb.getString(data['0040A043'].Value[0]['00080104'])} = `) || '';
+
+function getValueString (data) {
+    switch (DICOMWeb.getString(data['0040A040'])) { // ValueType
+        case 'CODE':
+            const conceptCode = getNestedObject(data['0040A168']);
+            const conceptCodeValue = DICOMWeb.getString(conceptCode['00080100']);
+            const conceptCodeMeaning = DICOMWeb.getString(conceptCode['00080104']);
+            const schemeDesignator = DICOMWeb.getString(conceptCode['00080102']);
+            return `${conceptCodeMeaning} (${conceptCodeValue}, ${schemeDesignator})`;
+
+        case 'PNAME':
+            return DICOMWeb.getName(data['0040A123']);
+
+        case 'TEXT':
+            return DICOMWeb.getString(data['0040A160']);
+
+        case 'UIDREF':
+            return DICOMWeb.getString(data['0040A124']);
+
+        case 'NUM':
+            const numValue = DICOMWeb.getString(getNestedObject(data['0040A300'])['0040A30A']);
+            const codeValue = DICOMWeb.getString(getNestedObject(getNestedObject(data['0040A300'])['004008EA'])['00080100']);
+            return `${numValue} ${codeValue}`;
+    }
+}
+
+function constructPlainValue(data) {
+    const value = getValueString(data);
+
+    if (value) {
+        return getRelationshipString(data) + getMeaningString(data) + value;
+    }
+}
+
+function constructContentSequence(data, header) {
+    if (!data['0040A730'].Value) {
+        return;
+    }
+
+    const items = data['0040A730'].Value.map(item => parseContent(item)).filter(item => item);
+
+    if (items.length) {
+        const result = {
+            items
+        };
+
+        if (header) {
+            result.header = header;
+        }
+
+        return result;
+    }
+}
+
+/**
+ * Recursively parses content sequence for structured reports
+ *
+ * @param instance The instance
+ * @returns {Array} Series List
+ */
+
+function parseContent(instance) {
+    if (instance['0040A040']) { // ValueType
+        if (DICOMWeb.getString(instance['0040A040']) === 'CONTAINER') {
+            const header = DICOMWeb.getString(getNestedObject(instance['0040A043'])['00080104']); // TODO: check with real data
+            return constructContentSequence(instance, header);
+        }
+
+        return constructPlainValue(instance);
+    }
+
+    if (instance['0040A730']) { //ContentSequence
+        return constructContentSequence(instance);
+    }
+}
+
+function getModality(instance) {
+    const modality = DICOMWeb.getString(instance['00080060']);
+    return modality || (!!instance['0040A730'] && 'SR') || undefined; // FIXME: dirty, dirty hack, we use 
+}
+
+function getContentDateTime(instance) {
+    const date = DICOMWeb.getString(instance['00080023'])
+    const time = DICOMWeb.getString(instance['00080033'])
+
+    if (date && time) { 
+        return `${date.substr(0, 4)}-${date.substr(4, 2)}-${date.substr(6, 2)} ${time.substr(0, 2)}:${time.substr(2, 2)}:${time.substr(4, 2)}`
+    }
+}
+
 /**
  * Parses data returned from a QIDO search and transforms it into
  * an array of series that are present in the study
@@ -73,7 +179,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                     seriesInstanceUid: seriesInstanceUid,
                     seriesNumber: DICOMWeb.getString(instance['00200011']),
                     seriesDescription: DICOMWeb.getString(instance['0008103E']),
-                    modality: DICOMWeb.getString(instance['00080060']),
+                    modality: getModality(instance),
                     seriesDate: DICOMWeb.getString(instance['00080021']),
                     seriesTime: DICOMWeb.getString(instance['00080031']),
                     instances: []
@@ -95,6 +201,11 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             // NOTE: Haven't been able to get Orthanc's WADO-URI to work yet - maybe its not configured?
             var sopInstanceUid = DICOMWeb.getString(instance['00080018']);
             const instanceSummary = {
+                contentSequence: parseContent(instance),
+                completionFlag: DICOMWeb.getString(instance['0040A491']),
+                manufacturer: DICOMWeb.getString(instance['00080070']),
+                verificationFlag: DICOMWeb.getString(instance['0040A493']),
+                contentDateTime: getContentDateTime(instance),
                 sopClassUid: DICOMWeb.getString(instance['00080016']),
                 sopInstanceUid: sopInstanceUid,
                 seriesInstanceUid: seriesInstanceUid,
