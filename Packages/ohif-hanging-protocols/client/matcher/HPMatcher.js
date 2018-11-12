@@ -2,6 +2,7 @@
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 // Local imports
+import { validate } from '../lib/validate.js';
 import '../customAttributes';
 
 /**
@@ -102,7 +103,8 @@ const match = (metadataInstance, rules) => {
 
     return {
         score,
-        details
+        details,
+        requiredFailed
     };
 };
 

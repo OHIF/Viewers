@@ -1,15 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
-import { DICOMWeb } from 'meteor/ohif:dicomweb-client';
+import DICOMwebClient from 'dicomweb-client';
 
-/**
- * Creates a QIDO URL given the server settings and a study instance UID
- * @param server
- * @param studyInstanceUid
- * @returns {string} URL to be used for QIDO calls
- */
-function buildUrl(server, studyInstanceUid) {
-    return server.qidoRoot + '/studies/' + studyInstanceUid + '/instances';
-}
+const { DICOMWeb } = OHIF;
 
 /**
  * Parses data returned from a QIDO search and transforms it into
@@ -76,20 +68,23 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * @returns {{wadoUriRoot: String, studyInstanceUid: String, seriesList: Array}}
  */
 OHIF.studies.services.QIDO.Instances = function(server, studyInstanceUid) {
-    var url = buildUrl(server, studyInstanceUid);
+    // TODO: Are we using this function anywhere?? Can we remove it?
 
-    try {
-        var result = DICOMWeb.getJSON(url, server.requestOptions);
+    const config = {
+        url: server.qidoRoot,
+        headers: OHIF.DICOMWeb.getAuthorizationHeader()
+    };
+    const dicomWeb = new DICOMwebClient.api.DICOMwebClient(config);
+    const queryParams = getQIDOQueryParams(filter, server.qidoSupportsIncludeField);
+    const options = {
+        studyInstanceUID: studyInstanceUid
+    };
 
+    return dicomWeb.searchForInstances(options).then(result => {
         return {
             wadoUriRoot: server.wadoUriRoot,
             studyInstanceUid: studyInstanceUid,
             seriesList: resultDataToStudyMetadata(server, studyInstanceUid, result.data)
         };
-    } catch (error) {
-        OHIF.log.trace();
-
-        throw error;
-    }
-
+    });
 };

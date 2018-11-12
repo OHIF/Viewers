@@ -15,8 +15,5 @@ export function getWADORSImageId(instance, frame) {
         return;
     }
 
-    const imageId = `wadors:${uri}`;
-    OHIF.log.info('WADO-RS ImageID: ' + imageId);
-
-    return imageId;
+    return `wadors:${uri}`;
 };

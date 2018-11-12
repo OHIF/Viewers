@@ -52,25 +52,33 @@ OHIF.ui.showPopover = (templateName, popoverData, options={}) => {
     const popoverOptions = Object.assign({} , defaults, options);
     popoverOptions.content = Blaze.toHTMLWithData(template, popoverData);
 
+    if (popoverOptions.hideOnClick) {
+        $element.click(function() {
+            $(this).popover('hide');
+        });
+    }
+
     $element.popover(popoverOptions);
 
-    $element.one('shown.bs.popover', function(event) {
-        const popoverId = $element.attr('aria-describedby');
-        const popover = document.getElementById(popoverId);
-        const $popover = $(popover);
-        const $popoverContent = $popover.find('.popover-content');
-        const dismissPopover = () => $element.popover('hide');
+    if (popoverOptions.trigger !== 'hover') {
+        $element.one('shown.bs.popover', function(event) {
+            const popoverId = $element.attr('aria-describedby');
+            const popover = document.getElementById(popoverId);
+            const $popover = $(popover);
+            const $popoverContent = $popover.find('.popover-content');
+            const dismissPopover = () => $element.popover('hide');
 
-        $popoverContent.html('');
+            $popoverContent.html('');
 
-        const view = Blaze.renderWithData(template, templateData, $popoverContent[0]);
-        $element.one('hidden.bs.popover', () => {
-            Blaze.remove(view);
-            $element.popover('destroy');
+            const view = Blaze.renderWithData(template, templateData, $popoverContent[0]);
+            $element.one('hidden.bs.popover', () => {
+                Blaze.remove(view);
+                $element.popover('destroy');
+            });
+
+            promise.then(dismissPopover).catch(dismissPopover);
         });
-
-        promise.then(dismissPopover).catch(dismissPopover);
-    });
+    }
 
     if (popoverOptions.trigger === 'manual') {
         $element.popover('show');

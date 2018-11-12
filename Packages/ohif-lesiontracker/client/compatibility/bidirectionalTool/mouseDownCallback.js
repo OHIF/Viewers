@@ -5,6 +5,7 @@ import { toolType, distanceThreshold } from './definitions';
 import mouseMoveCallback from './mouseMoveCallback';
 import pointNearTool from './pointNearTool';
 import moveHandle from './moveHandle';
+import invertHandles from './invertHandles';
 
 // Clear the selected state for the given handles object
 const unselectAllHandles = handles => {
@@ -88,9 +89,14 @@ export default function(event) {
     for (let i = 0; i < toolData.data.length; i++) {
         data = toolData.data[i];
         const handleParams = [element, data.handles, coords, distanceThreshold];
-        const handle = cornerstoneTools.getHandleNearImagePoint(...handleParams);
+        let handle = cornerstoneTools.getHandleNearImagePoint(...handleParams);
 
         if (handle) {
+            handle.moving = true;
+
+            // Invert handles if needed
+            handle = invertHandles(eventData, data, handle);
+
             // Hide the cursor to improve precision while resizing the line or set to move
             // if dragging text box
             $element.css('cursor', handle.hasBoundingBox ? 'move' : 'none');
@@ -99,7 +105,6 @@ export default function(event) {
             data.active = true;
 
             unselectAllHandles(data.handles);
-            handle.moving = true;
             moveHandle(eventData, toolType, data, handle, () => handleDoneMove(handle));
             event.stopImmediatePropagation();
             event.stopPropagation();

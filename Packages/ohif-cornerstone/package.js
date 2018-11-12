@@ -11,11 +11,11 @@ Npm.depends({
     'cornerstone-math': '0.1.6',
     'dicom-parser': '1.8.0',
     'cornerstone-wado-image-loader': '2.1.4',
-    'dcmjs': '0.1.5'
+    'dcmjs': '0.2.1'
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.5');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
 

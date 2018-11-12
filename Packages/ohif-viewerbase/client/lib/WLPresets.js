@@ -153,7 +153,7 @@ class WindowLevelPresetsManager {
         return new Promise((resolve, reject) => {
             if (this.retrieveFunction) {
                 this.retrieveFunction.call(this).then(resolve).catch(reject);
-            } else if (OHIF.user) {
+            } else if (OHIF.user.userLoggedIn()) {
                 try {
                     resolve(OHIF.user.getData(WL_STORAGE_KEY));
                 } catch(error) {

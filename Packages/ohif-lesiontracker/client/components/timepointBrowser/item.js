@@ -62,7 +62,7 @@ Template.timepointBrowserItem.onCreated(() => {
 });
 
 Template.timepointBrowserItem.events({
-    'ohif.lesiontracker.timepoint.load .timepoint-item'(event, instance) {
+    'ohif.measurements.timepoint.load .timepoint-item'(event, instance) {
         instance.loadStudies();
     },
 
@@ -71,7 +71,7 @@ Template.timepointBrowserItem.events({
         const $element = $(element);
 
         const triggerClick = () => {
-            $element.trigger('ohif.lesiontracker.timepoint.click', instance.data.timepoint);
+            $element.trigger('ohif.measurements.timepoint.click', instance.data.timepoint);
         };
 
         if (!instance.studiesData.get()) {

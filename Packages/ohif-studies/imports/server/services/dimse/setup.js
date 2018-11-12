@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 import { CurrentServer } from 'meteor/ohif:servers/both/collections';
+import DIMSE from 'dimse';
 
 const setupDIMSE = () => {
     // Terminate existing DIMSE servers and sockets and clean up the connection object

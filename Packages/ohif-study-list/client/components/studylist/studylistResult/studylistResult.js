@@ -15,7 +15,6 @@ Template.studylistResult.helpers({
      */
     studies() {
         const instance = Template.instance();
-        let studies;
         let sortOption = {
             patientName: 1,
             studyDate: 1
@@ -26,13 +25,7 @@ Template.studylistResult.helpers({
             sortOption = Session.get('sortOption');
         }
 
-        // Pagination parameters
-        const rowsPerPage = instance.paginationData.rowsPerPage.get();
-        const currentPage = instance.paginationData.currentPage.get();
-        const offset = rowsPerPage * currentPage;
-        const limit = offset + rowsPerPage;
-
-        studies = OHIF.studylist.collections.Studies.find({}, {
+        const studies = OHIF.studylist.collections.Studies.find({}, {
             sort: sortOption
         }).fetch();
 
@@ -43,8 +36,7 @@ Template.studylistResult.helpers({
         // Update record count
         instance.paginationData.recordCount.set(studies.length);
 
-        // Limit studies
-        return studies.slice(offset, limit);
+        return studies;
     },
 
     numberOfStudies() {
@@ -91,17 +83,6 @@ function getFilter(filter) {
 }
 
 /**
- * Search for a value in a string
- */
-function isIndexOf(mainVal, searchVal) {
-    if (mainVal === undefined || mainVal === '' || mainVal.indexOf(searchVal) > -1){
-        return true;
-    }
-
-    return false;
-}
-
-/**
  * Replace object if undefined
  */
 function replaceUndefinedColumnValue(text) {
@@ -113,21 +94,10 @@ function replaceUndefinedColumnValue(text) {
 }
 
 /**
- * Convert string to study date
- */
-function convertStringToStudyDate(dateStr) {
-    const y = dateStr.substring(0, 4);
-    const m = dateStr.substring(4, 6);
-    const d = dateStr.substring(6, 8);
-    const newDateStr = m + '/' + d + '/' + y;
-    return new Date(newDateStr);
-}
-
-/**
  * Runs a search for studies matching the studylist query parameters
  * Inserts the identified studies into the Studies Collection
  */
-function search() {
+function search(instance) {
     OHIF.log.info('search()');
 
     // Show loading message
@@ -136,8 +106,14 @@ function search() {
     // Hiding error message
     Session.set('serverError', false);
 
+    // Pagination parameters
+    const rowsPerPage = instance.paginationData.rowsPerPage.get();
+    const currentPage = instance.paginationData.currentPage.get();
+
     // Create the filters to be used for the StudyList Search
     filter = {
+        offset: rowsPerPage * currentPage,
+        limit: rowsPerPage,
         patientName: getFilter($('input#patientName').val()),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
@@ -153,28 +129,37 @@ function search() {
 
     OHIF.studies.searchStudies(filter).then((studies) => {
         OHIF.log.info('StudyListSearch');
-        // Hide loading text
 
+        // Hide loading text
         Session.set('showLoadingText', false);
+
+        // Clear all current studies
+        OHIF.studylist.collections.Studies.remove({});
 
         if (!studies) {
             OHIF.log.warn('No studies found');
             return;
         }
 
-        // Clear all current studies
-        OHIF.studylist.collections.Studies.remove({});
-
         // Loop through all identified studies
         studies.forEach(study => {
-            // Search the rest of the parameters that aren't done via the server call
-            if (isIndexOf(study.modalities, modality) &&
-                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === '') &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
+            // TODO: Why is this Modality filter different from QIDO?
+            if (!modality && !study.modalities.includes(modality)) {
+                return;
+            }
 
+            // Sometimes DICOM studies have incorrect Date entries with
+            // periods such as '1990.10.04'
+            let studyDate = study.studyDate;
+            if (studyDate && studyDate.includes('.')) {
+                studyDate = studyDate.replace('.', '');
+            }
+
+            // Search the rest of the parameters that aren't done via the server call
+            if ((moment(studyDateFrom, "MM/DD/YYYY").isBefore(moment(studyDate, "YYYYMMDD")) || !studyDateFrom ) &&
+                (moment(studyDate, "YYYYMMDD").isBefore(moment(studyDateTo, "MM/DD/YYYY")) || !studyDateTo || studyDateTo === '')) {
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : undefined;
-
                 // Insert any matching studies into the Studies Collection
                 OHIF.studylist.collections.Studies.insert(study);
             }
@@ -273,7 +258,20 @@ Template.studylistResult.onRendered(() => {
         }
     }).data('daterangepicker');
 
-    search();
+    search(instance);
+
+    // Search when rowsPerPage or currentPage is changed
+    instance.autorun(computation => {
+        instance.paginationData.rowsPerPage.dep.depend();
+        instance.paginationData.currentPage.dep.depend();
+
+        // Stop here if it is the first run
+        if (computation.firstRun) {
+            return;
+        }
+
+        search(instance);
+    });
 });
 
 Template.studylistResult.onDestroyed(() => {
@@ -292,17 +290,17 @@ function resetSortingColumns(instance, sortingColumn) {
 }
 
 Template.studylistResult.events({
-    'keydown input'(event) {
+    'keydown input'(event, instance) {
         if (event.which === 13) { //  Enter
-            search();
+            search(instance);
         }
     },
 
-    'onsearch input'() {
-        search();
+    'onsearch input'(event, instance) {
+        search(instance);
     },
 
-    'change #studyDate'(event) {
+    'change #studyDate'(event, instance) {
         let dateRange = $(event.currentTarget).val();
 
         // Remove all space chars
@@ -314,7 +312,7 @@ Template.studylistResult.events({
         studyDateTo = dates[1];
 
         if (dateRange !== '') {
-            search();
+            search(instance);
         }
     },
 

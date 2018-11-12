@@ -10,7 +10,7 @@ Npm.depends({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
     api.use('clinical:router@2.0.19');
@@ -22,7 +22,7 @@ Package.onUse(function(api) {
     api.addFiles('both/convertURL.js', ['client', 'server']);
     api.addFiles('both/initialize.js', ['client', 'server']);
     api.addFiles('server/routes.js', 'server');
-    
+
     // Global exports
     api.export('WADOProxy');
 });

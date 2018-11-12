@@ -28,6 +28,9 @@ Template.viewerMain.onCreated(() => {
 
     // Add beforeUnload event handler to check for unsaved changes
     window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
+
+    // Set the current context
+    OHIF.context.set('viewer');
 });
 
 Template.viewerMain.onRendered(() => {
@@ -82,4 +85,7 @@ Template.viewerMain.onDestroyed(() => {
     // @TypeSafeStudies
     // Clears OHIF.viewer.StudyMetadataList collection
     OHIF.viewer.StudyMetadataList.removeAll();
+
+    // Reset the current context
+    OHIF.context.set(null);
 });

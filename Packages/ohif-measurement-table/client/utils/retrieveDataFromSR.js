@@ -1,36 +1,58 @@
 import { dcmjs } from 'meteor/ohif:cornerstone';
-import getLengthMeasurementData from './getLengthMeasurementData';
-import { toArray, codeMeaningEquals, getAllDisplaySets } from './srUtils'
+import {getAllDisplaySets, getInstanceMetadata} from './srUtils'
 
 const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
-    // Identify the Imaging Measurements
-    const imagingMeasurementContent = toArray(dataset.ContentSequence).find(codeMeaningEquals("Imaging Measurements"));
+    const { MeasurementReport } = dcmjs.adapters.Cornerstone;
+    const storedMeasurementByToolType = MeasurementReport.generateToolState(dataset);
+    const measurementData = {};
+    let measurementNumber = 0;
 
-    // Retrieve the Measurements themselves
-    const measurementGroupContent = toArray(imagingMeasurementContent.ContentSequence).find(codeMeaningEquals("Measurement Group"));
+    Object.keys(storedMeasurementByToolType).forEach(toolType => {
+        const measurements = storedMeasurementByToolType[toolType];
+        measurementData[toolType] = [];
 
-    // For now, bail out if the dataset is not a TID1500 SR with length measurements
-    // TODO: generalize to the various kinds of report
-    // TODO: generalize to the kinds of measurements the Viewer supports
-    if (dataset.ContentTemplateSequence.TemplateIdentifier !== "1500") {
-        OHIF.log.warn("This package can currently only interpret DICOM SR TID 1500");
+        measurements.forEach(measurement => {
+            const instanceMetadata = getInstanceMetadata(displaySets, measurement.sopInstanceUid);
+            const imageId = OHIF.viewerbase.getImageId(instanceMetadata);
+            if (!imageId) {
+                return;
+            }
 
-        return {};
-    }
+            // TODO: Update the OHIF metadata provider, then switch these to use 'generalSeriesModule'
+            const study = cornerstone.metaData.get('study', imageId);
+            const series = cornerstone.metaData.get('series', imageId);
+            const imagePath = [
+                study.studyInstanceUid,
+                series.seriesInstanceUid,
+                measurement.sopInstanceUid,
+                measurement.frameIndex
+            ].join('_');
 
-    // Filter to find Length measurements in the Structured Report
-    const lengthMeasurementContent = toArray(measurementGroupContent.ContentSequence).filter(codeMeaningEquals("Length"));
+            const toolData = Object.assign({}, measurement, {
+                imageId,
+                imagePath,
+                seriesInstanceUid: series.seriesInstanceUid,
+                studyInstanceUid: study.studyInstanceUid,
+                patientId: study.patientId,
+                measurementNumber: ++measurementNumber,
+                timepointId: OHIF.viewer.data.currentTimepointId,
+                toolType,
+                _id: imageId + measurementNumber,
+            });
 
-    // Retrieve Length Measurement Data
-    return getLengthMeasurementData(lengthMeasurementContent, displaySets);
+            measurementData[toolType].push(toolData);
+        });
+    })
+
+    return measurementData;
 };
 
 export default retrieveDataFromSR = (Part10SRArrayBuffer) => {
     const allDisplaySets = getAllDisplaySets();
 
-    // get the dicom data as an Object
-    let dicomData = dcmjs.data.DicomMessage.readFile(Part10SRArrayBuffer);
-    let dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
+    // Get the dicom data as an Object
+    const dicomData = dcmjs.data.DicomMessage.readFile(Part10SRArrayBuffer);
+    const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomData.dict);
 
     // Convert the SR into the kind of object the Measurements package is expecting
     return imagingMeasurementsToMeasurementData(dataset, allDisplaySets);

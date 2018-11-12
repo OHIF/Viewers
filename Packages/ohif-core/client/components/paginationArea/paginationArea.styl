@@ -18,7 +18,7 @@
     select
       width: 42px
 
-  .page-number
+  .page-buttons
     margin: 0
     text-align: right
 
@@ -29,28 +29,34 @@
         margin: 0
 
         li
+          display: table-cell
+          padding: 5px 2px
+
           a
             padding: 4px 8px
             theme('background-color', '$primaryBackgroundColor')
             theme('border-color', '$uiGray')
             theme('background-color', '$uiGrayDarkest')
             color: white
-            padding: 4px 8px
+            text-decoration: none
 
             &:hover
               theme('color', '$activeColor')
 
-        .active
-          a
-            theme('background-color', '$uiGray')
-            border-color: #ddd
-            color: white
+          .active
+            a
+              theme('background-color', '$uiGray')
+              border-color: #ddd
+              color: white
 
         .disabled
+          cursor: not-allowed
+
           a, a:hover, a:focus, a:active
             theme('background-color', '$uiGrayDarkest')
             theme('border-color', '$uiGray')
             theme('color', '$uiGrayLight')
+            pointer-events: none
 
           &:not(.disabled):hover a
             theme('background-color', '$uiGrayDark')
