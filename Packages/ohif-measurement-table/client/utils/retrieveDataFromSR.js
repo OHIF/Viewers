@@ -1,9 +1,94 @@
-import { dcmjs } from 'meteor/ohif:cornerstone';
+import {dcmjs} from 'meteor/ohif:cornerstone';
 import getLengthMeasurementData from './getLengthMeasurementData';
-import { toArray, codeMeaningEquals, getAllDisplaySets } from './srUtils'
+import getElipseMeasurementData from './getElipseMeasurementData';
+import getArrowMeasurementData from './getArrowMeasurementData';
+import {toArray, graphicTypeEquals, codeMeaningEquals, getAllDisplaySets} from './srUtils'
 
 const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
     // Identify the Imaging Measurements
+    var imagingMeasurementsContent;
+    var imagingMeasurementsContentElipse;
+    if (dataset.GraphicAnnotationSequence) {
+        var arrayGraphic = [];
+        var arrayText = [];
+        dataset.GraphicAnnotationSequence.forEach(function (element) {
+            arrayGraphic = arrayGraphic.concat(element.GraphicObjectSequence);
+            if (element.TextObjectSequence) {
+                arrayText = arrayText.concat(element.TextObjectSequence);
+            }
+        });
+        imagingMeasurementsContent = toArray(arrayGraphic).filter(graphicTypeEquals("POLYLINE"));
+        imagingMeasurementsContent = imagingMeasurementsContent.concat(toArray(arrayGraphic).filter(graphicTypeEquals("INTERPOLATED")));
+        imagingMeasurementsContentElipse = toArray(arrayGraphic).filter(graphicTypeEquals("CIRCLE"));
+        var lineMeasurementContent = [];
+        var elipseMeasurementContent = [];
+        var arrowMeasurementContent = [];
+        toArray(imagingMeasurementsContent).forEach(function (element) {
+            for (var i = 0; i < element.GraphicData.length - 2; i += 2) {
+                var line = {};
+                line.ConceptNameCodeSequence = {};
+                line.ContentSequence = {};
+                line.ContentSequence.GraphicType = element.GraphicType;
+                line.ContentSequence.GraphicData = element.GraphicData.slice(i, i + 4);
+                line.ContentSequence.RelationshipType = "INFERRED FROM";
+                line.ContentSequence.ValueType = element.LineStyleSequence.LineDashingStyle;
+                line.ContentSequence.ContentSequence = {};
+                line.ContentSequence.ContentSequence.ReferencedSOPSequence = {};
+                line.ContentSequence.ContentSequence.ReferencedSOPSequence.ReferencedSOPClassUID = dataset.ReferencedSeriesSequence.ReferencedImageSequence.ReferencedSOPClassUID;
+                line.ContentSequence.ContentSequence.ReferencedSOPSequence.ReferencedSOPInstanceUID = dataset.ReferencedSeriesSequence.ReferencedImageSequence.ReferencedSOPInstanceUID;
+                line.MeasuredValueSequence = {};
+                line.MeasuredValueSequence.MeasurementUnitsCodeSequence = {};
+                line.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeMeaning = "millimeter";
+                line.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeValue = "mm";
+                line.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodingSchemeDesignator = "UCUM";
+                line.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodingSchemeVersion = "1.4";
+                lineMeasurementContent.push(line);
+            }
+        });
+        toArray(imagingMeasurementsContentElipse).forEach(function (element) {
+            var elipse = {};
+            elipse.ConceptNameCodeSequence = {};
+            elipse.ContentSequence = {};
+            elipse.ContentSequence.GraphicType = element.GraphicType;
+            elipse.ContentSequence.GraphicData = element.GraphicData;
+            elipse.ContentSequence.RelationshipType = "INFERRED FROM";
+            elipse.ContentSequence.ValueType = element.LineStyleSequence.LineDashingStyle;
+            elipse.ContentSequence.ContentSequence = {};
+            elipse.ContentSequence.ContentSequence.ReferencedSOPSequence = {};
+            elipse.ContentSequence.ContentSequence.ReferencedSOPSequence.ReferencedSOPClassUID = dataset.ReferencedSeriesSequence.ReferencedImageSequence.ReferencedSOPClassUID;
+            elipse.ContentSequence.ContentSequence.ReferencedSOPSequence.ReferencedSOPInstanceUID = dataset.ReferencedSeriesSequence.ReferencedImageSequence.ReferencedSOPInstanceUID;
+            elipse.MeasuredValueSequence = {};
+            elipse.MeasuredValueSequence.MeasurementUnitsCodeSequence = {};
+            elipse.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeMeaning = "millimeter";
+            elipse.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeValue = "mm";
+            elipse.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodingSchemeDesignator = "UCUM";
+            elipse.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodingSchemeVersion = "1.4";
+            elipseMeasurementContent.push(elipse);
+        });
+
+        toArray(arrayText).forEach(function (element) {
+            var arrow = {};
+            arrow.ConceptNameCodeSequence = {};
+            arrow.ContentSequence = {};
+            arrow.ContentSequence.GraphicType = element.GraphicType;
+            arrow.ContentSequence.GraphicData = element.BoundingBoxTopLeftHandCorner.concat(element.BoundingBoxTopLeftHandCorner);
+            arrow.ContentSequence.RelationshipType = "INFERRED FROM";
+            arrow.ContentSequence.ValueType = "none";
+            arrow.ContentSequence.ContentSequence = {};
+            arrow.ContentSequence.ContentSequence.ReferencedSOPSequence = {};
+            arrow.ContentSequence.ContentSequence.ReferencedSOPSequence.ReferencedSOPClassUID = dataset.ReferencedSeriesSequence.ReferencedImageSequence.ReferencedSOPClassUID;
+            arrow.ContentSequence.ContentSequence.ReferencedSOPSequence.ReferencedSOPInstanceUID = dataset.ReferencedSeriesSequence.ReferencedImageSequence.ReferencedSOPInstanceUID;
+            arrow.MeasuredValueSequence = {};
+            arrow.MeasuredValueSequence.MeasurementUnitsCodeSequence = {};
+            arrow.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeMeaning = "millimeter";
+            arrow.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeValue = "mm";
+            arrow.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodingSchemeDesignator = "UCUM";
+            arrow.MeasuredValueSequence.MeasurementUnitsCodeSequence.CodingSchemeVersion = "1.4";
+            arrow.text = element.UnformattedTextValue.replace(/Â/g,'');
+            arrowMeasurementContent.push(arrow);
+        });
+        return getElipseMeasurementData(elipseMeasurementContent, displaySets).concat(getLengthMeasurementData(lineMeasurementContent, displaySets)).concat(getArrowMeasurementData(arrowMeasurementContent, displaySets));
+    }
     const imagingMeasurementContent = toArray(dataset.ContentSequence).find(codeMeaningEquals("Imaging Measurements"));
 
     // Retrieve the Measurements themselves

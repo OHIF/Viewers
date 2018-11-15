@@ -15,7 +15,8 @@ function getMultipartContentInfo(headers) {
         while ((match = pairRegex.exec(contentType)) !== null) {
             let key = match[1]
             let value = match[2];
-
+            value = value.replace('\"','');
+            value = value.replace('\"','');
             if (dict === null) {
                 dict = {};
             }

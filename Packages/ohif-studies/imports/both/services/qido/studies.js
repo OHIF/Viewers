@@ -48,7 +48,7 @@ function filterToQIDOURL(server, filter) {
     if (filter.studyDateFrom || filter.studyDateTo) {
         const dateFrom = dateToString(new Date(filter.studyDateFrom));
         const dateTo = dateToString(new Date(filter.studyDateTo));
-        parameters.StudyDate = `${dateFrom}-${dateTo}`;
+    //    parameters.StudyDate = `${dateFrom}-${dateTo}`;
     }
 
     // Build the StudyInstanceUID parameter

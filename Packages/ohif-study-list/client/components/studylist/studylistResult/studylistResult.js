@@ -116,10 +116,13 @@ function replaceUndefinedColumnValue(text) {
  * Convert string to study date
  */
 function convertStringToStudyDate(dateStr) {
-    const y = dateStr.substring(0, 4);
-    const m = dateStr.substring(4, 6);
-    const d = dateStr.substring(6, 8);
-    const newDateStr = m + '/' + d + '/' + y;
+    var newDateStr = '01/05/2018';
+    if(dateStr) {
+        const y = dateStr.substring(0, 4);
+        const m = dateStr.substring(4, 6);
+        const d = dateStr.substring(6, 8);
+        newDateStr = m + '/' + d + '/' + y;
+    }
     return new Date(newDateStr);
 }
 
