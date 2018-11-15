@@ -30,6 +30,6 @@ RUN ls /home/user/app/
 
 # Second stage of multi-stage build
 FROM nginx:stable-alpine-perl
-COPY ./clientImage/default.conf /etc/nginx/nginx.conf
+COPY ./clientImage/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /home/user/app /usr/share/nginx/html/
 
