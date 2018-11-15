@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
+import { Router } from 'meteor/clinical:router';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { $ } from 'meteor/jquery';
@@ -29,6 +30,15 @@ Template.studylistToolbar.events({
 
     'click .uploadStudiesBtn'() {
         OHIF.gcloud.showUploadStudiesDialog();
+    },
+
+    'click .changeDicomStoreBtn'() {
+        OHIF.gcloud.showDicomStorePicker().then(config => {
+            Session.set("IsStudyListReady", false);
+            OHIF.studylist.collections.Studies.remove({});
+            OHIF.servers.applyCloudServerConfig(config);
+            setImmediate(() => Session.set("IsStudyListReady", true));
+        });
     }
 });
 
@@ -38,6 +48,9 @@ Template.studylistToolbar.helpers({
         return (importSupported && OHIF.uiSettings.studyListFunctionsEnabled);
     },
     uploadSupported() {
+        return true;
+    },
+    changeDicomStoreSupported() {
         return true;
     }
 });

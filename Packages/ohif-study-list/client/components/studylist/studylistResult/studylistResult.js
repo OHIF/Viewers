@@ -157,20 +157,20 @@ function search() {
 
         Session.set('showLoadingText', false);
 
+        // Clear all current studies
+        OHIF.studylist.collections.Studies.remove({});
+
         if (!studies) {
             OHIF.log.warn('No studies found');
             return;
         }
 
-        // Clear all current studies
-        OHIF.studylist.collections.Studies.remove({});
-
         // Loop through all identified studies
         studies.forEach(study => {
             // Search the rest of the parameters that aren't done via the server call
             if (isIndexOf(study.modalities, modality) &&
-                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === '') &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
+                (!study.studyDate || !studyDateFrom || new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate)) &&
+                (!study.studyDate || !studyDateTo || convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0))) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : undefined;
@@ -270,9 +270,13 @@ Template.studylistResult.onRendered(() => {
             Today: [today, today],
             'Last 7 Days': [lastWeek, today],
             'Last 30 Days': [lastMonth, today]
-        }
+        },
+        locale: { cancelLabel: 'Clear' }
     }).data('daterangepicker');
-
+    $studyDate.on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+        $("#studyDate").trigger('change');
+    });
     search();
 });
 
@@ -308,14 +312,16 @@ Template.studylistResult.events({
         // Remove all space chars
         dateRange = dateRange.replace(/ /g, '');
 
-        // Split dateRange into subdates
-        const dates = dateRange.split('-');
-        studyDateFrom = dates[0];
-        studyDateTo = dates[1];
-
-        if (dateRange !== '') {
-            search();
+        if (dateRange) {
+            // Split dateRange into subdates
+            const dates = dateRange.split('-');
+            studyDateFrom = dates[0];
+            studyDateTo = dates[1];
+        } else {
+            studyDateFrom = '';
+            studyDateTo = ''; 
         }
+        search();
     },
 
     'click div.sortingCell'(event, instance) {
