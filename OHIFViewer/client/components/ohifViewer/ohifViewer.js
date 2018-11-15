@@ -83,7 +83,6 @@ Template.ohifViewer.setActive = function(config) {
     config.thumbnailRendering = "wadors";
     config.qidoSupportsIncludeField = false;
     config.type = "dicomweb";
-    config.metadataSource = "qido";
     config.requestOptions = {};
     config.requestOptions.requestFromBrowser = true;
     config.origin = 'json';
