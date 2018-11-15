@@ -151,6 +151,9 @@ export const toolManager = {
             const apiTool = cornerstoneTools[tools[toolName]];
             if (apiTool) {
                 cornerstoneTools.addTool(apiTool, { name: toolName });
+
+                // Set all tools passive by default in order to render the external data if exists
+                cornerstoneTools.setToolPassive(toolName);
             }
         });
 
