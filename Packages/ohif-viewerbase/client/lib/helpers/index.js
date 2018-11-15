@@ -3,7 +3,7 @@
  */
 
 import { isTouchDevice } from './isTouchDevice';
-import { formatPN } from './formatPN';
+import { formatPN, reverseFormatPN } from './formatPN';
 import { formatDA } from './formatDA';
 import { formatTM } from './formatTM';
 
@@ -33,7 +33,8 @@ const helpers = {
     isTouchDevice,
     formatPN,
     formatDA,
-    formatTM
+    formatTM,
+    reverseFormatPN
 };
 
 export { helpers };

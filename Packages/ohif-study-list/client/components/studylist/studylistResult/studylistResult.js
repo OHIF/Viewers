@@ -6,6 +6,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
+
 Session.setDefault('showLoadingText', true);
 Session.setDefault('serverError', false);
 
@@ -83,9 +84,10 @@ let filter;
  * @returns {*}
  */
 function getFilter(filter) {
-    if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
-        filter += '*';
-    }
+    // disable wildcard mode for GCloud healthcare
+    // if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
+    //     filter += '*';
+    // }
 
     return filter;
 }
@@ -130,6 +132,9 @@ function convertStringToStudyDate(dateStr) {
 function search() {
     OHIF.log.info('search()');
 
+    // Clear all current studies
+    OHIF.studylist.collections.Studies.remove({});
+
     // Show loading message
     Session.set('showLoadingText', true);
 
@@ -137,8 +142,9 @@ function search() {
     Session.set('serverError', false);
 
     // Create the filters to be used for the StudyList Search
+    const reverseFormatPN = Blaze._getGlobalHelper('reverseFormatPN');
     filter = {
-        patientName: getFilter($('input#patientName').val()),
+        patientName: reverseFormatPN(getFilter($('input#patientName').val())),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
         studyDescription: getFilter($('input#studyDescription').val()),
@@ -156,9 +162,6 @@ function search() {
         // Hide loading text
 
         Session.set('showLoadingText', false);
-
-        // Clear all current studies
-        OHIF.studylist.collections.Studies.remove({});
 
         if (!studies) {
             OHIF.log.warn('No studies found');
