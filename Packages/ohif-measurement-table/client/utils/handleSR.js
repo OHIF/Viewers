@@ -1,4 +1,4 @@
-import { dcmjs } from 'meteor/ohif:cornerstone';
+import {dcmjs} from 'meteor/ohif:cornerstone';
 import retrieveDataFromSR from './retrieveDataFromSR';
 import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
 import {
@@ -7,18 +7,17 @@ import {
 
 const retrieveMeasurementFromSR = async (series) => {
     const instance = series.getFirstInstance();
-    const options  = {
+    const options = {
         method: 'GET',
         responseType: 'arraybuffer',
     };
-    const url = instance.getDataProperty('wadouri');
+    const url = instance.getDataProperty('baseWadoRsUri');
 
     try {
-        const result = await DICOMWeb.makeRequest(url, options);
-        const data = await result.arrayBuffer();
-        const measurementData = retrieveDataFromSR(data);
+        const bulkDataPromise = await DICOMWeb.getPS(url);
+        const measurementData = retrieveDataFromSR(bulkDataPromise);
         return Promise.resolve(measurementData);
-    } catch(error) {
+    } catch (error) {
         return Promise.reject(error);
     }
 };

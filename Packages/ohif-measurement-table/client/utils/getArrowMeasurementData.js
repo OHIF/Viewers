@@ -2,23 +2,23 @@ import {OHIF} from 'meteor/ohif:core';
 import {cornerstone} from 'meteor/ohif:cornerstone';
 import {getInstanceMetadata} from './srUtils';
 
-export default getLengthMeasurementData = (lengthMeasurementContent, displaySets) => {
-    let lengthStates = [];
+export default getArrowMeasurementData = (arrowMeasurementContent, displaySets) => {
+    let arrowStates = [];
 
-    lengthMeasurementContent.forEach(groupItemContent => {
-        const lengthContent = groupItemContent.ContentSequence;
-        const reference = lengthContent.ContentSequence.ReferencedSOPSequence;
-        const lengthState = {};
+    arrowMeasurementContent.forEach(groupItemContent => {
+        const arrowContent = groupItemContent.ContentSequence;
+        const reference = arrowContent.ContentSequence.ReferencedSOPSequence;
+        const arrowState = {};
 
-        lengthState.measuredValue = groupItemContent.MeasuredValueSequence.NumericValue;
-        lengthState.handles = {start: {}, end: {}};
-        [lengthState.handles.start.x,
-            lengthState.handles.start.y,
-            lengthState.handles.end.x,
-            lengthState.handles.end.y] = lengthContent.GraphicData;
+        arrowState.measuredValue = groupItemContent.MeasuredValueSequence.NumericValue;
+        arrowState.handles = {start: {}, end: {}};
+        [arrowState.handles.start.x,
+            arrowState.handles.start.y,
+            arrowState.handles.end.x,
+            arrowState.handles.end.y] = arrowContent.GraphicData;
 
         // TODO: Save textbox position in GraphicData?
-        lengthState.handles.textBox = {
+        arrowState.handles.textBox = {
             hasMoved: false,
             movesIndependently: false,
             drawnIndependently: true,
@@ -26,24 +26,21 @@ export default getLengthMeasurementData = (lengthMeasurementContent, displaySets
             hasBoundingBox: true
         }
 
-        lengthState.ReferencedInstanceUID = reference.ReferencedSOPInstanceUID;
+        arrowState.ReferencedInstanceUID = reference.ReferencedSOPInstanceUID;
         if (reference.ReferencedFrameNumber && reference.ReferencedFrameNumber !== 'NaN') {
-            lengthState.ReferencedFrameNumber = reference.ReferencedFrameNumber;
+            arrowState.ReferencedFrameNumber = reference.ReferencedFrameNumber;
         } else {
-            lengthState.ReferencedFrameNumber = 0;
+            arrowState.ReferencedFrameNumber = 0;
         }
-        lengthState.dashed = "solid";
-        if (lengthContent.ValueType === "DASHED") {
-            lengthState.dashed = "dashed";
-        }
-        lengthStates.push(lengthState);
+        arrowState.text = groupItemContent.text;
+        arrowStates.push(arrowState);
     });
 
-    const lengthMeasurementData = [];
+    const arrowMeasurementData = [];
 
     let measurementNumber = 0;
-    lengthStates.forEach(lengthState => {
-        const sopInstanceUid = lengthState.ReferencedInstanceUID;
+    arrowStates.forEach(arrowState => {
+        const sopInstanceUid = arrowState.ReferencedInstanceUID;
         const instanceMetadata = getInstanceMetadata(displaySets, sopInstanceUid);
         const imageId = OHIF.viewerbase.getImageId(instanceMetadata);
         if (!imageId) {
@@ -53,12 +50,11 @@ export default getLengthMeasurementData = (lengthMeasurementContent, displaySets
         const studyInstanceUid = cornerstone.metaData.get('study', imageId).studyInstanceUid;
         const seriesInstanceUid = cornerstone.metaData.get('series', imageId).seriesInstanceUid;
         const patientId = instanceMetadata._study.patientId;
-        const frameIndex = lengthState.ReferencedFrameNumber;
+        const frameIndex = arrowState.ReferencedFrameNumber;
         const imagePath = [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
         const measurement = {
-            handles: lengthState.handles,
+            handles: arrowState.handles,
             length: -1,
-            dashed:lengthState.dashed,
             imageId,
             imagePath,
             sopInstanceUid,
@@ -66,15 +62,16 @@ export default getLengthMeasurementData = (lengthMeasurementContent, displaySets
             studyInstanceUid,
             patientId,
             frameIndex,
+            text: arrowState.text,
             measurementNumber: ++measurementNumber,
             userId: 'UserID',
             timepointId: OHIF.viewer.data.currentTimepointId,
-            toolType: 'length',
+            toolType: 'arrowAnnotate',
             _id: imageId + measurementNumber,
         };
-        lengthMeasurementData.push(measurement);
+        arrowMeasurementData.push(measurement);
     });
 
 
-    return lengthMeasurementData;
+    return arrowMeasurementData;
 };

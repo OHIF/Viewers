@@ -1,6 +1,7 @@
 import get from './get.js';
 import getAttribute from './getAttribute.js';
 import getBulkData from './getBulkData.js';
+import getPS from './getPS.js';
 import getJSON from './getJSON.js';
 import getModalities from './getModalities.js';
 import getName from './getName.js';
@@ -13,6 +14,7 @@ const DICOMWeb = {
     get,
     getAttribute,
     getBulkData,
+    getPS,
     getJSON,
     getModalities,
     getName,

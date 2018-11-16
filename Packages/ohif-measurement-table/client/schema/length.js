@@ -47,6 +47,11 @@ const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasu
         label: 'Length',
         optional: true,
         decimal: true
+    },
+    dashed: {
+        type: String,
+        label: 'dashed',
+        optional: true
     }
 }]);
 

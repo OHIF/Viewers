@@ -24,7 +24,7 @@
         {{/section}}
     {{/header}}
     
-    {{#if instance.isStudyListReady.get}}
+    {{#if isStudyListReady}}
         {{>Template.dynamic template=(choose this.template 'studylist') data=this}}
     {{/if}}
 </template>

@@ -1,6 +1,6 @@
 import { dcmjs } from 'meteor/ohif:cornerstone';
 
-const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22'];
+const supportedSopClassUIDs = ['1.2.840.10008.5.1.4.1.1.88.22', '1.2.840.10008.5.1.4.1.1.11.1'];
 
 const toArray = function(x) {
     return (x.constructor.name === "Array" ? x : [x]);
@@ -9,6 +9,12 @@ const toArray = function(x) {
 const codeMeaningEquals = (codeMeaningName) => {
     return (contentItem) => {
         return contentItem.ConceptNameCodeSequence.CodeMeaning === codeMeaningName;
+    };
+};
+
+const graphicTypeEquals = (graphicTypeName) => {
+    return (contentItem) => {
+        return contentItem.GraphicType === graphicTypeName;
     };
 };
 
@@ -101,5 +107,6 @@ export {
     getInstanceMetadata,
     getLatestSRSeries,
     multipartEncode,
-    toArray
+    toArray,
+    graphicTypeEquals
 }

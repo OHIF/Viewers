@@ -4,12 +4,12 @@ import { Session } from 'meteor/session';
 import { Router } from 'meteor/clinical:router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
-import { Servers, CurrentServer } from 'meteor/ohif:servers/both/collections';
+
 
 Template.ohifViewer.onCreated(() => {
     const instance = Template.instance();
-    instance.isStudyListReady = new ReactiveVar(true);
     instance.headerClasses = new ReactiveVar('');
+    Session.set("IsStudyListReady", true);;
 
     const headerItems = [{
         action: () => OHIF.ui.showDialog('serverInformationModal'),
@@ -63,38 +63,17 @@ Template.ohifViewer.onCreated(() => {
     if (OHIF.gcloud){
         const gcpConfig = OHIF.gcloud.getConfig();
         if (gcpConfig) {
-            Template.ohifViewer.setActive(gcpConfig);
+            OHIF.servers.applyCloudServerConfig(gcpConfig);
         }
         else {
-            instance.isStudyListReady.set(false);
+            Session.set("IsStudyListReady", false);
             OHIF.gcloud.showDicomStorePicker().then(config => {
-                Template.ohifViewer.setActive(config);
-               // alert(JSON.stringify(config, null, '  '));
-                instance.isStudyListReady.set(true);
+                OHIF.servers.applyCloudServerConfig(config);
+                Session.set("IsStudyListReady", true);
             });
         }
     }
 });
-
-Template.ohifViewer.setActive = function(config) {
-    config.name = "gcs";
-    config.imageRendering = "wadors";
-    config.origin = "json";
-    config.thumbnailRendering = "wadors";
-    config.qidoSupportsIncludeField = false;
-    config.type = "dicomweb";
-    config.metadataSource = "qido";
-    config.requestOptions = {};
-    config.requestOptions.requestFromBrowser = true;
-    config.origin = 'json';
-    config.type = 'dicomWeb';
-    const serverId = Servers.insert(config);
-    CurrentServer.remove({});
-    CurrentServer.insert({
-        serverId
-    });
-    return null;
-};
 
 Template.ohifViewer.events({
     'click .js-toggle-studyList'(event, instance) {
@@ -125,4 +104,7 @@ Template.ohifViewer.helpers({
 
         return instance.hasViewerData ? 'Back to viewer' : '';
     },
+    isStudyListReady() {
+        return !!Session.get('IsStudyListReady');
+    }
 });

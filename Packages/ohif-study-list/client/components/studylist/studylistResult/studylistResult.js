@@ -6,6 +6,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 
+
 Session.setDefault('showLoadingText', true);
 Session.setDefault('serverError', false);
 
@@ -83,9 +84,10 @@ let filter;
  * @returns {*}
  */
 function getFilter(filter) {
-    if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
-        filter += '*';
-    }
+    // disable wildcard mode for GCloud healthcare
+    // if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
+    //     filter += '*';
+    // }
 
     return filter;
 }
@@ -130,6 +132,9 @@ function convertStringToStudyDate(dateStr) {
 function search() {
     OHIF.log.info('search()');
 
+    // Clear all current studies
+    OHIF.studylist.collections.Studies.remove({});
+
     // Show loading message
     Session.set('showLoadingText', true);
 
@@ -137,8 +142,9 @@ function search() {
     Session.set('serverError', false);
 
     // Create the filters to be used for the StudyList Search
+    const reverseFormatPN = Blaze._getGlobalHelper('reverseFormatPN');
     filter = {
-        patientName: getFilter($('input#patientName').val()),
+        patientName: reverseFormatPN(getFilter($('input#patientName').val())),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
         studyDescription: getFilter($('input#studyDescription').val()),
@@ -162,15 +168,12 @@ function search() {
             return;
         }
 
-        // Clear all current studies
-        OHIF.studylist.collections.Studies.remove({});
-
         // Loop through all identified studies
         studies.forEach(study => {
             // Search the rest of the parameters that aren't done via the server call
             if (isIndexOf(study.modalities, modality) &&
-                (new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate) || !studyDateFrom || studyDateFrom === '') &&
-                (convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0) || !studyDateTo || studyDateTo === '')) {
+                (!study.studyDate || !studyDateFrom || new Date(studyDateFrom).setHours(0, 0, 0, 0) <= convertStringToStudyDate(study.studyDate)) &&
+                (!study.studyDate || !studyDateTo || convertStringToStudyDate(study.studyDate) <= new Date(studyDateTo).setHours(0, 0, 0, 0))) {
 
                 // Convert numberOfStudyRelatedInstance string into integer
                 study.numberOfStudyRelatedInstances = !isNaN(study.numberOfStudyRelatedInstances) ? parseInt(study.numberOfStudyRelatedInstances) : undefined;
@@ -270,9 +273,13 @@ Template.studylistResult.onRendered(() => {
             Today: [today, today],
             'Last 7 Days': [lastWeek, today],
             'Last 30 Days': [lastMonth, today]
-        }
+        },
+        locale: { cancelLabel: 'Clear' }
     }).data('daterangepicker');
-
+    $studyDate.on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+        $("#studyDate").trigger('change');
+    });
     search();
 });
 
@@ -308,14 +315,16 @@ Template.studylistResult.events({
         // Remove all space chars
         dateRange = dateRange.replace(/ /g, '');
 
-        // Split dateRange into subdates
-        const dates = dateRange.split('-');
-        studyDateFrom = dates[0];
-        studyDateTo = dates[1];
-
-        if (dateRange !== '') {
-            search();
+        if (dateRange) {
+            // Split dateRange into subdates
+            const dates = dateRange.split('-');
+            studyDateFrom = dates[0];
+            studyDateTo = dates[1];
+        } else {
+            studyDateFrom = '';
+            studyDateTo = ''; 
         }
+        search();
     },
 
     'click div.sortingCell'(event, instance) {

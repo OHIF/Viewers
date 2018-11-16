@@ -13,7 +13,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "cross-env METEOR_PACKAGE_DIRS=../Packages/ meteor --settings ../config/oidc.json --inspect"
+    "debug": "cross-env METEOR_PACKAGE_DIRS=../Packages/ meteor --settings ../config/oidc-dev.json --inspect"
   },
   "author": "",
   "license": "MIT"
