@@ -10,13 +10,12 @@ const studySearchPromises = new Map();
  * @returns {Promise} resolved with an array of studies information or rejected with an error
  */
 OHIF.studies.searchStudies = filter => {
-    const promiseKey = JSON.stringify(filter);
+    const server = OHIF.servers.getCurrentServer();
+    const promiseKey = server.qidoRoot + " - " + JSON.stringify(filter);
     if (studySearchPromises.has(promiseKey)) {
         return studySearchPromises.get(promiseKey);
     } else {
         const promise = new Promise((resolve, reject) => {
-            const server = OHIF.servers.getCurrentServer();
-
             if (server.type === 'dicomWeb' && server.requestOptions.requestFromBrowser === true) {
                 OHIF.studies.services.QIDO.Studies(server, filter).then(resolve, reject);
             } else {

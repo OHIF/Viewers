@@ -9,10 +9,28 @@ const formatPN = context => {
 
     // Convert the first ^ to a ', '. String.replace() only affects
     // the first appearance of the character.
-    const commaBetweenFirstAndLast = context.replace('^', ', ');
+    //const commaBetweenFirstAndLast = context.replace('^', ', ');
 
     // Replace any remaining '^' characters with spaces
-    const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
+    //const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
+
+    // for cloud healthcare replace all ^ with ', '
+    const cleaned = context.replace(/\^/g, ', ');
+
+    // Trim any extraneous whitespace
+    return cleaned.trim();
+};
+
+/**
+ * Formats a patient name for display purposes
+ */
+const reverseFormatPN = context => {
+    if (!context) {
+        context;
+    }
+
+    // Replace any remaining '^' characters with spaces
+    const cleaned = context.replace(/, /g, '^');
 
     // Trim any extraneous whitespace
     return cleaned.trim();
@@ -27,4 +45,8 @@ if (!Blaze._getGlobalHelper('formatPN')) {
     Blaze.registerHelper('formatPN', formatPN);
 }
 
-export { formatPN };
+if (!Blaze._getGlobalHelper('reverseFormatPN')) {
+    Blaze.registerHelper('reverseFormatPN', reverseFormatPN);
+}
+
+export { formatPN, reverseFormatPN };

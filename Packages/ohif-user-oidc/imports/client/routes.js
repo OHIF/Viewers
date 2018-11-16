@@ -74,6 +74,10 @@ Router.onRun(function() {
     } else if (urlHasSignInResponse() === true) {
         processSignInResponse().then(next);
     } else {
-        signIn({ redirect_uri });
+        // do sign-in only from root, because redirect_uri is set in OAuth settings
+        if (this.url !== '/')
+            Router.go('/', {}, { replaceState: true });
+        else
+            signIn({ redirect_uri });
     }
 });
