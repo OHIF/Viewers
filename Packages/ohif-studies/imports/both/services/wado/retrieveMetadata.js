@@ -192,7 +192,7 @@ function getRadiopharmaceuticalInfo(instance) {
 }
 
 function getRelationshipString (data) {
-    const relationshipType = DICOMWeb.getString(data['0040A010'])
+    const relationshipType = DICOMWeb.getString(data['0040A010']);
 
     switch (relationshipType) {
         case 'HAS CONCEPT MOD':
@@ -204,7 +204,7 @@ function getRelationshipString (data) {
     }
 }
 
-const getNestedObject = (data) => data.Value[0] || {}
+const getNestedObject = (data) => data.Value[0] || {};
 
 const getMeaningString = (data) => (data['0040A043'] && `${DICOMWeb.getString(data['0040A043'].Value[0]['00080104'])} = `) || '';
 
@@ -289,11 +289,11 @@ function getModality(instance) {
 }
 
 function getContentDateTime(instance) {
-    const date = DICOMWeb.getString(instance['00080023'])
-    const time = DICOMWeb.getString(instance['00080033'])
+    const date = DICOMWeb.getString(instance['00080023']);
+    const time = DICOMWeb.getString(instance['00080033']);
 
     if (date && time) { 
-        return `${date.substr(0, 4)}-${date.substr(4, 2)}-${date.substr(6, 2)} ${time.substr(0, 2)}:${time.substr(2, 2)}:${time.substr(4, 2)}`
+        return `${date.substr(0, 4)}-${date.substr(4, 2)}-${date.substr(6, 2)} ${time.substr(0, 2)}:${time.substr(2, 2)}:${time.substr(4, 2)}`;
     }
 }
 
@@ -339,10 +339,11 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
     await Promise.all(resultData.map(async function(instance) {
         var seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
         var series = seriesMap[seriesInstanceUid];
+        const modality = getModality(instance);
         if (!series) {
             series = {
                 seriesDescription: DICOMWeb.getString(instance['0008103E']),
-                modality: DICOMWeb.getString(instance['00080060']),
+                modality,
                 seriesInstanceUid: seriesInstanceUid,
                 seriesNumber: DICOMWeb.getNumber(instance['00200011']),
                 seriesDate: DICOMWeb.getString(instance['00080021']),
@@ -365,7 +366,7 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             contentDateTime: getContentDateTime(instance),
             imageType: DICOMWeb.getString(instance['00080008']),
             sopClassUid: DICOMWeb.getString(instance['00080016']),
-            modality: DICOMWeb.getString(instance['00080060']),
+            modality,
             sopInstanceUid,
             instanceNumber: DICOMWeb.getNumber(instance['00200013']),
             imagePositionPatient: DICOMWeb.getString(instance['00200032']),

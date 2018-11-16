@@ -48,7 +48,7 @@ const paletteColorCache = {
 };
 
 function getRelationshipString (data) {
-    const relationshipType = DICOMWeb.getString(data['0040A010'])
+    const relationshipType = DICOMWeb.getString(data['0040A010']);
 
     switch (relationshipType) {
         case 'HAS CONCEPT MOD':
@@ -60,7 +60,7 @@ function getRelationshipString (data) {
     }
 }
 
-const getNestedObject = (data) => data.Value[0] || {}
+const getNestedObject = (data) => data.Value[0] || {};
 
 const getMeaningString = (data) => (data['0040A043'] && `${DICOMWeb.getString(data['0040A043'].Value[0]['00080104'])} = `) || '';
 
@@ -145,11 +145,11 @@ function getModality(instance) {
 }
 
 function getContentDateTime(instance) {
-    const date = DICOMWeb.getString(instance['00080023'])
-    const time = DICOMWeb.getString(instance['00080033'])
+    const date = DICOMWeb.getString(instance['00080023']);
+    const time = DICOMWeb.getString(instance['00080033']);
 
     if (date && time) { 
-        return `${date.substr(0, 4)}-${date.substr(4, 2)}-${date.substr(6, 2)} ${time.substr(0, 2)}:${time.substr(2, 2)}:${time.substr(4, 2)}`
+        return `${date.substr(0, 4)}-${date.substr(4, 2)}-${date.substr(6, 2)} ${time.substr(0, 2)}:${time.substr(2, 2)}:${time.substr(4, 2)}`;
     }
 }
 
@@ -171,6 +171,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             // process series data, continue using that series
             var seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
             var series = seriesMap[seriesInstanceUid];
+            const modality = getModality(instance);
 
             // If no series data exists in the seriesMap cache variable,
             // process any available series data
@@ -179,7 +180,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                     seriesInstanceUid: seriesInstanceUid,
                     seriesNumber: DICOMWeb.getString(instance['00200011']),
                     seriesDescription: DICOMWeb.getString(instance['0008103E']),
-                    modality: getModality(instance),
+                    modality,
                     seriesDate: DICOMWeb.getString(instance['00080021']),
                     seriesTime: DICOMWeb.getString(instance['00080031']),
                     instances: []
@@ -210,7 +211,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
                 sopInstanceUid: sopInstanceUid,
                 seriesInstanceUid: seriesInstanceUid,
                 imageType: DICOMWeb.getString(instance['00080008']),
-                modality: DICOMWeb.getString(instance['00080060']),
+                modality,
                 instanceNumber: DICOMWeb.getNumber(instance['00200013']),
                 imagePositionPatient: DICOMWeb.getString(instance['00200032']),
                 imageOrientationPatient: DICOMWeb.getString(instance['00200037']),

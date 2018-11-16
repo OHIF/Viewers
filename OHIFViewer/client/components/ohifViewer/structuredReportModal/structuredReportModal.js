@@ -45,7 +45,7 @@ function renderNoData(root) {
 function getMainDataHtml(data) {
     const root = $('<div></div>');
 
-    const { completionFlag, verificationFlag, manufacturer, contentDateTime } = data
+    const { completionFlag, verificationFlag, manufacturer, contentDateTime } = data;
 
     if (completionFlag) {
         root.append(getMainDataItemHtml('Completion flag', completionFlag));
@@ -68,8 +68,8 @@ function getMainDataHtml(data) {
 
 const getContentSequenceHtml = (data, level = 1) => {
     const root = $('<div></div>');
-    const header = data.header
-    const items = data.items || []
+    const header = data.header;
+    const items = data.items || [];
 
     if (header) {
         root.append(`<h${level}>${header}</h${level}>`);
@@ -87,5 +87,5 @@ const getContentSequenceHtml = (data, level = 1) => {
 }
 
 function getMainDataItemHtml(key, value) {
-    return $(`<div><b>${key}</b>: ${value}</div>`)
+    return $(`<div><b>${key}</b>: ${value}</div>`);
 }
