@@ -36,14 +36,23 @@ class MeasurementTable {
     //    measurementApi.syncMeasurementsAndToolData();
 
         this.firstMeasurementActivated = false;
-
+        this.dataIsavalible = false;
         instance.autorun(() => {
             if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||
             !Session.get('ViewerReady') ||
             this.firstMeasurementActivated) {
+                if (this.dataIsavalible) {
+                OHIF.measurements.clearCornerstoneToolState();
+                this.jumpToFirstMeasurement();
+                this.dataIsavalible = false;
+                }
                 return;
             }
+            if(!this.dataIsavalible){
+         //       measurementApi.retrieveMeasurements(patientId, [OHIF.viewer.data.currentTimepointId]);
+            }
+            this.dataIsavalible = true;
             measurementApi.syncMeasurementsAndToolData();
             this.jumpToFirstMeasurement();
             
