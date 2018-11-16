@@ -31,9 +31,9 @@ class MeasurementTable {
         Session.set('TimepointsReady', true);
            
         await measurementApi.retrieveMeasurements(patientId, [OHIF.viewer.data.currentTimepointId]);
-        Session.set('MeasurementsReady', true);
+        Session.set('MeasurementsReady', false);
 
-        measurementApi.syncMeasurementsAndToolData();
+    //    measurementApi.syncMeasurementsAndToolData();
 
         this.firstMeasurementActivated = false;
 
@@ -44,7 +44,7 @@ class MeasurementTable {
             this.firstMeasurementActivated) {
                 return;
             }
-            
+            measurementApi.syncMeasurementsAndToolData();
             this.jumpToFirstMeasurement();
             
         });

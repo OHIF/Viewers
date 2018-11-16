@@ -3,6 +3,7 @@ import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
+import {Session} from "meteor/session";
 
 function isThereSeries(studies) {
     if (studies.length === 1) {
@@ -339,5 +340,12 @@ Template.toolbarSection.onRendered(function() {
 Template.toolbarSection.events({
     'click .openModalBtn'() {
         OHIF.ui.showDialog('structuredReportModal');
+    }
+});
+
+Template.toolbarSection.events({
+    'click .openPS'() {
+
+        Session.set('MeasurementsReady', !Session.get('MeasurementsReady'));
     }
 });
