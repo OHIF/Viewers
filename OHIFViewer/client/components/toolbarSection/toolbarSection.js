@@ -319,3 +319,9 @@ Template.toolbarSection.onRendered(function() {
         }
     }
 });
+
+Template.toolbarSection.events({
+    'click .openModalBtn'() {
+        OHIF.ui.showDialog('structuredReportModal');
+    }
+});
