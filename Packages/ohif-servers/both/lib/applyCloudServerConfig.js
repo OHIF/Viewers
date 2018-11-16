@@ -18,6 +18,7 @@ OHIF.servers.applyCloudServerConfig = (config) => {
     config.requestOptions.requestFromBrowser = true;
     config.origin = 'json';
     config.type = 'dicomWeb';
+    config.isCloud = true;
     const serverId = Servers.insert(config);
     CurrentServer.insert({
         serverId

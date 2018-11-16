@@ -262,6 +262,22 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
+            id: 'sr',
+            title: 'SR',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-sr'
+        });
+
+        buttonData.push({
+            id: 'ps',
+            title: 'PS',
+            iconClasses: 'fa fa-th-large',
+            classes: 'imageViewerTool',
+            svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-ps'
+        });
+        
+
+        buttonData.push({
             id: 'toggleMore',
             title: 'More',
             classes: 'rp-x-1 rm-l-3',

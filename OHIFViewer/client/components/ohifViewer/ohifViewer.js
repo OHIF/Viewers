@@ -60,12 +60,9 @@ Template.ohifViewer.onCreated(() => {
         Session.set('ViewerOpened', isViewer);
     });
 
-    if (OHIF.gcloud){
-        const gcpConfig = OHIF.gcloud.getConfig();
-        if (gcpConfig) {
-            OHIF.servers.applyCloudServerConfig(gcpConfig);
-        }
-        else {
+    if (OHIF.gcloud) {
+        const server = OHIF.servers.getCurrentServer();
+        if (!server || !server.isCloud) {
             Session.set("IsStudyListReady", false);
             OHIF.gcloud.showDicomStorePicker().then(config => {
                 OHIF.servers.applyCloudServerConfig(config);

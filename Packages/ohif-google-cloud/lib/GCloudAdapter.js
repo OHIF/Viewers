@@ -24,4 +24,9 @@ GCloudAdapter.showUploadStudiesDialog = function() {
   return OHIF.ui.showDialog('uploadStudiesDialog')
 };
 
+const gcpConfig = GCloudAdapter.getConfig();
+if (gcpConfig) {
+    OHIF.servers.applyCloudServerConfig(gcpConfig);
+}
+
 export default GCloudAdapter;

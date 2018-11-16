@@ -265,20 +265,29 @@ Template.studylistResult.onRendered(() => {
     }
 
     instance.datePicker = $studyDate.daterangepicker({
-        maxDate: today,
-        autoUpdateInput: true,
-        startDate: startDate,
-        endDate: endDate,
+        maxDate: false,
+        autoUpdateInput: false,
+        // startDate: startDate,
+        // endDate: endDate,
         ranges: {
+            Empty: [],
             Today: [today, today],
             'Last 7 Days': [lastWeek, today],
             'Last 30 Days': [lastMonth, today]
         },
         locale: { cancelLabel: 'Clear' }
     }).data('daterangepicker');
+    instance.datePicker.autoUpdateInput = true;
+    $studyDate.on('apply.daterangepicker', function(ev, picker) {
+        if (picker.chosenLabel === 'Empty')
+            $(this).val('');
+        else
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        $studyDate.trigger('change');
+    });
     $studyDate.on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
-        $("#studyDate").trigger('change');
+        $studyDate.trigger('change');
     });
     search();
 });
