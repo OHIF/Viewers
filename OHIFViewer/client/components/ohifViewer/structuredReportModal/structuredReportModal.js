@@ -12,10 +12,8 @@ function getStructureReport() {
     let structuredReport;
 
     OHIF.viewer.StudyMetadataList.find(studyMetadata => {
-        const data = studyMetadata.getData();
-        const series = data.seriesList || [];
-        const srSeries = series.find(series => series.modality === 'SR');
-        structuredReport = srSeries && srSeries.instances[0];
+
+        structuredReport = studyMetadata.findInstance(instance => instance.getData().modality === 'SR');
 
         // If SR is found stop the search
         return !!structuredReport;
@@ -28,16 +26,16 @@ function render(structureReport) {
     const root = $('#root');
 
     if (structureReport) {
-        renderStructuredReport(root, structureReport);
+        renderStructuredReport(root, structureReport.getData());
     } else {
         renderNoData(root);
     }
 
 }
 
-function renderStructuredReport(root, structureReport) {
-    root.append(getMainDataHtml(structureReport));
-    root.append(getContentSequenceHtml(structureReport.contentSequence));
+function renderStructuredReport(root, data) {
+    root.append(getMainDataHtml(data));
+    root.append(getContentSequenceHtml(data.contentSequence));
 }
 
 function renderNoData(root) {
