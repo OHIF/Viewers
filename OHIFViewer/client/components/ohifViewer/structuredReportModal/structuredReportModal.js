@@ -1,26 +1,47 @@
 import { $ } from 'meteor/jquery';
+import { OHIF } from 'meteor/ohif:core';
 
 Template.structuredReportModal.onRendered(() => {
-    const instance = Template.instance()
-    const { structuredReport } = instance.data;
-    
+    const structuredReport = getStructureReport();
+
     render(structuredReport);
-})
+});
+
+// FIXME: we use just 1st SR for current study for now
+function getStructureReport() {
+    let structuredReport;
+
+    OHIF.viewer.StudyMetadataList.find(studyMetadata => {
+        const data = studyMetadata.getData();
+        const series = data.seriesList || [];
+        const srSeries = series.find(series => series.modality === 'SR');
+        structuredReport = srSeries && srSeries.instances[0];
+
+        // If SR is found stop the search
+        return !!structuredReport;
+    });
+
+    return structuredReport;
+}
 
 function render(structureReport) {
     const root = $('#root');
 
     if (structureReport) {
-        root.append(getMainDataHtml(structureReport));
-        root.append(getContentSequenceHtml(structureReport.contentSequence));
+        renderStructuredReport(root, structureReport);
     } else {
-        root.append('No data');
+        renderNoData(root);
     }
 
 }
 
-function getMainDataItemHtml(key, value) {
-    return $(`<div><b>${key}</b>: ${value}</div>`)
+function renderStructuredReport(root, structureReport) {
+    root.append(getMainDataHtml(structureReport));
+    root.append(getContentSequenceHtml(structureReport.contentSequence));
+}
+
+function renderNoData(root) {
+    root.append('<div>No structured report found</div>');
 }
 
 function getMainDataHtml(data) {
@@ -65,4 +86,8 @@ const getContentSequenceHtml = (data, level = 1) => {
     });
 
     return root;
+}
+
+function getMainDataItemHtml(key, value) {
+    return $(`<div><b>${key}</b>: ${value}</div>`)
 }
