@@ -214,7 +214,7 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         return;
     }
 
-    const studyData = {
+    var studyData = {
         seriesList,
         patientName: DICOMWeb.getName(anInstance['00100010']),
         patientId: DICOMWeb.getString(anInstance['00100020']),
@@ -305,6 +305,8 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         // Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
         if (instanceSummary.photometricInterpretation === 'PALETTE COLOR') {
+            studyData =null;
+            return false;
             const redPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281101']));
             const greenPaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281102']));
             const bluePaletteColorLookupTableDescriptor = parseFloatArray(DICOMWeb.getString(instance['00281103']));
@@ -342,6 +344,9 @@ OHIF.studies.services.WADO.RetrieveMetadata = async function(server, studyInstan
     return new Promise((resolve, reject) => {
         DICOMWeb.getJSON(url, server.requestOptions).then(result => {
             resultDataToStudyMetadata(server, studyInstanceUid, result).then((study) => {
+                if (study === null) {
+                    reject("501 Not Implemented: PALETTE COLOR");
+                }
                 study.wadoUriRoot = server.wadoUriRoot;
                 study.studyInstanceUid = studyInstanceUid;
 
