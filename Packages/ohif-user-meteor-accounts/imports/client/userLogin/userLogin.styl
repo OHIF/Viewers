@@ -1,0 +1,80 @@
+@import "{ohif:design}/app"
+
+html, body
+  height: 100%
+
+.user-login
+  theme('color', '$textPrimaryColor')
+  height: 100%
+  position: relative
+  overflow: hidden
+
+  &:before, &:after
+    bottom: 0
+    content: ''
+    display: block
+    left: 0
+    position: absolute
+    width: 100%
+
+  &:before
+    theme('background-color', '$primaryBackgroundColor')
+    height: 100%
+    z-index: 1
+
+  &:after
+    theme('background-color', '$uiGrayDark')
+    animation(login-bg 0.5s ease 0.5s forwards)
+    bottom: -50%
+    height: 50%
+    z-index: 2
+
+  .user-login-box
+    animation(login-box 0.5s forwards)
+    left: 50%
+    position: absolute
+    width: 300px
+    z-index: 3
+
+    .user-login-logo
+      animation(login-logo 0.5s ease 0.5s forwards)
+      left: 0
+      position: absolute
+      top: 0
+      width: 100%
+      z-index: 1
+
+    .user-login-form
+      theme('background-color', '$uiGrayDarkest')
+      theme('border', '1px solid $uiBorderColor')
+      theme('color', '$textPrimaryColor')
+      border-radius: 3px
+      position: relative
+      z-index: 2
+
+      h3
+        margin: 0
+        text-align: center
+
+      .btn-primary
+        font-weight: bold
+
+@keyframes login-box
+  from
+    top: 100%
+    transform(translateX(-50%) translateY(0%))
+  to
+    top: 50%
+    transform(translateX(-50%) translateY(-50%))
+
+@keyframes login-logo
+  from
+    transform(translateY(0))
+  to
+    transform(translateY(-100%))
+
+@keyframes login-bg
+  from
+    bottom: -50%
+  to
+    bottom: 0

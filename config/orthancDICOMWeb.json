@@ -23,6 +23,7 @@
   "dropCollections": true,
   "public": {
     "verifyEmail": false,
+    "demoUserEnabled": false,
     "ui": {
         "studyListFunctionsEnabled": true,
         "leftSidebarOpen": false,

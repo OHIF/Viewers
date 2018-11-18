@@ -1,0 +1,45 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "adler32cs": {
+      "version": "0.0.2",
+      "resolved": "github:chick307/adler32cs.js#7fd00ffa24bf173a1eeb987ce7a21ae214eff658",
+      "integrity": "sha1-6XqLrO8YGABf+Yo8uqoR93b6J84="
+    },
+    "ajv": {
+      "version": "4.10.4",
+      "resolved": "http://registry.npmjs.org/ajv/-/ajv-4.10.4.tgz",
+      "integrity": "sha1-wJdN0As0ZJhIktYBCqnCyUWTMlQ="
+    },
+    "cf-blob.js": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/cf-blob.js/-/cf-blob.js-0.0.1.tgz",
+      "integrity": "sha1-9at+EueYyvCMz4KMaaug8GPYP5k="
+    },
+    "co": {
+      "version": "4.6.0",
+      "resolved": "https://registry.npmjs.org/co/-/co-4.6.0.tgz",
+      "integrity": "sha1-bqa989hTrlTMuOR7+gvz+QMfsYQ="
+    },
+    "filesaver.js": {
+      "version": "1.0.0",
+      "resolved": "github:andyinabox/FileSaver.js#973b433b8fbaee9a11d53b9ae423b046742cfe32",
+      "integrity": "sha1-NWyLQSgD4N4K8O8MBHHizw93pSc="
+    },
+    "json-stable-stringify": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/json-stable-stringify/-/json-stable-stringify-1.0.1.tgz",
+      "integrity": "sha1-mnWdOcXy/1A/1TAGRu1EX4jE+a8="
+    },
+    "jsonify": {
+      "version": "0.0.0",
+      "resolved": "https://registry.npmjs.org/jsonify/-/jsonify-0.0.0.tgz",
+      "integrity": "sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM="
+    },
+    "jspdf": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/jspdf/-/jspdf-1.3.3.tgz",
+      "integrity": "sha1-s7dtYlasvSAyv+ls+IMEaW4R3gw="
+    }
+  }
+}

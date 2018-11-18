@@ -1,12 +1,47 @@
 import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
+import {Meteor} from "meteor/meteor";
 
 Router.configure({
     layoutTemplate: 'layout',
-    loadingTemplate: 'layout'
+    loadingTemplate: 'loading'
 });
 
+// If we are running a disconnected client similar to the StandaloneViewer
+// (see https://docs.ohif.org/standalone-viewer/usage.html) we don't want
+// our routes to get stuck while waiting for Pub / Sub.
+//
+// In this case, the developer is required to add Servers and specify
+// a CurrentServer with some other approach (e.g. a separate script).
+if (Meteor.settings &&
+    Meteor.settings.public &&
+    Meteor.settings.public.clientOnly !== true) {
+    Router.waitOn(function() {
+        return [
+            Meteor.subscribe('servers'),
+            Meteor.subscribe('currentServer')
+        ];
+    });
+}
+
 Router.onBeforeAction('loading');
+
+Router.onBeforeAction(function() {
+    // verifyEmail controls whether emailVerification template will be rendered or not
+    const publicSettings = Meteor.settings && Meteor.settings.public;
+    const verifyEmail = publicSettings && publicSettings.verifyEmail || false;
+
+    // Check if user is signed in or needs an email verification
+    if (!Meteor.userId() && !Meteor.loggingIn()) {
+        this.render('entrySignIn');
+    } else if (verifyEmail && Meteor.user().emails && !Meteor.user().emails[0].verified) {
+        this.render('emailVerification');
+    } else {
+        this.next();
+    }
+}, {
+    except: ['entrySignIn', 'entrySignUp', 'forgotPassword', 'resetPassword', 'emailVerification']
+});
 
 Router.route('/', function() {
     Router.go('studylist', {}, { replaceState: true });

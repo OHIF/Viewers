@@ -1,0 +1,23 @@
+<template name="userLogin">
+    <div class="user-login">
+        {{>section 'userLoginBefore'}}
+        <div class="user-login-box">
+            <div class="user-login-logo">{{>section 'userLoginLogo'}}</div>
+            {{#form class='user-login-form form-themed p-a-2' schema=instance.schema api=instance.api hideValidationBox=true}}
+                <h3>Sign In</h3>
+                <hr class="m-h-2">
+                {{>section 'userLoginFieldsBefore'}}
+                {{>inputText labelClass='form-group' key='username'}}
+                {{>inputPassword labelClass='form-group' key='password'}}
+                {{>section 'userLoginFieldsAfter'}}
+                <hr class="m-t-0 m-b-2">
+                {{#button action='login' class='form-control btn btn-primary'}}Enter{{/button}}
+
+                {{ #each additionalLoginButtons }}
+                    {{>Template.dynamic template=template}}
+                {{ /each }}
+            {{/form}}
+        </div>
+        {{>section 'userLoginAfter'}}
+    </div>
+</template>

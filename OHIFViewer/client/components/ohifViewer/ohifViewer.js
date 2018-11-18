@@ -9,6 +9,18 @@ Template.ohifViewer.onCreated(() => {
     instance.headerClasses = new ReactiveVar('');
 
     OHIF.header.dropdown.setItems([{
+        action: OHIF.user.audit,
+        text: 'View Audit Log',
+        iconClasses: 'log',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#log',
+        separatorAfter: true
+    }, {
+        action: () => OHIF.ui.showDialog('themeSelectorModal'),
+        text: 'Themes',
+        iconClasses: 'theme',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#theme',
+        separatorAfter: true
+    }, {
         action: () => OHIF.ui.showDialog('serverInformationModal'),
         text: 'Server Information',
         icon: 'fa fa-server fa-lg',
@@ -18,6 +30,16 @@ Template.ohifViewer.onCreated(() => {
         text: 'Preferences',
         icon: 'fa fa-user',
         separatorAfter: true
+    }, {
+        action: OHIF.user.changePassword,
+        text: 'Change Password',
+        iconClasses: 'password',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#password'
+    }, {
+        action: OHIF.user.logout,
+        text: 'Logout',
+        iconClasses: 'logout',
+        iconSvgUse: 'packages/ohif_viewerbase/assets/icons.svg#logout'
     }, {
         action: () => OHIF.ui.showDialog('aboutModal'),
         text: 'About',
@@ -58,6 +80,8 @@ Template.ohifViewer.events({
 });
 
 Template.ohifViewer.helpers({
+    userName: OHIF.user.getName,
+
     studyListToggleText() {
         const instance = Template.instance();
         const isViewer = Session.get('ViewerOpened');
