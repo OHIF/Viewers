@@ -336,16 +336,3 @@ Template.toolbarSection.onRendered(function() {
         }
     }
 });
-
-Template.toolbarSection.events({
-    'click .openModalBtn'() {
-        OHIF.ui.showDialog('structuredReportModal');
-    }
-});
-
-Template.toolbarSection.events({
-    'click .openPS'() {
-
-        Session.set('MeasurementsReady', !Session.get('MeasurementsReady'));
-    }
-});
