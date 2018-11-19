@@ -26,7 +26,6 @@ Template.uploadStudiesDialog.helpers({
     return OHIF.user.getOidcStorageKey();
   },
   url() {
-    console.log(OHIF.gcloud.getConfig());
     return OHIF.gcloud.getConfig().qidoRoot; // FIXME: not QIDO
   }
 });

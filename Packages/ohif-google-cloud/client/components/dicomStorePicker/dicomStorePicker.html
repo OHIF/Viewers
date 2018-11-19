@@ -3,7 +3,7 @@
     id='dicomStorePicker' dialogClass='themed modal-lg'
     )}}
     <div class="dicom-store-picker">
-        <gcp-dataset-selector id={{datasetPickerId}} event={{eventName}} oidc-key={{oidcStorageKey}}></gcp-dataset-selector>
+        <gcp-dataset-selector id={{datasetPickerId}} event={{eventName}} oidc-key={{oidcStorageKey}} can-close={{this.canClose}}></gcp-dataset-selector>
     </div>
     {{/gcloudDialog}}
 </template>

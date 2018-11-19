@@ -20,19 +20,18 @@ Package.onUse(function(api) {
   api.addFiles('client/index.js', 'client');
 
   var assets = [
-    'healthcare-api-adapter/dist/demo.html',
-    'healthcare-api-adapter/dist/gcp.0.js',
-    'healthcare-api-adapter/dist/gcp.1.js',
-    'healthcare-api-adapter/dist/gcp.2.js',
-    'healthcare-api-adapter/dist/gcp.3.js',
-    'healthcare-api-adapter/dist/gcp.js',
+    'healthcare-api-adapter/dist/gcp.0.min.js',
+    'healthcare-api-adapter/dist/gcp.2.min.js',
+    'healthcare-api-adapter/dist/gcp.3.min.js',
+    'healthcare-api-adapter/dist/gcp.4.min.js',
+    'healthcare-api-adapter/dist/gcp.min.js',
     'healthcare-api-adapter/dist/vue.js',
-    'healthcare-api-adapter/dist/img/arrow_right.d8a5b209.svg',
-    'healthcare-api-adapter/dist/img/Button_Folder.271da60b.svg',
     'healthcare-api-adapter/dist/img/Button_File.473e74a7.svg',
+    'healthcare-api-adapter/dist/img/Button_Folder.271da60b.svg',
     'healthcare-api-adapter/dist/img/Icon-24px-Close.d1a4d6d2.svg',
     'healthcare-api-adapter/dist/img/Icon-Arrow.e493b444.svg',
     'healthcare-api-adapter/dist/img/Icon-Warn.f3b4b640.svg',
+    'healthcare-api-adapter/dist/img/arrow_right.d8a5b209.svg',
   ];
 
   api.addAssets(assets, 'client');
