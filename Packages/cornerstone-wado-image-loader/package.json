@@ -34,7 +34,6 @@
     "eslint-fix": "eslint -c .eslintrc.js --fix src",
     "prebuild": "npm run clean:dist && npm run webpack && npm run build:codecs",
     "start": "npm run webpack && npm run build:codecs",
-    "start:dev": "webpack-dev-server --config ./config/webpack/webpack-dev",
     "test": "npm run prebuild && npm run test:chrome",
     "test:all": "npm run test && npm run test:chrome && npm run test:firefox",
     "test:chrome": "karma start config/karma/karma-chrome.js",
@@ -79,9 +78,8 @@
     "shx": "^0.2.2",
     "uglify-js": "^3.3.9",
     "uglifyjs-webpack-plugin": "^1.2.4",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.9"
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.13"
   },
   "dependencies": {
     "dicom-parser": "^1.7.6"
