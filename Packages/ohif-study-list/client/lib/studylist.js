@@ -4,6 +4,7 @@ import { Router } from 'meteor/iron:router';
 // Functions
 import { getStudyPriors } from './getStudyPriors';
 import { getStudyPriorsMap } from './getStudyPriorsMap';
+import {Meteor} from "meteor/meteor";
 
 OHIF.studylist.functions = {
     getStudyPriors,
@@ -24,5 +25,11 @@ const dblClickOnStudy = data => {
     Router.go('viewerStudies', { studyInstanceUids: data.studyInstanceUid });
 };
 
-OHIF.studylist.callbacks.dblClickOnStudy = dblClickOnStudy;
-OHIF.studylist.callbacks.middleClickOnStudy = dblClickOnStudy;
+Meteor.startup(function() {
+    if (!OHIF.studylist) return;
+
+    OHIF.studylist.callbacks.dblClickOnStudy = dblClickOnStudy;
+    OHIF.studylist.callbacks.middleClickOnStudy = dblClickOnStudy;
+
+    OHIF.studylist.timepointApi = new OHIF.measurements.TimepointApi();
+});
