@@ -47,5 +47,6 @@ Package.onUse(function(api) {
 
     // Client and server imports
     api.addFiles('both/index.js', ['client', 'server']);
+    api.addFiles('user.js', ['client', 'server']);
 
 });
