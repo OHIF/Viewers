@@ -1,5 +1,6 @@
 import './dialogs/gcloudDialog.html';
 import './dialogs/gcloudDialog.js';
+import './dialogs/gcloudDialog.styl';
 
 
 import './dicomStorePicker/dicomStorePicker.html';

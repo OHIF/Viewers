@@ -1,6 +1,9 @@
 <template name="studylistResult">
     <div class="studyListToolbar clearfix">
-        <div class="header pull-left">Study List</div>
+        <div class="header pull-left">
+            <span>Study List</span>
+            <span class="dicom-source">{{dicomSource}}</span>
+        </div>
         <div class="studyCount pull-right">{{numberOfStudies}}</div>
         <div class="pull-right">{{>studylistToolbar}}</div>
     </div>

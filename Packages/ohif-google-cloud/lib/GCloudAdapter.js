@@ -13,8 +13,8 @@ GCloudAdapter.setConfig = function(config) {
   else sessionStorage.removeItem(GCP_HEALTHCARE_CONFIG);
 };
 
-GCloudAdapter.showDicomStorePicker = function() {
-  return OHIF.ui.showDialog('dicomStorePicker').then(config => {
+GCloudAdapter.showDicomStorePicker = function(options) {
+  return OHIF.ui.showDialog('dicomStorePicker', options).then(config => {
     if (config) OHIF.gcloud.setConfig(config);
     return config;
   });

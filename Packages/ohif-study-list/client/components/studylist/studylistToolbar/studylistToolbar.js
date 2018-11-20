@@ -33,7 +33,9 @@ Template.studylistToolbar.events({
     },
 
     'click .changeDicomStoreBtn'() {
-        OHIF.gcloud.showDicomStorePicker().then(config => {
+        OHIF.gcloud.showDicomStorePicker({canClose:true}).then(config => {
+            if (!config)
+                return;
             Session.set("IsStudyListReady", false);
             OHIF.studylist.collections.Studies.remove({});
             OHIF.servers.applyCloudServerConfig(config);

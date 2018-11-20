@@ -48,6 +48,13 @@ Template.studylistResult.helpers({
         return studies.slice(offset, limit);
     },
 
+    dicomSource() {
+        const config = Session.get('GCP_HEALTHCARE_CONFIG');;
+        if (!config)
+            return '';
+        return config.project + ' / ' + config.dataset + ' / ' + config.dicomStore
+    },
+
     numberOfStudies() {
         return OHIF.studylist.collections.Studies.find().count();
     },
