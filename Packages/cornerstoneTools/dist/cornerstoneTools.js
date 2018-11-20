@@ -1,4 +1,4 @@
-/*! cornerstone-tools - 2.3.9 - 2018-11-15 | (c) 2017 Chris Hafey | https://github.com/cornerstonejs/cornerstoneTools */
+/*! cornerstone-tools - 2.3.9 - 2018-11-20 | (c) 2017 Chris Hafey | https://github.com/cornerstonejs/cornerstoneTools */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	}
 /******/
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4948ce6114bad2d68ebf"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "aa42d0141b83c1e36f2a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -17478,10 +17478,49 @@ function newImageIdSpecificToolStateManager() {
     delete toolState[enabledImage.image.imageId];
   }
 
+  // Clears all tool data from this toolStateManager.
+  function hideImageIdSpecificToolStateManager(element) {
+    var enabledImage = _externalModules2.default.cornerstone.getEnabledElement(element);
+
+    if (!enabledImage.image || toolState.hasOwnProperty(enabledImage.image.imageId) === false) {
+      return;
+    }
+    var tt = toolState[enabledImage.image.imageId];
+    tt.length.data.forEach(function (tool) {
+      tool.visible = false;
+    });
+    tt.arrowAnnotate.data.forEach(function (tool) {
+      tool.visible = false;
+    });
+    tt.ellipticalRoi.data.forEach(function (tool) {
+      tool.visible = false;
+    });
+  }
+
+  function unHideImageIdSpecificToolStateManager(element) {
+    var enabledImage = _externalModules2.default.cornerstone.getEnabledElement(element);
+
+    if (!enabledImage.image || toolState.hasOwnProperty(enabledImage.image.imageId) === false) {
+      return;
+    }
+    var tt = toolState[enabledImage.image.imageId];
+    tt.length.data.forEach(function (tool) {
+      tool.visible = true;
+    });
+    tt.arrowAnnotate.data.forEach(function (tool) {
+      tool.visible = true;
+    });
+    tt.ellipticalRoi.data.forEach(function (tool) {
+      tool.visible = true;
+    });
+  }
+
   return {
     get: getImageIdSpecificToolState,
     add: addImageIdSpecificToolState,
     clear: clearImageIdSpecificToolStateManager,
+    hide: hideImageIdSpecificToolStateManager,
+    unhide: unHideImageIdSpecificToolStateManager,
     saveImageIdToolState: saveImageIdToolState,
     restoreImageIdToolState: restoreImageIdToolState,
     saveToolState: saveToolState,

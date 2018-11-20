@@ -33,28 +33,27 @@ class MeasurementTable {
         await measurementApi.retrieveMeasurements(patientId, [OHIF.viewer.data.currentTimepointId]);
         Session.set('MeasurementsReady', false);
 
-    //    measurementApi.syncMeasurementsAndToolData();
+        measurementApi.syncMeasurementsAndToolData();
+        this.jumpToFirstMeasurement();
 
+        const viewportUtils = OHIF.viewerbase.viewportUtils;
         this.firstMeasurementActivated = false;
-        this.dataIsavalible = false;
+        this.dataIsavalible = true;
         instance.autorun(() => {
             if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||
             !Session.get('ViewerReady') ||
             this.firstMeasurementActivated) {
                 if (this.dataIsavalible) {
-                OHIF.measurements.clearCornerstoneToolState();
-                this.jumpToFirstMeasurement();
-                this.dataIsavalible = false;
+                    viewportUtils.hideTools();
+                    this.dataIsavalible = false;
                 }
                 return;
             }
             if(!this.dataIsavalible){
-         //       measurementApi.retrieveMeasurements(patientId, [OHIF.viewer.data.currentTimepointId]);
+                viewportUtils.unhideTools();
+                this.dataIsavalible = true;
             }
-            this.dataIsavalible = true;
-            measurementApi.syncMeasurementsAndToolData();
-            this.jumpToFirstMeasurement();
             
         });
         
