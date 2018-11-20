@@ -38,7 +38,7 @@ class MeasurementTable {
 
         const viewportUtils = OHIF.viewerbase.viewportUtils;
         this.firstMeasurementActivated = false;
-        this.dataIsavalible = true;
+        this.dataIsavalible = false;
         instance.autorun(() => {
             if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||

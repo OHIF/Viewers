@@ -83,6 +83,7 @@ export default getElipseMeasurementData = (elipseMeasurementContent, displaySets
             timepointId: OHIF.viewer.data.currentTimepointId,
             toolType: 'ellipticalRoi',
             _id: imageId + measurementNumber,
+            visible: false
         };
 
         elipseMeasurementData.push(measurement);

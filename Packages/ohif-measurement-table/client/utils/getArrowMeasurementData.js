@@ -68,6 +68,7 @@ export default getArrowMeasurementData = (arrowMeasurementContent, displaySets) 
             timepointId: OHIF.viewer.data.currentTimepointId,
             toolType: 'arrowAnnotate',
             _id: imageId + measurementNumber,
+            visible: false
         };
         arrowMeasurementData.push(measurement);
     });

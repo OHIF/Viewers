@@ -71,6 +71,7 @@ export default getLengthMeasurementData = (lengthMeasurementContent, displaySets
             timepointId: OHIF.viewer.data.currentTimepointId,
             toolType: 'length',
             _id: imageId + measurementNumber,
+            visible: false
         };
         lengthMeasurementData.push(measurement);
     });
