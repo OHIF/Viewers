@@ -1,4 +1,4 @@
-/*! cornerstone-wado-image-loader - 2.1.4 - 2018-11-19 | (c) 2016 Chris Hafey | https://github.com/cornerstonejs/cornerstoneWADOImageLoader */
+/*! cornerstone-wado-image-loader - 2.1.4 - 2018-11-22 | (c) 2016 Chris Hafey | https://github.com/cornerstonejs/cornerstoneWADOImageLoader */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1074,7 +1074,7 @@ function handler(data, doneCallback) {
   // Load the codecs if they aren't already loaded
   loadCodecs(decodeConfig);
 
-  var strict = decodeConfig && decodeConfig.decodeTask && decodeConfig.decodeTask.strict;
+  var strict = false; //decodeConfig && decodeConfig.decodeTask && decodeConfig.decodeTask.strict;
   var imageFrame = data.data.imageFrame;
 
   // convert pixel data from ArrayBuffer to Uint8Array since web workers support passing ArrayBuffers but

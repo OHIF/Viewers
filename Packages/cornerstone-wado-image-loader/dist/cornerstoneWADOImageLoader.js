@@ -1,4 +1,4 @@
-/*! cornerstone-wado-image-loader - 2.1.4 - 2018-11-19 | (c) 2016 Chris Hafey | https://github.com/cornerstonejs/cornerstoneWADOImageLoader */
+/*! cornerstone-wado-image-loader - 2.1.4 - 2018-11-22 | (c) 2016 Chris Hafey | https://github.com/cornerstonejs/cornerstoneWADOImageLoader */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2201,8 +2201,6 @@ function metaDataProvider(type, imageId) {
       pixelRepresentation: (0, _getNumberValue2.default)(metaData['00280103']),
       planarConfiguration: (0, _getNumberValue2.default)(metaData['00280006']),
       pixelAspectRatio: (0, _getValue2.default)(metaData['00280034']),
-      smallestPixelValue: (0, _getNumberValue2.default)(metaData['00280106']),
-      largestPixelValue: (0, _getNumberValue2.default)(metaData['00280107']),
       redPaletteColorLookupTableDescriptor: (0, _getNumberValues2.default)(metaData['00281101']),
       greenPaletteColorLookupTableDescriptor: (0, _getNumberValues2.default)(metaData['00281102']),
       bluePaletteColorLookupTableDescriptor: (0, _getNumberValues2.default)(metaData['00281103']),
