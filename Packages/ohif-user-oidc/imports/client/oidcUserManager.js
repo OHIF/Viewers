@@ -55,7 +55,6 @@ OHIF.user.getAccessToken = function oidcGetAccessToken() {
     if (!OHIF.user.userLoggedIn) {
         throw new Error('User is not logged in.');
     }
-
     return getTokenFromStorage();
 };
 
@@ -64,7 +63,18 @@ OHIF.user.getOidcStorageKey = function () {
 }
 
 OHIF.user.logout = function oidcLogout() {
-    oidcUserManager.signoutRedirect();
+    const config = JSON.parse(sessionStorage.getItem(itemName) || null);
+    if (oidcClient.revokeUrl && config && config.access_token) {
+        // OIDC from Google doesn't support signing out for some reason
+        // so we revoke the token manually
+        sessionStorage.removeItem(itemName);
+        const revokeUrl = oidcClient.revokeUrl + config.access_token;
+        fetch(revokeUrl).catch(()=>{}).then(() => location.assign(oidcClient.postLogoutRedirectUri || '/'));
+        
+    } else {
+        // simple oidc signout behavior
+        oidcUserManager.signoutRedirect();
+    }
 }
 
 OHIF.user.userLoggedIn = () => !!getTokenFromStorage();
