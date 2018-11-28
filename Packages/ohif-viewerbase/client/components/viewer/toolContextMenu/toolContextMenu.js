@@ -59,7 +59,7 @@ Template.viewerMain.events({
     'cornerstonetoolsmouseclick .imageViewerViewport'(event) {
         const { originalEvent } = event;
         const eventData = originalEvent.detail;
-        if (eventData.which === 3) {
+        if (eventData.event && eventData.event.which === 3) {
             createDropdown(eventData);
         }
     },

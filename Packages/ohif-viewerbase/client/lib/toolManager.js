@@ -213,10 +213,35 @@ export const toolManager = {
         });
     },
 
-    getNearbyToolData() {
-        // TODO: Implement this and let the others (e.g. deleteLesionKeyboardTool) use this function
-        // if it does not exist in cornerstoneTools
-        return undefined;
+    getNearbyToolData(element, coords, toolTypes) {
+        let pointNearTool = false;
+        const nearbyTool = {};
+
+        const toolTypesToCheck = toolTypes || this.getTools();
+        toolTypesToCheck.forEach(toolType => {
+            const toolData = cornerstoneTools.getToolState(element, toolType);
+            if (!toolData) {
+                return;
+            }
+
+            for (let i = 0; i < toolData.data.length; i++) {
+                const data = toolData.data[i];
+                const tool = cornerstoneTools.getToolForElement(element, toolType);
+                if (tool && typeof tool.pointNearTool === 'function' && tool.pointNearTool(element, data, coords)) {
+                    pointNearTool = true;
+                    nearbyTool.tool = data;
+                    nearbyTool.index = i;
+                    nearbyTool.toolType = toolType;
+                    break;
+                }
+            }
+
+            if (pointNearTool === true) {
+                return false;
+            }
+        });
+
+        return pointNearTool ? nearbyTool : undefined;
     },
 
     getActiveTool(button = 'left') {
