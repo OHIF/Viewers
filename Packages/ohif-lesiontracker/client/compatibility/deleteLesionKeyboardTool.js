@@ -37,47 +37,6 @@ function removeMeasurementTimepoint(data, index, toolType, element) {
     cornerstone.updateImage(element);
 }
 
-// TODO = Check if we have the same function already in Cornerstone Tools
-function getNearbyToolData(element, coords) {
-    const Viewerbase = OHIF.viewerbase;
-    const allTools = Viewerbase.toolManager.getTools();
-    let pointNearTool = false;
-    const isTouchDevice = Viewerbase.helpers.isTouchDevice();
-    const nearbyTool = {};
-
-    toolTypes.forEach(toolType => {
-        const toolData = cornerstoneTools.getToolState(element, toolType);
-        if (!toolData) {
-            return;
-        }
-
-        for (let i = 0; i < toolData.data.length; i++) {
-            const data = toolData.data[i];
-
-            let toolInterface;
-            if (isTouchDevice) {
-                toolInterface = allTools[toolType].touch;
-            } else {
-                toolInterface = allTools[toolType].mouse;
-            }
-
-            if (toolInterface.pointNearTool(element, data, coords)) {
-                pointNearTool = true;
-                nearbyTool.tool = data;
-                nearbyTool.index = i;
-                nearbyTool.toolType = toolType;
-                break;
-            }
-        }
-
-        if (pointNearTool === true) {
-            return false;
-        }
-    });
-
-    return pointNearTool ? nearbyTool : undefined;
-}
-
 function keyDownCallback(event) {
     const eventData = event.detail;
     const keyCode = eventData.which;
@@ -88,7 +47,7 @@ function keyDownCallback(event) {
     if (keyCode === keys.DELETE ||
         (keyCode === keys.D && eventData.event.ctrlKey === true)) {
 
-        const nearbyToolData = getNearbyToolData(eventData.element, eventData.currentPoints.canvas);
+        const nearbyToolData = OHIF.viewerbase.toolManager.getNearbyToolData(eventData.element, eventData.currentPoints.canvas, toolTypes);
 
         if (!nearbyToolData || nearbyToolData.tool.isCreating) return;
 
