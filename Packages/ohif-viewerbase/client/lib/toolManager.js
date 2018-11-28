@@ -11,6 +11,15 @@ let defaultTool = {
     right: 'zoom',
     middle: 'pan'
 };
+
+const defaultToolConfig = {
+    shadow: false,
+    shadowColor: '#000000',
+    shadowOffsetX: 0,
+    shadowOffsetY: 0,
+    drawHandlesOnHover: true
+};
+
 const buttonNum = {
     'left': 1,
     'right': 2,
@@ -49,6 +58,25 @@ export const toolManager = {
             panMultiTouch: 'PanMultiTouchTool',
             stackScrollMouseWheel: 'StackScrollMouseWheelTool'
         };
+
+        const { textStyle, toolStyle, toolColors } = cornerstoneTools;
+
+        // Set text box background color
+        textStyle.setBackgroundColor('transparent');
+
+        // Set the tool font and font size
+        // context.font = "[style] [variant] [weight] [size]/[line height] [font family]";
+        const fontFamily = 'Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
+        textStyle.setFont('15px ' + fontFamily);
+
+        // Set the tool width
+        toolStyle.setToolWidth(2);
+
+        // Set color for inactive tools
+        toolColors.setToolColor('rgb(255, 255, 0)'); // yellow
+
+        // Set color for active tools
+        toolColors.setActiveColor('rgb(50, 205, 50)'); // limegreen
 
         initialized = true;
     },
@@ -150,7 +178,10 @@ export const toolManager = {
         Object.keys(tools).forEach(toolName => {
             const apiTool = cornerstoneTools[tools[toolName]];
             if (apiTool) {
-                cornerstoneTools.addTool(apiTool, { name: toolName });
+                cornerstoneTools.addTool(apiTool, {
+                    name: toolName,
+                    configuration: defaultToolConfig
+                });
 
                 // Set all tools passive by default in order to render the external data if exists
                 cornerstoneTools.setToolPassive(toolName);
