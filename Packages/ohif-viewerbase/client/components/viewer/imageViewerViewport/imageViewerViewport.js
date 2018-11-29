@@ -278,7 +278,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         }
 
         // Instantiate the tools
-        toolManager.instantiateTools();
+        toolManager.instantiateTools(element);
 
         toolManager.instantiateTools(element);
 
