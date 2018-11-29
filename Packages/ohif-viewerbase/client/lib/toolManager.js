@@ -56,7 +56,8 @@ export const toolManager = {
             wwwcRegion: 'WwwcRegionTool',
             zoomTouchPinch: 'ZoomTouchPinchTool',
             panMultiTouch: 'PanMultiTouchTool',
-            stackScrollMouseWheel: 'StackScrollMouseWheelTool'
+            stackScrollMouseWheel: 'StackScrollMouseWheelTool',
+            referenceLines: 'ReferenceLinesTool'
         };
 
         const { textStyle, toolStyle, toolColors } = cornerstoneTools;

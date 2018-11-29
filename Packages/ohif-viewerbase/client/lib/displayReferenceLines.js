@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 /**
  * This function disables reference lines for a specific viewport element.
@@ -22,7 +23,7 @@ export function displayReferenceLines(element) {
     const imagePlane = cornerstone.metaData.get('imagePlane', imageId);
 
     // Disable reference lines for the current element
-    cornerstoneTools.referenceLines.tool.disable(element);
+    cornerstoneTools.setToolDisabledForElement(element, 'referenceLines');
 
     if (!OHIF.viewer.refLinesEnabled || !imagePlane || !imagePlane.frameOfReferenceUID) {
         OHIF.log.info('displayReferenceLines refLinesEnabled is not enabled, no imagePlane or no frameOfReferenceUID');
@@ -46,7 +47,9 @@ export function displayReferenceLines(element) {
                 return;
             }
 
-            cornerstoneTools.referenceLines.tool.enable(viewportElement, OHIF.viewer.updateImageSynchronizer);
+            cornerstoneTools.setToolEnabledForElement(viewportElement, 'referenceLines', {
+                synchronizationContext: OHIF.viewer.updateImageSynchronizer
+            });
         }
     });
 }
