@@ -183,8 +183,10 @@ export const toolManager = {
                     configuration: defaultToolConfig
                 });
 
-                // Set all tools passive by default in order to render the external data if exists
-                cornerstoneTools.setToolPassive(toolName);
+                // Set all tools (except the active tools) passive by default in order to render the external data if exists
+                if (!activeTool || !Object.values(activeTool).includes(toolName)) {
+                    cornerstoneTools.setToolPassive(toolName);
+                }
             }
         });
 
