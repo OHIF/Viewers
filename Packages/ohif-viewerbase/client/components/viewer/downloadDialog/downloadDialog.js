@@ -8,7 +8,7 @@ import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 OHIF.viewerbase.getImageDownloadDialogAnnotationTools = () => {
-    return ['length', 'probe', 'simpleAngle', 'arrowAnnotate', 'ellipticalRoi', 'rectangleRoi'];
+    return ['length', 'dragProbe', 'angle', 'annotate', 'ellipticalRoi', 'rectangleRoi'];
 };
 
 /**
@@ -81,6 +81,8 @@ Template.imageDownloadDialog.onRendered(() => {
     instance.viewportPreview = instance.$viewportPreview[0];
 
     cornerstone.enable(instance.viewportElement);
+    OHIF.viewerbase.toolManager.instantiateTools(instance.viewportElement);
+
     instance.downloadCanvas = $(instance.viewportElement).find('canvas')[0];
 
     instance.form = instance.$('form').data('component');
@@ -94,9 +96,9 @@ Template.imageDownloadDialog.onRendered(() => {
     };
 
     instance.toggleAnnotations = toggle => {
-        const action = toggle ? 'enable' : 'disable';
+        const action = toggle ? 'setToolEnabledForElement' : 'setToolDisabledForElement';
         const annotationTools = OHIF.viewerbase.getImageDownloadDialogAnnotationTools();
-        annotationTools.forEach(tool => cornerstoneTools[tool][action](instance.viewportElement));
+        annotationTools.forEach(tool => cornerstoneTools[action](instance.viewportElement, tool));
     };
 
     instance.updateViewportPreview = () => {
@@ -137,7 +139,7 @@ Template.imageDownloadDialog.onRendered(() => {
             return window.navigator.msSaveBlob(blob, filename);
         }
 
-        return cornerstoneTools.saveAs(instance.viewportElement, filename, mimetype);
+        return cornerstoneTools.SaveAs(instance.viewportElement, filename, mimetype);
     };
 
     instance.autorun(() => {
