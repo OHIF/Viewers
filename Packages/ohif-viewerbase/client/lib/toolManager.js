@@ -173,12 +173,12 @@ export const toolManager = {
         Session.set('ToolManagerActiveToolUpdated', Random.id());
     },
 
-    instantiateTools() {
-        // Instantiate all cornerstone tools for all enabled elements
+    instantiateTools(element) {
+        // Instantiate all cornerstone tools for the given element
         Object.keys(tools).forEach(toolName => {
             const apiTool = cornerstoneTools[tools[toolName]];
             if (apiTool) {
-                cornerstoneTools.addTool(apiTool, {
+                cornerstoneTools.addToolForElement(element, apiTool, {
                     name: toolName,
                     configuration: defaultToolConfig
                 });
