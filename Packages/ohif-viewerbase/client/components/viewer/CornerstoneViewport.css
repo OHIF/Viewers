@@ -1,5 +1,0 @@
-.CornerstoneViewport {
-  width: 100%;
-  height: 100%;
-  position: relative; /*Necessary so that the viewportOverlay is on top of the viewports */
-}

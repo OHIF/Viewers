@@ -2,7 +2,7 @@ import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { OHIF } from 'meteor/ohif:core';
-import CornerstoneViewport from '../CornerstoneViewport.js';
+import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport.js';
 import './GridLayout.styl';
 
 const TOP_CLASS = 'top';

@@ -121,25 +121,9 @@ Package.onUse(function(api) {
     api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.styl', 'client');
 
     // Viewer components
-    api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.html', 'client');
-    api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.js', 'client');
-    api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.styl', 'client');
-
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.html', 'client');
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.js', 'client');
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.styl', 'client');
-
-    api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.styl', 'client');
-
-    api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.html', 'client');
-    api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.js', 'client');
-    api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.styl', 'client');
-
-    api.addFiles('client/components/viewer/toolContextMenu/toolContextMenu.js', 'client');
-
-    api.addFiles('client/components/viewer/imageControls/imageControls.html', 'client');
-    api.addFiles('client/components/viewer/imageControls/imageControls.js', 'client');
-    api.addFiles('client/components/viewer/imageControls/imageControls.styl', 'client');
 
     api.addFiles('client/components/viewer/layoutButton/layoutButton.html', 'client');
     api.addFiles('client/components/viewer/layoutButton/layoutButton.js', 'client');

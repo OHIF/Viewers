@@ -1,6 +1,5 @@
 import { Component } from 'react';
 import React from 'react';
-import './ViewportOverlay.css';
 /*import * as cornerstone from 'cornerstone-core';
 import * as cornerstoneTools from 'cornerstone-tools';*/
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';

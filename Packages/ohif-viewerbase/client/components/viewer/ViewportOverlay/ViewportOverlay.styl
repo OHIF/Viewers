@@ -8,39 +8,35 @@ $viewportTagPadding = 20px
 .imageViewerViewportOverlay
   theme('color', '$textSecondaryColor')
 
-  .dicomTag
+  .overlay-element
     position: absolute
     font-weight: 400
     text-shadow: 1px 1px black
     pointer-events: none
 
-  .topleft
+  .top-left
     top: $viewportTagPadding
     left: $viewportTagPadding
 
-  .topcenter
+  .top-center
     top: $viewportTagPadding
     padding-top: $viewportTagPadding
     width: 100%
     text-align: center
 
-  .topright
+  .top-right
     top: $viewportTagPadding
     right: $viewportTagPadding
     text-align: right
 
-  .bottomleft
+  .bottom-left
     bottom: $viewportTagPadding
     left: $viewportTagPadding
 
-  .bottomright
+  .bottom-right
     bottom: $viewportTagPadding
     right: $viewportTagPadding
     text-align: right
-
-  .priorIndicator
-    font-weight: bold
-    color: yellow
 
   &.controlsVisible
     .topright, .bottomright

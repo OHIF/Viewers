@@ -242,39 +242,4 @@ Template.viewportOverlay.helpers({
 
         return stack.imageIds.length;
     },
-
-    prior() {
-        // This helper is updated whenever a new image is displayed in the viewport
-        Session.get('CornerstoneNewImage' + this.viewportIndex);
-
-        if (!this.imageId) {
-            return;
-        }
-
-        // @TypeSafeStudies
-        // Make sure there are more than two studies loaded in the viewer
-        const viewportStudies = OHIF.viewer.Studies.all();
-        if (viewportStudies.length < 2) {
-            return;
-        }
-
-        // Here we sort the collection in ascending order by study date, so
-        // that we can obtain the oldest study as the first element of the array
-        //
-        // TODO= Find out if we should encode studyDate as a Date in the OHIF.viewer.Studies Collection
-        const viewportStudiesArray = _.sortBy(viewportStudies, function(study) {
-            return viewportOverlayUtils.formatDateTime(study.studyDate, study.studyTime);
-        });
-
-        // Get study data
-        const study = cornerstone.metaData.get('study', this.imageId);
-        if (!study) {
-            return;
-        }
-
-        const oldestStudy = viewportStudiesArray[0];
-        if (viewportOverlayUtils.formatDateTime(study.studyDate, study.studyTime) <= viewportOverlayUtils.formatDateTime(oldestStudy.studyDate, oldestStudy.studyTime)) {
-            return 'Prior';
-        }
-    }
 });

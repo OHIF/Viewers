@@ -1,20 +1,21 @@
 import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
+import cloneDeep from 'lodash.clonedeep';
+import debounce from 'lodash.debounce';
+
 //import * as cornerstone from 'cornerstone-core';
 //import * as cornerstoneTools from 'cornerstone-tools';
 
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 //import './lib/initCornerstone.js';
-import ImageScrollbar from './ImageScrollbar.js';
-import ViewportOverlay from './ViewportOverlay.js';
-import ToolContextMenu from './ToolContextMenu.js';
-import LoadingIndicator from './LoadingIndicator/LoadingIndicator.js';
-import './CornerstoneViewport.css';
-
-import cloneDeep from 'lodash.clonedeep';
-import debounce from 'lodash.debounce';
-import {StackManager} from "../../lib/StackManager";
+import ImageScrollbar from '../ImageScrollbar/ImageScrollbar.js';
+import ViewportOverlay from '../ViewportOverlay/ViewportOverlay.js';
+import ToolContextMenu from '../ToolContextMenu/ToolContextMenu.js';
+import LoadingIndicator from '../LoadingIndicator/LoadingIndicator.js';
+import ViewportOrientationMarkers from '../ViewportOrientationMarkers/ViewportOrientationMarkers.js';
+import { StackManager } from "../../../lib/StackManager";
+import './CornerstoneViewport.styl';
 
 const EVENT_RESIZE = 'resize';
 const loadIndicatorDelay = 45;
@@ -92,6 +93,13 @@ class CornerstoneViewport extends Component {
     //loadHandlerManager.setEndLoadHandler(this.doneLoadingHandler);
 
     this.debouncedResize = debounce(() => {
+      try {
+          cornerstone.getEnabledElement(this.element);
+      } catch (error) {
+          console.error(error);
+          return;
+      }
+
       cornerstone.resize(this.element, true);
 
       this.setState({
@@ -117,6 +125,9 @@ class CornerstoneViewport extends Component {
         <div
           className="CornerstoneViewport viewportElement"
           onContextMenu={this.onContextMenu}
+          tabIndex='0'
+          unselectable='on'
+          onSelectStart='return false;'
           ref={input => {
             this.element = input;
           }}
@@ -129,6 +140,10 @@ class CornerstoneViewport extends Component {
             imageId={this.state.imageId}
             numImagesLoaded={this.state.numImagesLoaded}
           />
+          <ViewportOrientationMarkers/>
+        </div>
+        <div className='viewportInstructions'>
+            Please drag a stack here to view images.
         </div>
         {this.displayScrollbar && (
           <ImageScrollbar
@@ -191,8 +206,6 @@ class CornerstoneViewport extends Component {
     this.setState({
       viewport
     });
-
-    debugger;
   }
 
   onNewImage() {
@@ -451,8 +464,8 @@ class CornerstoneViewport extends Component {
         isTouchActive: true
       });
     }
-    
-    cornerstone.resize(this.element);
+
+    this.debouncedResize();
   }
 
   setActiveTool = activeTool => {

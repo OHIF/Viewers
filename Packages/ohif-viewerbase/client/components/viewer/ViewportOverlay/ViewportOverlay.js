@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import React from 'react';
-import './ViewportOverlay.css';
 import PropTypes from 'prop-types';
+import './ViewportOverlay.styl';
 
 class ViewportOverlay extends Component {
   render() {
