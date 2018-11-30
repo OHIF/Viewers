@@ -1,0 +1,115 @@
+import { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { OHIF } from 'meteor/ohif:core';
+import CornerstoneViewport from '../CornerstoneViewport.js';
+import './GridLayout.styl';
+
+const TOP_CLASS = 'top';
+const BOTTOM_CLASS = 'bottom';
+const MIDDLE_CLASS = 'middle';
+
+class GridLayout extends Component {
+    constructor(props) {
+        super(props);
+
+        this.getClass = this.getClass.bind(this);
+    }
+
+    // Get class for each viewport, so each app
+    // using ohif-viewerbase can style on their own
+    getClass(index) {
+        const { rows, columns } = this.props;
+
+        if (rows === 1) {
+            return `${TOP_CLASS} ${BOTTOM_CLASS}`;
+        }
+
+        const actualRow = Math.floor(index / columns);
+
+        if ( actualRow === 0 ) {
+            return TOP_CLASS;
+        }
+        if ( actualRow + 1 === rows ) {
+            return BOTTOM_CLASS;
+        }
+
+        return MIDDLE_CLASS;
+    }
+
+    getActiveClass(index) {
+        if (this.props.activeViewport === index) {
+            return 'active';
+        };
+
+        return ''
+    }
+
+    render() {
+        // Get the height percentage for each viewport
+        const rows = this.props.rows || 1;
+        const height = 100 / rows;
+
+        // Get the width percentage for each viewport
+        const columns = this.props.columns || 1;
+        const width = 100 / columns;
+
+        let viewportData = this.props.viewportData;
+        const numViewports = rows * columns;
+        const numViewportsWithData = viewportData.length;
+
+        // Check if the viewportData length is different from the given
+        if (numViewportsWithData < numViewports) {
+            // Add the missing viewports
+            const difference = numViewports - numViewportsWithData;
+            for (let i = 0; i < difference; i++) {
+                viewportData.push({
+                    viewportIndex: numViewportsWithData + i + 1,
+                    rows,
+                    columns
+                });
+            }
+        } else if (numViewportsWithData > numViewports) {
+            // Remove the additional viewports
+            viewportData = viewportData.slice(0, numViewports);
+        }
+
+        const viewports = viewportData.map((viewport, index) => {
+            const className = `viewportContainer ${this.getClass(index)} ${getActiveClass(index)}`;
+
+            const styles = {
+                height: `${height}%`,
+                width: `${width}%`,
+            };
+
+            const cornerstoneViewport = (viewport) => (
+                <div className="removable">
+                    <CornerstoneViewport/>
+                </div>
+            );
+
+            const pluginViewport = (viewport) => (
+                <div className={`viewport-plugin-${viewport.plugin}`} style="height:100%; width: 100%">
+                </div>
+            );
+
+            return (
+                <div className={className} style={styles}>
+                {viewport.plugin === 'cornerstone' ?
+                    cornerstoneViewport(viewport) :
+                    pluginViewport(viewport)
+                }
+                {/*{>seriesQuickSwitch (clone this viewport=viewport viewportIndex=@index)}*/}
+            </div>
+            )
+        })
+
+        return (
+            <div id='imageViewerViewports'>
+            { viewports }
+            </div>
+        )
+    }
+}
+
+export default GridLayout;

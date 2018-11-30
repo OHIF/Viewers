@@ -1,11 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
 import { $ } from 'meteor/jquery';
 import { OHIF } from 'meteor/ohif:core';
 
+import { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import './LoadingIndicator.styl';
+
 Meteor.startup(() => {
     // This checking is necessary because cornerstoneTools may not have some tools available.
-    // Example: when an app defines its own cornerstone's lib versions, so it 
+    // Example: when an app defines its own cornerstone's lib versions, so it
     // uses only ohif-viewerbase and not ohif-cornerstone and those libs are added later.
     if (cornerstoneTools.loadHandlerManager) {
         cornerstoneTools.loadHandlerManager.setStartLoadHandler(startLoadingHandler);
@@ -69,11 +73,38 @@ const errorLoadingHandler = (element, imageId, error, source) => {
     }
 };
 
-Template.loadingIndicator.helpers({
-    'percentComplete'() {
-        const percentComplete = Session.get('CornerstoneLoadProgress' + this.viewportIndex);
-        if (percentComplete && percentComplete !== 100) {
-            return `${percentComplete}%`;
-        }
+class LoadingIndicator extends Component {
+    constructor(props) {
+        super(props);
     }
-});
+
+    render() {
+        // TODO[react]: Pass this in as a prop reactively
+        //const percentComplete = Session.get('CornerstoneLoadProgress' + this.viewportIndex);
+        let percComplete;
+        if (this.props.percentComplete && this.props.percentComplete !== 100) {
+            percComplete = `${this.props.percentComplete}%`;
+        }
+
+        return (<>
+        <div className="imageViewerLoadingIndicator loadingIndicator">
+            <div className="indicatorContents">
+            <p>Loading... <i className="fa fa-spin fa-circle-o-notch fa-fw"></i> {{percComplete}}</p>
+           </div>
+        </div>
+        <div className="imageViewerErrorLoadingIndicator loadingIndicator">
+            <div className="indicatorContents">
+                    <h4>Error Loading Image</h4>
+                    <p className='description'>An error has occurred.</p>
+                    <p className='details'></p>
+                </div>
+            </div>
+        </>);
+    }
+}
+
+LoadingIndicator.propTypes = {
+    percentComplete: PropTypes.number.isRequired
+};
+
+export default LoadingIndicator;

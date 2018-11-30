@@ -17,7 +17,7 @@ export function updateOrientationMarkers(element, viewport) {
     // Updates the orientation labels on the viewport
     const enabledElement = cornerstone.getEnabledElement(element);
     const imagePlane = cornerstone.metaData.get('imagePlane', enabledElement.image.imageId);
-    
+
     if (!imagePlane || !imagePlane.rowCosines || !imagePlane.columnCosines) {
         return;
     }
@@ -41,6 +41,8 @@ export function updateOrientationMarkers(element, viewport) {
     if (viewport.hflip) {
         markers.left = cornerstoneTools.orientation.invertOrientationString(markers.left);
     }
+
+    // TODO[react]: This should set values in the redux store
 
     // Get the viewport orientation marker DOM elements
     const viewportOrientationMarkers = $(element).siblings('.viewportOrientationMarkers');

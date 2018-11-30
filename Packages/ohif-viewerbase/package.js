@@ -125,28 +125,15 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.js', 'client');
     api.addFiles('client/components/viewer/imageViewerViewport/imageViewerViewport.styl', 'client');
 
-    api.addFiles('client/components/viewer/gridLayout/gridLayout.html', 'client');
-    api.addFiles('client/components/viewer/gridLayout/gridLayout.js', 'client');
-    api.addFiles('client/components/viewer/gridLayout/gridLayout.styl', 'client');
-
-    api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.html', 'client');
-    api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.js', 'client');
-    api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.styl', 'client');
-
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.html', 'client');
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.js', 'client');
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.styl', 'client');
 
-    api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.html', 'client');
     api.addFiles('client/components/viewer/viewportOrientationMarkers/viewportOrientationMarkers.styl', 'client');
 
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.html', 'client');
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.js', 'client');
     api.addFiles('client/components/viewer/viewportOverlay/viewportOverlay.styl', 'client');
-
-    api.addFiles('client/components/viewer/viewerMain/viewerMain.html', 'client');
-    api.addFiles('client/components/viewer/viewerMain/viewerMain.js', 'client');
-    api.addFiles('client/components/viewer/viewerMain/viewerMain.styl', 'client');
 
     api.addFiles('client/components/viewer/toolContextMenu/toolContextMenu.js', 'client');
 

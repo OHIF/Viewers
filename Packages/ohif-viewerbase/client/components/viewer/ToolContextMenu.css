@@ -1,0 +1,37 @@
+@value globals: "../GlobalStyles.css";
+@value textActiveColor, uiGrayDark, uiGrayLight from globals;
+
+.ToolContextMenu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  z-index: 1000;
+  display: block;
+  width: 160px;
+}
+
+.ToolContextMenu > ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.ToolContextMenu > ul > li > button {
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  color: uiGrayLight;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  background: none;
+}
+
+.ToolContextMenu > ul > li > button:hover {
+  color: uiGrayDark;
+}
+
+.ToolContextMenu > ul > li > button:active {
+  color: textActiveColor;
+}

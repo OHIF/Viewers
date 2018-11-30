@@ -8,6 +8,8 @@ import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 
+import viewer from '../../components/viewer';
+
 const PLUGIN_CORNERSTONE = 'cornerstone';
 
 let isInteractingWithViewport = false;
@@ -28,14 +30,15 @@ export class LayoutManager {
      * @param {DOM element}    parentNode DOM element representing the parent node, which wraps the Layout Manager content
      * @param {Array} studies  Array of studies objects that will be rendered in the Viewer. Each object will be rendered in a div.imageViewerViewport
      */
-    constructor(parentNode, studies) {
+    constructor(setContents, studies) {
         OHIF.log.info('LayoutManager constructor');
 
+        this.setContents = setContents;
         this.observer = new Tracker.Dependency();
         this.parentNode = parentNode;
         this.studies = studies;
         this.viewportData = [];
-        this.layoutTemplateName = 'gridLayout';
+        this.layoutTemplate = viewer.GridLayout;
         this.layoutProps = {
             rows: 1,
             columns: 1
@@ -209,11 +212,10 @@ export class LayoutManager {
             data.viewportData.push(viewportDataAndLayoutProps);
         });
 
-        const layoutTemplate = Template[this.layoutTemplateName];
-
-        this.parentNode.innerHTML = '';
         this.updateLayoutClass();
-        Blaze.renderWithData(layoutTemplate, data, this.parentNode);
+
+        const component = GridLayout;
+        this.setContents(component, data)
 
         this.updateSession();
 
@@ -276,6 +278,8 @@ export class LayoutManager {
             container.appendChild(newViewportContainer);
 
             Blaze.renderWithData(Template.imageViewerViewport, data, newViewportContainer);
+
+
         } else {
             newViewportContainer.className = `viewport-plugin-${plugin}`;
             newViewportContainer.style.width = '100%';
@@ -314,10 +318,8 @@ export class LayoutManager {
             columns: 1
         };
 
-        const layoutTemplate = Template.gridLayout;
-
-        this.parentNode.innerHTML = '';
-        Blaze.renderWithData(layoutTemplate, data, this.parentNode);
+        const component = GridLayout;
+        this.setContents(component, data)
 
         this.isZoomed = true;
         this.zoomedViewportIndex = viewportIndex;

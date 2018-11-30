@@ -5,7 +5,14 @@
   "main": "index.js",
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.51",
-    "loglevel": "^1.6.1"
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
+    "loglevel": "^1.6.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.1"
   },
   "devDependencies": {
     "puppeteer": "^1.5.0"

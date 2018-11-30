@@ -51,3 +51,4 @@ cultofcoders:persistent-session
 shell-server@0.3.1
 underscore
 meteortesting:mocha
+react-template-helper

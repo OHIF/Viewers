@@ -55,6 +55,9 @@ const createDropdown = function(eventData, isTouchEvent = false) {
     }
 };
 
+/*
+TODO[react]: Migrate these to ViewerMain React Component
+
 Template.viewerMain.events({
     'cornerstonetoolsmouseclick .imageViewerViewport'(event) {
         const { originalEvent } = event;
@@ -69,4 +72,4 @@ Template.viewerMain.events({
         const eventData = originalEvent.detail;
         createDropdown(eventData, true);
     }
-});
+});*/

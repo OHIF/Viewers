@@ -6,6 +6,9 @@ import { Viewerbase } from '../namespace';
 
 import './collections';
 import './lib/debugReactivity';
+import components from './components/index.js';
+
+Viewerbase.components = components;
 
 /**
  * Exported Functions

@@ -5,6 +5,10 @@ import { OHIF } from 'meteor/ohif:core';
 import { setActiveViewport } from '../../../lib/setActiveViewport';
 import { switchToImageByIndex } from '../../../lib/switchToImageByIndex';
 
+import { Component } from 'react';
+import React from 'react';
+
+
 const slideTimeoutTime = 40;
 let slideTimeout;
 
