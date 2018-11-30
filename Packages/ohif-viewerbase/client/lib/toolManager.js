@@ -2,6 +2,9 @@ import { Session } from 'meteor/session';
 import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
+import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
+import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
+import { crosshairsSynchronizers } from './crosshairsSynchronizers';
 
 let activeTool;
 let tools = {};
@@ -167,7 +170,20 @@ export const toolManager = {
                 break;
         }
 
-        cornerstoneTools.setToolActive(toolName, options);
+        if (toolName === 'crosshairs') {
+            // Activate crosshairs tool with the synchronizers by element
+            cornerstoneTools.store.state.enabledElements.forEach(element => {
+                const currentFrameOfReferenceUID = getFrameOfReferenceUID(element);
+                if (currentFrameOfReferenceUID) {
+                    updateCrosshairsSynchronizer(currentFrameOfReferenceUID);
+                    options.synchronizationContext = crosshairsSynchronizers.synchronizers[currentFrameOfReferenceUID];
+                }
+                cornerstoneTools.setToolActiveForElement(element, toolName, options);
+            });
+        } else {
+            cornerstoneTools.setToolActive(toolName, options);
+        }
+
         activeTool[button] = toolName;
 
         // Enable reactivity

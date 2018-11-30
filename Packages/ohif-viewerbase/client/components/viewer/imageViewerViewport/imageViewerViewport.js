@@ -15,6 +15,7 @@ import { toolManager } from '../../../lib/toolManager';
 import { updateOrientationMarkers } from '../../../lib/updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from '../../../lib/instanceClassSpecificViewport';
 import { OHIFError } from '../../../lib/classes/OHIFError';
+import { crosshairsSynchronizers } from '../../../lib/crosshairsSynchronizers';
 
 const allCornerstoneEvents = ['click', 'cornerstonetoolsmousedown', 'cornerstonetoolsmousedownactivate',
     'cornerstonetoolsmouseclick', 'cornerstonetoolsmousedrag', 'cornerstonetoolsmouseup',
@@ -467,6 +468,12 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             const activeTool = toolManager.getActiveTool();
             if (activeTool === 'crosshairs') {
                 updateCrosshairsSynchronizer(imagePlane.frameOfReferenceUID);
+                cornerstoneTools.store.state.enabledElements.forEach(cornerstoneToolsElement => {
+                    cornerstoneTools.clearToolState(cornerstoneToolsElement, 'crosshairs');
+                    cornerstoneTools.addToolState(cornerstoneToolsElement, 'crosshairs', {
+                        synchronizationContext: crosshairsSynchronizers.synchronizers[imagePlane.frameOfReferenceUID]
+                    });
+                });
             }
         }
 
