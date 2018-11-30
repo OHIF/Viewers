@@ -1,6 +1,8 @@
 import viewer  from './viewer/index.js';
 
-export {
+const components = {
     viewer
 };
+
+export default components;
 

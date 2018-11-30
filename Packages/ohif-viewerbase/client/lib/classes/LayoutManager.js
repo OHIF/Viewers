@@ -8,7 +8,7 @@ import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 
-import viewer from '../../components/viewer';
+import viewerComponents from '../../components/viewer/index.js';
 
 const PLUGIN_CORNERSTONE = 'cornerstone';
 
@@ -27,7 +27,7 @@ Meteor.startup(() => {
 export class LayoutManager {
     /**
      * Constructor: initializes a Layout Manager object.
-     * @param {DOM element}    parentNode DOM element representing the parent node, which wraps the Layout Manager content
+     * @param {Function}
      * @param {Array} studies  Array of studies objects that will be rendered in the Viewer. Each object will be rendered in a div.imageViewerViewport
      */
     constructor(setContents, studies) {
@@ -35,15 +35,13 @@ export class LayoutManager {
 
         this.setContents = setContents;
         this.observer = new Tracker.Dependency();
-        this.parentNode = parentNode;
         this.studies = studies;
         this.viewportData = [];
-        this.layoutTemplate = viewer.GridLayout;
+        this.layoutTemplate = viewerComponents.GridLayout;
         this.layoutProps = {
             rows: 1,
             columns: 1
         };
-        this.layoutClassName = this.getLayoutClass();
 
         this.isZoomed = false;
 
@@ -149,36 +147,6 @@ export class LayoutManager {
     }
 
     /**
-     * Returns the name of the class to be added to the parentNode
-     * @return {string} class name following the pattern layout-<rows>-<columns>. Ex: layout-1-1, layout-2-2
-     */
-    getLayoutClass() {
-        const { rows, columns } = this.layoutProps;
-        const layoutClass = `layout-${rows}-${columns}`;
-
-        return layoutClass;
-    }
-
-    /**
-     * Add a class to the parentNode based on the layout configuration.
-     * This function is helpful to style the layout of viewports.
-     * Besides that, each inner div.viewportContainer will have helpful classes
-     * as well. See viewer/components/gridLayout/ component in this ohif-viewerbase package.
-     */
-    updateLayoutClass() {
-        const newLayoutClass = this.getLayoutClass();
-
-        // If layout has changed, change its class
-        if (this.layoutClassName !== newLayoutClass) {
-            this.parentNode.classList.remove(this.layoutClassName);
-        }
-
-        this.layoutClassName = newLayoutClass;
-
-        this.parentNode.classList.add(newLayoutClass);
-    }
-
-    /**
      * Updates the grid with the new layout props.
      * It iterates over all viewportData to render the studies
      * in the viewports.
@@ -212,9 +180,7 @@ export class LayoutManager {
             data.viewportData.push(viewportDataAndLayoutProps);
         });
 
-        this.updateLayoutClass();
-
-        const component = GridLayout;
+        const component = viewerComponents.GridLayout;
         this.setContents(component, data)
 
         this.updateSession();
@@ -318,7 +284,7 @@ export class LayoutManager {
             columns: 1
         };
 
-        const component = GridLayout;
+        const component = viewerComponents.GridLayout;
         this.setContents(component, data)
 
         this.isZoomed = true;

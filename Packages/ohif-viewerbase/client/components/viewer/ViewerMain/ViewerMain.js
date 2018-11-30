@@ -59,9 +59,8 @@ class ViewerMain extends Component {
         Session.set('OHIFViewerMainRendered', Math.random());
     }
 
-    setContents(component, data) {
-        const Comp = this.props.component;
-        const contents = (<Comp data={data}/>);
+    setContents(Component, props) {
+        const contents = (<Component {...props}/>);
 
         this.setState({
             contents

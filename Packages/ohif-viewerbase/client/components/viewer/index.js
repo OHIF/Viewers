@@ -6,7 +6,7 @@ import ImageScrollbar from './ImageScrollbar.js';
 import ToolContextMenu from './ToolContextMenu.js';
 import ViewportOverlay from './ViewportOverlay.js';
 
-export {
+const viewer = {
     ViewerMain,
     GridLayout,
     LoadingIndicator,
@@ -14,4 +14,7 @@ export {
     ImageScrollbar,
     ToolContextMenu,
     ViewportOverlay,
+    test: 'test2'
 };
+
+export default viewer;

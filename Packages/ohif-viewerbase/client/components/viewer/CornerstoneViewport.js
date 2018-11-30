@@ -14,6 +14,7 @@ import './CornerstoneViewport.css';
 
 import cloneDeep from 'lodash.clonedeep';
 import debounce from 'lodash.debounce';
+import {StackManager} from "../../lib/StackManager";
 
 const EVENT_RESIZE = 'resize';
 const loadIndicatorDelay = 45;
@@ -42,11 +43,22 @@ class CornerstoneViewport extends Component {
   constructor(props) {
     super(props);
 
-    const stack = props.viewportData.stack;
+    const { displaySetInstanceUid, studyInstanceUid } = this.props.viewportData;
+
+    // Create shortcut to displaySet
+    const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+
+    const displaySet = study.displaySets.find(set => {
+      return set.displaySetInstanceUid === displaySetInstanceUid;
+    });
+
+    // Get stack from Stack Manager
+    const stack = StackManager.findOrCreateStack(study, displaySet);
 
     // TODO: Allow viewport as a prop
     this.state = {
       stack,
+      displaySetInstanceUid,
       imageId: stack.imageIds[0],
       viewportHeight: '100%',
       isLoading: true,
@@ -388,10 +400,10 @@ class CornerstoneViewport extends Component {
   componentDidUpdate(prevProps) {
     // TODO: Add a real object shallow comparison here?
     if (
-      this.state.stack.imageIds[0] !== this.props.viewportData.stack.imageIds[0]
+      this.state.displaySetInstanceUid !== this.props.viewportData.displaySetInstanceUid
     ) {
       this.setState({
-        stack: this.props.viewportData.stack
+        displaySetInstanceUid: this.props.viewportData.displaySetInstanceUid
       });
 
       const stackData = cornerstoneTools.getToolState(this.element, 'stack');
@@ -413,7 +425,7 @@ class CornerstoneViewport extends Component {
 
       const imageId = currentStack.imageIds[currentStack.currentImageIdIndex];
 
-      cornerstone.loadAndCacheImage(imageId).then(image => {
+      /*cornerstone.loadAndCacheImage(imageId).then(image => {
         try {
           cornerstone.getEnabledElement(this.element);
         } catch (error) {
@@ -426,7 +438,7 @@ class CornerstoneViewport extends Component {
 
         cornerstoneTools.stackPrefetch.disable(this.element);
         cornerstoneTools.stackPrefetch.enable(this.element);
-      });
+      });*/
     }
 
     if (this.props.activeTool !== prevProps.activeTool) {
@@ -437,54 +449,6 @@ class CornerstoneViewport extends Component {
         mouseButtonMask: 0,
         isTouchActive: true
       });
-    }
-
-    if (this.props.currentLesion !== prevProps.currentLesion) {
-      const currentToolData = this.props.toolData[this.props.currentLesion - 1];
-      if (currentToolData) {
-        const { imageId } = currentToolData;
-        const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
-        const toolData = toolState[imageId][currentToolData.toolType].data;
-
-        toolData.forEach(data => {
-          if (data._id === currentToolData._id) {
-            data.active = true;
-          } else {
-            data.active = false;
-          }
-        });
-
-        cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-          toolState
-        );
-
-        if (this.state.imageId === imageId) {
-          cornerstone.setViewport(this.element, currentToolData.viewport);
-          cornerstone.updateImage(this.element);
-        } else {
-          cornerstone.loadAndCacheImage(imageId).then(image => {
-            try {
-              cornerstone.getEnabledElement(this.element);
-            } catch (error) {
-              // Handle cases where the user ends the session before the image is displayed.
-              console.error(error);
-              return;
-            }
-
-            cornerstone.displayImage(
-              this.element,
-              image,
-              currentToolData.viewport
-            );
-
-            this.setState({
-              imageId
-            });
-          });
-        }
-      } else {
-        cornerstone.updateImage(this.element);
-      }
     }
   }
 
@@ -636,9 +600,9 @@ class CornerstoneViewport extends Component {
 }
 
 CornerstoneViewport.propTypes = {
-  measurementsAddedOrRemoved: PropTypes.func.isRequired,
-  measurementsChanged: PropTypes.func.isRequired,
-  activeTool: PropTypes.string.isRequired,
+  measurementsAddedOrRemoved: PropTypes.func,
+  measurementsChanged: PropTypes.func,
+  activeTool: PropTypes.string,
   viewportData: PropTypes.object.isRequired
 };
 

@@ -89,7 +89,7 @@ class LoadingIndicator extends Component {
         return (<>
         <div className="imageViewerLoadingIndicator loadingIndicator">
             <div className="indicatorContents">
-            <p>Loading... <i className="fa fa-spin fa-circle-o-notch fa-fw"></i> {{percComplete}}</p>
+            <p>Loading... <i className="fa fa-spin fa-circle-o-notch fa-fw"></i> {percComplete}</p>
            </div>
         </div>
         <div className="imageViewerErrorLoadingIndicator loadingIndicator">
@@ -104,7 +104,7 @@ class LoadingIndicator extends Component {
 }
 
 LoadingIndicator.propTypes = {
-    percentComplete: PropTypes.number.isRequired
+    percentComplete: PropTypes.number
 };
 
 export default LoadingIndicator;

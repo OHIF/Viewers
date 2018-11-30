@@ -74,39 +74,43 @@ class GridLayout extends Component {
             viewportData = viewportData.slice(0, numViewports);
         }
 
-        const viewports = viewportData.map((viewport, index) => {
-            const className = `viewportContainer ${this.getClass(index)} ${getActiveClass(index)}`;
+        const viewports = viewportData.map((data, index) => {
+            const className = `viewportContainer ${this.getClass(index)} ${this.getActiveClass(index)}`;
 
             const styles = {
                 height: `${height}%`,
                 width: `${width}%`,
             };
 
-            const cornerstoneViewport = (viewport) => (
+            const cornerstoneViewport = (data) => (
                 <div className="removable">
-                    <CornerstoneViewport/>
+                    <CornerstoneViewport viewportData={data}/>
                 </div>
             );
 
-            const pluginViewport = (viewport) => (
-                <div className={`viewport-plugin-${viewport.plugin}`} style="height:100%; width: 100%">
+            const pluginViewport = (data) => (
+                <div className={`viewport-plugin-${data.plugin}`} style="height:100%; width: 100%">
                 </div>
             );
 
             return (
-                <div className={className} style={styles}>
-                {viewport.plugin === 'cornerstone' ?
-                    cornerstoneViewport(viewport) :
-                    pluginViewport(viewport)
+                <div key={index} className={className} style={styles}>
+                {data.plugin === 'cornerstone' ?
+                    cornerstoneViewport(data) :
+                    pluginViewport(data)
                 }
                 {/*{>seriesQuickSwitch (clone this viewport=viewport viewportIndex=@index)}*/}
             </div>
             )
         })
 
+        const layoutClass = `layout-${rows}-${columns}`;
+
         return (
             <div id='imageViewerViewports'>
-            { viewports }
+                <div id='layoutManagerTarget' className={layoutClass}>
+                { viewports }
+                </div>
             </div>
         )
     }
