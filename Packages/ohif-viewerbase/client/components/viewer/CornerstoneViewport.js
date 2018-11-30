@@ -54,6 +54,7 @@ class CornerstoneViewport extends Component {
 
     // Get stack from Stack Manager
     const stack = StackManager.findOrCreateStack(study, displaySet);
+    stack.currentImageIdIndex = 0;
 
     // TODO: Allow viewport as a prop
     this.state = {
@@ -61,7 +62,7 @@ class CornerstoneViewport extends Component {
       displaySetInstanceUid,
       imageId: stack.imageIds[0],
       viewportHeight: '100%',
-      isLoading: true,
+      isLoading: false,//true,
       imageScrollbarValue: 0,
       numImagesLoaded: 0
     };
@@ -87,10 +88,10 @@ class CornerstoneViewport extends Component {
     );
 
     this.loadHandlerTimeout = 25;
-    loadHandlerManager.setStartLoadHandler(this.startLoadingHandler);
-    loadHandlerManager.setEndLoadHandler(this.doneLoadingHandler);
+    //loadHandlerManager.setStartLoadHandler(this.startLoadingHandler);
+    //loadHandlerManager.setEndLoadHandler(this.doneLoadingHandler);
 
-    this.debouncedResize = _.debounce(() => {
+    this.debouncedResize = debounce(() => {
       cornerstone.resize(this.element, true);
 
       this.setState({
@@ -190,6 +191,8 @@ class CornerstoneViewport extends Component {
     this.setState({
       viewport
     });
+
+    debugger;
   }
 
   onNewImage() {
@@ -348,8 +351,6 @@ class CornerstoneViewport extends Component {
       this.setState({
         viewportHeight: `${this.element.clientHeight - 20}px`
       });
-
-      this.doneLoadingHandler();
     });
   }
 
@@ -450,6 +451,8 @@ class CornerstoneViewport extends Component {
         isTouchActive: true
       });
     }
+    
+    cornerstone.resize(this.element);
   }
 
   setActiveTool = activeTool => {

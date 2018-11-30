@@ -83,9 +83,7 @@ class GridLayout extends Component {
             };
 
             const cornerstoneViewport = (data) => (
-                <div className="removable">
-                    <CornerstoneViewport viewportData={data}/>
-                </div>
+                <CornerstoneViewport viewportData={data}/>
             );
 
             const pluginViewport = (data) => (
@@ -107,10 +105,8 @@ class GridLayout extends Component {
         const layoutClass = `layout-${rows}-${columns}`;
 
         return (
-            <div id='imageViewerViewports'>
-                <div id='layoutManagerTarget' className={layoutClass}>
+            <div id='imageViewerViewports' className={layoutClass}>
                 { viewports }
-                </div>
             </div>
         )
     }
