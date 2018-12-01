@@ -5,6 +5,7 @@ import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
 import { updateCrosshairsSynchronizer } from './updateCrosshairsSynchronizer';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
+import { annotateTextUtils } from './annotateTextUtils';
 
 let activeTool;
 let tools = {};
@@ -43,24 +44,69 @@ export const toolManager = {
 
         cornerstoneTools.init();
 
+        // Define tools object with the corresponding class names in cornerstone tools,
+        //  and support for setting different configuration per tool
         tools = {
-            length: 'LengthTool',
-            angle: 'AngleTool',
-            annotate: 'ArrowAnnotateTool',
-            wwwc: 'WwwcTool',
-            zoom: 'ZoomTool',
-            pan: 'PanTool',
-            dragProbe: 'DragProbeTool',
-            magnify: 'MagnifyTool',
-            crosshairs: 'CrosshairsTool',
-            stackScroll: 'StackScrollTool',
-            ellipticalRoi: 'EllipticalRoiTool',
-            rectangleRoi: 'RectangleRoiTool',
-            wwwcRegion: 'WwwcRegionTool',
-            zoomTouchPinch: 'ZoomTouchPinchTool',
-            panMultiTouch: 'PanMultiTouchTool',
-            stackScrollMouseWheel: 'StackScrollMouseWheelTool',
-            referenceLines: 'ReferenceLinesTool'
+            length: {
+                className: 'LengthTool',
+                configuration: defaultToolConfig
+            },
+            angle: {
+                className: 'AngleTool',
+                configuration: defaultToolConfig
+            },
+            annotate: {
+                className: 'ArrowAnnotateTool',
+                configuration: {
+                    ...defaultToolConfig,
+                    getTextCallback: annotateTextUtils.getTextCallback,
+                    changeTextCallback: annotateTextUtils.changeTextCallback
+                }
+            },
+            wwwc: {
+                className: 'WwwcTool'
+            },
+            zoom: {
+                className: 'ZoomTool'
+            },
+            pan: {
+                className: 'PanTool'
+            },
+            dragProbe: {
+                className: 'DragProbeTool'
+            },
+            magnify: {
+                className: 'MagnifyTool'
+            },
+            crosshairs: {
+                className: 'CrosshairsTool'
+            },
+            stackScroll: {
+                className: 'StackScrollTool'
+            },
+            ellipticalRoi: {
+                className: 'EllipticalRoiTool',
+                configuration: defaultToolConfig
+            },
+            rectangleRoi: {
+                className: 'RectangleRoiTool',
+                configuration: defaultToolConfig
+            },
+            wwwcRegion: {
+                className: 'WwwcRegionTool'
+            },
+            zoomTouchPinch: {
+                className: 'ZoomTouchPinchTool'
+            },
+            panMultiTouch: {
+                className: 'PanMultiTouchTool'
+            },
+            stackScrollMouseWheel: {
+                className: 'StackScrollMouseWheelTool'
+            },
+            referenceLines: {
+                className: 'ReferenceLinesTool'
+            }
         };
 
         const { textStyle, toolStyle, toolColors } = cornerstoneTools;
@@ -193,12 +239,19 @@ export const toolManager = {
     instantiateTools(element) {
         // Instantiate all cornerstone tools for the given element
         Object.keys(tools).forEach(toolName => {
-            const apiTool = cornerstoneTools[tools[toolName]];
+            const { className, configuration } = tools[toolName];
+            const apiTool = cornerstoneTools[className];
             if (apiTool) {
-                cornerstoneTools.addToolForElement(element, apiTool, {
-                    name: toolName,
-                    configuration: defaultToolConfig
-                });
+                const options = {
+                    name: toolName
+                };
+
+                // Set configuration only if exists to prevent overwrite default configuration in cornerstone tools
+                if (configuration) {
+                    options.configuration = configuration;
+                }
+
+                cornerstoneTools.addToolForElement(element, apiTool, options);
 
                 // Set all tools (except the active tools) passive by default in order to render the external data if exists
                 if (!activeTool || !Object.values(activeTool).includes(toolName)) {
@@ -285,11 +338,22 @@ export const toolManager = {
     },
 
     activateCommandButton(button) {
-        // TODO: Do we need this?
+        const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
+
+        if (activeCommandButtons.indexOf(button) === -1) {
+            activeCommandButtons.push(button);
+            Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
+        }
     },
 
     deactivateCommandButton(button) {
-        // TODO: Do we need this?
+        const activeCommandButtons = Session.get('ToolManagerActiveCommandButtons') || [];
+        const index = activeCommandButtons.indexOf(button);
+
+        if (index !== -1) {
+            activeCommandButtons.splice(index, 1);
+            Session.set('ToolManagerActiveCommandButtons', activeCommandButtons);
+        }
     }
 };
 

@@ -3,14 +3,14 @@ import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolManager } from '../../../lib/toolManager';
 
-const toolTypes = ['length', 'simpleAngle', 'probe', 'ellipticalRoi', 'rectangleRoi', 'arrowAnnotate'];
+const toolTypes = ['length', 'angle', 'dragProbe', 'ellipticalRoi', 'rectangleRoi', 'annotate'];
 const TypeToLabelMap = {
     length: 'Length',
-    simpleAngle: 'Angle',
-    probe: 'Probe',
+    angle: 'Angle',
+    dragProbe: 'Probe',
     ellipticalRoi: 'Elliptical ROI',
     rectangleRoi: 'Rectangle ROI',
-    arrowAnnotate: 'Annotation'
+    annotate: 'Annotation'
 };
 let dropdownItems = [{
     actionType: 'Delete',
