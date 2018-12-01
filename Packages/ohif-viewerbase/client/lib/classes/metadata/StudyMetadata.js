@@ -244,20 +244,18 @@ export class StudyMetadata extends Metadata {
     }
 
     /**
-     * It sorts the series based on display sets order. Each series must be an instance 
+     * It sorts the series based on display sets order. Each series must be an instance
      * of SeriesMetadata and each display sets must be an instance of ImageSet.
-     * Useful example of usage: 
-     *     Study data provided by backend does not sort series at all and client-side 
+     * Useful example of usage:
+     *     Study data provided by backend does not sort series at all and client-side
      *     needs series sorted by the same criteria used for sorting display sets.
      */
     sortSeriesByDisplaySets() {
-
         // Object for mapping display sets' index by seriesInstanceUid
         const displaySetsMapping = {};
 
         // Loop through each display set to create the mapping
         this.forEachDisplaySet( (displaySet, index) => {
-
             if (!(displaySet instanceof ImageSet)) {
               throw new OHIFError(`StudyMetadata::sortSeriesByDisplaySets display set at index ${index} is not an instance of ImageSet`);
             }
@@ -271,8 +269,7 @@ export class StudyMetadata extends Metadata {
         // Clone of actual series
         const actualSeries = this.getSeries();
 
-        actualSeries.forEach( (series, index) => {
-
+        actualSeries.forEach((series, index) => {
             if (!(series instanceof SeriesMetadata)) {
               throw new OHIFError(`StudyMetadata::sortSeriesByDisplaySets series at index ${index} is not an instance of SeriesMetadata`);
             }
@@ -343,7 +340,7 @@ export class StudyMetadata extends Metadata {
      * The callback is passed two arguments: instance (a InstanceMetadata instance) and index (the integer
      * index of the instance within the current series)
      * @param {function} callback The callback function which will be invoked for each instance instance.
-     * @returns {Object} Result object containing series (SeriesMetadata) and instance (InstanceMetadata) 
+     * @returns {Object} Result object containing series (SeriesMetadata) and instance (InstanceMetadata)
      *                   objects or an empty object if not found.
      */
     findSeriesAndInstanceByInstance(callback) {
@@ -371,7 +368,7 @@ export class StudyMetadata extends Metadata {
 
     /**
      * Find series by instance using the supplied callback as criteria. The callback is passed
-     * two arguments: instance (a InstanceMetadata instance) and index (the integer index of 
+     * two arguments: instance (a InstanceMetadata instance) and index (the integer index of
      * the instance within its series)
      * @param {function} callback The callback function which will be invoked for each instance.
      * @returns {SeriesMetadata|undefined} If a series is found based on callback criteria it
@@ -385,7 +382,7 @@ export class StudyMetadata extends Metadata {
 
     /**
      * Find an instance using the supplied callback as criteria. The callback is passed
-     * two arguments: instance (a InstanceMetadata instance) and index (the integer index of 
+     * two arguments: instance (a InstanceMetadata instance) and index (the integer index of
      * the instance within its series)
      * @param {function} callback The callback function which will be invoked for each instance.
      * @returns {InstanceMetadata|undefined} If an instance is found based on callback criteria it
@@ -396,7 +393,4 @@ export class StudyMetadata extends Metadata {
 
         return result.instance;
     }
-
-   
-
 }

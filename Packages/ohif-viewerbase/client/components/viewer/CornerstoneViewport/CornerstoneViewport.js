@@ -38,29 +38,36 @@ function initializeTools(tools) {
   });
 }
 
-const scrollToIndex = cornerstoneTools.import('util/scrollToIndex');
-
-class CornerstoneViewport extends Component {
-  constructor(props) {
-    super(props);
-
-    const { displaySetInstanceUid, studyInstanceUid } = this.props.viewportData;
+function getCornerstoneStack(viewportData) {
+    const { displaySetInstanceUid, studyInstanceUid } = viewportData;
 
     // Create shortcut to displaySet
     const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
 
     const displaySet = study.displaySets.find(set => {
-      return set.displaySetInstanceUid === displaySetInstanceUid;
+        return set.displaySetInstanceUid === displaySetInstanceUid;
     });
 
     // Get stack from Stack Manager
     const stack = StackManager.findOrCreateStack(study, displaySet);
     stack.currentImageIdIndex = 0;
 
+    return stack
+}
+
+
+const scrollToIndex = cornerstoneTools.import('util/scrollToIndex');
+
+class CornerstoneViewport extends Component {
+  constructor(props) {
+    super(props);
+
+    const stack = getCornerstoneStack(this.props.viewportData)
+
     // TODO: Allow viewport as a prop
     this.state = {
       stack,
-      displaySetInstanceUid,
+      displaySetInstanceUid: this.props.viewportData.displaySetInstanceUid,
       imageId: stack.imageIds[0],
       viewportHeight: '100%',
       isLoading: false,//true,
@@ -138,7 +145,10 @@ class CornerstoneViewport extends Component {
             imageId={this.state.imageId}
             numImagesLoaded={this.state.numImagesLoaded}
           />
-          <ViewportOrientationMarkers/>
+          <ViewportOrientationMarkers
+              imageId={this.state.imageId}
+              viewport={this.state.viewport}
+          />
         </div>
         <div className='viewportInstructions'>
             Please drag a stack here to view images.
@@ -425,13 +435,12 @@ class CornerstoneViewport extends Component {
 
       // Get stack from Stack Manager
       const stack = StackManager.findOrCreateStack(study, displaySet);
-
       const stackData = cornerstoneTools.getToolState(this.element, 'stack');
       let currentStack = stackData && stackData.data[0];
 
       if (!currentStack) {
         currentStack = {
-          currentImageIdIndex: currentImageIdIndex,
+          currentImageIdIndex,
           imageIds: stack.imageIds
         };
 
@@ -443,7 +452,7 @@ class CornerstoneViewport extends Component {
         currentStack.imageIds = stack.imageIds;
       }
 
-      const imageId = currentStack.imageIds[currentStack.currentImageIdIndex];
+      const imageId = currentStack.imageIds[currentImageIdIndex];
 
       this.setState({
           displaySetInstanceUid,
@@ -452,6 +461,7 @@ class CornerstoneViewport extends Component {
           imageId
       });
 
+      cornerstoneTools.stackPrefetch.disable(this.element);
       cornerstone.loadAndCacheImage(imageId).then(image => {
         try {
           cornerstone.getEnabledElement(this.element);
@@ -460,7 +470,6 @@ class CornerstoneViewport extends Component {
           console.error(error);
           return;
         }
-
 
         const viewport = cornerstone.getDefaultViewportForImage(this.element, image);
 
@@ -472,7 +481,6 @@ class CornerstoneViewport extends Component {
 
         cornerstone.displayImage(this.element, image, viewport);
 
-        cornerstoneTools.stackPrefetch.disable(this.element);
         cornerstoneTools.stackPrefetch.enable(this.element);
       });
     }

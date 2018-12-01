@@ -347,9 +347,7 @@ class StudyLoadingListener {
             return;
         }
 
-        for (let i = 0; i < studies.length; i++) {
-            this.addStudy(studies[i]);
-        }
+        studies.forEach(study => this.addStudy(study));
     }
 
     clear() {
