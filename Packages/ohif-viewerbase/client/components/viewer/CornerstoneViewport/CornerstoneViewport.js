@@ -126,8 +126,6 @@ class CornerstoneViewport extends Component {
           className="CornerstoneViewport viewportElement"
           onContextMenu={this.onContextMenu}
           tabIndex='0'
-          unselectable='on'
-          onSelectStart='return false;'
           ref={input => {
             this.element = input;
           }}
@@ -203,9 +201,9 @@ class CornerstoneViewport extends Component {
   onImageRendered() {
     const viewport = cornerstone.getViewport(this.element);
 
-    this.setState({
+    /*this.setState({
       viewport
-    });
+    });*/
   }
 
   onNewImage() {
@@ -416,30 +414,45 @@ class CornerstoneViewport extends Component {
     if (
       this.state.displaySetInstanceUid !== this.props.viewportData.displaySetInstanceUid
     ) {
-      this.setState({
-        displaySetInstanceUid: this.props.viewportData.displaySetInstanceUid
+      const { displaySetInstanceUid, studyInstanceUid, currentImageIdIndex } = this.props.viewportData;
+
+      // Create shortcut to displaySet
+      const study = OHIF.viewer.Studies.findBy({ studyInstanceUid });
+
+      const displaySet = study.displaySets.find(set => {
+          return set.displaySetInstanceUid === displaySetInstanceUid;
       });
+
+      // Get stack from Stack Manager
+      const stack = StackManager.findOrCreateStack(study, displaySet);
 
       const stackData = cornerstoneTools.getToolState(this.element, 'stack');
       let currentStack = stackData && stackData.data[0];
 
       if (!currentStack) {
         currentStack = {
-          currentImageIdIndex: this.state.stack.currentImageIdIndex,
-          imageIds: this.state.stack.imageIds
+          currentImageIdIndex: currentImageIdIndex,
+          imageIds: stack.imageIds
         };
 
         cornerstoneTools.addStackStateManager(this.element, ['stack']);
         cornerstoneTools.addToolState(this.element, 'stack', currentStack);
       } else {
         // TODO: we should make something like setToolState by an ID
-        currentStack.currentImageIdIndex = this.state.stack.currentImageIdIndex;
-        currentStack.imageIds = this.state.stack.imageIds;
+        currentStack.currentImageIdIndex = currentImageIdIndex;
+        currentStack.imageIds = stack.imageIds;
       }
 
       const imageId = currentStack.imageIds[currentStack.currentImageIdIndex];
 
-      /*cornerstone.loadAndCacheImage(imageId).then(image => {
+      this.setState({
+          displaySetInstanceUid,
+          studyInstanceUid,
+          stack,
+          imageId
+      });
+
+      cornerstone.loadAndCacheImage(imageId).then(image => {
         try {
           cornerstone.getEnabledElement(this.element);
         } catch (error) {
@@ -448,11 +461,20 @@ class CornerstoneViewport extends Component {
           return;
         }
 
-        cornerstone.displayImage(this.element, image);
+
+        const viewport = cornerstone.getDefaultViewportForImage(this.element, image);
+
+        // Workaround for Cornerstone issue #304
+        viewport.displayedArea.brhc = {
+          x: image.width,
+          y: image.height
+        }
+
+        cornerstone.displayImage(this.element, image, viewport);
 
         cornerstoneTools.stackPrefetch.disable(this.element);
         cornerstoneTools.stackPrefetch.enable(this.element);
-      });*/
+      });
     }
 
     if (this.props.activeTool !== prevProps.activeTool) {
@@ -465,7 +487,8 @@ class CornerstoneViewport extends Component {
       });
     }
 
-    this.debouncedResize();
+    // TODO: Check this, causes infinite loop
+    //this.debouncedResize();
   }
 
   setActiveTool = activeTool => {

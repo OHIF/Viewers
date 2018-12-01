@@ -6,10 +6,10 @@ import './ViewportOrientationMarkers.styl';
 class ViewportOrientationMarkers extends Component {
     render() {
         return (
-            <div class="viewportOrientationMarkers noselect">
-                <div class="topMid orientationMarker">
+            <div className="viewportOrientationMarkers noselect">
+                <div className="topMid orientationMarker">
                 </div>
-                <div class="leftMid orientationMarker">
+                <div className="leftMid orientationMarker">
                 </div>
             </div>
         );

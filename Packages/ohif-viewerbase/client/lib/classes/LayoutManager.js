@@ -196,64 +196,38 @@ export class LayoutManager {
      */
     rerenderViewportWithNewDisplaySet(viewportIndex, viewportData) {
         // Clone the data to prevent changing the original object
-        const data = _.clone(viewportData);
+        const updatedViewportData = _.clone(viewportData);
 
         OHIF.log.info(`LayoutManager rerenderViewportWithNewDisplaySet: ${viewportIndex}`);
 
-        // The parent container is identified because it is later removed from the DOM
-        const container = $('.viewportContainer').get(viewportIndex);
-
         // Record the current viewportIndex so this can be passed into the re-rendering call
-        data.viewportIndex = viewportIndex;
+        updatedViewportData.viewportIndex = viewportIndex;
 
         // If we have been provided with a plugin to use, use it.
         // Otherwise, use whichever plugin is currently in use in this viewport.
-        const plugin = data.plugin || this.viewportData[viewportIndex].plugin;
-        const pluginData = data.pluginData || this.viewportData[viewportIndex].pluginData;
+        const plugin = updatedViewportData.plugin || this.viewportData[viewportIndex].plugin;
+        const pluginData = updatedViewportData.pluginData || this.viewportData[viewportIndex].pluginData;
 
         // Update the dictionary of loaded displaySet for the specified viewport
         this.viewportData[viewportIndex] = {
             viewportIndex,
-            displaySetInstanceUid: data.displaySetInstanceUid,
-            seriesInstanceUid: data.seriesInstanceUid,
-            studyInstanceUid: data.studyInstanceUid,
-            renderedCallback: data.renderedCallback,
-            currentImageIdIndex: data.currentImageIdIndex || 0,
+            displaySetInstanceUid: updatedViewportData.displaySetInstanceUid,
+            seriesInstanceUid: updatedViewportData.seriesInstanceUid,
+            studyInstanceUid: updatedViewportData.studyInstanceUid,
+            renderedCallback: updatedViewportData.renderedCallback,
+            currentImageIdIndex: updatedViewportData.currentImageIdIndex || 0,
             plugin,
             pluginData,
+            ...this.layoutProps
         };
 
-        const newViewportContainer = document.createElement('div');
+        const component = viewerComponents.GridLayout;
+        const data = {
+            viewportData: this.viewportData,
+            ...this.layoutProps
+        };
 
-        // Render and insert the template
-        if (plugin === PLUGIN_CORNERSTONE) {
-            // Remove the hover styling
-            const element = $(container).find('.imageViewerViewport');
-
-            element.find('canvas').not('.magnifyTool').removeClass('faded');
-
-            // Remove the whole template, add in the new one
-            const viewportContainer = element.parents('.removable');
-
-            newViewportContainer.className = 'removable';
-
-            // Remove the parent element of the template
-            // This is a workaround since otherwise Blaze UI onDestroyed doesn't fire
-            viewportContainer.remove();
-
-            container.appendChild(newViewportContainer);
-
-            Blaze.renderWithData(Template.imageViewerViewport, data, newViewportContainer);
-
-
-        } else {
-            newViewportContainer.className = `viewport-plugin-${plugin}`;
-            newViewportContainer.style.width = '100%';
-            newViewportContainer.style.height = '100%';
-
-            container.innerHTML = '';
-            container.appendChild(newViewportContainer);
-        }
+        this.setContents(component, data)
 
         this.updateSession();
     }
