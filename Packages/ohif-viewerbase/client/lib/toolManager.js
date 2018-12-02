@@ -1,5 +1,4 @@
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
@@ -171,7 +170,7 @@ export const toolManager = {
         activeTool[button] = toolName;
 
         // Enable reactivity
-        Session.set('ToolManagerActiveToolUpdated', Random.id());
+        Session.set('ToolManagerActiveToolUpdated', OHIF.utils.guid());
     },
 
     instantiateTools(element) {

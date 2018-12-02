@@ -18,6 +18,9 @@
     "puppeteer": "^1.5.0"
   },
   "scripts": {
+    "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > client/version.js",
+    "sha": "echo \"export default '\"$(git rev-parse HEAD)\"';\" > client/sha.js",
+    "details": "npm run version && npm run sha",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -1,6 +1,6 @@
 cd docs
 npm -v
-node -v 
+node -v
 echo 'Installing Gitbook CLI'
 npm install
 
@@ -21,4 +21,5 @@ meteor-build-client-fixed --version
 curl https://install.meteor.com | /bin/sh
 export PATH=$HOME/.meteor:$PATH
 meteor npm install
+meteor npm run details
 meteor-build-client-fixed ../../docs/_book/viewer -u $ROOT_URL --path './'

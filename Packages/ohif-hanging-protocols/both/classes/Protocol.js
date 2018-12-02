@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
 import { OHIF } from 'meteor/ohif:core';
 
 // Local imports
@@ -19,7 +18,7 @@ HP.Protocol = class Protocol {
      */
     constructor(name) {
         // Create a new UUID for this Protocol
-        this.id = Random.id();
+        this.id = OHIF.utils.guid();
 
         // Store a value which determines whether or not a Protocol is locked
         // This is probably temporary, since we will eventually have role / user
@@ -133,7 +132,7 @@ HP.Protocol = class Protocol {
     fromObject(input) {
         // Check if the input already has an ID
         // If so, keep it. It not, create a new UUID
-        this.id = input.id || Random.id();
+        this.id = input.id || OHIF.utils.guid();
 
         // Assign the input name to the Protocol
         this.name = input.name;

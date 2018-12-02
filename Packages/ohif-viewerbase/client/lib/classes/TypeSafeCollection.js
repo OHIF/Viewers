@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { OHIF } from 'meteor/ohif:core';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 /**
@@ -130,7 +130,7 @@ export class TypeSafeCollection {
         let id = null,
             found = this._elementWithPayload(payload, true);
         if (!found) {
-            id = Random.id();
+            id = OHIF.utils.guid();
             this._elements(true).push({ id, payload });
             this._invalidate();
             this._trigger('insert', { id, data: payload });

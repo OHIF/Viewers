@@ -1,5 +1,4 @@
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 import { _ } from 'meteor/underscore';
 // Local Modules
@@ -222,7 +221,7 @@ const toggleCineDialog = () => {
     const dialog = document.getElementById('cineDialog');
 
     toggleDialog(dialog, stopAllClips);
-    Session.set('UpdateCINE', Random.id());
+    Session.set('UpdateCINE', Math.random());
 };
 
 const toggleDownloadDialog = () => {

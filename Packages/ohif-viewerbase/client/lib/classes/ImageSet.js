@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { OHIF } from 'meteor/ohif:core';
 import { OHIFError } from './OHIFError';
 
 const OBJECT = 'object';
@@ -30,7 +30,7 @@ export class ImageSet {
             enumerable: false,
             configurable: false,
             writable: false,
-            value: Random.id() // Unique ID of the instance
+            value: OHIF.utils.guid() // Unique ID of the instance
         });
 
     }

@@ -1,5 +1,4 @@
-import { Random } from 'meteor/random';
-
+import { OHIF } from 'meteor/ohif:core';
 import { comparators } from '../lib/comparators';
 
 const EQUALS_REGEXP = /^equals$/;
@@ -30,7 +29,7 @@ export class Rule {
      */
     constructor(attribute, constraint, required, weight) {
         // Create a new UUID for this Rule
-        this.id = Random.id();
+        this.id = OHIF.utils.guid();
 
         // Set the Rule's weight (defaults to 1)
         this.weight = weight || 1;
@@ -69,7 +68,7 @@ export class Rule {
     fromObject(input) {
         // Check if the input already has an ID
         // If so, keep it. It not, create a new UUID
-        this.id = input.id || Random.id();
+        this.id = input.id || OHIF.utils.guid();
 
         // Assign the specified input data to the Rule
         this.required = input.required;
@@ -80,7 +79,7 @@ export class Rule {
 
     /**
      * Get the constraint info object for the current constraint
-     * @return {Object\undefined} Constraint object or undefined if current constraint 
+     * @return {Object\undefined} Constraint object or undefined if current constraint
      *                            is not valid or not found in comparators list
      */
     getConstraintInfo() {
@@ -141,7 +140,7 @@ export class Rule {
      */
     getConstraintValidatorAndValue() {
         let validatorAndValue = this._validatorAndValue;
-        
+
         // Check if validator and value are cached already
         if (validatorAndValue !== void 0) {
             return validatorAndValue;

@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
-import { Random } from 'meteor/random';
 import { moment } from 'meteor/momentjs:moment';
 import { OHIF } from 'meteor/ohif:core';
 import { _ } from 'meteor/underscore';
@@ -113,7 +112,7 @@ Template.dialogStudyAssociation.onCreated(() => {
                 // Create a new timepoint to represent the (baseline or follow-up) studies
                 let timepoint = {
                     timepointType: timepointType,
-                    timepointId: Random.id(),
+                    timepointId: OHIF.utils.guid(),
                     studyInstanceUids: studyInstanceUids,
                     patientId: relatedStudies[0].patientId,
                     earliestDate: studyDates[0],

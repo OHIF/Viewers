@@ -49,24 +49,16 @@
                     <tr>
                         <td>Last Commit Hash</td>
                         <td>
-                            <a target='_blank' href="{{githubUrl}}/commit/{{gitRev 'long'}}">
-                            {{gitRev 'long'}}
+                            <a target='_blank' href="{{githubUrl}}/commit/{{gitSHA}}">
+                            {{gitSHA}}
                             </a>
                         </td>
                     </tr>
                     <tr>
-                        <td>Latest Tag</td>
+                        <td>Version</td>
                         <td>
-                            <a target='_blank' href="{{githubUrl}}/releases/tag/{{gitRev 'tag'}}">
-                            {{gitRev 'tag'}}
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Branch</td>
-                        <td>
-                            <a target='_blank' href="{{githubUrl}}/tree/{{gitRev 'branch'}}">
-                                {{gitRev 'branch'}}
+                            <a target='_blank' href="{{githubUrl}}/releases/tag/{{gitVersion}}">
+                            {{gitVersion}}
                             </a>
                         </td>
                     </tr>

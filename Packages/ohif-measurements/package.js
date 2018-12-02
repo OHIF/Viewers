@@ -35,7 +35,6 @@ Package.onUse(function(api) {
     api.use('ohif:select-tree');
     api.use('ohif:log');
     api.use('ohif:studies');
-    api.use('ohif:hanging-protocols');
     api.use('ohif:viewerbase');
 
     // Client and server imports

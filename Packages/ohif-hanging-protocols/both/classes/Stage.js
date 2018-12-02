@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { OHIF } from 'meteor/ohif:core';
 
 /**
  * A Stage is one step in the Display Set Sequence for a Hanging Protocol
@@ -10,7 +10,7 @@ import { Random } from 'meteor/random';
 HP.Stage = class Stage {
     constructor(ViewportStructure, name) {
         // Create a new UUID for this Stage
-        this.id = Random.id();
+        this.id = OHIF.utils.guid();
 
         // Assign the name and ViewportStructure provided
         this.name = name;
@@ -62,7 +62,7 @@ HP.Stage = class Stage {
     fromObject(input) {
         // Check if the input already has an ID
         // If so, keep it. It not, create a new UUID
-        this.id = input.id || Random.id();
+        this.id = input.id || OHIF.utils.guid();
 
         // Assign the input name to the Stage
         this.name = input.name;

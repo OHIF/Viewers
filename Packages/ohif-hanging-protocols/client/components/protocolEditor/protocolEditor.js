@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
@@ -14,7 +13,7 @@ function updateProtocolSelect() {
     if (!ProtocolEngine) {
         return;
     }
-    
+
     // Loop through the available hanging protocols
     // to create an array with the protocols that includes
     // a property labelled 'text', so that Select2 has something
@@ -85,7 +84,7 @@ Template.protocolEditor.helpers({
 
         // Make sure that the number of referenced priors is correct
         ProtocolEngine.protocol.updateNumberOfPriorsReferenced();
-        
+
         // Otherwise, return the active Hanging Protocol
         return ProtocolEngine.protocol;
     },
@@ -147,7 +146,7 @@ Template.protocolEditor.helpers({
                 stage.viewports.push(viewport);
             }
         }
-        
+
         // Return the current Stage model for the active Protocol
         return ProtocolEngine.getCurrentStageModel();
     },
@@ -169,7 +168,7 @@ Template.protocolEditor.events({
         protocol.name = 'New (created ' + moment().format('h:mm:ss a') + ')';
 
         // Change the Protocol ID from the default value
-        protocol.id = Random.id();
+        protocol.id = OHIF.utils.guid();
 
         // Insert the protocol
         HP.ProtocolStore.addProtocol(protocol);
@@ -321,7 +320,7 @@ Template.protocolEditor.events({
         // and fire the callback function when finished.
         openTextEntryDialog(title, instructions, currentValue, function(value) {
             // Create a new ID for the protocol
-            protocol.id = Random.id();
+            protocol.id = OHIF.utils.guid();
 
             // Update the name with the entered text
             protocol.name = value;
