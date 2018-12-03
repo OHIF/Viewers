@@ -1,4 +1,4 @@
 myOutputFolder/
 node_modules
-client/sha.js
-client/version.js
+StandaloneViewer/client/sha.js
+StandaloneViewer/client/version.js

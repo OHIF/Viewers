@@ -76,6 +76,10 @@ class GridLayout extends Component {
 
         const viewports = viewportData.map((data, index) => {
             const className = `viewportContainer ${this.getClass(index)} ${this.getActiveClass(index)}`;
+            
+            // TODO[react]: Not sure why I needed to do this. Looks like
+            // empty viewports aren't provided with a viewportIndex normally?
+            data.viewportIndex = index;
 
             const styles = {
                 height: `${height}%`,
@@ -91,16 +95,28 @@ class GridLayout extends Component {
                 </div>
             );
 
+            let contents;            
+            if (!data.studyInstanceUid || !data.displaySetInstanceUid) {
+                contents = (
+                    <div className="CornerstoneViewport">
+                        <div className="viewportInstructions">
+                        Please drag a stack here to view images.
+                        </div>
+                    </div>
+                );
+            } else if (data.plugin === 'cornerstone') {
+                contents = cornerstoneViewport(data);
+            } else {
+                contents = pluginViewport(data);
+            }
+
             return (
                 <div key={index} className={className} style={styles}>
-                {data.plugin === 'cornerstone' ?
-                    cornerstoneViewport(data) :
-                    pluginViewport(data)
-                }
-                {/*{>seriesQuickSwitch (clone this viewport=viewport viewportIndex=@index)}*/}
-            </div>
-            )
-        })
+                    {contents}
+                    {/*{>seriesQuickSwitch (clone this viewport=viewport viewportIndex=@index)}*/}
+                </div>
+            );
+        });
 
         const layoutClass = `layout-${rows}-${columns}`;
 

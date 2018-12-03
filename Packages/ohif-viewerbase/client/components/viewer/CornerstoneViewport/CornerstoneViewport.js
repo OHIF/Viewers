@@ -185,8 +185,7 @@ class CornerstoneViewport extends Component {
               viewport={
                         this.state.viewport
                     }
-            /> </div > <div className="viewportInstructions" >
-      Please drag a stack here to view images. </div> {
+            /> </div > {
                 this.displayScrollbar && (<ImageScrollbar
                   onInputCallback={
                         this.imageSliderOnInputCallback
