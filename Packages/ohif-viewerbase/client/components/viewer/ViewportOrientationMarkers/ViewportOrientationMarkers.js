@@ -62,6 +62,10 @@ class ViewportOrientationMarkers extends Component {
     render() {
         const { imageId, viewport } = this.props;
         const markers = getOrientationMarkers(imageId, viewport);
+        if (!markers) {
+            return '';
+        }
+
         return (
             <div className="ViewportOrientationMarkers noselect">
                 <div className="top-mid orientation-marker">

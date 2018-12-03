@@ -1,1 +1,4 @@
 myOutputFolder/
+node_modules
+client/sha.js
+client/version.js

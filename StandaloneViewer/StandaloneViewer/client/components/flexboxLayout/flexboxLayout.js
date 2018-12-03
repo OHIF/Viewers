@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 Template.flexboxLayout.events({
     'transitionend .sidebarMenu'(event, instance) {
@@ -16,5 +17,9 @@ Template.flexboxLayout.helpers({
     },
     rightSidebarOpen() {
         return Template.instance().data.state.get('rightSidebar');
+    },
+
+    ViewerMain() {
+        return Viewerbase.components.viewer.ViewerMain;
     }
 });

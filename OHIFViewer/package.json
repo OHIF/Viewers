@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@babel/runtime": "7.0.0-beta.51",
+    "@babel/runtime": "^7.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "loglevel": "^1.6.1",

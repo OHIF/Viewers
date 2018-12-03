@@ -49,12 +49,12 @@ class ViewerMain extends Component {
 
         const { studies } = this.props;
         this.studyPrefetcher = StudyPrefetcher.getInstance();
+        this.studyPrefetcher.setStudies(studies);
         this.studyLoadingListener = StudyLoadingListener.getInstance();
         this.studyLoadingListener.clear();
         this.studyLoadingListener.addStudies(studies);
 
         OHIF.viewerbase.layoutManager = new LayoutManager(this.setContents, studies);
-        this.studyPrefetcher.setStudies(studies);
 
         Session.set('OHIFViewerMainRendered', Math.random());
     }
@@ -116,6 +116,6 @@ class ViewerMain extends Component {
 
 ViewerMain.propTypes = {
     studies: PropTypes.array.isRequired
-}
+};
 
 export default ViewerMain;

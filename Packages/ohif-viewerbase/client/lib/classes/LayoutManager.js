@@ -14,7 +14,7 @@ const PLUGIN_CORNERSTONE = 'cornerstone';
 
 let isInteractingWithViewport = false;
 Meteor.startup(() => {
-    const setInteracting = flag => {
+    const setInteracting = (flag) => {
         isInteractingWithViewport = flag;
     };
 
@@ -102,7 +102,7 @@ export class LayoutManager {
 
         // Get all the display sets for the viewer studies
         let displaySets = [];
-        this.studies.forEach(study => {
+        this.studies.forEach((study) => {
             study.displaySets.forEach(dSet => dSet.images.length && displaySets.push(dSet));
         });
 
@@ -174,14 +174,14 @@ export class LayoutManager {
             viewportData: []
         }, layoutProps);
 
-        this.viewportData.forEach(viewportData => {
+        this.viewportData.forEach((viewportData) => {
             const viewportDataAndLayoutProps = $.extend(viewportData, layoutProps);
 
             data.viewportData.push(viewportDataAndLayoutProps);
         });
 
         const component = viewerComponents.GridLayout;
-        this.setContents(component, data)
+        this.setContents(component, data);
 
         this.updateSession();
 
@@ -227,7 +227,7 @@ export class LayoutManager {
             ...this.layoutProps
         };
 
-        this.setContents(component, data)
+        this.setContents(component, data);
 
         this.updateSession();
     }
@@ -259,7 +259,7 @@ export class LayoutManager {
         };
 
         const component = viewerComponents.GridLayout;
-        this.setContents(component, data)
+        this.setContents(component, data);
 
         this.isZoomed = true;
         this.zoomedViewportIndex = viewportIndex;
@@ -673,5 +673,4 @@ export class LayoutManager {
     isMultipleLayout() {
         return this.layoutProps.row !== 1 && this.layoutProps.columns !== 1;
     }
-
 }

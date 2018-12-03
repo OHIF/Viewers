@@ -307,3 +307,5 @@ if (Meteor.settings &&
     HP.ProtocolStore.setStrategy(defaultStrategy);
 }
 
+HP.clientOnlyStrategy = clientOnlyStrategy;
+

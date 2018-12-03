@@ -76,7 +76,7 @@ Meteor.startup(() => {
     const metadataProvider = OHIF.viewer.metadataProvider;
     cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 
-    // Instanciate viewer plugins
+    // Instantiate viewer plugins
     OHIF.viewer.measurementTable = new MeasurementTable();
 });
 

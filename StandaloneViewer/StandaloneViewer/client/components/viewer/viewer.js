@@ -8,19 +8,53 @@ import { MeasurementTable } from 'meteor/ohif:measurement-table';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
 
-const viewportUtils = OHIF.viewerbase.viewportUtils;
+import { createStore } from 'redux';
 
-OHIF.viewer.functionList = {
-    toggleCineDialog: viewportUtils.toggleCineDialog,
-    toggleCinePlay: viewportUtils.toggleCinePlay,
-    clearTools: viewportUtils.clearTools,
-    resetViewport: viewportUtils.resetViewport,
-    invert: viewportUtils.invert
-};
+const store = createStore(OHIF.viewerbase.redux.combinedReducer);
 
-Session.setDefault('activeViewport', false);
-Session.setDefault('leftSidebar', false);
-Session.setDefault('rightSidebar', false);
+// TODO[react] Use a provider when the whole tree is React
+window.store = store;
+
+HP.ProtocolStore.setStrategy(HP.clientOnlyStrategy);
+
+Meteor.startup(() => {
+    Session.setDefault('leftSidebar', false);
+    Session.setDefault('rightSidebar', false);
+
+    OHIF.viewer.defaultTool = {
+        left: 'wwwc',
+        right: 'zoom',
+        middle: 'pan'
+    };
+
+    OHIF.viewer.refLinesEnabled = true;
+    OHIF.viewer.cine = {
+        framesPerSecond: 24,
+        loop: true
+    };
+
+    const viewportUtils = OHIF.viewerbase.viewportUtils;
+
+    OHIF.viewer.functionList = {
+        toggleCineDialog: viewportUtils.toggleCineDialog,
+        toggleCinePlay: viewportUtils.toggleCinePlay,
+        clearTools: viewportUtils.clearTools,
+        resetViewport: viewportUtils.resetViewport,
+        invert: viewportUtils.invert
+    };
+
+    // Create the synchronizer used to update reference lines
+    OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);
+
+    OHIF.viewer.metadataProvider = new OHIF.cornerstone.MetadataProvider();
+
+    // Metadata configuration
+    const metadataProvider = OHIF.viewer.metadataProvider;
+    cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+
+    // Instantiate viewer plugins
+    OHIF.viewer.measurementTable = new MeasurementTable();
+});
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -46,6 +80,7 @@ const initHangingProtocol = () => {
         // Sets up Hanging Protocol engine
         HP.setEngine(ProtocolEngine);
 
+        Session.set('ViewerReady', true);
     });
 };
 
@@ -132,7 +167,7 @@ Template.viewer.onRendered(function() {
     }
 });
 
-Template.viewer.events( Object.assign({
+Template.viewer.events(Object.assign({
     // Viewer Events
     },
     MeasurementTable.measurementEvents

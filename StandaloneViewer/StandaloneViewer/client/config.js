@@ -2,6 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstoneWADOImageLoader } from 'meteor/ohif:cornerstone';
 import * as cornerstoneWebImageLoader from 'cornerstone-web-image-loader'; 
+import sha from './sha.js';
+import version from './version.js';
+
+OHIF.info = {
+    sha,
+    version
+};
 
 Meteor.startup(function() {
     const maxWebWorkers = Math.max(navigator.hardwareConcurrency - 1, 1);
