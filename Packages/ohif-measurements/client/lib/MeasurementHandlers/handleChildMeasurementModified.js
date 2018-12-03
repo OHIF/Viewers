@@ -37,6 +37,6 @@ export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) 
 
     // Notify that viewer suffered changes
     if (tool.toolGroup !== 'temp') {
-        OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolType);
+        OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolName);
     }
 }

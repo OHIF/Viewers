@@ -37,8 +37,8 @@ const MeasurementHandlers = {
 
     onModified(event, instance) {
         const eventData = event.detail;
-        const { toolType } = eventData;
-        const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
+        const { toolName } = eventData;
+        const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolName);
         const params = {
             instance,
             eventData,
