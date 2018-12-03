@@ -4,9 +4,9 @@ import { cornerstone } from 'meteor/ohif:cornerstone';
 
 export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) {
     const { measurementApi } = instance.data;
-    const { measurementData, toolType } = eventData;
+    const { measurementData, toolName } = eventData;
 
-    const Collection = measurementApi.tools[toolType];
+    const Collection = measurementApi.tools[toolName];
 
     // Stop here if the tool data shall not be persisted (e.g. temp tools)
     if (!Collection) return;
@@ -39,6 +39,6 @@ export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) 
 
     // Notify that viewer suffered changes
     if (tool.toolGroup !== 'temp') {
-        OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolType);
+        OHIF.measurements.triggerTimepointUnsavedChanges(eventData.toolName);
     }
 }
