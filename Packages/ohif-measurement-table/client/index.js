@@ -111,7 +111,7 @@ class MeasurementTable {
             instance.measurementModifiedHandler(originalEvent, instance);
         },
     
-        'cornerstonemeasurementremoved .imageViewerViewport'(event, instance) {
+        'cornerstonetoolsmeasurementremoved .imageViewerViewport'(event, instance) {
             const originalEvent = event.originalEvent;
             OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
         }
