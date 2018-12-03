@@ -30,9 +30,12 @@ export function setActiveViewport(element) {
         $element.trigger('OHIFBeforeActivateViewport');
     }
 
-    // When an OHIFActivateViewport event is fired, update the Meteor Session
+    // When an OHIFActivateViewport event is fired, update the Redux state
     // with the viewport index that it was fired from.
-    Session.set('activeViewport', viewportIndex);
+    window.store.dispatch({
+        type: 'SET_VIEWPORT_ACTIVE',
+        viewportIndex
+    });
 
     // Finally, enable stack prefetching and hide the reference lines from
     // the newly activated viewport that has a canvas

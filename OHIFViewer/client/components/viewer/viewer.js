@@ -38,13 +38,10 @@ const initHangingProtocol = () => {
         HP.setEngine(ProtocolEngine);
 
         Session.set('ViewerReady', true);
-
-        Session.set('activeViewport', 0);
     });
 };
 
 Meteor.startup(() => {
-    Session.setDefault('activeViewport', false);
     Session.setDefault('leftSidebar', false);
     Session.setDefault('rightSidebar', false);
 
@@ -80,7 +77,7 @@ Meteor.startup(() => {
     cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 
     // Instanciate viewer plugins
-    OHIF.viewer.measurementTable = new MeasurementTable();  
+    OHIF.viewer.measurementTable = new MeasurementTable();
 });
 
 Template.viewer.onCreated(() => {
@@ -111,8 +108,6 @@ Template.viewer.onCreated(() => {
 
     // Store the viewer data in session for further user
     Session.setPersistent('ViewerData', OHIF.viewer.data);
-
-    Session.set('activeViewport', OHIF.viewer.data.activeViewport || 0);
 
     // @TypeSafeStudies
     // Clears OHIF.viewer.Studies collection
@@ -163,7 +158,7 @@ Template.viewer.onRendered(function() {
         }
     });
 
-    // Call Viewer plugins onRendered functions 
+    // Call Viewer plugins onRendered functions
     if(typeof OHIF.viewer.measurementTable.onRendered === 'function') {
         OHIF.viewer.measurementTable.onRendered(instance);
     }

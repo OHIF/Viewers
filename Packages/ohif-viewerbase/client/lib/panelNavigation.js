@@ -5,7 +5,7 @@ import { setActiveViewport } from './setActiveViewport';
 
 const loadPreviousActivePanel = () => {
     OHIF.log.info('nextActivePanel');
-    let currentIndex = Session.get('activeViewport');
+    let currentIndex = window.store.getState().viewports.activeViewport;
     currentIndex--;
 
     const $viewports = $('.viewportContainer');
@@ -24,7 +24,7 @@ const loadPreviousActivePanel = () => {
 
 const loadNextActivePanel = () => {
     OHIF.log.info('nextActivePanel');
-    let currentIndex = Session.get('activeViewport');
+    let currentIndex = window.store.getState().viewports.activeViewport;
     currentIndex++;
 
     const $viewports = $('.viewportContainer');

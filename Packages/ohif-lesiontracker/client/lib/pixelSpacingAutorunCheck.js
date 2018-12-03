@@ -8,7 +8,7 @@ OHIF.lesiontracker.pixelSpacingAutorunCheck = () => {
     const $oncologyTools = $('button#lesion, button#nonTarget');
 
     // TODO: Set activeViewport for empty viewport element
-    const activeViewportIndex = Session.get('activeViewport');
+    const activeViewportIndex = window.store.getState().viewports.activeViewport;
     if (activeViewportIndex === undefined) {
         return;
     }

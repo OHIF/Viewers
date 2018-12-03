@@ -86,7 +86,7 @@ export class StackImagePositionOffsetSynchronizer {
     }
 
     getActiveViewportElement() {
-        const viewportIndex = Session.get('activeViewport') || 0;
+        const viewportIndex = window.store.getState().viewports.activeViewport || 0;
         return $('.imageViewerViewport').get(viewportIndex);
     }
 

@@ -30,7 +30,7 @@ const getEnabledElement = element => {
  * @return {DOMElement} DOMElement of the current active viewport
  */
 const getActiveViewportElement = () => {
-    const viewportIndex = Session.get('activeViewport') || 0;
+    const viewportIndex = window.store.getState().viewports.activeViewport || 0;
     return $('.imageViewerViewport').get(viewportIndex);
 };
 
@@ -274,7 +274,7 @@ const isPlaying = () => {
 // Check if a study has multiple frames
 const hasMultipleFrames = () => {
     // Its called everytime active viewport and/or layout change
-    Session.get('activeViewport');
+    window.store.getState().viewports.activeViewport;
     Session.get('LayoutManagerUpdated');
 
     const activeViewport = getActiveViewportElement();
@@ -326,7 +326,7 @@ const isStackScrollLinkingDisabled = () => {
     let linkableViewportsCount = 0;
 
     // Its called everytime active viewport and/or layout change
-    Session.get('activeViewport');
+    window.store.getState().viewports.activeViewport;
     Session.get('LayoutManagerUpdated');
 
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;

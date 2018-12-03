@@ -92,7 +92,7 @@ Meteor.startup(function() {
 
     // Create a function that returns true if the active viewport is empty
     const isActiveViewportEmpty = () => {
-        const activeViewport = Session.get('activeViewport') || 0;
+        const activeViewport = window.store.getState().viewports.activeViewport || 0;
         return $('.imageViewerViewport').eq(activeViewport).hasClass('empty');
     };
 

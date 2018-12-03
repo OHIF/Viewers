@@ -88,7 +88,7 @@ Template.cineDialog.onCreated(() => {
 
     // Run this computation every time the active viewport is changed
     instance.autorun(() => {
-        Session.get('activeViewport');
+        window.store.getState().viewports.activeViewport;
 
         Tracker.afterFlush(() => {
             // Get the active viewportElement

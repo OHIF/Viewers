@@ -11,7 +11,7 @@ getActiveViewportModel = function() {
     var stage = ProtocolEngine.getCurrentStageModel();
 
     // Retrieve the index of the active viewport
-    var activeViewport = Session.get('activeViewport');
+    var activeViewport = window.store.getState().viewports.activeViewport;
 
     // If the active viewport index is outside the bounds of the
     // number of Viewports defined for this Stage, stop here

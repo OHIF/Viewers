@@ -100,7 +100,7 @@ Template.toolbarSectionButton.helpers({
     },
 
     disableButton() {
-        Session.get('activeViewport');
+        window.store.getState().viewports.activeViewport;
         Session.get('LayoutManagerUpdated');
         const instance = Template.instance();
         const isCommandDisabled = OHIF.commands.isDisabled(instance.data.id);

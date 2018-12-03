@@ -86,7 +86,7 @@ export class StudyPrefetcher {
         // Make sure there is a stack to fetch
         if (this.hasStack(element)) {
             // Check if this is a clip or not
-            const activeViewportIndex = Session.get('activeViewport');
+            const activeViewportIndex = window.store.getState().viewports.activeViewport;
             const displaySetInstanceUid = OHIF.viewer.data.loadedSeriesData[activeViewportIndex].displaySetInstanceUid;
 
             const stack = StackManager.findStack(displaySetInstanceUid);

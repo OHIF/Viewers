@@ -2,42 +2,129 @@ import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import './ViewportOverlay.styl';
+import { viewportOverlayUtils } from '../../../lib/viewportOverlayUtils';
+import { helpers } from '../../../lib/helpers/index.js';
+const { formatPN, formatDA, formatNumberPrecision, formatTM, isValidNumber} = helpers;
+
+function getCompression(imageId) {
+  const instance = cornerstone.metaData.get('instance', imageId);
+  if (!instance) {
+      return '';
+  }
+
+  if (instance.lossyImageCompression === '01' &&
+      instance.lossyImageCompressionRatio !== '') {
+      const compressionMethod = instance.lossyImageCompressionMethod || 'Lossy: ';
+      const compressionRatio = formatNumberPrecision(instance.lossyImageCompressionRatio, 2);
+      return compressionMethod + compressionRatio + ' : 1';
+  }
+
+  return 'Lossless / Uncompressed';
+}
+
+function getImageDimensions(imageId) {
+  const instance = cornerstone.metaData.get('instance', imageId)
+  if (!instance) {
+      return '';
+  }
+
+  return `${instance.columns} x ${instance.rows}`;
+}
 
 class ViewportOverlay extends Component {
   render() {
-    const scale = Math.round(this.props.viewport.scale * 100) / 100;
+    const zoom = this.props.viewport.scale * 100;
     const imageId = this.props.imageId;
 
-    /*const patientId = cornerstone.metaData.get('00100020', imageId);
-    const studyDate = cornerstone.metaData.get('00080020', imageId);
-    const collection = cornerstone.metaData.get('00131010', imageId);
-    const studyDescription = cornerstone.metaData.get('00081030', imageId);*/
+    const patientMetadata = cornerstone.metaData.get('patient', imageId);
+    const studyMetadata = cornerstone.metaData.get('study', imageId);
+    const seriesMetadata = cornerstone.metaData.get('series', imageId);
+    const instanceMetadata = cornerstone.metaData.get('instance', imageId);
 
-    const windowWidth = Math.round(this.props.viewport.voi.windowWidth);
-    const windowCenter = Math.round(this.props.viewport.voi.windowCenter);
-    const imagesLeft =
-      this.props.stack.imageIds.length - this.props.numImagesLoaded;
+    const patientName = patientMetadata.name;
+    const patientId = patientMetadata.id;;
+    const { studyDate, studyTime, studyDescription } = studyMetadata;
+    const { seriesNumber, seriesDescription } = seriesMetadata;
+    const { instanceNumber, frameTime, thickness, spacingBetweenSlices, sliceLocation } = instanceMetadata;
+    const frameRate = formatNumberPrecision(1000 / frameTime, 1);
+    const compression = getCompression(imageId);
+    const windowWidth = this.props.viewport.voi.windowWidth || 0;
+    const windowCenter = this.props.viewport.voi.windowCenter || 0;
+    const wwwc = `W: ${windowWidth.toFixed(0)} L: ${windowCenter.toFixed(0)}`;
+    const imageIndex = this.props.stack.imageIds.indexOf(this.props.imageId) + 1;
+    const numImages = this.props.stack.imageIds.length;
+    const imageDimensions = getImageDimensions(imageId);
+
+    const normal = (<>
+      <div className="top-left overlay-element">
+          <div>{formatPN(patientName)}</div>
+          <div>{patientId}</div>
+      </div>
+      <div className="top-right overlay-element">
+          <div>{studyDescription}</div>
+          <div>{formatDA(studyDate)} {formatTM(studyTime)}</div>
+      </div>
+      <div className="bottom-right overlay-element">
+        <div>Zoom: {formatNumberPrecision(zoom,0)}%</div>
+            <div className="compressionIndicator">{compression}</div>
+            <div>{wwwc}</div>
+        </div>
+        <div className="bottom-left overlay-element">
+            <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
+            <div>{numImages > 1 ? `Img: ${instanceNumber} ${imageIndex}/${numImages}` : ''}</div>
+            <div>{frameRate >= 0 ? `${formatNumberPrecision(frameRate, 2)} FPS` : ''}
+            <div>{imageDimensions}</div>
+            <div>
+              <span>{isValidNumber(sliceLocation) ? `Loc: ${formatNumberPrecision(sliceLocation, 2)} mm` : ''}</span>
+              <span>{thickness ? `Thick: ${formatNumberPrecision(thickness, 2)} mm` : ''}</span>
+              <span>{spacingBetweenSlices ? `Spacing: ${formatNumberPrecision(spacingBetweenSlices, 2)} mm` : ''}</span>
+            </div>
+            <div>{seriesDescription}</div>
+        </div>
+      </div>
+    </>);
+
+    const rightOnly = (<>
+      <div className="top-right overlay-element">
+        <div>{formatPN(patientName)}</div>
+        <div>{patientId}</div>
+        <div>{studyDescription}</div>
+        <div>{formatDA(studyDate)} {formatTM(studyTime)}</div>
+      </div>
+      <div className="bottom-right overlay-element">
+        <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
+        <div>{numImages > 1 ? `Img: ${instanceNumber} ${imageIndex}/${numImages}` : ''}</div>
+        <div>{frameRate >= 0 ? `${formatNumberPrecision(frameRate, 2)} FPS` : ''}</div>
+        <div>{imageDimensions}</div>
+        <div>{seriesDescription}</div>
+        <div>Zoom: ${formatNumberPrecision(zoom, 0)}%</div>
+        <div className="compressionIndicator">{compression}</div>
+        <div>{wwwc}</div>
+      </div>
+    </>);
+
+    const leftOnly = (<>
+      <div className="top-left overlay-element">
+        <div>{formatPN(patientName)}</div>
+        <div>{patientId}</div>
+        <div>{studyDescription}</div>
+        <div>{formatDA(studyDate)} {formatTM(studyTime)}</div>
+      </div>
+      <div className="bottom-left overlay-element">
+        <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
+        <div>{numImages > 1 ? `Img: ${instanceNumber} ${imageIndex}/${numImages}` : ''}</div>
+        <div>{frameRate >= 0 ? `${formatNumberPrecision(frameRate, 2)} FPS` : ''}</div>
+        <div>{imageDimensions}</div>
+        <div>{seriesDescription}</div>
+        <div>Zoom: ${formatNumberPrecision(zoom, 0)}%</div>
+        <div className="compressionIndicator">{compression}</div>
+        <div>{wwwc}</div>
+      </div>
+    </>);
 
     return (
-      <div className="ViewportOverlay">
-        <div className="top-left overlay-element">
-          <span>{this.props.patientId}</span>
-          <span>{this.props.studyDate}</span>
-          <span>{this.props.studyDescription}</span>
-          <span>
-            {imagesLeft > 0 ? `${imagesLeft} images remaining...` : ''}
-          </span>
-        </div>
-        <div className="bottom-left overlay-element">Zoom: {scale}</div>
-        <div className="bottom-right overlay-element">
-          <span>
-            WW/WC: {windowWidth} / {windowCenter}
-          </span>
-          <span>
-            Image: {this.props.stack.currentImageIdIndex + 1} /{' '}
-            {this.props.stack.imageIds.length}
-          </span>
-        </div>
+      <div className='ViewportOverlay'>
+        {normal}
       </div>
     );
   }

@@ -6,7 +6,7 @@ Template.ruleTable.helpers({
      */
     rulePassed: function() {
         // Retrieve the latest match details given the active viewport index
-        var viewportIndex = Session.get('activeViewport');
+        var viewportIndex = window.store.getState().viewports.activeViewport;
         var details = ProtocolEngine.matchDetails[viewportIndex];
 
         // If no match was found, stop here
@@ -92,7 +92,7 @@ Template.ruleTable.events({
         }
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        var viewportIndex = window.store.getState().viewports.activeViewport;
         ProtocolEngine.updateViewports(viewportIndex);
     },
     /**
@@ -108,7 +108,7 @@ Template.ruleTable.events({
         rule.weight = $(event.currentTarget).val();
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        var viewportIndex = window.store.getState().viewports.activeViewport;
         ProtocolEngine.updateViewports(viewportIndex);
     },
     /**
@@ -124,7 +124,7 @@ Template.ruleTable.events({
         rule.required = $(event.currentTarget).prop('checked');
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        var viewportIndex = window.store.getState().viewports.activeViewport;
         ProtocolEngine.updateViewports(viewportIndex);
     }
 });

@@ -318,7 +318,7 @@ Template.ruleEntryDialog.events({
         rule.constraint = constraint;
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        var viewportIndex = window.store.getState().viewports.activeViewport;
         ProtocolEngine.updateViewports(viewportIndex);
 
         // Close the dialog

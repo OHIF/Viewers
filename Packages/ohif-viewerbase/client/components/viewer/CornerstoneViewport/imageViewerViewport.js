@@ -413,7 +413,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
             // Check if the current active viewport in the Meteor Session
             // Is the same as the viewport in which the activation event was fired.
             // If it was, no changes are necessary, so stop here.
-            const activeViewportIndex = Session.get('activeViewport');
+            const activeViewportIndex = window.store.getState().viewports.activeViewport;
             if (viewportIndex === activeViewportIndex) return;
 
             $element.focus();
@@ -473,7 +473,7 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
         // Set the active viewport based on the Session variable
         // This is done to ensure that the active element has the current
         // focus, so that keyboard events are triggered.
-        if (viewportIndex === Session.get('activeViewport')) {
+        if (viewportIndex === window.store.getState().viewports.activeViewport) {
             const viewportContainer = $element.parents('.viewportContainer');
 
             setActiveViewport(viewportContainer);
@@ -563,7 +563,7 @@ Template.imageViewerViewport.onRendered(function() {
 
     // Get the current active viewport index, if this viewport has the same index,
     // add the CSS 'active' class to highlight this viewport.
-    const activeViewport = Session.get('activeViewport');
+    const activeViewport = window.store.getState().viewports.activeViewport;
 
     // Focus the viewport if it's the active one
     if (templateData.viewportIndex === activeViewport) {

@@ -248,3 +248,6 @@ Viewerbase.StackImagePositionOffsetSynchronizer = StackImagePositionOffsetSynchr
 // StudyMetadataSource
 import { StudyMetadataSource } from './lib/classes/StudyMetadataSource';
 Viewerbase.StudyMetadataSource = StudyMetadataSource;
+
+import redux from './lib/redux/';
+Viewerbase.redux = redux;

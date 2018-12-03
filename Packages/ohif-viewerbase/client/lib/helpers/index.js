@@ -6,6 +6,7 @@ import { isTouchDevice } from './isTouchDevice';
 import { formatPN } from './formatPN';
 import { formatDA } from './formatDA';
 import { formatTM } from './formatTM';
+import isValidNumber from './isValidNumber';
 
 /**
  * Helpers with side effects only...
@@ -13,7 +14,7 @@ import { formatTM } from './formatTM';
 
 import './formatJSDate';
 import './jsDateFromNow';
-import './formatNumberPrecision';
+import formatNumberPrecision from './formatNumberPrecision';
 import './inc';
 import './isDisplaySetActive';
 import './getUsername';
@@ -33,7 +34,9 @@ const helpers = {
     isTouchDevice,
     formatPN,
     formatDA,
-    formatTM
+    formatTM,
+    formatNumberPrecision,
+    isValidNumber,
 };
 
 export { helpers };

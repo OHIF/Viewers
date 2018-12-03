@@ -12,7 +12,7 @@ const setFocusToActiveViewport = () => {
     const viewports = $('.imageViewerViewport');
 
     // Get the current active viewport index from Session
-    const activeViewportIndex = Session.get('activeViewport');
+    const activeViewportIndex = window.store.getState().viewports.activeViewport;
 
     // Find the div from the list of viewports
     const activeViewport = viewports.eq(activeViewportIndex);

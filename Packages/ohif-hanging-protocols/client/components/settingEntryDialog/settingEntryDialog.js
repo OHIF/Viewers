@@ -165,7 +165,7 @@ Template.settingEntryDialog.events({
         viewport.viewportSettings[viewportSetting.id] = viewportSetting.value;
 
         // Instruct the Protocol Engine to update the Layout Manager with new data
-        var viewportIndex = Session.get('activeViewport');
+        var viewportIndex = window.store.getState().viewports.activeViewport;
         ProtocolEngine.updateViewports(viewportIndex);
 
         // Close the dialog
@@ -176,7 +176,7 @@ Template.settingEntryDialog.events({
      */
     'click #cancel': function() {
         var dialog = Template.settingEntryDialog.dialog;
-        closeHandler(dialog);  
+        closeHandler(dialog);
     },
     /**
      * Allow Esc keydown events to close the dialog

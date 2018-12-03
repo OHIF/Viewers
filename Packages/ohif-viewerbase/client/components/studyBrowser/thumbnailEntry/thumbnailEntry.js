@@ -48,7 +48,7 @@ Template.thumbnailEntry.events({
         // Get the viewport index
         let { viewportIndex } = instance.data;
         if (_.isUndefined(viewportIndex)) {
-            viewportIndex = Session.get('activeViewport') || 0;
+            viewportIndex = window.store.getState().viewports.activeViewport || 0;
         }
 
         // Rerender the viewport using the clicked thumbnail data
@@ -61,7 +61,7 @@ Template.thumbnailEntry.events({
 
         // Get the active viewport index and total number of viewports...
         const viewportCount = OHIF.viewerbase.layoutManager.getNumberOfViewports();
-        let viewportIndex = Session.get('activeViewport') || 0;
+        let viewportIndex = window.store.getState().viewports.activeViewport || 0;
         if (viewportIndex >= viewportCount) {
             viewportIndex = viewportCount > 0 ? viewportCount - 1 : 0;
         }

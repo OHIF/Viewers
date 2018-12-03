@@ -7,7 +7,7 @@ import { OHIF } from 'meteor/ohif:core';
  * @returns {Object} - Timepoint data for the active viewport
  */
 OHIF.measurements.getActiveTimepoint = () => {
-    const activeViewportIndex = Session.get('activeViewport');
+    const activeViewportIndex = window.store.getState().viewports.activeViewport;
     const { studyInstanceUid } = OHIF.viewerbase.layoutManager.viewportData[activeViewportIndex];
     return OHIF.viewer.timepointApi.study(studyInstanceUid)[0];
 };

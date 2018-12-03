@@ -416,7 +416,7 @@ export class LayoutManager {
         const isSequenced = this.isDisplaySetsSequenced(sequenceMap);
 
         // Get Active Viewport Index if isMultiple is false
-        const activeViewportIndex = !isMultiple ? Session.get('activeViewport') : null;
+        const activeViewportIndex = !isMultiple ? window.store.getState().viewports.activeViewport : null;
 
         // Check if is next and looping is blocked
         if (isNext && !allowLooping) {
@@ -649,7 +649,7 @@ export class LayoutManager {
             this.moveMultipleViewportDisplaySets(isNext);
         } else {
             // Get the selected viewport index
-            const viewportIndex = Session.get('activeViewport');
+            const viewportIndex = window.store.getState().viewports.activeViewport;
 
             // Move display sets on a single viewport
             this.moveSingleViewportDisplaySets(viewportIndex, isNext);

@@ -151,7 +151,7 @@ Template.protocolEditor.helpers({
         return ProtocolEngine.getCurrentStageModel();
     },
     activeViewportUndefined() {
-        const viewportIndex = Session.get('activeViewport');
+        const viewportIndex = window.store.getState().viewports.activeViewport;
         return (viewportIndex === undefined);
     }
 });
