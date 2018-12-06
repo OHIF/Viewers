@@ -4,6 +4,16 @@ Package.describe({
     version: '0.0.1'
 });
 
+Npm.depends({
+    'react-cornerstone-viewport': 'git://github.com:cornerstonejs/react-cornerstone-viewport.git',
+    hammerjs: '2.0.8',
+    'cornerstone-core': '2.2.8',
+    'cornerstone-tools': '3.0.0-b.1471',
+    'cornerstone-math': '0.1.7',
+    'dicom-parser': '1.8.3',
+    'cornerstone-wado-image-loader': '2.2.3',
+});
+
 Package.onUse(function(api) {
     api.versionsFrom('1.7');
 

@@ -2,12 +2,36 @@ import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { OHIF } from 'meteor/ohif:core';
-import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport.js';
+import CornerstoneViewport from 'react-cornerstone-viewport';
 import './GridLayout.styl';
+import StackManager from '../../../lib/StackManager.js';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 const TOP_CLASS = 'top';
 const BOTTOM_CLASS = 'bottom';
 const MIDDLE_CLASS = 'middle';
+
+function getCornerstoneStack(viewportData) {
+    const {
+        displaySetInstanceUid,
+        studyInstanceUid,
+    } = viewportData;
+
+    // Create shortcut to displaySet
+    const study = OHIF.viewer.Studies.findBy({
+        studyInstanceUid,
+    });
+
+    const displaySet = study.displaySets.find((set) => {
+        return set.displaySetInstanceUid === displaySetInstanceUid;
+    });
+
+    // Get stack from Stack Manager
+    const stack = StackManager.findOrCreateStack(study, displaySet);
+    stack.currentImageIdIndex = 0;
+
+    return stack;
+}
 
 class GridLayout extends Component {
     constructor(props) {
@@ -76,7 +100,7 @@ class GridLayout extends Component {
 
         const viewports = viewportData.map((data, index) => {
             const className = `viewportContainer ${this.getClass(index)} ${this.getActiveClass(index)}`;
-            
+
             // TODO[react]: Not sure why I needed to do this. Looks like
             // empty viewports aren't provided with a viewportIndex normally?
             data.viewportIndex = index;
@@ -86,16 +110,26 @@ class GridLayout extends Component {
                 width: `${width}%`,
             };
 
-            const cornerstoneViewport = (data) => (
-                <CornerstoneViewport viewportData={data}/>
-            );
+            const cornerstoneViewport = (data) => {
+                const stack = getCornerstoneStack(data)
+                const viewportData = {
+                    stack,
+                    ...data
+                };
+
+                return (<CornerstoneViewport
+                    viewportData={viewportData}
+                    cornerstone={cornerstone}
+                    cornerstoneTools={cornerstoneTools}
+                />);
+            };
 
             const pluginViewport = (data) => (
                 <div className={`viewport-plugin-${data.plugin}`} style="height:100%; width: 100%">
                 </div>
             );
 
-            let contents;            
+            let contents;
             if (!data.studyInstanceUid || !data.displaySetInstanceUid) {
                 contents = (
                     <div className="CornerstoneViewport">
