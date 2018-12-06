@@ -12,6 +12,7 @@ import './ViewerMain.styl';
 import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Provider } from 'react-redux';
 
 Meteor.startup(() => {
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
@@ -20,6 +21,8 @@ Meteor.startup(() => {
     // session variable. This can used in viewer main template
     Session.set('OHIFViewerMainRendered', false);
 });
+
+import { connect } from 'react-redux';
 
 class ViewerMain extends Component {
     constructor(props) {
@@ -60,7 +63,19 @@ class ViewerMain extends Component {
     }
 
     setContents(Component, props) {
-        const contents = (<Component {...props}/>);
+        // TODO[react] Not sure I like this piece much
+        const mapStateToProps = state => {
+            return {
+                activeViewportIndex: state.viewports.activeViewportIndex,
+            };
+        };
+
+        const ConnectedComponent = connect(
+            mapStateToProps,
+            null
+        )(Component);
+
+        const contents = (<ConnectedComponent {...props}/>);
 
         this.setState({
             contents
@@ -69,9 +84,11 @@ class ViewerMain extends Component {
 
     render() {
         return (
-            <div className="viewerMain">
-                {this.state.contents}
-            </div>
+            <Provider store={window.store}>
+                <div className="viewerMain">
+                    {this.state.contents}
+                </div>
+            </Provider>
         );
     }
 

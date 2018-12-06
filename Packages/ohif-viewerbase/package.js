@@ -12,6 +12,7 @@ Npm.depends({
     'cornerstone-math': '0.1.7',
     'dicom-parser': '1.8.3',
     'cornerstone-wado-image-loader': '2.2.3',
+    'react-redux': '6.0.0'
 });
 
 Package.onUse(function(api) {

@@ -2,10 +2,10 @@ import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { OHIF } from 'meteor/ohif:core';
-import CornerstoneViewport from 'react-cornerstone-viewport';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
+import ConnectedCornerstoneViewport from '../ConnectedCornerstoneViewport.js';
 import './GridLayout.styl';
 import StackManager from '../../../lib/StackManager.js';
-import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 const TOP_CLASS = 'top';
 const BOTTOM_CLASS = 'bottom';
@@ -62,7 +62,7 @@ class GridLayout extends Component {
     }
 
     getActiveClass(index) {
-        if (this.props.activeViewport === index) {
+        if (this.props.activeViewportIndex === index) {
             return 'active';
         };
 
@@ -117,7 +117,7 @@ class GridLayout extends Component {
                     ...data
                 };
 
-                return (<CornerstoneViewport
+                return (<ConnectedCornerstoneViewport
                     viewportData={viewportData}
                     cornerstone={cornerstone}
                     cornerstoneTools={cornerstoneTools}

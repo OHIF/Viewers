@@ -18,7 +18,7 @@ const defaultButtons = [
         type: 'tool',
         text: 'Bidirectional',
         svgUrl: '/icons.svg#icon-tools-measure-target',
-        active: true
+        active: false
     },
     {
         command: 'StackScroll',
@@ -39,7 +39,7 @@ const defaultButtons = [
         type: 'tool',
         text: 'Manual',
         svgUrl: '/icons.svg#icon-tools-levels',
-        active: false
+        active: true
     },
     {
         command: 'setWLPresetSoftTissue',
