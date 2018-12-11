@@ -32,8 +32,6 @@ const loadSuccess = function(image, studyInstanceUid, displaySetInstanceUid) {
     canvasElement.width = 193;
     canvasElement.height = 123;
 
-    console.warn(this.state);
-
     // Render the image to canvas to be able to get its dataURL
     renderAsync(canvasElement, image).then(() => {
         const studies = this.state.studiesForBrowser;
@@ -41,8 +39,6 @@ const loadSuccess = function(image, studyInstanceUid, displaySetInstanceUid) {
         const thumbnail = study.thumbnails.find(t => t.displaySetInstanceUid === displaySetInstanceUid);
 
         thumbnail.imageSrc = canvasElement.toDataURL('image/jpeg', 1);
-
-        console.warn(this.state);
 
         this.setState({
             studiesForBrowser: studies

@@ -12,7 +12,6 @@ import './ViewerMain.styl';
 import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
 
 Meteor.startup(() => {
     window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
@@ -84,11 +83,9 @@ class ViewerMain extends Component {
 
     render() {
         return (
-            <Provider store={window.store}>
                 <div className="viewerMain">
                     {this.state.contents}
                 </div>
-            </Provider>
         );
     }
 

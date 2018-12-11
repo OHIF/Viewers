@@ -6,6 +6,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
 import { createStore } from 'redux';
+import Viewer from '../viewer/viewer.js';
 
 const store = createStore(OHIF.viewerbase.redux.combinedReducer);
 
@@ -93,5 +94,13 @@ Template.ohifViewer.helpers({
         }
 
         return instance.hasViewerData ? 'Back to viewer' : '';
+    },
+
+    Viewer() {
+        return Viewer;
+    },
+
+    studies() {
+        return Template.instance().data.studies;
     }
 });
