@@ -6,6 +6,9 @@ import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
 import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
+import { CineDialog } from 'react-viewerbase';
+import FlexboxLayout from '../flexboxLayout/flexboxLayout.js';
+
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
 import 'meteor/ohif:metadata';
@@ -180,5 +183,13 @@ Template.viewer.onDestroyed(function() {
 Template.viewer.helpers({
     state() {
         return Template.instance().state;
+    },
+
+    CineDialog() {
+        return CineDialog
+    },
+
+    FlexboxLayout() {
+        return FlexboxLayout
     }
 });

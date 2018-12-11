@@ -6,6 +6,7 @@ Package.describe({
 
 Npm.depends({
     'react-cornerstone-viewport': 'git://github.com:cornerstonejs/react-cornerstone-viewport.git',
+    'react-viewerbase': 'git://github.com:OHIF/react-viewerbase.git',
     hammerjs: '2.0.8',
     'cornerstone-core': '2.2.8',
     'cornerstone-tools': '3.0.0-b.1471',
@@ -117,19 +118,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/basic/aboutModal/aboutModal.html', 'client');
     api.addFiles('client/components/basic/aboutModal/aboutModal.js', 'client');
     api.addFiles('client/components/basic/aboutModal/aboutModal.styl', 'client');
-
-    // Study Browser components
-    api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.html', 'client');
-    api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.js', 'client');
-    api.addFiles('client/components/studyBrowser/studyBrowser/studyBrowser.styl', 'client');
-
-    api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.html', 'client');
-    api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.js', 'client');
-    api.addFiles('client/components/studyBrowser/thumbnailEntry/thumbnailEntry.styl', 'client');
-
-    api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.html', 'client');
-    api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.js', 'client');
-    api.addFiles('client/components/studyBrowser/imageThumbnail/imageThumbnail.styl', 'client');
 
     // Viewer components
     api.addFiles('client/components/viewer/annotationDialogs/annotationDialogs.html', 'client');
