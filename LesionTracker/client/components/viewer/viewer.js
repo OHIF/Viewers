@@ -91,9 +91,6 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.data.loadedSeriesData = {};
     }
 
-    // Store the viewer data in session for further user
-    Session.setPersistent('ViewerData', OHIF.viewer.data);
-
     Session.set('activeViewport', OHIF.viewer.data.activeViewport || false);
 
     // Set lesion tool buttons as disabled if pixel spacing is not available for active element

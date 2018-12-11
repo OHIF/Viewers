@@ -110,9 +110,6 @@ Template.viewer.onCreated(() => {
         OHIF.viewer.data.activeViewport = 0;
     }
 
-    // Store the viewer data in session for further user
-    Session.setPersistent('ViewerData', OHIF.viewer.data);
-
     Session.set('activeViewport', OHIF.viewer.data.activeViewport || 0);
 
     // @TypeSafeStudies

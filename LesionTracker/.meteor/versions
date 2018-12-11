@@ -31,7 +31,6 @@ clinical:router-location@2.1.0
 clinical:router-middleware-stack@2.1.2
 clinical:router-url@2.1.0
 clinical:theming@0.4.10
-cultofcoders:persistent-session@0.4.5
 ddp@1.4.0
 ddp-client@2.3.3
 ddp-common@1.4.0

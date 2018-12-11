@@ -39,7 +39,8 @@ export class HotkeysManager {
             } else if (OHIF.user.userLoggedIn()) {
                 OHIF.user.setData(storageKey, definitions).then(resolve).catch(reject);
             } else {
-                Session.setPersistent(storageKey, definitions);
+                const definitionsJSON = JSON.stringify(definitions);
+                localStorage.setItem(storageKey, definitionsJSON);
                 resolve();
             }
         });
@@ -57,7 +58,9 @@ export class HotkeysManager {
                     reject(error);
                 }
             } else {
-                resolve(Session.get(storageKey));
+                const definitionsJSON = localStorage.getItem(storageKey) || '';
+                const definitions = JSON.parse(definitionsJSON) || undefined;
+                resolve(definitions);
             }
         });
     }

@@ -18,8 +18,7 @@ Package.onUse(function(api) {
         'stylus',
         'reactive-var',
         'session',
-        'clinical:router',
-        'cultofcoders:persistent-session'
+        'clinical:router'
     ]);
 
     // OHIF dependencies

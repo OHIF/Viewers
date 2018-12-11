@@ -46,7 +46,6 @@ fortawesome:fontawesome
 momentjs:moment@2.15.1
 aldeed:simple-schema          # Third party package to deal with schemas
 aldeed:template-extension
-cultofcoders:persistent-session
 underscore@1.0.10
 meteortesting:mocha
 react-template-helper

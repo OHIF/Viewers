@@ -25,7 +25,6 @@ Package.onUse(function(api) {
         'jquery',
         'stylus',
         'momentjs:moment',
-        'cultofcoders:persistent-session'
     ]);
 
     // OHIF dependencies
@@ -199,7 +198,6 @@ Package.onTest(function(api) {
         'jquery',
         'mongo',
         'momentjs:moment',
-        'cultofcoders:persistent-session'
     ], 'client');
 
     // OHIF dependencies

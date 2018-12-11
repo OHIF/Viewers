@@ -59,7 +59,5 @@ aldeed:simple-schema          # Third party package to deal with schemas
 aldeed:template-extension@4.0.0
 aldeed:collection2
 zuuk:stale-session
-johdirr:meteor-git-rev
-cultofcoders:persistent-session@0.4.4
 shell-server@0.3.1
 underscore

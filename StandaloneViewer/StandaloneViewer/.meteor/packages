@@ -35,7 +35,6 @@ aldeed:simple-schema@1.5.3
 stylus@=2.513.14
 clinical:router
 session@1.2.0-beta181.7
-cultofcoders:persistent-session
 reactive-dict@1.3.0-beta181.7
 fortawesome:fontawesome
 mrt:moment

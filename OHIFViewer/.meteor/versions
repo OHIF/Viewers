@@ -23,7 +23,6 @@ clinical:router@2.0.19
 clinical:router-location@2.1.0
 clinical:router-middleware-stack@2.1.2
 clinical:router-url@2.1.0
-cultofcoders:persistent-session@0.4.5
 ddp@1.4.0
 ddp-client@2.3.3
 ddp-common@1.4.0
@@ -37,7 +36,6 @@ ecmascript-runtime-client@0.8.0
 ecmascript-runtime-server@0.7.1
 ejson@1.1.0
 es5-shim@4.8.0
-fastclick@1.0.13
 fetch@0.1.0
 fortawesome:fontawesome@4.7.0
 geojson-utils@1.0.10

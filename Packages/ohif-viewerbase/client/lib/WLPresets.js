@@ -143,7 +143,8 @@ class WindowLevelPresetsManager {
             } else if (OHIF.user.userLoggedIn()) {
                 OHIF.user.setData(WL_STORAGE_KEY, wlPresets).then(resolve).catch(reject);
             } else {
-                Session.setPersistent(WL_STORAGE_KEY, wlPresets);
+                const wlPresetsJSON = JSON.stringify(wlPresets);
+                localStorage.setItem(WL_STORAGE_KEY, wlPresetsJSON);
                 resolve();
             }
         }).then(() => this.setOHIFWLPresets.call(this, wlPresets));
@@ -160,7 +161,9 @@ class WindowLevelPresetsManager {
                     reject(error);
                 }
             } else {
-                resolve(Session.get(WL_STORAGE_KEY));
+                const wlPresetsJSON = localStorage.getItem(WL_STORAGE_KEY) || '';
+                const wlPresets = JSON.parse(wlPresetsJSON) || undefined;
+                resolve(wlPresets);
             }
         });
     }
