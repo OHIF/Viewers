@@ -70,6 +70,16 @@ It is possible to build this standalone viewer to run as a client-only bundle of
 
     Open your web browser and navigate to http://localhost:3000/sampleJPEG.json or http://localhost:3000/sampleDICOM.json
 
+    ## Authorization Header
+
+    A ```token``` fragment parameter can be specified. If present this value will be used for http bearer authorization when making requests for the above JSON, and when retrieving images using the Cornerstone Image Loaders.
+
+    Example :
+
+    ```
+    http://localhost:3000/sampleDICOM.json#token=1a2b3c4d
+    ```
+
 
 ### Testing the Sample client-only build
 For the sake of simplicity we have also included a pre-built client-only version of the standalone viewer, which can be found in the SampleClientOnlyBuild folder.
