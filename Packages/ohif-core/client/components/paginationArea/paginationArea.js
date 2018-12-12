@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 Template.paginationArea.onCreated(function() {
     const instance = Template.instance();

@@ -1,7 +1,7 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
-import { $ } from 'meteor/jquery';
+import _ from 'underscore';
+import $ from 'jquery';
 
 const MARGIN_RIGHT = 15;
 const MARGIN_BOTTOM = 15;

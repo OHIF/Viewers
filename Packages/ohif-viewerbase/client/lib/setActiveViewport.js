@@ -1,5 +1,5 @@
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { Random } from 'meteor/random';
 
 import { OHIF } from 'meteor/ohif:core';

@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 export function updateAllViewports() {
     var viewports = $('.imageViewerViewport').not('.empty');

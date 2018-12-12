@@ -1,0 +1,11 @@
+@import "{ohif:viewerbase}/app"
+
+.viewerDialogs>.dialog-animated
+  &:not(.dialog-closed):not(.dialog-open)
+    display: none
+
+  &.dialog-closed
+    animateFadeOut()
+
+  &.dialog-open
+    animateFadeIn()

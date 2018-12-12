@@ -5,21 +5,19 @@ Package.describe({
 });
 
 Npm.depends({
-    'validate.js': '0.9.0'
+    'validate.js': '0.9.0',
+    moment: '2.22.2',
+    jquery: '3.3.1'
 });
 
 Package.onUse(function(api) {
     api.versionsFrom('1.7');
 
     api.use('ecmascript');
-    api.use('standard-app-packages');
-    api.use('jquery');
     api.use('stylus');
     api.use('random');
     api.use('templating');
     api.use('natestrauser:select2@4.0.1', 'client');
-    api.use('clinical:router@2.0.19');
-    api.use('momentjs:moment');
 
     // Our custom packages
     api.use('ohif:core');
@@ -27,14 +25,10 @@ Package.onUse(function(api) {
 
     api.addAssets('assets/dots.svg', 'client');
 
-    // Both client & server
-    api.addFiles('both/namespace.js');
-    api.addFiles('both/collections.js');
-    api.addFiles('both/schema.js');
-    api.addFiles('both/hardcodedData.js');
-    api.addFiles('both/testData.js');
-
-    // Client-only
+    api.addFiles('client/namespace.js', 'client');
+    api.addFiles('client/schema.js', 'client');
+    api.addFiles('client/hardcodedData.js', 'client');
+    api.addFiles('client/testData.js', 'client');
     api.addFiles('client/collections.js', 'client');
     api.addFiles('client/protocolEngine.js', 'client');
     api.addFiles('client/helpers/displayConstraint.js', 'client');
@@ -84,9 +78,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/stageSortable/stageSortable.html', 'client');
     api.addFiles('client/components/stageSortable/stageSortable.styl', 'client');
     api.addFiles('client/components/stageSortable/stageSortable.js', 'client');
-
-    // Server-only
-    api.addFiles('server/collections.js', 'server');
 
     // Global exports
     api.export('HP');

@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { getFrameOfReferenceUID } from './getFrameOfReferenceUID';
 import { crosshairsSynchronizers } from './crosshairsSynchronizers';
 

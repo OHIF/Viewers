@@ -1,28 +1,11 @@
 import { Meteor } from "meteor/meteor";
-import { Router } from 'meteor/clinical:router';
+//import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
 
-Router.configure({
+/*Router.configure({
     layoutTemplate: 'layout',
 });
 
-
-// If we are running a disconnected client similar to the StandaloneViewer
-// (see https://docs.ohif.org/standalone-viewer/usage.html) we don't want
-// our routes to get stuck while waiting for Pub / Sub.
-//
-// In this case, the developer is required to add Servers and specify
-// a CurrentServer with some other approach (e.g. a separate script).
-if (Meteor.settings &&
-    Meteor.settings.public &&
-    Meteor.settings.public.clientOnly !== true) {
-    Router.waitOn(function() {
-        return [
-            Meteor.subscribe('servers'),
-            Meteor.subscribe('currentServer')
-        ];
-    });
-}
 
 Router.onBeforeAction('loading');
 
@@ -66,4 +49,4 @@ Router.route('/IHEInvokeImageDisplay', function() {
     } else {
         Router.go('studylist', {}, {replaceState: true});
     }
-});
+});*/

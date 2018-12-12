@@ -2,8 +2,8 @@ import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Spacebars } from 'meteor/spacebars';
-import { _ } from 'meteor/underscore';
-import { $ } from 'meteor/jquery';
+import _ from 'underscore';
+import $ from 'jquery';
 
 /*
  * form: controls a form and its registered inputs

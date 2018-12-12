@@ -2,8 +2,8 @@ import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
-import { $ } from 'meteor/jquery';
+import _ from 'underscore';
+import $ from 'jquery';
 
 /*
  * formItem: create a generic controller for form items

@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { $ } from 'meteor/jquery';
-import { _ } from 'meteor/underscore';
+import $ from 'jquery';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.hotkeysForm.onCreated(() => {

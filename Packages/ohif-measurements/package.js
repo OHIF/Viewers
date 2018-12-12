@@ -1,7 +1,9 @@
 Npm.depends({
     ajv: '4.10.4',
     url: '0.11.0',
-    jspdf: '1.3.3'
+    jspdf: '1.3.3',
+    moment: '2.22.2',
+    jquery: '3.3.1'
 });
 
 Package.describe({
@@ -14,12 +16,8 @@ Package.onUse(function(api) {
     api.versionsFrom('1.7');
 
     api.use('ecmascript');
-    api.use('standard-app-packages');
-    api.use('jquery');
     api.use('stylus');
     api.use('random');
-
-    api.use('momentjs:moment');
 
     // Schema for Data Models
     api.use('aldeed:simple-schema');
@@ -30,16 +28,12 @@ Package.onUse(function(api) {
 
     // Our custom packages
     api.use('ohif:cornerstone');
-    api.use('ohif:design');
     api.use('ohif:core');
     api.use('ohif:studies');
     api.use('ohif:viewerbase');
 
-    // Client and server imports
-    api.addFiles('both/index.js', ['client', 'server']);
-
     // Client imports
-    api.addFiles('client/index.js', 'client');
+    api.addFiles('src/index.js', 'client');
 
-    api.export('MeasurementSchemaTypes', ['client', 'server']);
+    api.export('MeasurementSchemaTypes', 'client');
 });

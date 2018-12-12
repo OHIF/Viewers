@@ -3,7 +3,7 @@ import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 // Helper function to get the component's current schema
 const getCurrentSchemaDefs = (parentComponent, key) => {

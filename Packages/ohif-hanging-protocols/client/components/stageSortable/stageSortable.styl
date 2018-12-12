@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@import "{ohif:viewerbase}/app"
 
 #stageSortingContainer
   padding: 0 20px
@@ -13,7 +13,7 @@
 
         &:hover
           theme('color', '$hoverColor')
-        
+
         &.active
           theme('color', '$activeColor')
 
@@ -38,11 +38,11 @@
       cursor: pointer
       theme('color', '$defaultColor')
       transition(all 0.1s ease)
-      
+
       &:hover
         theme('color', '$hoverColor')
-        
-      &:active  
+
+      &:active
         theme('color', '$activeColor')
 
   .addStage
@@ -52,11 +52,11 @@
 
     #addStage
       transition(all 0.1s ease)
-      
+
       &:hover
         theme('color', '$hoverColor')
-        
-      &:active  
+
+      &:active
         theme('color', '$activeColor')
 
   .moveStageButtons
@@ -68,11 +68,11 @@
       cursor: pointer
       text-decoration: none
       transition(all 0.1s ease)
-      
+
       &:hover
         theme('color', '$hoverColor')
-        
-      &:active  
+
+      &:active
         theme('color', '$activeColor')
 
       &[disabled="true"]

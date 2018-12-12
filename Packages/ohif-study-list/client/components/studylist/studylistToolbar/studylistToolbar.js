@@ -2,7 +2,7 @@ import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 Template.studylistToolbar.onCreated(() => {
     Meteor.call('importSupported', (error, result) => {

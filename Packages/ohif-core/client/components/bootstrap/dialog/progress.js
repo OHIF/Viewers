@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 Template.dialogProgress.onCreated(() => {
     const instance = Template.instance();

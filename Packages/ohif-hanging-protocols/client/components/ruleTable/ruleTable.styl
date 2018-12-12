@@ -1,4 +1,4 @@
-@import "{ohif:design}/app"
+@import "{ohif:viewerbase}/app"
 
 table.ruleTable
   thead
@@ -24,11 +24,11 @@ table.ruleTable
           &:hover, &:active
             cursor: pointer
             transition(all 0.1s ease)
-            
+
             &:hover
               theme('color', '$hoverColor')
-              
-            &:active  
+
+            &:active
               theme('color', '$activeColor')
 
       td:first-child
@@ -50,9 +50,9 @@ table.ruleTable
   .addRule
     cursor: pointer
     transition(all 0.1s ease)
-    
+
     &:hover
       theme('color', '$hoverColor')
-      
-    &:active  
+
+    &:active
       theme('color', '$activeColor')

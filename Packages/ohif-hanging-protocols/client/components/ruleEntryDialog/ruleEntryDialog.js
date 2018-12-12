@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';

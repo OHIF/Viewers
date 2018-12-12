@@ -1,5 +1,5 @@
 import { Blaze } from 'meteor/blaze';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { Template } from 'meteor/templating';
 
 import { Viewerbase } from 'meteor/ohif:viewerbase';

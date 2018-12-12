@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 import { Template } from 'meteor/templating';
 
 /**

@@ -1,5 +1,5 @@
 import { Blaze } from 'meteor/blaze';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 Blaze.registerHelper('objectEach', function(object) {
     // http://stackoverflow.com/questions/30234732/how-to-print-key-and-values-in-meteor-template

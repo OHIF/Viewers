@@ -1,2 +1,2 @@
-import './components';
 import './lib';
+import './services';

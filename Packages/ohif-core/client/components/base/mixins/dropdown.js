@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { $ } from 'meteor/jquery';
-import { _ } from 'meteor/underscore';
+import $ from 'jquery';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 /*

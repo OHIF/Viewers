@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 /**
  * Updates the orientation labels on a Cornerstone-enabled Viewport element

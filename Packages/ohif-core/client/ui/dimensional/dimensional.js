@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 // Temporarily show and hide the element to enable dimension calculations
 $.fn.tempShow = function(callback) {

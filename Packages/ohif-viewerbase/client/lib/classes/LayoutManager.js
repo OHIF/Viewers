@@ -3,8 +3,8 @@ import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
-import { $ } from 'meteor/jquery';
+import _ from 'underscore';
+import $ from 'jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 

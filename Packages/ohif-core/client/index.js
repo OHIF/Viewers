@@ -4,8 +4,9 @@ import './commands';
 import './hotkeys';
 import './components';
 import './ui';
-
-import './routes.js';
 import './header.js';
-import './hotkeys.js';
-import './hotkeys.js';
+import './schema.js';
+import './utils/';
+import './startup.js';
+import './classes/';
+import './cornerstone.js';

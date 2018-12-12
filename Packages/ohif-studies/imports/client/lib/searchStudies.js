@@ -19,14 +19,6 @@ OHIF.studies.searchStudies = filter => {
 
             if (server.type === 'dicomWeb' && server.requestOptions.requestFromBrowser === true) {
                 OHIF.studies.services.QIDO.Studies(server, filter).then(resolve, reject);
-            } else {
-                Meteor.call('StudyListSearch', filter, (error, studiesData) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(studiesData);
-                    }
-                });
             }
         });
         studySearchPromises.set(promiseKey, promise);

@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 export function getElementIfNotEmpty(viewportIndex) {
     // Meteor template helpers run more often than expected

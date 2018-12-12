@@ -1,6 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 import { setFocusToActiveViewport } from './setFocusToActiveViewport';
 
@@ -8,7 +8,7 @@ let doneCallbackFunction;
 
 /**
  * Removes the backdrop abd closes opened dialog
- * and focus to the active viewport. If a done callback is set, 
+ * and focus to the active viewport. If a done callback is set,
  * it's called before
  * @param  {Boolean} runCallback Indicate if callback function needs to be called. Default: true
  */

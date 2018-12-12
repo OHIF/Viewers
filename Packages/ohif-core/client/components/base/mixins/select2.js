@@ -1,8 +1,8 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { _ } from 'meteor/underscore';
-import { $ } from 'meteor/jquery';
+import _ from 'underscore';
+import $ from 'jquery';
 import { OHIF } from 'meteor/ohif:core';
 
 /*

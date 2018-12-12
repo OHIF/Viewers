@@ -1,5 +1,5 @@
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 /**
  * Restores the browser focus to the currently specified active viewport

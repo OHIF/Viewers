@@ -1,6 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
-import { _ } from 'meteor/underscore';
-import { $ } from 'meteor/jquery';
+import _ from 'underscore';
+import $ from 'jquery';
 
 OHIF.string = {};
 

@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import Blaze from 'meteor/gadicc:blaze-react-component';
+import { OHIF } from 'meteor/ohif:core';
+import './StudyList.css';
 
 class StudyList extends Component {
     constructor(props) {
@@ -10,14 +14,14 @@ class StudyList extends Component {
     render() {
         return (
             <div className='StudyList'>
-                <Blaze template="studylist" />
+                <Blaze template="studylist" className='tempStudyList'/>
             </div>
         );
     }
 }
 
 StudyList.propTypes = {
-    studies: PropTypes.array.isRequired
+    studies: PropTypes.array
 };
 
 OHIF.studylist.components = {

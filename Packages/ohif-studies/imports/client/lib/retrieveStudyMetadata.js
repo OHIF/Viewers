@@ -8,11 +8,11 @@ const StudyMetaDataPromises = new Map();
 
 
 /**
- * Delete the cached study metadata retrieval promise to ensure that the browser will 
+ * Delete the cached study metadata retrieval promise to ensure that the browser will
  * re-retrieve the study metadata when it is next requested
  *
  * @param {String} studyInstanceUid The UID of the Study to be removed from cache
- * 
+ *
  */
 OHIF.studies.deleteStudyMetadataPromise = (studyInstanceUid) => {
     if (StudyMetaDataPromises.has(studyInstanceUid)) {
@@ -52,41 +52,6 @@ OHIF.studies.retrieveStudyMetadata = (studyInstanceUid, seriesInstanceUids) => {
             OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid).then(function (data) {
                 resolve(data)
             }, reject);
-        } else {
-            Meteor.call('GetStudyMetadata', studyInstanceUid, function (error, study) {
-                OHIF.log.timeEnd(timingKey);
-
-                if (error) {
-                    const errorType = error.error;
-                    let errorMessage = '';
-
-                    if (errorType === 'server-connection-error') {
-                        errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.';
-                    } else if (errorType === 'server-internal-error') {
-                        errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
-                    } else {
-                        errorMessage = `For some reason we could not retrieve the study\'s metadata for ${studyInstanceUid}.`;
-                    }
-
-                    OHIF.log.error(errorMessage);
-                    OHIF.log.error(error.stack);
-                    reject(`GetStudyMetadata: ${errorMessage}`);
-                    return;
-                }
-
-                // Filter series if seriesInstanceUid exists
-                if (seriesInstanceUids && seriesInstanceUids.length) {
-                    study.seriesList = study.seriesList.filter(series => seriesInstanceUids.indexOf(series.seriesInstanceUid) > -1);
-                }
-
-                if (!study) {
-                    reject(`GetStudyMetadata: No study data returned from server: ${studyInstanceUid}`);
-                    return;
-                }
-
-                // Resolve the promise with the final study metadata object
-                resolve(study);
-            });
         }
     });
 

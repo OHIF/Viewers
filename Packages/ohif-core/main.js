@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import './log.js';
+import log from './log.js';
 
 /*
  * Defines the base OHIF object
  */
 
 const OHIF = {
-    log: {},
+    log,
     ui: {},
     utils: {},
     viewer: {},
@@ -14,11 +14,5 @@ const OHIF = {
     user: {},
     DICOMWeb: {}, // Temporarily added
 };
-
-// Expose the OHIF object to the client if it is on development mode
-// @TODO: remove this after applying namespace to this package
-if (Meteor.isClient) {
-    window.OHIF = OHIF;
-}
 
 export { OHIF };

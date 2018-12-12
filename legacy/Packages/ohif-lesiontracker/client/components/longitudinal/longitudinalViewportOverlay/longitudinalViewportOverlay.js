@@ -2,8 +2,8 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { _ } from 'meteor/underscore';
-import { moment } from 'meteor/momentjs:moment';
+import _ from 'underscore';
+import moment from 'moment';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 

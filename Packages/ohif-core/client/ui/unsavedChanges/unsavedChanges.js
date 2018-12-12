@@ -1,6 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 import { OHIF } from 'meteor/ohif:core';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 const FUNCTION = 'function';
 const STRING = 'string';

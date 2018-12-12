@@ -1,5 +1,4 @@
 import { OHIF } from 'meteor/ohif:core';
-import { Router } from 'meteor/clinical:router';
 
 // Functions
 import { getStudyPriors } from './getStudyPriors';
@@ -11,7 +10,8 @@ OHIF.studylist.functions = {
 };
 
 const dblClickOnStudy = data => {
-    Router.go('viewerStudies', { studyInstanceUids: data.studyInstanceUid });
+    //Router.go('viewerStudies', { studyInstanceUids: data.studyInstanceUid });
+    console.log('dblClickOnStudy');
 };
 
 OHIF.studylist.callbacks.dblClickOnStudy = dblClickOnStudy;

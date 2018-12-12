@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 OHIF.cornerstone = {};
 

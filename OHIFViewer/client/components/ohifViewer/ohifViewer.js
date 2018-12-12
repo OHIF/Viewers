@@ -1,17 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { Router } from 'meteor/clinical:router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
-import { createStore } from 'redux';
 import Viewer from '../viewer/viewer.js';
-
-const store = createStore(OHIF.viewerbase.redux.combinedReducer);
-
-// TODO[react] Use a provider when the whole tree is React
-window.store = store;
 
 Template.ohifViewer.onCreated(() => {
     const instance = Template.instance();
@@ -50,7 +43,7 @@ Template.ohifViewer.onCreated(() => {
 
     OHIF.header.dropdown.setItems(headerItems);
 
-    instance.autorun(() => {
+    /*instance.autorun(() => {
         const currentRoute = Router.current();
         if (!currentRoute) return;
         const routeName = currentRoute.route.getName();
@@ -64,7 +57,7 @@ Template.ohifViewer.onCreated(() => {
 
         // Set the viewer open state on session
         Session.set('ViewerOpened', isViewer);
-    });
+    });*/
 });
 
 Template.ohifViewer.events({
@@ -72,14 +65,14 @@ Template.ohifViewer.events({
         event.preventDefault();
         const isViewer = Session.get('ViewerOpened');
 
-        if (isViewer) {
+        /*if (isViewer) {
             Router.go('studylist');
         } else {
             const { studyInstanceUids } = OHIF.viewer.data;
             if (studyInstanceUids) {
                 Router.go('viewerStudies', { studyInstanceUids });
             }
-        }
+        }*/
     }
 });
 

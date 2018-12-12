@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Router } from 'meteor/clinical:router';
+//import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
 
 import oidcUserManager from './oidcUserManager.js';
@@ -65,7 +65,7 @@ function urlHasSignInResponse() {
     return !!params.state;
 }
 
-Router.onRun(function() {
+/*Router.onRun(function() {
     const next = this.next;
     const redirect_uri = Meteor.absoluteUrl(this.request.url);
 
@@ -76,4 +76,4 @@ Router.onRun(function() {
     } else {
         signIn({ redirect_uri });
     }
-});
+});*/

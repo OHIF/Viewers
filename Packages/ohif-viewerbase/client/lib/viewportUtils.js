@@ -1,6 +1,6 @@
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
-import { _ } from 'meteor/underscore';
+import $ from 'jquery';
+import _ from 'underscore';
 // Local Modules
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';

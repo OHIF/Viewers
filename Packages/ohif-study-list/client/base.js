@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 
-Object.assign(OHIF.studylist, {
+OHIF.studylist = {
+    actions: {},
     callbacks: {}
-});
+};

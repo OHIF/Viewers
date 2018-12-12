@@ -22,18 +22,9 @@ Package.onUse(function(api) {
 
     // Our custom packages
     api.use([
-        'ohif:design',
         'ohif:core',
-        'ohif:servers',
         'ohif:viewerbase',
-        'ohif:wadoproxy'
     ]);
-
-    // Client and server imports
-    api.addFiles('both/main.js', [ 'client', 'server' ]);
-
-    // Server imports
-    api.addFiles('server/main.js', 'server');
 
     // Client imports
     api.addFiles('client/main.js', 'client');

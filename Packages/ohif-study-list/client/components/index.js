@@ -1,3 +1,3 @@
 import './seriesDetailsModal';
-import './studylist';
+import './studylist/index.js';
 import './StudyList.js';

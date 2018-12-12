@@ -1,5 +1,5 @@
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolManager } from '../toolManager';

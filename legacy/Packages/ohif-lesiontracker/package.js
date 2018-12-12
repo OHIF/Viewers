@@ -8,7 +8,6 @@ Package.onUse(function(api) {
     api.versionsFrom('1.7');
 
     api.use('ecmascript');
-    api.use('standard-app-packages');
     api.use('jquery');
     api.use('stylus');
     api.use('random');
@@ -20,7 +19,6 @@ Package.onUse(function(api) {
     api.use('ohif:design');
     api.use('ohif:cornerstone');
     api.use('ohif:core');
-    api.use('ohif:cornerstone-settings');
     api.use('ohif:studies');
     api.use('ohif:measurements');
 

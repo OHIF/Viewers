@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 // Return the newPosition for the handle based on the mmStep and handles

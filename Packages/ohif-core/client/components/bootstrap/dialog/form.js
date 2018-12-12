@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 Template.dialogForm.onCreated(() => {

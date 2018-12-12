@@ -1,6 +1,6 @@
 import { Blaze } from 'meteor/blaze';
 import { Session } from 'meteor/session';
-import { moment } from 'meteor/momentjs:moment';
+import moment from 'moment';
 
 /**
  * A global Blaze UI helper function to format JavaScript Dates using the Moment library
@@ -11,7 +11,7 @@ Blaze.registerHelper('jsDateFromNow', function(context, format, options) {
     }
 
     Session.get('timeAgoVariable');
-    
+
     var dateAsMoment = moment(new Date(context));
     return dateAsMoment.fromNow();
 });

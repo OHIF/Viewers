@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
-import { _ } from 'meteor/underscore';
+import $ from 'jquery';
+import _ from 'underscore';
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
@@ -19,7 +19,7 @@ Template.registerHelper('isDisplaySetActive', (displaySetInstanceUid, viewportIn
     }
 
     // Check if the display set is current visible in any of the layout
-    // manager's displayed viewports. Note that we have to check the 
+    // manager's displayed viewports. Note that we have to check the
     // onscreen number of viewports here, since the layout manager will
     // keep the viewport data of old viewports, even after the layout is changed.
     //

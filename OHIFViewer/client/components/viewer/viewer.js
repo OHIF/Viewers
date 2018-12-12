@@ -1,3 +1,6 @@
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+
 import { OHIF } from 'meteor/ohif:core';
 import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
@@ -6,11 +9,7 @@ import FlexboxLayout from '../flexboxLayout/flexboxLayout.js';
 
 import 'meteor/ohif:cornerstone';
 import 'meteor/ohif:viewerbase';
-import 'meteor/ohif:metadata';
 
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import { Provider } from 'react-redux';
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -82,7 +81,6 @@ class Viewer extends Component {
 
         // Define the OHIF.viewer.data global object
         OHIF.viewer.data = OHIF.viewer.data || {};
-        debugger;
 
         // @TypeSafeStudies
         // Clears OHIF.viewer.Studies collection
@@ -93,7 +91,7 @@ class Viewer extends Component {
         OHIF.viewer.StudyMetadataList.removeAll();
 
         OHIF.viewer.data.studyInstanceUids = [];
-
+        
         const studies = this.props.studies;
         studies.forEach(study => {
             const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
@@ -137,7 +135,7 @@ class Viewer extends Component {
 }
 
 Viewer.propTypes = {
-    studies: PropTypes.array.isRequired
+    studies: PropTypes.array
 };
 
 export default Viewer;

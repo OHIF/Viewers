@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { $ } from 'meteor/jquery';
-import { _ } from 'meteor/underscore';
+import $ from 'jquery';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { OHIFError } from './OHIFError';
 import { StackManager } from '../StackManager.js';

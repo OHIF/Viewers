@@ -1,5 +1,5 @@
 import { Tracker } from 'meteor/tracker';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 class Dropdown {

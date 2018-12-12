@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 import { setInstanceClassDefaultViewportFunction } from './instanceClassSpecificViewport';
@@ -20,7 +20,7 @@ const setMammogramViewportAlignment = (series, enabledElement, imageId) => {
     const right = left + enabledElement.canvas.width;
 
     const metadataProvider = OHIF.viewer.metadataProvider;
-    
+
     let laterality = instance.laterality;
     let position;
 

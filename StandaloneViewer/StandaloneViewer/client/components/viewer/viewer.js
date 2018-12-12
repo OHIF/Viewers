@@ -15,8 +15,6 @@ const store = createStore(OHIF.viewerbase.redux.combinedReducer);
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
 
-HP.ProtocolStore.setStrategy(HP.clientOnlyStrategy);
-
 Meteor.startup(() => {
     Session.setDefault('leftSidebar', false);
     Session.setDefault('rightSidebar', false);

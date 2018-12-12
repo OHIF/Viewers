@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 import { Session } from 'meteor/session';
 
 // OHIF Modules

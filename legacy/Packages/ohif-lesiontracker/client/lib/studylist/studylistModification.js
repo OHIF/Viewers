@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function() {
@@ -22,10 +21,10 @@ const dblClickOnStudy = data => {
         return;
     }
 
-    const timepoint = timepointApi.study(data.studyInstanceUid)[0];
+    /*const timepoint = timepointApi.study(data.studyInstanceUid)[0];
     if (timepoint) {
         Router.go('viewerTimepoint', { timepointId: timepoint.timepointId });
     } else {
         Router.go('viewerStudies', { studyInstanceUids: data.studyInstanceUid });
-    }
+    }*/
 };

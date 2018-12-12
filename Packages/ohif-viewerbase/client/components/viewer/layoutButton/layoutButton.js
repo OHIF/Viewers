@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { viewportUtils } from '../../../lib/viewportUtils';
 
 Template.layoutButton.events({

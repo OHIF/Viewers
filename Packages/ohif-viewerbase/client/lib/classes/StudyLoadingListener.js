@@ -1,4 +1,4 @@
-import { $ } from 'meteor/jquery';
+import $ from 'jquery';
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
 import { cornerstone, cornerstoneWADOImageLoader } from 'meteor/ohif:cornerstone';

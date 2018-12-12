@@ -1,5 +1,5 @@
-import { $ } from 'meteor/jquery';
-import { _ } from 'meteor/underscore';
+import $ from 'jquery';
+import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 
 // Allow attaching to jQuery selectors

@@ -3,7 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import { OHIF } from 'meteor/ohif:core';
-import { HotkeysContext } from 'meteor/ohif:hotkeys/client/classes/HotkeysContext';
+import { HotkeysContext } from './HotkeysContext';
 
 export class HotkeysManager {
     constructor() {

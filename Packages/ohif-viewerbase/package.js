@@ -13,27 +13,24 @@ Npm.depends({
     'cornerstone-math': '0.1.7',
     'dicom-parser': '1.8.3',
     'cornerstone-wado-image-loader': '2.2.3',
-    'react-redux': '6.0.0'
+    'react-redux': '6.0.0',
+    jquery: '3.3.1'
 });
 
 Package.onUse(function(api) {
     api.versionsFrom('1.7');
 
     api.use(['ecmascript',
-        'standard-app-packages',
+        'templating',
         'http',
-        'jquery',
         'stylus',
-        'momentjs:moment',
     ]);
 
     // OHIF dependencies
     api.use([
-        'ohif:design',
         'ohif:cornerstone',
         'ohif:core',
-        'ohif:cornerstone-settings',
-        'ohif:hotkeys',
+        'ohif:themes'
     ]);
 
     const assets = [
@@ -177,49 +174,38 @@ Package.onUse(function(api) {
 
     api.export('dialogPolyfill', 'client');
 
+    api.addAssets('assets/theme-icons.png', 'client');
+
+    // Importable colors / typography settings
+    api.addFiles([
+        'app.styl',
+        'styles/imports/mixins.styl',
+        'styles/imports/spacings.styl',
+        'styles/imports/variables.styl',
+        'styles/imports/theming.styl',
+        'styles/imports/theme-icons.styl'
+    ], 'client', {
+        isImport: true
+    });
+
+    // Common styles
+    api.addFiles([
+        'styles/common/webfonts.styl',
+        'styles/common/keyframes.styl',
+        'styles/common/global.styl',
+        'styles/common/form.styl',
+        'styles/common/spacings.styl'
+    ], 'client');
+
+    // Component styles
+    api.addFiles([
+        'styles/components/dialog.styl',
+        'styles/components/popover.styl',
+        'styles/components/radio.styl',
+        'styles/components/select2.styl',
+        'styles/components/states.styl'
+    ], 'client');
+
     api.mainModule('main.js', 'client');
 
-});
-
-Package.onTest(function(api) {
-    api.versionsFrom('1.7');
-
-    /*
-   * Really important dependencies to the project
-   */
-    api.use(['ecmascript',
-        'standard-app-packages',
-        'http',
-        'jquery',
-        'mongo',
-        'momentjs:moment',
-    ], 'client');
-
-    // OHIF dependencies
-    api.use([
-        'lookback:logger',
-        'aldeed:simple-schema@1.5.3',
-        'ohif:design',
-        'ohif:core',
-        'ohif:hotkeys',
-    ], 'client');
-
-    /*
-     * Our custom packages
-     */
-    api.use('ohif:viewerbase', 'client');
-
-    /*
-    * Tests framework components
-    */
-    api.use('cultofcoders:mocha');
-    api.use('practicalmeteor:sinon');
-    api.use('practicalmeteor:chai');
-    api.use('lmieulet:meteor-coverage@1.1.4');
-    api.use('xolvio:template-isolator');
-
-    /*
-    * Adding all our tests files
-    */
-    api.addFiles('./tests/client/components/viewer/gridLayout/gridLayout.tests.js', 'client');
 });

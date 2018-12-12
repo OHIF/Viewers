@@ -1,5 +1,4 @@
 import { OHIF } from 'meteor/ohif:core';
-import { Router } from 'meteor/clinical:router';
 
 /**
  * Loads multiple unassociated studies in the Viewer
@@ -14,5 +13,6 @@ OHIF.studylist.viewStudies = () => {
 
     const studyInstanceUids = selectedStudies.map(study => study.studyInstanceUid).join(';');
 
-    Router.go('viewerStudies', { studyInstanceUids });
+    //Router.go('viewerStudies', { studyInstanceUids });
+    console.log('OHIF.studylist.viewStudies');
 };

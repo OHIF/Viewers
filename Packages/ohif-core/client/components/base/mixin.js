@@ -1,5 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 // Create an object to store all the application mixins
 OHIF.mixins = {};

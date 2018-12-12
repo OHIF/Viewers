@@ -1,7 +1,7 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 
 /*
  * group: controls a group and its registered items

@@ -1,6 +1,8 @@
 Npm.depends({
     daterangepicker: '3.0.3',
-    hammerjs: '2.0.8'
+    hammerjs: '2.0.8',
+    moment: '2.22.2',
+    jquery: '3.3.1'
 });
 
 Package.describe({
@@ -12,32 +14,19 @@ Package.describe({
 Package.onUse(function(api) {
     api.versionsFrom('1.7');
 
-    api.use('ecmascript');
-    api.use('standard-app-packages');
-    api.use('jquery', 'client');
+    api.use('ecmascript', 'client');
+    api.use('templating', 'client');
     api.use('stylus', 'client');
     api.use('http', 'client');
     api.use('random', 'client');
-    api.use('silentcicero:jszip', 'client');
-    api.use('aldeed:simple-schema');
-    api.use('aldeed:collection2');
-
-    // Note: MomentJS appears to be required for Bootstrap3 Datepicker, but not a dependency for some reason
-    api.use('momentjs:moment', 'client');
+    api.use('aldeed:simple-schema', 'client');
+    api.use('aldeed:collection2', 'client');
+    api.use('gadicc:blaze-react-component', 'client');
 
     // Our custom packages
-    api.use('ohif:design');
-    api.use('ohif:core');
-    api.use('ohif:servers');
-    api.use('ohif:viewerbase');
-    api.use('ohif:wadoproxy');
-    api.use('ohif:studies');
-
-    // Client and server imports
-    api.addFiles('both/index.js', [ 'client', 'server' ]);
-
-    // Server imports
-    api.addFiles('server/index.js', 'server');
+    api.use('ohif:core', 'client');
+    api.use('ohif:viewerbase', 'client');
+    api.use('ohif:studies', 'client');
 
     // Client imports
     api.addFiles('client/index.js', 'client');

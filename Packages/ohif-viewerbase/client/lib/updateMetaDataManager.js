@@ -1,4 +1,4 @@
-import { _ } from 'meteor/underscore';
+import _ from 'underscore';
 import { getWADORSImageId } from './getWADORSImageId';
 import { WadoRsMetaDataBuilder } from './classes/metadata/WadoRsMetaDataBuilder';
 
