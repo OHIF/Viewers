@@ -106,6 +106,9 @@ export const toolManager = {
             },
             referenceLines: {
                 className: 'ReferenceLinesTool'
+            },
+            bidirectional: {
+                className: 'BidirectionalTool'
             }
         };
 
@@ -169,6 +172,19 @@ export const toolManager = {
 
     getTools() {
         return Object.keys(tools);
+    },
+
+    addTool(toolName, options) {
+        tools[toolName] = options;
+    },
+
+    registerThirdPartyTool(className, toolName, toolClass, configuration) {
+        cornerstoneTools[className] = toolClass;
+
+        tools[toolName] = {
+            className,
+            configuration
+        };
     },
 
     setActiveTool(toolName, button = 'left') {
