@@ -123,7 +123,7 @@ class Viewer extends Component {
     }
 
     render() {
-        return (<Provider store={window.store}>
+        return (<>
                 <div className='viewerDialogs'>
                     <CineDialog/>
                 </div>
@@ -131,7 +131,7 @@ class Viewer extends Component {
                     {/*<ToolbarSection/>*/}
                     <FlexboxLayout studies={this.state.studies}/>
                 </div>
-            </Provider>
+            </>
         );
     }
 }
