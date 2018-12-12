@@ -28,7 +28,8 @@ Meteor.startup(() => {
     cornerstone.metaData.addProvider(metadataProvider.getProvider());
 
     // Target tools configuration
-    OHIF.lesiontracker.configureTargetToolsHandles();
+    // TODO: figured out if we need this here anymore
+    //OHIF.lesiontracker.configureTargetToolsHandles();
 });
 
 Template.viewer.onCreated(() => {
@@ -167,7 +168,8 @@ Template.viewer.onCreated(() => {
     }
 
     //  Enable/Disable Lesion Tracker Tools if the opened study is associated or not
-    OHIF.lesiontracker.toggleLesionTrackerToolsButtons(!!currentTimepointId);
+    // TODO: update the actual function because of toolManager changes
+    // OHIF.lesiontracker.toggleLesionTrackerToolsButtons(!!currentTimepointId);
 
     let firstMeasurementActivated = false;
     instance.autorun(() => {
@@ -373,7 +375,7 @@ Template.viewer.events({
         instance.measurementModifiedHandler(originalEvent, instance);
     },
 
-    'cornerstonemeasurementremoved .imageViewerViewport'(event, instance) {
+    'cornerstonetoolsmeasurementremoved .imageViewerViewport'(event, instance) {
         const originalEvent = event.originalEvent;
         OHIF.measurements.MeasurementHandlers.onRemoved(originalEvent, instance);
     }

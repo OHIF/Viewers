@@ -1,198 +1,91 @@
-import { OHIF } from 'meteor/ohif:core';
-import { Viewerbase } from 'meteor/ohif:viewerbase';
+const BaseAnnotationTool = cornerstoneTools.import('base/BaseAnnotationTool');
+const moveNewHandle = cornerstoneTools.import('manipulators/moveNewHandle');
+const drawArrow = cornerstoneTools.import('drawing/drawArrow');
+const drawHandles = cornerstoneTools.import('drawing/drawHandles');
+const drawTextBox = cornerstoneTools.import('drawing/drawTextBox');
+const pointInsideBoundingBox = cornerstoneTools.import('util/pointInsideBoundingBox');
 
-import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:cornerstone';
-
-const toolType = 'nonTarget';
-
-const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
-const shadowConfig = toolDefaultStates.shadowConfig;
-const textBoxConfig = toolDefaultStates.textBoxConfig;
-
-const configuration = Object.assign({}, shadowConfig, {
-    getMeasurementLocationCallback,
-    changeMeasurementLocationCallback,
-    drawHandles: false,
-    drawHandlesOnHover: true,
-    arrowFirst: true,
-    textBox: textBoxConfig
-});
 
 // Used to cancel tool placement
 const keys = {
-    ESC: 27
+  ESC: 27
 };
 
 const getPosition = eventData => {
-    const event = eventData.event;
-    return {
-        x: event.clientX,
-        y: event.clientY
-    };
+  const event = eventData.event;
+  return {
+      x: event.clientX,
+      y: event.clientY
+  };
 };
 
 // Define a callback to get your text annotation
 // This could be used, e.g. to open a modal
 function getMeasurementLocationCallback(measurementData, eventData) {
-    if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
-        return;
-    }
+  if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
+      return;
+  }
 
-    delete measurementData.isCreating;
+  delete measurementData.isCreating;
 
-    OHIF.ui.showDialog('dialogNonTargetMeasurement', {
-        position: getPosition(eventData),
-        title: 'Select Lesion Location',
-        element: eventData.element,
-        measurementData
-    });
+  OHIF.ui.showDialog('dialogNonTargetMeasurement', {
+      position: getPosition(eventData),
+      title: 'Select Lesion Location',
+      element: eventData.element,
+      measurementData
+  });
 }
 
 function changeMeasurementLocationCallback(measurementData, eventData) {
-    if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
-        return;
-    }
+  if (OHIF.lesiontracker.removeMeasurementIfInvalid(measurementData, eventData)) {
+      return;
+  }
 
-    OHIF.ui.showDialog('dialogNonTargetMeasurement', {
-        position: getPosition(eventData),
-        title: 'Change Lesion Location',
-        element: eventData.element,
-        measurementData,
-        edit: true
-    });
+  OHIF.ui.showDialog('dialogNonTargetMeasurement', {
+      position: getPosition(eventData),
+      title: 'Change Lesion Location',
+      element: eventData.element,
+      measurementData,
+      edit: true
+  });
 }
 
-/// --- Mouse Tool --- ///
-///////// BEGIN ACTIVE TOOL ///////
-function addNewMeasurement(mouseEventData) {
-    const { element } = mouseEventData;
-    const $element = $(element);
+export default class nonTargetTool extends BaseAnnotationTool {
+  constructor(props) {
+    const name = 'nonTarget';
 
-    function doneCallback() {
-        measurementData.active = true;
-        cornerstone.updateImage(element);
-    }
+    // const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
+    const shadowConfig = {};
+    const textBoxConfig = {};
 
-    const measurementData = createNewMeasurement(mouseEventData);
-    measurementData.viewport = cornerstone.getViewport(element);
-
-    const tool = cornerstoneTools[toolType];
-    const config = tool.getConfiguration();
-
-    // associate this data with this imageId so we can render it and manipulate it
-    cornerstoneTools.addToolState(element, toolType, measurementData);
-
-    const disableDefaultHandlers = () => {
-        // since we are dragging to another place to drop the end point, we can just activate
-        // the end point and let the moveHandle move it for us.
-
-        element.removeEventListener('cornerstonetoolsmousemove', tool.mouseMoveCallback);
-        element.removeEventListener('cornerstonetoolsmousedown', tool.mouseDownCallback);
-        element.removeEventListener('cornerstonetoolsmousedownactivate', tool.mouseDownActivateCallback);
-        element.removeEventListener('cornerstonetoolsmousedoubleclick', doubleClickCallback);
-    };
-
-    disableDefaultHandlers();
-
-    // Add a flag for using Esc to cancel tool placement
-    let cancelled = false;
-    const cancelAction = () => {
-        cancelled = true;
-        cornerstoneTools.removeToolState(element, toolType, measurementData);
-    };
-
-    // Add a flag for using Esc to cancel tool placement
-    const keyDownHandler = event => {
-        // If the Esc key was pressed, set the flag to true
-        if (event.which === keys.ESC) {
-            cancelAction();
-        }
-
-        // Don't propagate this keydown event so it can't interfere
-        // with anything outside of this tool
-        return false;
-    };
-
-    // Bind a one-time event listener for the Esc key
-    $(element).one('keydown', keyDownHandler);
-
-    // Bind a mousedown handler to cancel the measurement if it's zero-sized
-    const mousedownHandler = () => {
-        const { start, end } = measurementData.handles;
-        if (!cornerstoneMath.point.distance(start, end)) {
-            cancelAction();
-        }
-    };
-
-    // Bind a one-time event listener for mouse down
-    $element.one('mousedown', mousedownHandler);
-
-    // Keep the current image and create a handler for new rendered images
-    const currentImage = cornerstone.getImage(element);
-    const currentViewport = cornerstone.getViewport(element);
-    const imageRenderedHandler = () => {
-        const newImage = cornerstone.getImage(element);
-
-        // Check if the rendered image changed during measurement creation and delete it if so
-        if (newImage.imageId !== currentImage.imageId) {
-            cornerstone.displayImage(element, currentImage, currentViewport);
-            cancelAction();
-            cornerstone.displayImage(element, newImage, currentViewport);
-        }
-    };
-
-    // Bind the event listener for image rendering
-    element.addEventListener('cornerstoneimagerendered', imageRenderedHandler);
-
-    // Bind the tool deactivation and enlargement handlers
-    element.addEventListener('cornerstonetoolstooldeactivated', cancelAction);
-    $element.one('ohif.viewer.viewport.toggleEnlargement', cancelAction);
-
-    cornerstone.updateImage(element);
-
-    cornerstoneTools.moveNewHandle(mouseEventData, toolType, measurementData, measurementData.handles.end, function() {
-        if (cancelled || cornerstoneTools.anyHandlesOutsideImage(mouseEventData, measurementData.handles)) {
-            // delete the measurement
-            cornerstoneTools.removeToolState(mouseEventData.element, toolType, measurementData);
-        } else {
-            config.getMeasurementLocationCallback(measurementData, mouseEventData, doneCallback);
-        }
-
-        // Unbind the Esc keydown hook
-        $element.off('keydown', keyDownHandler);
-
-        // Unbind the mouse down hook
-        $element.off('mousedown', mousedownHandler);
-
-        // Unbind the event listener for image rendering
-        element.removeEventListener('cornerstoneimagerendered', imageRenderedHandler);
-
-        // Unbind the tool deactivation and enlargement handlers
-        element.removeEventListener('cornerstonetoolstooldeactivated', cancelAction);
-        $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
-
-        // Disable the default handlers and re-enable again
-        disableDefaultHandlers();
-        element.addEventListener('cornerstonetoolsmousemove', tool.mouseMoveCallback);
-        element.addEventListener('cornerstonetoolsmousedown', tool.mouseDownCallback);
-        element.addEventListener('cornerstonetoolsmousedownactivate', tool.mouseDownActivateCallback);
-        element.addEventListener('cornerstonetoolsmousedoubleclick', doubleClickCallback);
-
-        cornerstone.updateImage(element);
+    const configuration = Object.assign({}, shadowConfig, {
+        getMeasurementLocationCallback,
+        changeMeasurementLocationCallback,
+        drawHandles: false,
+        drawHandlesOnHover: true,
+        arrowFirst: true,
+        textBox: textBoxConfig
     });
-}
 
-function createNewMeasurement(mouseEventData) {
-    const imageId = mouseEventData.image.imageId;
+    super({
+      name,
+      supportedInteractionTypes: ['Mouse', 'Touch'],
+      configuration
+    });
+  }
+
+  createNewMeasurement = (event) => {
+    const eventData = event.detail;
+    const { image, currentPoints } = eventData;
+    const { imageId } = image;
 
     // Get studyInstanceUid
     const study = cornerstone.metaData.get('study', imageId);
-    const studyInstanceUid = study.studyInstanceUid;
-    const patientId = study.patientId;
+    const { studyInstanceUid, patientId } = study;
 
     // Get seriesInstanceUid
     const series = cornerstone.metaData.get('series', imageId);
-    const seriesInstanceUid = series.seriesInstanceUid;
+    const { seriesInstanceUid } = series;
 
     // create the measurement data for this tool with the end handle activated
     const measurementData = {
@@ -201,22 +94,22 @@ function createNewMeasurement(mouseEventData) {
         active: true,
         handles: {
             start: {
-                x: mouseEventData.currentPoints.image.x,
-                y: mouseEventData.currentPoints.image.y,
+                x: currentPoints.image.x,
+                y: currentPoints.image.y,
                 allowedOutsideImage: true,
                 highlight: true,
                 active: false
             },
             end: {
-                x: mouseEventData.currentPoints.image.x,
-                y: mouseEventData.currentPoints.image.y,
+                x: currentPoints.image.x,
+                y: currentPoints.image.y,
                 allowedOutsideImage: true,
                 highlight: true,
                 active: false
             },
             textBox: {
-                x: mouseEventData.currentPoints.image.x - 50,
-                y: mouseEventData.currentPoints.image.y - 50,
+                x: currentPoints.image.x - 50,
+                y: currentPoints.image.y - 50,
                 active: false,
                 movesIndependently: false,
                 drawnIndependently: true,
@@ -234,30 +127,28 @@ function createNewMeasurement(mouseEventData) {
     };
 
     return measurementData;
-}
-///////// END ACTIVE TOOL ///////
+  };
 
-function pointNearTool(element, data, coords) {
+  pointNearTool = (element, data, coords) => {
     const lineSegment = {
         start: cornerstone.pixelToCanvas(element, data.handles.start),
         end: cornerstone.pixelToCanvas(element, data.handles.end)
     };
     const distanceToPoint = cornerstoneMath.lineSegment.distanceToPoint(lineSegment, coords);
 
-    if (cornerstoneTools.pointInsideBoundingBox(data.handles.textBox, coords)) {
+    if (pointInsideBoundingBox(data.handles.textBox, coords)) {
         return true;
     }
 
     return distanceToPoint < 25;
-}
+  }
 
-///////// BEGIN IMAGE RENDERING ///////
-function onImageRendered(e) {
-    const eventData = e.detail;
+  renderToolData = (event) => {
+    const eventData = event.detail;
     const { element } = eventData;
 
     // if we have no toolData for this element, return immediately as there is nothing to do
-    const toolData = cornerstoneTools.getToolState(element, toolType);
+    const toolData = cornerstoneTools.getToolState(element, this.name);
     if (!toolData) {
         return;
     }
@@ -268,7 +159,7 @@ function onImageRendered(e) {
 
     let color;
     const lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-    const config = cornerstoneTools.nonTarget.getConfiguration();
+    const config = this.configuration;
 
     for (let i = 0; i < toolData.data.length; i++) {
         const data = toolData.data[i];
@@ -296,20 +187,20 @@ function onImageRendered(e) {
         const handleEndCanvas = cornerstone.pixelToCanvas(element, data.handles.end);
         const canvasTextLocation = cornerstone.pixelToCanvas(element, data.handles.textBox);
 
-        cornerstoneTools.drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
+        drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
 
         if (config.drawHandles) {
-            cornerstoneTools.drawHandles(context, eventData, data.handles, color);
+            drawHandles(context, eventData, data.handles, color);
         } else if (config.drawHandlesOnHover && data.handles.start.active) {
-            cornerstoneTools.drawHandles(context, eventData, [ data.handles.start ], color);
+            drawHandles(context, eventData, [ data.handles.start ], color);
         } else if (config.drawHandlesOnHover && data.handles.end.active) {
-            cornerstoneTools.drawHandles(context, eventData, [ data.handles.end ], color);
+            drawHandles(context, eventData, [ data.handles.end ], color);
         }
 
         // Draw the text
         if (data.measurementNumber) {
             const textLine = `Non-Target ${data.measurementNumber}`;
-            const boundingBox = cornerstoneTools.drawTextBox(context, textLine, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
+            const boundingBox = drawTextBox(context, textLine, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
             data.handles.textBox.boundingBox = boundingBox;
 
             OHIF.cornerstone.repositionTextBox(eventData, data, config.textBox);
@@ -364,52 +255,128 @@ function onImageRendered(e) {
 
         context.restore();
     }
-}
+  };
 
-// ---- Touch tool ----
+  addNewMeasurement = (event) => {
+    const eventData = event.detail;
+    const { element } = eventData;
+    const $element = $(element);
 
-///////// BEGIN ACTIVE TOOL ///////
-function addNewMeasurementTouch(touchEventData) {
-    const element = touchEventData.element;
-
-    function doneCallback() {
+    doneCallback = () => {
         measurementData.active = true;
         cornerstone.updateImage(element);
     }
 
-    const measurementData = createNewMeasurement(touchEventData);
-    cornerstoneTools.addToolState(element, toolType, measurementData);
-    element.removeEventListener('cornerstonetoolstouchdrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
-    element.removeEventListener('cornerstonetoolsdragstartactive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
-    element.removeEventListener('cornerstonetoolstap', cornerstoneTools.nonTargetTouch.tapCallback);
-    const config = cornerstoneTools.nonTarget.getConfiguration();
+    const measurementData = this.createNewMeasurement(event);
+    measurementData.viewport = cornerstone.getViewport(element);
+
+    const tool = cornerstoneTools[this.name];
+    const config = this.configuration;
+
+    // associate this data with this imageId so we can render it and manipulate it
+    cornerstoneTools.addToolState(element, this.name, measurementData);
+
+    // Add a flag for using Esc to cancel tool placement
+    let cancelled = false;
+    const cancelAction = () => {
+        cancelled = true;
+        cornerstoneTools.removeToolState(element, this.name, measurementData);
+    };
+
+    // Add a flag for using Esc to cancel tool placement
+    const keyDownHandler = event => {
+        // If the Esc key was pressed, set the flag to true
+        if (event.which === keys.ESC) {
+            cancelAction();
+        }
+
+        // Don't propagate this keydown event so it can't interfere
+        // with anything outside of this tool
+        return false;
+    };
+
+    // Bind a one-time event listener for the Esc key
+    $(element).one('keydown', keyDownHandler);
+
+    // Bind a mousedown handler to cancel the measurement if it's zero-sized
+    const mousedownHandler = () => {
+        const { start, end } = measurementData.handles;
+        if (!cornerstoneMath.point.distance(start, end)) {
+            cancelAction();
+        }
+    };
+
+    // Bind a one-time event listener for mouse down
+    $element.one('mousedown', mousedownHandler);
+
+    // Keep the current image and create a handler for new rendered images
+    const currentImage = cornerstone.getImage(element);
+    const currentViewport = cornerstone.getViewport(element);
+    const imageRenderedHandler = () => {
+        const newImage = cornerstone.getImage(element);
+
+        // Check if the rendered image changed during measurement creation and delete it if so
+        if (newImage.imageId !== currentImage.imageId) {
+            cornerstone.displayImage(element, currentImage, currentViewport);
+            cancelAction();
+            cornerstone.displayImage(element, newImage, currentViewport);
+        }
+    };
+
+    // Bind the event listener for image rendering
+    element.addEventListener('cornerstoneimagerendered', imageRenderedHandler);
+
+    // Bind the tool deactivation and enlargement handlers
+    element.addEventListener('cornerstonetoolstooldeactivated', cancelAction);
+    $element.one('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
     cornerstone.updateImage(element);
 
-    cornerstoneTools.moveNewHandleTouch(touchEventData, toolType, measurementData, measurementData.handles.end, function() {
-        cornerstone.updateImage(element);
-
-        if (cornerstoneTools.anyHandlesOutsideImage(touchEventData, measurementData.handles)) {
+    moveNewHandle(
+      eventData,
+      this.name, 
+      measurementData, 
+      measurementData.handles.end, 
+      function() {
+        if (cancelled || cornerstoneTools.anyHandlesOutsideImage(eventData, measurementData.handles)) {
             // delete the measurement
-            cornerstoneTools.removeToolState(element, toolType, measurementData);
+            cornerstoneTools.removeToolState(eventData.element, this.name, measurementData);
+        } else {
+            config.getMeasurementLocationCallback(measurementData, eventData, doneCallback);
         }
 
-        config.getMeasurementLocationCallback(measurementData, touchEventData, doneCallback);
+        // Unbind the Esc keydown hook
+        $element.off('keydown', keyDownHandler);
 
-        element.addEventListener('cornerstonetoolstouchdrag', cornerstoneTools.nonTargetTouch.touchMoveHandle);
-        element.addEventListener('cornerstonetoolsdragstartactive', cornerstoneTools.nonTargetTouch.touchDownActivateCallback);
-        element.addEventListener('cornerstonetoolstap', cornerstoneTools.nonTargetTouch.tapCallback);
+        // Unbind the mouse down hook
+        $element.off('mousedown', mousedownHandler);
+
+        // Unbind the event listener for image rendering
+        element.removeEventListener('cornerstoneimagerendered', imageRenderedHandler);
+
+        // Unbind the tool deactivation and enlargement handlers
+        element.removeEventListener('cornerstonetoolstooldeactivated', cancelAction);
+        $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
+
+        // Disable the default handlers and re-enable again
+        disableDefaultHandlers();
+        element.addEventListener('cornerstonetoolsmousemove', tool.mouseMoveCallback);
+        element.addEventListener('cornerstonetoolsmousedown', tool.mouseDownCallback);
+        element.addEventListener('cornerstonetoolsmousedownactivate', tool.mouseDownActivateCallback);
+        element.addEventListener('cornerstonetoolsmousedoubleclick', doubleClickCallback);
+
+        cornerstone.updateImage(element);
     });
-}
+  }
 
-function doubleClickCallback(e) {
-    const eventData = e.detail;
-    const { element } = eventData;
+  doubleClickCallback = (event) => {
+    const eventData = event.detail;
+    const { element, currentPoints } = eventData;
     let data;
 
-    function doneCallback(data, deleteTool) {
+    doneCallback = (data, deleteTool) => {
         if (deleteTool === true) {
-            cornerstoneTools.removeToolState(element, toolType, data);
+            cornerstoneTools.removeToolState(element, this.name, data);
             cornerstone.updateImage(element);
             return;
         }
@@ -418,7 +385,9 @@ function doubleClickCallback(e) {
         cornerstone.updateImage(element);
     }
 
-    if (e.data && e.data.mouseButtonMask && !cornerstoneTools.isMouseButtonEnabled(eventData.which, e.data.mouseButtonMask)) {
+    if (event.data && 
+        event.data.mouseButtonMask && 
+        !isMouseButtonEnabled(eventData.which, event.data.mouseButtonMask)) {
         return false;
     }
 
@@ -429,10 +398,9 @@ function doubleClickCallback(e) {
         return;
     }
 
-    const config = cornerstoneTools.nonTarget.getConfiguration();
-
-    const coords = eventData.currentPoints.canvas;
-    const toolData = cornerstoneTools.getToolState(element, toolType);
+    const config = this.configuration;
+    const coords = currentPoints.canvas;
+    const toolData = cornerstoneTools.getToolState(element, this.name);
 
     // now check to see if there is a handle we can move
     if (!toolData) {
@@ -447,28 +415,9 @@ function doubleClickCallback(e) {
             // Allow relabelling via a callback
             config.changeMeasurementLocationCallback(data, eventData, doneCallback);
 
-            e.stopImmediatePropagation();
+            event.stopImmediatePropagation();
             return false;
         }
     }
-}
-
-cornerstoneTools.nonTarget = cornerstoneTools.mouseButtonTool({
-    addNewMeasurement,
-    createNewMeasurement,
-    onImageRendered,
-    pointNearTool,
-    toolType,
-    mouseDoubleClickCallback: doubleClickCallback
-});
-
-cornerstoneTools.nonTarget.setConfiguration(configuration);
-
-cornerstoneTools.nonTargetTouch = cornerstoneTools.touchTool({
-    addNewMeasurement: addNewMeasurementTouch,
-    createNewMeasurement,
-    onImageRendered,
-    pointNearTool,
-    toolType
-    // pressCallback: doubleClickCallback
-});
+  }
+};

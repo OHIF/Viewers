@@ -303,7 +303,9 @@ Template.studylistResult.onDestroyed(() => {
     const instance = Template.instance();
 
     // Destroy the daterangepicker to prevent residual elements on DOM
-    instance.datePicker.remove();
+    if(instance.datePicker){
+        instance.datePicker.remove();
+    }
 });
 
 function resetSortingColumns(instance, sortingColumn) {
