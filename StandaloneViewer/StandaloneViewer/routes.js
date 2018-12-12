@@ -94,6 +94,14 @@ if (Meteor.isClient) {
             oReq.open('GET', url);
             oReq.setRequestHeader('Accept', 'application/json')
 
+            // Add token in the request authorization header
+            // if a token fragment parameter is present
+            const tokenParam = this.params.hash ? this.params.hash.match(/(?:token)=(.*?)(?:&|$)/) : null;
+            if (tokenParam) {
+                OHIF.viewer.authorizationToken = "Bearer " + tokenParam[1];
+                oReq.setRequestHeader('Authorization', OHIF.viewer.authorizationToken);
+            }
+
             // Fire the request to the server
             oReq.send();
         },
