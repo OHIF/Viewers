@@ -12,7 +12,7 @@ import './getLocationLabel';
 import './getParentToolData';
 import './getTimepointName';
 import './getToolConfiguration';
-import './hangingProtocolCustomizations';
+//import './hangingProtocolCustomizations';
 import './isNewLesionsMeasurement';
 import './isSaveDisabled';
 import './MeasurementHandlers';

@@ -68,11 +68,9 @@ ohif:cornerstone@0.0.1
 ohif:hanging-protocols@0.0.1
 ohif:measurement-table@0.0.1
 ohif:measurements@0.0.1
-ohif:studies@0.0.1
 ohif:study-list@0.0.1
 ohif:themes@0.0.1
 ohif:themes-common@0.0.1
-ohif:user-oidc@0.0.1
 ohif:viewerbase@0.0.1
 ordered-dict@1.1.0
 promise@0.11.2

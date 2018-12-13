@@ -1,5 +1,4 @@
-// OHIF Modules
-import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { OHIF } from 'meteor/ohif:core';
 
 // Local imports
 import { validate } from '../lib/validate.js';
@@ -8,7 +7,8 @@ import '../customAttributes';
 /**
  * Import Constants
  */
-const { OHIFError, metadata: { StudySummary, InstanceMetadata } } = Viewerbase;
+const { OHIFError } = OHIF.classes;
+const { StudySummary, InstanceMetadata } = OHIF.metadata;
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
@@ -53,7 +53,7 @@ const match = (metadataInstance, rules) => {
             [attribute]: rule.constraint
         };
 
-        // Create a single attribute object to be validated, since metadataInstance is an 
+        // Create a single attribute object to be validated, since metadataInstance is an
         // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
         const attributeValue = customAttributeExists ? metadataInstance.getCustomAttribute(attribute) : metadataInstance.getTagValue(attribute);
         const attributeMap = {

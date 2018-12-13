@@ -158,7 +158,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.styl', 'client');
     api.addFiles('client/components/viewer/studySeriesQuickSwitch/studySeriesQuickSwitch.js', 'client');
 
-    api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepoint.html', 'client');
+    /*api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepoint.html', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepoint.styl', 'client');
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepoint.js', 'client');
 
@@ -167,7 +167,7 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointBrowser.js', 'client');
 
     api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.html', 'client');
-    api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.js', 'client');
+    api.addFiles('client/components/viewer/studyTimepointBrowser/studyTimepointStudy.js', 'client');*/
 
     api.addFiles('client/components/viewer/windowLevelPresets/form.html', 'client');
     api.addFiles('client/components/viewer/windowLevelPresets/form.js', 'client');

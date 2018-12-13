@@ -1,7 +1,7 @@
-import { Viewerbase } from 'meteor/ohif:viewerbase';
+import { StudyMetadata } from './StudyMetadata';
 import { OHIFSeriesMetadata } from './OHIFSeriesMetadata';
 
-export class OHIFStudyMetadata extends Viewerbase.metadata.StudyMetadata {
+export class OHIFStudyMetadata extends StudyMetadata {
 
     /**
      * @param {Object} Study object.

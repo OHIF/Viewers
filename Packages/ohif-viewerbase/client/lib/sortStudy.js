@@ -1,4 +1,6 @@
-import { OHIFError } from './classes/OHIFError';
+import { OHIF } from 'meteor/ohif:core';
+
+const { OHIFError } = OHIF.classes;
 
 /**
  * Sorts the series and instances inside a study instance by their series

@@ -1,4 +1,4 @@
-
+// TODO: Deprecate since we have the same thing in dcmjs?
 const NUMBER = 'number';
 const STRING = 'string';
 const REGEX_TAG = /^x[0-9a-fx]{8}$/;

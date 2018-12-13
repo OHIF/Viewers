@@ -1,10 +1,12 @@
 import { OHIF } from 'meteor/ohif:core';
 import { getImageId } from './getImageId';
-import { OHIFError } from './classes/OHIFError';
 
 let stackMap = {};
 let configuration = {};
 const stackUpdatedCallbacks = [];
+
+const { OHIFError } = OHIF.classes;
+
 
 /**
  * Loop through the current series and add metadata to the

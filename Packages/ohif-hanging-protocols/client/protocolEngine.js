@@ -15,7 +15,8 @@ import './customViewportSettings';
  * Import Constants
  */
 
-const { OHIFError, metadata: { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary } } = OHIF.viewerbase;
+const { OHIFError } = OHIF.classes;
+const { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary } = OHIF.metadata;
 
 // Useful constants
 const ABSTRACT_PRIOR_VALUE = 'abstractPriorValue';

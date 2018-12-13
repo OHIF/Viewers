@@ -91,7 +91,7 @@ class Viewer extends Component {
         OHIF.viewer.StudyMetadataList.removeAll();
 
         OHIF.viewer.data.studyInstanceUids = [];
-        
+
         const studies = this.props.studies;
         studies.forEach(study => {
             const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);

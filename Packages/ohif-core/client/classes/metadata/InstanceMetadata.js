@@ -1,5 +1,5 @@
 import { Metadata } from './Metadata';
-import { OHIFError } from '../OHIFError';
+import { OHIFError } from '../OHIFError.js';
 
 /**
  * ATTENTION! This class should never depend on StudyMetadata or SeriesMetadata classes as this could
@@ -93,7 +93,7 @@ export class InstanceMetadata extends Metadata {
         let value = this.getTagValue(tagOrProperty, defaultValue);
 
         if (typeof value !== STRING && typeof value !== UNDEFINED) {
-            value = value.toString(); 
+            value = value.toString();
         }
 
         return InstanceMetadata.getIndexedValue(value, index, defaultValue);
@@ -108,7 +108,7 @@ export class InstanceMetadata extends Metadata {
             value.forEach( (val, idx) => {
                 value[idx] = parseFloat(val);
             });
-            
+
             return value;
         }
 
@@ -195,7 +195,7 @@ export class InstanceMetadata extends Metadata {
      * Get an value based that can be index based. This function is called by all getters. See above functions.
      *     - If value is a String and has indexes:
      *         - If undefined index: returns an array of the split values.
-     *         - If defined index: 
+     *         - If defined index:
      *             - If invalid: returns defaultValue
      *             - If valid: returns the indexed value
      *      - If value is not a String, returns default value.

@@ -13,6 +13,8 @@ const { DICOMWeb } = OHIF;
  * @returns {Array} Series List
  */
 function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
+    const { DICOMWeb } = OHIF;
+
     var seriesMap = {};
     var seriesList = [];
 
@@ -67,7 +69,7 @@ function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * @throws ECONNREFUSED
  * @returns {{wadoUriRoot: String, studyInstanceUid: String, seriesList: Array}}
  */
-OHIF.studies.services.QIDO.Instances = function(server, studyInstanceUid) {
+export default function Instances(server, studyInstanceUid) {
     // TODO: Are we using this function anywhere?? Can we remove it?
 
     const config = {

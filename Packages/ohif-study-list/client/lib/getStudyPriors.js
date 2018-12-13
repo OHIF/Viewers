@@ -1,7 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
 
-const { StudyMetadata, StudySummary } = OHIF.viewerbase.metadata;
+const { StudyMetadata, StudySummary } = OHIF.metadata;
 const PATIENT_ID = 'x00100020';
 const STUDY_DATE = 'x00080020';
 

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { ImageSet } from './classes/ImageSet';
 import { isImage } from './isImage';
 import { OHIF } from 'meteor/ohif:core';
 
@@ -11,6 +10,7 @@ const isMultiFrame = instance => {
 const makeDisplaySet = (series, instances) => {
     const instance = instances[0];
 
+    const { ImageSet } = OHIF.classes;
     const imageSet = new ImageSet(instances);
     const seriesData = series.getData();
 

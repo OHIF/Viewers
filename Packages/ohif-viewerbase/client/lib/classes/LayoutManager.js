@@ -674,3 +674,4 @@ export class LayoutManager {
         return this.layoutProps.row !== 1 && this.layoutProps.columns !== 1;
     }
 }
+

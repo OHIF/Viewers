@@ -1,6 +1,6 @@
 import _ from 'underscore';
+import { OHIF } from 'meteor/ohif:core';
 import { getWADORSImageId } from './getWADORSImageId';
-import { WadoRsMetaDataBuilder } from './classes/metadata/WadoRsMetaDataBuilder';
 
 function getRadiopharmaceuticalInfoMetaData(instance) {
     const radiopharmaceuticalInfo = instance.radiopharmaceuticalInfo;
@@ -8,6 +8,7 @@ function getRadiopharmaceuticalInfoMetaData(instance) {
     if ((instance.modality !== 'PT') || !radiopharmaceuticalInfo) {
         return;
     }
+    const { WadoRsMetaDataBuilder } = OHIF.metadata;
 
     return new WadoRsMetaDataBuilder()
         .addTag('00181072', radiopharmaceuticalInfo.radiopharmaceuticalStartTime)
@@ -17,6 +18,7 @@ function getRadiopharmaceuticalInfoMetaData(instance) {
 }
 
 const getWadoRsInstanceMetaData = (study, series, instance) => {
+    const { WadoRsMetaDataBuilder } = OHIF.metadata;
     return new WadoRsMetaDataBuilder()
         .addTag('00080016', instance.sopClassUid)
         .addTag('00080018', instance.sopInstanceUid)

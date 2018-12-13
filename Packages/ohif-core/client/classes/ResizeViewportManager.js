@@ -1,7 +1,7 @@
 import { Session } from 'meteor/session';
 import $ from 'jquery';
 import { OHIF } from 'meteor/ohif:core';
-import { getInstanceClassDefaultViewport } from '../instanceClassSpecificViewport';
+//import { getInstanceClassDefaultViewport } from '../instanceClassSpecificViewport';
 
 // Manage resizing viewports triggered by window resize
 export class ResizeViewportManager {
@@ -96,12 +96,12 @@ export class ResizeViewportManager {
 
         cornerstone.resize(element, fitToWindow);
 
-        if (enabledElement.fitToWindow === false) {
+        /*if (enabledElement.fitToWindow === false) {
             const imageId = enabledElement.image.imageId;
             const instance = cornerstone.metaData.get('instance', imageId);
             const instanceClassViewport = getInstanceClassDefaultViewport(instance, enabledElement, imageId);
             cornerstone.setViewport(element, instanceClassViewport);
-        }
+        }*/
     }
 
     // Resize each viewport element

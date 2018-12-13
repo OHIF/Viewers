@@ -29,7 +29,6 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('ohif:cornerstone');
     api.use('ohif:core');
-    api.use('ohif:studies');
     api.use('ohif:viewerbase');
 
     // Client imports

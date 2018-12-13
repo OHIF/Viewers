@@ -3,7 +3,9 @@ Npm.depends({
     'jquery.hotkeys': '0.1.0',
     loglevel: '1.4.1',
     jquery: '3.3.1',
-    underscore: "1.9.1"
+    underscore: "1.9.1",
+    'dicomweb-client': '0.3.2',
+    'xhr2': '0.1.4'
 });
 
 Package.describe({

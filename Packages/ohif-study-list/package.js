@@ -26,7 +26,6 @@ Package.onUse(function(api) {
     // Our custom packages
     api.use('ohif:core', 'client');
     api.use('ohif:viewerbase', 'client');
-    api.use('ohif:studies', 'client');
 
     // Client imports
     api.addFiles('client/index.js', 'client');

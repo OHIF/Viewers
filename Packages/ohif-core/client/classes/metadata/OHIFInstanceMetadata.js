@@ -1,7 +1,5 @@
-import { Viewerbase } from 'meteor/ohif:viewerbase';
-
-const InstanceMetadata = Viewerbase.metadata.InstanceMetadata;
-const DICOMTagDescriptions = Viewerbase.DICOMTagDescriptions;
+import { InstanceMetadata } from './InstanceMetadata';
+import { DICOMTagDescriptions } from '../../lib/DICOMTagDescriptions.js';
 
 export class OHIFInstanceMetadata extends InstanceMetadata {
 

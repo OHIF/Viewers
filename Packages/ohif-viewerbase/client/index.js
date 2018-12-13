@@ -95,10 +95,6 @@ Viewerbase.getStudyMetadata = getStudyMetadata;
  * Exported Namespaces (sub-namespaces)
  */
 
-// imageViewerViewportData.*
-import { imageViewerViewportData } from './lib/imageViewerViewportData';
-Viewerbase.imageViewerViewportData = imageViewerViewportData;
-
 // panelNavigation.*
 import { panelNavigation } from './lib/panelNavigation';
 Viewerbase.panelNavigation = panelNavigation;
@@ -126,10 +122,6 @@ Viewerbase.viewportOverlayUtils = viewportOverlayUtils;
 // viewportUtils.*
 import { viewportUtils } from './lib/viewportUtils';
 Viewerbase.viewportUtils = viewportUtils;
-
-// thumbnailDragHandlers.*
-import { thumbnailDragHandlers } from './lib/thumbnailDragHandlers';
-Viewerbase.thumbnailDragHandlers = thumbnailDragHandlers;
 
 // dialogUtils.*
 import { dialogUtils } from './lib/dialogUtils';
@@ -186,68 +178,6 @@ Viewerbase.helpers = helpers;
 // sopClassDictionary
 import { sopClassDictionary } from './lib/sopClassDictionary';
 Viewerbase.sopClassDictionary = sopClassDictionary;
-
-// dicomTagDescriptions
-import { DICOMTagDescriptions } from './lib/DICOMTagDescriptions';
-Viewerbase.DICOMTagDescriptions = DICOMTagDescriptions;
-
-/**
- * Exported Classes
- */
-
-// ImageSet
-import { ImageSet } from './lib/classes/ImageSet';
-Viewerbase.ImageSet = ImageSet;
-
-// LayoutManager
-import { LayoutManager } from './lib/classes/LayoutManager';
-Viewerbase.LayoutManager = LayoutManager;
-
-// StudyPrefetcher
-import { StudyPrefetcher } from './lib/classes/StudyPrefetcher';
-Viewerbase.StudyPrefetcher = StudyPrefetcher;
-
-// ResizeViewportManager
-import { ResizeViewportManager } from './lib/classes/ResizeViewportManager';
-Viewerbase.ResizeViewportManager = ResizeViewportManager;
-
-// StudyLoadingListener
-import { StudyLoadingListener } from './lib/classes/StudyLoadingListener';
-Viewerbase.StudyLoadingListener = StudyLoadingListener;
-
-// StackLoadingListener
-import { StackLoadingListener } from './lib/classes/StudyLoadingListener';
-Viewerbase.StackLoadingListener = StackLoadingListener;
-
-// DICOMFileLoadingListener
-import { DICOMFileLoadingListener } from './lib/classes/StudyLoadingListener';
-Viewerbase.DICOMFileLoadingListener = DICOMFileLoadingListener;
-
-// StudyMetadata, SeriesMetadata, InstanceMetadata
-import { StudyMetadata } from './lib/classes/metadata/StudyMetadata';
-import { SeriesMetadata } from './lib/classes/metadata/SeriesMetadata';
-import { InstanceMetadata } from './lib/classes/metadata/InstanceMetadata';
-import { StudySummary } from './lib/classes/metadata/StudySummary';
-Viewerbase.metadata = { StudyMetadata, SeriesMetadata, InstanceMetadata, StudySummary };
-
-import { plugins } from './lib/classes/plugins/';
-Viewerbase.plugins = plugins;
-
-// TypeSafeCollection
-import { TypeSafeCollection } from './lib/classes/TypeSafeCollection';
-Viewerbase.TypeSafeCollection = TypeSafeCollection;
-
-// OHIFError
-import { OHIFError } from './lib/classes/OHIFError';
-Viewerbase.OHIFError = OHIFError;
-
-// StackImagePositionOffsetSynchronizer
-import { StackImagePositionOffsetSynchronizer } from './lib/classes/StackImagePositionOffsetSynchronizer';
-Viewerbase.StackImagePositionOffsetSynchronizer = StackImagePositionOffsetSynchronizer;
-
-// StudyMetadataSource
-import { StudyMetadataSource } from './lib/classes/StudyMetadataSource';
-Viewerbase.StudyMetadataSource = StudyMetadataSource;
 
 import redux from './lib/redux/';
 Viewerbase.redux = redux;

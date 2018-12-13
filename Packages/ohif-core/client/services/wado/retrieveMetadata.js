@@ -3,7 +3,12 @@ import DICOMwebClient from 'dicomweb-client';
 
 import { parseFloatArray } from '../../lib/parseFloatArray';
 
-const { DICOMWeb } = OHIF;
+WADOProxy = {
+    convertURL: (url, server) => {
+        // TODO: Remove all WADOProxy stuff from this file
+        return url;
+    }
+}
 
 /**
  * Simple cache schema for retrieved color palettes.
@@ -146,6 +151,8 @@ function getPaletteColor(server, instance, tag, lutDescriptor) {
  * @returns {String} The ReferenceSOPInstanceUID
  */
 async function getPaletteColors(server, instance, lutDescriptor) {
+    const { DICOMWeb } = OHIF;
+
     let paletteUID = DICOMWeb.getString(instance['00281199']);
 
     return new Promise((resolve, reject) => {
@@ -195,6 +202,8 @@ function getFrameIncrementPointer(element) {
 }
 
 function getRadiopharmaceuticalInfo(instance) {
+    const { DICOMWeb } = OHIF;
+
     const modality = DICOMWeb.getString(instance['00080060']);
 
     if (modality !== 'PT') {
@@ -225,6 +234,8 @@ function getRadiopharmaceuticalInfo(instance) {
  * @returns {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
 async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
+    const { DICOMWeb } = OHIF;
+
     if (!resultData.length) {
         return;
     }
@@ -362,7 +373,7 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * @param studyInstanceUid
  * @returns {Promise}
  */
-OHIF.studies.services.WADO.RetrieveMetadata = async function(server, studyInstanceUid) {
+async function RetrieveMetadata (server, studyInstanceUid) {
     const config = {
         url: server.wadoRoot,
         headers: OHIF.DICOMWeb.getAuthorizationHeader()
@@ -376,3 +387,5 @@ OHIF.studies.services.WADO.RetrieveMetadata = async function(server, studyInstan
         return resultDataToStudyMetadata(server, studyInstanceUid, result);
     });
 };
+
+export default RetrieveMetadata;

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { OHIF } from 'meteor/ohif:core';
-import Viewer from "./viewer/viewer";
+import ViewerRouting from "./ViewerRouting.js";
+import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
 import './App.css';
 
 const reload = () => window.location.reload();
@@ -46,12 +47,24 @@ class App extends Component {
                     store={this.props.store}
                 />
                 <Route
-                    exact
-                    path="/viewer"
-                    component={Viewer}
+                    path="/viewer/:studyInstanceUids"
+                    component={ViewerRouting}
                     /*auth={this.props.auth}*/
                     store={this.props.store}
                 />
+                <Route
+                    path="/study/:studyInstanceUid/series/:seriesInstanceUids"
+                    component={ViewerRouting}
+                    /*auth={this.props.auth}*/
+                    store={this.props.store}
+                />
+                <Route
+                    path="/IHEInvokeImageDisplay"
+                    component={IHEInvokeImageDisplay}
+                    /*auth={this.props.auth}*/
+                    store={this.props.store}
+                />
+
                 {/*<Route path="/silent-refresh.html" onEnter={reload} />
                 <Route path="/logout-redirect.html" onEnter={reload} />*/}
                 <Route render={() =>

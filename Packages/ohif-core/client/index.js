@@ -1,3 +1,4 @@
+import './studies.js';
 import './lib';
 import './helpers';
 import './commands';
@@ -7,6 +8,8 @@ import './ui';
 import './header.js';
 import './schema.js';
 import './utils/';
+import './metadata.js';
 import './startup.js';
 import './classes/';
 import './cornerstone.js';
+import './classes.js';

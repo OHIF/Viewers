@@ -4,8 +4,7 @@ import $ from 'jquery';
 import _ from 'underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { OHIFError } from './OHIFError';
-import { StackManager } from '../StackManager.js';
-import { getImageId } from '../getImageId.js';
+//import { getImageId } from '../getImageId.js';
 
 export class StudyPrefetcher {
 
@@ -88,6 +87,8 @@ export class StudyPrefetcher {
             // Check if this is a clip or not
             const activeViewportIndex = window.store.getState().viewports.activeViewport;
             const displaySetInstanceUid = OHIF.viewer.data.loadedSeriesData[activeViewportIndex].displaySetInstanceUid;
+
+            const { StackManager } = OHIF.viewerbase;
 
             const stack = StackManager.findStack(displaySetInstanceUid);
 
@@ -295,7 +296,7 @@ export class StudyPrefetcher {
     getImageIdsFromDisplaySet(displaySet) {
         const imageIds = [];
 
-        displaySet.images.forEach(image => {
+        /*displaySet.images.forEach(image => {
             const numFrames = image.numFrames;
             if (numFrames > 1) {
                 for (let i = 0; i < numFrames; i++) {
@@ -306,9 +307,9 @@ export class StudyPrefetcher {
                 let imageId = getImageId(image);
                 imageIds.push(imageId);
             }
-        });
+        });*/
 
-        return imageIds;
+        return [];//imageIds;
     }
 
     filterCachedImageIds(imageIds) {

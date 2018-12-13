@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export class WadoRsMetaDataBuilder {
     constructor() {
         this.tags = {};

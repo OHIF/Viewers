@@ -1,5 +1,4 @@
 import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
 
 // Important metadata classes
 const { OHIFError, metadata } = OHIF.viewerbase;

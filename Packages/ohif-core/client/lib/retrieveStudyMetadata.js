@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
-import 'meteor/ohif:viewerbase';
 
 // Define the StudyMetaDataPromises object. This is used as a cache to store study meta data
 // promises and prevent unnecessary subsequent calls to the server

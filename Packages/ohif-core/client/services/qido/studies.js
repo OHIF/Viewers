@@ -88,6 +88,8 @@ function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
  * @returns {Array} An array of Study MetaData objects
  */
 function resultDataToStudies(resultData) {
+    const { DICOMWeb } = OHIF;
+
     const studies = [];
 
     if (!resultData || !resultData.length) return;
@@ -116,7 +118,7 @@ function resultDataToStudies(resultData) {
     return studies;
 }
 
-OHIF.studies.services.QIDO.Studies = (server, filter) => {
+export default function Studies(server, filter) {
     const config = {
         url: server.qidoRoot,
         headers: OHIF.DICOMWeb.getAuthorizationHeader()
