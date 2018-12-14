@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import Hammer from 'hammerjs';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 // Clear all selected studies
 function doClearStudySelections() {

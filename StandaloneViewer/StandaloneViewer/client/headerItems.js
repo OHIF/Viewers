@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 OHIF.header.dropdown.setItems([{
     action: () => OHIF.ui.showDialog('themeSelectorModal'),

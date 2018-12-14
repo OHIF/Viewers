@@ -32,8 +32,6 @@ Template.stageDetails.helpers({
      * @returns {*} The Viewport model for the active viewport
      */
     activeViewport: function() {
-        // Run this function anytime the layout manager has changed
-        Session.get('LayoutManagerUpdated');
 
         return getActiveViewportModel();
     }

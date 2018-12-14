@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 import { viewportUtils } from './viewportUtils';
 

@@ -1,5 +1,5 @@
 import { JSZip } from 'meteor/silentcicero:jszip';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 const getNumberOfFilesToExport = function(studiesToExport) {
     let numberOfFilesToExport = 0;

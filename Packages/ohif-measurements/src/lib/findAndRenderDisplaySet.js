@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 OHIF.measurements.findAndRenderDisplaySet = (displaySets, viewportIndex, studyInstanceUid, seriesInstanceUid, sopInstanceUid, renderedCallback) => {
     // Find the proper stack to display
@@ -23,5 +23,5 @@ OHIF.measurements.findAndRenderDisplaySet = (displaySets, viewportIndex, studyIn
         displaySetData.renderedCallback = renderedCallback;
     }
 
-    OHIF.viewerbase.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
+    OHIF.viewer.layoutManager.rerenderViewportWithNewDisplaySet(viewportIndex, displaySetData);
 };

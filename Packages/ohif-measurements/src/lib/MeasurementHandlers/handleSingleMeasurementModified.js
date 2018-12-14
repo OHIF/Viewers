@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 
 export default function ({ instance, eventData, tool, toolGroupId, toolGroup }) {

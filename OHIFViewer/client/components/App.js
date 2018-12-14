@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import ViewerRouting from "./ViewerRouting.js";
 import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
 import './App.css';
@@ -20,6 +20,11 @@ function setContext(context) {
 
 class App extends Component {
     componentDidMount() {
+        // Temporary until the rest of the UI is in React
+        window.router = {
+            history: this.props.history
+        };
+        
         this.unlisten = this.props.history.listen((location, action) => {
             setContext(window.location.pathname);
         });

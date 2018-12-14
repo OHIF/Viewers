@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import _ from 'underscore';
@@ -101,7 +101,6 @@ Template.toolbarSectionButton.helpers({
 
     disableButton() {
         window.store.getState().viewports.activeViewport;
-        Session.get('LayoutManagerUpdated');
         const instance = Template.instance();
         const isCommandDisabled = OHIF.commands.isDisabled(instance.data.id);
         const isFunctionDisabled = instance.data.disableFunction && instance.data.disableFunction();

@@ -17,7 +17,6 @@ Package.onUse(function(api) {
 
     api.use('ecmascript');
     api.use('stylus');
-    api.use('random');
 
     // Schema for Data Models
     api.use('aldeed:simple-schema');

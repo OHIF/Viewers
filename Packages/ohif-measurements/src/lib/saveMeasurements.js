@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 OHIF.measurements.saveMeasurements = (measurementApi, timepointId) => {
     const { unsavedChanges, notifications, showDialog } = OHIF.ui;

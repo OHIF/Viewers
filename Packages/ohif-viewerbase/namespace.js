@@ -2,7 +2,7 @@
  * Import main dependency
  */
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * Create Viewerbase namespace

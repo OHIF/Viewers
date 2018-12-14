@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { DICOMWebServer as dicomSchema } from 'meteor/ohif:servers/both/schema/servers.js';
 import { DIMSEServer as dimseSchema } from 'meteor/ohif:servers/both/schema/servers.js';
 

@@ -4,9 +4,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import App from './App.js';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
-const store = createStore(OHIF.viewerbase.redux.combinedReducer);
+const store = createStore(OHIF.redux.combinedReducer);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;

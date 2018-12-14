@@ -178,6 +178,3 @@ Viewerbase.helpers = helpers;
 // sopClassDictionary
 import { sopClassDictionary } from './lib/sopClassDictionary';
 Viewerbase.sopClassDictionary = sopClassDictionary;
-
-import redux from './lib/redux/';
-Viewerbase.redux = redux;

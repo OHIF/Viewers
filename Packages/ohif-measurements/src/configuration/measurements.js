@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstoneTools } from 'meteor/ohif:cornerstone';
 
 let configuration = {};
@@ -36,13 +36,13 @@ class MeasurementApi {
         configuration.measurementTools.forEach(toolGroup => {
             const groupCollection = new Mongo.Collection(null);
             groupCollection._debugName = toolGroup.name;
-            groupCollection.attachSchema(toolGroup.schema);
+            //groupCollection.attachSchema(toolGroup.schema);
             this.toolGroups[toolGroup.id] = groupCollection;
 
             toolGroup.childTools.forEach(tool => {
                 const collection = new Mongo.Collection(null);
                 collection._debugName = tool.name;
-                collection.attachSchema(tool.schema);
+                //collection.attachSchema(tool.schema);
                 this.tools[tool.id] = collection;
 
                 const addedHandler = measurement => {

@@ -20,14 +20,14 @@ import './client/'; // which is actually: import './client/index.js';
  *
  * Which is equivalent to:
  *
- * import { OHIF } from 'meteor/ohif:core';
+ * import { OHIF } from 'ohif-core';
  * import 'meteor/ohif:viewerbase';
  *
  * The second (extended) format should be used when other OHIF packages are also to be used within
  * the current module. This makes it explicit that the following imports will populate their
  * respective namespaces within the to "OHIF" namespace. Example:
  *
- * import { OHIF } from 'meteor/ohif:core';
+ * import { OHIF } from 'ohif-core';
  * import 'meteor/ohif:viewerbase';
  * import 'meteor/ohif:hanging-protocols';
  * [ ... ]

@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import 'meteor/ohif:viewerbase';
 // Local Dependencies
 import { getStudyPriors } from './getStudyPriors';

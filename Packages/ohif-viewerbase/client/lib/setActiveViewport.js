@@ -1,8 +1,5 @@
-import { Session } from 'meteor/session';
 import $ from 'jquery';
-import { Random } from 'meteor/random';
-
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 //import { StudyPrefetcher } from './classes/StudyPrefetcher';
 import { displayReferenceLines } from './displayReferenceLines';
 

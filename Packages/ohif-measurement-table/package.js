@@ -6,7 +6,8 @@ Package.describe({
 
 Npm.depends({
     'dicomweb-client': '0.3.2',
-    'xhr2': '0.1.4'
+    'xhr2': '0.1.4',
+    'simpl-schema': '1.5.3'
 });
 
 Package.onUse(function(api) {

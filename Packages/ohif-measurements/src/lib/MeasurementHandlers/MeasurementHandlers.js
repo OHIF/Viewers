@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import handleSingleMeasurementAdded from './handleSingleMeasurementAdded';
 import handleChildMeasurementAdded from './handleChildMeasurementAdded';
 import handleSingleMeasurementModified from './handleSingleMeasurementModified';

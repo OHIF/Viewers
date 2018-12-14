@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 Template.measurementTable.onCreated(() => {
     const instance = Template.instance();

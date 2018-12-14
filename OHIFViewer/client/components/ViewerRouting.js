@@ -20,4 +20,13 @@ function ViewerRouting({ match }) {
     );
 }
 
+ViewerRouting.propTypes = {
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            studyInstanceUids: PropTypes.string.isRequired,
+            seriesInstanceUids: PropTypes.string
+        })
+    })
+};
+
 export default ViewerRouting;

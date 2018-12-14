@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { comparators } from '../lib/comparators';
 
 const EQUALS_REGEXP = /^equals$/;

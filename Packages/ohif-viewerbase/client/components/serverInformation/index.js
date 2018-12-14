@@ -10,6 +10,6 @@ import './serverInformationForm/serverInformationForm.js';
 import './serverInformationList/serverInformationList.html';
 import './serverInformationList/serverInformationList.js';
 
-import './serverInformationModal/serverInformationModal.html';
+/*import './serverInformationModal/serverInformationModal.html';
 import './serverInformationModal/serverInformationModal.styl';
-import './serverInformationModal/serverInformationModal.js';
+import './serverInformationModal/serverInformationModal.js';*/

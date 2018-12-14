@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Blaze from 'meteor/gadicc:blaze-react-component';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import './StudyList.css';
 
 class StudyList extends Component {

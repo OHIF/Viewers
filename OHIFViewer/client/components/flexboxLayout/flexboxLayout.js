@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 import { StudyBrowser } from 'react-viewerbase';
 

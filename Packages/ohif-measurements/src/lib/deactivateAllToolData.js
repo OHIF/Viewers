@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core'
+import { OHIF } from 'ohif-core'
 
 /**
  * Sets all tool data entries value for 'active' to false

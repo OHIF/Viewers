@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { Session } from 'meteor/session';
 import { configureApis } from './configuration/configuration'
 

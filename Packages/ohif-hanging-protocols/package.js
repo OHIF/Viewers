@@ -7,7 +7,8 @@ Package.describe({
 Npm.depends({
     'validate.js': '0.9.0',
     moment: '2.22.2',
-    jquery: '3.3.1'
+    jquery: '3.3.1',
+    'ohif-core': 'file:///Users/Erik/Projects/OHIF/ohif-core/'
 });
 
 Package.onUse(function(api) {
@@ -15,12 +16,10 @@ Package.onUse(function(api) {
 
     api.use('ecmascript');
     api.use('stylus');
-    api.use('random');
     api.use('templating');
     api.use('natestrauser:select2@4.0.1', 'client');
 
     // Our custom packages
-    api.use('ohif:core');
     api.use('ohif:viewerbase');
 
     api.addAssets('assets/dots.svg', 'client');

@@ -1,8 +1,6 @@
 import { Template } from 'meteor/templating';
 import '../../../../../client/components/viewer/gridLayout/gridLayout.html';
 import '../../../../../client/components/viewer/gridLayout/gridLayout.js';
-import { Session } from 'meteor/session';
-import { sinon } from 'meteor/practicalmeteor:sinon';
 chai.should();
 
 describe('GridLayout', function() {
@@ -38,13 +36,11 @@ describe('GridLayout', function() {
 
     // describe('Testing getClass() Helper', function () {
     //     it('should return priorDropdown', function () {
-    //         Session.set('isPrior', true);
     //         Template.priorDropdown.__helpers.get('getClass')()
     //             .should.equal('priorDropdown');
     //     });
 
     //     it('should return empty string', function () {
-    //         Session.set('isPrior', false);
     //         Template.priorDropdown.__helpers.get('getClass')()
     //             .should.equal('');
     //     });

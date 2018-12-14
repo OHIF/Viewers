@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 // Local imports
 import { removeFromArray } from '../lib/removeFromArray';

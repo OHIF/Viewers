@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * Return the parent tool data if it's a child tool or the tool data itself if not

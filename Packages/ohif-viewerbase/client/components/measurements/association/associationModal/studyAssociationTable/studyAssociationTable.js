@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import moment from 'moment';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * Finds related studies within defined time window of =/- 14 days of selected studies

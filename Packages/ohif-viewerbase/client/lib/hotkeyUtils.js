@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import $ from 'jquery';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { toolManager } from './toolManager';
 import { switchToImageRelative } from './switchToImageRelative';
 import { switchToImageByIndex } from './switchToImageByIndex';
@@ -163,10 +162,10 @@ Meteor.startup(function() {
 
     // Check if display sets can be moved
     const canMoveDisplaySets = isNext => {
-        if (!OHIF.viewerbase.layoutManager) {
+        if (!OHIF.viewer.layoutManager) {
             return false;
         } else {
-            return OHIF.viewerbase.layoutManager.canMoveDisplaySets(isNext);
+            return OHIF.viewer.layoutManager.canMoveDisplaySets(isNext);
         }
     };
 
@@ -190,12 +189,12 @@ Meteor.startup(function() {
         },
         previousDisplaySet: {
             name: 'Previous Series',
-            action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
+            action: () => OHIF.viewer.layoutManager.moveDisplaySets(false),
             disabled: () => !canMoveDisplaySets(false)
         },
         nextDisplaySet: {
             name: 'Next Series',
-            action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
+            action: () => OHIF.viewer.layoutManager.moveDisplaySets(true),
             disabled: () => !canMoveDisplaySets(true)
         },
         nextPanel: {

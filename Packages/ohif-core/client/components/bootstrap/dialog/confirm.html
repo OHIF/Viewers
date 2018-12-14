@@ -1,7 +1,0 @@
-<template name="dialogConfirm">
-    {{#dialogForm (extend this
-        dialogClass='modal-sm'
-        title=(choose this.title 'Confirmation')
-        message=(valueIf UI.contentBlock '' (choose this.message 'Are you sure you want to perform this action?'))
-    )}}{{>UI.contentBlock}}{{/dialogForm}}
-</template>

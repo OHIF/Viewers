@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { MeasurementReport } from '../reports/measurement';
 
 OHIF.measurements.exportPdf = (measurementApi, timepointApi) => {

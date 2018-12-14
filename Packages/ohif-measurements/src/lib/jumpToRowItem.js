@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 
 // Flag that can be changed to disable automatic stack scroll linking when jumping over lesions
@@ -85,7 +85,7 @@ let lastActivatedRowItem;
  * @param measurementId The unique key for a specific Measurement
  */
 OHIF.measurements.jumpToRowItem = (rowItem, timepoints, childToolKey) => {
-    const { isZoomed, zoomedViewportIndex } = OHIF.viewerbase.layoutManager;
+    const { isZoomed, zoomedViewportIndex } = OHIF.viewer.layoutManager;
 
     lastActivatedRowItem = rowItem;
 

@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * Extensible method to translate the location and return a string containing its label

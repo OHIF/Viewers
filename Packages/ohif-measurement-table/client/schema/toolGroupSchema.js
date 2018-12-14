@@ -1,4 +1,5 @@
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+//import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import SimpleSchema from 'simpl-schema'
 
 export const ToolGroupBaseSchema = new SimpleSchema({
     toolId: {

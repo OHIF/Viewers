@@ -63,11 +63,8 @@ mongo-id@1.0.7
 natestrauser:select2@4.0.3
 npm-mongo@3.1.2-beta181.7
 observe-sequence@1.0.16
-ohif:core@0.0.1
 ohif:cornerstone@0.0.1
 ohif:hanging-protocols@0.0.1
-ohif:measurement-table@0.0.1
-ohif:measurements@0.0.1
 ohif:study-list@0.0.1
 ohif:themes@0.0.1
 ohif:themes-common@0.0.1

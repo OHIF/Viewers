@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * Return the tool configuration of a given tool type

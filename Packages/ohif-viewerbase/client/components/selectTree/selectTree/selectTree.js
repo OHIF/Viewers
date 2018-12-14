@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
@@ -7,7 +7,7 @@ import _ from 'underscore';
 import $ from 'jquery';
 
 // TODO: use npm dependency
-import transition from 'meteor/ohif:core/client/lib/third-party/transition-to-from-auto';
+import transition from 'ohif-core/client/lib/third-party/transition-to-from-auto';
 
 Template.selectTree.onCreated(() => {
     const instance = Template.instance();

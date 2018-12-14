@@ -1,10 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import moment from 'moment';
 import _ from 'underscore';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 
 Template.dialogStudyAssociation.onCreated(() => {

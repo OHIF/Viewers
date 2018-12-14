@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 export const unloadHandlers = {
     beforeUnload: function(event) {

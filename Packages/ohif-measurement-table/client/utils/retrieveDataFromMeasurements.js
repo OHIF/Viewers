@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { dcmjs } from 'meteor/ohif:cornerstone';
 
 export default retrieveDataFromMeasurements = (measurements) => {

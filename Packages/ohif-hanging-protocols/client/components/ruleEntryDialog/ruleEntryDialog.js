@@ -4,7 +4,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
 
 const keys = {

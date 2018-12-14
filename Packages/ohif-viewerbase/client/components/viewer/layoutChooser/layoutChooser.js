@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import 'meteor/ohif:viewerbase';
 import { viewportUtils } from '../../../lib/viewportUtils';
 
@@ -41,12 +41,12 @@ Template.layoutChooser.onRendered(() => {
     // Refresh layout chooser highlighting based on current viewports state
     instance.refreshHighlights = () => {
         // Stop here if layoutManager is not defined yet
-        if (!OHIF.viewerbase.layoutManager) {
+        if (!OHIF.viewer.layoutManager) {
             return;
         }
 
         // Get the layout rows and columns amount
-        const info = OHIF.viewerbase.layoutManager.layoutProps;
+        const info = OHIF.viewer.layoutManager.layoutProps;
 
         // get the limiter cell
         const cell = instance.$('tr').eq(info.rows - 1).children().eq(info.columns - 1);
@@ -57,8 +57,7 @@ Template.layoutChooser.onRendered(() => {
 
     instance.autorun(() => {
         // Run this computation every time the viewer layout is changed
-        Session.get('LayoutManagerUpdated');
-
+        
         instance.refreshHighlights();
     });
 });
@@ -83,9 +82,9 @@ Template.layoutChooser.events({
             columns: columnIndex + 1
         };
 
-        OHIF.viewerbase.layoutManager.layoutTemplateName = 'gridLayout';
-        OHIF.viewerbase.layoutManager.layoutProps = layoutProps;
-        OHIF.viewerbase.layoutManager.updateViewports();
+        OHIF.viewer.layoutManager.layoutTemplateName = 'gridLayout';
+        OHIF.viewer.layoutManager.layoutProps = layoutProps;
+        OHIF.viewer.layoutManager.updateViewports();
 
         const $dropdown = instance.$('.layoutChooser');
         viewportUtils.toggleDialog($dropdown);

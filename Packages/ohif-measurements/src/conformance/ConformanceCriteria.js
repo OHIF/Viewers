@@ -1,7 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import 'meteor/ohif:viewerbase';
 import { CriteriaEvaluator } from './CriteriaEvaluator';
 import * as evaluations from './evaluations';

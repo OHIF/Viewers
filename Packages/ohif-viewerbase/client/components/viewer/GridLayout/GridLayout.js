@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import ConnectedCornerstoneViewport from '../ConnectedCornerstoneViewport.js';
 import './GridLayout.styl';

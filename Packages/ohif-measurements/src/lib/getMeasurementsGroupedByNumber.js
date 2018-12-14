@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import _ from 'underscore';
 
 // TODO: change this to a const after refactoring newMeasurements code on measurementTableView.js

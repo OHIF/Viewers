@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { chai } from 'meteor/practicalmeteor:chai';
 import ReportService from 'meteor/lmieulet:meteor-coverage'
 

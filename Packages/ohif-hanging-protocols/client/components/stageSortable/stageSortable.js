@@ -1,8 +1,7 @@
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
-import { Random } from 'meteor/random';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import 'meteor/ohif:viewerbase';
 
 /**
@@ -52,7 +51,6 @@ Template.stageSortable.helpers({
      */
     isActiveStage: function() {
         // Rerun this function every time the layout manager has been updated
-        Session.get('LayoutManagerUpdated');
 
         // If no Protocol Engine has been defined yet, stop here to prevent errors
         if (!ProtocolEngine) {
@@ -115,9 +113,6 @@ Template.stageSortable.helpers({
      * @returns {boolean} Whether or not a later stage exists
      */
     isNextAvailable: function() {
-        // Run this helper whenever the ProtocolEngine / LayoutManager has changed
-        Session.get('LayoutManagerUpdated');
-
         // If no ProtocolEngine has been defined yet, stop here
         if (!ProtocolEngine) {
             return;
@@ -133,7 +128,6 @@ Template.stageSortable.helpers({
      */
     isPreviousAvailable: function() {
         // Run this helper whenever the ProtocolEngine / LayoutManager has changed
-        Session.get('LayoutManagerUpdated');
 
         // If no ProtocolEngine has been defined yet, stop here
         if (!ProtocolEngine) {
@@ -209,9 +203,6 @@ Template.stageSortable.events({
                 // Display the previous stage
                 ProtocolEngine.setCurrentProtocolStage(-1);
             }
-
-            // Update the Session variable to the UI re-renders
-            Session.set('LayoutManagerUpdated', Math.random());
         }, options);
     },
 
@@ -231,9 +222,6 @@ Template.stageSortable.events({
         // If the currently displayed stage was reordered into a new position,
         // update the value for the stage index in the displayed Protocol
         ProtocolEngine.stage = newIndex;
-
-        // Update the Session variable to the UI re-renders
-        Session.set('LayoutManagerUpdated', Math.random());
     },
     'click .moveStageDown': function() {
         // Get the old and new indices following a 'sort' event
@@ -251,8 +239,5 @@ Template.stageSortable.events({
         // If the currently displayed stage was reordered into a new position,
         // update the value for the stage index in the displayed Protocol
         ProtocolEngine.stage = newIndex;
-
-        // Update the Session variable to the UI re-renders
-        Session.set('LayoutManagerUpdated', Math.random());
     }
 });

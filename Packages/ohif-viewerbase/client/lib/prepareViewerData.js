@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * Prepare the studies data to render the viewer template

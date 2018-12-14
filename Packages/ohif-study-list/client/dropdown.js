@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 Meteor.startup(() => {
     OHIF.studylist.dropdown = new OHIF.ui.Dropdown();

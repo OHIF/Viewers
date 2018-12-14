@@ -6,7 +6,7 @@ import { Template } from 'meteor/templating';
 import _ from 'underscore';
 import $ from 'jquery';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 import viewerComponents from '../../components/viewer/index.js';
 
@@ -44,17 +44,6 @@ export class LayoutManager {
         };
 
         this.isZoomed = false;
-
-        const updateSessionFn = () => {
-            const random = Math.random();
-            Session.set('LayoutManagerUpdated', random);
-            this.observer.changed();
-        };
-
-        this.updateSession = _.throttle(updateSessionFn, 300, {
-            leading: true,
-            trailing: false
-        });
     }
 
     /**
@@ -183,8 +172,6 @@ export class LayoutManager {
         const component = viewerComponents.GridLayout;
         this.setContents(component, data);
 
-        this.updateSession();
-
         this.isZoomed = false;
     }
 
@@ -228,8 +215,6 @@ export class LayoutManager {
         };
 
         this.setContents(component, data);
-
-        this.updateSession();
     }
 
     /**
@@ -264,8 +249,6 @@ export class LayoutManager {
         this.isZoomed = true;
         this.zoomedViewportIndex = viewportIndex;
         this.viewportData = data.viewportData;
-
-        this.updateSession();
     }
 
     /**

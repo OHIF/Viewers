@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import _ from 'underscore';
 import $ from 'jquery';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 Template.studyTimepointStudy.onCreated(() => {
     const instance = Template.instance();

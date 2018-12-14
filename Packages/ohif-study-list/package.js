@@ -2,7 +2,8 @@ Npm.depends({
     daterangepicker: '3.0.3',
     hammerjs: '2.0.8',
     moment: '2.22.2',
-    jquery: '3.3.1'
+    jquery: '3.3.1',
+    'ohif-core': 'file:///Users/Erik/Projects/OHIF/ohif-core/'
 });
 
 Package.describe({
@@ -18,13 +19,11 @@ Package.onUse(function(api) {
     api.use('templating', 'client');
     api.use('stylus', 'client');
     api.use('http', 'client');
-    api.use('random', 'client');
     api.use('aldeed:simple-schema', 'client');
     api.use('aldeed:collection2', 'client');
     api.use('gadicc:blaze-react-component', 'client');
 
     // Our custom packages
-    api.use('ohif:core', 'client');
     api.use('ohif:viewerbase', 'client');
 
     // Client imports

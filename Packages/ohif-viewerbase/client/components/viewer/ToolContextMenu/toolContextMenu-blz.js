@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { toolManager } from '../../../lib/toolManager';
 

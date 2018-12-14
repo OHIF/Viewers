@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { isImage } from './isImage';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 const isMultiFrame = instance => {
     // NumberOfFrames (0028,0008)

@@ -6,7 +6,6 @@ Template.previousPresentationGroupButton.helpers({
      */
     previousNotAvailable() {
         // Run this helper whenever the ProtocolEngine / LayoutManager has changed
-        Session.get('LayoutManagerUpdated');
 
         // If no ProtocolEngine has been defined yet, stop here
         if (!ProtocolEngine) {

@@ -1,8 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 import Viewer from '../viewer/viewer.js';
 
@@ -61,18 +60,8 @@ Template.ohifViewer.onCreated(() => {
 });
 
 Template.ohifViewer.events({
-    'click .js-toggle-studyList'(event, instance) {
+    'click .js-toggle-studyList'(event) {
         event.preventDefault();
-        const isViewer = Session.get('ViewerOpened');
-
-        /*if (isViewer) {
-            Router.go('studylist');
-        } else {
-            const { studyInstanceUids } = OHIF.viewer.data;
-            if (studyInstanceUids) {
-                Router.go('viewerStudies', { studyInstanceUids });
-            }
-        }*/
     }
 });
 

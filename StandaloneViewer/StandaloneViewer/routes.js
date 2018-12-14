@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Router } from 'meteor/clinical:router';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 if (Meteor.isClient) {
     // Disconnect from the Meteor Server since we don't need it

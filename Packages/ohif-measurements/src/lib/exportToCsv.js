@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { getCSVMeasurementData } from '../reports/reportMeasurementDataToCSV';
 
 const downloadCSV = (csvData, args = {}) => {

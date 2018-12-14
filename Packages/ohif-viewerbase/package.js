@@ -5,8 +5,8 @@ Package.describe({
 });
 
 Npm.depends({
-    'react-cornerstone-viewport': 'git://github.com:cornerstonejs/react-cornerstone-viewport.git',
-    'react-viewerbase': 'git://github.com:OHIF/react-viewerbase.git',
+    'react-cornerstone-viewport': '0.1.1', //'git://github.com:cornerstonejs/react-cornerstone-viewport.git',
+    'react-viewerbase': 'git://github.com:OHIF/react-viewerbase.git', //'0.1.2', //'git://github.com:OHIF/react-viewerbase.git',
     hammerjs: '2.0.8',
     'cornerstone-core': '2.2.8',
     'cornerstone-tools': '3.0.0-b.1471',
@@ -14,7 +14,8 @@ Npm.depends({
     'dicom-parser': '1.8.3',
     'cornerstone-wado-image-loader': '2.2.3',
     'react-redux': '6.0.0',
-    jquery: '3.3.1'
+    jquery: '3.3.1',
+    'ohif-core': 'file:///Users/Erik/Projects/OHIF/ohif-core/'
 });
 
 Package.onUse(function(api) {
@@ -29,7 +30,6 @@ Package.onUse(function(api) {
     // OHIF dependencies
     api.use([
         'ohif:cornerstone',
-        'ohif:core',
         'ohif:themes'
     ]);
 
@@ -92,15 +92,7 @@ Package.onUse(function(api) {
 
     api.addAssets(assets, 'client');
 
-    api.addFiles('client/compatibility/dialogPolyfill.js', 'client', {
-        bare: true
-    });
-    api.addFiles('client/compatibility/dialogPolyfill.styl', 'client');
-
-    // ---------- Components ----------
-
     // Basic components
-    api.addFiles('client/components/basic/layout/layout.html', 'client');
     api.addFiles('client/components/basic/layout/layout.styl', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.html', 'client');
     api.addFiles('client/components/basic/loadingText/loadingText.styl', 'client');
@@ -125,10 +117,6 @@ Package.onUse(function(api) {
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.html', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.js', 'client');
     api.addFiles('client/components/viewer/layoutChooser/layoutChooser.styl', 'client');
-
-    api.addFiles('client/components/viewer/cineDialog/cineDialog.html', 'client');
-    api.addFiles('client/components/viewer/cineDialog/cineDialog.js', 'client');
-    api.addFiles('client/components/viewer/cineDialog/cineDialog.styl', 'client');
 
     api.addFiles('client/components/viewer/downloadDialog/downloadDialog.html', 'client');
     api.addFiles('client/components/viewer/downloadDialog/downloadDialog.js', 'client');

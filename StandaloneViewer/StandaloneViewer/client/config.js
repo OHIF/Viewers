@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstoneWADOImageLoader } from 'meteor/ohif:cornerstone';
 import * as cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
 import sha from './sha.js';

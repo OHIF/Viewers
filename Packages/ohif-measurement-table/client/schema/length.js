@@ -1,4 +1,5 @@
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+//import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import SimpleSchema from 'simpl-schema'
 import { MeasurementSchemaTypes } from 'meteor/ohif:measurements/src/schema/measurements';
 
 const CornerstoneHandleSchema = MeasurementSchemaTypes.CornerstoneHandleSchema;

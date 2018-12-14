@@ -16,7 +16,7 @@
     "react-dom": "^16.6.3",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
-    "react-viewerbase": "git://github.com:OHIF/react-viewerbase.git",
+    "react-viewerbase": "^0.1.2",
     "redux": "^4.0.1",
     "underscore": "1.9.1"
   },

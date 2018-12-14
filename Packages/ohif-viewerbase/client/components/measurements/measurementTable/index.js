@@ -7,10 +7,6 @@ import './measurementTableView/measurementTableView.html';
 import './measurementTableView/measurementTableView.styl';
 import './measurementTableView/measurementTableView.js';
 
-import './measurementTableHUD/measurementTableHUD.html';
-import './measurementTableHUD/measurementTableHUD.styl';
-import './measurementTableHUD/measurementTableHUD.js';
-
 import './measurementTableRow/measurementTableRow.html';
 import './measurementTableRow/measurementTableRow.styl';
 import './measurementTableRow/measurementTableRow.js';

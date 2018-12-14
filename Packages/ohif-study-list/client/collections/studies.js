@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 // Define the Studies Collection. This is a client-side only Collection which stores the list of
 // studies in the StudyList

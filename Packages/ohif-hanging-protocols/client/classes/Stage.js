@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 /**
  * A Stage is one step in the Display Set Sequence for a Hanging Protocol

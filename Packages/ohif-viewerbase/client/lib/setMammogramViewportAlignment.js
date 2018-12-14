@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import $ from 'jquery';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { setInstanceClassDefaultViewportFunction } from './instanceClassSpecificViewport';
 
 const setMammogramViewportAlignment = (series, enabledElement, imageId) => {

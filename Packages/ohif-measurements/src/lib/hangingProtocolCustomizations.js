@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Viewerbase } from 'meteor/ohif:viewerbase';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 const { InstanceMetadata, StudySummary } = Viewerbase.metadata;
 

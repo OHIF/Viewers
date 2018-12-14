@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import $ from 'jquery';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import 'meteor/ohif:viewerbase';
 
 function isThereSeries(studies) {

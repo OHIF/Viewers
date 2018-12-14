@@ -4,7 +4,7 @@ import { Session } from 'meteor/session';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import moment from 'moment';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 Session.setDefault('showLoadingText', true);
 Session.setDefault('serverError', false);

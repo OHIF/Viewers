@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import $ from 'jquery';
 import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:cornerstone';
 

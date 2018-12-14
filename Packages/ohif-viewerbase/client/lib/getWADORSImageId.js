@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 function getWADORSImageUrl(instance, frame) {
     let wadorsuri = instance.wadorsuri;

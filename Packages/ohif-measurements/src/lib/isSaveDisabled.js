@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 OHIF.measurements.isSaveDisabled = timepointId => {
     const basePath = `viewer.studyViewer.measurements.${timepointId}`;

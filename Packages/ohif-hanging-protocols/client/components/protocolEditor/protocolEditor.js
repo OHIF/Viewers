@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import $ from 'jquery';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import 'meteor/ohif:viewerbase';
 
 /**
@@ -69,8 +69,7 @@ Template.protocolEditor.helpers({
      */
     activeProtocol() {
         // Whenever the Layout Manager is updated, trigger this helper
-        Session.get('LayoutManagerUpdated');
-
+        
         // If no ProtocolEngine, protocol, or stage is defined, stop here
         if (!ProtocolEngine ||
             !ProtocolEngine.protocol ||
@@ -95,7 +94,7 @@ Template.protocolEditor.helpers({
      */
     activeStage() {
         // Whenever the Layout Manager is updated, trigger this helper
-        Session.get('LayoutManagerUpdated');
+
 
         // If no ProtocolEngine, protocol, or stage is defined, stop here
         if (!ProtocolEngine ||

@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 const getStudyMetadata = study => {
     let studyMetadata = study;

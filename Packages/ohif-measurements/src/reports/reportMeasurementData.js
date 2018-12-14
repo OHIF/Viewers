@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 export const getExportMeasurementData = async (measurementApi, timepointApi) => {
     const currentTimepoint = timepointApi.current();

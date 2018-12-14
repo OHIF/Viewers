@@ -1,0 +1,37 @@
+{
+  "public": {
+    "clientOnly": true,
+    "ui": {
+      "studyListFunctionsEnabled": true,
+      "studyListDateFilterNumDays": 10000
+    },
+    "servers": {
+      "dicomWeb": [
+        {
+          "name": "Orthanc",
+          "wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
+          "qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+          "wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+          "qidoSupportsIncludeField": true,
+          "imageRendering": "wadors",
+          "thumbnailRendering": "wadors",
+          "requestOptions": {
+            "requestFromBrowser": true,
+            "logRequests": true,
+            "logResponses": false,
+            "logTiming": true,
+            "auth": "admin:admin"
+          }
+        }]
+    },
+    "custom": {
+      "oidc": [{
+        "authServerUrl": "https://cancer.crowds-cure.org/auth/realms/dcm4che",
+        "authRedirectUri": "/studylist",
+        "postLogoutRedirectUri": "/",
+        "clientId": "ohif-viewer"
+      }]
+    },
+    "userAuthenticationRoutesEnabled": false
+  }
+}

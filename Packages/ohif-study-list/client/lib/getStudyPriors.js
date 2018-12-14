@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 const { StudyMetadata, StudySummary } = OHIF.metadata;
 const PATIENT_ID = 'x00100020';

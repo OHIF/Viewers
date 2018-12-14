@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
 import { CineDialog } from 'react-viewerbase';
@@ -79,51 +79,17 @@ class Viewer extends Component {
     constructor(props) {
         super(props);
 
-        // Define the OHIF.viewer.data global object
-        OHIF.viewer.data = OHIF.viewer.data || {};
-
-        // @TypeSafeStudies
-        // Clears OHIF.viewer.Studies collection
-        OHIF.viewer.Studies.removeAll();
-
-        // @TypeSafeStudies
-        // Clears OHIF.viewer.StudyMetadataList collection
-        OHIF.viewer.StudyMetadataList.removeAll();
-
-        OHIF.viewer.data.studyInstanceUids = [];
-
-        const studies = this.props.studies;
-        studies.forEach(study => {
-            const studyMetadata = new OHIF.metadata.StudyMetadata(study, study.studyInstanceUid);
-            let displaySets = study.displaySets;
-
-            if (!study.displaySets) {
-                displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
-                study.displaySets = displaySets;
-            }
-
-            studyMetadata.setDisplaySets(displaySets);
-
-            study.selected = true;
-            OHIF.viewer.Studies.insert(study);
-            OHIF.viewer.StudyMetadataList.insert(studyMetadata);
-            OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
-
-            // Updates WADO-RS metaDataManager
-            OHIF.viewerbase.updateMetaDataManager(study);
-        });
-
         this.state = {
             leftSidebar: 'studies',
             rightSidebar: 'measurements',
-            studies
+            studies: this.props.studies
         };
     }
 
     render() {
         return (<>
                 <div className='viewerDialogs'>
-                    <CineDialog/>
+                    {/*<CineDialog/>*/}
                 </div>
                 <div id="viewer" className='Viewer'>
                     {/*<ToolbarSection/>*/}

@@ -26,12 +26,10 @@ standard-minifier-js@2.4.0
 shell-server@0.4.0
 
 # OHIF Packages
-ohif:core
 ohif:cornerstone
 ohif:viewerbase
 ohif:study-list
 ohif:hanging-protocols
-ohif:measurement-table
 
 fortawesome:fontawesome
 aldeed:simple-schema          # Third party package to deal with schemas

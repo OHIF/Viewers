@@ -1,37 +1,54 @@
-import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
-import { OHIF } from 'meteor/ohif:core';
+import { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+import { LayoutManager } from 'react-viewerbase';
+import { OHIF } from 'ohif-core';
+
 // Local Modules
 import { unloadHandlers } from '../../../lib/unloadHandlers';
-import { LayoutManager } from '../../../lib/classes/LayoutManager';
+import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
+import ConnectedCornerstoneViewport from '../ConnectedCornerstoneViewport.js';
+import StackManager from '../../../lib/StackManager.js';
 
 const { StudyLoadingListener, StudyPrefetcher, ResizeViewportManager } = OHIF.classes;
 
 import './ViewerMain.styl';
 
-import { Component } from 'react';
-import React from 'react';
-import PropTypes from 'prop-types';
+window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
 
-Meteor.startup(() => {
-    window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
+function getCornerstoneStack(viewportData) {
+    const {
+        displaySetInstanceUid,
+        studyInstanceUid,
+    } = viewportData;
 
-    // Set initial value for OHIFViewerMainRendered
-    // session variable. This can used in viewer main template
-    Session.set('OHIFViewerMainRendered', false);
-});
+    // Create shortcut to displaySet
+    const study = OHIF.viewer.Studies.findBy({
+        studyInstanceUid,
+    });
 
-import { connect } from 'react-redux';
+    const displaySet = study.displaySets.find((set) => {
+        return set.displaySetInstanceUid === displaySetInstanceUid;
+    });
+
+    // Get stack from Stack Manager
+    const stack = StackManager.findOrCreateStack(study, displaySet);
+    stack.currentImageIdIndex = 0;
+
+    return stack;
+}
 
 class ViewerMain extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            contents: ''
+            displaySets: []
         };
 
-        this.setContents = this.setContents.bind(this);
+        this.getCornerstoneViewport = this.getCornerstoneViewport.bind(this);
     }
 
     componentDidMount() {
@@ -46,9 +63,6 @@ class ViewerMain extends Component {
         // Add beforeUnload event handler to check for unsaved changes
         window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
-        // Set the current context
-        OHIF.context.set('viewer');
-
         const { studies } = this.props;
         this.studyPrefetcher = StudyPrefetcher.getInstance();
         this.studyPrefetcher.setStudies(studies);
@@ -56,42 +70,47 @@ class ViewerMain extends Component {
         this.studyLoadingListener.clear();
         this.studyLoadingListener.addStudies(studies);
 
-        OHIF.viewerbase.layoutManager = new LayoutManager(this.setContents, studies);
-
-        Session.set('OHIFViewerMainRendered', Math.random());
-    }
-
-    setContents(Component, props) {
-        // TODO[react] Not sure I like this piece much
-        const mapStateToProps = state => {
-            return {
-                activeViewportIndex: state.viewports.activeViewportIndex,
-            };
-        };
-
-        const ConnectedComponent = connect(
-            mapStateToProps,
-            null
-        )(Component);
-
-        const contents = (<ConnectedComponent {...props}/>);
+        // Get all the display sets for the viewer studies
+        const displaySets = [];
+        studies.forEach((study) => {
+            study.displaySets.forEach(dSet => dSet.images.length && displaySets.push(dSet));
+        });
 
         this.setState({
-            contents
+            displaySets
         });
     }
 
+    getCornerstoneViewport(data, index) {
+        const stack = getCornerstoneStack(data)
+        const viewportData = {
+            stack,
+            ...data
+        };
+
+        return (<ConnectedCornerstoneViewport
+            key={index}
+            viewportData={viewportData}
+            cornerstone={cornerstone}
+            cornerstoneTools={cornerstoneTools}
+        />);
+    };
+
     render() {
+        // TODO: re-add plugins back in
+        const viewportData = this.state.displaySets.map((dSet, index) => {
+            return this.getCornerstoneViewport(dSet, index);
+        })
+
+        // TODO: Connect LayoutManager to redux
         return (
-                <div className="viewerMain">
-                    {this.state.contents}
-                </div>
+            <div className="ViewerMain">
+                <LayoutManager viewportData={viewportData}/>
+            </div>
         );
     }
 
     componentWillUnmount() {
-        OHIF.log.info('viewerMain onDestroyed');
-
         // Remove the Window resize listener
         window.removeEventListener('resize', window.ResizeViewportManager.getResizeHandler());
 
@@ -101,10 +120,7 @@ class ViewerMain extends Component {
         // Destroy the synchronizer used to update reference lines
         OHIF.viewer.updateImageSynchronizer.destroy();
 
-        delete OHIF.viewerbase.layoutManager;
         ProtocolEngine = null;
-
-        Session.set('OHIFViewerMainRendered', false);
 
         // Stop prefetching when we close the viewer
         this.studyPrefetcher.destroy();
@@ -122,9 +138,6 @@ class ViewerMain extends Component {
         // @TypeSafeStudies
         // Clears OHIF.viewer.StudyMetadataList collection
         OHIF.viewer.StudyMetadataList.removeAll();
-
-        // Reset the current context
-        OHIF.context.set(null);
     }
 }
 

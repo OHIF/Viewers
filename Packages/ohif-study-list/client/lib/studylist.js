@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 // Functions
 /*import { getStudyPriors } from './getStudyPriors';
@@ -10,7 +10,8 @@ OHIF.studylist.functions = {
 };*/
 
 const dblClickOnStudy = data => {
-    //Router.go('viewerStudies', { studyInstanceUids: data.studyInstanceUid });
+    // TODO: Switch to more appropriate routing
+    window.router.history.push(`/viewer/${data.studyInstanceUid}`);
     console.log('dblClickOnStudy');
 };
 

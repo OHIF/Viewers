@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 const scrollToIndex = cornerstoneTools.import('util/scrollToIndex');
 

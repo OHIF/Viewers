@@ -1,17 +1,16 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { Template } from 'meteor/templating';
-import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import $ from 'jquery';
 
 Template.studylistToolbar.onCreated(() => {
-    Meteor.call('importSupported', (error, result) => {
+    /*Meteor.call('importSupported', (error, result) => {
         if (error || !result) {
             Session.set('importSupported', false);
         } else {
             Session.set('importSupported', true);
         }
-    });
+    });*/
 });
 
 Template.studylistToolbar.events({

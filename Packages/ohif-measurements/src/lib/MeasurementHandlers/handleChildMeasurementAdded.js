@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone } from 'meteor/ohif:cornerstone';
 import getImageAttributes from './getImageAttributes';
 

@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import _ from 'underscore';
 
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 import { schema as TimepointSchema } from '../schema/timepoints';
 
@@ -23,7 +23,7 @@ class TimepointApi {
 
         this.options = options;
         this.timepoints = new Mongo.Collection(null);
-        this.timepoints.attachSchema(TimepointSchema);
+        //this.timepoints.attachSchema(TimepointSchema);
         this.timepoints._debugName = 'Timepoints';
     }
 

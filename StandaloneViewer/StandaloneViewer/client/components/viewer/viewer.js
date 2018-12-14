@@ -2,7 +2,7 @@ import { Template } from 'meteor/templating';
 import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { MeasurementTable } from 'meteor/ohif:measurement-table';
 
 import 'meteor/ohif:viewerbase';

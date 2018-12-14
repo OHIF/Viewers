@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 Template.windowLevelPresetsForm.onCreated(() => {
     const instance = Template.instance();

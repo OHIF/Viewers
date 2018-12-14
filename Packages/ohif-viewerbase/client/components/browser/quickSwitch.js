@@ -1,7 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 
 Template.studyBrowserQuickSwitch.onCreated(() => {
     const instance = Template.instance();

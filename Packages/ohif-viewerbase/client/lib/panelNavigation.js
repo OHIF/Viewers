@@ -1,6 +1,6 @@
 import { Session } from 'meteor/session';
 import $ from 'jquery';
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { setActiveViewport } from './setActiveViewport';
 
 const loadPreviousActivePanel = () => {

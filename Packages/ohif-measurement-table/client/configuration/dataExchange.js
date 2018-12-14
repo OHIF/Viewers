@@ -1,4 +1,4 @@
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { retrieveMeasurementFromSR, stowSRFromMeasurements } from '../utils/handleSR';
 import { getLatestSRSeries } from '../utils/srUtils';
 

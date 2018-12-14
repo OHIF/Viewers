@@ -1,8 +1,7 @@
-import { Session } from 'meteor/session';
 import $ from 'jquery';
 import _ from 'underscore';
 // Local Modules
-import { OHIF } from 'meteor/ohif:core';
+import { OHIF } from 'ohif-core';
 import { cornerstone, cornerstoneTools } from 'meteor/ohif:cornerstone';
 import { updateOrientationMarkers } from './updateOrientationMarkers';
 import { getInstanceClassDefaultViewport } from './instanceClassSpecificViewport';
@@ -211,9 +210,6 @@ const toggleCinePlay = () => {
     } else {
         cornerstoneTools.playClip(element);
     }
-
-    // Update the UpdateCINE session property
-    Session.set('UpdateCINE', Math.random());
 };
 
 // Show/hide the CINE dialog
@@ -221,7 +217,6 @@ const toggleCineDialog = () => {
     const dialog = document.getElementById('cineDialog');
 
     toggleDialog(dialog, stopAllClips);
-    Session.set('UpdateCINE', Math.random());
 };
 
 const toggleDownloadDialog = () => {
@@ -242,10 +237,6 @@ const isDownloadEnabled = () => {
 
 // Check if the clip is playing on the active viewport
 const isPlaying = () => {
-    // Create a dependency on LayoutManagerUpdated and UpdateCINE session
-    Session.get('UpdateCINE');
-    Session.get('LayoutManagerUpdated');
-
     // Get the viewport element and its current playClip tool state
     const element = getActiveViewportElement();
     // Empty Elements throws cornerstore exception
@@ -275,7 +266,6 @@ const isPlaying = () => {
 const hasMultipleFrames = () => {
     // Its called everytime active viewport and/or layout change
     window.store.getState().viewports.activeViewport;
-    Session.get('LayoutManagerUpdated');
 
     const activeViewport = getActiveViewportElement();
 
@@ -327,7 +317,6 @@ const isStackScrollLinkingDisabled = () => {
 
     // Its called everytime active viewport and/or layout change
     window.store.getState().viewports.activeViewport;
-    Session.get('LayoutManagerUpdated');
 
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
     if (synchronizer) {
@@ -340,10 +329,6 @@ const isStackScrollLinkingDisabled = () => {
 
 const isStackScrollLinkingActive = () => {
     let isActive = true;
-
-    // Its called everytime active viewport layout changes
-    Session.get('LayoutManagerUpdated');
-
     const synchronizer = OHIF.viewer.stackImagePositionOffsetSynchronizer;
 
     if (!synchronizer) { return; }
@@ -361,7 +346,7 @@ const isStackScrollLinkingActive = () => {
 
 // Create an event listener to update playing state when a clip stops playing
 window.addEventListener('cornerstonetoolsclipstopped', () => {
-    Session.set('UpdateCINE', Math.random());
+    console.log('cornerstonetoolsclipstopped');
 });
 
 /**
