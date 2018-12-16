@@ -13,6 +13,7 @@
         "imageRendering": "wadors",
         "thumbnailRendering": "wadors",
         "metadataSource": "wado",
+        "isGCloud": true,
         "requestOptions": {
           "requestFromBrowser": true,
           "logRequests": true,
@@ -30,6 +31,7 @@
         "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
       }]
     },
-    "userAuthenticationRoutesEnabled": true
+    "userAuthenticationRoutesEnabled": true,
+    "demoMode": true
   }
 }

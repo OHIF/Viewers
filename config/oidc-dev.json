@@ -19,6 +19,22 @@
           "logResponses": false,
           "logTiming": true
         }
+      },
+      {
+        "name": "demo-dcm4chee",
+        "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
+        "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+        "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadouri",
+        "thumbnailRendering": "wadors",
+        "requestOptions": {
+          "auth": "cloud:healthcare",
+          "requestFromBrowser": true,
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+        }
       }]
     },
     "custom": {
@@ -31,6 +47,7 @@
         "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
       }]
     },
-    "userAuthenticationRoutesEnabled": true
+    "userAuthenticationRoutesEnabled": true,
+    "demoMode": true
   }
 }

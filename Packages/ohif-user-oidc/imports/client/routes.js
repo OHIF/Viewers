@@ -68,16 +68,24 @@ function urlHasSignInResponse() {
 Router.onRun(function() {
     const next = this.next;
     const redirect_uri = Meteor.absoluteUrl(this.request.url);
+    const demoMode = Meteor.settings.public.demoMode;
 
-    if (OHIF.user.userLoggedIn()) {
+    const isSignedIn = OHIF.user.userLoggedIn() || OHIF.user.demoUserLoggedIn();
+    // if devMode, allow only signed in users
+    if (isSignedIn)
+        this.next() 
+    else // or redirect to /
+        Router.go('/', {}, { replaceState: true });
+
+    if (OHIF.user.userLoggedIn() || OHIF.user.demoUserLoggedIn())
         next()
-    } else if (urlHasSignInResponse() === true) {
+    else if (urlHasSignInResponse() === true)
         processSignInResponse().then(next);
-    } else {
-        // do sign-in only from root, because redirect_uri is set in OAuth settings
-        if (this.url !== '/')
-            Router.go('/', {}, { replaceState: true });
-        else
-            signIn({ redirect_uri });
-    }
+    else if (this.url !== '/') // do sign-in only from root, because redirect_uri is set in OAuth settings
+        Router.go('/', {}, { replaceState: true });
+    else if (demoMode)
+        next();
+    else
+        signIn({ redirect_uri });
 });
+

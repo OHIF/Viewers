@@ -14,3 +14,10 @@ OHIF.user.logout = () => new Promise((resolve, reject) => reject());
 OHIF.user.getData = (key) => null;
 OHIF.user.setData = (key, value) => null;
 OHIF.user.validate = () => null;
+
+// functions for demo mode
+if (Meteor.settings.public.demoMode) {
+    OHIF.user.demoLogin = () => sessionStorage.setItem('isDemoUserSignedIn', true);
+    OHIF.user.demoLogout = () => sessionStorage.remove('isDemoUserSignedIn');
+    OHIF.user.demoUserLoggedIn = () => sessionStorage.getItem('isDemoUserSignedIn');
+}

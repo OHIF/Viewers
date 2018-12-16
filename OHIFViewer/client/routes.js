@@ -2,6 +2,8 @@ import { Meteor } from "meteor/meteor";
 import { Router } from 'meteor/clinical:router';
 import { OHIF } from 'meteor/ohif:core';
 
+const demoMode = Meteor.settings && Meteor.settings.public && Meteor.settings.public.demoMode;
+
 Router.configure({
     layoutTemplate: 'layout',
 });
@@ -27,7 +29,10 @@ if (Meteor.settings &&
 Router.onBeforeAction('loading');
 
 Router.route('/', function() {
-    Router.go('studylist', {}, { replaceState: true });
+    if (demoMode && !OHIF.user.userLoggedIn() && !OHIF.user.demoUserLoggedIn())
+        this.render('demoSignin');
+    else 
+        Router.go('studylist', {}, { replaceState: true });
 }, { name: 'home' });
 
 Router.route('/studylist', function() {
