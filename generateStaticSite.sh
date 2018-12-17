@@ -10,16 +10,10 @@ echo 'Running Gitbook installation'
 cd ..
 
 # Build and copy the StandaloneViewer into the static directory
-cd StandaloneViewer
-echo $DEPLOY_PRIME_URL
-export ROOT_URL=$DEPLOY_PRIME_URL:/viewer/
-export METEOR_PACKAGE_DIRS="../../Packages"
-mkdir buildDirectory
-cd StandaloneViewer
-npm install -g meteor-build-client-fixed@0.4.3
-meteor-build-client-fixed --version
-curl https://install.meteor.com | /bin/sh
-export PATH=$HOME/.meteor:$PATH
-meteor npm install
-meteor npm run details
-meteor-build-client-fixed ../../docs/_book/viewer -u $ROOT_URL --path './'
+# echo $DEPLOY_PRIME_URL
+# export ROOT_URL=$DEPLOY_PRIME_URL:/viewer/
+cd OHIFViewer-react
+yarn install
+yarn run build
+mkdir ../docs/_book/viewer/
+cp -R build/* ../docs/_book/viewer/
