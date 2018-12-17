@@ -7,10 +7,12 @@ import Hammer from 'hammerjs';
 import OHIF from 'ohif-core';
 import sha from './sha.js';
 import version from './version.js';
+import { homepage } from '../package.json';
 
 window.info = {
     sha,
-    version
+    version,
+    homepage
 };
 
 cornerstoneTools.external.cornerstone = cornerstone;
@@ -21,16 +23,25 @@ cornerstoneTools.init();
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
-// TODO: find a better way to get app root URL other than window.location.origin
+// TODO: Is there a better way to guess ROOT_URL?
+let ROOT_URL = homepage;
+
+// If the page we are on is not a subset of the expected homepage
+// provided in the package.json file, we might be doing local development.
+// In this case, set the base URL to the current location's origin.
+if (homepage.includes(window.location.origin) === false) {
+    ROOT_URL = window.location.origin;
+}
+
 const config = {
     maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
     startWebWorkersOnDemand: true,
-    webWorkerPath: window.location.origin + '/cornerstoneWADOImageLoaderWebWorker.min.js',
+    webWorkerPath: ROOT_URL + '/cornerstoneWADOImageLoaderWebWorker.min.js',
     taskConfiguration: {
         decodeTask: {
             loadCodecsOnStartup: true,
             initializeCodecsOnStartup: false,
-            codecsPath: window.location.origin + '/cornerstoneWADOImageLoaderCodecs.min.js',
+            codecsPath: ROOT_URL + '/cornerstoneWADOImageLoaderCodecs.min.js',
             usePDFJS: false,
             strict: false
         }
