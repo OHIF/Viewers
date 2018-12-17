@@ -1,8 +1,9 @@
 {
-  "name": "react-cornerstone-viewport-example",
+  "name": "OHIFViewer",
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
+  "homepage": "https://docs.ohif.org/viewer",
   "dependencies": {
     "cornerstone-core": "2.2.8",
     "cornerstone-math": "0.1.7",
