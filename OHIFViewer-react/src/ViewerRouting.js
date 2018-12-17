@@ -1,6 +1,6 @@
-import React, {Component} from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import ViewerFromStudyData from "./ViewerFromStudyData.js";
+import ConnectedViewerFromStudyData from "./ConnectedViewerFromStudyData";
 
 // TODO: Move to react-viewerbase
 
@@ -18,7 +18,7 @@ function ViewerRouting({ match }) {
     }
 
     return (
-        <ViewerFromStudyData studyInstanceUids={studyUIDs} seriesInstanceUids={seriesUIDs}/>
+        <ConnectedViewerFromStudyData studyInstanceUids={studyUIDs} seriesInstanceUids={seriesUIDs}/>
     );
 }
 

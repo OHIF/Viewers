@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
-import { OHIF } from 'ohif-core';
 import ViewerRouting from "./ViewerRouting.js";
 import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
 import './App.css';
+import { StudyList } from 'react-viewerbase';
 
 const reload = () => window.location.reload();
-const Studylist = OHIF.studylist.components.StudyList;
 
 function setContext(context) {
     /*Rollbar.configure({
@@ -24,7 +23,7 @@ class App extends Component {
         window.router = {
             history: this.props.history
         };
-        
+
         this.unlisten = this.props.history.listen((location, action) => {
             setContext(window.location.pathname);
         });
@@ -40,14 +39,14 @@ class App extends Component {
                 <Route
                     exact
                     path="/studylist"
-                    component={Studylist}
+                    component={StudyList}
                     /*auth={this.props.auth}*/
                     store={this.props.store}
                 />
                 <Route
                     exact
                     path="/"
-                    component={Studylist}
+                    component={StudyList}
                     /*auth={this.props.auth}*/
                     store={this.props.store}
                 />
@@ -70,8 +69,8 @@ class App extends Component {
                     store={this.props.store}
                 />
 
-                {/*<Route path="/silent-refresh.html" onEnter={reload} />
-                <Route path="/logout-redirect.html" onEnter={reload} />*/}
+                <Route path="/silent-refresh.html" onEnter={reload} />
+                <Route path="/logout-redirect.html" onEnter={reload} />
                 <Route render={() =>
                     <div> Sorry, this page does not exist. </div>}
                 />

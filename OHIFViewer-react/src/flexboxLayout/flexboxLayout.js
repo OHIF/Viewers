@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { OHIF } from 'ohif-core';
-import { StudyBrowser } from 'react-viewerbase';
+import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
+import { StudyBrowser } from 'react-viewerbase';
+import ViewerMain from './ViewerMain.js';
+// TODO: Where should we put ViewerMain? ohif-core or react-viewerbase?
 
 /**
  * Asynchronous wrapper around Cornerstone's renderToCanvas method.
@@ -51,7 +53,8 @@ const loadError = function(error, studyInstanceUid, displaySetInstanceUid) {
     const study = studies.find(study => study.studyInstanceUid === studyInstanceUid);
     const thumbnail = study.thumbnails.find(t => t.displaySetInstanceUid === displaySetInstanceUid);
 
-    thumbnail.error = error;
+    thumbnail.error = true;
+    //thumbnail.details = error;
 
     this.setState({
         studiesForBrowser: studies
@@ -95,11 +98,7 @@ class FlexboxLayout extends Component {
     }
 
     getStudiesForBrowser() {
-        // @TypeSafeStudies
-        const studies = OHIF.viewer.Studies.findAllBy({
-            selected: true
-        });
-
+        const { studies } = this.props;
 
         // TODO[react]:
         // - Add sorting of display sets
@@ -152,7 +151,7 @@ class FlexboxLayout extends Component {
                     <StudyBrowser studies={this.state.studiesForBrowser}/>
                 </div>
                 <div className={mainContentClassName}>
-                    {/* TODO: Needs to be moved from Meteor package to react-viewerbase: <ViewerMain studies={this.props.studies}/>*/}
+                    <ViewerMain studies={this.props.studies}/>
                 </div>
                 <div className={this.state.rightSidebarOpen ? "sidebarMenu sidebar-right sidebar-open" : "sidebarMenu sidebar-right"}>
                     {/*{{> measurementLightTable (clone this)}}*/}

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import { OHIF } from 'ohif-core';
+import OHIF from 'ohif-core';
 import { CineDialog } from 'react-viewerbase';
 import FlexboxLayout from '../flexboxLayout/flexboxLayout.js';
 
@@ -48,7 +48,7 @@ OHIF.viewer.cine = {
     loop: true
 };
 
-const viewportUtils = OHIF.viewerbase.viewportUtils;
+/*const viewportUtils = OHIF.viewerbase.viewportUtils;
 
 OHIF.viewer.functionList = {
     toggleCineDialog: viewportUtils.toggleCineDialog,
@@ -56,7 +56,7 @@ OHIF.viewer.functionList = {
     clearTools: viewportUtils.clearTools,
     resetViewport: viewportUtils.resetViewport,
     invert: viewportUtils.invert
-};
+};*/
 
 // Create the synchronizer used to update reference lines
 OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);

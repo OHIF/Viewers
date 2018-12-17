@@ -1,43 +1,44 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import Viewer from "./viewer/viewer.js";
-import { OHIF } from 'ohif-core';
+import OHIF from 'ohif-core';
+import { sortingManager } from './lib/sortingManager.js';
+import { updateMetaDataManager } from './lib/updateMetaDataManager.js';
 
 // TODO: Move to react-viewerbase
-
 function createDisplaySets(studies) {
     // Define the OHIF.viewer.data global object
     // TODO: Save all data that is currently in OHIF.viewer in redux instead
-    OHIF.viewer.data = OHIF.viewer.data || {};
+    //OHIF.viewer.data = OHIF.viewer.data || {};
 
     // @TypeSafeStudies
     // Clears OHIF.viewer.Studies collection
-    OHIF.viewer.Studies.removeAll();
+    //OHIF.viewer.Studies.removeAll();
 
     // @TypeSafeStudies
     // Clears OHIF.viewer.StudyMetadataList collection
-    OHIF.viewer.StudyMetadataList.removeAll();
+    //OHIF.viewer.StudyMetadataList.removeAll();
 
-    OHIF.viewer.data.studyInstanceUids = [];
+    //OHIF.viewer.data.studyInstanceUids = [];
 
     const updatedStudies = studies.map(study => {
         const studyMetadata = new OHIF.metadata.OHIFStudyMetadata(study, study.studyInstanceUid);
         let displaySets = study.displaySets;
 
         if (!study.displaySets) {
-            displaySets = OHIF.viewerbase.sortingManager.getDisplaySets(studyMetadata);
+            displaySets = sortingManager.getDisplaySets(studyMetadata);
             study.displaySets = displaySets;
         }
 
         studyMetadata.setDisplaySets(displaySets);
 
         study.selected = true;
-        OHIF.viewer.Studies.insert(study);
-        OHIF.viewer.StudyMetadataList.insert(studyMetadata);
-        OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
+        //OHIF.viewer.Studies.insert(study);
+        //OHIF.viewer.StudyMetadataList.insert(studyMetadata);
+        //OHIF.viewer.data.studyInstanceUids.push(study.studyInstanceUid);
 
         // Updates WADO-RS metaDataManager
-        OHIF.viewerbase.updateMetaDataManager(study);
+        updateMetaDataManager(study);
 
         return study;
     });
@@ -58,16 +59,11 @@ class ViewerFromStudyData extends Component {
     componentDidMount() {
         // TODO: Avoid using timepoints here
         //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
-        const params = {
-            studyInstanceUids: this.props.studyInstanceUids,
-            seriesInstanceUids: this.props.seriesInstanceUids,
-        }
-        const promise = OHIF.viewerbase.prepareViewerData(params);
+        const { studyInstanceUids, seriesInstanceUids, server } = this.props;
+        const promise = OHIF.studies.retrieveStudiesMetadata(server, studyInstanceUids, seriesInstanceUids)
 
         // Render the viewer when the data is ready
-        promise.then(({ studies, viewerData }) => {
-            OHIF.viewer.data = viewerData;
-
+        promise.then(studies => {
             const updatedStudies = createDisplaySets(studies);
 
             this.setState({
@@ -75,8 +71,10 @@ class ViewerFromStudyData extends Component {
             });
         }).catch(error => {
             this.setState({
-                error,
+                error: true,
             });
+
+            console.error(error);
         });
 
     }
@@ -96,7 +94,8 @@ class ViewerFromStudyData extends Component {
 
 ViewerFromStudyData.propTypes = {
     studyInstanceUids: PropTypes.array.isRequired,
-    seriesInstanceUids: PropTypes.array
+    seriesInstanceUids: PropTypes.array,
+    server: PropTypes.object
 };
 
 export default ViewerFromStudyData;

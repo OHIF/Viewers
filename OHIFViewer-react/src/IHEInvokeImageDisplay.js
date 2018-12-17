@@ -1,12 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import ViewerFromStudyData from "./ViewerFromStudyData.js";
 
 function IHEInvokeImageDisplay({ match }) {
     const requestType = match.params.query.requestType;
-
     let studyInstanceUids;
+    let patientUids;
     let displayStudyList = false;
+
     if (requestType === "STUDY") {
         studyInstanceUids = match.params.query.studyUID.split(';');
     } else if (requestType === "STUDYBASE64") {
@@ -14,20 +15,31 @@ function IHEInvokeImageDisplay({ match }) {
         const decodedData = window.atob(uids);
         studyInstanceUids = decodedData.split(';');
     } else if (requestType === "PATIENT") {
-        const patientUids = this.params.query.patientID.split(';');
+        patientUids = this.params.query.patientID.split(';');
         displayStudyList = true
     } else {
         displayStudyList = true
     }
 
     if (displayStudyList) {
-        //return (<StudyList/>);
-        return ('');
+        return ('')//<StudyList patientUids={patientUids}/>);
     }
 
     return (
         <ViewerFromStudyData studyInstanceUids={studyInstanceUids}/>
     );
 }
+
+IHEInvokeImageDisplay.propTypes = {
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            query: PropTypes.shape({
+                requestType: PropTypes.string.isRequired,
+                studyUID: PropTypes.string,
+                patientID: PropTypes.string
+            })
+        })
+    })
+};
 
 export default IHEInvokeImageDisplay;
