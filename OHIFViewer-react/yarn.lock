@@ -6832,9 +6832,10 @@ obuf@^1.0.0, obuf@^1.1.1:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-"ohif-core@git://github.com/OHIF/ohif-core#master":
+ohif-core@^0.1.0:
   version "0.1.0"
-  resolved "git://github.com/OHIF/ohif-core#130e621cf3c13817c1c120f91f0e9378b3eba993"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.0.tgz#5de7a7e51abb3c895ed1479cf4b607f1f162cf8a"
+  integrity sha512-4jICzpSTM8Nfq8rY1JjKk/hWRGLWO3eq154PGX8fqYcQuTx8DxDlQLlKQoKbgRqNH2LBGBtOfDWjCZaBp7cDfg==
   dependencies:
     cornerstone-math "^0.1.7"
     isomorphic-base64 "^1.0.2"
@@ -8040,6 +8041,14 @@ qs@6.5.2, qs@~6.5.2:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
   integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
 
+query-string@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-6.2.0.tgz#468edeb542b7e0538f9f9b1aeb26f034f19c86e1"
+  integrity sha512-5wupExkIt8RYL4h/FE+WTg3JHk62e6fFPWtAZA9J5IWK1PfTfKkMS93HBUHcFpeYi9KsY5pFbh+ldvEyaz5MyA==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    strict-uri-encode "^2.0.0"
+
 querystring-es3@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/querystring-es3/-/querystring-es3-0.2.1.tgz#9ec61f79049875707d69414596fd907a4d711e73"
@@ -8279,9 +8288,10 @@ react-scripts@^2.1.1:
   optionalDependencies:
     fsevents "1.2.4"
 
-"react-viewerbase@git://github.com/OHIF/react-viewerbase#master":
-  version "0.1.2"
-  resolved "git://github.com/OHIF/react-viewerbase#851631857f037f8db32534a1d2a74dfa945429e4"
+react-viewerbase@^0.1.2:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.3.tgz#0a1861149ef5d8116e68f2d375147edf942ce1aa"
+  integrity sha512-xuMTxgXa+E3lXLeI7mn8MVSiVw8C+HwjYbxItMues5cmeRrUvpjZ0VVx8Qcvr/9XwDmKShHj4mdyKhLL0koi/Q==
   dependencies:
     classnames "^2.2.6"
 
@@ -9244,6 +9254,11 @@ stream-shift@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.0.tgz#d5c752825e5367e786f78e18e445ea223a155952"
   integrity sha1-1cdSgl5TZ+eG944Y5EXqIjoVWVI=
+
+strict-uri-encode@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
+  integrity sha1-ucczDHBChi9rFC3CdLvMWGbONUY=
 
 string-length@^2.0.0:
   version "2.0.0"

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import ViewerRouting from "./ViewerRouting.js";
+import StandaloneRouting from './StandaloneRouting.js';
 import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
 import './App.css';
 import { StudyList } from 'react-viewerbase';
@@ -47,6 +48,13 @@ class App extends Component {
                     exact
                     path="/"
                     component={StudyList}
+                    /*auth={this.props.auth}*/
+                    store={this.props.store}
+                />
+                <Route
+                    exact
+                    path="/viewer"
+                    component={StandaloneRouting}
                     /*auth={this.props.auth}*/
                     store={this.props.store}
                 />
