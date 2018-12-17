@@ -12,8 +12,8 @@ cd ..
 # Build and copy the StandaloneViewer into the static directory
 echo $DEPLOY_PRIME_URL
 cd OHIFViewer-react
-export ROOT_URL=$DEPLOY_PRIME_URL:/viewer/
-sed -i 's,https://docs.ohif.org/viewer,${ROOT_URL},g' package.json
+export ROOT_URL=$DEPLOY_PRIME_URL/viewer/
+sed -i "s,https://docs.ohif.org/viewer,${ROOT_URL},g" package.json
 cat package.json
 npm install
 npm run build
