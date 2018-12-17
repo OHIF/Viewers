@@ -13,7 +13,7 @@ cd ..
 # echo $DEPLOY_PRIME_URL
 # export ROOT_URL=$DEPLOY_PRIME_URL:/viewer/
 cd OHIFViewer-react
-yarn install
-yarn run build
+npm install
+npm run build
 mkdir ../docs/_book/viewer/
 cp -R build/* ../docs/_book/viewer/
