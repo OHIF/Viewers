@@ -1,0 +1,11 @@
+#viewer {
+  background-color: black;
+  height: 100%;
+  width: 100%;
+}
+
+.loadingTextDiv {
+  color: var(--text-secondary-color);
+  font-size: 30px;
+}
+

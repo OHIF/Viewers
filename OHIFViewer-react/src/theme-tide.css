@@ -1,0 +1,33 @@
+/* "Tide" theme */
+
+/* Common palette */
+:root {
+    --ui-yellow: #E29E4A;
+    --ui-sky-blue: #6FBDE2;
+}
+/* State palette */
+:root {
+    --ui-state-error: #FFCCCC;
+    --ui-state-error-border: #993333;
+    --ui-state-error-text: #661111;
+}
+
+:root {
+    --ui-gray-light: #516873;
+    --ui-gray: #263340;
+    --ui-gray-dark: #16202B;
+    --ui-gray-darker: #151A1F;
+    --ui-gray-darkest: #14202A;
+}
+
+/* Interface UI Colors */
+:root {
+    --default-color: #9CCEF9;
+    --hover-color: #ffffff;
+    --active-color: #20A5D6;
+    --ui-border-color: #44626F;
+    --ui-border-color-dark: #3C5D80;
+    --ui-border-color-active: #00a4d9;
+    --primary-background-color: #000000;
+    --box-background-color: #3E5975;
+}

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 //import PropTypes from "prop-types";
-import Viewer from "./viewer/viewer";
 import qs from 'query-string'
+import Viewer from "./Viewer/Viewer";
 import OHIF from 'ohif-core';
 import createDisplaySets from "./lib/createDisplaySets";
 

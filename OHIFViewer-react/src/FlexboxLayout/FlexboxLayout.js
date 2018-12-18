@@ -4,6 +4,7 @@ import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import { StudyBrowser } from 'react-viewerbase';
 import ViewerMain from './ViewerMain.js';
+import './FlexboxLayout.css';
 // TODO: Where should we put ViewerMain? ohif-core or react-viewerbase?
 
 /**
@@ -66,7 +67,7 @@ class FlexboxLayout extends Component {
         super(props);
 
         this.state = {
-            leftSidebarOpen: true,
+            leftSidebarOpen: true, // TODO: switch to false by default. Leaving it like this for testing
             rightSidebarOpen: false,
             studiesForBrowser: this.getStudiesForBrowser(),
         };
@@ -135,7 +136,7 @@ class FlexboxLayout extends Component {
     }
 
     render() {
-        let mainContentClassName = "mainContent"
+        let mainContentClassName = "main-content"
         if (this.state.leftSidebarOpen) {
             mainContentClassName += ' sidebar-left-open';
         }
@@ -146,14 +147,14 @@ class FlexboxLayout extends Component {
 
         // TODO[react]: Add measurementLightTable
         return (
-            <div className="viewerSection">
-                <div className={this.state.leftSidebarOpen ? "sidebarMenu sidebar-left sidebar-open" : "sidebarMenu sidebar-left"}>
+            <div className="FlexboxLayout">
+                <div className={this.state.leftSidebarOpen ? "sidebar-menu sidebar-left sidebar-open" : "sidebarMenu sidebar-left"}>
                     <StudyBrowser studies={this.state.studiesForBrowser}/>
                 </div>
                 <div className={mainContentClassName}>
                     <ViewerMain studies={this.props.studies}/>
                 </div>
-                <div className={this.state.rightSidebarOpen ? "sidebarMenu sidebar-right sidebar-open" : "sidebarMenu sidebar-right"}>
+                <div className={this.state.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebarMenu sidebar-right"}>
                     {/*{{> measurementLightTable (clone this)}}*/}
                 </div>
             </div>

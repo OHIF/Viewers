@@ -5,6 +5,9 @@ import ViewerRouting from "./ViewerRouting.js";
 import StandaloneRouting from './StandaloneRouting.js';
 import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
 import './App.css';
+import './variables.css';
+// TODO: figure out how to change themes dynamically
+import './theme-tide.css';
 import { StudyList } from 'react-viewerbase';
 
 const reload = () => window.location.reload();

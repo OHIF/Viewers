@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
-import Viewer from "./viewer/viewer.js";
+import Viewer from "./Viewer/Viewer.js";
 import createDisplaySets from './lib/createDisplaySets.js';
 
 class ViewerFromStudyData extends Component {

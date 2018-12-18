@@ -4,7 +4,8 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from 'ohif-core';
 import { CineDialog } from 'react-viewerbase';
-import FlexboxLayout from '../flexboxLayout/flexboxLayout.js';
+import FlexboxLayout from '../FlexboxLayout/FlexboxLayout.js';
+import './Viewer.css';
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
