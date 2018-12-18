@@ -1,0 +1,14 @@
+.ToolbarRow {
+    border-bottom: var(--ui-border-thickness) solid var(--ui-border-color);
+    flex: 0 0 auto;
+    height: var(--toolbar-height);
+    padding-top: 6px;
+    position: relative;
+    transition: height 300ms ease;
+    width: 100%;
+}
+
+ToolbarRow.expanded {
+    height: calc(var(--toolbar-height) + var(--toolbar-drawer-height));
+}
+

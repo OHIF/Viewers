@@ -4,6 +4,8 @@ import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import { StudyBrowser } from 'react-viewerbase';
 import ViewerMain from './ViewerMain.js';
+import ToolbarRow from './ToolbarRow.js';
+
 import './FlexboxLayout.css';
 // TODO: Where should we put ViewerMain? ohif-core or react-viewerbase?
 
@@ -152,6 +154,7 @@ class FlexboxLayout extends Component {
                     <StudyBrowser studies={this.state.studiesForBrowser}/>
                 </div>
                 <div className={mainContentClassName}>
+                    <ToolbarRow/>
                     <ViewerMain studies={this.props.studies}/>
                 </div>
                 <div className={this.state.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebarMenu sidebar-right"}>

@@ -1,27 +1,13 @@
 /* "Tide" theme */
-
-/* Common palette */
-:root {
-    --ui-yellow: #E29E4A;
-    --ui-sky-blue: #6FBDE2;
-}
-/* State palette */
-:root {
-    --ui-state-error: #FFCCCC;
-    --ui-state-error-border: #993333;
-    --ui-state-error-text: #661111;
-}
+/* TODO:
+- Convert the other themes to CSS Variables
+- Allow user to set default CSS theme in JS config
+- Export the themes as identical JS objects
+- For theme switcher, update root-level CSS properties via JS (https://medium.com/@_bengarrison/accessing-and-modifying-css-variables-with-javascript-2ccb735bbff0)
+ */
 
 :root {
-    --ui-gray-light: #516873;
-    --ui-gray: #263340;
-    --ui-gray-dark: #16202B;
-    --ui-gray-darker: #151A1F;
-    --ui-gray-darkest: #14202A;
-}
-
-/* Interface UI Colors */
-:root {
+    /* Interface UI Colors */
     --default-color: #9CCEF9;
     --hover-color: #ffffff;
     --active-color: #20A5D6;
@@ -30,4 +16,17 @@
     --ui-border-color-active: #00a4d9;
     --primary-background-color: #000000;
     --box-background-color: #3E5975;
+
+    /* Common palette */
+    --ui-yellow: #E29E4A;
+    --ui-sky-blue: #6FBDE2;
+    /* State palette */
+    --ui-state-error: #FFCCCC;
+    --ui-state-error-border: #993333;
+    --ui-state-error-text: #661111;
+    --ui-gray-light: #516873;
+    --ui-gray: #263340;
+    --ui-gray-dark: #16202B;
+    --ui-gray-darker: #151A1F;
+    --ui-gray-darkest: #14202A;
 }
