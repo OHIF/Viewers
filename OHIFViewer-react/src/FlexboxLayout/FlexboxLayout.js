@@ -4,7 +4,7 @@ import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import { StudyBrowser } from 'react-viewerbase';
 import ViewerMain from './ViewerMain.js';
-import ToolbarRow from './ToolbarRow.js';
+import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 
 import './FlexboxLayout.css';
 // TODO: Where should we put ViewerMain? ohif-core or react-viewerbase?
@@ -69,8 +69,6 @@ class FlexboxLayout extends Component {
         super(props);
 
         this.state = {
-            leftSidebarOpen: true, // TODO: switch to false by default. Leaving it like this for testing
-            rightSidebarOpen: false,
             studiesForBrowser: this.getStudiesForBrowser(),
         };
 
@@ -139,25 +137,25 @@ class FlexboxLayout extends Component {
 
     render() {
         let mainContentClassName = "main-content"
-        if (this.state.leftSidebarOpen) {
+        if (this.props.leftSidebarOpen) {
             mainContentClassName += ' sidebar-left-open';
         }
 
-        if (this.state.rightSidebarOpen) {
+        if (this.props.rightSidebarOpen) {
             mainContentClassName += ' sidebar-right-open';
         }
 
         // TODO[react]: Add measurementLightTable
         return (
             <div className="FlexboxLayout">
-                <div className={this.state.leftSidebarOpen ? "sidebar-menu sidebar-left sidebar-open" : "sidebarMenu sidebar-left"}>
+                <div className={this.props.leftSidebarOpen ? "sidebar-menu sidebar-left sidebar-open" : "sidebar-menu sidebar-left"}>
                     <StudyBrowser studies={this.state.studiesForBrowser}/>
                 </div>
                 <div className={mainContentClassName}>
-                    <ToolbarRow/>
+                    <ConnectedToolbarRow/>
                     <ViewerMain studies={this.props.studies}/>
                 </div>
-                <div className={this.state.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebarMenu sidebar-right"}>
+                <div className={this.props.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebar-menu sidebar-right"}>
                     {/*{{> measurementLightTable (clone this)}}*/}
                 </div>
             </div>
@@ -166,7 +164,9 @@ class FlexboxLayout extends Component {
 }
 
 FlexboxLayout.propTypes = {
-    studies: PropTypes.array.isRequired
+    studies: PropTypes.array.isRequired,
+    leftSidebarOpen: PropTypes.bool.isRequired,
+    rightSidebarOpen: PropTypes.bool.isRequired,
 };
 
 export default FlexboxLayout;

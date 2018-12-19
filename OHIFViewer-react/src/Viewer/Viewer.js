@@ -4,7 +4,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from 'ohif-core';
 import { CineDialog } from 'react-viewerbase';
-import FlexboxLayout from '../FlexboxLayout/FlexboxLayout.js';
+import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
 import './Viewer.css';
 
 /**
@@ -86,7 +86,7 @@ class Viewer extends Component {
                 </div>
                 <div id="viewer" className='Viewer'>
                     {/*<ToolbarSection/>*/}
-                    <FlexboxLayout studies={this.state.studies}/>
+                    <ConnectedFlexboxLayout studies={this.state.studies}/>
                 </div>
             </>
         );

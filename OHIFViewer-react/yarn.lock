@@ -8288,10 +8288,10 @@ react-scripts@^2.1.1:
   optionalDependencies:
     fsevents "1.2.4"
 
-react-viewerbase@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.4.tgz#3df7c35e3af3cc1b1a42a8d295ab28bb086efca3"
-  integrity sha512-uj5AMJ9gdHxSJ8JmNVOS3ri9RdVhCAUFf2OX0u5qJ20vpkp3gUHE9ENjZdjYEQ8222g7jhB4d3EM1Jd8wALYNA==
+react-viewerbase@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.5.tgz#a5ef7fd852ead91c74fb0068a7cb97c922a9c17a"
+  integrity sha512-196Req5szlhpvQWivxZmQzF3dMj2vCJtjnyusullRd8isTdaK+cLaCuKBRiJ5Eo6zwM69uTXj7ar8BHQARRzeQ==
   dependencies:
     classnames "^2.2.6"
 
