@@ -1,0 +1,49 @@
+.header {
+  padding: 10px 10px 0;
+  height: 40px;
+}
+
+.brand {
+  height: 30px;
+  text-decoration: none;
+  float: left;
+}
+
+.logo-image {
+  fill: transparent;
+  height: 100%;
+  margin: 0 8px 0 0;
+  width: 30px;
+  float: left;
+}
+
+.logo-text {
+  display: inline-block;
+  font-family: var(--logo-font-family);
+  font-size: 14px;
+  font-weight: var(--logo-font-weight);
+  color: var(--text-primary-color);
+  line-height: 30px;
+}
+
+.btn {
+  color: var(--text-secondary-color);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.btn:hover {
+  color: var(--hover-color);
+}
+
+.btn:active {
+  color: var(--active-color);
+}
+
+.studyListLinkSection {
+  border-left: var(--ui-border-thickness) solid var(--ui-border-color);
+  margin: 3px 0 0 10px;
+  padding: 0 0 0 10px;
+}
