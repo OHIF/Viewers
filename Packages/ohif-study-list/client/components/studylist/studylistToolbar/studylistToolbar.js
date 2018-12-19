@@ -50,9 +50,9 @@ Template.studylistToolbar.helpers({
         return (importSupported && OHIF.uiSettings.studyListFunctionsEnabled);
     },
     uploadSupported() {
-        return true;
+        return !!(OHIF.gcloud && OHIF.gcloud.isEnabled());
     },
     changeDicomStoreSupported() {
-        return true;
+        return !!(OHIF.gcloud && OHIF.gcloud.isEnabled());
     }
 });

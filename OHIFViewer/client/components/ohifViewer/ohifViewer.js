@@ -60,9 +60,9 @@ Template.ohifViewer.onCreated(() => {
         Session.set('ViewerOpened', isViewer);
     });
 
-    if (OHIF.user.demoUserLoggedIn())
-        OHIF.servers.setDemoServerConfig();
-    else if (OHIF.gcloud && OHIF.glcoud.enabled()) {
+    if (OHIF.demoMode && OHIF.demoMode.userLoggedIn())
+        OHIF.demoMode.setDemoServerConfig();
+    else if (OHIF.gcloud && OHIF.gcloud.isEnabled()) {
         const server = OHIF.servers.getCurrentServer();
         if (!server || !server.isCloud) {
             Session.set("IsStudyListReady", false);
