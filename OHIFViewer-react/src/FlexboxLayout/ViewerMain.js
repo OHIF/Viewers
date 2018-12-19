@@ -73,8 +73,6 @@ class ViewerMain extends Component {
         this.setState({
             displaySets
         });
-
-        debugger;
     }
 
     getCornerstoneViewport(data, index) {
