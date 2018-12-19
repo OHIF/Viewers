@@ -1,0 +1,237 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <symbol id="icon-hud" viewBox="0 0 20 22">
+    <title>HUD</title>
+    <g id="icon-hud-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <path id="icon-hud-dashes" d="m14.5,2.75 2,0 a2.5 2.5 0 0 1 2.5 2.5 l0,13.25 a2.5 2.5 0 0 1 -2.5 2.5 l-11.5,0 a2.5 2.5 0 0 1 -2.5 -2.5 l0,-1" stroke-dasharray="1,3" />
+      <path id="icon-hud-box" d="m0.5,2 0,14 a1.5 1.5 0 0 0 1.5 1.5 l12,0 a1.5 1.5 0 0 0 1.5 -1.5 l0,-14" />
+      <path id="icon-hud-top" d="m2,2 12,0" stroke-width="4" />
+      <path id="icon-hud-paralel" d="m4.4,7.5 7.2,0 m0,3 -7.2,0 m0,3 7.2,0" stroke-linecap="square" />
+    </g>
+  </symbol>
+  <symbol id="icon-measurements-additional" viewBox="0 0 16 16">
+    <title>Additional Measurements</title>
+    <g id="icon-measurements-additional-group" stroke="none">
+      <path id="icon-measurements-additional-boxes" d="M11,2 l1.85,-1.85 a1 1 0 0 1 1,0 l2,2 a1 1 0 0 1 0,1 l-1.85,1.85Z  M10,3 l-10,10 0,3 3,0 10,-10Z M16,16 l0,-2 -9,0 -2,2Z" />
+    </g>
+  </symbol>
+  <symbol id="icon-measurements-lesions" viewBox="0 0 18 10">
+    <title>Lesions</title>
+    <g id="icon-measurements-lesions-group" stroke="none">
+      <path id="icon-measurements-lesions-boxes" d="M0,0 2,0 2,2 0,2Z M4,0 18,0 18,2 4,2Z M0,4 2,4 2,6 0,6Z M4,4 18,4 18,6 4,6Z M0,8 2,8 2,10 0,10Z M4,8 18,8 18,10 4,10Z" />
+    </g>
+  </symbol>
+  <symbol id="icon-settings" viewBox="0 0 15 15">
+    <title>Settings</title>
+    <path d="M12.85 8.25C12.85 8.03 12.93 7.8 12.93 7.5 12.93 7.2 12.93 6.98 12.85 6.75L14.43 5.48C14.58 5.33 14.58 5.18 14.5 5.03L13 2.4C12.93 2.33 12.78 2.25 12.55 2.33L10.68 3.08C10.3 2.78 9.85 2.55 9.4 2.33L9.1 0.38C9.18 0.15 8.95 0 8.8 0L5.8 0C5.65 0 5.43 0.15 5.43 0.3L5.13 2.33C4.68 2.48 4.3 2.78 3.85 3.08L2.05 2.33C1.83 2.25 1.68 2.33 1.53 2.48L0.03 5.1C-0.05 5.18 0.03 5.4 0.18 5.55L1.75 6.75C1.75 6.98 1.68 7.2 1.68 7.5 1.68 7.8 1.68 8.03 1.75 8.25L0.18 9.53C0.03 9.68 0.03 9.82 0.1 9.98L1.6 12.6C1.68 12.68 1.83 12.75 2.05 12.68L3.93 11.93C4.3 12.23 4.75 12.45 5.2 12.68L5.5 14.63C5.5 14.78 5.65 14.93 5.88 14.93L8.88 14.93C9.03 14.93 9.25 14.78 9.25 14.63L9.55 12.68C10 12.45 10.45 12.23 10.83 11.93L12.7 12.68C12.85 12.75 13.08 12.68 13.15 12.53L14.65 9.9C14.73 9.75 14.73 9.53 14.58 9.45L12.85 8.25 12.85 8.25ZM7.3 10.13C5.88 10.13 4.68 8.93 4.68 7.5 4.68 6.08 5.88 4.88 7.3 4.88 8.73 4.88 9.93 6.08 9.93 7.5 9.93 8.93 8.73 10.13 7.3 10.13L7.3 10.13Z" id="Shape"/>
+  </symbol>
+  <symbol id="icon-status-complete" viewBox="0 0 27 27">
+    <title>Complete</title>
+    <g id="icon-status-complete-group" stroke="none">
+      <path id="icon-status-complete-circle" d="M13.5,0 a13.5 13.5 0 0 1 0 27 a13.5 13.5 0 0 1 0 -27 M23,8 l-2,-2 -10,10, -5,-5 -2,2 7,7Z" />
+    </g>
+  </symbol>
+  <symbol id="icon-status-lock" viewBox="0 0 16 21">
+    <title>Locked</title>
+    <path d="M14 7L13 7 13 5C13 2.2 10.8 0 8 0 5.2 0 3 2.2 3 5L3 7 2 7C0.9 7 0 7.9 0 9L0 19C0 20.1 0.9 21 2 21L14 21C15.1 21 16 20.1 16 19L16 9C16 7.9 15.1 7 14 7L14 7ZM11.1 7L4.9 7 4.9 5C4.9 3.3 6.3 1.9 8 1.9 9.7 1.9 11.1 3.3 11.1 5L11.1 7 11.1 7Z"/>
+  </symbol>
+  <symbol id="icon-studies" viewBox="0 0 15 13">
+    <title>Studies</title>
+    <g id="icon-studies-group" stroke="none">
+      <path id="icon-studies-boxes" d="M0,0 7,0 7,6 0,6Z M8,0 15,0 15,6 8,6Z M0,7 7,7 7,13 0,13Z M8,7 15,7 15,13 8,13Z" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-levels" viewBox="0 0 18 18">
+    <title>Window / Level</title>
+    <g id="icon-tools-levels-group">
+      <path id="icon-tools-levels-path" d="M14.5,3.5 a1 1 0 0 1 -11,11 Z" stroke="none" opacity="0.8" />
+      <circle id="icon-tools-levels-circle" cx="9" cy="9" r="8" fill="none" stroke-width="2" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-link" viewBox="0 0 23 15">
+    <title>Link</title>
+    <g id="icon-tools-link-group" stroke="none">
+      <circle id="icon-tools-link-circle-l" opacity="0.8" cx="7.5" cy="7.5" r="7.5" />
+      <circle id="icon-tools-link-circle-r" opacity="0.6" cx="15.5" cy="7.5" r="7.5" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-non-target" viewBox="0 0 24 24">
+    <title>Non-Target Measurement</title>
+    <g id="icon-tools-measure-non-target-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <circle id="icon-tools-measure-non-target-circle" cx="6.5" cy="6.5" r="6" />
+      <path id="icon-tools-measure-non-target-plus" d="M6.5,3 l0,7 M3,6.5 l7,0"></path>
+      <path id="icon-tools-measure-non-target-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-target" viewBox="0 0 26 26">
+    <title>Target Measurement</title>
+    <g id="icon-tools-measure-target-group" stroke-width="0">
+      <path id="icon-tools-measure-target-ruler" d="m9.5,26 2,-2 -1.5,-1.5 0.5,-0.5 1.5,1.5 1.5,-1.5 -2.5,-2.5 0.5,-0.5 2.5,2.5 1.5,-1.5 -1.5,-1.5 0.5,-0.5 1.5,1.5 1.5,-1.5 -2.5,-2.5 0.5,-0.5 2.5,2.5 1.5,-1.5 -1.5,-1.5 0.5,-0.5 1.5,1.5 1.5,-1.5 -2.5,-2.5 0.5,-0.5 2.5,2.5 1.5,-1.5 -1.5,-1.5 0.5,-0.5 1.5,1.5 2,-2 -4,-4 a2 2 0 0 0 -2.5 0 l-14 14 a2 2 0 0 0 0 2.5 l4,4 Z" />
+      <path id="icon-tools-measure-target-plus" d="m6,0 a6 6 0 0 1 0 12 a6 6 0 0 1 0 -12 m0.5,3 a0.5 0.5 0 0 0 -1 0 l0,2.5 -2.5,0 a0.5 0.5 0 0 0 0 1 l2.5,0 0,2.5 a0.5 0.5 0 0 0 1 0 l0,-2.5 2.5,0 a0.5 0.5 0 0 0 0 -1 l-2.5,0 z" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-target-cr" viewBox="0 0 24 24">
+    <title>Target CR Measurement</title>
+    <g id="icon-tools-measure-target-cr-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <text id="icon-tools-measure-target-cr-text" fill="#000000" x="0" y="8" style="font-size:10px; font-family:sans-serif">CR</text>
+      <path id="icon-tools-measure-target-cr-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-target-un" viewBox="0 0 24 24">
+    <title>Target UN Measurement</title>
+    <g id="icon-tools-measure-target-un-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <text id="icon-tools-measure-target-un-text" fill="#000000" x="0" y="8" style="font-size:10px; font-family:sans-serif">UN</text>
+      <path id="icon-tools-measure-target-un-arrow" d="M23,7 l-15,15 M7,17 l0,6 6,0" stroke-width="2" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-measure-temp" viewBox="0 0 24 24">
+    <title>Temporary Measurement</title>
+    <g id="icon-tools-measure-temp-group" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <circle id="icon-tools-measure-temp-circle" cx="6.5" cy="6.5" r="6" />
+      <path id="icon-tools-measure-temp-plus" d="M6.5,3 l0,7 M3,6.5 l7,0"></path>
+      <path id="icon-tools-measure-temp-dashes" d="m22.5,6 -16.5,16.5" stroke-width="3" stroke-dasharray="0.6666,5" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-more" viewBox="0 0 18 18">
+    <title>More</title>
+    <g id="icon-tools-more-group" stroke="none">
+      <path id="icon-tools-more-circle" d="M9,0 a9 9 0 0 1 0 18 a9 9 0 0 1 0 -18 M4.5,8 a1.5 1.5 0 0 0 0 3 a1.5 1.5 0 0 0 0 -3 M9,8 a1.5 1.5 0 0 0 0 3 a1.5 1.5 0 0 0 0 -3  M13.5,8 a1.5 1.5 0 0 0 0 3 a1.5 1.5 0 0 0 0 -3" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-pan" viewBox="0 0 18 18">
+    <title>Pan</title>
+    <g id="icon-tools-pan-group" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path id="icon-tools-pan-line-v" d="M9,1 L9,17"></path>
+      <path id="icon-tools-pan-line-h" d="M1,9 L17,9"></path>
+      <polyline id="icon-tools-pan-caret-t" points="7 3 9 1 11 3"></polyline>
+      <polyline id="icon-tools-pan-caret-r" points="15 11 17 9 15 7"></polyline>
+      <polyline id="icon-tools-pan-caret-b" points="11 15 9 17 7 15"></polyline>
+      <polyline id="icon-tools-pan-caret-l" points="3 7 1 9 3 11"></polyline>
+    </g>
+  </symbol>
+  <symbol id="icon-tools-zoom" viewBox="0 0 17 17">
+    <title>Zoom</title>
+    <g id="icon-tools-zoom-group" fill="none" stroke-width="2" stroke-linecap="round">
+      <path id="icon-tools-zoom-path" d="m11.5,11.5 4.5,4.5" />
+      <circle id="icon-tools-zoom-circle" cx="7" cy="7" r="6" />
+    </g>
+  </symbol>
+  <symbol id="icon-tools-invert" viewBox="0 0 24 28">
+    <title>Invert</title>
+    <path d="M12 22.5v-17c-4.688 0-8.5 3.813-8.5 8.5s3.813 8.5 8.5 8.5zM24 14c0 6.625-5.375 12-12 12s-12-5.375-12-12 5.375-12 12-12 12 5.375 12 12z"></path>
+  </symbol>
+  <symbol id="icon-tools-stack-scroll" viewBox="0 0 24 28">
+    <title>Stack Scroll</title>
+    <path d="M24 21v2c0 0.547-0.453 1-1 1h-22c-0.547 0-1-0.453-1-1v-2c0-0.547 0.453-1 1-1h22c0.547 0 1 0.453 1 1zM24 13v2c0 0.547-0.453 1-1 1h-22c-0.547 0-1-0.453-1-1v-2c0-0.547 0.453-1 1-1h22c0.547 0 1 0.453 1 1zM24 5v2c0 0.547-0.453 1-1 1h-22c-0.547 0-1-0.453-1-1v-2c0-0.547 0.453-1 1-1h22c0.547 0 1 0.453 1 1z"></path>
+  </symbol>
+  <symbol id="icon-tools-elliptical-roi" viewBox="0 0 24 28">
+    <title>Elliptical ROI</title>
+    <path d="M12 5.5c-4.688 0-8.5 3.813-8.5 8.5s3.813 8.5 8.5 8.5 8.5-3.813 8.5-8.5-3.813-8.5-8.5-8.5zM24 14c0 6.625-5.375 12-12 12s-12-5.375-12-12 5.375-12 12-12v0c6.625 0 12 5.375 12 12z"></path>
+  </symbol>
+  <symbol id="icon-tools-magnify" viewBox="0 0 24 28">
+    <title>Magnify</title>
+    <path d="M24 14c0 6.625-5.375 12-12 12s-12-5.375-12-12 5.375-12 12-12 12 5.375 12 12z"></path>
+  </symbol>
+  <symbol id="icon-tools-reset" viewBox="0 0 24 28">
+    <title>Reset</title>
+    <path d="M24 14c0 6.609-5.391 12-12 12-3.578 0-6.953-1.578-9.234-4.328-0.156-0.203-0.141-0.5 0.031-0.672l2.141-2.156c0.109-0.094 0.25-0.141 0.391-0.141 0.141 0.016 0.281 0.078 0.359 0.187 1.531 1.984 3.828 3.109 6.312 3.109 4.406 0 8-3.594 8-8s-3.594-8-8-8c-2.047 0-3.984 0.781-5.437 2.141l2.141 2.156c0.297 0.281 0.375 0.719 0.219 1.078-0.156 0.375-0.516 0.625-0.922 0.625h-7c-0.547 0-1-0.453-1-1v-7c0-0.406 0.25-0.766 0.625-0.922 0.359-0.156 0.797-0.078 1.078 0.219l2.031 2.016c2.203-2.078 5.187-3.313 8.266-3.313 6.609 0 12 5.391 12 12z"></path>
+  </symbol>
+  <symbol id="icon-tools-rotate" viewBox="0 0 24 28">
+    <title>Rotate</title>
+    <path d="M24 4v7c0 0.547-0.453 1-1 1h-7c-0.406 0-0.766-0.25-0.922-0.625-0.156-0.359-0.078-0.797 0.219-1.078l2.156-2.156c-1.469-1.359-3.406-2.141-5.453-2.141-4.406 0-8 3.594-8 8s3.594 8 8 8c2.484 0 4.781-1.125 6.312-3.109 0.078-0.109 0.219-0.172 0.359-0.187 0.141 0 0.281 0.047 0.391 0.141l2.141 2.156c0.187 0.172 0.187 0.469 0.031 0.672-2.281 2.75-5.656 4.328-9.234 4.328-6.609 0-12-5.391-12-12s5.391-12 12-12c3.078 0 6.062 1.234 8.266 3.313l2.031-2.016c0.281-0.297 0.719-0.375 1.094-0.219 0.359 0.156 0.609 0.516 0.609 0.922z"></path>
+  </symbol>
+  <symbol id="icon-tools-rotate-right" viewBox="0 0 24 24">
+    <title>Rotate Right</title>
+    <path d="M16.875 15.469c0.563-0.75 0.891-1.594 1.031-2.484h2.016c-0.188 1.406-0.703 2.719-1.594 3.891zM12.984 17.906c0.891-0.141 1.734-0.469 2.484-1.031l1.453 1.453c-1.172 0.891-2.531 1.406-3.938 1.594v-2.016zM19.922 11.016h-2.016c-0.141-0.891-0.469-1.734-1.031-2.484l1.453-1.406c0.891 1.172 1.406 2.484 1.594 3.891zM15.563 5.531l-4.547 4.453v-3.891c-2.859 0.469-5.016 2.953-5.016 5.906s2.156 5.438 5.016 5.906v2.016c-3.938-0.469-7.031-3.844-7.031-7.922s3.094-7.453 7.031-7.922v-3.094z"></path>
+  </symbol>
+  <symbol id="icon-tools-cineplay-toggle" viewBox="0 0 28 28">
+    <title>Cineplay Toggle</title>
+    <path d="M11.109 17.625l7.562-3.906-7.562-3.953v7.859zM14 4.156c5.891 0 9.797 0.281 9.797 0.281 0.547 0.063 1.75 0.063 2.812 1.188 0 0 0.859 0.844 1.109 2.781 0.297 2.266 0.281 4.531 0.281 4.531v2.125s0.016 2.266-0.281 4.531c-0.25 1.922-1.109 2.781-1.109 2.781-1.062 1.109-2.266 1.109-2.812 1.172 0 0-3.906 0.297-9.797 0.297v0c-7.281-0.063-9.516-0.281-9.516-0.281-0.625-0.109-2.031-0.078-3.094-1.188 0 0-0.859-0.859-1.109-2.781-0.297-2.266-0.281-4.531-0.281-4.531v-2.125s-0.016-2.266 0.281-4.531c0.25-1.937 1.109-2.781 1.109-2.781 1.062-1.125 2.266-1.125 2.812-1.188 0 0 3.906-0.281 9.797-0.281v0z"></path>
+  </symbol>
+  <symbol id="icon-tools-flip-vertical" viewBox="0 0 6 28">
+    <title>Vertical</title>
+    <path d="M6 19.5v3c0 0.828-0.672 1.5-1.5 1.5h-3c-0.828 0-1.5-0.672-1.5-1.5v-3c0-0.828 0.672-1.5 1.5-1.5h3c0.828 0 1.5 0.672 1.5 1.5zM6 11.5v3c0 0.828-0.672 1.5-1.5 1.5h-3c-0.828 0-1.5-0.672-1.5-1.5v-3c0-0.828 0.672-1.5 1.5-1.5h3c0.828 0 1.5 0.672 1.5 1.5zM6 3.5v3c0 0.828-0.672 1.5-1.5 1.5h-3c-0.828 0-1.5-0.672-1.5-1.5v-3c0-0.828 0.672-1.5 1.5-1.5h3c0.828 0 1.5 0.672 1.5 1.5z"></path>
+  </symbol>
+  <symbol id="icon-tools-flip-horizontal" viewBox="0 0 22 28">
+    <title>Horizontal</title>
+    <path d="M6 11.5v3c0 0.828-0.672 1.5-1.5 1.5h-3c-0.828 0-1.5-0.672-1.5-1.5v-3c0-0.828 0.672-1.5 1.5-1.5h3c0.828 0 1.5 0.672 1.5 1.5zM14 11.5v3c0 0.828-0.672 1.5-1.5 1.5h-3c-0.828 0-1.5-0.672-1.5-1.5v-3c0-0.828 0.672-1.5 1.5-1.5h3c0.828 0 1.5 0.672 1.5 1.5zM22 11.5v3c0 0.828-0.672 1.5-1.5 1.5h-3c-0.828 0-1.5-0.672-1.5-1.5v-3c0-0.828 0.672-1.5 1.5-1.5h3c0.828 0 1.5 0.672 1.5 1.5z"></path>
+  </symbol>
+  <symbol id="icon-trial-info" viewBox="0 0 20 20">
+    <title>Trial Information</title>
+    <g id="icon-trial-info-group" fill="none" stroke-width="2">
+      <path id="icon-trial-info-circle" d="M10,1 a9 9 0 0 1 0 18 a9 9 0 0 1 0 -18 M10,5 l0,2 m0,2 0,6" />
+    </g>
+  </symbol>
+  <symbol id="icon-ui-accordion-expand" viewBox="0 0 12 8">
+    <title>Expand</title>
+    <polygon transform="translate(6.000000, 3.700000) rotate(-270.000000) translate(-6.000000, -3.700000) " points="3.7 -2.3 2.3 -0.9 6.9 3.7 2.3 8.3 3.7 9.7 9.7 3.7"/>
+  </symbol>
+  <symbol id="icon-ui-add" viewBox="0 0 12 13">
+    <title>Add</title>
+    <path d="M6.5 7L6.5 12C6.5 12.28 6.28 12.5 6 12.5 5.72 12.5 5.5 12.28 5.5 12L5.5 7 0.5 7C0.22 7 0 6.78 0 6.5 0 6.22 0.22 6 0.5 6L5.5 6 5.5 1C5.5 0.72 5.72 0.5 6 0.5 6.28 0.5 6.5 0.72 6.5 1L6.5 6 11.5 6C11.78 6 12 6.22 12 6.5 12 6.78 11.78 7 11.5 7L6.5 7Z" id="Combined-Shape"/>
+  </symbol>
+  <symbol id="icon-ui-close" viewBox="0 0 14 14">
+    <title>Close</title>
+    <g id="icon-ui-close-group" stroke-width="1.75">
+        <path id="icon-ui-close-path" d="M1,1 13,13 M1,13 13,1" />
+    </g>
+  </symbol>
+  <symbol id="icon-create-comment" viewBox="0 0 37 34">
+    <title>Comment</title>
+    <path fill="#94a8b3" d="M22.32 14L35 14C36.1 14 37 14.9 37 16L37 28C37 29.1 36.1 30 35 30L21 30 17 34 17 20.39C19.45 18.97 21.36 16.71 22.32 14Z" id="Combined-Shape"/>
+    <path d="M10 0C4.5 0 0 4.5 0 10 0 15.5 4.5 20 10 20 15.5 20 20 15.5 20 10 20 4.5 15.5 0 10 0L10 0ZM15 11L11 11 11 15 9 15 9 11 5 11 5 9 9 9 9 5 11 5 11 9 15 9 15 11 15 11Z" id="Shape"/>
+  </symbol>
+  <symbol id="icon-create-screen-capture" viewBox="0 0 37 35">
+    <title>Capture Screen</title>
+    <g id="camera-alt" transform="translate(17.000000, 17.000000)" fill="#94a8b3">
+      <path d="M10 13C11.66 13 13 11.66 13 10 13 8.34 11.66 7 10 7 8.34 7 7 8.34 7 10 7 11.66 8.34 13 10 13Z" id="Oval"/>
+      <path d="M7 0L5.2 2 2 2C0.9 2 0 2.9 0 4L0 16C0 17.1 0.9 18 2 18L18 18C19.1 18 20 17.1 20 16L20 4C20 2.9 19.1 2 18 2L14.8 2 13 0 7 0 7 0ZM10 15C7.2 15 5 12.8 5 10 5 7.2 7.2 5 10 5 12.8 5 15 7.2 15 10 15 12.8 12.8 15 10 15L10 15Z" id="Shape"/>
+    </g>
+    <path d="M10 0C4.5 0 0 4.5 0 10 0 15.5 4.5 20 10 20 15.5 20 20 15.5 20 10 20 4.5 15.5 0 10 0L10 0ZM15 11L11 11 11 15 9 15 9 11 5 11 5 9 9 9 9 5 11 5 11 9 15 9 15 11 15 11Z" id="Shape"/>
+  </symbol>
+  <symbol id="icon-ui-warning" viewBox="0 0 22 20">
+    <title>Warning</title>
+    <g id="icon-ui-warning-group" stroke="none">
+      <path d="m11,0 11,20 -22,0Z m1,7 -2,0 0,6 2,0Z m0,8 -2,0 0,2 2,0Z" />
+    </g>
+  </symbol>
+  <symbol id="icon-ohif-logo" viewBox="0 0 47 47">
+    <title>Open Health Imaging Foundation</title>
+    <g id="icon-ohif-logo" stroke="#fff" stroke-width="2.5" stroke-miterlimit="10">
+      <rect x="1.25" y="1.25" width="18.8" height="18.8" rx="1" ry="1"/>
+      <rect x="26" y="1.25" width="18.8" height="18.8" rx="1" ry="1"/>
+      <rect x="1.25" y="26" width="18.8" height="18.8" rx="1" ry="1"/>
+      <rect x="26" y="26" width="18.8" height="18.8" rx="1" ry="1"/>
+    </g>
+  </symbol>
+  <symbol id="icon-viewport-link" viewBox="0 0 32 32">
+    <title>Viewport Link</title>
+    <g id="icon-viewport-link-group" stroke="none">
+      <path d="m5.364 28.917c1.047 1.046 2.422 1.57 3.797 1.57 1.376 0 2.751-0.523 3.798-1.572l7.552-7.554c1.016-1.014 1.574-2.361 1.574-3.797 -0.001-1.432-0.558-2.781-1.574-3.796l-2.297-2.298 -2.009 2.009 2.297 2.298c0.478 0.478 0.741 1.113 0.741 1.788 0 0.674-0.264 1.309-0.741 1.786l-7.553 7.555c-0.987 0.985-2.59 0.985-3.576 0l-2.297-2.298c-0.987-0.985-0.987-2.589 0-3.576l3.775-3.776 -2.009-2.009 -3.776 3.776c-2.094 2.096-2.092 5.502 0 7.595l2.299 2.3zM26.695 2.992"/>
+      <path d="m26.695 2.992c-1.014-1.016-2.362-1.575-3.797-1.575 -0.001 0-0.001 0-0.002 0 -1.435 0-2.784 0.56-3.798 1.573l-7.551 7.553c-1.017 1.016-1.576 2.363-1.576 3.799 0 1.434 0.558 2.784 1.574 3.797l2.297 2.297 2.01-2.009 -2.298-2.297c-0.477-0.477-0.741-1.113-0.741-1.788 0-0.676 0.265-1.311 0.742-1.788l7.553-7.555c0.477-0.477 1.111-0.74 1.789-0.74 0 0 0 0 0.001 0 0.674 0 1.309 0.264 1.786 0.74l2.297 2.299c0.477 0.477 0.74 1.111 0.74 1.788 0 0.674-0.264 1.311-0.74 1.788l-3.776 3.777 2.009 2.009 3.776-3.777c1.014-1.013 1.573-2.363 1.574-3.797 0-1.435-0.56-2.784-1.574-3.797l-2.295-2.296z"/>
+    </g>
+  </symbol>
+  <symbol id="theme" viewBox="0 0 24 24">
+    <title>Theme</title>
+    <path d="M17.484 12c0.844 0 1.5-0.656 1.5-1.5s-0.656-1.5-1.5-1.5-1.5 0.656-1.5 1.5 0.656 1.5 1.5 1.5zM14.484 8.016c0.844 0 1.5-0.656 1.5-1.5s-0.656-1.5-1.5-1.5-1.5 0.656-1.5 1.5 0.656 1.5 1.5 1.5zM9.516 8.016c0.844 0 1.5-0.656 1.5-1.5s-0.656-1.5-1.5-1.5-1.5 0.656-1.5 1.5 0.656 1.5 1.5 1.5zM6.516 12c0.844 0 1.5-0.656 1.5-1.5s-0.656-1.5-1.5-1.5-1.5 0.656-1.5 1.5 0.656 1.5 1.5 1.5zM12 3c4.969 0 9 3.609 9 8.016 0 2.766-2.25 4.969-5.016 4.969h-1.734c-0.844 0-1.5 0.656-1.5 1.5 0 0.375 0.141 0.703 0.375 0.984s0.375 0.656 0.375 1.031c0 0.844-0.656 1.5-1.5 1.5-4.969 0-9-4.031-9-9s4.031-9 9-9z"></path>
+  </symbol>
+  <symbol id="log" viewBox="0 0 24 24">
+    <title>Log</title>
+    <path d="M9.516 14.016c2.484 0 4.5-2.016 4.5-4.5s-2.016-4.5-4.5-4.5-4.5 2.016-4.5 4.5 2.016 4.5 4.5 4.5zM15.516 14.016l4.969 4.969-1.5 1.5-4.969-4.969v-0.797l-0.281-0.281c-1.125 0.984-2.625 1.547-4.219 1.547-3.609 0-6.516-2.859-6.516-6.469s2.906-6.516 6.516-6.516 6.469 2.906 6.469 6.516c0 1.594-0.563 3.094-1.547 4.219l0.281 0.281h0.797z"></path>
+  </symbol>
+  <symbol id="server" viewBox="0 0 24 28">
+    <title>Server</title>
+    <path d="M12 12c4.703 0 9.422-0.844 12-2.656v2.656c0 2.203-5.375 4-12 4s-12-1.797-12-4v-2.656c2.578 1.813 7.297 2.656 12 2.656zM12 24c4.703 0 9.422-0.844 12-2.656v2.656c0 2.203-5.375 4-12 4s-12-1.797-12-4v-2.656c2.578 1.813 7.297 2.656 12 2.656zM12 18c4.703 0 9.422-0.844 12-2.656v2.656c0 2.203-5.375 4-12 4s-12-1.797-12-4v-2.656c2.578 1.813 7.297 2.656 12 2.656zM12 0c6.625 0 12 1.797 12 4v2c0 2.203-5.375 4-12 4s-12-1.797-12-4v-2c0-2.203 5.375-4 12-4z"></path>
+  </symbol>
+  <symbol id="study-list" viewBox="0 0 24 24">
+    <title>Study List</title>
+    <path d="M9 5.016h12v3.984h-12v-3.984zM9 18.984v-3.984h12v3.984h-12zM9 14.016v-4.031h12v4.031h-12zM3.984 9v-3.984h4.031v3.984h-4.031zM3.984 18.984v-3.984h4.031v3.984h-4.031zM3.984 14.016v-4.031h4.031v4.031h-4.031z"></path>
+  </symbol>
+  <symbol id="logout" viewBox="0 0 24 28">
+    <title>Logout</title>
+    <path d="M24 14c0 6.609-5.391 12-12 12s-12-5.391-12-12c0-3.797 1.75-7.297 4.797-9.578 0.891-0.672 2.141-0.5 2.797 0.391 0.672 0.875 0.484 2.141-0.391 2.797-2.031 1.531-3.203 3.859-3.203 6.391 0 4.406 3.594 8 8 8s8-3.594 8-8c0-2.531-1.172-4.859-3.203-6.391-0.875-0.656-1.062-1.922-0.391-2.797 0.656-0.891 1.922-1.062 2.797-0.391 3.047 2.281 4.797 5.781 4.797 9.578zM14 2v10c0 1.094-0.906 2-2 2s-2-0.906-2-2v-10c0-1.094 0.906-2 2-2s2 0.906 2 2z"></path>
+  </symbol>
+  <symbol id="password" viewBox="0 0 18 28">
+    <title>Password</title>
+    <path d="M5 12h8v-3c0-2.203-1.797-4-4-4s-4 1.797-4 4v3zM18 13.5v9c0 0.828-0.672 1.5-1.5 1.5h-15c-0.828 0-1.5-0.672-1.5-1.5v-9c0-0.828 0.672-1.5 1.5-1.5h0.5v-3c0-3.844 3.156-7 7-7s7 3.156 7 7v3h0.5c0.828 0 1.5 0.672 1.5 1.5z"></path>
+  </symbol>
+</svg>
