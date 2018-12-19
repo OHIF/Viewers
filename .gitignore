@@ -10,3 +10,4 @@ Packages/active-entry/helloworld/
 LesionTracker/tests/nightwatch/reports/
 docs/_book
 OHIFViewer-react/build/
+.DS_Store
