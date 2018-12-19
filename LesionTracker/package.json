@@ -9,8 +9,8 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
-    "@babel/runtime": "^7.2.0",
-    "bcrypt": "^3.0.2",
+    "@babel/runtime": "^7.0.0-beta.53",
+    "bcrypt": "^2.0.1",
     "loglevel": "^1.6.1",
     "url": "^0.11.0"
   },
