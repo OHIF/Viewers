@@ -327,7 +327,6 @@ export default class nonTargetTool extends BaseAnnotationTool {
     element.addEventListener('cornerstoneimagerendered', imageRenderedHandler);
 
     // Bind the tool deactivation and enlargement handlers
-    element.addEventListener('cornerstonetoolstooldeactivated', cancelAction);
     $element.one('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
     cornerstone.updateImage(element);
@@ -355,15 +354,13 @@ export default class nonTargetTool extends BaseAnnotationTool {
         element.removeEventListener('cornerstoneimagerendered', imageRenderedHandler);
 
         // Unbind the tool deactivation and enlargement handlers
-        element.removeEventListener('cornerstonetoolstooldeactivated', cancelAction);
         $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
         // Disable the default handlers and re-enable again
-        disableDefaultHandlers();
         element.addEventListener('cornerstonetoolsmousemove', tool.mouseMoveCallback);
         element.addEventListener('cornerstonetoolsmousedown', tool.mouseDownCallback);
         element.addEventListener('cornerstonetoolsmousedownactivate', tool.mouseDownActivateCallback);
-        element.addEventListener('cornerstonetoolsmousedoubleclick', doubleClickCallback);
+        element.addEventListener('cornerstonetoolsmousedoubleclick', this.doubleClickCallback);
 
         cornerstone.updateImage(element);
     });
@@ -386,8 +383,7 @@ export default class nonTargetTool extends BaseAnnotationTool {
     }
 
     if (event.data && 
-        event.data.mouseButtonMask && 
-        !isMouseButtonEnabled(eventData.which, event.data.mouseButtonMask)) {
+        event.data.mouseButtonMask) {
         return false;
     }
 
@@ -409,7 +405,7 @@ export default class nonTargetTool extends BaseAnnotationTool {
 
     for (let i = 0; i < toolData.data.length; i++) {
         data = toolData.data[i];
-        if (pointNearTool(element, data, coords)) {
+        if (this.pointNearTool(element, data, coords)) {
             data.active = true;
             cornerstone.updateImage(element);
             // Allow relabelling via a callback
