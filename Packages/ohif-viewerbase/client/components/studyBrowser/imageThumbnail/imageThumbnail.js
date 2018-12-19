@@ -57,28 +57,20 @@ Template.imageThumbnail.onRendered(() => {
     const $thumbnailElement = $parent.find('.imageThumbnailCanvas');
 
     instance.refreshImage = () => {
-        const imageElement = $thumbnailElement.find('img').get(0);
+        const staticImageCanvasElement = $thumbnailElement.find('canvas').get(0);
 
         // Activate the loading state
         instance.isLoading.set(true);
         instance.hasLoadingError.set(false);
 
-        // Clear the previous image
-        imageElement.removeAttribute('src');
-
         // Define a handler for success on image load
         const loadSuccess = image => {
-            // This is an off-screen canvas. It's used to get dataURL images by using
-            // cornerstone.renderToCanvas function.
-            const canvasElement = document.createElement('canvas');
-            canvasElement.width = 193;
-            canvasElement.height = 123;
+            staticImageCanvasElement.width = 193;
+            staticImageCanvasElement.height = 123;
 
-            // Render the image to canvas to be able to get its dataURL
-            renderAsync(canvasElement, image).then(() => {
-              instance.isLoading.set(false);
-
-              imageElement.src = canvasElement.toDataURL('image/jpeg', 1);
+            // Render the image to the static image canvas
+            renderAsync(staticImageCanvasElement, image).then(() => {
+                instance.isLoading.set(false);
             });
         };
 
