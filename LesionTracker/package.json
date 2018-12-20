@@ -9,20 +9,20 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.54",
-    "bcrypt": "^0.8.7",
+    "@babel/runtime": "7.0.0-beta.51",
+    "bcrypt": "^3.0.1",
     "loglevel": "^1.6.1",
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "babel-eslint": "^6.1.2",
-    "eslint": "^3.7.0",
-    "eslint-config-airbnb": "^12.0.0",
-    "eslint-import-resolver-meteor": "^0.3.3",
-    "eslint-plugin-import": "^1.16.0",
-    "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-meteor": "^4.0.0",
-    "eslint-plugin-react": "^6.3.0"
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.6.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-import-resolver-meteor": "^0.4.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-meteor": "^5.1.0",
+    "eslint-plugin-react": "^7.11.1"
   },
   "main": "index.js",
   "repository": {

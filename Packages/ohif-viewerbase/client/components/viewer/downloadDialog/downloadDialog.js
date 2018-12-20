@@ -11,6 +11,31 @@ OHIF.viewerbase.getImageDownloadDialogAnnotationTools = () => {
     return ['length', 'probe', 'simpleAngle', 'arrowAnnotate', 'ellipticalRoi', 'rectangleRoi'];
 };
 
+/**
+ * Converts a base64 data to a blob. This is needed to enabled JPEG images downloading on IE11.
+ * Source: https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript/16245768
+ */
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+    const byteCharacters = atob(b64Data);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    const blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+};
+
 Template.imageDownloadDialog.onCreated(() => {
     const instance = Template.instance();
 
@@ -42,7 +67,7 @@ Template.imageDownloadDialog.onCreated(() => {
     instance.lastImage = {};
 
     instance.getConfirmCallback = () => () => {
-        instance.downloadImage();
+        return instance.downloadImage();
     };
 });
 
@@ -105,7 +130,14 @@ Template.imageDownloadDialog.onRendered(() => {
         const filename = `${formData.name}.${formData.type}`;
         const mimetype = `image/${formData.type}`;
 
-        cornerstoneTools.saveAs(instance.viewportElement, filename, mimetype);
+        // Handles JPEG images for IE11
+        if (instance.downloadCanvas.msToBlob && formData.type === 'jpeg') {
+            const image = instance.downloadCanvas.toDataURL(mimetype, 1);
+            const blob = b64toBlob(image.replace('data:image/jpeg;base64,', ''), mimetype);
+            return window.navigator.msSaveBlob(blob, filename);
+        }
+
+        return cornerstoneTools.saveAs(instance.viewportElement, filename, mimetype);
     };
 
     instance.autorun(() => {
@@ -147,9 +179,9 @@ Template.imageDownloadDialog.onRendered(() => {
 });
 
 Template.imageDownloadDialog.onDestroyed(() => {
-  const instance = Template.instance();
+    const instance = Template.instance();
 
-  cornerstone.disable(instance.viewportElement);
+    cornerstone.disable(instance.viewportElement);
 });
 
 Template.imageDownloadDialog.events({

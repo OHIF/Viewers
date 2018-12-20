@@ -6,18 +6,16 @@ Package.describe({
 
 Npm.depends({
     hammerjs: '2.0.8',
-    'cornerstone-core': '2.2.4',
-  //  'cornerstone-tools': '2.4.0',
-    'cornerstone-tools': 'file://../../../cornerstoneTools',
-    'cornerstone-math': '0.1.6',
-    'dicom-parser': '1.8.0',
-  //  'cornerstone-wado-image-loader': '2.1.4',
-    'cornerstone-wado-image-loader': 'file://../../../cornerstone-wado-image-loader',
-    'dcmjs': '0.1.5'
+    'cornerstone-core': '2.2.8',
+    'cornerstone-tools': '2.4.0',
+    'cornerstone-math': '0.1.7',
+    'dicom-parser': '1.8.3',
+    'cornerstone-wado-image-loader': '2.2.3',
+    'dcmjs': '0.2.1'
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.5');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
 

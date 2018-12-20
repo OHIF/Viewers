@@ -36,3 +36,4 @@ import './input/text.html';
 import './notification';
 
 import './popover/form.html';
+import './popover/popoverSimple.html';

@@ -2,11 +2,12 @@ import { cornerstone, cornerstoneMath, cornerstoneTools } from 'meteor/ohif:corn
 import { OHIF } from 'meteor/ohif:core';
 import { toolType } from '../definitions';
 import drawHandles from './drawHandles';
+import calculateLongestAndShortestDiameters from '../calculateLongestAndShortestDiameters';
 import updatePerpendicularLineHandles from '../updatePerpendicularLineHandles';
 import drawPerpendicularLine from './drawPerpendicularLine';
 import drawSelectedMarker from './drawSelectedMarker';
 
-export default function(event) {
+export default function onImageRendered(event) {
     const eventData = event.detail;
     const { element, canvasContext } = eventData;
 
@@ -41,9 +42,7 @@ export default function(event) {
 
     for (let i = 0; i < toolData.data.length; i++) {
         const data = toolData.data[i];
-        if (data.visible === false) {
-          continue;
-        }
+        if (data.visible === false) continue;
 
         const { start, end, perpendicularStart, perpendicularEnd, textBox } = data.handles;
         const strokeWidth = lineWidth;
@@ -65,10 +64,16 @@ export default function(event) {
             color = cornerstoneTools.toolColors.getToolColor();
         }
 
-        // draw the line
-        const handleStartCanvas = cornerstone.pixelToCanvas(element, start);
-        const handleEndCanvas = cornerstone.pixelToCanvas(element, end);
-        const canvasTextLocation = cornerstone.pixelToCanvas(element, textBox);
+        // Update the perpendicular handles to draw it correctly
+        updatePerpendicularLineHandles(eventData, data);
+
+        // Draw the line
+        const { pixelToCanvas } = cornerstone;
+        const handleStartCanvas = pixelToCanvas(element, start);
+        const handleEndCanvas = pixelToCanvas(element, end);
+        const handlePerpendicularStartCanvas = pixelToCanvas(element, perpendicularStart);
+        const handlePerpendicularEndCanvas = pixelToCanvas(element, perpendicularEnd);
+        const canvasTextLocation = pixelToCanvas(element, textBox);
 
         context.beginPath();
         context.strokeStyle = color;
@@ -78,7 +83,6 @@ export default function(event) {
         context.stroke();
 
         // Draw perpendicular line
-        updatePerpendicularLineHandles(eventData, data);
         drawPerpendicularLine(context, element, data, color, strokeWidth);
 
         // Draw the handles
@@ -88,26 +92,8 @@ export default function(event) {
         // Draw the selected marker
         drawSelectedMarker(eventData, data.handles, '#FF9999');
 
-        // Calculate the long axis length
-        const dx = (start.x - end.x) * (colPixelSpacing || 1);
-        const dy = (start.y - end.y) * (rowPixelSpacing || 1);
-        let length = Math.sqrt(dx * dx + dy * dy);
-
-        // Calculate the short axis length
-        const wx = (perpendicularStart.x - perpendicularEnd.x) * (colPixelSpacing || 1);
-        const wy = (perpendicularStart.y - perpendicularEnd.y) * (rowPixelSpacing || 1);
-        let width = Math.sqrt(wx * wx + wy * wy);
-        if (!width) {
-            width = 0;
-        }
-
-        // Length is always longer than width
-        if (width > length) {
-            const tempW = width;
-            const tempL = length;
-            length = tempW;
-            width = tempL;
-        }
+        // Calculate the longest and shortest diameters, storing it in the respective attributes
+        calculateLongestAndShortestDiameters(eventData, data);
 
         if (data.measurementNumber) {
             // Draw the textbox
@@ -116,9 +102,14 @@ export default function(event) {
                 suffix = ' pixels';
             }
 
-            const lengthText = ' L ' + length.toFixed(1) + suffix;
-            const widthText = ' W ' + width.toFixed(1) + suffix;
-            const textLines = [`Target ${data.measurementNumber}`, lengthText, widthText];
+            const lengthText = ' L ' + data.longestDiameter + suffix;
+            const widthText = ' W ' + data.shortestDiameter + suffix;
+            let textLines = [`Target ${data.measurementNumber}`, lengthText, widthText];
+
+            // Append extra text lines when applies
+            if (data.additionalData && Array.isArray(data.additionalData.extraTextLines)) {
+                textLines = textLines.concat(data.additionalData.extraTextLines);
+            }
 
             const boundingBox = cornerstoneTools.drawTextBox(
                 context,
@@ -139,12 +130,39 @@ export default function(event) {
                 end: {}
             };
 
-            const midpointCanvas = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
+            const longLine = {
+                start: handleStartCanvas,
+                end: handleEndCanvas
             };
 
-            const points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
+            const perpendicularLine = {
+                start: handlePerpendicularStartCanvas,
+                end: handlePerpendicularEndCanvas
+            };
+
+            // Check if the perpendicular line has some length (start and end are not equal)
+            // Note: this check is needed to prevent NaN value on the intersection result
+            const { distance } = cornerstoneMath.point;
+            const lineHasLength = distance(perpendicularLine.start, perpendicularLine.end) > 0;
+
+            // Define the lines intersection point
+            let linesIntersection;
+            if (lineHasLength) {
+                // As the line has length, define it as the intersection between the lines
+                const { intersectLine } = cornerstoneMath.lineSegment;
+                linesIntersection = intersectLine(longLine, perpendicularLine);
+            } else {
+                // As the line has no length, the tool is in its start position
+                linesIntersection = longLine.start;
+            }
+
+            const points = [
+                handleStartCanvas,
+                handleEndCanvas,
+                handlePerpendicularStartCanvas,
+                handlePerpendicularEndCanvas,
+                linesIntersection
+            ];
 
             link.end.x = canvasTextLocation.x;
             link.end.y = canvasTextLocation.y;
@@ -180,10 +198,6 @@ export default function(event) {
             context.lineTo(link.end.x, link.end.y);
             context.stroke();
         }
-
-        // Set measurement text to show lesion table
-        data.longestDiameter = length.toFixed(1);
-        data.shortestDiameter = width.toFixed(1);
 
         context.restore();
     }

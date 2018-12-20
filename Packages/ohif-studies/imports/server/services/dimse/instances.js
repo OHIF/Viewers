@@ -1,4 +1,5 @@
 import { OHIF } from 'meteor/ohif:core';
+import DIMSE from 'dimse';
 
 /**
  * Parses data returned from a study search and transforms it into

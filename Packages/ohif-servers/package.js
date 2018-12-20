@@ -5,14 +5,14 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
-    api.use('templating');
-    api.use('jquery');
-    api.use('stylus');
-    api.use('aldeed:simple-schema');
-    api.use('aldeed:collection2');
+    api.use('templating', 'client');
+    api.use('jquery', 'client');
+    api.use('stylus', 'client');
+    api.use('aldeed:simple-schema@1.5.4');
+    api.use('aldeed:collection2@2.10.0');
 
     // Our custom packages
     api.use('ohif:core');

@@ -27,7 +27,6 @@ ohif:cornerstone-settings
 ohif:viewerbase
 ohif:metadata
 ohif:study-list
-ohif:dicomweb-client
 ohif:measurement-table
 
 aldeed:template-extension

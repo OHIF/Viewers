@@ -10,7 +10,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.4');
+    api.versionsFrom('1.7');
 
     api.use('ecmascript');
     api.use('standard-app-packages');
@@ -30,7 +30,6 @@ Package.onUse(function(api) {
     api.use('ohif:core');
     api.use('ohif:log');
     api.use('ohif:servers');
-    api.use('ohif:dicom-services');
     api.use('ohif:viewerbase');
     api.use('ohif:wadoproxy');
     api.use('ohif:studies');

@@ -193,11 +193,11 @@ Meteor.startup(function() {
             disabled: () => !canMoveDisplaySets(true)
         },
         nextPanel: {
-            name: 'Next Panel',
+            name: 'Next Image Viewport',
             action: () => panelNavigation.loadNextActivePanel()
         },
         previousPanel: {
-            name: 'Previous Panel',
+            name: 'Previous Image Viewport',
             action: () => panelNavigation.loadPreviousActivePanel()
         }
     }, true);

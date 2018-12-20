@@ -35,12 +35,13 @@ function createAndAddStack(stackMap, study, displaySet) {
         if (numberOfFrames > 1) {
             OHIF.log.info('Multiframe image detected');
             for (let i = 0; i < numberOfFrames; i++) {
-                metaData.frame = i;
+                metaData.frameNumber = i;
                 imageId = getImageId(image, i);
                 imageIds.push(imageId);
                 metadataProvider.addMetadata(imageId, metaData);
             }
         } else {
+            metaData.frameNumber = 1;
             imageId = getImageId(image);
             imageIds.push(imageId);
             metadataProvider.addMetadata(imageId, metaData);

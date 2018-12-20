@@ -21,4 +21,15 @@ Meteor.startup(function() {
 
     cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
     cornerstoneWebImageLoader.external.cornerstone = cornerstone;
+
+    let configureAuthorization = {
+        beforeSend: function(xhr){
+            if (OHIF.viewer.authorizationToken) {
+                xhr.setRequestHeader('Authorization', OHIF.viewer.authorizationToken);
+            }
+        }
+    };
+
+    cornerstoneWADOImageLoader.configure(configureAuthorization);
+    cornerstoneWebImageLoader.configure(configureAuthorization);
 });

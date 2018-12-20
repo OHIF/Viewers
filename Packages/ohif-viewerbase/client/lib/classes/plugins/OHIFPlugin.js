@@ -43,6 +43,12 @@ export class OHIFPlugin {
             });
         }
 
+        if (plugin.styleURLs && plugin.styleURLs.length) {
+            plugin.styleURLs.forEach(styleURLs => {
+                this.loadScript(styleURLs, "text/css");
+            });
+        }
+
         let scriptURL = plugin.url;
 
         if (plugin.allowCaching === false) {

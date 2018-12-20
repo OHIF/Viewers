@@ -92,8 +92,6 @@ ohif:core@0.0.1
 ohif:cornerstone@0.0.1
 ohif:cornerstone-settings@0.0.1
 ohif:design@0.0.1
-ohif:dicom-services@0.0.1
-ohif:dicomweb-client@0.0.1
 ohif:hanging-protocols@0.0.1
 ohif:header@0.0.1
 ohif:hotkeys@0.0.1
@@ -143,7 +141,6 @@ tracker@1.2.0
 ui@1.0.13
 underscore@1.0.10
 url@1.2.0
-validatejs@0.0.1
 webapp@1.6.2
 webapp-hashing@1.0.9
 zuuk:stale-session@1.0.8

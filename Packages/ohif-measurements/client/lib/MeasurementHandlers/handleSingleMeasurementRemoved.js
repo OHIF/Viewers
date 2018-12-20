@@ -30,7 +30,7 @@ export default function({ instance, eventData, tool, toolGroupId, toolGroup }) {
     measurementApi.sortMeasurements(baseline.timepointId);
 
     // Repaint the images on all viewports without the removed measurements
-    _.each($('.imageViewerViewport'), element => cornerstone.updateImage(element));
+    _.each($('.imageViewerViewport:not(.empty)'), element => cornerstone.updateImage(element));
 
     // Notify that viewer suffered changes
     if (tool.toolGroup !== 'temp') {

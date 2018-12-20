@@ -4,12 +4,10 @@ OHIF.measurements.saveMeasurements = (measurementApi, timepointId) => {
     const { unsavedChanges, notifications, showDialog } = OHIF.ui;
     const basePath = `viewer.studyViewer.measurements.${timepointId}`;
 
-    // Stop here if there are nonconformities in the timepoints
-    const nonconformities = OHIF.viewer.conformanceCriteria.nonconformities.get();
-    if (nonconformities.length) return;
-
-    // Stop here if there were no changes to the timepoint
-    if (unsavedChanges.probe(basePath) === 0) return;
+    // Prevent saving if it's disabled
+    if (OHIF.measurements.isSaveDisabled(timepointId)) {
+        return;
+    }
 
     // Clear unsaved changes state and display success message
     const successHandler = () => {

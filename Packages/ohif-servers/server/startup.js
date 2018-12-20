@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { _ } from 'meteor/underscore';
 import { OHIF } from 'meteor/ohif:core';
 import { Servers } from 'meteor/ohif:servers/both/collections';
-import { ServerConfiguration } from 'meteor/ohif:servers/both/schema/servers.js';
 
 // Check the servers on meteor startup
 if (Meteor.settings &&

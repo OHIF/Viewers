@@ -1,5 +1,6 @@
 import { cornerstone } from 'meteor/ohif:cornerstone';
 import setHandlesPosition from './setHandlesPosition';
+import calculateLongestAndShortestDiameters from '../calculateLongestAndShortestDiameters';
 
 export default function (mouseEventData, toolType, data, handle, doneMovingCallback, preventHandleOutsideImage) {
     const element = mouseEventData.element;
@@ -29,14 +30,23 @@ export default function (mouseEventData, toolType, data, handle, doneMovingCallb
 
         cornerstone.updateImage(element);
 
-        const eventType = 'cornerstonetoolsmeasurementmodified';
-        const modifiedEventData = {
-            toolType,
-            element,
-            measurementData: data
+        const measurementModifiedHandler = () => {
+            const eventType = 'cornerstonetoolsmeasurementmodified';
+            const modifiedEventData = {
+                toolType,
+                element,
+                measurementData: data
+            };
+
+            calculateLongestAndShortestDiameters(mouseEventData, data);
+
+            cornerstone.triggerEvent(element, eventType, modifiedEventData);
+
+            element.removeEventListener('cornerstoneimagerendered', measurementModifiedHandler);
         };
 
-        cornerstone.triggerEvent(element, eventType, modifiedEventData);
+        // Wait on image render before triggering the modified event
+        element.addEventListener('cornerstoneimagerendered', measurementModifiedHandler);
     };
 
     element.addEventListener('cornerstonetoolsmousedrag', mouseDragCallback);
