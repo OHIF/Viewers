@@ -1,7 +1,7 @@
 const BaseAnnotationTool = cornerstoneTools.import('base/BaseAnnotationTool');
 const moveNewHandle = cornerstoneTools.import('manipulators/moveNewHandle');
+const anyHandlesOutsideImage = cornerstoneTools.import('manipulators/anyHandlesOutsideImage');
 const drawArrow = cornerstoneTools.import('drawing/drawArrow');
-const drawLine = cornerstoneTools.import('drawing/drawLine');
 const drawHandles = cornerstoneTools.import('drawing/drawHandles');
 const draw = cornerstoneTools.import('drawing/draw');
 const drawLinkedTextBox = cornerstoneTools.import('drawing/drawLinkedTextBox');
@@ -232,7 +232,7 @@ export default class nonTargetTool extends BaseAnnotationTool {
     }
   };
 
-  addNewMeasurement = (event) => {
+  addNewMeasurement = (event, interactionType) => {
     const eventData = event.detail;
     const { element } = eventData;
     const $element = $(element);
@@ -306,13 +306,8 @@ export default class nonTargetTool extends BaseAnnotationTool {
 
     cornerstone.updateImage(element);
 
-    moveNewHandle(
-      eventData,
-      this.name, 
-      measurementData, 
-      measurementData.handles.end, 
-      function() {
-        if (cancelled || cornerstoneTools.anyHandlesOutsideImage(eventData, measurementData.handles)) {
+    function doneMovingCallback() {
+        if (cancelled || anyHandlesOutsideImage(eventData, measurementData.handles)) {
             // delete the measurement
             cornerstoneTools.removeToolState(eventData.element, this.name, measurementData);
         } else {
@@ -332,7 +327,16 @@ export default class nonTargetTool extends BaseAnnotationTool {
         $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
 
         cornerstone.updateImage(element);
-    });
+    }
+
+    moveNewHandle(
+      eventData,
+      this.name, 
+      measurementData, 
+      measurementData.handles.end,
+      { doneMovingCallback },
+      interactionType
+    );
   }
 
   doubleClickCallback = (event) => {
