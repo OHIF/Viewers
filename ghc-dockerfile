@@ -25,7 +25,7 @@ WORKDIR /home/user/Viewers/OHIFViewer
 ENV METEOR_PACKAGE_DIRS=../Packages
 ENV METEOR_PROFILE=1
 RUN meteor npm install
-RUN meteor-build-client /home/user/app/ -s ../config/oidc.json
+RUN meteor-build-client /home/user/app/ -s ../config/oidc-demo.json
 RUN ls /home/user/app/ 
 
 # Second stage of multi-stage build

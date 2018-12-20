@@ -11,6 +11,10 @@ Package.onUse(function(api) {
   api.use('ecmascript');
   api.use(['templating', 'stylus'], 'client');
 
+  // OHIF dependencies
+  api.use('ohif:core', 'client');
+
   // Main module
   api.mainModule('main.js', 'client');
+
 });

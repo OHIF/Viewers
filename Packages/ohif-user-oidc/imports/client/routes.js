@@ -74,7 +74,7 @@ Router.onRun(function() {
     else if (urlHasSignInResponse() === true)
         processSignInResponse().then(this.next);
     else {
-        const redirect_uri = OHIF.user.getOidcRedirectUri();
+        const redirect_uri = Meteor.absoluteUrl(OHIF.user.getOidcRedirectUri());
         signIn({ redirect_uri });
     }
 });

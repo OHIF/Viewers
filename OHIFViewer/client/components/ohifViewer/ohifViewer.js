@@ -33,9 +33,11 @@ Template.ohifViewer.onCreated(() => {
         icon: 'fa fa-info'
     }];
 
-    if (OHIF.user.userLoggedIn() === true) {
+    const isUserLoggedIn = OHIF.user.userLoggedIn();
+    const isDemoUserLoggedIn = OHIF.demoMode && OHIF.demoMode.userLoggedIn();
+    if (isUserLoggedIn || isDemoUserLoggedIn) {
         headerItems.push({
-            action: OHIF.user.logout,
+            action: isDemoUserLoggedIn ? OHIF.demoMode.logout : OHIF.user.logout,
             text: 'Logout',
             iconClasses: 'logout',
             iconSvgUse: 'packages/ohif_viewerbase/assets/user-menu-icons.svg#logout'
@@ -66,7 +68,12 @@ Template.ohifViewer.onCreated(() => {
         const server = OHIF.servers.getCurrentServer();
         if (!server || !server.isCloud) {
             Session.set("IsStudyListReady", false);
-            OHIF.gcloud.showDicomStorePicker().then(config => {
+            OHIF.gcloud.showDicomStorePicker({canClose: OHIF.demoMode}).then(config => {
+                if (!config) {
+                    if (OHIF.demoMode)
+                        Router.go('/demo-signin');
+                    return;
+                }
                 OHIF.servers.applyCloudServerConfig(config);
                 Session.set("IsStudyListReady", true);
             });
