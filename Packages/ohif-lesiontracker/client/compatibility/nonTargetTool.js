@@ -1,8 +1,12 @@
 const BaseAnnotationTool = cornerstoneTools.import('base/BaseAnnotationTool');
 const moveNewHandle = cornerstoneTools.import('manipulators/moveNewHandle');
 const drawArrow = cornerstoneTools.import('drawing/drawArrow');
+const drawLine = cornerstoneTools.import('drawing/drawLine');
 const drawHandles = cornerstoneTools.import('drawing/drawHandles');
-const drawTextBox = cornerstoneTools.import('drawing/drawTextBox');
+const draw = cornerstoneTools.import('drawing/draw');
+const drawLinkedTextBox = cornerstoneTools.import('drawing/drawLinkedTextBox');
+const setShadow = cornerstoneTools.import('drawing/setShadow');
+const getNewContext = cornerstoneTools.import('drawing/getNewContext');
 const pointInsideBoundingBox = cornerstoneTools.import('util/pointInsideBoundingBox');
 
 
@@ -145,7 +149,8 @@ export default class nonTargetTool extends BaseAnnotationTool {
 
   renderToolData = (event) => {
     const eventData = event.detail;
-    const { element } = eventData;
+    const { element, canvasContext } = eventData;
+    const { handleRadius, drawHandlesOnHover } = this.configuration;
 
     // if we have no toolData for this element, return immediately as there is nothing to do
     const toolData = cornerstoneTools.getToolState(element, this.name);
@@ -153,13 +158,9 @@ export default class nonTargetTool extends BaseAnnotationTool {
         return;
     }
 
-    // we have tool data for this element - iterate over each one and draw it
-    const context = eventData.canvasContext.canvas.getContext('2d');
-    context.setTransform(1, 0, 0, 1, 0, 0);
-
-    let color;
+    const context = getNewContext(canvasContext.canvas);
+    
     const lineWidth = cornerstoneTools.toolStyle.getToolWidth();
-    const config = this.configuration;
 
     for (let i = 0; i < toolData.data.length; i++) {
         const data = toolData.data[i];
@@ -167,93 +168,67 @@ export default class nonTargetTool extends BaseAnnotationTool {
           continue;
         }
 
-        context.save();
-
-        // configurable shadow from CornerstoneTools
-        if (config && config.shadow) {
-            context.shadowColor = config.shadowColor || '#000000';
-            context.shadowOffsetX = config.shadowOffsetX || 1;
-            context.shadowOffsetY = config.shadowOffsetY || 1;
-        }
-
+        let color = cornerstoneTools.toolColors.getToolColor();
         if (data.active) {
             color = cornerstoneTools.toolColors.getActiveColor();
-        } else {
-            color = cornerstoneTools.toolColors.getToolColor();
         }
 
-        // Draw the arrow
-        const handleStartCanvas = cornerstone.pixelToCanvas(element, data.handles.start);
-        const handleEndCanvas = cornerstone.pixelToCanvas(element, data.handles.end);
-        const canvasTextLocation = cornerstone.pixelToCanvas(element, data.handles.textBox);
+        draw(context, context => {
+            setShadow(context, this.configuration);
 
-        drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
+            const {
+                start,
+                end,
+                textBox,
+            } = data.handles;
+            const handleStartCanvas = cornerstone.pixelToCanvas(element, start);
+            const handleEndCanvas = cornerstone.pixelToCanvas(element, end);
 
-        if (config.drawHandles) {
-            drawHandles(context, eventData, data.handles, color);
-        } else if (config.drawHandlesOnHover && data.handles.start.active) {
-            drawHandles(context, eventData, [ data.handles.start ], color);
-        } else if (config.drawHandlesOnHover && data.handles.end.active) {
-            drawHandles(context, eventData, [ data.handles.end ], color);
-        }
+            drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
+            //drawArrow(context, end, start, color, lineWidth);
 
-        // Draw the text
-        if (data.measurementNumber) {
-            const textLine = `Non-Target ${data.measurementNumber}`;
-            const boundingBox = drawTextBox(context, textLine, canvasTextLocation.x, canvasTextLocation.y, color, config.textBox);
-            data.handles.textBox.boundingBox = boundingBox;
-
-            OHIF.cornerstone.repositionTextBox(eventData, data, config.textBox);
-
-            // Draw linked line as dashed
-            const link = {
-                start: {},
-                end: {}
+            const handleOptions = {
+                color,
+                handleRadius,
+                drawHandlesIfActive: drawHandlesOnHover,
             };
 
-            const midpointCanvas = {
-                x: (handleStartCanvas.x + handleEndCanvas.x) / 2,
-                y: (handleStartCanvas.y + handleEndCanvas.y) / 2,
-            };
+            drawHandles(context, eventData, data.handles, handleOptions);
 
-            const points = [ handleStartCanvas, handleEndCanvas, midpointCanvas ];
+            
+            // Draw the text
+            if (data.measurementNumber) {
+                const xOffset = 10;
+                const midpointCanvas = {
+                    x: (start.x + end.x) / 2,
+                    y: (start.y + end.y) / 2,
+                };
+                const textBoxAnchorPoints = handles => [
+                    start,
+                    end,
+                    midpointCanvas
+                ];
 
-            link.end.x = canvasTextLocation.x;
-            link.end.y = canvasTextLocation.y;
+                const textLine = `Non-Target ${data.measurementNumber}`;
 
-            link.start = cornerstoneMath.point.findClosestPoint(points, link.end);
+                if (data.additionalData && Array.isArray(data.additionalData)) {
+                    textLines = data.additionalData.concat(textLines);
+                }
 
-            const boundingBoxPoints = [ {
-                    // Top middle point of bounding box
-                    x: boundingBox.left + boundingBox.width / 2,
-                    y: boundingBox.top
-                }, {
-                    // Left middle point of bounding box
-                    x: boundingBox.left,
-                    y: boundingBox.top + boundingBox.height / 2
-                }, {
-                    // Bottom middle point of bounding box
-                    x: boundingBox.left + boundingBox.width / 2,
-                    y: boundingBox.top + boundingBox.height
-                }, {
-                    // Right middle point of bounding box
-                    x: boundingBox.left + boundingBox.width,
-                    y: boundingBox.top + boundingBox.height / 2
-                },
-            ];
-
-            link.end = cornerstoneMath.point.findClosestPoint(boundingBoxPoints, link.start);
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = lineWidth;
-            context.setLineDash([ 2, 3 ]);
-
-            context.moveTo(link.start.x, link.start.y);
-            context.lineTo(link.end.x, link.end.y);
-            context.stroke();
-        }
-
-        context.restore();
+                drawLinkedTextBox(
+                    context,
+                    element,
+                    textBox,
+                    [textLine],
+                    data.handles,
+                    textBoxAnchorPoints,
+                    color,
+                    lineWidth,
+                    xOffset,
+                    true
+                );
+            }
+        });
     }
   };
 
@@ -355,12 +330,6 @@ export default class nonTargetTool extends BaseAnnotationTool {
 
         // Unbind the tool deactivation and enlargement handlers
         $element.off('ohif.viewer.viewport.toggleEnlargement', cancelAction);
-
-        // Disable the default handlers and re-enable again
-        element.addEventListener('cornerstonetoolsmousemove', tool.mouseMoveCallback);
-        element.addEventListener('cornerstonetoolsmousedown', tool.mouseDownCallback);
-        element.addEventListener('cornerstonetoolsmousedownactivate', tool.mouseDownActivateCallback);
-        element.addEventListener('cornerstonetoolsmousedoubleclick', this.doubleClickCallback);
 
         cornerstone.updateImage(element);
     });
