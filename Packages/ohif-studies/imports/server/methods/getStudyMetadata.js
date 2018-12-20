@@ -12,7 +12,6 @@ Meteor.methods({
         // Get the server data. This is user-defined in the config.json files or through servers
         // configuration modal
         const server = OHIF.servers.getCurrentServer();
-
         if (!server) {
             throw new Meteor.Error('improper-server-config', 'No properly configured server was available over DICOMWeb or DIMSE.');
         }

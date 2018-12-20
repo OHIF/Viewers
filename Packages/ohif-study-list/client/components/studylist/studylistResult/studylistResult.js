@@ -125,8 +125,8 @@ function search(instance) {
     // Create the filters to be used for the StudyList Search
     const reverseFormatPN = Blaze._getGlobalHelper('reverseFormatPN');
     filter = {
-        offset: rowsPerPage * currentPage,
-        limit: rowsPerPage,
+      //  offset: rowsPerPage * currentPage,
+      //  limit: rowsPerPage,
         patientName: reverseFormatPN(getFilter($('input#patientName').val())),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
@@ -156,10 +156,7 @@ function search(instance) {
 
         // Loop through all identified studies
         studies.forEach(study => {
-            // TODO: Why is this Modality filter different from QIDO?
-            if (!modality && !study.modalities.includes(modality)) {
-                return;
-            }
+
 
             // Sometimes DICOM studies have incorrect Date entries with
             // periods such as '1990.10.04'

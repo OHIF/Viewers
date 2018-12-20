@@ -1,6 +1,7 @@
 
 import { OHIF } from 'meteor/ohif:core';
-import { DICOMWeb } from 'meteor/ohif:dicomweb-client';
+import DICOMwebClient from 'dicomweb-client';
+const { DICOMWeb } = OHIF;
 
 /**
  * Creates a URL for a WADO search

@@ -6,7 +6,7 @@
 
 http@1.4.1
 promise@0.11.1
-stylus@2.513.13
+stylus@=2.513.14
 meteor-base@1.4.0
 mobile-experience@1.0.5
 mongo@1.5.0
