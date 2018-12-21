@@ -361,7 +361,6 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
     const seriesMap = {};
 
     await Promise.all(resultData.map(async function(instance) {
-        debugger;
         const seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
         let series = seriesMap[seriesInstanceUid];
         const modality = getModality(instance);
@@ -463,7 +462,6 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
 
         series.instances.push(instanceSummary);
     }));
-    debugger;
     return studyData;
 }
 
@@ -475,12 +473,10 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
  * @returns {Promise}
  */
 OHIF.studies.services.WADO.RetrieveMetadata = async function(server, studyInstanceUid) {
-    debugger;
     const config = {
         url: server.wadoRoot,
         headers: OHIF.DICOMWeb.getAuthorizationHeader()
     };
-    debugger;
     const dicomWeb = new DICOMwebClient.api.DICOMwebClient(config);
     const options = {
         studyInstanceUID: studyInstanceUid
