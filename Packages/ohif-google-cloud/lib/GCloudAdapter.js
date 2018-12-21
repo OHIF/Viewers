@@ -1,6 +1,7 @@
 const GCloudAdapter = {};
 
 const GCP_HEALTHCARE_CONFIG = 'GCP_HEALTHCARE_CONFIG';
+let isEnabled = true;
 
 GCloudAdapter.getConfig = function() {
   const configStr = sessionStorage.getItem(GCP_HEALTHCARE_CONFIG);
@@ -28,5 +29,13 @@ const gcpConfig = GCloudAdapter.getConfig();
 if (gcpConfig) {
     OHIF.servers.applyCloudServerConfig(gcpConfig);
 }
+
+GCloudAdapter.setEnabled = function(value) {
+  isEnabled = value;
+}
+
+GCloudAdapter.isEnabled = function() {
+  return isEnabled;
+};
 
 export default GCloudAdapter;

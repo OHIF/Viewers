@@ -62,6 +62,14 @@ OHIF.user.getOidcStorageKey = function () {
     return itemName;
 }
 
+OHIF.user.getOidcRedirectUri = function () {
+    return oidcClient.authRedirectUri;
+}
+
+OHIF.user.login = function oidcLogin() {
+    oidcUserManager.signinRedirect({redirect_uri});
+}
+
 OHIF.user.logout = function oidcLogout() {
     const config = JSON.parse(sessionStorage.getItem(itemName) || null);
     if (oidcClient.revokeUrl && config && config.access_token) {
