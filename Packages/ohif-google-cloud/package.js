@@ -5,6 +5,11 @@ Package.describe({
   documentation: 'README.md',
 });
 
+Npm.depends({
+  'healthcare-api-adapter': "git+https://github.com/quantumsoftgroup/healthcare-api-adapter#master"
+});
+
+
 Package.onUse(function(api) {
   api.versionsFrom('1.4');
 
@@ -20,18 +25,18 @@ Package.onUse(function(api) {
   api.addFiles('client/index.js', 'client');
 
   var assets = [
-    'healthcare-api-adapter/dist/gcp.0.min.js',
-    'healthcare-api-adapter/dist/gcp.2.min.js',
-    'healthcare-api-adapter/dist/gcp.3.min.js',
-    'healthcare-api-adapter/dist/gcp.4.min.js',
-    'healthcare-api-adapter/dist/gcp.min.js',
-    'healthcare-api-adapter/dist/vue.js',
-    'healthcare-api-adapter/dist/img/Button_File.473e74a7.svg',
-    'healthcare-api-adapter/dist/img/Button_Folder.271da60b.svg',
-    'healthcare-api-adapter/dist/img/Icon-24px-Close.d1a4d6d2.svg',
-    'healthcare-api-adapter/dist/img/Icon-Arrow.e493b444.svg',
-    'healthcare-api-adapter/dist/img/Icon-Warn.f3b4b640.svg',
-    'healthcare-api-adapter/dist/img/arrow_right.d8a5b209.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.0.min.js',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.2.min.js',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.3.min.js',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.4.min.js',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.min.js',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/vue.js',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/Button_File.473e74a7.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/Button_Folder.271da60b.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/Icon-24px-Close.d1a4d6d2.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/Icon-Arrow.e493b444.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/Icon-Warn.f3b4b640.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/arrow_right.d8a5b209.svg',
   ];
 
   api.addAssets(assets, 'client');
