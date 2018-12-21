@@ -3,7 +3,6 @@ import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
-import {Session} from "meteor/session";
 
 function isThereSeries(studies) {
     if (studies.length === 1) {

@@ -5,7 +5,6 @@ import { Router } from 'meteor/clinical:router';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { OHIF } from 'meteor/ohif:core';
 
-
 Template.ohifViewer.onCreated(() => {
     const instance = Template.instance();
     instance.headerClasses = new ReactiveVar('');

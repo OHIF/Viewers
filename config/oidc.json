@@ -13,7 +13,6 @@
         "imageRendering": "wadors",
         "thumbnailRendering": "wadors",
         "metadataSource": "wado",
-        "isGCloud": true,
         "requestOptions": {
           "requestFromBrowser": true,
           "logRequests": true,

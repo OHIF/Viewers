@@ -5,7 +5,6 @@
 git clone https://github.com/quantumsoftgroup/ViewersClone.git
 cd ViewersClone
 git checkout dev
-git submodule update --init --recursive
 ```
 ## build
 ```bash
