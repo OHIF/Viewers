@@ -83,10 +83,12 @@ let filter;
  * @returns {*}
  */
 function getFilter(filter) {
-    // disable wildcard mode for GCloud healthcare
-    // if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
-    //     filter += '*';
-    // }
+    const server = OHIF.servers.getCurrentServer();
+    if (!server.isCloud) {
+        if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
+            filter += '*';
+        }
+    }
 
     return filter;
 }

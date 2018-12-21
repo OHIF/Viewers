@@ -42,9 +42,3 @@ Package.onUse(function(api) {
   api.addAssets(assets, 'client');
 });
 
-// Package.onTest(function(api) {
-//   api.use('ecmascript');
-//   api.use('tinytest');
-//   api.use('ohif-google-cloud');
-//   api.mainModule('ohif-google-cloud-tests.js');
-// });
