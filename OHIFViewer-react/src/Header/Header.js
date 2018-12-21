@@ -1,8 +1,23 @@
 import React from 'react'
-import './Header.css'
+import { Link } from 'react-router-dom'
+import { Dropdown } from "../components"
 import Icons from "../images/icons.svg"
+import './Header.css'
 
-export default function Header() {
+const list = [
+  {
+    title: 'Preferences',
+    icon: 'fa fa-user',
+    link: 'http://www.google.com'
+  },
+  {
+    title: 'About',
+    icon: 'fa fa-info',
+    link: 'http://ohif.org'
+  }
+]
+
+function Header() {
   return (
     <div className='header'>
       <a target="_blank" rel="noopener noreferrer" className="brand" href="http://ohif.org">
@@ -11,9 +26,21 @@ export default function Header() {
         </svg>
         <div className="logo-text">Open Health Imaging Foundation</div>
       </a>
-      <a href="#" class="btn studyListLinkSection pull-left js-toggle-studyList">
-        Study list
-      </a>
+
+      <Link className='btn studyListLinkSection' to="/">Study list</Link>
+
+      <div className="header-menu">
+        {/* TODO: research-use */}
+
+        <Dropdown
+          title='Options'
+          list={list}
+          align='right'
+        />
+      </div>
+
     </div>
   )
 }
+
+export default Header
