@@ -1,6 +1,5 @@
 .header {
   padding: 10px 10px 0;
-  height: 40px;
 }
 
 .brand {
@@ -46,4 +45,15 @@
   border-left: var(--ui-border-thickness) solid var(--ui-border-color);
   margin: 3px 0 0 10px;
   padding: 0 0 0 10px;
+}
+
+.header-menu {
+  color: var(--text-primary-color);
+  float: right;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  text-decoration: none;
+  margin-right: 10px;
 }
