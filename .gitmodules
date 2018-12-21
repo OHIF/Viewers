@@ -1,4 +1,0 @@
-[submodule "Packages/ohif-google-cloud/healthcare-api-adapter"]
-	path = Packages/ohif-google-cloud/healthcare-api-adapter
-	url = https://github.com/quantumsoftgroup/healthcare-api-adapter.git
-	branch = master
