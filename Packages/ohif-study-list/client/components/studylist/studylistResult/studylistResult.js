@@ -125,8 +125,6 @@ function search(instance) {
     // Create the filters to be used for the StudyList Search
     const reverseFormatPN = Blaze._getGlobalHelper('reverseFormatPN');
     filter = {
-      //  offset: rowsPerPage * currentPage,
-      //  limit: rowsPerPage,
         patientName: reverseFormatPN(getFilter($('input#patientName').val())),
         patientId: getFilter($('input#patientId').val()),
         accessionNumber: getFilter($('input#accessionNumber').val()),
@@ -135,7 +133,11 @@ function search(instance) {
         studyDateTo,
         modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : ''
     };
-
+    const server = OHIF.servers.getCurrentServer();
+    if (!server.isCloud) {
+        filter.offset=rowsPerPage * currentPage;
+        filter.limit=rowsPerPage;
+    }
     // Make sure that modality has a reasonable value, since it is occasionally
     // returned as 'undefined'
     const modality = replaceUndefinedColumnValue($('input#modality').val());
