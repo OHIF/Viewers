@@ -1,6 +1,6 @@
 # OHIF Standalone Installation Instructions For Windows Server 2016:
 
-*Turn-Off Windows Defender Realtime protection during this process
+* Note: Turn-Off Windows Defender Realtime protection during this process
 
 1. Install Chocolatey
     
