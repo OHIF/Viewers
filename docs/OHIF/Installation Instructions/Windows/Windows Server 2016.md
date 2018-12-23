@@ -50,7 +50,7 @@ https://www.mongodb.com/download-center/community
 
 	a. if you get this error "Error: EPERM: operation not permitted, unlink" Or,
 	
-	b. You feel the build is stale for a very long time > 10min with no visual indication, restart the cmd prompt and repeat this step (meteor)
+	b. You feel the build is stale for a very long time > 10min with no visual indication, restart the cmd prompt and repeat this step (`meteor`)
 
 # Troubleshooting:
 
