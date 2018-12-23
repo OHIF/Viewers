@@ -29,7 +29,7 @@ https://www.mongodb.com/download-center/community
 	
 	a. GitHub Repo: https://github.com/OHIF/Viewers
 	
-	b. GIT Clone command: git clone https://github.com/OHIF/Viewers
+	b. GIT Clone command: `git clone https://github.com/OHIF/Viewers`
 7. Set the Meteor Packages folder environment variable
 	
 	a. Go to Advanced System Settings
