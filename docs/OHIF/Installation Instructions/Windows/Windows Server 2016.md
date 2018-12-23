@@ -12,29 +12,43 @@
 	
 	c. Type choco -? to ensure the installation is OK.
 2. Install Meteor
+	
 	a. Type the command: `choco install meteor`
 3. Install node.js
+	
 	a. Download MSI from: https://nodejs.org/en/download/
 4. Install MongoDB
+	
 	a. Download MSI from: 
 https://www.mongodb.com/download-center/community
 5. Install Git
+	
 	a. https://git-scm.com/download/win
 6. Download the OHIF Viewer repository from GitHub, or use Git to clone it (recommended)
+	
 	a. GitHub Repo: https://github.com/OHIF/Viewers
+	
 	b. GIT Clone command: git clone https://github.com/OHIF/Viewers
 7. Set the Meteor Packages folder environment variable
+	
 	a. Go to Advanced System Settings
+	
 	b. Under Advanced, click on the "Environment Variables..." button
+	
 	c. Under System Variables, click "New..."
+	
 	d. Set the following:
+	
 		i. Variable name: METEOR_PACKAGE_DIRS
+		
 		ii. Variable Value: {path to the OHIF Viewer Packages Folder} 
 	example: C:\OHIF\Viewers\Packages
 8. Using the command line, navigate/cs to the standalone viewer folder, example: `cd C:\OHIF\Viewers\StandaloneViewer\StandaloneViewer`
 9. run the command: `meteor npm install`
 10. Run the command: `meteor`
+
 	a. if you get this error "Error: EPERM: operation not permitted, unlink" Or,
+	
 	b. You feel the build is stale for a very long time > 10min with no visual indication, restart the cmd prompt and repeat this step (meteor)
 
 # Troubleshooting:
