@@ -43,7 +43,7 @@ https://www.mongodb.com/download-center/community
 		i. Variable name: METEOR_PACKAGE_DIRS
 		
 		ii. Variable Value: {path to the OHIF Viewer Packages Folder} 
-	example: C:\OHIF\Viewers\Packages
+		example: C:\OHIF\Viewers\Packages
 8. Using the command line, navigate/cs to the standalone viewer folder, example: `cd C:\OHIF\Viewers\StandaloneViewer\StandaloneViewer`
 9. run the command: `meteor npm install`
 10. Run the command: `meteor`
