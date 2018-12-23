@@ -4,7 +4,8 @@
 
 1. Install Chocolatey
 
-	a. Go to this URL for instructions: 
+	a. Go to this URL for instructions:
+	
 	https://chocolatey.org/install#install-with-cmdexe
 	
 	b. Execute this command in the cmd line as Admin:
