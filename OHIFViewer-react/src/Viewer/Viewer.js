@@ -6,7 +6,7 @@ import OHIF from 'ohif-core';
 import { CineDialog } from 'react-viewerbase';
 
 import Header from '../Header'
-import FlexboxLayout from '../FlexboxLayout/FlexboxLayout.js';
+import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
 import './Viewer.css';
 
 /**
@@ -83,15 +83,15 @@ class Viewer extends Component {
 
     render() {
         return (<>
-            <Header />
-            <div className='viewerDialogs'>
-                {/*<CineDialog/>*/}
-            </div>
-            <div id="viewer" className='Viewer'>
-                {/*<ToolbarSection/>*/}
-                <FlexboxLayout studies={this.state.studies} />
-            </div>
-        </>
+                <Header />
+                <div className='viewerDialogs'>
+                    {/*<CineDialog/>*/}
+                </div>
+                <div id="viewer" className='Viewer'>
+                    {/*<ToolbarSection/>*/}
+                    <ConnectedFlexboxLayout studies={this.state.studies}/>
+                </div>
+            </>
         );
     }
 }
