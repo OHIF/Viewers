@@ -2,13 +2,13 @@
   padding: 10px 10px 0;
 }
 
-.brand {
+.header-brand {
   height: 30px;
   text-decoration: none;
   float: left;
 }
 
-.logo-image {
+.header-logo-image {
   fill: transparent;
   height: 100%;
   margin: 0 8px 0 0;
@@ -16,7 +16,7 @@
   float: left;
 }
 
-.logo-text {
+.header-logo-text {
   display: inline-block;
   font-family: var(--logo-font-family);
   font-size: 14px;
@@ -25,7 +25,7 @@
   line-height: 30px;
 }
 
-.btn {
+.header-btn {
   color: var(--text-secondary-color);
   cursor: pointer;
   font-size: 13px;
@@ -33,15 +33,15 @@
   line-height: 26px;
 }
 
-.btn:hover {
+.header-btn:hover {
   color: var(--hover-color);
 }
 
-.btn:active {
+.header-btn:active {
   color: var(--active-color);
 }
 
-.studyListLinkSection {
+.header-studyListLinkSection {
   border-left: var(--ui-border-thickness) solid var(--ui-border-color);
   margin: 3px 0 0 10px;
   padding: 0 0 0 10px;
