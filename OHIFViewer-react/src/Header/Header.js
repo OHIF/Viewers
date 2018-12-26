@@ -3,19 +3,7 @@ import { Link } from 'react-router-dom'
 import { Dropdown } from "../components"
 import Icons from "../images/icons.svg"
 import './Header.css'
-
-const list = [
-  {
-    title: 'Preferences',
-    icon: 'fa fa-user',
-    link: 'http://www.google.com'
-  },
-  {
-    title: 'About',
-    icon: 'fa fa-info',
-    link: 'http://ohif.org'
-  }
-]
+import list from './HeaderMenuList.json'
 
 function Header() {
   return (
