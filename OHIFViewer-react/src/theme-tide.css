@@ -29,4 +29,11 @@
     --ui-gray-dark: #16202B;
     --ui-gray-darker: #151A1F;
     --ui-gray-darkest: #14202A;
+
+    /* Text Colors */
+    --text-color-active: #000000;
+    --text-primary-color: #ffffff;
+    --text-secondary-color: #91b9cd;
+    --large-numbers-color: #6fbde2;
+    --text-disabled-color: #878787;
 }

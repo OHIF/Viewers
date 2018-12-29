@@ -1,0 +1,59 @@
+.header {
+  padding: 10px 10px 0;
+}
+
+.header-brand {
+  height: 30px;
+  text-decoration: none;
+  float: left;
+}
+
+.header-logo-image {
+  fill: transparent;
+  height: 100%;
+  margin: 0 8px 0 0;
+  width: 30px;
+  float: left;
+}
+
+.header-logo-text {
+  display: inline-block;
+  font-family: var(--logo-font-family);
+  font-size: 14px;
+  font-weight: var(--logo-font-weight);
+  color: var(--text-primary-color);
+  line-height: 30px;
+}
+
+.header-btn {
+  color: var(--text-secondary-color);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.header-btn:hover {
+  color: var(--hover-color);
+}
+
+.header-btn:active {
+  color: var(--active-color);
+}
+
+.header-studyListLinkSection {
+  border-left: var(--ui-border-thickness) solid var(--ui-border-color);
+  margin: 3px 0 0 10px;
+  padding: 0 0 0 10px;
+}
+
+.header-menu {
+  color: var(--text-primary-color);
+  float: right;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  text-decoration: none;
+  margin-right: 10px;
+}
