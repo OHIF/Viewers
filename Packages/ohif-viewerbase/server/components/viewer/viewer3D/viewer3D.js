@@ -14,13 +14,37 @@ Meteor.methods({
         }
 
         try {
+            var response = {
+                vtk: undefined,
+                instances: undefined
+            };
             if (server.type === 'dicomWeb') {
                 url = server.vtkRoot + "/studies/" + studyUid + "/series/" + serieUid;
-                return HTTP.get(url,
+                OHIF.log.info('URL: %s', url);
+                Object.assign(response.vtk, HTTP.get(url,
                     { headers: {
                             Accept: 'application/octet-stream'
                         }
+                    }));
+
+                debugger;
+                url = server.wadoRoot + "/studies/" + studyUid + "/series/" + serieUid + "/instances";
+                let instances = HTTP.get(url,
+                    { headers: {
+                            Accept: "application/json"
+                        }
                     });
+
+                const urls = instances.content.map( instance => {
+                    const sopInstanceUid = instance['00080018'].value;
+                    // Retrieve the actual data over WADO-URI
+                    const server = OHIF.servers.getCurrentServer();
+                    const wadouri = `${server.wadoUriRoot}?requestType=WADO&studyUID=${studyUid}&seriesUID=${serieUid}&objectUID=${sopInstanceUid}&contentType=application%2Fdicom`;
+                    return WADOProxy.convertURL(wadouri, server);
+                });
+                Object.assign(response.instances, urls);
+
+                return response;
             }
         } catch (error) {
             OHIF.log.trace();

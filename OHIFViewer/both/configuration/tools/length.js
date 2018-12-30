@@ -28,7 +28,15 @@ const LengthSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMea
 export const length = {
     id: 'length',
     name: 'Length',
-    toolGroup: 'temp',
+    toolGroup: 'Target',
     cornerstoneToolType: 'length',
-    schema: LengthSchema
+    schema: LengthSchema,
+    options: {
+        measurementTable: {
+            displayFunction: data => data.response
+        },
+        caseProgress: {
+            include: true
+        }
+    }
 };

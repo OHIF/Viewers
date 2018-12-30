@@ -7,9 +7,10 @@ import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 import {Session} from "meteor/session";
 import { getElementIfNotEmpty } from "../../../lib/getElementIfNotEmpty";
+import 'meteor/gtajesgenga:ami';
 
 var scene, camera, renderer, controls;
-var texture, geometry, material, plane, geometry2, material2, sphere2, edges;
+var texture, geometry, material, plane = undefined, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
 var objects = new Map();
 var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
@@ -253,7 +254,7 @@ function onImage2DRendered(e) {
 
         geometry = new THREE.PlaneGeometry(image.width, image.height, image.width, image.height);
         // geometry.center();
-
+        geometry.scale(0.961000025272369, 0.961000025272369, 1)
         //geometry.applyMatrix(mS);
         //mesh.applyMatrix(mS);
         //object.applyMatrix(mS);
@@ -261,8 +262,10 @@ function onImage2DRendered(e) {
         material = new THREE.MeshBasicMaterial({color: 0xff0000, map: texture, side: THREE.DoubleSide});
          material.transparent = false;
          material.opacity = 0.5;
-        scene.remove(plane);
-        objects.delete(plane.uuid);
+        if (plane !== undefined) {
+            scene.remove(plane);
+            objects.delete(plane.uuid);
+        }
 
 
         plane = new THREE.Mesh( geometry, material );
@@ -275,8 +278,7 @@ function onImage2DRendered(e) {
         console.log('Nueva:' + plane.position);
         scene.add(plane);
         objects.set(plane.uuid, plane);
-        camera.updateProjectionMatrix();
-        plane.updateMatrixWorld();
+        //camera.updateProjectionMatrix();
     }
 }
 
@@ -338,12 +340,12 @@ function init() {
         selectionMode = !selectionMode;
     });
 
-      geometry = new THREE.PlaneGeometry();
+     // geometry = new THREE.PlaneGeometry();
     // geometry.center();
-      material = new THREE.MeshBasicMaterial({color: 0xff0000});
+    //  material = new THREE.MeshBasicMaterial({color: 0xff0000});
     // material.transparent = false;
     // material.opacity = 0.5;
-      plane = new THREE.Mesh( geometry, material );
+    //  plane = new THREE.Mesh( geometry, material );
     // sphere.scale.set(1, 1, 1);
     // edges = new THREE.EdgesHelper(sphere);
     // geometry2 = new THREE.SphereGeometry(2, 64, 64, 0, 3 * Math.PI / 2);
@@ -355,7 +357,7 @@ function init() {
     // sphere2 = new THREE.Mesh( geometry2, material2 );
     // sphere2.scale.set(1, 1, 1);
 
-     scene.add(plane);
+     //scene.add(plane);
     // objects.push(sphere);
     // scene.add(sphere2);
     // objects.push(sphere2);
@@ -507,6 +509,7 @@ Template.viewer3D.onRendered(function () {
         animate();
     }
 
+/**
     var element = parentTemplate(this.view);
     element = element.findAll('.imageViewerViewport');
     var $element = $(element);
@@ -520,11 +523,12 @@ Template.viewer3D.onRendered(function () {
         $element.off('cornerstoneimagerendered', onImage2DRendered);
         $element.on('cornerstoneimagerendered', onImage2DRendered);
     });
+ **/
 
     const viewportIndex = Session.get('activeViewport') || 0;
     let activeElement = getElementIfNotEmpty(viewportIndex)
 
-    $element = $(activeElement);
+    var $element = $(activeElement);
 
     $element.on('Render3D', function (event) {
 
@@ -547,10 +551,12 @@ Template.viewer3D.onRendered(function () {
                 return;
             }
 
-            let geometry = parseResponse( response.content );
+            let geometry = parseResponse( response.vtk.content );
 
 
             geometry.computeVertexNormals();
+            geometry.computeBoundingBox();
+            var geometrySize = geometry.boundingBox.size();
             //geometry.applyMatrix(mS);
             //geometry.center();
             computeScale(geometry);
@@ -567,7 +573,6 @@ Template.viewer3D.onRendered(function () {
             scene.add(mesh);
             objects.set(mesh.name, mesh);
             hasGeometry = hasGeometry || true;
-            geometry.computeBoundingBox();
             var helper = new THREE.BoxHelper( mesh, 0xffff00 );
             scene.add( helper );
             gui.domElement.style.display = '';

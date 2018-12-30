@@ -18,9 +18,10 @@ class ConformanceCriteria {
 
         const validate = _.debounce(trialCriteriaType => this.validate(trialCriteriaType), 300);
         Tracker.autorun(() => {
-            const selectedType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
+            // const selectedType = OHIF.lesiontracker.TrialCriteriaTypes.findOne({ selected: true });
+            //TODO GTG comment this?
             this.measurementApi.changeObserver.depend();
-            validate(selectedType);
+            // validate(selectedType);
         });
     }
 
