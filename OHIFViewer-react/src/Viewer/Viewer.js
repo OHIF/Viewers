@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from 'ohif-core';
-import { CineDialog } from 'react-viewerbase';
+//import { CineDialog } from 'react-viewerbase';
 
 import Header from '../Header'
 import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
@@ -83,15 +83,15 @@ class Viewer extends Component {
 
     render() {
         return (<>
-                <Header />
-                <div className='viewerDialogs'>
-                    {/*<CineDialog/>*/}
-                </div>
-                <div id="viewer" className='Viewer'>
-                    {/*<ToolbarSection/>*/}
-                    <ConnectedFlexboxLayout studies={this.state.studies}/>
-                </div>
-            </>
+            <Header />
+            <div className='viewerDialogs'>
+                {/*<CineDialog/>*/}
+            </div>
+            <div id="viewer" className='Viewer'>
+                {/*<ToolbarSection/>*/}
+                <ConnectedFlexboxLayout studies={this.state.studies} />
+            </div>
+        </>
         );
     }
 }

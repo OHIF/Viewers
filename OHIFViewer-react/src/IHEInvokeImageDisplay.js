@@ -5,7 +5,7 @@ import ViewerFromStudyData from "./ViewerFromStudyData.js";
 function IHEInvokeImageDisplay({ match }) {
     const requestType = match.params.query.requestType;
     let studyInstanceUids;
-    let patientUids;
+    //let patientUids;
     let displayStudyList = false;
 
     if (requestType === "STUDY") {
@@ -15,7 +15,7 @@ function IHEInvokeImageDisplay({ match }) {
         const decodedData = window.atob(uids);
         studyInstanceUids = decodedData.split(';');
     } else if (requestType === "PATIENT") {
-        patientUids = this.params.query.patientID.split(';');
+        //patientUidspatientUids = this.params.query.patientID.split(';');
         displayStudyList = true
     } else {
         displayStudyList = true

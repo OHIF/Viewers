@@ -6832,10 +6832,10 @@ obuf@^1.0.0, obuf@^1.1.1:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-ohif-core@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.1.tgz#594b5a7969c11e5d5eaa3890a384f39409543d3b"
-  integrity sha512-Ib/lI9fioMiqt5DXmZ8iXtiSne8Z2ubQoh/ePAwgZPljXfMvSY1cUpQK+O90pZqBh444KDolYX00OrJIIbSRgg==
+ohif-core@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.2.tgz#897c63b73de7a139567d0a6cfe98426aa25e1cb9"
+  integrity sha512-KkiN14ctO3Dp4fJkjndSyUH5suBVcMVxetZdOVGrSlxWbnpCg6Hd2FPZpP6PcYPE4yhWNvUyV5dfP4Qhg14oxw==
   dependencies:
     cornerstone-math "^0.1.7"
     isomorphic-base64 "^1.0.2"
@@ -8288,10 +8288,10 @@ react-scripts@^2.1.1:
   optionalDependencies:
     fsevents "1.2.4"
 
-react-viewerbase@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.5.tgz#a5ef7fd852ead91c74fb0068a7cb97c922a9c17a"
-  integrity sha512-196Req5szlhpvQWivxZmQzF3dMj2vCJtjnyusullRd8isTdaK+cLaCuKBRiJ5Eo6zwM69uTXj7ar8BHQARRzeQ==
+react-viewerbase@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.6.tgz#09c775aed103d4382e7f24e5e0850c45327fa481"
+  integrity sha512-msFND25X0uooifaPf8y/VA/2yHrz+M/6yiJwh/rJD8HiM2Bel4JExDOJw9hJmmOS4l7dHpooxAI9ackibvwFAQ==
   dependencies:
     classnames "^2.2.6"
 
