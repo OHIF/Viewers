@@ -7,6 +7,7 @@ import OHIF from 'ohif-core';
 
 import Header from '../Header'
 import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
+import ConnectedToolbarRow from "../FlexboxLayout/ConnectedToolbarRow";
 import './Viewer.css';
 
 /**
@@ -88,7 +89,7 @@ class Viewer extends Component {
                     {/*<CineDialog/>*/}
                 </div>
                 <div id="viewer" className='Viewer'>
-                    {/*<ToolbarSection/>*/}
+                    <ConnectedToolbarRow/>
                     <ConnectedFlexboxLayout studies={this.state.studies}/>
                 </div>
             </>

@@ -7,7 +7,7 @@ import { LayoutManager } from 'react-viewerbase';
 import { OHIF } from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport.js';
 import StackManager from '../lib/StackManager.js';
-import './ViewerMain.styl';
+import './ViewerMain.css';
 
 //const { StudyLoadingListener, StudyPrefetcher, ResizeViewportManager } = OHIF.classes;
 
