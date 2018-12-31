@@ -1,5 +1,7 @@
-.header {
+.entry-header {
   padding: 10px 10px 0;
+  height: var(--top-bar-height);
+  overflow: hidden;
 }
 
 .header-brand {

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import { StudyBrowser } from 'react-viewerbase';
 import ViewerMain from './ViewerMain.js';
-import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 
 import './FlexboxLayout.css';
 // TODO: Where should we put ViewerMain? ohif-core or react-viewerbase?
@@ -151,7 +150,6 @@ class FlexboxLayout extends Component {
                     <StudyBrowser studies={this.state.studiesForBrowser}/>
                 </div>
                 <div className={mainContentClassName}>
-                    <ConnectedToolbarRow/>
                     <ViewerMain studies={this.props.studies}/>
                 </div>
                 <div className={this.props.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebar-menu sidebar-right"}>
