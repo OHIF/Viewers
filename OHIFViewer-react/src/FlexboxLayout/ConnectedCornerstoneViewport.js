@@ -5,9 +5,11 @@ import OHIF from 'ohif-core'
 const { setViewportActive } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
+    const activeButton = state.tools.buttons.find(tool => tool.active === true);
+
     return {
         activeViewportIndex: state.viewports.activeViewportIndex,
-        activeTool: state.tools.buttons.find(tool => tool.active === true).command
+        activeTool: activeButton && activeButton.command
     };
 };
 
