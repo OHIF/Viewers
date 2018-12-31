@@ -11,15 +11,25 @@
   width: 100%;
 }
 
+.header-left-box {
+  display: inline-block;
+  position: relative;
+}
+
+.header-viewerLink {
+  float: left;
+}
+
 .header-brand {
   height: 30px;
   text-decoration: none;
   float: left;
+  clear: both;
 }
 
 .entry-header.header-big .header-brand {
-  height: 100%;
-  line-height: 150px;
+  height: auto;
+  padding: 25px 0;
 }
 
 
@@ -34,6 +44,7 @@
 .entry-header.header-big .header-logo-image {
   margin: 0 20px 0 0;
   width: 50px;
+  height: 50px;
 }
 
 .header-logo-text {
@@ -47,6 +58,7 @@
 
 .entry-header.header-big .header-logo-text {
   font-size: 30px;
+  line-height: 36px;
 }
 
 .header-btn {
