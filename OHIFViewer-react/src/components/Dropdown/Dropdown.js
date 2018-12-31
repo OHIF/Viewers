@@ -8,7 +8,7 @@ class Dropdown extends Component {
   }
 
   renderList = () => {
-    const { list, link, align } = this.props
+    const { list, align } = this.props
 
     if (!this.state.open) {
       return null
@@ -80,8 +80,6 @@ class Dropdown extends Component {
   }
 
   render() {
-    const { open } = this.state
-
     return (
       <div className='dd-menu' ref={node => this.node = node}>
         <div className="dd-menu-toggle" onClick={this.toggleList}>

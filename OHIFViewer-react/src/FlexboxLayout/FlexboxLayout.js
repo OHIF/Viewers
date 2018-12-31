@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import { StudyBrowser } from 'react-viewerbase';
 import ViewerMain from './ViewerMain.js';
@@ -81,12 +80,12 @@ class FlexboxLayout extends Component {
     }
 
     getThumbnailsFromImageIds() {
-        const studyThumbnails = this.state.studiesForBrowser.forEach(function (study) {
+        this.state.studiesForBrowser.forEach(function (study) {
             const { studyInstanceUid } = study;
 
             study.thumbnails.forEach(function (displaySet) {
                 const imageId = displaySet.imageId;
-                const {displaySetInstanceUid, seriesDescription, seriesNumber, instanceNumber, numImageFrames} = displaySet;
+                const { displaySetInstanceUid } = displaySet;
 
                 cornerstone.loadAndCacheImage(imageId).then((image) => {
                     loadSuccess.call(this, image, studyInstanceUid, displaySetInstanceUid);

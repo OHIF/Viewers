@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from 'ohif-core';
-import { CineDialog } from 'react-viewerbase';
+//import { CineDialog } from 'react-viewerbase';
 
 import Header from '../Header'
 import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';

@@ -18,9 +18,12 @@ const servers = {
     dicomWeb: [
         {
             "name": "DCM4CHEE",
-            "wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
-            "qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-            "wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+            //"wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
+            //"qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+            //"wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+            "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
+            "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+            "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
             "qidoSupportsIncludeField": true,
             "imageRendering": "wadors",
             "thumbnailRendering": "wadors",
@@ -29,7 +32,8 @@ const servers = {
                 "logRequests": true,
                 "logResponses": false,
                 "logTiming": true,
-                "auth": "admin:admin"
+                //"auth": "admin:admin"
+                "auth": "cloud:healthcare"
             }
         }
     ]

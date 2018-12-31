@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import ViewerRouting from "./ViewerRouting.js";
+import StudyListRouting from './StudyListRouting.js';
 import StandaloneRouting from './StandaloneRouting.js';
 import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
 import './App.css';
 import './variables.css';
 // TODO: figure out how to change themes dynamically
 import './theme-tide.css';
-import { StudyList } from 'react-viewerbase';
 
 const reload = () => window.location.reload();
 
@@ -43,14 +43,14 @@ class App extends Component {
                 <Route
                     exact
                     path="/studylist"
-                    component={StudyList}
+                    component={StudyListRouting}
                     /*auth={this.props.auth}*/
                     store={this.props.store}
                 />
                 <Route
                     exact
                     path="/"
-                    component={StudyList}
+                    component={StudyListRouting}
                     /*auth={this.props.auth}*/
                     store={this.props.store}
                 />
