@@ -84,15 +84,15 @@ class Viewer extends Component {
 
     render() {
         return (<>
-                <Header />
-                <div className='viewerDialogs'>
-                    {/*<CineDialog/>*/}
-                </div>
-                <div id="viewer" className='Viewer'>
-                    <ConnectedToolbarRow/>
-                    <ConnectedFlexboxLayout studies={this.state.studies}/>
-                </div>
-            </>
+            <Header />
+            <div className='viewerDialogs'>
+                {/*<CineDialog/>*/}
+            </div>
+            <div id="viewer" className='Viewer'>
+                <ConnectedToolbarRow />
+                <ConnectedFlexboxLayout studies={this.state.studies} />
+            </div>
+        </>
         );
     }
 }

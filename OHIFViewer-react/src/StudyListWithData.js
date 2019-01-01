@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
@@ -98,7 +98,7 @@ class StudyListWithData extends Component {
         const studyCount = this.state.studies ? this.state.studies.length : 0;
 
         return (<>
-            <Header />
+            <Header home />
             <StudyList studies={this.state.studies}
                 studyCount={studyCount}
                 studyListFunctionsEnabled={false}
@@ -107,7 +107,7 @@ class StudyListWithData extends Component {
                 pageSize={this.pageSize}
                 defaultSort={this.defaultSort}
                 onSearch={this.onSearch} />
-            </>
+        </>
         );
     }
 }
