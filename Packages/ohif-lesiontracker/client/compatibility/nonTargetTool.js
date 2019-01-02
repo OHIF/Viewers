@@ -56,7 +56,7 @@ function changeMeasurementLocationCallback(measurementData, eventData) {
 
 export default class nonTargetTool extends BaseAnnotationTool {
   constructor(props) {
-    const name = 'nonTarget';
+    const name = 'NonTarget';
 
     // const toolDefaultStates = Viewerbase.toolManager.getToolDefaultStates();
     const shadowConfig = {};
@@ -185,7 +185,6 @@ export default class nonTargetTool extends BaseAnnotationTool {
             const handleEndCanvas = cornerstone.pixelToCanvas(element, end);
 
             drawArrow(context, handleEndCanvas, handleStartCanvas, color, lineWidth);
-            //drawArrow(context, end, start, color, lineWidth);
 
             const handleOptions = {
                 color,
@@ -210,10 +209,6 @@ export default class nonTargetTool extends BaseAnnotationTool {
                 ];
 
                 const textLine = `Non-Target ${data.measurementNumber}`;
-
-                if (data.additionalData && Array.isArray(data.additionalData)) {
-                    textLines = data.additionalData.concat(textLines);
-                }
 
                 drawLinkedTextBox(
                     context,
