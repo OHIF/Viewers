@@ -15,6 +15,10 @@ window.info = {
     homepage
 };
 
+// For debugging
+window.cornerstone = cornerstone;
+window.cornerstoneTools = cornerstoneTools;
+
 cornerstoneTools.external.cornerstone = cornerstone;
 cornerstoneTools.external.Hammer = Hammer;
 cornerstoneTools.external.cornerstoneMath = cornerstoneMath;

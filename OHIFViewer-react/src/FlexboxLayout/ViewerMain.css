@@ -1,12 +1,12 @@
 #viewer {
-  height: "calc(100% - %s)" % var(--top-bar-height);
+  height: calc(100% - var(--top-bar-height));
 }
 
 #viewer > .loadingTextDiv {
   color: var(--text-secondary-color);
   font-size: 30px;
   height: 100%;
-  line-height: "calc(100% - %s)" % var(--top-bar-height);
+  line-height: calc(100% - var(--top-bar-height));
 }
 
 .ViewerMain {
