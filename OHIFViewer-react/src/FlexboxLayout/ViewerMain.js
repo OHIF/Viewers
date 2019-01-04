@@ -101,7 +101,7 @@ class ViewerMain extends Component {
         />);
     };
 
-    setViewportData = ({ viewportIndex, item }) => {
+    setViewportData = ({viewportIndex, item}) => {
         // TODO: Replace this with mapDispatchToProps call
         // if we decide to put viewport info into redux
 
@@ -122,7 +122,7 @@ class ViewerMain extends Component {
         // TODO: Connect LayoutManager to redux
         return (
             <div className="ViewerMain">
-                <LayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData} />
+                <LayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData}/>
             </div>
         );
     }
