@@ -5,9 +5,10 @@ import ViewerRouting from "./ViewerRouting.js";
 import StudyListRouting from './StudyListRouting.js';
 import StandaloneRouting from './StandaloneRouting.js';
 import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
+import { ViewerbaseDragDropContext } from 'react-viewerbase';
+
 import './App.css';
 import './variables.css';
-// TODO: figure out how to change themes dynamically
 import './theme-tide.css';
 
 const reload = () => window.location.reload();
@@ -90,4 +91,4 @@ class App extends Component {
     }
 }
 
-export default withRouter(App);
+export default ViewerbaseDragDropContext(withRouter(App));

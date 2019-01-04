@@ -39,7 +39,8 @@ class ViewerMain extends Component {
         super(props);
 
         this.state = {
-            displaySets: []
+            displaySets: [],
+            viewportData: [],
         };
 
         this.getCornerstoneViewport = this.getCornerstoneViewport.bind(this);
@@ -70,8 +71,15 @@ class ViewerMain extends Component {
             study.displaySets.forEach(dSet => dSet.images.length && displaySets.push(dSet));
         });
 
+        // TODO: re-add plugins back in
+        // TODO: We shouldn't just show hang display sets by default
+        const viewportData = displaySets.map((dSet, index) => {
+            return this.getCornerstoneViewport(dSet, index);
+        });
+
         this.setState({
-            displaySets
+            displaySets,
+            viewportData
         });
     }
 
@@ -90,16 +98,28 @@ class ViewerMain extends Component {
         />);
     };
 
-    render() {
-        // TODO: re-add plugins back in
-        const viewportData = this.state.displaySets.map((dSet, index) => {
-            return this.getCornerstoneViewport(dSet, index);
-        })
+    setViewportData = ({ viewportIndex, item }) => {
+        // TODO: Replace this with mapDispatchToProps call
+        // if we decide to put viewport info into redux
 
+        const updatedViewportData = this.state.viewportData;
+        const data = {
+            studyInstanceUid: item.studyInstanceUid,
+            displaySetInstanceUid: item.displaySetInstanceUid
+        };
+
+        updatedViewportData[viewportIndex] = this.getCornerstoneViewport(data, viewportIndex);
+
+        this.setState({
+            viewportData: updatedViewportData
+        });
+    }
+
+    render() {
         // TODO: Connect LayoutManager to redux
         return (
             <div className="ViewerMain">
-                <LayoutManager viewportData={viewportData}/>
+                <LayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData} />
             </div>
         );
     }
