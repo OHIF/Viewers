@@ -152,9 +152,9 @@ class FlexboxLayout extends Component {
                 <div className={mainContentClassName}>
                     <ViewerMain studies={this.props.studies}/>
                 </div>
-                <div className={this.props.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebar-menu sidebar-right"}>
-                    {/*{{> measurementLightTable (clone this)}}*/}
-                </div>
+                {/* <div className={this.props.rightSidebarOpen ? "sidebar-menu sidebar-right sidebar-open" : "sidebar-menu sidebar-right"}>
+                    {{> measurementLightTable (clone this)}}
+                </div> */}
             </div>
         );
     }
