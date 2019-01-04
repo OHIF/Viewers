@@ -77,6 +77,8 @@ class ViewerMain extends Component {
             return this.getCornerstoneViewport(dSet, index);
         });
 
+        debugger;
+
         this.setState({
             displaySets,
             viewportData
@@ -84,6 +86,7 @@ class ViewerMain extends Component {
     }
 
     getCornerstoneViewport(data, index) {
+        debugger;
         const stack = getCornerstoneStack(this.props.studies, data)
         const viewportData = {
             stack,
