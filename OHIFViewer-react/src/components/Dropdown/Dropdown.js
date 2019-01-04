@@ -8,7 +8,7 @@ class Dropdown extends Component {
   }
 
   renderList = () => {
-    const { list, link, align } = this.props
+    const { list, align } = this.props
 
     if (!this.state.open) {
       return null
