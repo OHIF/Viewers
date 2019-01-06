@@ -14,6 +14,56 @@ reducers.ui = ui;
 const combined = combineReducers(reducers)
 const store = createStore(combined);
 
+const defaultButtons = [
+    {
+        command: 'Pan',
+        type: 'tool',
+        text: 'Pan',
+        svgUrl: '/icons.svg#icon-tools-pan',
+        active: false
+    },
+    {
+        command: 'Zoom',
+        type: 'tool',
+        text: 'Zoom',
+        svgUrl: '/icons.svg#icon-tools-zoom',
+        active: false
+    },
+    {
+        command: 'Bidirectional',
+        type: 'tool',
+        text: 'Bidirectional',
+        svgUrl: '/icons.svg#icon-tools-measure-target',
+        active: false
+    },
+    {
+        command: 'StackScroll',
+        type: 'tool',
+        text: 'Stack Scroll',
+        svgUrl: '/icons.svg#icon-tools-stack-scroll',
+        active: false
+    },
+    {
+        command: 'reset',
+        type: 'command',
+        text: 'Reset',
+        svgUrl: '/icons.svg#icon-tools-reset',
+        active: false
+    },
+    {
+        command: 'Wwwc',
+        type: 'tool',
+        text: 'Manual',
+        svgUrl: '/icons.svg#icon-tools-levels',
+        active: true
+    },
+];
+
+store.dispatch({
+    type: 'SET_AVAILABLE_BUTTONS',
+    buttons: defaultButtons
+});
+
 const servers = {
     dicomWeb: [
         {

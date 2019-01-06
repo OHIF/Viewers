@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ConnectedToolbarSection from './ConnectedToolbarSection';
+import ConnectedLayoutButton from './ConnectedLayoutButton';
 import PropTypes from 'prop-types';
 import { RoundedButtonGroup } from 'react-viewerbase';
 import './ToolbarRow.css';
@@ -35,14 +36,13 @@ class ToolbarRow extends Component {
         const leftSidebarValue = this.props.leftSidebarOpen ? leftSidebarToggle[0].value : null;
 
         return (<div className="ToolbarRow">
-            <div className="clearfix">
-                <div className="pull-left m-t-1">
-                    <RoundedButtonGroup options={leftSidebarToggle} value={leftSidebarValue} onValueChanged={this.onLeftSidebarValueChanged}/>
-                </div>
-                <ConnectedToolbarSection/>
-                <div className="pull-right m-t-1 rm-x-1">
-                    {/* > roundedButtonGroup rightSidebarToggleButtonData */}
-                </div>
+            <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
+                <RoundedButtonGroup options={leftSidebarToggle} value={leftSidebarValue} onValueChanged={this.onLeftSidebarValueChanged}/>
+            </div>
+            <ConnectedToolbarSection/>
+            <ConnectedLayoutButton/>
+            <div className="pull-right m-t-1 rm-x-1">
+                {/* > roundedButtonGroup rightSidebarToggleButtonData */}
             </div>
             </div>
         );

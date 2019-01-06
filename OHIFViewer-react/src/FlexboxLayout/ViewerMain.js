@@ -3,9 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import { LayoutManager } from 'react-viewerbase';
 import { OHIF } from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport.js';
+import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import StackManager from '../lib/StackManager.js';
 import './ViewerMain.css';
 
@@ -72,12 +72,10 @@ class ViewerMain extends Component {
         });
 
         // TODO: re-add plugins back in
-        // TODO: We shouldn't just show hang display sets by default
+        // TODO: We shouldn't just hang display sets by default
         const viewportData = displaySets.map((dSet, index) => {
             return this.getCornerstoneViewport(dSet, index);
         });
-
-        debugger;
 
         this.setState({
             displaySets,
@@ -86,11 +84,11 @@ class ViewerMain extends Component {
     }
 
     getCornerstoneViewport(data, index) {
-        debugger;
         const stack = getCornerstoneStack(this.props.studies, data)
         const viewportData = {
             stack,
-            ...data
+            ...data,
+            viewportIndex: index
         };
 
         return (<ConnectedCornerstoneViewport
@@ -122,7 +120,7 @@ class ViewerMain extends Component {
         // TODO: Connect LayoutManager to redux
         return (
             <div className="ViewerMain">
-                <LayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData}/>
+                <ConnectedLayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData}/>
             </div>
         );
     }
