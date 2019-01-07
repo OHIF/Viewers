@@ -8,6 +8,7 @@ const mapStateToProps = state => {
     const activeButton = state.tools.buttons.find(tool => tool.active === true);
 
     return {
+        layout: state.viewports.layout,
         activeViewportIndex: state.viewports.activeViewportIndex,
         activeTool: activeButton && activeButton.command
     };

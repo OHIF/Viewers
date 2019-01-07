@@ -18,7 +18,7 @@
     "prop-types": "^15.6.2",
     "query-string": "^6.2.0",
     "react": "^16.4.1",
-    "react-cornerstone-viewport": "^0.1.3",
+    "react-cornerstone-viewport": "^0.1.4",
     "react-dom": "^16.4.1",
     "react-redux": "^6.0.0",
     "react-router": "^4.3.1",

@@ -118,7 +118,6 @@ class ViewerMain extends Component {
     }
 
     render() {
-        // TODO: Connect LayoutManager to redux
         return (
             <div className="ViewerMain">
                 <ConnectedLayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData}/>
