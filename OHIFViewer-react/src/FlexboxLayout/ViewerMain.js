@@ -28,10 +28,7 @@ function getCornerstoneStack(studies, viewportData) {
     });
 
     // Get stack from Stack Manager
-    const stack = StackManager.findOrCreateStack(study, displaySet);
-    stack.currentImageIdIndex = 0;
-
-    return stack;
+    return StackManager.findOrCreateStack(study, displaySet);
 }
 
 class ViewerMain extends Component {
@@ -84,7 +81,9 @@ class ViewerMain extends Component {
     }
 
     getCornerstoneViewport(data, index) {
-        const stack = getCornerstoneStack(this.props.studies, data)
+        // Clone the stack here so we don't mutate it later
+        const stack = Object.assign({}, getCornerstoneStack(this.props.studies, data));
+        stack.currentImageIdIndex = 0;
         const viewportData = {
             stack,
             ...data,
@@ -103,14 +102,16 @@ class ViewerMain extends Component {
         // TODO: Replace this with mapDispatchToProps call
         // if we decide to put viewport info into redux
 
-        const updatedViewportData = this.state.viewportData;
+        // Note: Use Slice because React does a shallow equality check. Mutating the array
+        // would not trigger a re-render. We have to create a copy.
+        const updatedViewportData = this.state.viewportData.slice(0);
         const data = {
             studyInstanceUid: item.studyInstanceUid,
             displaySetInstanceUid: item.displaySetInstanceUid
         };
 
         updatedViewportData[viewportIndex] = this.getCornerstoneViewport(data, viewportIndex);
-
+        
         this.setState({
             viewportData: updatedViewportData
         });
