@@ -4,6 +4,7 @@ import ConnectedLayoutButton from './ConnectedLayoutButton';
 import PropTypes from 'prop-types';
 import { RoundedButtonGroup } from 'react-viewerbase';
 import './ToolbarRow.css';
+import Icons from "../images/icons.svg"
 
 class ToolbarRow extends Component {
     static propTypes = {
@@ -27,7 +28,7 @@ class ToolbarRow extends Component {
     render() {
         const leftSidebarToggle = [{
             value: 'studies',
-            svgLink: '/icons.svg#icon-studies',
+            svgLink: `${Icons}#icon-studies`,
             svgWidth: 15,
             svgHeight: 13,
             bottomLabel: 'Series',

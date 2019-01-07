@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "private": true,
-  "homepage": "https://docs.ohif.org/viewer",
+  "homepage": "http://localhost:5000/",
   "dependencies": {
     "cornerstone-core": "2.2.8",
     "cornerstone-math": "0.1.7",

@@ -7,6 +7,7 @@ import App from './App.js';
 import OHIF from 'ohif-core';
 import './config';
 import ui from './redux/ui.js'
+import Icons from "./images/icons.svg"
 
 const reducers = OHIF.redux.reducers;
 reducers.ui = ui;
@@ -19,42 +20,42 @@ const defaultButtons = [
         command: 'Pan',
         type: 'tool',
         text: 'Pan',
-        svgUrl: '/icons.svg#icon-tools-pan',
+        svgUrl: `${Icons}#icon-tools-pan`,
         active: false
     },
     {
         command: 'Zoom',
         type: 'tool',
         text: 'Zoom',
-        svgUrl: '/icons.svg#icon-tools-zoom',
+        svgUrl: `${Icons}#icon-tools-zoom`,
         active: false
     },
     {
         command: 'Bidirectional',
         type: 'tool',
         text: 'Bidirectional',
-        svgUrl: '/icons.svg#icon-tools-measure-target',
+        svgUrl: `${Icons}#icon-tools-measure-target`,
         active: false
     },
     {
         command: 'StackScroll',
         type: 'tool',
         text: 'Stack Scroll',
-        svgUrl: '/icons.svg#icon-tools-stack-scroll',
+        svgUrl: `${Icons}#icon-tools-stack-scroll`,
         active: false
     },
     {
         command: 'reset',
         type: 'command',
         text: 'Reset',
-        svgUrl: '/icons.svg#icon-tools-reset',
+        svgUrl: `${Icons}#icon-tools-reset`,
         active: false
     },
     {
         command: 'Wwwc',
         type: 'tool',
         text: 'Manual',
-        svgUrl: '/icons.svg#icon-tools-levels',
+        svgUrl: `${Icons}#icon-tools-levels`,
         active: true
     },
 ];
