@@ -13,7 +13,7 @@ cd ..
 echo $DEPLOY_PRIME_URL
 cd OHIFViewer-react
 export ROOT_URL=$DEPLOY_PRIME_URL/viewer/
-sed -i "s,https://docs.ohif.org/viewer,${ROOT_URL},g" package.json
+sed -i "s,http://localhost:5000/,${ROOT_URL},g" package.json
 cat package.json
 npm install
 npm run build
