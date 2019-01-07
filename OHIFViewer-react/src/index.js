@@ -3,17 +3,23 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
-import App from './App.js';
+import { loadUser, reducer as oidcReducer, OidcProvider} from 'redux-oidc';
 import OHIF from 'ohif-core';
+
 import './config';
+import App from './App.js';
 import ui from './redux/ui.js'
+import userManager from './userManager.js';
 import Icons from "./images/icons.svg"
 
 const reducers = OHIF.redux.reducers;
 reducers.ui = ui;
+reducers.oidc = oidcReducer;
 
 const combined = combineReducers(reducers)
+
 const store = createStore(combined);
+loadUser(store, userManager);
 
 const defaultButtons = [
     {
@@ -96,6 +102,9 @@ const servers = {
             "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
             "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
             "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+            //"wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
+            //"qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+            //"wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
             "qidoSupportsIncludeField": true,
             "imageRendering": "wadors",
             "thumbnailRendering": "wadors",
@@ -118,9 +127,11 @@ window.store = store;
 
 ReactDOM.render(
     <Provider store={store}>
-        <BrowserRouter>
-            <App store={store}/>
-        </BrowserRouter>
+        <OidcProvider store={store} userManager={userManager}>
+            <BrowserRouter>
+                <App/>
+            </BrowserRouter>
+        </OidcProvider>
     </Provider>,
     document.getElementById('root')
 );

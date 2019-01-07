@@ -54,6 +54,17 @@ const config = {
 
 cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
 
+
+OHIF.user.getAccessToken = () => {
+    // TODO: Get the Redux store from somewhere else
+    const state = window.store.getState();
+    if (!state.oidc || !state.oidc.user) {
+        return;
+    }
+
+    return state.oidc.user.access_token;
+}
+
 cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
         const headers = OHIF.DICOMWeb.getAuthorizationHeader();
@@ -67,7 +78,7 @@ cornerstoneWADOImageLoader.configure({
 // Set the tool font and font size
 // context.font = "[style] [variant] [weight] [size]/[line height] [font family]";
 const fontFamily =
-    'Work Sans, Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
+    'Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
 cornerstoneTools.textStyle.setFont(`16px ${fontFamily}`);
 
 // Set the tool width

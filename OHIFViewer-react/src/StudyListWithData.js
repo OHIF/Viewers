@@ -15,7 +15,7 @@ class StudyListWithData extends Component {
             error: null
         };
 
-        this.pageSize = 5;
+        this.rowsPerPage = 20;
         this.defaultSort = { field: 'patientName', order: 'desc' };
     }
 
@@ -28,18 +28,17 @@ class StudyListWithData extends Component {
 
     searchForStudies = (searchData = {
         currentPage: 0,
-        pageSize: 5
+        rowsPerPage: this.rowsPerPage
     }) => {
         const { server } = this.props;
-        console.log(searchData);
         const filter = {
             patientId: searchData.patientId,
             patientName: searchData.patientName,
             accessionNumber: searchData.accessionNumber,
             studyDescription: searchData.studyDescription,
             modalitiesInStudy: searchData.modalitiesInStudy,
-            limit: searchData.currentPage * searchData.pageSize + searchData.pageSize,
-            offset: searchData.currentPage * searchData.pageSize
+            limit: searchData.currentPage * searchData.rowsPerPage + searchData.rowsPerPage,
+            offset: searchData.currentPage * searchData.rowsPerPage
         };
 
         // TODO: add sorting
@@ -98,13 +97,13 @@ class StudyListWithData extends Component {
         const studyCount = this.state.studies ? this.state.studies.length : 0;
 
         return (<>
-            <Header home />
+            <Header home user={this.props.user}/>
             <StudyList studies={this.state.studies}
                 studyCount={studyCount}
                 studyListFunctionsEnabled={false}
                 onImport={this.onImport}
                 onSelectItem={this.onSelectItem}
-                pageSize={this.pageSize}
+                pageSize={this.rowsPerPage}
                 defaultSort={this.defaultSort}
                 onSearch={this.onSearch} />
         </>
@@ -114,7 +113,8 @@ class StudyListWithData extends Component {
 
 StudyListWithData.propTypes = {
     patientId: PropTypes.string,
-    server: PropTypes.object
+    server: PropTypes.object,
+    user: PropTypes.object
 };
 
 export default withRouter(StudyListWithData);

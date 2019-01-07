@@ -1604,6 +1604,15 @@ babel-plugin-transform-react-remove-prop-types@0.4.18:
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-react-remove-prop-types/-/babel-plugin-transform-react-remove-prop-types-0.4.18.tgz#85ff79d66047b34288c6f7cc986b8854ab384f8c"
   integrity sha512-azed2nHo8vmOy7EY26KH+om5oOcWRs0r1U8wOmhwta+SBMMnmJ4H6yaBZRCcHBtMeWp9AVhvBTL/lpR1kEx+Xw==
 
+babel-polyfill@>=6.9.1:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
+  integrity sha1-N5k3q8Z9eJWXCtxiHyhM2WbPIVM=
+  dependencies:
+    babel-runtime "^6.26.0"
+    core-js "^2.5.0"
+    regenerator-runtime "^0.10.5"
+
 babel-preset-jest@^23.2.0:
   version "23.2.0"
   resolved "https://registry.yarnpkg.com/babel-preset-jest/-/babel-preset-jest-23.2.0.tgz#8ec7a03a138f001a1a8fb1e8113652bf1a55da46"
@@ -4735,6 +4744,11 @@ immer@1.7.2:
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.7.2.tgz#a51e9723c50b27e132f6566facbec1c85fc69547"
   integrity sha512-4Urocwu9+XLDJw4Tc6ZCg7APVjjLInCFvO4TwGsAYV5zT6YYSor14dsZR0+0tHlDIN92cFUOq+i7fC00G5vTxA==
 
+immutable@>=3.6.0:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
+  integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
+
 import-cwd@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-cwd/-/import-cwd-2.1.0.tgz#aa6cf36e722761285cb371ec6519f53e2435b0a9"
@@ -5861,6 +5875,11 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jsrsasign@^8.0.12:
+  version "8.0.12"
+  resolved "https://registry.yarnpkg.com/jsrsasign/-/jsrsasign-8.0.12.tgz#22abb9656d34a30b9530436720835e89c2e5c316"
+  integrity sha1-Iqu5ZW00owuVMENnIINeicLlwxY=
+
 jsx-ast-utils@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-2.0.1.tgz#e801b1b39985e20fffc87b40e3748080e2dcac7f"
@@ -6960,6 +6979,15 @@ ohif-core@^0.1.3:
     redux "^4.0.1"
     simpl-schema "^1.5.3"
     underscore "^1.9.1"
+
+oidc-client@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/oidc-client/-/oidc-client-1.6.1.tgz#76a7f24ad7fb5342269b6cae895bb32e1e27e785"
+  integrity sha512-buA9G0hlFjUwxoL/xuHunBtTgoICtJSojnZtATqMliUTKxPYAzHprOQ85Lj0hgF+Zv8lI/ViqaNFDG0Z5KCUKA==
+  dependencies:
+    jsrsasign "^8.0.12"
+  optionalDependencies:
+    babel-polyfill ">=6.9.1"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -8485,10 +8513,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@^0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.8.tgz#982d25572a4b4ebf8f251e6770de23364421bff6"
-  integrity sha512-bUg/bO6EQhbE6kEkfw1n91GTjSy52xP6BnfESSUEz9JcZ0VmcG8cDKhNSc+JVvtAAdjmmhLgCEkpoL9uza+CPQ==
+react-viewerbase@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.9.tgz#9d6930cc22149dd34bbf5d088218f86a804f0260"
+  integrity sha512-0wpEATJxdZAUT8dqUJa4Q0FSv7Zo+HLh969uDXx+x9ZtlZi2JgsU8Hb97D4ump16LHfg6OG5uQqJPcQzrDGWYA==
   dependencies:
     classnames "^2.2.6"
     react-bootstrap-modal "^4.2.0"
@@ -8606,6 +8634,13 @@ recursive-readdir@2.2.2:
   dependencies:
     minimatch "3.0.4"
 
+redux-oidc@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/redux-oidc/-/redux-oidc-3.1.0.tgz#26791fab7d2542f4827a175d515a941a5e35b4c6"
+  integrity sha512-VygfGdkuUI8kRn+R1LQLcGAmm0fJUPHKqaRB3l2BL8D9s3sIFFanuVf7Q05QS6DlRVIz9pmcgInyBHlAVZE8og==
+  optionalDependencies:
+    immutable ">=3.6.0"
+
 redux@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.1.tgz#436cae6cc40fbe4727689d7c8fae44808f1bfef5"
@@ -8625,6 +8660,11 @@ regenerate@^1.2.1, regenerate@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
   integrity sha512-1G6jJVDWrt0rK99kBjvEtziZNCICAuvIPkSiUFIQxVP06RCVpq3dmDo2oi6ABpYaDYaTRr67BEhL8r1wgEZZKg==
+
+regenerator-runtime@^0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz#336c3efc1220adcedda2c9fab67b5a7955a33658"
+  integrity sha1-M2w+/BIgrc7dosn6tntaeVWjNlg=
 
 regenerator-runtime@^0.11.0:
   version "0.11.1"

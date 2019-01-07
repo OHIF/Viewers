@@ -4,12 +4,12 @@ import StudyListWithData from './StudyListWithData.js';
 
 const isActive = (a) => a.active === true;
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
     const activeServer = state.servers.servers.find(isActive);
 
     return {
         server: activeServer,
-        ...ownProps
+        user: state.oidc.user,
     };
 };
 
