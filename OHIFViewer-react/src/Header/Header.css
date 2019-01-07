@@ -98,3 +98,11 @@
 .entry-header.header-big .header-menu {
   margin-right: 0;
 }
+
+.header-menu .research-use {
+  float: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: #91b9cd;
+  margin-right: 1rem;
+}

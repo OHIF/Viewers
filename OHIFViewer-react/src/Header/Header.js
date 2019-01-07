@@ -35,8 +35,9 @@ function Header({ home, lastStudy, location }) {
 
 
       <div className="header-menu">
-        {/* TODO: research-use */}
-
+        <span className="research-use">
+                INVESTIGATIONAL USE ONLY
+        </span>
         <Dropdown
           title='Options'
           list={list}

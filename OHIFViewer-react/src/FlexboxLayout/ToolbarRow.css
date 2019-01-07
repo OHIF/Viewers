@@ -3,6 +3,8 @@
     flex: 0 0 auto;
     height: var(--toolbar-height);
     padding-top: 6px;
+    padding-left: 1rem;
+    padding-right: 1rem;
     position: relative;
     transition: height 300ms ease;
     width: 100%;

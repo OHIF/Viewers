@@ -17,10 +17,10 @@ const store = createStore(combined);
 
 const defaultButtons = [
     {
-        command: 'Pan',
+        command: 'StackScroll',
         type: 'tool',
-        text: 'Pan',
-        svgUrl: `${Icons}#icon-tools-pan`,
+        text: 'Stack Scroll',
+        svgUrl: `${Icons}#icon-tools-stack-scroll`,
         active: false
     },
     {
@@ -31,17 +31,45 @@ const defaultButtons = [
         active: false
     },
     {
+        command: 'Wwwc',
+        type: 'tool',
+        text: 'Levels',
+        svgUrl: `${Icons}#icon-tools-levels`,
+        active: true
+    },
+    {
+        command: 'Pan',
+        type: 'tool',
+        text: 'Pan',
+        svgUrl: `${Icons}#icon-tools-pan`,
+        active: false
+    },
+    {
+        command: 'Length',
+        type: 'tool',
+        text: 'Length',
+        svgUrl: `${Icons}#icon-tools-measure-temp`,
+        active: false
+    },
+    /*{
+        command: 'Annotate',
+        type: 'tool',
+        text: 'Annotate',
+        svgUrl: `${Icons}#icon-tools-measure-non-target`,
+        active: false
+    },*/
+    {
+        command: 'Angle',
+        type: 'tool',
+        text: 'Angle',
+        iconClasses: 'fa fa-angle-left',
+        active: false
+    },
+    {
         command: 'Bidirectional',
         type: 'tool',
         text: 'Bidirectional',
         svgUrl: `${Icons}#icon-tools-measure-target`,
-        active: false
-    },
-    {
-        command: 'StackScroll',
-        type: 'tool',
-        text: 'Stack Scroll',
-        svgUrl: `${Icons}#icon-tools-stack-scroll`,
         active: false
     },
     {
@@ -50,13 +78,6 @@ const defaultButtons = [
         text: 'Reset',
         svgUrl: `${Icons}#icon-tools-reset`,
         active: false
-    },
-    {
-        command: 'Wwwc',
-        type: 'tool',
-        text: 'Manual',
-        svgUrl: `${Icons}#icon-tools-levels`,
-        active: true
     },
 ];
 

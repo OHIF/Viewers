@@ -111,7 +111,7 @@ class ViewerMain extends Component {
         };
 
         updatedViewportData[viewportIndex] = this.getCornerstoneViewport(data, viewportIndex);
-        
+
         this.setState({
             viewportData: updatedViewportData
         });
