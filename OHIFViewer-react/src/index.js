@@ -99,12 +99,12 @@ const servers = {
             //"wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
             //"qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
             //"wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-            "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
-            "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
-            "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
-            //"wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
-            //"qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-            //"wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+            //"wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
+            //"qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+            //"wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+            "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
+            "qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+            "wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
             "qidoSupportsIncludeField": true,
             "imageRendering": "wadors",
             "thumbnailRendering": "wadors",
@@ -114,7 +114,7 @@ const servers = {
                 "logResponses": false,
                 "logTiming": true,
                 //"auth": "admin:admin"
-                "auth": "cloud:healthcare"
+                //"auth": "cloud:healthcare"
             }
         }
     ]

@@ -4,13 +4,17 @@ import OHIF from 'ohif-core'
 
 const { setViewportActive } = OHIF.redux.actions;
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
     const activeButton = state.tools.buttons.find(tool => tool.active === true);
+
+    // If this is the active viewport, enable prefetching.
+    const enableStackPrefetch = ownProps.viewportData.viewportIndex === state.viewports.activeViewportIndex;
 
     return {
         layout: state.viewports.layout,
         activeViewportIndex: state.viewports.activeViewportIndex,
-        activeTool: activeButton && activeButton.command
+        activeTool: activeButton && activeButton.command,
+        enableStackPrefetch
     };
 };
 

@@ -63,23 +63,60 @@ const loadError = function(error, studyInstanceUid, displaySetInstanceUid) {
 };
 
 class FlexboxLayout extends Component {
-    constructor(props) {
-        super(props);
+    static propTypes = {
+        studies: PropTypes.array.isRequired,
+        leftSidebarOpen: PropTypes.bool.isRequired,
+        rightSidebarOpen: PropTypes.bool.isRequired,
+        stackLoadingData: PropTypes.object// { lastUpdated, progress }
+    };
 
-        this.state = {
-            studiesForBrowser: this.getStudiesForBrowser(),
-        };
-
-        this.getStudiesForBrowser = this.getStudiesForBrowser.bind(this);
-        this.getThumbnailsFromImageIds = this.getThumbnailsFromImageIds.bind(this);
-    }
+    state = {
+        studiesForBrowser: []
+    };
 
     componentDidMount() {
-        this.getThumbnailsFromImageIds();
+        const studiesForBrowser = this.getStudiesForBrowser();
+
+        this.setState({
+            studiesForBrowser
+        });
+
+        this.getThumbnailsFromImageIds(studiesForBrowser);
     }
 
-    getThumbnailsFromImageIds() {
-        this.state.studiesForBrowser.forEach(function (study) {
+    componentDidUpdate(prevProps) {
+        const { stackLoadingData } = this.props;
+
+        // If we know that the stack loading progress details have changed,
+        // we can try to update the component state so that the thumbnail
+        // progress bar is updated
+        if (stackLoadingData.lastUpdated !== prevProps.stackLoadingData.lastUpdated) {
+            const stackLoadingProgressMap = stackLoadingData.progress;
+            const studiesForBrowser = this.state.studiesForBrowser;
+
+            studiesForBrowser.forEach(study => {
+                study.thumbnails.forEach(data => {
+                    const { displaySetInstanceUid } = data
+                    const stackId = `StackProgress:${displaySetInstanceUid}`;
+                    const stackProgressData = stackLoadingProgressMap[stackId];
+
+                    let stackPercentComplete = 0;
+                    if (stackProgressData) {
+                        stackPercentComplete = stackProgressData.percentComplete;
+                    }
+
+                    data.stackPercentComplete = stackPercentComplete;
+                })
+            })
+
+            this.setState({
+                studiesForBrowser
+            });
+        }
+    }
+
+    getThumbnailsFromImageIds = (studiesForBrowser) => {
+        studiesForBrowser.forEach(function (study) {
             const { studyInstanceUid } = study;
 
             study.thumbnails.forEach(function (displaySet) {
@@ -96,8 +133,9 @@ class FlexboxLayout extends Component {
 
     }
 
-    getStudiesForBrowser() {
-        const { studies } = this.props;
+    getStudiesForBrowser = () => {
+        const { studies, stackLoadingData } = this.props;
+        const stackLoadingProgressMap = stackLoadingData.progress;
 
         // TODO[react]:
         // - Add sorting of display sets
@@ -109,10 +147,18 @@ class FlexboxLayout extends Component {
             const { studyInstanceUid } = study;
 
             const thumbnails = study.displaySets.map((displaySet) => {
-                const active = false;
-                const stackPercentComplete = 0;
                 const { displaySetInstanceUid, seriesDescription, seriesNumber, instanceNumber, numImageFrames } = displaySet;
+                const active = false;
+                const stackId = `StackProgress:${displaySetInstanceUid}`;
+                const stackProgressData = stackLoadingProgressMap[stackId];
+
+                let stackPercentComplete = 0;
+                if (stackProgressData) {
+                    stackPercentComplete = stackProgressData.percentComplete;
+                }
+
                 const imageId = displaySet.images[0].getImageId();
+
                 return {
                     imageSrc: '',
                     imageId,
@@ -159,11 +205,5 @@ class FlexboxLayout extends Component {
         );
     }
 }
-
-FlexboxLayout.propTypes = {
-    studies: PropTypes.array.isRequired,
-    leftSidebarOpen: PropTypes.bool.isRequired,
-    rightSidebarOpen: PropTypes.bool.isRequired,
-};
 
 export default FlexboxLayout;

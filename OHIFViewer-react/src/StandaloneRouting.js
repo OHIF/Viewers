@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import qs from 'query-string'
 import Viewer from "./Viewer/Viewer";
 import OHIF from 'ohif-core';
-import createDisplaySets from "./lib/createDisplaySets";
+
+const { createDisplaySets } = OHIF.utils;
 
 function parseQueryAndFetchStudies(query) {
     return new Promise((resolve, reject) => {

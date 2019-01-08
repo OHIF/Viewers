@@ -7,16 +7,13 @@ import cornerstoneMath from "cornerstone-math";
 import { OHIF } from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport.js';
 import ConnectedLayoutManager from './ConnectedLayoutManager.js';
-import StackManager from '../lib/StackManager.js';
 import './ViewerMain.css';
 
 // Attempt to fix weird undefined dep issue
 cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
 
-//const { StudyLoadingListener, StudyPrefetcher, ResizeViewportManager } = OHIF.classes;
-
-
-//window.ResizeViewportManager = window.ResizeViewportManager || new ResizeViewportManager();
+const { StudyLoadingListener, StudyPrefetcher } = OHIF.classes;
+const { StackManager } = OHIF.utils;
 
 function getCornerstoneStack(studies, viewportData) {
     const {
@@ -36,35 +33,21 @@ function getCornerstoneStack(studies, viewportData) {
 }
 
 class ViewerMain extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            displaySets: [],
-            viewportData: [],
-        };
-
-        this.getCornerstoneViewport = this.getCornerstoneViewport.bind(this);
-    }
+    state = {
+        displaySets: [],
+        viewportData: [],
+    };
 
     componentDidMount() {
-        // Attach the Window resize listener
-        // Don't use jQuery here. "window.onresize" will always be null
-        // If its necessary, check all the code for window.onresize getter
-        // and change it to jQuery._data(window, 'events')['resize'].
-        // Otherwise this function will be probably overrided.
-        // See cineDialog instance.setResizeHandler function
-        //window.addEventListener('resize', window.ResizeViewportManager.getResizeHandler());
-
         // Add beforeUnload event handler to check for unsaved changes
         //window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
         const { studies } = this.props;
-        //this.studyPrefetcher = StudyPrefetcher.getInstance();
-        //this.studyPrefetcher.setStudies(studies);
-        //this.studyLoadingListener = StudyLoadingListener.getInstance();
-        //this.studyLoadingListener.clear();
-        //this.studyLoadingListener.addStudies(studies);
+        this.studyPrefetcher = StudyPrefetcher.getInstance(cornerstone, cornerstoneTools);
+        this.studyPrefetcher.setStudies(studies);
+        this.studyLoadingListener = StudyLoadingListener.getInstance(cornerstone);
+        this.studyLoadingListener.clear();
+        this.studyLoadingListener.addStudies(studies);
 
         // Get all the display sets for the viewer studies
         const displaySets = [];
@@ -84,7 +67,7 @@ class ViewerMain extends Component {
         });
     }
 
-    getCornerstoneViewport(data, index) {
+    getCornerstoneViewport = (data, index) => {
         // Clone the stack here so we don't mutate it later
         const stack = Object.assign({}, getCornerstoneStack(this.props.studies, data));
         stack.currentImageIdIndex = 0;
@@ -130,9 +113,6 @@ class ViewerMain extends Component {
     }
 
     componentWillUnmount() {
-        // Remove the Window resize listener
-        //window.removeEventListener('resize', window.ResizeViewportManager.getResizeHandler());
-
         // Remove beforeUnload event handler...
         //window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
 
@@ -140,13 +120,13 @@ class ViewerMain extends Component {
         OHIF.viewer.updateImageSynchronizer.destroy();
 
         // Stop prefetching when we close the viewer
-        //this.studyPrefetcher.destroy();
+        this.studyPrefetcher.destroy();
 
         // Destroy stack loading listeners when we close the viewer
-        //this.studyLoadingListener.clear();
+        this.studyLoadingListener.clear();
 
         // Clear references to all stacks in the StackManager
-        //OHIF.viewerbase.stackManager.clearStacks();
+        StackManager.clearStacks();
 
         // @TypeSafeStudies
         // Clears OHIF.viewer.Studies collection

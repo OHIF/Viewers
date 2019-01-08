@@ -10,6 +10,8 @@ import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from "../FlexboxLayout/ConnectedToolbarRow";
 import './Viewer.css';
 
+const { StackManager } = OHIF.utils;
+
 /**
  * Inits OHIF Hanging Protocol's onReady.
  * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
@@ -65,13 +67,17 @@ OHIF.viewer.functionList = {
 // Create the synchronizer used to update reference lines
 OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);
 
-OHIF.viewer.metadataProvider = new OHIF.cornerstone.MetadataProvider();
-
 // Metadata configuration
-const metadataProvider = OHIF.viewer.metadataProvider;
+const metadataProvider = new OHIF.cornerstone.MetadataProvider();
 cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
 
+StackManager.setMetadataProvider(metadataProvider);
+
 class Viewer extends Component {
+    static propTypes = {
+        studies: PropTypes.array
+    };
+
     constructor(props) {
         super(props);
 
@@ -97,8 +103,5 @@ class Viewer extends Component {
     }
 }
 
-Viewer.propTypes = {
-    studies: PropTypes.array
-};
 
 export default Viewer;

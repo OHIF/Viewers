@@ -36,4 +36,17 @@
     --text-secondary-color: #91b9cd;
     --large-numbers-color: #6fbde2;
     --text-disabled-color: #878787;
+
+    --input-background-color: #2c363f;
+    --input-placeholder-color: #d3d3d3;
+
+    --table-hover-color: #2c363f;
+    --table-text-primary-color: #ffffff;
+    --table-text-secondary-color: #91b9cd;
+
+    --large-numbers-color:#6FBDE2;
+
+    --state-error: #FFCCCC;
+    --state-error-border: #FFCCCC;
+    --state-error-text: #FFCCCC;
 }

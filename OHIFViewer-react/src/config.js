@@ -9,8 +9,6 @@ import sha from './sha.js';
 import version from './version.js';
 import { homepage } from '../package.json';
 
-console.warn('cornerstoneMath');
-console.warn(cornerstoneMath)
 window.info = {
     sha,
     version,
@@ -20,6 +18,7 @@ window.info = {
 // For debugging
 window.cornerstone = cornerstone;
 window.cornerstoneTools = cornerstoneTools;
+window.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
 cornerstoneTools.external.cornerstone = cornerstone;
 cornerstoneTools.external.Hammer = Hammer;
@@ -28,6 +27,10 @@ cornerstoneTools.init();
 
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
+
+OHIF.external.cornerstone = cornerstone;
+OHIF.external.cornerstoneTools = cornerstoneTools;
+OHIF.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
 // TODO: Is there a better way to guess ROOT_URL?
 let ROOT_URL = homepage;

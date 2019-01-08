@@ -2519,14 +2519,6 @@ cornerstone-math@0.1.7, cornerstone-math@^0.1.7:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.7.tgz#7c55536f02e7221b05fc49a4c780bb82c234ce39"
   integrity sha512-svsDSoqLNFM9niCV2AtV2DNmRkYztT1v80lVdbA5hkgdGdpWg5/h2On794zbqBK+aI3hNOHufERDsI4wdXGknA==
 
-cornerstone-tools@3.0.0-b.1471:
-  version "3.0.0-b.1471"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.0.0-b.1471.tgz#9bbfd6e21ec6acfbc7b497ff16fe897a03cac899"
-  integrity sha512-XyNOH0ptfZBAW0xghnhyVVc9PqteBRH9OUiLcBoVQSh1GvY0lsmGZURUF/5a4VbnfmXaFuV1niAkODP1zP7mbA==
-  dependencies:
-    "@babel/runtime" "7.1.2"
-    cornerstone-math "^0.1.7"
-
 cornerstone-tools@3.0.0-b.1512:
   version "3.0.0-b.1512"
   resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.0.0-b.1512.tgz#64e60709b7b638c08d201313a5748aa6f5145337"
@@ -8317,17 +8309,11 @@ react-bootstrap-modal@^4.2.0:
     react-overlays "^0.8.0"
     react-transition-group "^2.0.0"
 
-react-cornerstone-viewport@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.4.tgz#6e1e1e31cbfca28617d4aebddd591f3a13206382"
-  integrity sha512-bowfkjKR/hdg+2nEQy2BJejjKIsudiedJrMKehygK2f0SI17w2FC8r8QJPysdykfwz1WuBouOlA0JJtfHzk+CQ==
+react-cornerstone-viewport@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.5.tgz#64809bcba4942710c1cd7dddd63ab14cb682b31f"
+  integrity sha512-ANSjQvYOc533k055j4/sV+SrOgmLoEI7ssQ6MiHn5j3E3po30ooUYMWc56fsDxEH/lxFt5VtcFyHYgJdI4RHig==
   dependencies:
-    cornerstone-core "2.2.8"
-    cornerstone-math "0.1.7"
-    cornerstone-tools "3.0.0-b.1471"
-    cornerstone-wado-image-loader "2.2.3"
-    dicom-parser "1.8.3"
-    hammerjs "^2.0.8"
     lodash.debounce "^4.0.8"
     moment "^2.23.0"
     stylus "^0.54.5"
@@ -8521,10 +8507,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.9.tgz#9d6930cc22149dd34bbf5d088218f86a804f0260"
-  integrity sha512-0wpEATJxdZAUT8dqUJa4Q0FSv7Zo+HLh969uDXx+x9ZtlZi2JgsU8Hb97D4ump16LHfg6OG5uQqJPcQzrDGWYA==
+react-viewerbase@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.1.10.tgz#7b5d2d9adcea20174a863c0291eca6a728d8da6a"
+  integrity sha512-I6f6n3wgGD9aHyMTta9CIae3BXWk6TTmeAmqaYrfR+uSTfnjBsARmaj2FKtnusGLc2XCZlsSKUQRHSVL6NH3Kg==
   dependencies:
     classnames "^2.2.6"
     react-bootstrap-modal "^4.2.0"

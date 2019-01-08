@@ -2,7 +2,8 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
 import Viewer from "./Viewer/Viewer.js";
-import createDisplaySets from './lib/createDisplaySets.js';
+
+const { createDisplaySets } = OHIF.utils;
 
 class ViewerFromStudyData extends Component {
     static propTypes = {
