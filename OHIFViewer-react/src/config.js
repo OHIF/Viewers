@@ -9,6 +9,8 @@ import sha from './sha.js';
 import version from './version.js';
 import { homepage } from '../package.json';
 
+console.warn('cornerstoneMath');
+console.warn(cornerstoneMath)
 window.info = {
     sha,
     version,

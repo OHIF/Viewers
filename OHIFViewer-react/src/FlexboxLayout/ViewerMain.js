@@ -3,11 +3,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
+import cornerstoneMath from "cornerstone-math";
 import { OHIF } from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport.js';
 import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import StackManager from '../lib/StackManager.js';
 import './ViewerMain.css';
+
+// Attempt to fix weird undefined dep issue
+cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
 
 //const { StudyLoadingListener, StudyPrefetcher, ResizeViewportManager } = OHIF.classes;
 
