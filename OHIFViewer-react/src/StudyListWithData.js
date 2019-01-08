@@ -6,18 +6,21 @@ import { StudyList } from "react-viewerbase";
 import Header from "./Header";
 
 class StudyListWithData extends Component {
-    constructor(props) {
-        super(props);
+    state = {
+        searchData: {},
+        studies: null,
+        error: null
+    };
 
-        this.state = {
-            searchData: {},
-            studies: null,
-            error: null
-        };
+    static propTypes = {
+        patientId: PropTypes.string,
+        server: PropTypes.object,
+        user: PropTypes.object,
+        history: PropTypes.object
+    };
 
-        this.rowsPerPage = 20;
-        this.defaultSort = { field: 'patientName', order: 'desc' };
-    }
+    static rowsPerPage = 25;
+    static defaultSort = { field: 'patientName', order: 'desc' };
 
     componentDidMount() {
         // TODO: Avoid using timepoints here
@@ -28,7 +31,7 @@ class StudyListWithData extends Component {
 
     searchForStudies = (searchData = {
         currentPage: 0,
-        rowsPerPage: this.rowsPerPage
+        rowsPerPage: StudyListWithData.rowsPerPage
     }) => {
         const { server } = this.props;
         const filter = {
@@ -66,19 +69,15 @@ class StudyListWithData extends Component {
                 error: true,
             });
 
-            console.error(error);
+            throw new Error(error);
         });
     }
 
     onImport = () => {
-        console.log('onImport');
+        //console.log('onImport');
     }
 
     onSelectItem = (studyInstanceUID) => {
-        console.log('onSelectItem');
-
-        console.log('studyInstanceUID');
-
         this.props.history.push(`/viewer/${studyInstanceUID}`);
     }
 
@@ -97,24 +96,18 @@ class StudyListWithData extends Component {
         const studyCount = this.state.studies ? this.state.studies.length : 0;
 
         return (<>
-            <Header home user={this.props.user}/>
+            <Header home={true} user={this.props.user}/>
             <StudyList studies={this.state.studies}
                 studyCount={studyCount}
                 studyListFunctionsEnabled={false}
                 onImport={this.onImport}
                 onSelectItem={this.onSelectItem}
                 pageSize={this.rowsPerPage}
-                defaultSort={this.defaultSort}
+                defaultSort={StudyListWithData.defaultSort}
                 onSearch={this.onSearch} />
         </>
         );
     }
 }
-
-StudyListWithData.propTypes = {
-    patientId: PropTypes.string,
-    server: PropTypes.object,
-    user: PropTypes.object
-};
 
 export default withRouter(StudyListWithData);

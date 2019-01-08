@@ -14,8 +14,6 @@ const mapDispatchToProps = dispatch => {
     return {
         // TODO: Change if layout switched becomes more complex
         onChange: selectedCell => {
-            console.log(`setLayout: ${JSON.stringify(selectedCell)}`);
-
             let viewports = [];
             const rows = selectedCell.row + 1;
             const columns = selectedCell.col + 1;

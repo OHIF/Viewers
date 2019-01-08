@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-//import PropTypes from "prop-types";
+import PropTypes from "prop-types";
 import qs from 'query-string'
 import Viewer from "./Viewer/Viewer";
 import OHIF from 'ohif-core';
@@ -66,14 +66,14 @@ function parseQueryAndFetchStudies(query) {
 }
 
 class StandaloneRouting extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            studies: null,
-            error: null
-        };
+    state = {
+        studies: null,
+        error: null
     }
+
+    static propTypes = {
+        location: PropTypes.object
+    };
 
     componentDidMount() {
         const query = qs.parse(this.props.location.search);

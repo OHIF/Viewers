@@ -1,11 +1,12 @@
-import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
-import { Dropdown } from "../components"
-import Icons from "../images/icons.svg"
-import './Header.css'
-import list from './HeaderMenuList.json'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link, withRouter } from 'react-router-dom';
+import { Dropdown } from "../components";
+import Icons from "../images/icons.svg";
+import './Header.css';
+import list from './HeaderMenuList.json';
 
-function Header({ home, lastStudy, location }) {
+function Header({ home, location }) {
   const { state } = location
 
   return (
@@ -48,5 +49,14 @@ function Header({ home, lastStudy, location }) {
     </div>
   )
 }
+
+Header.propTypes = {
+    home: PropTypes.bool.isRequired,
+    location: PropTypes.object.isRequired
+};
+
+Header.defaultProps = {
+    home: true
+};
 
 export default withRouter(Header)

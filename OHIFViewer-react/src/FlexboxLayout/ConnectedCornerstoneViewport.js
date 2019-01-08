@@ -17,7 +17,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         setViewportActive: viewportIndex => {
-            console.log(`setViewportActive: ${viewportIndex}`);
             dispatch(setViewportActive(viewportIndex))
         }
     };

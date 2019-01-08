@@ -96,7 +96,7 @@ class ViewerMain extends Component {
             cornerstone={cornerstone}
             cornerstoneTools={cornerstoneTools}
         />);
-    };
+    }
 
     setViewportData = ({viewportIndex, item}) => {
         // TODO: Replace this with mapDispatchToProps call

@@ -4,7 +4,6 @@ const defaultState = {
 }
 
 const ui = (state = defaultState, action) => {
-    console.log(action);
     switch (action.type) {
         case 'SET_LEFT_SIDEBAR_OPEN':
             return Object.assign({}, state, { leftSidebarOpen: action.state });

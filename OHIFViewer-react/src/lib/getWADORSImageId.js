@@ -28,4 +28,4 @@ export function getWADORSImageId(instance, frame) {
     }
 
     return `wadors:${uri}`;
-};
+}

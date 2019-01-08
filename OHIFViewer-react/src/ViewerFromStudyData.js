@@ -5,13 +5,15 @@ import Viewer from "./Viewer/Viewer.js";
 import createDisplaySets from './lib/createDisplaySets.js';
 
 class ViewerFromStudyData extends Component {
-    constructor(props) {
-        super(props);
+    static propTypes = {
+        studyInstanceUids: PropTypes.array.isRequired,
+        seriesInstanceUids: PropTypes.array,
+        server: PropTypes.object
+    };
 
-        this.state = {
-            studies: null,
-            error: null
-        };
+    state = {
+        studies: null,
+        error: null
     }
 
     componentDidMount() {
@@ -32,7 +34,7 @@ class ViewerFromStudyData extends Component {
                 error: true,
             });
 
-            console.error(error);
+            throw new Error(error);
         });
 
     }
@@ -49,11 +51,5 @@ class ViewerFromStudyData extends Component {
         );
     }
 }
-
-ViewerFromStudyData.propTypes = {
-    studyInstanceUids: PropTypes.array.isRequired,
-    seriesInstanceUids: PropTypes.array,
-    server: PropTypes.object
-};
 
 export default ViewerFromStudyData;

@@ -16,7 +16,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         setToolActive: tool => {
-            console.log(`setViewportActive: ${tool}`);
             dispatch(setToolActive(tool.command))
         }
     };

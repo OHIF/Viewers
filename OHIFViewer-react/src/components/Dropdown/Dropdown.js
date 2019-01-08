@@ -7,6 +7,18 @@ class Dropdown extends Component {
     open: false
   }
 
+  static propTypes = {
+      titleElement: PropTypes.node,
+      title: PropTypes.string,
+      align: PropTypes.oneOf(['left', 'center', 'right']),
+      list: PropTypes.arrayOf(PropTypes.shape({
+          title: PropTypes.string.isRequired,
+          icon: PropTypes.string,
+          onClick: PropTypes.func,
+          link: PropTypes.string,
+      }))
+  };
+
   renderList = () => {
     const { list, align } = this.props
 
@@ -52,7 +64,9 @@ class Dropdown extends Component {
   renderTitleElement = () => {
     const { titleElement, title } = this.props
 
-    if (titleElement) return titleElement
+    if (titleElement) {
+      return titleElement;
+    }
 
     return (
       <>
@@ -91,16 +105,5 @@ class Dropdown extends Component {
     )
   }
 }
-
-Dropdown.propTypes = {
-  titleElement: PropTypes.node,
-  align: PropTypes.oneOf(['left', 'center', 'right']),
-  list: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    icon: PropTypes.string,
-    onClick: PropTypes.func,
-    link: PropTypes.string,
-  }))
-};
 
 export default Dropdown

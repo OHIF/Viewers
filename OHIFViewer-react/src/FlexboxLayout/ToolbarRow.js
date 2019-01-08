@@ -21,8 +21,6 @@ class ToolbarRow extends Component {
 
     onLeftSidebarValueChanged = (value) => {
         this.props.setLeftSidebarOpen(!!value);
-
-        console.log('value changed: ', value);
     }
 
     render() {

@@ -2527,6 +2527,14 @@ cornerstone-tools@3.0.0-b.1471:
     "@babel/runtime" "7.1.2"
     cornerstone-math "^0.1.7"
 
+cornerstone-tools@3.0.0-b.1512:
+  version "3.0.0-b.1512"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.0.0-b.1512.tgz#64e60709b7b638c08d201313a5748aa6f5145337"
+  integrity sha512-+lpoPJnTTkGq61XZzrNfAVhYJprBYqFZc++D0TgVUUOfAlXn5I016+cabfRQ/K65ecTfd8RitFK/LrIBUE7D2Q==
+  dependencies:
+    "@babel/runtime" "7.1.2"
+    cornerstone-math "^0.1.7"
+
 cornerstone-wado-image-loader@2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-2.2.3.tgz#2d4c06b5c87cd9198b52906c48e2d9dd145de986"
@@ -8309,10 +8317,10 @@ react-bootstrap-modal@^4.2.0:
     react-overlays "^0.8.0"
     react-transition-group "^2.0.0"
 
-react-cornerstone-viewport@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.3.tgz#d0c3b6e0d1adde9b3282465ae3397428f76aaf52"
-  integrity sha512-ZbnT8M6HZimPGtdIlc1qPg04RmzlOijsWXTVdBBTAWPg5PUqbdBShQRjv+KvciL4kb6I+77WPWpsxJ1+QEoV+w==
+react-cornerstone-viewport@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.4.tgz#6e1e1e31cbfca28617d4aebddd591f3a13206382"
+  integrity sha512-bowfkjKR/hdg+2nEQy2BJejjKIsudiedJrMKehygK2f0SI17w2FC8r8QJPysdykfwz1WuBouOlA0JJtfHzk+CQ==
   dependencies:
     cornerstone-core "2.2.8"
     cornerstone-math "0.1.7"

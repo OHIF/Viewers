@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -21,10 +22,18 @@ function setContext(context) {
             context
         }
     });*/
-    console.log(context);
+}
+
+function LoadingUser() {
+    return (<div>Loading user...</div>);
 }
 
 class App extends Component {
+    static propTypes = {
+        history: PropTypes.object.isRequired,
+        user: PropTypes.object
+    }
+
     componentDidMount() {
         this.unlisten = this.props.history.listen((location, action) => {
             setContext(window.location.pathname);
@@ -40,7 +49,13 @@ class App extends Component {
 
         if (!user || user.expired) {
             // TODO: redirect to OAuth page if necessary
-            //return ('Loading user...');
+            return <Switch>
+                <Route path="/callback" component={CallbackPage} />
+                <Route exact path='/login' component={() => {
+                    userManager.signinRedirect();
+                }}/>
+                <Route component={LoadingUser}/>
+            </Switch>;
         }
 
         return (

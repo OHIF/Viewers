@@ -84,7 +84,7 @@ class Viewer extends Component {
 
     render() {
         return (<>
-            <Header />
+            <Header home={false}/>
             <div className='viewerDialogs'>
                 {/*<CineDialog/>*/}
             </div>

@@ -1,3 +1,6 @@
 import loglevel from 'loglevel';
-log = loglevel.getLogger('OHIFViewer');
+
+const log = loglevel.getLogger('OHIFViewer');
 log.setLevel('info');
+
+export default log;
