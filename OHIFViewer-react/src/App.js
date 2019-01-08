@@ -47,7 +47,7 @@ class App extends Component {
     render() {
         const user = this.props.user;
 
-        if (!user || user.expired) {
+        /*if (!user || user.expired) {
             // TODO: redirect to OAuth page if necessary
             return <Switch>
                 <Route path="/callback" component={CallbackPage} />
@@ -56,7 +56,7 @@ class App extends Component {
                 }}/>
                 <Route component={LoadingUser}/>
             </Switch>;
-        }
+        }*/
 
         return (
             <Switch>
