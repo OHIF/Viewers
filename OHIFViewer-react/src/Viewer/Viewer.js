@@ -8,6 +8,7 @@ import OHIF from 'ohif-core';
 import Header from '../Header'
 import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from "../FlexboxLayout/ConnectedToolbarRow";
+import ConnectedUserPreferencesModal from '../FlexboxLayout/ConnectedUserPreferencesModal';
 import './Viewer.css';
 
 const { StackManager } = OHIF.utils;
@@ -96,6 +97,7 @@ class Viewer extends Component {
             </div>
             <div id="viewer" className='Viewer'>
                 <ConnectedToolbarRow />
+                <ConnectedUserPreferencesModal/>
                 <ConnectedFlexboxLayout studies={this.state.studies} />
             </div>
         </>

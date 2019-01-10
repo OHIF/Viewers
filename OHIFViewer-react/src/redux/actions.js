@@ -8,9 +8,15 @@ export const setRightSidebarOpen = state => ({
     state
 });
 
+export const setUserPreferencesModalOpen = state => ({
+    type: 'SET_USER_PREFERENCES_MODAL_OPEN',
+    state
+});
+
 const actions = {
     setLeftSidebarOpen,
-    setRightSidebarOpen
+    setRightSidebarOpen,
+    setUserPreferencesModalOpen
 };
 
 export default actions;
