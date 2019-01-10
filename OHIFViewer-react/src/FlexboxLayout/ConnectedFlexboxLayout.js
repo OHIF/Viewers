@@ -5,7 +5,6 @@ const mapStateToProps = state => {
     return {
         leftSidebarOpen: state.ui.leftSidebarOpen,
         rightSidebarOpen: state.ui.rightSidebarOpen,
-        stackLoadingData: state.loading
     };
 };
 

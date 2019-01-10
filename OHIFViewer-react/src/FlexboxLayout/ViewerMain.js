@@ -12,7 +12,6 @@ import './ViewerMain.css';
 // Attempt to fix weird undefined dep issue
 cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
 
-const { StudyLoadingListener, StudyPrefetcher } = OHIF.classes;
 const { StackManager } = OHIF.utils;
 
 function getCornerstoneStack(studies, viewportData) {
@@ -38,19 +37,17 @@ class ViewerMain extends Component {
         viewportData: [],
     };
 
+    static propTypes = {
+        studies: PropTypes.array.isRequired
+    };
+
     componentDidMount() {
         // Add beforeUnload event handler to check for unsaved changes
         //window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
-        const { studies } = this.props;
-        this.studyPrefetcher = StudyPrefetcher.getInstance(cornerstone, cornerstoneTools);
-        this.studyPrefetcher.setStudies(studies);
-        this.studyLoadingListener = StudyLoadingListener.getInstance(cornerstone);
-        this.studyLoadingListener.clear();
-        this.studyLoadingListener.addStudies(studies);
-
         // Get all the display sets for the viewer studies
         const displaySets = [];
+        const studies = this.props.studies;
         studies.forEach((study) => {
             study.displaySets.forEach(dSet => dSet.images.length && displaySets.push(dSet));
         });
@@ -119,12 +116,6 @@ class ViewerMain extends Component {
         // Destroy the synchronizer used to update reference lines
         OHIF.viewer.updateImageSynchronizer.destroy();
 
-        // Stop prefetching when we close the viewer
-        this.studyPrefetcher.destroy();
-
-        // Destroy stack loading listeners when we close the viewer
-        this.studyLoadingListener.clear();
-
         // Clear references to all stacks in the StackManager
         StackManager.clearStacks();
 
@@ -137,9 +128,5 @@ class ViewerMain extends Component {
         //OHIF.viewer.StudyMetadataList.removeAll();
     }
 }
-
-ViewerMain.propTypes = {
-    studies: PropTypes.array.isRequired
-};
 
 export default ViewerMain;

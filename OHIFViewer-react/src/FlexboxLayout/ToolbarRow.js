@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ConnectedToolbarSection from './ConnectedToolbarSection';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
+import ConnectedCineDialog from '../components/ConnectedCineDialog.js';
 import PropTypes from 'prop-types';
 import { RoundedButtonGroup } from 'react-viewerbase';
 import './ToolbarRow.css';
@@ -40,6 +41,10 @@ class ToolbarRow extends Component {
             </div>
             <ConnectedToolbarSection/>
             <ConnectedLayoutButton/>
+            {/* TODO: Putting cine dialog here for now */}
+            <div style={{ marginLeft: '100px', display: 'inline-block'}}>
+                <ConnectedCineDialog/>
+            </div>
             <div className="pull-right m-t-1 rm-x-1">
                 {/* > roundedButtonGroup rightSidebarToggleButtonData */}
             </div>

@@ -2,26 +2,40 @@ import { connect } from 'react-redux';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from 'ohif-core'
 
-const { setViewportActive } = OHIF.redux.actions;
+const { setViewportActive, setViewportSpecificData, clearViewportSpecificData } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
     const activeButton = state.tools.buttons.find(tool => tool.active === true);
 
     // If this is the active viewport, enable prefetching.
-    const enableStackPrefetch = ownProps.viewportData.viewportIndex === state.viewports.activeViewportIndex;
+    const { viewportIndex } = ownProps.viewportData;
+    const isActive = viewportIndex === state.viewports.activeViewportIndex;
+    const viewportSpecificData = state.viewports.viewportSpecificData[viewportIndex] || {};
 
     return {
         layout: state.viewports.layout,
-        activeViewportIndex: state.viewports.activeViewportIndex,
+        isActive,
         activeTool: activeButton && activeButton.command,
-        enableStackPrefetch
+        enableStackPrefetch: isActive,
+        //stack: viewportSpecificData.stack,
+        cineToolData: viewportSpecificData.cine
     };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
+    const viewportIndex = ownProps.viewportData.viewportIndex;
+
     return {
-        setViewportActive: viewportIndex => {
+        setViewportActive: () => {
             dispatch(setViewportActive(viewportIndex))
+        },
+
+        setViewportSpecificData: (data) => {
+            dispatch(setViewportSpecificData(viewportIndex, data))
+        },
+
+        clearViewportSpecificData: () => {
+            dispatch(clearViewportSpecificData(viewportIndex));
         }
     };
 };

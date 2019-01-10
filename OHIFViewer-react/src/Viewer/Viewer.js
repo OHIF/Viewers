@@ -8,6 +8,8 @@ import OHIF from 'ohif-core';
 import Header from '../Header'
 import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from "../FlexboxLayout/ConnectedToolbarRow";
+import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
+import StudyPrefetch from './StudyPrefetch.js';
 import './Viewer.css';
 
 const { StackManager } = OHIF.utils;
@@ -49,10 +51,6 @@ OHIF.viewer.defaultTool = {
 };
 
 OHIF.viewer.refLinesEnabled = true;
-OHIF.viewer.cine = {
-    framesPerSecond: 24,
-    loop: true
-};
 
 /*const viewportUtils = OHIF.viewerbase.viewportUtils;
 
@@ -75,18 +73,8 @@ StackManager.setMetadataProvider(metadataProvider);
 
 class Viewer extends Component {
     static propTypes = {
-        studies: PropTypes.array
+        studies: PropTypes.array,
     };
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            leftSidebar: 'studies',
-            rightSidebar: 'measurements',
-            studies: this.props.studies
-        };
-    }
 
     render() {
         return (<>
@@ -96,7 +84,9 @@ class Viewer extends Component {
             </div>
             <div id="viewer" className='Viewer'>
                 <ConnectedToolbarRow />
-                <ConnectedFlexboxLayout studies={this.state.studies} />
+                <ConnectedStudyLoadingMonitor studies={this.props.studies} />
+                <StudyPrefetch studies={this.props.studies} />
+                <ConnectedFlexboxLayout studies={this.props.studies} />
             </div>
         </>
         );
