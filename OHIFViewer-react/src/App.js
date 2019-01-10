@@ -13,6 +13,7 @@ import userManager from "./userManager.js";
 import './App.css';
 import './variables.css';
 import './theme-tide.css';
+import UserPreferences from './UserPreferences/UserPreferences.js';
 
 const reload = () => window.location.reload();
 
@@ -87,11 +88,10 @@ class App extends Component {
                     path="/IHEInvokeImageDisplay"
                     component={IHEInvokeImageDisplay}
                 />
-
                 <Route path="/silent-refresh.html" onEnter={reload} />
                 <Route path="/logout-redirect.html" onEnter={reload} />
                 <Route exact path='/login' component={() => {
-                        userManager.signinRedirect();
+                    userManager.signinRedirect();
                 }}
                 />
                 <Route path="/callback" component={CallbackPage} />
