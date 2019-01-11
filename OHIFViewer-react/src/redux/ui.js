@@ -1,7 +1,7 @@
 const defaultState = {
     leftSidebarOpen: true,
     rightSidebarOpen: false,
-    userPreferencesModalOpen: true
+    userPreferencesModalOpen: false
 }
 
 const ui = (state = defaultState, action) => {

@@ -4,6 +4,7 @@ import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
 import { StudyList } from "react-viewerbase";
 import Header from "./Header";
+import ConnectedHeader from "./Header/ConnectedHeader";
 
 class StudyListWithData extends Component {
     state = {
@@ -96,7 +97,7 @@ class StudyListWithData extends Component {
         const studyCount = this.state.studies ? this.state.studies.length : 0;
 
         return (<>
-            <Header home={true} user={this.props.user}/>
+            <ConnectedHeader home={true} user={this.props.user}/>
             <StudyList studies={this.state.studies}
                 studyCount={studyCount}
                 studyListFunctionsEnabled={false}

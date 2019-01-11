@@ -8,8 +8,8 @@ import OHIF from 'ohif-core';
 import Header from '../Header'
 import ConnectedFlexboxLayout from '../FlexboxLayout/ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from "../FlexboxLayout/ConnectedToolbarRow";
-import ConnectedUserPreferencesModal from '../FlexboxLayout/ConnectedUserPreferencesModal';
 import './Viewer.css';
+import ConnectedHeader from "../Header/ConnectedHeader";
 
 const { StackManager } = OHIF.utils;
 
@@ -91,13 +91,12 @@ class Viewer extends Component {
 
     render() {
         return (<>
-            <Header home={false}/>
+            <ConnectedHeader home={false} />
             <div className='viewerDialogs'>
                 {/*<CineDialog/>*/}
             </div>
             <div id="viewer" className='Viewer'>
                 <ConnectedToolbarRow />
-                <ConnectedUserPreferencesModal/>
                 <ConnectedFlexboxLayout studies={this.state.studies} />
             </div>
         </>

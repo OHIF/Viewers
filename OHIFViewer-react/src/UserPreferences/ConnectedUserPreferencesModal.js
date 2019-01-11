@@ -15,17 +15,17 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onCancel: state => {
+        onCancel: () => {
             dispatch(setUserPreferencesModalOpen(false));
         },
         onSave: data => {
             dispatch(setUserPreferences(data));
-            //dispatch(setUserPreferencesModalOpen(false));
+            dispatch(setUserPreferencesModalOpen(false));
         },
-        onResetToDefaults: state => {
+        onResetToDefaults: () => {
             dispatch(setUserPreferences());
-            //dispatch(setUserPreferencesModalOpen(false));
-        }
+            dispatch(setUserPreferencesModalOpen(false));
+        },
     };
 };
 

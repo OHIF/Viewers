@@ -13,7 +13,6 @@ import userManager from "./userManager.js";
 import './App.css';
 import './variables.css';
 import './theme-tide.css';
-import UserPreferences from './UserPreferences/UserPreferences.js';
 
 const reload = () => window.location.reload();
 

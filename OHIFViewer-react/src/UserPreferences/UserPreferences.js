@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
 import { UserPreferencesModal } from 'react-viewerbase';
+import ConnectedUserPreferencesModal from './ConnectedUserPreferencesModal';
 
 function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
@@ -138,7 +139,7 @@ class UserPreferences extends Component {
     }
 
     render() {
-        return (<UserPreferencesModal
+        return (<ConnectedUserPreferencesModal
             isOpen={this.props.modalOpen}
             onCancel={this.onCancel.bind(this)}
             onSave={this.save.bind(this)}

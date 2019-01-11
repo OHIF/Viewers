@@ -4,13 +4,14 @@ import { Link, withRouter } from 'react-router-dom';
 import { Dropdown } from '../components';
 import Icons from '../images/icons.svg';
 import './Header.css';
-import UserPreferences from '../UserPreferences/UserPreferences';
+import ConnectedUserPreferencesModal from '../UserPreferences/ConnectedUserPreferencesModal';
 
 class Header extends Component {
 
   static propTypes = {
     home: PropTypes.bool.isRequired,
-    location: []
+    location: PropTypes.object,
+    openUserPreferencesModal: PropTypes.func,
   };
 
   static defaultProps = {
@@ -28,7 +29,7 @@ class Header extends Component {
       {
         title: 'Preferences ',
         icon: 'fa fa-user',
-        onClick: this.openPreferencesClick.bind(this),
+        onClick: this.props.openUserPreferencesModal,
       },
       {
         title: 'About',
@@ -36,10 +37,6 @@ class Header extends Component {
         link: 'http://ohif.org',
       }
     ];
-  }
-
-  openPreferencesClick() {
-    this.setState({ userPreferencesOpen: true });
   }
 
   render() {
@@ -70,14 +67,14 @@ class Header extends Component {
 
       <div className="header-menu">
         <span className="research-use">
-          INVESTIGATIONAL USE ONLY {this.state.userPreferencesOpen.toString()}
+          INVESTIGATIONAL USE ONLY
         </span>
         <Dropdown
           title='Options'
           list={this.options}
           align='right'
         />
-        <UserPreferences modalOpen={this.state.userPreferencesOpen} closeModal={() => { this.setState({ userPreferencesOpen: false }) }} />
+        <ConnectedUserPreferencesModal />
       </div>
     </div>
     );
