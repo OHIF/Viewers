@@ -66,11 +66,11 @@ class StudyListWithData extends Component {
                 studies: fixedStudies,
             });
         }).catch(error => {
-            // this.setState({
-            //     error: true,
-            // });
+            this.setState({
+                error: true,
+            });
 
-            // throw new Error(error);
+            throw new Error(error);
         });
     }
 
