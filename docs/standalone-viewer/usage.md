@@ -29,16 +29,16 @@ http://localhost:3000/testDICOMs
 
 It is possible to build this standalone viewer to run as a client-only bundle of HTML, JavaScript, and CSS.
 
-1. First, install [meteor-build-client-fixed](https://github.com/brettg2/meteor-build-client/).
+1. First, install [meteor-build-client-fixed2](https://www.npmjs.com/package/meteor-build-client-fixed2).
 
   ````bash
-  sudo npm install -g meteor-build-client-fixed
+  sudo npm install -g meteor-build-client-fixed2
   ````
 
 2. Next, build the client bundle into an output folder ("myOutputFolder") with a base URL ("localhost:3000"). In production, this would be the URL where the Viewer is available.
 
   ````
-  METEOR_PACKAGE_DIRS="../../Packages" meteor-build-client-fixed ../myOutputFolder -u localhost:3000
+  METEOR_PACKAGE_DIRS="../../Packages" meteor-build-client-fixed2 ../myOutputFolder -u localhost:3000 --legacy
   ````
 
 3. Test the bundled client-side package locally.
