@@ -16,9 +16,9 @@ export ROOT_URL=$DEPLOY_PRIME_URL:/viewer/
 export METEOR_PACKAGE_DIRS="../../Packages"
 mkdir buildDirectory
 cd StandaloneViewer
-npm install -g meteor-build-client-fixed@0.4.3
-meteor-build-client-fixed --version
+npm install -g meteor-build-client-fixed2@0.4.3-b
+meteor-build-client-fixed2 --version
 curl https://install.meteor.com | /bin/sh
 export PATH=$HOME/.meteor:$PATH
 meteor npm install
-meteor-build-client-fixed ../../docs/_book/viewer -u $ROOT_URL --path './'
+meteor-build-client-fixed2 ../../docs/_book/viewer -u $ROOT_URL --path './' --legacy
