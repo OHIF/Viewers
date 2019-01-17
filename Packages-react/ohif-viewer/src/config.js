@@ -34,7 +34,7 @@ OHIF.external.cornerstoneMath = cornerstoneMath;
 OHIF.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
 // TODO: Is there a better way to guess ROOT_URL?
-let ROOT_URL = homepage;
+let ROOT_URL = window.location.pathname;
 
 // If the page we are on is not a subset of the expected homepage
 // provided in the package.json file, we might be doing local development.

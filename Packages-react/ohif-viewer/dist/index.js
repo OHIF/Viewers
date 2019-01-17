@@ -125,6 +125,23 @@ function _inherits(subClass, superClass) {
 
 var inherits = _inherits;
 
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+var defineProperty = _defineProperty;
+
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -3739,7 +3756,7 @@ var KNOWN_STATICS = {
     arity: true
 };
 
-var defineProperty = Object.defineProperty;
+var defineProperty$1 = Object.defineProperty;
 var getOwnPropertyNames = Object.getOwnPropertyNames;
 var getOwnPropertySymbols$1 = Object.getOwnPropertySymbols;
 var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
@@ -3767,7 +3784,7 @@ function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
             if (!REACT_STATICS[key] && !KNOWN_STATICS[key] && (!blacklist || !blacklist[key])) {
                 var descriptor = getOwnPropertyDescriptor(sourceComponent, key);
                 try { // Avoid failures from read-only properties
-                    defineProperty(targetComponent, key, descriptor);
+                    defineProperty$1(targetComponent, key, descriptor);
                 } catch (e) {}
             }
         }
@@ -4287,7 +4304,7 @@ var FORWARD_REF_STATICS = {
 var TYPE_STATICS = {};
 TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
 
-var defineProperty$1 = Object.defineProperty;
+var defineProperty$2 = Object.defineProperty;
 var getOwnPropertyNames$1 = Object.getOwnPropertyNames;
 var getOwnPropertySymbols$2 = Object.getOwnPropertySymbols;
 var getOwnPropertyDescriptor$1 = Object.getOwnPropertyDescriptor;
@@ -4320,7 +4337,7 @@ function hoistNonReactStatics$1(targetComponent, sourceComponent, blacklist) {
                 var descriptor = getOwnPropertyDescriptor$1(sourceComponent, key);
                 try {
                     // Avoid failures from read-only properties
-                    defineProperty$1(targetComponent, key, descriptor);
+                    defineProperty$2(targetComponent, key, descriptor);
                 } catch (e) {}
             }
         }
@@ -5465,7 +5482,7 @@ function createConnect(_temp) {
 }
 var connect = createConnect();
 
-function _typeof$4(obj){if(typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"){_typeof$4=function(obj){return typeof obj;};}else{_typeof$4=function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};}return _typeof$4(obj);}function asyncGeneratorStep(gen,resolve,reject,_next,_throw,key,arg){try{var info=gen[key](arg);var value=info.value;}catch(error){reject(error);return;}if(info.done){resolve(value);}else{Promise.resolve(value).then(_next,_throw);}}function _asyncToGenerator(fn){return function(){var self=this,args=arguments;return new Promise(function(resolve,reject){var gen=fn.apply(self,args);function _next(value){asyncGeneratorStep(gen,resolve,reject,_next,_throw,"next",value);}function _throw(err){asyncGeneratorStep(gen,resolve,reject,_next,_throw,"throw",err);}_next(undefined);});};}function _classCallCheck$b(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _defineProperties$1(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}function _createClass$1(Constructor,protoProps,staticProps){if(protoProps)_defineProperties$1(Constructor.prototype,protoProps);if(staticProps)_defineProperties$1(Constructor,staticProps);return Constructor;}function _defineProperty$1(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _objectSpread$1(target){for(var i=1;i<arguments.length;i++){var source=arguments[i]!=null?arguments[i]:{};var ownKeys=Object.keys(source);if(typeof Object.getOwnPropertySymbols==='function'){ownKeys=ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym){return Object.getOwnPropertyDescriptor(source,sym).enumerable;}));}ownKeys.forEach(function(key){_defineProperty$1(target,key,source[key]);});}return target;}function _inherits$b(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function");}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,writable:true,configurable:true}});if(superClass)_setPrototypeOf(subClass,superClass);}function _getPrototypeOf(o){_getPrototypeOf=Object.setPrototypeOf?Object.getPrototypeOf:function _getPrototypeOf(o){return o.__proto__||Object.getPrototypeOf(o);};return _getPrototypeOf(o);}function _setPrototypeOf(o,p){_setPrototypeOf=Object.setPrototypeOf||function _setPrototypeOf(o,p){o.__proto__=p;return o;};return _setPrototypeOf(o,p);}function isNativeReflectConstruct(){if(typeof Reflect==="undefined"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy==="function")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}function _construct(Parent,args,Class){if(isNativeReflectConstruct()){_construct=Reflect.construct;}else{_construct=function _construct(Parent,args,Class){var a=[null];a.push.apply(a,args);var Constructor=Function.bind.apply(Parent,a);var instance=new Constructor();if(Class)_setPrototypeOf(instance,Class.prototype);return instance;};}return _construct.apply(null,arguments);}function _isNativeFunction(fn){return Function.toString.call(fn).indexOf("[native code]")!==-1;}function _wrapNativeSuper(Class){var _cache=typeof Map==="function"?new Map():undefined;_wrapNativeSuper=function _wrapNativeSuper(Class){if(Class===null||!_isNativeFunction(Class))return Class;if(typeof Class!=="function"){throw new TypeError("Super expression must either be null or a function");}if(typeof _cache!=="undefined"){if(_cache.has(Class))return _cache.get(Class);_cache.set(Class,Wrapper);}function Wrapper(){return _construct(Class,arguments,_getPrototypeOf(this).constructor);}Wrapper.prototype=Object.create(Class.prototype,{constructor:{value:Wrapper,enumerable:false,writable:true,configurable:true}});return _setPrototypeOf(Wrapper,Class);};return _wrapNativeSuper(Class);}function _assertThisInitialized$2(self){if(self===void 0){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return self;}function _possibleConstructorReturn$b(self,call){if(call&&(typeof call==="object"||typeof call==="function")){return call;}return _assertThisInitialized$2(self);}var cornerstone$1=window.cornerstone;var cornerstoneTools=window.cornerstoneTools;var cornerstoneWADOImageLoader=window.cornerstoneWADOImageLoader;var cornerstoneMath=window.cornerstoneMath;var external={set cornerstone(cs){cornerstone$1=cs;},get cornerstone(){return cornerstone$1;},set cornerstoneTools(tools){cornerstoneTools=tools;},get cornerstoneTools(){return cornerstoneTools;},set cornerstoneWADOImageLoader(wado){cornerstoneWADOImageLoader=wado;},get cornerstoneWADOImageLoader(){return cornerstoneWADOImageLoader;},set cornerstoneMath(math){cornerstoneMath=math;},get cornerstoneMath(){return cornerstoneMath;}};function getBoundingBox(context,textLines,x,y,options){var cornerstoneTools=external.cornerstoneTools;if(Object.prototype.toString.call(textLines)!=='[object Array]'){textLines=[textLines];}var padding=5;var font=cornerstoneTools.textStyle.getFont();var fontSize=cornerstoneTools.textStyle.getFontSize();context.save();context.font=font;context.textBaseline='top';// Find the longest text width in the array of text data
+function _typeof$4(obj){if(typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"){_typeof$4=function(obj){return typeof obj;};}else{_typeof$4=function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};}return _typeof$4(obj);}function asyncGeneratorStep(gen,resolve,reject,_next,_throw,key,arg){try{var info=gen[key](arg);var value=info.value;}catch(error){reject(error);return;}if(info.done){resolve(value);}else{Promise.resolve(value).then(_next,_throw);}}function _asyncToGenerator(fn){return function(){var self=this,args=arguments;return new Promise(function(resolve,reject){var gen=fn.apply(self,args);function _next(value){asyncGeneratorStep(gen,resolve,reject,_next,_throw,"next",value);}function _throw(err){asyncGeneratorStep(gen,resolve,reject,_next,_throw,"throw",err);}_next(undefined);});};}function _classCallCheck$b(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _defineProperties$1(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}function _createClass$1(Constructor,protoProps,staticProps){if(protoProps)_defineProperties$1(Constructor.prototype,protoProps);if(staticProps)_defineProperties$1(Constructor,staticProps);return Constructor;}function _defineProperty$2(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _objectSpread$1(target){for(var i=1;i<arguments.length;i++){var source=arguments[i]!=null?arguments[i]:{};var ownKeys=Object.keys(source);if(typeof Object.getOwnPropertySymbols==='function'){ownKeys=ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym){return Object.getOwnPropertyDescriptor(source,sym).enumerable;}));}ownKeys.forEach(function(key){_defineProperty$2(target,key,source[key]);});}return target;}function _inherits$b(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function");}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,writable:true,configurable:true}});if(superClass)_setPrototypeOf(subClass,superClass);}function _getPrototypeOf(o){_getPrototypeOf=Object.setPrototypeOf?Object.getPrototypeOf:function _getPrototypeOf(o){return o.__proto__||Object.getPrototypeOf(o);};return _getPrototypeOf(o);}function _setPrototypeOf(o,p){_setPrototypeOf=Object.setPrototypeOf||function _setPrototypeOf(o,p){o.__proto__=p;return o;};return _setPrototypeOf(o,p);}function isNativeReflectConstruct(){if(typeof Reflect==="undefined"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy==="function")return true;try{Date.prototype.toString.call(Reflect.construct(Date,[],function(){}));return true;}catch(e){return false;}}function _construct(Parent,args,Class){if(isNativeReflectConstruct()){_construct=Reflect.construct;}else{_construct=function _construct(Parent,args,Class){var a=[null];a.push.apply(a,args);var Constructor=Function.bind.apply(Parent,a);var instance=new Constructor();if(Class)_setPrototypeOf(instance,Class.prototype);return instance;};}return _construct.apply(null,arguments);}function _isNativeFunction(fn){return Function.toString.call(fn).indexOf("[native code]")!==-1;}function _wrapNativeSuper(Class){var _cache=typeof Map==="function"?new Map():undefined;_wrapNativeSuper=function _wrapNativeSuper(Class){if(Class===null||!_isNativeFunction(Class))return Class;if(typeof Class!=="function"){throw new TypeError("Super expression must either be null or a function");}if(typeof _cache!=="undefined"){if(_cache.has(Class))return _cache.get(Class);_cache.set(Class,Wrapper);}function Wrapper(){return _construct(Class,arguments,_getPrototypeOf(this).constructor);}Wrapper.prototype=Object.create(Class.prototype,{constructor:{value:Wrapper,enumerable:false,writable:true,configurable:true}});return _setPrototypeOf(Wrapper,Class);};return _wrapNativeSuper(Class);}function _assertThisInitialized$2(self){if(self===void 0){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return self;}function _possibleConstructorReturn$b(self,call){if(call&&(typeof call==="object"||typeof call==="function")){return call;}return _assertThisInitialized$2(self);}var cornerstone$1=window.cornerstone;var cornerstoneTools=window.cornerstoneTools;var cornerstoneWADOImageLoader=window.cornerstoneWADOImageLoader;var cornerstoneMath=window.cornerstoneMath;var external={set cornerstone(cs){cornerstone$1=cs;},get cornerstone(){return cornerstone$1;},set cornerstoneTools(tools){cornerstoneTools=tools;},get cornerstoneTools(){return cornerstoneTools;},set cornerstoneWADOImageLoader(wado){cornerstoneWADOImageLoader=wado;},get cornerstoneWADOImageLoader(){return cornerstoneWADOImageLoader;},set cornerstoneMath(math){cornerstoneMath=math;},get cornerstoneMath(){return cornerstoneMath;}};function getBoundingBox(context,textLines,x,y,options){var cornerstoneTools=external.cornerstoneTools;if(Object.prototype.toString.call(textLines)!=='[object Array]'){textLines=[textLines];}var padding=5;var font=cornerstoneTools.textStyle.getFont();var fontSize=cornerstoneTools.textStyle.getFontSize();context.save();context.font=font;context.textBaseline='top';// Find the longest text width in the array of text data
 var maxWidth=0;textLines.forEach(function(text){// Get the text width in the current font
 var width=context.measureText(text).width;// Find the maximum with for all the text rows;
 maxWidth=Math.max(maxWidth,width);});// Calculate the bounding box for this text box
@@ -6326,7 +6343,7 @@ entry.uid=paletteUID;paletteColorCache.add(entry);resolve(entry);});}));case 2:c
  * @param server
  * @param studyInstanceUid
  * @returns {Promise}
- */function _resultDataToStudyMetadata(){_resultDataToStudyMetadata=_asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee3(server,studyInstanceUid,resultData){var _studyData;var anInstance,studyData,seriesMap;return regenerator.wrap(function _callee3$(_context3){while(1){switch(_context3.prev=_context3.next){case 0:if(resultData.length){_context3.next=2;break;}return _context3.abrupt("return");case 2:anInstance=resultData[0];if(anInstance){_context3.next=5;break;}return _context3.abrupt("return");case 5:studyData=(_studyData={seriesList:[],studyInstanceUid:studyInstanceUid,wadoUriRoot:server.wadoUriRoot,patientName:DICOMWeb.getName(anInstance['00100010']),patientId:DICOMWeb.getString(anInstance['00100020']),patientAge:DICOMWeb.getNumber(anInstance['00101010']),patientSize:DICOMWeb.getNumber(anInstance['00101020']),patientWeight:DICOMWeb.getNumber(anInstance['00101030']),accessionNumber:DICOMWeb.getString(anInstance['00080050']),studyDate:DICOMWeb.getString(anInstance['00080020']),modalities:DICOMWeb.getString(anInstance['00080061']),studyDescription:DICOMWeb.getString(anInstance['00081030']),imageCount:DICOMWeb.getString(anInstance['00201208'])},_defineProperty$1(_studyData,"studyInstanceUid",DICOMWeb.getString(anInstance['0020000D'])),_defineProperty$1(_studyData,"institutionName",DICOMWeb.getString(anInstance['00080080'])),_studyData);seriesMap={};_context3.next=9;return Promise.all(resultData.map(/*#__PURE__*/function(){var _ref=_asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee2(instance){var seriesInstanceUid,series,sopInstanceUid,wadouri,baseWadoRsUri,wadorsuri,instanceSummary,redPaletteColorLookupTableDescriptor,greenPaletteColorLookupTableDescriptor,bluePaletteColorLookupTableDescriptor,palettes;return regenerator.wrap(function _callee2$(_context2){while(1){switch(_context2.prev=_context2.next){case 0:seriesInstanceUid=DICOMWeb.getString(instance['0020000E']);series=seriesMap[seriesInstanceUid];if(!series){series={seriesDescription:DICOMWeb.getString(instance['0008103E']),modality:DICOMWeb.getString(instance['00080060']),seriesInstanceUid:seriesInstanceUid,seriesNumber:DICOMWeb.getNumber(instance['00200011']),seriesDate:DICOMWeb.getString(instance['00080021']),seriesTime:DICOMWeb.getString(instance['00080031']),instances:[]};seriesMap[seriesInstanceUid]=series;studyData.seriesList.push(series);}sopInstanceUid=DICOMWeb.getString(instance['00080018']);wadouri=buildInstanceWadoUrl(server,studyInstanceUid,seriesInstanceUid,sopInstanceUid);baseWadoRsUri=buildInstanceWadoRsUri(server,studyInstanceUid,seriesInstanceUid,sopInstanceUid);wadorsuri=buildInstanceFrameWadoRsUri(server,studyInstanceUid,seriesInstanceUid,sopInstanceUid);instanceSummary={imageType:DICOMWeb.getString(instance['00080008']),sopClassUid:DICOMWeb.getString(instance['00080016']),modality:DICOMWeb.getString(instance['00080060']),sopInstanceUid:sopInstanceUid,instanceNumber:DICOMWeb.getNumber(instance['00200013']),imagePositionPatient:DICOMWeb.getString(instance['00200032']),imageOrientationPatient:DICOMWeb.getString(instance['00200037']),frameOfReferenceUID:DICOMWeb.getString(instance['00200052']),sliceLocation:DICOMWeb.getNumber(instance['00201041']),samplesPerPixel:DICOMWeb.getNumber(instance['00280002']),photometricInterpretation:DICOMWeb.getString(instance['00280004']),planarConfiguration:DICOMWeb.getNumber(instance['00280006']),rows:DICOMWeb.getNumber(instance['00280010']),columns:DICOMWeb.getNumber(instance['00280011']),pixelSpacing:DICOMWeb.getString(instance['00280030']),pixelAspectRatio:DICOMWeb.getString(instance['00280034']),bitsAllocated:DICOMWeb.getNumber(instance['00280100']),bitsStored:DICOMWeb.getNumber(instance['00280101']),highBit:DICOMWeb.getNumber(instance['00280102']),pixelRepresentation:DICOMWeb.getNumber(instance['00280103']),smallestPixelValue:DICOMWeb.getNumber(instance['00280106']),largestPixelValue:DICOMWeb.getNumber(instance['00280107']),windowCenter:DICOMWeb.getString(instance['00281050']),windowWidth:DICOMWeb.getString(instance['00281051']),rescaleIntercept:DICOMWeb.getNumber(instance['00281052']),rescaleSlope:DICOMWeb.getNumber(instance['00281053']),rescaleType:DICOMWeb.getNumber(instance['00281054']),sourceImageInstanceUid:getSourceImageInstanceUid(instance),laterality:DICOMWeb.getString(instance['00200062']),viewPosition:DICOMWeb.getString(instance['00185101']),acquisitionDateTime:DICOMWeb.getString(instance['0008002A']),numberOfFrames:DICOMWeb.getNumber(instance['00280008']),frameIncrementPointer:getFrameIncrementPointer(instance['00280009']),frameTime:DICOMWeb.getNumber(instance['00181063']),frameTimeVector:parseFloatArray(DICOMWeb.getString(instance['00181065'])),sliceThickness:DICOMWeb.getNumber(instance['00180050']),lossyImageCompression:DICOMWeb.getString(instance['00282110']),derivationDescription:DICOMWeb.getString(instance['00282111']),lossyImageCompressionRatio:DICOMWeb.getString(instance['00282112']),lossyImageCompressionMethod:DICOMWeb.getString(instance['00282114']),echoNumber:DICOMWeb.getString(instance['00180086']),contrastBolusAgent:DICOMWeb.getString(instance['00180010']),radiopharmaceuticalInfo:getRadiopharmaceuticalInfo(instance),baseWadoRsUri:baseWadoRsUri,wadouri:WADOProxy.convertURL(wadouri,server),wadorsuri:WADOProxy.convertURL(wadorsuri,server),imageRendering:server.imageRendering,thumbnailRendering:server.thumbnailRendering};// Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
+ */function _resultDataToStudyMetadata(){_resultDataToStudyMetadata=_asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee3(server,studyInstanceUid,resultData){var _studyData;var anInstance,studyData,seriesMap;return regenerator.wrap(function _callee3$(_context3){while(1){switch(_context3.prev=_context3.next){case 0:if(resultData.length){_context3.next=2;break;}return _context3.abrupt("return");case 2:anInstance=resultData[0];if(anInstance){_context3.next=5;break;}return _context3.abrupt("return");case 5:studyData=(_studyData={seriesList:[],studyInstanceUid:studyInstanceUid,wadoUriRoot:server.wadoUriRoot,patientName:DICOMWeb.getName(anInstance['00100010']),patientId:DICOMWeb.getString(anInstance['00100020']),patientAge:DICOMWeb.getNumber(anInstance['00101010']),patientSize:DICOMWeb.getNumber(anInstance['00101020']),patientWeight:DICOMWeb.getNumber(anInstance['00101030']),accessionNumber:DICOMWeb.getString(anInstance['00080050']),studyDate:DICOMWeb.getString(anInstance['00080020']),modalities:DICOMWeb.getString(anInstance['00080061']),studyDescription:DICOMWeb.getString(anInstance['00081030']),imageCount:DICOMWeb.getString(anInstance['00201208'])},_defineProperty$2(_studyData,"studyInstanceUid",DICOMWeb.getString(anInstance['0020000D'])),_defineProperty$2(_studyData,"institutionName",DICOMWeb.getString(anInstance['00080080'])),_studyData);seriesMap={};_context3.next=9;return Promise.all(resultData.map(/*#__PURE__*/function(){var _ref=_asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee2(instance){var seriesInstanceUid,series,sopInstanceUid,wadouri,baseWadoRsUri,wadorsuri,instanceSummary,redPaletteColorLookupTableDescriptor,greenPaletteColorLookupTableDescriptor,bluePaletteColorLookupTableDescriptor,palettes;return regenerator.wrap(function _callee2$(_context2){while(1){switch(_context2.prev=_context2.next){case 0:seriesInstanceUid=DICOMWeb.getString(instance['0020000E']);series=seriesMap[seriesInstanceUid];if(!series){series={seriesDescription:DICOMWeb.getString(instance['0008103E']),modality:DICOMWeb.getString(instance['00080060']),seriesInstanceUid:seriesInstanceUid,seriesNumber:DICOMWeb.getNumber(instance['00200011']),seriesDate:DICOMWeb.getString(instance['00080021']),seriesTime:DICOMWeb.getString(instance['00080031']),instances:[]};seriesMap[seriesInstanceUid]=series;studyData.seriesList.push(series);}sopInstanceUid=DICOMWeb.getString(instance['00080018']);wadouri=buildInstanceWadoUrl(server,studyInstanceUid,seriesInstanceUid,sopInstanceUid);baseWadoRsUri=buildInstanceWadoRsUri(server,studyInstanceUid,seriesInstanceUid,sopInstanceUid);wadorsuri=buildInstanceFrameWadoRsUri(server,studyInstanceUid,seriesInstanceUid,sopInstanceUid);instanceSummary={imageType:DICOMWeb.getString(instance['00080008']),sopClassUid:DICOMWeb.getString(instance['00080016']),modality:DICOMWeb.getString(instance['00080060']),sopInstanceUid:sopInstanceUid,instanceNumber:DICOMWeb.getNumber(instance['00200013']),imagePositionPatient:DICOMWeb.getString(instance['00200032']),imageOrientationPatient:DICOMWeb.getString(instance['00200037']),frameOfReferenceUID:DICOMWeb.getString(instance['00200052']),sliceLocation:DICOMWeb.getNumber(instance['00201041']),samplesPerPixel:DICOMWeb.getNumber(instance['00280002']),photometricInterpretation:DICOMWeb.getString(instance['00280004']),planarConfiguration:DICOMWeb.getNumber(instance['00280006']),rows:DICOMWeb.getNumber(instance['00280010']),columns:DICOMWeb.getNumber(instance['00280011']),pixelSpacing:DICOMWeb.getString(instance['00280030']),pixelAspectRatio:DICOMWeb.getString(instance['00280034']),bitsAllocated:DICOMWeb.getNumber(instance['00280100']),bitsStored:DICOMWeb.getNumber(instance['00280101']),highBit:DICOMWeb.getNumber(instance['00280102']),pixelRepresentation:DICOMWeb.getNumber(instance['00280103']),smallestPixelValue:DICOMWeb.getNumber(instance['00280106']),largestPixelValue:DICOMWeb.getNumber(instance['00280107']),windowCenter:DICOMWeb.getString(instance['00281050']),windowWidth:DICOMWeb.getString(instance['00281051']),rescaleIntercept:DICOMWeb.getNumber(instance['00281052']),rescaleSlope:DICOMWeb.getNumber(instance['00281053']),rescaleType:DICOMWeb.getNumber(instance['00281054']),sourceImageInstanceUid:getSourceImageInstanceUid(instance),laterality:DICOMWeb.getString(instance['00200062']),viewPosition:DICOMWeb.getString(instance['00185101']),acquisitionDateTime:DICOMWeb.getString(instance['0008002A']),numberOfFrames:DICOMWeb.getNumber(instance['00280008']),frameIncrementPointer:getFrameIncrementPointer(instance['00280009']),frameTime:DICOMWeb.getNumber(instance['00181063']),frameTimeVector:parseFloatArray(DICOMWeb.getString(instance['00181065'])),sliceThickness:DICOMWeb.getNumber(instance['00180050']),lossyImageCompression:DICOMWeb.getString(instance['00282110']),derivationDescription:DICOMWeb.getString(instance['00282111']),lossyImageCompressionRatio:DICOMWeb.getString(instance['00282112']),lossyImageCompressionMethod:DICOMWeb.getString(instance['00282114']),echoNumber:DICOMWeb.getString(instance['00180086']),contrastBolusAgent:DICOMWeb.getString(instance['00180010']),radiopharmaceuticalInfo:getRadiopharmaceuticalInfo(instance),baseWadoRsUri:baseWadoRsUri,wadouri:WADOProxy.convertURL(wadouri,server),wadorsuri:WADOProxy.convertURL(wadorsuri,server),imageRendering:server.imageRendering,thumbnailRendering:server.thumbnailRendering};// Get additional information if the instance uses "PALETTE COLOR" photometric interpretation
 if(!(instanceSummary.photometricInterpretation==='PALETTE COLOR')){_context2.next=16;break;}redPaletteColorLookupTableDescriptor=parseFloatArray(DICOMWeb.getString(instance['00281101']));greenPaletteColorLookupTableDescriptor=parseFloatArray(DICOMWeb.getString(instance['00281102']));bluePaletteColorLookupTableDescriptor=parseFloatArray(DICOMWeb.getString(instance['00281103']));_context2.next=14;return getPaletteColors(server,instance,redPaletteColorLookupTableDescriptor);case 14:palettes=_context2.sent;if(palettes){if(palettes.uid){instanceSummary.paletteColorLookupTableUID=palettes.uid;}instanceSummary.redPaletteColorLookupTableData=palettes.red;instanceSummary.greenPaletteColorLookupTableData=palettes.green;instanceSummary.bluePaletteColorLookupTableData=palettes.blue;instanceSummary.redPaletteColorLookupTableDescriptor=redPaletteColorLookupTableDescriptor;instanceSummary.greenPaletteColorLookupTableDescriptor=greenPaletteColorLookupTableDescriptor;instanceSummary.bluePaletteColorLookupTableDescriptor=bluePaletteColorLookupTableDescriptor;}case 16:series.instances.push(instanceSummary);case 17:case"end":return _context2.stop();}}},_callee2,this);}));return function(_x9){return _ref.apply(this,arguments);};}()));case 9:return _context3.abrupt("return",studyData);case 10:case"end":return _context3.stop();}}},_callee3,this);}));return _resultDataToStudyMetadata.apply(this,arguments);}function RetrieveMetadata(_x7,_x8){return _RetrieveMetadata.apply(this,arguments);}function _RetrieveMetadata(){_RetrieveMetadata=_asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee4(server,studyInstanceUid){var config,dicomWeb,options;return regenerator.wrap(function _callee4$(_context4){while(1){switch(_context4.prev=_context4.next){case 0:config={url:server.wadoRoot,headers:DICOMWeb.getAuthorizationHeader(server)};dicomWeb=new DICOMwebClient.api.DICOMwebClient(config);options={studyInstanceUID:studyInstanceUid};return _context4.abrupt("return",dicomWeb.retrieveStudyMetadata(options).then(function(result){return resultDataToStudyMetadata$1(server,studyInstanceUid,result);}));case 4:case"end":return _context4.stop();}}},_callee4,this);}));return _RetrieveMetadata.apply(this,arguments);}// DICOMWeb instance, study, and metadata retrieval
 var WADO={RetrieveMetadata:RetrieveMetadata};var QIDO={Studies:Studies,Instances:Instances};var log$1={error:console.error,warn:console.warn,info:console.log,debug:console.debug,time:console.time,timeEnd:console.timeEnd};// promises and prevent unnecessary subsequent calls to the server
 var StudyMetaDataPromises=new Map();/**
@@ -6964,7 +6981,7 @@ var frameTimeVector=this.getFrameTimeVector(image);if(frameTimeVector instanceof
      * @param imageId
      * @returns {Object} Relevant metadata of the specified type
      */},{key:"provider",value:function provider(type,imageId){// TODO: Cornerstone Tools use 'imagePlaneModule', but OHIF use 'imagePlane'. It must be consistent.
-if(type==='imagePlaneModule'){type='imagePlane';}var imageMetadata=this.metadataLookup.get(imageId);if(!imageMetadata){return;}if(imageMetadata.hasOwnProperty(type)){return imageMetadata[type];}}}]);return MetadataProvider;}();var cornerstone$1$1={MetadataProvider:MetadataProvider,getBoundingBox:getBoundingBox,pixelToPage:pixelToPage,repositionTextBox:repositionTextBox};var StudyPrefetcher=/*#__PURE__*/function(){function StudyPrefetcher(studies){var _this=this;_classCallCheck$b(this,StudyPrefetcher);_defineProperty$1(this,"cacheFullHandler",function(){log$1.warn('Cache full');_this.stopPrefetching();});this.studies=studies||[];this.prefetchDisplaySetsTimeout=300;this.lastActiveViewportElement=null;external.cornerstone.events.addEventListener('cornerstoneimagecachefull.StudyPrefetcher',this.cacheFullHandler);}_createClass$1(StudyPrefetcher,[{key:"destroy",value:function destroy(){this.stopPrefetching();external.cornerstone.events.removeEventListener('cornerstoneimagecachefull.StudyPrefetcher',this.cacheFullHandler);}},{key:"setStudies",value:function setStudies(studies){this.stopPrefetching();this.studies=studies;}},{key:"prefetch",value:function prefetch(){if(!this.studies||!this.studies.length){return;}this.stopPrefetching();this.prefetchDisplaySets();}},{key:"stopPrefetching",value:function stopPrefetching(){external.cornerstoneTools.requestPoolManager.clearRequestStack('prefetch');}},{key:"prefetchDisplaySetsAsync",value:function prefetchDisplaySetsAsync(timeout){var _this2=this;timeout=timeout||this.prefetchDisplaySetsTimeout;clearTimeout(this.prefetchDisplaySetsHandler);this.prefetchDisplaySetsHandler=setTimeout(function(){_this2.prefetchDisplaySets();},timeout);}},{key:"prefetchDisplaySets",value:function prefetchDisplaySets(){// TODO: Allow passing in config
+if(type==='imagePlaneModule'){type='imagePlane';}var imageMetadata=this.metadataLookup.get(imageId);if(!imageMetadata){return;}if(imageMetadata.hasOwnProperty(type)){return imageMetadata[type];}}}]);return MetadataProvider;}();var cornerstone$1$1={MetadataProvider:MetadataProvider,getBoundingBox:getBoundingBox,pixelToPage:pixelToPage,repositionTextBox:repositionTextBox};var StudyPrefetcher=/*#__PURE__*/function(){function StudyPrefetcher(studies){var _this=this;_classCallCheck$b(this,StudyPrefetcher);_defineProperty$2(this,"cacheFullHandler",function(){log$1.warn('Cache full');_this.stopPrefetching();});this.studies=studies||[];this.prefetchDisplaySetsTimeout=300;this.lastActiveViewportElement=null;external.cornerstone.events.addEventListener('cornerstoneimagecachefull.StudyPrefetcher',this.cacheFullHandler);}_createClass$1(StudyPrefetcher,[{key:"destroy",value:function destroy(){this.stopPrefetching();external.cornerstone.events.removeEventListener('cornerstoneimagecachefull.StudyPrefetcher',this.cacheFullHandler);}},{key:"setStudies",value:function setStudies(studies){this.stopPrefetching();this.studies=studies;}},{key:"prefetch",value:function prefetch(){if(!this.studies||!this.studies.length){return;}this.stopPrefetching();this.prefetchDisplaySets();}},{key:"stopPrefetching",value:function stopPrefetching(){external.cornerstoneTools.requestPoolManager.clearRequestStack('prefetch');}},{key:"prefetchDisplaySetsAsync",value:function prefetchDisplaySetsAsync(timeout){var _this2=this;timeout=timeout||this.prefetchDisplaySetsTimeout;clearTimeout(this.prefetchDisplaySetsHandler);this.prefetchDisplaySetsHandler=setTimeout(function(){_this2.prefetchDisplaySets();},timeout);}},{key:"prefetchDisplaySets",value:function prefetchDisplaySets(){// TODO: Allow passing in config
 var config={order:'closest',displaySetCount:1};var displaySetsToPrefetch=this.getDisplaySetsToPrefetch(config);var imageIds=this.getImageIdsFromDisplaySets(displaySetsToPrefetch);this.prefetchImageIds(imageIds);}},{key:"prefetchImageIds",value:function prefetchImageIds(imageIds){var nonCachedImageIds=this.filterCachedImageIds(imageIds);var requestPoolManager=external.cornerstoneTools.requestPoolManager;var requestType='prefetch';var preventCache=false;var noop=function noop(){};nonCachedImageIds.forEach(function(imageId){requestPoolManager.addRequest({},imageId,requestType,preventCache,noop,noop);});requestPoolManager.startGrabbing();}},{key:"getStudy",value:function getStudy(image){var studyMetadata=external.cornerstone.metaData.get('study',image.imageId);return OHIF.viewer.Studies.find(function(study){return study.studyInstanceUid===studyMetadata.studyInstanceUid;});}},{key:"getSeries",value:function getSeries(study,image){var seriesMetadata=external.cornerstone.metaData.get('series',image.imageId);var studyMetadata=OHIF.viewerbase.getStudyMetadata(study);return studyMetadata.getSeriesByUID(seriesMetadata.seriesInstanceUid);}},{key:"getInstance",value:function getInstance(series,image){var instanceMetadata=external.cornerstone.metaData.get('instance',image.imageId);return series.getInstanceByUID(instanceMetadata.sopInstanceUid);}},{key:"getActiveDisplaySet",value:function getActiveDisplaySet(displaySets,instance){return displaySets.find(function(displaySet){return displaySet.images.some(function(displaySetImage){return displaySetImage.sopInstanceUid===instance.sopInstanceUid;});});}},{key:"getDisplaySetsToPrefetch",value:function getDisplaySetsToPrefetch(config){var image=this.getActiveViewportImage();if(!image||!config||!config.displaySetCount){return [];}/*const study = this.getStudy(image);
       const series = this.getSeries(study, image);
       const instance = this.getInstance(series, image);*/var displaySets=study.displaySets;var activeDisplaySet=null;//this.getActiveDisplaySet(displaySets, instance);
@@ -6976,7 +6993,7 @@ this._addStatsData(0);// Update the progress before starting the download
 this._updateProgress();}_createClass$1(BaseLoadingListener,[{key:"_addStatsData",value:function _addStatsData(value){var date=new Date();var stats=this.stats;var items=stats.items;var newItem={value:value,date:date};items.push(newItem);stats.total+=newItem.value;// Remove items until it gets below the limit
 while(items.length>this.statsItemsLimit){var item=items.shift();stats.total-=item.value;}// Update the elapsedTime (seconds) based on first and last
 // elements and recalculate the speed (bytes/s or frames/s)
-if(items.length>1){var oldestItem=items[0];stats.elapsedTime=(newItem.date.getTime()-oldestItem.date.getTime())/1000;stats.speed=(stats.total-oldestItem.value)/stats.elapsedTime;}}},{key:"_getProgressId",value:function _getProgressId(){var displaySetInstanceUid=this.stack.displaySetInstanceUid;return 'StackProgress:'+displaySetInstanceUid;}},{key:"_clearProgress",value:function _clearProgress(){var progressId=this._getProgressId();this._clearProgressById(progressId);}},{key:"startListening",value:function startListening(){throw new Error('`startListening` must be implemented by child classes');}},{key:"stopListening",value:function stopListening(){throw new Error('`stopListening` must be implemented by child classes');}},{key:"destroy",value:function destroy(){this.stopListening();this._clearProgress();}}],[{key:"getNewId",value:function getNewId(){var timeSlice=new Date().getTime().toString().slice(-8);var randomNumber=parseInt(Math.random()*1000000000);return timeSlice.toString()+randomNumber.toString();}}]);return BaseLoadingListener;}();var DICOMFileLoadingListener=/*#__PURE__*/function(_BaseLoadingListener){_inherits$b(DICOMFileLoadingListener,_BaseLoadingListener);function DICOMFileLoadingListener(stack,options){var _this;_classCallCheck$b(this,DICOMFileLoadingListener);_this=_possibleConstructorReturn$b(this,_getPrototypeOf(DICOMFileLoadingListener).call(this,stack,options));_defineProperty$1(_assertThisInitialized$2(_assertThisInitialized$2(_this)),"_imageLoadProgressEventHandler",function(e){var eventData=e.detail;var dataSetUrl=_this._convertImageIdToDataSetUrl(eventData.imageId);var bytesDiff=eventData.loaded-_this._lastLoaded;if(!_this._dataSetUrl===dataSetUrl){return;}// Add the bytes downloaded to the stats
+if(items.length>1){var oldestItem=items[0];stats.elapsedTime=(newItem.date.getTime()-oldestItem.date.getTime())/1000;stats.speed=(stats.total-oldestItem.value)/stats.elapsedTime;}}},{key:"_getProgressId",value:function _getProgressId(){var displaySetInstanceUid=this.stack.displaySetInstanceUid;return 'StackProgress:'+displaySetInstanceUid;}},{key:"_clearProgress",value:function _clearProgress(){var progressId=this._getProgressId();this._clearProgressById(progressId);}},{key:"startListening",value:function startListening(){throw new Error('`startListening` must be implemented by child classes');}},{key:"stopListening",value:function stopListening(){throw new Error('`stopListening` must be implemented by child classes');}},{key:"destroy",value:function destroy(){this.stopListening();this._clearProgress();}}],[{key:"getNewId",value:function getNewId(){var timeSlice=new Date().getTime().toString().slice(-8);var randomNumber=parseInt(Math.random()*1000000000);return timeSlice.toString()+randomNumber.toString();}}]);return BaseLoadingListener;}();var DICOMFileLoadingListener=/*#__PURE__*/function(_BaseLoadingListener){_inherits$b(DICOMFileLoadingListener,_BaseLoadingListener);function DICOMFileLoadingListener(stack,options){var _this;_classCallCheck$b(this,DICOMFileLoadingListener);_this=_possibleConstructorReturn$b(this,_getPrototypeOf(DICOMFileLoadingListener).call(this,stack,options));_defineProperty$2(_assertThisInitialized$2(_assertThisInitialized$2(_this)),"_imageLoadProgressEventHandler",function(e){var eventData=e.detail;var dataSetUrl=_this._convertImageIdToDataSetUrl(eventData.imageId);var bytesDiff=eventData.loaded-_this._lastLoaded;if(!_this._dataSetUrl===dataSetUrl){return;}// Add the bytes downloaded to the stats
 _this._addStatsData(bytesDiff);// Update the download progress
 _this._updateProgress(eventData);// Cache the last eventData.loaded value
 _this._lastLoaded=eventData.loaded;});_this._dataSetUrl=_this._getDataSetUrl(stack);_this._lastLoaded=0;// Check how many instances has already been download (cached)
@@ -9101,9 +9118,9 @@ if(!(metadataInstance instanceof StudySummary||metadataInstance instanceof Insta
 // not contain the attribute specified in the rule, check whether or not they have been
 // defined in the CustomAttributeRetrievalCallbacks Object.
 if(!customAttributeExists&&HP.CustomAttributeRetrievalCallbacks.hasOwnProperty(attribute)){var customAttribute=HP.CustomAttributeRetrievalCallbacks[attribute];metadataInstance.setCustomAttribute(attribute,customAttribute.callback(metadataInstance));customAttributeExists=true;}// Format the constraint as required by Validate.js
-var testConstraint=_defineProperty$1({},attribute,rule.constraint);// Create a single attribute object to be validated, since metadataInstance is an
+var testConstraint=_defineProperty$2({},attribute,rule.constraint);// Create a single attribute object to be validated, since metadataInstance is an
 // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-var attributeValue=customAttributeExists?metadataInstance.getCustomAttribute(attribute):metadataInstance.getTagValue(attribute);var attributeMap=_defineProperty$1({},attribute,attributeValue);// Use Validate.js to evaluate the constraints on the specified metadataInstance
+var attributeValue=customAttributeExists?metadataInstance.getCustomAttribute(attribute):metadataInstance.getTagValue(attribute);var attributeMap=_defineProperty$2({},attribute,attributeValue);// Use Validate.js to evaluate the constraints on the specified metadataInstance
 var errorMessages;try{errorMessages=validate(attributeMap,testConstraint,[options]);}catch(e){errorMessages=['Something went wrong during validation.',e];}if(!errorMessages){// If no errorMessages were returned, then validation passed.
 // Add the rule's weight to the total score
 score+=parseInt(rule.weight,10);// Log that this rule passed in the matching details object
@@ -9134,7 +9151,7 @@ var ProtocolEngine=/*#__PURE__*/function(){/**
    * @param  {Array} studies        Array of study metadata
    * @param  {Map} priorStudies Map of prior studies
    * @param  {Object} studyMetadataSource Instance of StudyMetadataSource (ohif-viewerbase) Object to get study metadata
-   */function ProtocolEngine(studies,priorStudies,studyMetadataSource){_classCallCheck$b(this,ProtocolEngine);_defineProperty$1(this,"matchedProtocols",new Set());_defineProperty$1(this,"matchedProtocolScores",new Map());// -----------
+   */function ProtocolEngine(studies,priorStudies,studyMetadataSource){_classCallCheck$b(this,ProtocolEngine);_defineProperty$2(this,"matchedProtocols",new Set());_defineProperty$2(this,"matchedProtocolScores",new Map());// -----------
 // Type Validations
 if(!(studyMetadataSource instanceof StudyMetadataSource)){throw new OHIFError('ProtocolEngine::constructor studyMetadataSource is not an instance of StudyMetadataSource');}if(!(studies instanceof Array)&&!studies.every(function(study){return study instanceof StudyMetadata$1;})){throw new OHIFError("ProtocolEngine::constructor studies is not an array or it's items are not instances of StudyMetadata");}// --------------
 // Initialization
@@ -20369,7 +20386,7 @@ OHIF$1.external.cornerstoneTools = cornerstoneTools$1;
 OHIF$1.external.cornerstoneMath = cornerstoneMath$1;
 OHIF$1.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader$1; // TODO: Is there a better way to guess ROOT_URL?
 
-var ROOT_URL = homepage; // If the page we are on is not a subset of the expected homepage
+var ROOT_URL = window.location.pathname; // If the page we are on is not a subset of the expected homepage
 // provided in the package.json file, we might be doing local development.
 // In this case, set the base URL to the current location's origin.
 
@@ -20449,23 +20466,6 @@ var ui$1 = function ui() {
       return state;
   }
 };
-
-function _defineProperty$2(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-var defineProperty$2 = _defineProperty$2;
 
 function asyncGeneratorStep$1(gen,resolve,reject,_next,_throw,key,arg){try{var info=gen[key](arg);var value=info.value;}catch(error){reject(error);return;}if(info.done){resolve(value);}else{Promise.resolve(value).then(_next,_throw);}}function _asyncToGenerator$1(fn){return function(){var self=this,args=arguments;return new Promise(function(resolve,reject){var gen=fn.apply(self,args);function _next(value){asyncGeneratorStep$1(gen,resolve,reject,_next,_throw,"next",value);}function _throw(err){asyncGeneratorStep$1(gen,resolve,reject,_next,_throw,"throw",err);}_next(undefined);});};}function _classCallCheck$c(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _defineProperties$2(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}function _createClass$2(Constructor,protoProps,staticProps){if(protoProps)_defineProperties$2(Constructor.prototype,protoProps);if(staticProps)_defineProperties$2(Constructor,staticProps);return Constructor;}function _defineProperty$3(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else{obj[key]=value;}return obj;}function _extends$c(){_extends$c=Object.assign||function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};return _extends$c.apply(this,arguments);}function _objectSpread$2(target){for(var i=1;i<arguments.length;i++){var source=arguments[i]!=null?arguments[i]:{};var ownKeys=Object.keys(source);if(typeof Object.getOwnPropertySymbols==='function'){ownKeys=ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function(sym){return Object.getOwnPropertyDescriptor(source,sym).enumerable;}));}ownKeys.forEach(function(key){_defineProperty$3(target,key,source[key]);});}return target;}function _inherits$c(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function");}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,writable:true,configurable:true}});if(superClass)_setPrototypeOf$1(subClass,superClass);}function _getPrototypeOf$1(o){_getPrototypeOf$1=Object.setPrototypeOf?Object.getPrototypeOf:function _getPrototypeOf(o){return o.__proto__||Object.getPrototypeOf(o);};return _getPrototypeOf$1(o);}function _setPrototypeOf$1(o,p){_setPrototypeOf$1=Object.setPrototypeOf||function _setPrototypeOf(o,p){o.__proto__=p;return o;};return _setPrototypeOf$1(o,p);}function _assertThisInitialized$3(self){if(self===void 0){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return self;}function _possibleConstructorReturn$c(self,call){if(call&&(typeof call==="object"||typeof call==="function")){return call;}return _assertThisInitialized$3(self);}function _toConsumableArray(arr){return _arrayWithoutHoles(arr)||_iterableToArray(arr)||_nonIterableSpread();}function _arrayWithoutHoles(arr){if(Array.isArray(arr)){for(var i=0,arr2=new Array(arr.length);i<arr.length;i++)arr2[i]=arr[i];return arr2;}}function _iterableToArray(iter){if(Symbol.iterator in Object(iter)||Object.prototype.toString.call(iter)==="[object Arguments]")return Array.from(iter);}function _nonIterableSpread(){throw new TypeError("Invalid attempt to spread non-iterable instance");}var commonjsGlobal$2=typeof window!=='undefined'?window:typeof global!=='undefined'?global:typeof self!=='undefined'?self:{};function unwrapExports$2(x){return x&&x.__esModule&&Object.prototype.hasOwnProperty.call(x,'default')?x.default:x;}function createCommonjsModule$2(fn,module){return module={exports:{}},fn(module,module.exports),module.exports;}/*
 object-assign
@@ -26470,11 +26470,11 @@ function (_Component) {
 
     _this = possibleConstructorReturn(this, (_getPrototypeOf2 = getPrototypeOf(ViewerMain)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "state", {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "state", {
       viewportData: []
     });
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "setViewportData", function (_ref) {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "setViewportData", function (_ref) {
       var viewportIndex = _ref.viewportIndex,
           item = _ref.item;
       // TODO: Replace this with mapDispatchToProps call
@@ -26571,7 +26571,7 @@ function (_Component) {
   return ViewerMain;
 }(React.Component);
 
-defineProperty$2(ViewerMain, "propTypes", {
+defineProperty(ViewerMain, "propTypes", {
   studies: propTypes.array.isRequired
 });
 
@@ -26596,11 +26596,11 @@ function (_Component) {
 
     _this = possibleConstructorReturn(this, (_getPrototypeOf2 = getPrototypeOf(FlexboxLayout)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "state", {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "state", {
       studiesForBrowser: []
     });
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "getStudiesForBrowser", function () {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "getStudiesForBrowser", function () {
       var studies = _this.props.studies; // TODO[react]:
       // - Add sorting of display sets
       // - Add useMiddleSeriesInstanceAsThumbnail
@@ -26673,7 +26673,7 @@ function (_Component) {
   return FlexboxLayout;
 }(React.Component);
 
-defineProperty$2(FlexboxLayout, "propTypes", {
+defineProperty(FlexboxLayout, "propTypes", {
   studies: propTypes.array.isRequired,
   leftSidebarOpen: propTypes.bool.isRequired,
   rightSidebarOpen: propTypes.bool.isRequired
@@ -26876,7 +26876,7 @@ function (_Component) {
 
     _this = possibleConstructorReturn(this, (_getPrototypeOf2 = getPrototypeOf(ToolbarRow)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "onLeftSidebarValueChanged", function (value) {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onLeftSidebarValueChanged", function (value) {
       _this.props.setLeftSidebarOpen(!!value);
     });
 
@@ -26919,14 +26919,14 @@ function (_Component) {
   return ToolbarRow;
 }(React.Component);
 
-defineProperty$2(ToolbarRow, "propTypes", {
+defineProperty(ToolbarRow, "propTypes", {
   leftSidebarOpen: propTypes.bool.isRequired,
   rightSidebarOpen: propTypes.bool.isRequired,
   setLeftSidebarOpen: propTypes.func,
   setRightSidebarOpen: propTypes.func
 });
 
-defineProperty$2(ToolbarRow, "defaultProps", {
+defineProperty(ToolbarRow, "defaultProps", {
   leftSidebarOpen: false,
   rightSidebarOpen: false
 });
@@ -27013,7 +27013,7 @@ function (_Component) {
   return StudyLoadingMonitor;
 }(React.Component);
 
-defineProperty$2(StudyLoadingMonitor, "propTypes", {
+defineProperty(StudyLoadingMonitor, "propTypes", {
   studies: propTypes.array.isRequired,
   setStudyLoadingProgress: propTypes.func.isRequired,
   clearStudyLoadingProgress: propTypes.func.isRequired
@@ -27072,7 +27072,7 @@ function (_Component) {
   return StudyPrefetcherComponent;
 }(React.Component);
 
-defineProperty$2(StudyPrefetcherComponent, "propTypes", {
+defineProperty(StudyPrefetcherComponent, "propTypes", {
   studies: propTypes.array
 });
 
@@ -27164,7 +27164,7 @@ function (_Component) {
   return Viewer;
 }(React.Component);
 
-defineProperty$2(Viewer, "propTypes", {
+defineProperty(Viewer, "propTypes", {
   studies: propTypes.array
 });
 
@@ -27188,7 +27188,7 @@ function (_Component) {
 
     _this = possibleConstructorReturn(this, (_getPrototypeOf2 = getPrototypeOf(ViewerRetrieveStudyData)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "state", {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "state", {
       studies: null,
       error: null
     });
@@ -27241,7 +27241,7 @@ function (_Component) {
   return ViewerRetrieveStudyData;
 }(React.Component);
 
-defineProperty$2(ViewerRetrieveStudyData, "propTypes", {
+defineProperty(ViewerRetrieveStudyData, "propTypes", {
   studyInstanceUids: propTypes.array.isRequired,
   seriesInstanceUids: propTypes.array,
   server: propTypes.object
@@ -27578,7 +27578,7 @@ function (_Component) {
 
     _this = possibleConstructorReturn(this, (_getPrototypeOf2 = getPrototypeOf(StandaloneRouting)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    defineProperty$2(assertThisInitialized(assertThisInitialized(_this)), "state", {
+    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "state", {
       studies: null,
       error: null
     });
@@ -27622,7 +27622,7 @@ function (_Component) {
   return StandaloneRouting;
 }(React.Component);
 
-defineProperty$2(StandaloneRouting, "propTypes", {
+defineProperty(StandaloneRouting, "propTypes", {
   location: propTypes.object,
   store: propTypes.object
 });
@@ -27761,7 +27761,7 @@ function (_Component) {
   return App;
 }(React.Component);
 
-defineProperty$2(App, "propTypes", {
+defineProperty(App, "propTypes", {
   history: propTypes.object.isRequired,
   user: propTypes.object
 });
@@ -34899,15 +34899,15 @@ function (_Component) {
   return OHIFCornerstoneViewportPlugin;
 }(React.Component);
 
-defineProperty$2(OHIFCornerstoneViewportPlugin, "propTypes", {
+defineProperty(OHIFCornerstoneViewportPlugin, "propTypes", {
   studies: propTypes.object,
   displaySet: propTypes.object,
   viewportIndex: propTypes.number
 });
 
-defineProperty$2(OHIFCornerstoneViewportPlugin, "id", 'CornerstoneViewportPlugin');
+defineProperty(OHIFCornerstoneViewportPlugin, "id", 'CornerstoneViewportPlugin');
 
-defineProperty$2(OHIFCornerstoneViewportPlugin, "getPluginViewportData", function (studies$$1, studyInstanceUid, displaySetInstanceUid) {
+defineProperty(OHIFCornerstoneViewportPlugin, "getPluginViewportData", function (studies$$1, studyInstanceUid, displaySetInstanceUid) {
   var currentStack = OHIFCornerstoneViewportPlugin.getCornerstoneStack(studies$$1, studyInstanceUid, displaySetInstanceUid); // Clone the stack here so we don't mutate it later
 
   var stack = Object.assign({}, currentStack);
@@ -35036,13 +35036,17 @@ function (_Component) {
       return React__default.createElement(Provider, {
         store: store
       }, React__default.createElement(BrowserRouter, {
-        basename: props.routerBasename
+        basename: this.props.routerBasename
       }, React__default.createElement(OHIFStandaloneViewer, null)));
     }
   }]);
 
   return App;
 }(React.Component);
+
+defineProperty(App$1, "propTypes", {
+  routerBasename: propTypes.string
+});
 
 exports.App = App$1;
 //# sourceMappingURL=index.js.map

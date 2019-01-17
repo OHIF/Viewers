@@ -51,14 +51,17 @@
 
         window.process = process;
     </script>
-    <script src="https://unpkg.com/ohif-viewer@0.0.2/dist/index.umd.js" crossorigin></script>
+    <script src="https://unpkg.com/ohif-viewer/dist/index.umd.js" crossorigin></script>
+    <!--<script src="http://localhost:3000/dist/index.umd.js" crossorigin></script>!-->
 
     <!-- Load our React component. -->
     <script>
         'use strict';
 
         // TODO: Add viewer config here
-        var props = {};
+        var props = {
+          routerBasename: window.location.pathname
+        };
 
         /*
 

@@ -136,11 +136,15 @@ OHIF.utils.addServers(servers, store);
 window.store = store;
 
 class App extends Component {
+  static propTypes = {
+    routerBasename: PropTypes.string
+  }
+
   render() {
     return (
       <Provider store={store}>
         {/*<OidcProvider store={store} userManager={userManager}>*/}
-          <BrowserRouter basename={props.routerBasename}>
+          <BrowserRouter basename={this.props.routerBasename}>
             <OHIFStandaloneViewer/>
           </BrowserRouter>
         {/*</OidcProvider>*/}
