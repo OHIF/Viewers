@@ -36,13 +36,6 @@ OHIF.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 // TODO: Is there a better way to guess ROOT_URL?
 let ROOT_URL = window.location.pathname;
 
-// If the page we are on is not a subset of the expected homepage
-// provided in the package.json file, we might be doing local development.
-// In this case, set the base URL to the current location's origin.
-if (homepage.includes(window.location.origin) === false) {
-    ROOT_URL = window.location.origin;
-}
-
 const config = {
     maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
     startWebWorkersOnDemand: true,
