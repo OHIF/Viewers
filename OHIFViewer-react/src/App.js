@@ -4,15 +4,15 @@ import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from 'react-viewerbase';
-import ViewerRouting from "./ViewerRouting.js";
-import StudyListRouting from './StudyListRouting.js';
-import StandaloneRouting from './StandaloneRouting.js';
-import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
-import CallbackPage from './CallbackPage.js';
+import routes from './routes/';
+import StudyListRouting from './studylist/StudyListRouting.js';
+//import CallbackPage from './CallbackPage.js';'
 import userManager from "./userManager.js";
 import './App.css';
 import './variables.css';
 import './theme-tide.css';
+
+const { ViewerRouting, StandaloneRouting, IHEInvokeImageDisplay } = routes;
 
 const reload = () => window.location.reload();
 
@@ -94,7 +94,7 @@ class App extends Component {
                         userManager.signinRedirect();
                 }}
                 />
-                <Route path="/callback" component={CallbackPage} />
+              {/*<Route path="/callback" component={CallbackPage} />*/}
                 <Route render={() =>
                     <div> Sorry, this page does not exist. </div>}
                 />

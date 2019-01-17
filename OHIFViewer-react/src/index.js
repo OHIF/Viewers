@@ -5,16 +5,18 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import { loadUser, reducer as oidcReducer, OidcProvider} from 'redux-oidc';
 import OHIF from 'ohif-core';
-
+import OHIFCornerstoneViewportPlugin from "./connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js";
 import './config';
+import ui from './redux/ui.js';
 import App from './App.js';
-import ui from './redux/ui.js'
 import userManager from './userManager.js';
-import Icons from "./images/icons.svg"
+import ConnectedExampleViewportPlugin from './components/ConnectedExampleViewportPlugin.js';
 
 const reducers = OHIF.redux.reducers;
 reducers.ui = ui;
 reducers.oidc = oidcReducer;
+
+const Icons = '/icons.svg';
 
 const combined = combineReducers(reducers)
 
@@ -87,10 +89,25 @@ const defaultButtons = [
     },
 ];
 
-store.dispatch({
-    type: 'SET_AVAILABLE_BUTTONS',
-    buttons: defaultButtons
+const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
+
+store.dispatch(buttonsAction);
+
+// Uncomment this and comment the Cornerstone version to see how the
+// example plugin works
+/*const pluginAction = OHIF.redux.actions.addPlugin({
+  id: 'example',
+  type: 'viewport',
+  component: ConnectedExampleViewportPlugin
+});*/
+
+const pluginAction = OHIF.redux.actions.addPlugin({
+  id: 'cornerstone',
+  type: 'viewport',
+  component: OHIFCornerstoneViewportPlugin
 });
+
+store.dispatch(pluginAction);
 
 const servers = {
     dicomWeb: [

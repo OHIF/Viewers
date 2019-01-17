@@ -30,6 +30,7 @@ cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
 OHIF.external.cornerstone = cornerstone;
 OHIF.external.cornerstoneTools = cornerstoneTools;
+OHIF.external.cornerstoneMath = cornerstoneMath;
 OHIF.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
 // TODO: Is there a better way to guess ROOT_URL?

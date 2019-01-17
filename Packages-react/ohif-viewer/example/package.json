@@ -1,0 +1,13 @@
+{
+  "name": "ohif-viewer-example",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "ohif-viewer": "link:../",
+    "serve": "^10.1.1"
+  },
+  "scripts": {
+    "start": "serve ."
+  }
+}
