@@ -297,6 +297,8 @@ const loadDisplaySetIntoViewport = (data, templateData) => {
 
             if (!layoutManager.viewportData[viewportIndex]) {
                 OHIF.log.warn(`onImageRendered: LayoutManager has no viewport data for this viewport index?: ${viewportIndex}`);
+                element.removeEventListener('cornerstoneimagerendered', onImageRendered);
+                return;
             }
 
             // Use Session to trigger reactive updates in the viewportOverlay helper functions
