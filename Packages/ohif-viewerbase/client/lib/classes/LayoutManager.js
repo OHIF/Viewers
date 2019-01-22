@@ -211,6 +211,7 @@ export class LayoutManager {
 
         const layoutTemplate = Template[this.layoutTemplateName];
 
+        this.removeViewportContainers();
         this.parentNode.innerHTML = '';
         this.updateLayoutClass();
         Blaze.renderWithData(layoutTemplate, data, this.parentNode);
@@ -316,6 +317,7 @@ export class LayoutManager {
 
         const layoutTemplate = Template.gridLayout;
 
+        this.removeViewportContainers();
         this.parentNode.innerHTML = '';
         Blaze.renderWithData(layoutTemplate, data, this.parentNode);
 
@@ -730,6 +732,24 @@ export class LayoutManager {
      */
     isMultipleLayout() {
         return this.layoutProps.row !== 1 && this.layoutProps.columns !== 1;
+    }
+
+    /**
+     * removeViewportContainers - Removes viewport containers. Required to
+     * cause onDestroyed to trigger before rendering the layout manager with
+     * new data.
+     *
+     * @return {null}
+     */
+    removeViewportContainers() {
+      const containers = $('.viewportContainer');
+
+      // NOTE: Trawl through object backwards, as we remove elements as we go.
+      for (let i = containers.length - 1; i >= 0; i--) {
+        const container = containers.get(i);
+        const removable = $(container).find('.removable');
+        $(removable).remove();
+      }
     }
 
 }
