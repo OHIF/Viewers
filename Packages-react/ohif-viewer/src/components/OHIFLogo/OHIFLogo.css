@@ -1,0 +1,23 @@
+.header-brand {
+  height: 30px;
+  text-decoration: none;
+  float: left;
+  clear: both;
+}
+
+.header-logo-text {
+  display: inline-block;
+  font-family: var(--logo-font-family);
+  font-size: 14px;
+  font-weight: var(--logo-font-weight);
+  color: var(--text-primary-color);
+  line-height: 30px;
+}
+
+.header-logo-image {
+  fill: transparent;
+  height: 100%;
+  margin: 0 8px 0 0;
+  width: 30px;
+  float: left;
+}

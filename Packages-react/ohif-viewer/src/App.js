@@ -9,6 +9,7 @@ import './config';
 import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js';
+import WhiteLabellingContext from './WhiteLabellingContext';
 
 import {
   loadUser,
@@ -188,7 +189,9 @@ class App extends Component {
         <Provider store={store}>
           <OidcProvider store={store} userManager={userManager}>
             <BrowserRouter>
-              <OHIFStandaloneViewer userManager={userManager} />
+              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+                <OHIFStandaloneViewer userManager={userManager} />
+              </WhiteLabellingContext.Provider>
             </BrowserRouter>
           </OidcProvider>
         </Provider>
@@ -198,7 +201,9 @@ class App extends Component {
     return (
       <Provider store={store}>
         <BrowserRouter>
-          <OHIFStandaloneViewer />
+          <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+            <OHIFStandaloneViewer />
+          </WhiteLabellingContext.Provider>
         </BrowserRouter>
       </Provider>
     );
