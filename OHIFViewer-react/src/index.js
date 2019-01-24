@@ -30,7 +30,7 @@ if (process.env.REACT_APP_CONFIG) {
 }
 
 let userManager;
-if (config.oidc) {
+if (config && config.oidc) {
   const oidcClient = config.oidc[0];
 
   const settings = {
@@ -53,10 +53,9 @@ if (config.oidc) {
   loadUser(store, userManager);
 }
 
-if (config.servers) {
+if (config && config.servers) {
   OHIF.utils.addServers(config.servers, store);
 }
-
 
 const defaultButtons = [
     {
