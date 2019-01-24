@@ -32,11 +32,169 @@ function getCornerstoneStack(studies, viewportData) {
     return StackManager.findOrCreateStack(study, displaySet);
 }
 
+
+const hotkeys = {
+    // Tool hotkeys
+    defaultTool: 'ESC',
+    zoom: 'Z',
+    wwwc: 'W',
+    pan: 'P',
+    angle: 'A',
+    stackScroll: 'S',
+    magnify: 'M',
+    length: '',
+    annotate: '',
+    dragProbe: '',
+    ellipticalRoi: '',
+    rectangleRoi: '',
+
+    // Viewport hotkeys
+    flipH: 'H',
+    flipV: 'V',
+    rotateR: 'R',
+    rotateL: 'L',
+    invert: 'I',
+    zoomIn: '',
+    zoomOut: '',
+    zoomToFit: '',
+    resetViewport: '',
+    clearTools: '',
+
+    // Viewport navigation hotkeys
+    scrollDown: 'DOWN',
+    scrollUp: 'UP',
+    scrollLastImage: 'END',
+    scrollFirstImage: 'HOME',
+    previousDisplaySet: 'PAGEUP',
+    nextDisplaySet: 'PAGEDOWN',
+    nextPanel: 'RIGHT',
+    previousPanel: 'LEFT',
+
+    // Miscellaneous hotkeys
+    toggleOverlayTags: 'O',
+    toggleCinePlay: 'SPACE',
+    toggleCineDialog: '',
+    toggleDownloadDialog: '',
+
+    // Preset hotkeys
+    WLPreset0: '1',
+    WLPreset1: '2',
+    WLPreset2: '3',
+    WLPreset3: '4',
+    WLPreset4: '5',
+    WLPreset5: '6',
+    WLPreset6: '7',
+    WLPreset7: '8',
+    WLPreset8: '9',
+    WLPreset9: '0'
+};
+
 class ViewerMain extends Component {
     state = {
         displaySets: [],
         viewportData: [],
     };
+
+    constructor(props) {
+        super(props);
+        const contextName = 'viewer';
+        OHIF.commands.createContext(contextName);
+
+        const registerToolCommands = map => Object.keys(map).forEach((toolId) => {
+            const commandName = map[toolId];
+            OHIF.commands.register(contextName, toolId, {
+                name: commandName,
+                action: () => {
+                    const { setToolActive } = OHIF.redux.actions;
+                    window.store.dispatch(setToolActive(commandName));
+                },
+                params: toolId
+            });
+        });
+
+        const registerViewportCommands = map => Object.keys(map).forEach((toolId) => {
+            const commandName = map[toolId];
+            OHIF.commands.register(contextName, toolId, {
+                name: commandName,
+                action: () => { alert('TODO: viewportUtils[commandId] - viewport set the active tool ->' + commandName) },
+                params: toolId
+            });
+        });
+
+        registerToolCommands({
+            wwwc: 'W/L',
+            zoom: 'Zoom',
+            angle: 'Angle Measurement',
+            dragProbe: 'Pixel Probe',
+            ellipticalRoi: 'Elliptical ROI',
+            rectangleRoi: 'Rectangle ROI',
+            magnify: 'Magnify',
+            annotate: 'Annotate',
+            stackScroll: 'Scroll Stack',
+            pan: 'Pan',
+            length: 'Length Measurement',
+            wwwcRegion: 'W/L by Region',
+            crosshairs: 'Crosshairs'
+        });
+
+        // Register the viewport commands
+        registerViewportCommands({
+            zoomIn: 'Zoom In',
+            zoomOut: 'Zoom Out',
+            zoomToFit: 'Zoom to Fit',
+            invert: 'Invert',
+            flipH: 'Flip Horizontally',
+            flipV: 'Flip Vertically',
+            rotateR: 'Rotate Right',
+            rotateL: 'Rotate Left',
+            resetViewport: 'Reset',
+            clearTools: 'Clear Tools'
+        });
+
+        // TODO: preset wl
+
+        // Register viewport navigation commands
+        OHIF.commands.set(contextName, {
+            scrollDown: {
+                name: 'Scroll Down',
+                action: () => alert('scroll down')
+            },
+            scrollUp: {
+                name: 'Scroll Up',
+                action: () => alert('scroll up')
+            },
+            scrollFirstImage: {
+                name: 'Scroll to First Image',
+                action: () => alert('scroll to first image')
+            },
+            scrollLastImage: {
+                name: 'Scroll to Last Image',
+                action: () => alert('scroll last image')
+            },
+            previousDisplaySet: {
+                name: 'Previous Series',
+                action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
+                disabled: () => alert('prev series')
+            },
+            nextDisplaySet: {
+                name: 'Next Series',
+                action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
+                disabled: () => alert('next series')
+            },
+            nextPanel: {
+                name: 'Next Image Viewport',
+                action: () => alert('next panel')
+            },
+            previousPanel: {
+                name: 'Previous Image Viewport',
+                action: () => alert('prev panel')
+            }
+        }, true);
+
+        OHIF.hotkeys.register(contextName, 'zoom', 'Z');
+        OHIF.hotkeys.set('viewer', hotkeys, true);
+        // OHIF.context.set('viewer');
+    }
 
     componentDidMount() {
         // Add beforeUnload event handler to check for unsaved changes
@@ -85,7 +243,7 @@ class ViewerMain extends Component {
         />);
     }
 
-    setViewportData = ({viewportIndex, item}) => {
+    setViewportData = ({ viewportIndex, item }) => {
         // TODO: Replace this with mapDispatchToProps call
         // if we decide to put viewport info into redux
 
@@ -107,7 +265,7 @@ class ViewerMain extends Component {
     render() {
         return (
             <div className="ViewerMain">
-                <ConnectedLayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData}/>
+                <ConnectedLayoutManager viewportData={this.state.viewportData} setViewportData={this.setViewportData} />
             </div>
         );
     }
