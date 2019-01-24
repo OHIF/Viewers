@@ -7126,10 +7126,10 @@ octal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
 
-ohif-core@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.6.tgz#81e2aea7bfe41acaea18641428c65afb57223a0b"
-  integrity sha512-2qYojFkcM5Zoa2y4nlJ/1ovZCLNjTvnuizixSWIuIvu4s3jnlu+2f09R3cHb53hlknC4NiZEgHH//cSXR4/9Jw==
+ohif-core@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.7.tgz#81f49f142d40338a3839f06c849aace675847002"
+  integrity sha512-VXnpaw4VjKBR1P9tSB2ZGLpXYXwdbmL0oZ7P+bbKKOh2Q+8An4E9lTiKpUlUoxaf/HiTZIUQ/2Cjp7qJe88FDg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     dicomweb-client "^0.4.1"

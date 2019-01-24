@@ -6,23 +6,29 @@ import { createStore, combineReducers } from 'redux';
 import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import './config';
-import ui from './redux/ui.js'
+import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js';
-//import { loadUser, reducer as oidcReducer, OidcProvider} from 'redux-oidc';
-//import userManager from './userManager.js';
+
+import {
+  loadUser,
+  OidcProvider,
+  createUserManager,
+  reducer as oidcReducer
+} from 'redux-oidc';
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+
 //import Icons from "./images/icons.svg"
 
-const Icons = 'icons.svg';
+const Icons = '/icons.svg';
 
 const reducers = OHIF.redux.reducers;
 reducers.ui = ui;
-//reducers.oidc = oidcReducer;
+reducers.oidc = oidcReducer;
 
-const combined = combineReducers(reducers)
+const combined = combineReducers(reducers);
 
 const store = createStore(combined);
-//loadUser(store, userManager);
 
 const defaultButtons = [
   {
@@ -87,7 +93,7 @@ const defaultButtons = [
     text: 'Reset',
     svgUrl: `${Icons}#icon-tools-reset`,
     active: false
-  },
+  }
 ];
 
 const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
@@ -102,52 +108,98 @@ const pluginAction = OHIF.redux.actions.addPlugin({
 
 store.dispatch(pluginAction);
 
-const servers = {
-  dicomWeb: [
-    {
-      "name": "DCM4CHEE",
-      //"wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
-      //"qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-      //"wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-      //"wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
-      //"qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
-      //"wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
-      "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
-      "qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-      "wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-      "qidoSupportsIncludeField": true,
-      "imageRendering": "wadors",
-      "thumbnailRendering": "wadors",
-      "requestOptions": {
-        "requestFromBrowser": true,
-        "logRequests": true,
-        "logResponses": false,
-        "logTiming": true,
-        //"auth": "admin:admin"
-        //"auth": "cloud:healthcare"
-      }
-    }
-  ]
-};
-
-OHIF.utils.addServers(servers, store);
-
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
 
+function handleServers(servers) {
+  if (servers) {
+    OHIF.utils.addServers(servers, store);
+  }
+}
+
+function handleOIDC(oidc) {
+  if (!oidc) {
+    return;
+  }
+
+  const oidcClient = oidc[0];
+
+  const settings = {
+    authority: oidcClient.authServerUrl,
+    client_id: oidcClient.clientId,
+    redirect_uri: oidcClient.authRedirectUri,
+    silent_redirect_uri: '/silent-refresh.html',
+    post_logout_redirect_uri: oidcClient.postLogoutRedirectUri,
+    response_type: oidcClient.responseType,
+    scope: 'email profile openid', // Note: Request must have scope 'openid' to be considered an OpenID Connect request
+    automaticSilentRenew: true,
+    revokeAccessTokenOnSignout: true,
+    filterProtocolClaims: true,
+    loadUserInfo: true,
+    extraQueryParams: oidcClient.extraQueryParams
+  };
+
+  const userManager = createUserManager(settings);
+
+  loadUser(store, userManager);
+
+  return userManager;
+}
+
+function handleWebWorkerInit(basename) {
+  const config = {
+    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
+    startWebWorkersOnDemand: true,
+    webWorkerPath: basename + '/cornerstoneWADOImageLoaderWebWorker.min.js',
+    taskConfiguration: {
+      decodeTask: {
+        loadCodecsOnStartup: true,
+        initializeCodecsOnStartup: false,
+        codecsPath: basename + '/cornerstoneWADOImageLoaderCodecs.min.js',
+        usePDFJS: false,
+        strict: false
+      }
+    }
+  };
+
+  cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+}
+
 class App extends Component {
   static propTypes = {
+    servers: PropTypes.array,
+    oidc: PropTypes.array,
     routerBasename: PropTypes.string
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.userManager = handleOIDC(this.props.oidc);
+    handleServers(this.props.servers);
+    handleWebWorkerInit(this.props.routerBasename);
   }
 
   render() {
+    const userManager = this.userManager;
+
+    if (userManager) {
+      return (
+        <Provider store={store}>
+          <OidcProvider store={store} userManager={userManager}>
+            <BrowserRouter>
+              <OHIFStandaloneViewer userManager={userManager} />
+            </BrowserRouter>
+          </OidcProvider>
+        </Provider>
+      );
+    }
+
     return (
       <Provider store={store}>
-        {/*<OidcProvider store={store} userManager={userManager}>*/}
-          <BrowserRouter basename={this.props.routerBasename}>
-            <OHIFStandaloneViewer/>
-          </BrowserRouter>
-        {/*</OidcProvider>*/}
+        <BrowserRouter>
+          <OHIFStandaloneViewer />
+        </BrowserRouter>
       </Provider>
     );
   }

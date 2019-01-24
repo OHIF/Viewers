@@ -7,12 +7,10 @@ import Hammer from 'hammerjs';
 import OHIF from 'ohif-core';
 //import sha from './sha.js';
 //import version from './version.js';
-import { homepage } from '../package.json';
 
 window.info = {
-    //sha,
+  //sha,
   //version,
-    homepage
 };
 
 // For debugging
@@ -33,51 +31,30 @@ OHIF.external.cornerstoneTools = cornerstoneTools;
 OHIF.external.cornerstoneMath = cornerstoneMath;
 OHIF.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
-// TODO: Is there a better way to guess ROOT_URL?
-let ROOT_URL = window.location.pathname;
+OHIF.user.getAccessToken = () => {
+  // TODO: Get the Redux store from somewhere else
+  const state = window.store.getState();
+  if (!state.oidc || !state.oidc.user) {
+    return;
+  }
 
-const config = {
-    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
-    startWebWorkersOnDemand: true,
-    webWorkerPath: ROOT_URL + '/cornerstoneWADOImageLoaderWebWorker.min.js',
-    taskConfiguration: {
-        decodeTask: {
-            loadCodecsOnStartup: true,
-            initializeCodecsOnStartup: false,
-            codecsPath: ROOT_URL + '/cornerstoneWADOImageLoaderCodecs.min.js',
-            usePDFJS: false,
-            strict: false
-        }
-    }
+  return state.oidc.user.access_token;
 };
 
-cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
-
-
-OHIF.user.getAccessToken = () => {
-    // TODO: Get the Redux store from somewhere else
-    const state = window.store.getState();
-    if (!state.oidc || !state.oidc.user) {
-        return;
-    }
-
-    return state.oidc.user.access_token;
-}
-
 cornerstoneWADOImageLoader.configure({
-    beforeSend: function(xhr) {
-        const headers = OHIF.DICOMWeb.getAuthorizationHeader();
+  beforeSend: function(xhr) {
+    const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
-        if (headers.Authorization) {
-            xhr.setRequestHeader("Authorization", headers.Authorization);
-        }
+    if (headers.Authorization) {
+      xhr.setRequestHeader('Authorization', headers.Authorization);
     }
+  }
 });
 
 // Set the tool font and font size
 // context.font = "[style] [variant] [weight] [size]/[line height] [font family]";
 const fontFamily =
-    'Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
+  'Roboto, OpenSans, HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif';
 cornerstoneTools.textStyle.setFont(`16px ${fontFamily}`);
 
 // Set the tool width

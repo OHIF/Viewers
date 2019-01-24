@@ -1,6 +1,6 @@
 {
   "name": "ohif-viewer",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -9,7 +9,6 @@
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
-  "homepage": "http://localhost:3000",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -94,7 +93,7 @@
     "dicom-parser": "^1.8.3",
     "hammerjs": "^2.0.8",
     "lodash.isequal": "^4.5.0",
-    "ohif-core": "^0.1.6",
+    "ohif-core": "^0.1.7",
     "oidc-client": "^1.6.1",
     "prop-types": "^15.6.2",
     "react-bootstrap-modal": "^4.2.0",

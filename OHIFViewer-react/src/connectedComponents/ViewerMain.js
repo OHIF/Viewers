@@ -9,6 +9,7 @@ import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import './ViewerMain.css';
 
 // Attempt to fix weird undefined dep issue
+cornerstoneTools.external.cornerstone = cornerstone;
 cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
 
 class ViewerMain extends Component {

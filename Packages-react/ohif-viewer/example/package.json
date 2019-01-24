@@ -8,6 +8,7 @@
     "serve": "^10.1.1"
   },
   "scripts": {
-    "start": "serve ."
+    "prepare": "mkdir -p deps && cp node_modules/ohif-viewer/dist/index.umd.* deps/",
+    "start": "yarn run prepare && serve -s ."
   }
 }
