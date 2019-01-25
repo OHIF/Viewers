@@ -32,7 +32,6 @@ function getCornerstoneStack(studies, viewportData) {
     return StackManager.findOrCreateStack(study, displaySet);
 }
 
-
 const hotkeys = {
     // Tool hotkeys
     defaultTool: 'ESC',
@@ -100,6 +99,7 @@ class ViewerMain extends Component {
         const contextName = 'viewer';
         OHIF.commands.createContext(contextName);
 
+        // Tools. ex: window/level, zoom, pan etc
         const registerToolCommands = map => Object.keys(map).forEach((toolId) => {
             const commandName = map[toolId];
             OHIF.commands.register(contextName, toolId, {
@@ -112,11 +112,14 @@ class ViewerMain extends Component {
             });
         });
 
+        // viewport commands. ex: cine play, pause etc
         const registerViewportCommands = map => Object.keys(map).forEach((toolId) => {
             const commandName = map[toolId];
             OHIF.commands.register(contextName, toolId, {
                 name: commandName,
-                action: () => { alert('TODO: viewportUtils[commandId] - viewport set the active tool ->' + commandName) },
+                action: () => {
+                    alert('TODO: viewportUtils[commandId] - viewport set the active tool ->' + commandName)
+                },
                 params: toolId
             });
         });
@@ -191,9 +194,9 @@ class ViewerMain extends Component {
             }
         }, true);
 
-        OHIF.hotkeys.register(contextName, 'zoom', 'Z');
-        OHIF.hotkeys.set('viewer', hotkeys, true);
-        // OHIF.context.set('viewer');
+        OHIF.hotkeys.set(contextName, hotkeys, true);
+        const { setCommandContext } = OHIF.redux.actions;
+        window.store.dispatch(setCommandContext({ context: contextName }));
     }
 
     componentDidMount() {
