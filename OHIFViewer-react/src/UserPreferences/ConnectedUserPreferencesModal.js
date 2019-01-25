@@ -21,13 +21,14 @@ const mapDispatchToProps = dispatch => {
         onSave: data => {
             dispatch(setUserPreferences(data));
             dispatch(setUserPreferencesModalOpen(false));
+
+            const hotKeys = {};
+
             Object.keys(data.hotKeysData).forEach(key => {
-                OHIF.hotkeys.register(
-                    window.store.getState().commandContext.context,
-                    key,
-                    data.hotKeysData[key].command
-                );
+                hotKeys[key] = data.hotKeysData[key].command;
             });
+
+            OHIF.hotkeys.set(window.store.getState().commandContext.context, hotKeys, true);
         },
         onResetToDefaults: () => {
             dispatch(setUserPreferences());

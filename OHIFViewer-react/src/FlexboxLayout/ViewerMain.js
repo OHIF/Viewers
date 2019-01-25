@@ -32,62 +32,6 @@ function getCornerstoneStack(studies, viewportData) {
     return StackManager.findOrCreateStack(study, displaySet);
 }
 
-const hotkeys = {
-    // Tool hotkeys
-    defaultTool: 'ESC',
-    zoom: 'Z',
-    wwwc: 'W',
-    pan: 'P',
-    angle: 'A',
-    stackScroll: 'S',
-    magnify: 'M',
-    length: '',
-    annotate: '',
-    dragProbe: '',
-    ellipticalRoi: '',
-    rectangleRoi: '',
-
-    // Viewport hotkeys
-    flipH: 'H',
-    flipV: 'V',
-    rotateR: 'R',
-    rotateL: 'L',
-    invert: 'I',
-    zoomIn: '',
-    zoomOut: '',
-    zoomToFit: '',
-    resetViewport: '',
-    clearTools: '',
-
-    // Viewport navigation hotkeys
-    scrollDown: 'DOWN',
-    scrollUp: 'UP',
-    scrollLastImage: 'END',
-    scrollFirstImage: 'HOME',
-    previousDisplaySet: 'PAGEUP',
-    nextDisplaySet: 'PAGEDOWN',
-    nextPanel: 'RIGHT',
-    previousPanel: 'LEFT',
-
-    // Miscellaneous hotkeys
-    toggleOverlayTags: 'O',
-    toggleCinePlay: 'SPACE',
-    toggleCineDialog: '',
-    toggleDownloadDialog: '',
-
-    // Preset hotkeys
-    WLPreset0: '1',
-    WLPreset1: '2',
-    WLPreset2: '3',
-    WLPreset3: '4',
-    WLPreset4: '5',
-    WLPreset5: '6',
-    WLPreset6: '7',
-    WLPreset7: '8',
-    WLPreset8: '9',
-    WLPreset9: '0'
-};
-
 class ViewerMain extends Component {
     state = {
         displaySets: [],
@@ -194,7 +138,14 @@ class ViewerMain extends Component {
             }
         }, true);
 
-        OHIF.hotkeys.set(contextName, hotkeys, true);
+        const hotKeys = {};
+        const hotKeysPreferences = window.store.getState().preferences.hotKeysData;
+
+        Object.keys(hotKeysPreferences).forEach(key => {
+            hotKeys[key] = hotKeysPreferences[key].command;
+        });
+        
+        OHIF.hotkeys.set(contextName, hotKeys, true);
         const { setCommandContext } = OHIF.redux.actions;
         window.store.dispatch(setCommandContext({ context: contextName }));
     }
