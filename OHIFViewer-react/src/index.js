@@ -11,6 +11,9 @@ import App from './App.js';
 
 import OHIFCornerstoneViewportPlugin from "./connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js";
 //import ConnectedExampleViewportPlugin from './components/ConnectedExampleViewportPlugin.js';
+//import OHIFVTKViewportPlugin from './connectedComponents/OHIFVTKViewportPlugin/OHIFVTKViewportPlugin.js';
+import OHIFDicomPDFViewportPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFViewportPlugin.js';
+import OHIFDicomPDFSopClassHandlerPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFSopClassHandlerPlugin.js';
 
 const reducers = OHIF.redux.reducers;
 reducers.ui = ui;
@@ -127,21 +130,44 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 
 store.dispatch(buttonsAction);
 
+const { plugins } = OHIF;
+const { PLUGIN_TYPES } = plugins;
+
 // Uncomment this and comment the Cornerstone version to see how the
 // example plugin works
 /*const pluginAction = OHIF.redux.actions.addPlugin({
   id: 'example',
-  type: 'viewport',
+  type: PLUGIN_TYPES.VIEWPORT,
   component: ConnectedExampleViewportPlugin
 });*/
 
-const pluginAction = OHIF.redux.actions.addPlugin({
+const cornerstonePluginAction = OHIF.redux.actions.addPlugin({
   id: 'cornerstone',
-  type: 'viewport',
+  type: PLUGIN_TYPES.VIEWPORT,
   component: OHIFCornerstoneViewportPlugin
 });
 
-store.dispatch(pluginAction);
+/*const pluginAction = OHIF.redux.actions.addPlugin({
+  id: 'vtk',
+  type: PLUGIN_TYPES.VIEWPORT,
+  component: OHIFVTKViewportPlugin
+});*/
+
+const pdfPluginAction = OHIF.redux.actions.addPlugin({
+  id: 'pdf',
+  type: PLUGIN_TYPES.VIEWPORT,
+  component: OHIFDicomPDFViewportPlugin
+});
+
+const pdfPluginActionSopClass = OHIF.redux.actions.addPlugin({
+  id: 'pdf_sopClassHandler',
+  type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
+  component: OHIFDicomPDFSopClassHandlerPlugin
+});
+
+store.dispatch(cornerstonePluginAction);
+store.dispatch(pdfPluginAction);
+store.dispatch(pdfPluginActionSopClass);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;

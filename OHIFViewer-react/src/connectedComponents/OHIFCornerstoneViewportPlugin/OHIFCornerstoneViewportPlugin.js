@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import OHIFComponentPlugin from './OHIFComponentPlugin.js';
+import OHIFComponentPlugin from '../OHIFComponentPlugin.js';
 
 const { StackManager } = OHIF.utils;
 

@@ -44,6 +44,12 @@ class App extends Component {
 
         const userNotLoggedIn = userManager && (!user || user.expired);
         if (userNotLoggedIn) {
+          const pathname = this.props.location.pathname;
+
+          if (pathname !== '/callback') {
+            sessionStorage.setItem('ohif-redirect-to', pathname);
+          }
+
           return (
             <Switch>
               <Route exact path="/silent-refresh.html" onEnter={reload} />

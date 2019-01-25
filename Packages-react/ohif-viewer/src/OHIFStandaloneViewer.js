@@ -38,7 +38,6 @@ class OHIFStandaloneViewer extends Component {
 
     const userNotLoggedIn = userManager && (!user || user.expired);
     if (userNotLoggedIn) {
-      debugger;
       const pathname = this.props.location.pathname;
 
       if (pathname !== '/callback') {
