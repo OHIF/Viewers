@@ -43,6 +43,12 @@ class ViewerMain extends Component {
         const contextName = 'viewer';
         OHIF.commands.createContext(contextName);
 
+        const isActiveViewportEmpty = () => {
+            // TODO: check if it is empty using redux. Need to put viewportData into redux.
+            // const activeViewport = Session.get('activeViewport') || 0;
+            // return $('.imageViewerViewport').eq(activeViewport).hasClass('empty');
+        };
+
         // Tools. ex: window/level, zoom, pan etc
         const registerToolCommands = map => Object.keys(map).forEach((toolId) => {
             const commandName = map[toolId];
@@ -62,22 +68,23 @@ class ViewerMain extends Component {
             OHIF.commands.register(contextName, toolId, {
                 name: commandName,
                 action: () => {
-                    alert('TODO: viewportUtils[commandId] - viewport set the active tool ->' + commandName)
+                    console.log('TODO: viewportUtils[commandId] - viewport set the active tool ->' + commandName)
                 },
-                params: toolId
+                params: toolId,
+                disabled: isActiveViewportEmpty,
             });
         });
 
         registerToolCommands({
             wwwc: 'W/L',
             zoom: 'Zoom',
-            angle: 'Angle Measurement',
+            angle: 'Angle',
             dragProbe: 'Pixel Probe',
             ellipticalRoi: 'Elliptical ROI',
             rectangleRoi: 'Rectangle ROI',
-            magnify: 'Magnify',
+            // magnify: 'Magnify', -- TODO: implement magnify
             annotate: 'Annotate',
-            stackScroll: 'Scroll Stack',
+            stackScroll: 'StackScroll',
             pan: 'Pan',
             length: 'Length Measurement',
             wwwcRegion: 'W/L by Region',
@@ -99,42 +106,60 @@ class ViewerMain extends Component {
         });
 
         // TODO: preset wl
+        // const applyPreset = presetName => WLPresets.applyWLPresetToActiveElement(presetName);
+        for (let i = 0; i < 10; i++) {
+            OHIF.commands.register(contextName, `WLPreset${i}`, {
+                name: `W/L Preset ${i + 1}`,
+                action: () => { console.log(`TODO: window level preset - WLPreset${i}`) }, // TODO applyPreset,
+                params: i
+            });
+        }
+
+        const canMoveDisplaySets = isNext => {
+            return false;
+            // TODO
+            // if (!OHIF.viewerbase.layoutManager) {
+            //     return false;
+            // } else {
+            //     return OHIF.viewerbase.layoutManager.canMoveDisplaySets(isNext);
+            // }
+        };
 
         // Register viewport navigation commands
         OHIF.commands.set(contextName, {
             scrollDown: {
                 name: 'Scroll Down',
-                action: () => alert('scroll down')
+                action: () => console.log('TODO: scroll down')
             },
             scrollUp: {
                 name: 'Scroll Up',
-                action: () => alert('scroll up')
+                action: () => console.log('TODO: scroll up')
             },
             scrollFirstImage: {
                 name: 'Scroll to First Image',
-                action: () => alert('scroll to first image')
+                action: () => console.log('TODO: scroll to first image')
             },
             scrollLastImage: {
                 name: 'Scroll to Last Image',
-                action: () => alert('scroll last image')
+                action: () => console.log('TODO: scroll last image')
             },
             previousDisplaySet: {
                 name: 'Previous Series',
-                action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(false),
-                disabled: () => alert('prev series')
+                action: () => console.log('TODO: previous series'),
+                disabled: () => !canMoveDisplaySets(false),
             },
             nextDisplaySet: {
                 name: 'Next Series',
-                action: () => OHIF.viewerbase.layoutManager.moveDisplaySets(true),
-                disabled: () => alert('next series')
+                action: () => console.log('TODO: next display set'),
+                disabled: () => !canMoveDisplaySets(true),
             },
             nextPanel: {
                 name: 'Next Image Viewport',
-                action: () => alert('next panel')
+                action: () => console.log('TODO: nextpanel'),
             },
             previousPanel: {
                 name: 'Previous Image Viewport',
-                action: () => alert('prev panel')
+                action: () => console.log('TODO: previous panel'),
             }
         }, true);
 
@@ -144,7 +169,7 @@ class ViewerMain extends Component {
         Object.keys(hotKeysPreferences).forEach(key => {
             hotKeys[key] = hotKeysPreferences[key].command;
         });
-        
+
         OHIF.hotkeys.set(contextName, hotKeys, true);
         const { setCommandContext } = OHIF.redux.actions;
         window.store.dispatch(setCommandContext({ context: contextName }));
