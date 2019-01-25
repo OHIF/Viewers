@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Preferences",
+    "icon": "fa fa-user",
+    "link": "http://www.google.com"
+  },
+  {
+    "title": "About",
+    "icon": "fa fa-info",
+    "link": "http://ohif.org"
+  }
+]

@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { CallbackComponent } from "redux-oidc";
-import { withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { CallbackComponent } from 'redux-oidc';
 
 class CallbackPage extends Component {
   static propTypes = {
     userManager: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired
-  }
+  };
 
   render() {
     return (
@@ -19,7 +19,7 @@ class CallbackPage extends Component {
           this.props.history.push(pathname);
         }}
         errorCallback={error => {
-          //this.props.history.push("/");
+          this.props.history.push('/');
           throw new Error(error);
         }}
       >

@@ -1,0 +1,14 @@
+{
+  "name": "ohif-viewer-example",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "ohif-viewer": "link:../",
+    "serve": "^10.1.1"
+  },
+  "scripts": {
+    "prepare": "mkdir -p deps && cp node_modules/ohif-viewer/dist/index.umd.* deps/",
+    "start": "yarn run prepare && serve -s ."
+  }
+}

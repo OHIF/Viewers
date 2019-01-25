@@ -4,15 +4,14 @@ import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from 'react-viewerbase';
-import ViewerRouting from "./ViewerRouting.js";
-import StudyListRouting from './StudyListRouting.js';
-import StandaloneRouting from './StandaloneRouting.js';
-import IHEInvokeImageDisplay from './IHEInvokeImageDisplay.js';
+import routes from './routes/';
+import StudyListRouting from './studylist/StudyListRouting.js';
 import CallbackPage from './CallbackPage.js';
-import userManager from "./userManager.js";
 import './App.css';
 import './variables.css';
 import './theme-tide.css';
+
+const { ViewerRouting, StandaloneRouting, IHEInvokeImageDisplay } = routes;
 
 const reload = () => window.location.reload();
 
@@ -24,14 +23,12 @@ function setContext(context) {
     });*/
 }
 
-function LoadingUser() {
-    return (<div>Loading user...</div>);
-}
-
 class App extends Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
-        user: PropTypes.object
+        user: PropTypes.object,
+        userManager: PropTypes.object,
+        location: PropTypes.object,
     }
 
     componentDidMount() {
@@ -45,21 +42,36 @@ class App extends Component {
     }
 
     render() {
-        const user = this.props.user;
+        const { user, userManager } = this.props;
 
-        /*if (!user || user.expired) {
-            // TODO: redirect to OAuth page if necessary
-            return <Switch>
-                <Route path="/callback" component={CallbackPage} />
-                <Route exact path='/login' component={() => {
-                    userManager.signinRedirect();
-                }}/>
-                <Route component={LoadingUser}/>
-            </Switch>;
-        }*/
+        const userNotLoggedIn = userManager && (!user || user.expired);
+        if (userNotLoggedIn) {
+            const pathname = this.props.location.pathname;
+
+            if (pathname !== '/callback') {
+                sessionStorage.setItem('ohif-redirect-to', pathname);
+            }
+
+            return (
+                <Switch>
+                    <Route exact path="/silent-refresh.html" onEnter={reload} />
+                    <Route exact path="/logout-redirect.html" onEnter={reload} />
+                    <Route path="/callback" render={
+                        () => <CallbackPage userManager={userManager} />
+                    } />
+                    <Route component={() => {
+                        userManager.signinRedirect();
+
+                        return null;
+                    }} />
+                </Switch>
+            )
+        }
 
         return (
             <Switch>
+                <Route exact path="/silent-refresh.html" onEnter={reload} />
+                <Route exact path="/logout-redirect.html" onEnter={reload} />
                 <Route
                     exact
                     path="/studylist"
