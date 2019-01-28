@@ -10,8 +10,8 @@ const mapStateToProps = state => {
     const contextName = window.store.getState().commandContext.context;
     return {
         isOpen: state.ui.userPreferencesModalOpen,
-        windowLevelData: state.preferences[contextName].windowLevelData,
-        hotKeysData: state.preferences[contextName].hotKeysData,
+        windowLevelData: state.preferences[contextName] ? state.preferences[contextName].windowLevelData : {},
+        hotKeysData: state.preferences[contextName] ? state.preferences[contextName].hotKeysData : {},
     };
 };
 

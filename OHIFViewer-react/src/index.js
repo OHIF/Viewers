@@ -8,6 +8,7 @@ import OHIF from 'ohif-core';
 import './config';
 import ui from './redux/ui.js';
 import App from './App.js';
+import { loadState, saveState } from './redux/localStorageState.js';
 
 import OHIFCornerstoneViewportPlugin from "./connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js";
 //import ConnectedExampleViewportPlugin from './components/ConnectedExampleViewportPlugin.js';
@@ -15,13 +16,20 @@ import OHIFCornerstoneViewportPlugin from "./connectedComponents/OHIFCornerstone
 import OHIFDicomPDFViewportPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFViewportPlugin.js';
 import OHIFDicomPDFSopClassHandlerPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFSopClassHandlerPlugin.js';
 
-const reducers = OHIF.redux.reducers;
+let reducers = OHIF.redux.reducers;
 reducers.ui = ui;
 reducers.oidc = oidcReducer;
 
 const Icons = '/icons.svg';
-const combined = combineReducers(reducers)
-const store = createStore(combined);
+const combined = combineReducers(reducers);
+const store = createStore(combined, loadState());
+
+// Subscribing store to save state of persistable data
+store.subscribe(() => {
+  saveState({
+    preferences: store.getState().preferences,
+  });
+});
 
 // Note: Run your build like this:
 // REACT_APP_CONFIG=$(cat ../config-react/ccc.json) yarn start
@@ -61,69 +69,69 @@ if (config && config.servers) {
 }
 
 const defaultButtons = [
-    {
-        command: 'StackScroll',
-        type: 'tool',
-        text: 'Stack Scroll',
-        svgUrl: `${Icons}#icon-tools-stack-scroll`,
-        active: false
-    },
-    {
-        command: 'Zoom',
-        type: 'tool',
-        text: 'Zoom',
-        svgUrl: `${Icons}#icon-tools-zoom`,
-        active: false
-    },
-    {
-        command: 'Wwwc',
-        type: 'tool',
-        text: 'Levels',
-        svgUrl: `${Icons}#icon-tools-levels`,
-        active: true
-    },
-    {
-        command: 'Pan',
-        type: 'tool',
-        text: 'Pan',
-        svgUrl: `${Icons}#icon-tools-pan`,
-        active: false
-    },
-    {
-        command: 'Length',
-        type: 'tool',
-        text: 'Length',
-        svgUrl: `${Icons}#icon-tools-measure-temp`,
-        active: false
-    },
-    /*{
-        command: 'Annotate',
-        type: 'tool',
-        text: 'Annotate',
-        svgUrl: `${Icons}#icon-tools-measure-non-target`,
-        active: false
-    },*/
-    {
-        command: 'Angle',
-        type: 'tool',
-        text: 'Angle',
-        iconClasses: 'fa fa-angle-left',
-        active: false
-    },
-    {
-        command: 'Bidirectional',
-        type: 'tool',
-        text: 'Bidirectional',
-        svgUrl: `${Icons}#icon-tools-measure-target`,
-        active: false
-    },
-    {
-        command: 'reset',
-        type: 'command',
-        text: 'Reset',
-        svgUrl: `${Icons}#icon-tools-reset`,
-        active: false
-    },
+  {
+    command: 'StackScroll',
+    type: 'tool',
+    text: 'Stack Scroll',
+    svgUrl: `${Icons}#icon-tools-stack-scroll`,
+    active: false
+  },
+  {
+    command: 'Zoom',
+    type: 'tool',
+    text: 'Zoom',
+    svgUrl: `${Icons}#icon-tools-zoom`,
+    active: false
+  },
+  {
+    command: 'Wwwc',
+    type: 'tool',
+    text: 'Levels',
+    svgUrl: `${Icons}#icon-tools-levels`,
+    active: true
+  },
+  {
+    command: 'Pan',
+    type: 'tool',
+    text: 'Pan',
+    svgUrl: `${Icons}#icon-tools-pan`,
+    active: false
+  },
+  {
+    command: 'Length',
+    type: 'tool',
+    text: 'Length',
+    svgUrl: `${Icons}#icon-tools-measure-temp`,
+    active: false
+  },
+  /*{
+      command: 'Annotate',
+      type: 'tool',
+      text: 'Annotate',
+      svgUrl: `${Icons}#icon-tools-measure-non-target`,
+      active: false
+  },*/
+  {
+    command: 'Angle',
+    type: 'tool',
+    text: 'Angle',
+    iconClasses: 'fa fa-angle-left',
+    active: false
+  },
+  {
+    command: 'Bidirectional',
+    type: 'tool',
+    text: 'Bidirectional',
+    svgUrl: `${Icons}#icon-tools-measure-target`,
+    active: false
+  },
+  {
+    command: 'reset',
+    type: 'command',
+    text: 'Reset',
+    svgUrl: `${Icons}#icon-tools-reset`,
+    active: false
+  },
 ];
 
 const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
@@ -160,31 +168,31 @@ const pdfPluginAction = OHIF.redux.actions.addPlugin({
 });
 
 const servers = {
-    dicomWeb: [
-        {
-            "name": "DCM4CHEE",
-            //"wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
-            //"qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-            //"wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
-            "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
-            "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
-            "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
-            // "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
-            // "qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-            // "wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-            "qidoSupportsIncludeField": true,
-            "imageRendering": "wadors",
-            "thumbnailRendering": "wadors",
-            "requestOptions": {
-                "requestFromBrowser": true,
-                "logRequests": true,
-                "logResponses": false,
-                "logTiming": true,
-                //"auth": "admin:admin"
-                //"auth": "cloud:healthcare"
-            }
-        }
-    ]
+  dicomWeb: [
+    {
+      "name": "DCM4CHEE",
+      //"wadoUriRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado",
+      //"qidoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+      //"wadoRoot": "http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs",
+      "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
+      "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+      "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+      // "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
+      // "qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+      // "wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+      "qidoSupportsIncludeField": true,
+      "imageRendering": "wadors",
+      "thumbnailRendering": "wadors",
+      "requestOptions": {
+        "requestFromBrowser": true,
+        "logRequests": true,
+        "logResponses": false,
+        "logTiming": true,
+        //"auth": "admin:admin"
+        //"auth": "cloud:healthcare"
+      }
+    }
+  ]
 };
 
 OHIF.utils.addServers(servers, store);
@@ -207,7 +215,7 @@ if (userManager) {
     <Provider store={store}>
       <OidcProvider store={store} userManager={userManager}>
         <BrowserRouter>
-          <App userManager={userManager}/>
+          <App userManager={userManager} />
         </BrowserRouter>
       </OidcProvider>
     </Provider>,
@@ -216,9 +224,9 @@ if (userManager) {
 } else {
   ReactDOM.render(
     <Provider store={store}>
-        <BrowserRouter>
-          <App/>
-        </BrowserRouter>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>,
     document.getElementById('root')
   );
