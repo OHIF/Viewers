@@ -31,6 +31,7 @@ const mapDispatchToProps = dispatch => {
         onResetToDefaults: () => {
             dispatch(setUserPreferences());
             dispatch(setUserPreferencesModalOpen(false));
+            OHIF.hotkeysUtil.setHotkeys();
         },
     };
 };
