@@ -29,7 +29,7 @@
     "sha": "echo \"export default '\"$(git rev-parse HEAD)\"';\" > src/sha.js",
     "details": "npm run version && npm run sha",
     "prep": "npm run details && npm run copy:webworkers",
-    "start:debug": "npm run prep && react-scripts start"
+    "start:debug": "cross-env PORT=5000 react-scripts start"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
