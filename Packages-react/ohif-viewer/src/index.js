@@ -21,7 +21,7 @@ Example config with OIDC
 // Try going to:
 // http://localhost:5000/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 // http://ohif-viewer-react.s3-website-us-east-1.amazonaws.com/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
-/* props.servers = {
+props.servers = {
   "dicomWeb": [{
       "name": "DCM4CHEE",
       "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
@@ -49,12 +49,12 @@ props.oidc = [{
       "kc_idp_hint": "crowds-cure-cancer-auth0-oidc",
       "client_id": "crowds-cure-cancer"
     }
-}]; */
+}];
 
 /* Example config without OIDC */
 // Try going to:
 // http://localhost:5000/viewer/1.3.6.1.4.1.14519.5.2.1.1706.4996.216859690032335293073513900362
-props.servers = {
+/* props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
@@ -70,7 +70,7 @@ props.servers = {
       }
     }
   ]
-};
+}; */
 
 /*
 UI settings

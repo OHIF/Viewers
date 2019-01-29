@@ -19,21 +19,21 @@ function Header({ home, location, children }) {
   return (
     <div className={`entry-header ${home ? 'header-big' : ''}`}>
       <div className="header-left-box">
-        {/*
+        {
           state && state.studyLink &&
           <Link to={state.studyLink} className="header-btn header-viewerLink">
             Back to Viewer
           </Link>
-        */}
+       }
 
         {children}
 
-        {/*!home &&
+        {!home &&
           <Link className='header-btn header-studyListLinkSection' to={{
             pathname: "/",
             state: { studyLink: location.pathname }
           }}>Study list</Link>
-        */}
+       }
       </div>
 
       <div className="header-menu">

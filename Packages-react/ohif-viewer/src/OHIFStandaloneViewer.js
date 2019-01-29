@@ -5,6 +5,7 @@ import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from 'react-viewerbase';
 import ViewerRouting from './routes/ViewerRouting.js';
+import StudyListRouting from './studylist/StudyListRouting.js'
 import StandaloneRouting from './routes/StandaloneRouting.js';
 import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
 import CallbackPage from './CallbackPage.js';
@@ -67,7 +68,12 @@ class OHIFStandaloneViewer extends Component {
       <Switch>
         <Route exact path="/silent-refresh.html" onEnter={reload} />
         <Route exact path="/logout-redirect.html" onEnter={reload} />
-        <Route exact path="/" component={StandaloneRouting} />
+        <Route
+            exact
+            path="/studylist"
+            component={StudyListRouting}
+        />
+        <Route exact path="/" component={StudyListRouting} />
         <Route exact path="/viewer" component={StandaloneRouting} />
         <Route path="/viewer/:studyInstanceUids" component={ViewerRouting} />
         <Route

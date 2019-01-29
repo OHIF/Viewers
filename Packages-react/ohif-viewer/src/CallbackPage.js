@@ -19,7 +19,7 @@ class CallbackPage extends Component {
           this.props.history.push(pathname);
         }}
         errorCallback={error => {
-          this.props.history.push('/');
+          //this.props.history.push("/");
           throw new Error(error);
         }}
       >
