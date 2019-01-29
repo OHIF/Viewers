@@ -24,7 +24,12 @@
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
     "generateStaticSite": "./generateStaticSite.sh",
-    "start:debug": "cross-env PORT=5000 react-scripts start"
+    "copy:webworkers": "cp node_modules/cornerstone-wado-image-loader/dist/*.min.js* public",
+    "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
+    "sha": "echo \"export default '\"$(git rev-parse HEAD)\"';\" > src/sha.js",
+    "details": "npm run version && npm run sha",
+    "prep": "npm run details && npm run copy:webworkers",
+    "start:debug": "npm run prep && react-scripts start"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
