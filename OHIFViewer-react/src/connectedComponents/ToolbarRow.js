@@ -23,7 +23,7 @@ class ToolbarRow extends Component {
 
     static defaultProps = {
         leftSidebarOpen: false,
-        rightSidebarOpen: false,
+        rightSidebarOpen: false
     };
 
     onLeftSidebarValueChanged = (value) => {

@@ -2,9 +2,22 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import OHIFComponentPlugin from './OHIFComponentPlugin.js';
+import OHIFComponentPlugin from '../OHIFComponentPlugin.js';
+import cornerstoneTools from "cornerstone-tools";
+import cornerstone from "cornerstone-core";
+import './config';
 
 const { StackManager } = OHIF.utils;
+
+// Create the synchronizer used to update reference lines
+OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);
+
+// Metadata configuration
+const metadataProvider = new OHIF.cornerstone.MetadataProvider();
+
+cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
+
+StackManager.setMetadataProvider(metadataProvider);
 
 class OHIFCornerstoneViewportPlugin extends Component {
   static propTypes = {
