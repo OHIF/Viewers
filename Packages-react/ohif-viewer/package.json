@@ -9,6 +9,7 @@
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
+  "homepage": "http://localhost:3000",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -22,7 +23,8 @@
     "prepare": "npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
-    "generateStaticSite": "./generateStaticSite.sh"
+    "generateStaticSite": "./generateStaticSite.sh",
+    "start:debug": "cross-env PORT=5000 react-scripts start"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
