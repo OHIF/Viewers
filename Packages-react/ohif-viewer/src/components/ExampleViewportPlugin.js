@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class ExampleViewportPlugin extends Component {
@@ -14,7 +14,8 @@ class ExampleViewportPlugin extends Component {
   };
 
   render() {
-    return (<div className="ExampleViewportPlugin">
+    return (
+      <div className="ExampleViewportPlugin">
         <p>StudyInstanceUid: {this.props.studyInstanceUid}</p>
         <p>SeriesInstanceUid: {this.props.seriesInstanceUid}</p>
         {JSON.stringify(this.props.displaySet)}

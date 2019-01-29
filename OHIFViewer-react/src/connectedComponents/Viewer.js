@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import Header from '../components/Header'
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
-import ConnectedToolbarRow from "./ConnectedToolbarRow";
+import ConnectedToolbarRow from './ConnectedToolbarRow';
 import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import './Viewer.css';
@@ -46,9 +46,9 @@ OHIF.viewer.functionList = {
 };*/
 
 class Viewer extends Component {
-    static propTypes = {
-        studies: PropTypes.array,
-    };
+  static propTypes = {
+    studies: PropTypes.array
+  };
 
     render() {
         return (<>
