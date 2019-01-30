@@ -8,8 +8,8 @@ export default class ExtensionManager {
   }
 
   static registerExtension(store, extension) {
-    /**  
-     *   TODO: 
+    /**
+     *   TODO:
      * - Use this function for checking extensions definition and throw errors early/ignore extension if format is not conformant or any required stuff is missing
      * - Check uniqueness of extension id
      * - Id Management: SopClassHandlers currently refer to viewport module by id; setting the extension id as viewport module id is a workaround for now
@@ -17,18 +17,22 @@ export default class ExtensionManager {
     let viewportModule = extension.getViewportModule();
     let sopClassHandler = extension.getSopClassHandler();
     if (viewportModule) {
-      store.dispatch(OHIF.redux.actions.addPlugin({
-        id: extension.getExtensionId(),
-        type: 'viewport',
-        component: viewportModule
-      }));
+      store.dispatch(
+        OHIF.redux.actions.addPlugin({
+          id: extension.getExtensionId(),
+          type: 'viewport',
+          component: viewportModule
+        })
+      );
     }
     if (sopClassHandler) {
-      store.dispatch(OHIF.redux.actions.addPlugin({
-        id: extension.getExtensionId()+"_sopClass_handler",
-        type: 'sopClassHandler',
-        component: sopClassHandler
-      }));
+      store.dispatch(
+        OHIF.redux.actions.addPlugin({
+          id: extension.getExtensionId() + '_sopClass_handler',
+          type: 'sopClassHandler',
+          component: sopClassHandler
+        })
+      );
     }
   }
 }
