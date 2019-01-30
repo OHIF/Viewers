@@ -10,7 +10,7 @@ const SOP_CLASS_UIDS = {
 
 const dwc = api.DICOMwebClient;
 
-const DicomMicrscopySopClassHandlerPlugin = {
+const DicomMicrscopySopClassHandler = {
   id: 'DicomMicroscopySopClassHandlerPlugin',
   type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
   sopClassUids: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
@@ -36,4 +36,4 @@ const DicomMicrscopySopClassHandlerPlugin = {
   }
 };
 
-export default DicomMicrscopySopClassHandlerPlugin;
+export default DicomMicrscopySopClassHandler;

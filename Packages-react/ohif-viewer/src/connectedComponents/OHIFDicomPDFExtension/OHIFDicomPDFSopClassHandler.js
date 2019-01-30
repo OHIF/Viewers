@@ -8,7 +8,7 @@ const SOP_CLASS_UIDS = {
   ENCAPSULATED_PDF: '1.2.840.10008.5.1.4.1.1.104.1'
 };
 
-const OHIFDicomPDFSopClassHandlerPlugin = {
+const OHIFDicomPDFSopClassHandler = {
   id: 'OHIFDicomPDFSopClassHandlerPlugin',
   type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
   sopClassUids: [
@@ -29,4 +29,4 @@ const OHIFDicomPDFSopClassHandlerPlugin = {
   }
 }
 
-export default OHIFDicomPDFSopClassHandlerPlugin;
+export default OHIFDicomPDFSopClassHandler;

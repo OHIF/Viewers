@@ -6,7 +6,7 @@ import DicomPDFViewport from './DicomPDFViewport';
 
 const { DICOMWeb } = OHIF;
 
-class OHIFDicomPDFViewportPlugin extends Component {
+class OHIFDicomPDFViewport extends Component {
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
@@ -18,14 +18,14 @@ class OHIFDicomPDFViewportPlugin extends Component {
     error: null
   }
 
-  static id = 'DicomPDFViewportPlugin';
+  static id = 'DicomPDFViewportP';
 
   static init() {
-    console.log('DicomPDFViewportPlugin init()');
+    console.log('DicomPDFViewport init()');
   }
 
   static destroy() {
-    console.log('DicomPDFViewportPlugin destroy()');
+    console.log('DicomPDFViewport destroy()');
   }
 
   componentDidMount() {
@@ -59,7 +59,7 @@ class OHIFDicomPDFViewportPlugin extends Component {
   }
 
   render() {
-    const { id, init, destroy } = OHIFDicomPDFViewportPlugin;
+    const { id, init, destroy } = OHIFDicomPDFViewport;
     const pluginProps = { id, init, destroy };
 
     return (
@@ -74,4 +74,4 @@ class OHIFDicomPDFViewportPlugin extends Component {
 }
 
 
-export default OHIFDicomPDFViewportPlugin;
+export default OHIFDicomPDFViewport;
