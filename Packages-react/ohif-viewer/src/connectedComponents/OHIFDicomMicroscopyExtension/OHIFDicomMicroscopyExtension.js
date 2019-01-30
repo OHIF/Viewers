@@ -3,17 +3,27 @@ import DicomMicroscopySopClassHandler from "./DicomMicroscopySopClassHandler.js"
 
 export default class OHIFDicomMicroscopyExtension {
 
-    registerModules(store, addPluginActionCreator) {
-        store.dispatch(addPluginActionCreator({
+    getViewportModuleDefinition() {
+        return {
             id: 'microscopy',
             type: 'viewport',
             component: DicomMicroscopyViewport
-        }));
-        store.dispatch(addPluginActionCreator({
+        };
+    }
+
+    getSopHandlerModuleDefinition() {
+        return {
             id: 'microscopy_sopClassHandler',
             type: 'sopClassHandler',
             component: DicomMicroscopySopClassHandler
-        }));
+        }
     }
 
+    getPanelModuleDefinition() {
+        return null;
+    }
+
+    getToolbarModuleDefinition() {
+        return null;
+    }
 }

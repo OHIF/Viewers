@@ -2,19 +2,28 @@ import OHIFDicomPDFViewport from "./OHIFDicomPDFViewport.js";
 import OHIFDicomPDFSopClassHandler from "./OHIFDicomPDFSopClassHandler.js";
 
 export default class OHIFDicomPDFExtension {
-
-    registerModules(store, addPluginActioNCreator) {
-        store.dispatch(addPluginActioNCreator({
+    getViewportModuleDefinition() {
+        return {
             id: 'pdf',
             type: 'viewport',
             component: OHIFDicomPDFViewport
-        }));
-          
-        store.dispatch(addPluginActioNCreator({
+        };
+    }
+
+    getSopHandlerModuleDefinition() {
+        return {
             id: 'pdf_sopClassHandler',
             type: 'sopClassHandler',
             component: OHIFDicomPDFSopClassHandler
-        }));
+        }
+    }
+
+    getPanelModuleDefinition() {
+        return null;
+    }
+
+    getToolbarModuleDefinition() {
+        return null;
     }
 
 }

@@ -19,6 +19,7 @@ import {
   reducer as oidcReducer
 } from 'redux-oidc';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import ExtensionManager from './ExtensionManager';
 
 //import Icons from "./images/icons.svg"
 
@@ -110,11 +111,9 @@ const cornerstonePluginAction = OHIF.redux.actions.addPlugin({
 
 store.dispatch(cornerstonePluginAction);
 
-/** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages */
+/** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 let extensions = [new OHIFDicomPDFExtension(), new OHIFDicomMicroscopyExtension()];
-extensions.forEach(extension => {
-  extension.registerModules(store, OHIF.redux.actions.addPlugin);
-})
+ExtensionManager.registerExtensions(store, extensions);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
