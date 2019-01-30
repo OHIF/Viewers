@@ -1,4 +1,5 @@
 import OHIFLogo from './components/OHIFLogo/OHIFLogo.js';
+import React from 'react';
 
 const defaultContextValues = {
   logoComponent: OHIFLogo()

@@ -12,7 +12,7 @@ import builtins from 'rollup-plugin-node-builtins';
 
 export default {
   external: ['react', 'react-dom'],
-  input: 'src/index.js',
+  input: 'src/index_publish.js',
   output: [
     {
         file: pkg.main,

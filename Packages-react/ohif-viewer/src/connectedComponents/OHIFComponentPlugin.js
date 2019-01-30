@@ -9,7 +9,7 @@ OHIFComponentPlugin.propTypes = {
   id: PropTypes.string.isRequired,
   init: PropTypes.func.isRequired,
   destroy: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node
 };
 
 export default OHIFComponentPlugin;
