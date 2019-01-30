@@ -44,7 +44,7 @@ Template.studylistResult.helpers({
         const config = Session.get('GCP_HEALTHCARE_CONFIG');;
         if (!config)
             return '';
-        return config.project + ' / ' + config.dataset + ' / ' + config.dicomStore
+        return config.project + ' / ' + config.location + ' / ' + config.dataset + ' / ' + config.dicomStore
     },
 
     numberOfStudies() {
