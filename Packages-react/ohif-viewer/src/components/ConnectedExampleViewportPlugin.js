@@ -8,7 +8,8 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     studyInstanceUid,
-    seriesInstanceUid
+    seriesInstanceUid,
+    displaySet
   };
 };
 

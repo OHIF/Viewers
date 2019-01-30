@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-import OHIF from 'ohif-core';
+//import OHIF from 'ohif-core';
 //import { CineDialog } from 'react-viewerbase';
 
 import WhiteLabellingContext from '../WhiteLabellingContext.js';
@@ -12,7 +10,6 @@ import ConnectedToolbarRow from './ConnectedToolbarRow';
 import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import './Viewer.css';
-const { StackManager } = OHIF.utils;
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -40,14 +37,6 @@ const { StackManager } = OHIF.utils;
     });
 };*/
 
-OHIF.viewer.defaultTool = {
-  left: 'wwwc',
-  right: 'zoom',
-  middle: 'pan'
-};
-
-OHIF.viewer.refLinesEnabled = true;
-
 /*const viewportUtils = OHIF.viewerbase.viewportUtils;
 
 OHIF.viewer.functionList = {
@@ -57,20 +46,6 @@ OHIF.viewer.functionList = {
     resetViewport: viewportUtils.resetViewport,
     invert: viewportUtils.invert
 };*/
-
-// Create the synchronizer used to update reference lines
-OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer(
-  'cornerstonenewimage',
-  cornerstoneTools.updateImageSynchronizer
-);
-
-// Metadata configuration
-const metadataProvider = new OHIF.cornerstone.MetadataProvider();
-cornerstone.metaData.addProvider(
-  metadataProvider.provider.bind(metadataProvider)
-);
-
-StackManager.setMetadataProvider(metadataProvider);
 
 class Viewer extends Component {
   static propTypes = {
@@ -85,7 +60,6 @@ class Viewer extends Component {
             <Header home={false}>{whiteLabelling.logoComponent}</Header>
           )}
         </WhiteLabellingContext.Consumer>
-        <div className="viewerDialogs">{/*<CineDialog/>*/}</div>
         <div id="viewer" className="Viewer">
           <ConnectedToolbarRow />
           <ConnectedStudyLoadingMonitor studies={this.props.studies} />

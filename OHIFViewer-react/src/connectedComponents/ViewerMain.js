@@ -1,16 +1,9 @@
 import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstoneMath from "cornerstone-math";
 import { OHIF } from 'ohif-core';
 import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import './ViewerMain.css';
-
-// Attempt to fix weird undefined dep issue
-cornerstoneTools.external.cornerstone = cornerstone;
-cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
 
 class ViewerMain extends Component {
   state = {

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
@@ -10,6 +9,10 @@ import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js';
 import WhiteLabellingContext from './WhiteLabellingContext';
+import OHIFDicomPDFViewportPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFViewportPlugin.js';
+import OHIFDicomPDFSopClassHandlerPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFSopClassHandlerPlugin.js';
+import DicomMicroscopySopClassHandlerPlugin from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopySopClassHandlerPlugin.js';
+import DicomMicroscopyViewport from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopyViewport.js';
 
 import {
   loadUser,
@@ -101,13 +104,46 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 
 store.dispatch(buttonsAction);
 
-const pluginAction = OHIF.redux.actions.addPlugin({
+const { plugins } = OHIF;
+const { PLUGIN_TYPES } = plugins;
+
+const cornerstonePluginAction = OHIF.redux.actions.addPlugin({
   id: 'cornerstone',
   type: 'viewport',
   component: OHIFCornerstoneViewportPlugin
 });
 
-store.dispatch(pluginAction);
+const pdfPluginAction = OHIF.redux.actions.addPlugin({
+  id: 'pdf',
+  type: PLUGIN_TYPES.VIEWPORT,
+  component: OHIFDicomPDFViewportPlugin
+});
+
+const pdfPluginActionSopClass = OHIF.redux.actions.addPlugin({
+  id: 'pdf_sopClassHandler',
+  type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
+  component: OHIFDicomPDFSopClassHandlerPlugin
+});
+
+const microscopyPluginAction = OHIF.redux.actions.addPlugin({
+  id: 'microscopy',
+  type: PLUGIN_TYPES.VIEWPORT,
+  component: DicomMicroscopyViewport
+});
+
+const microscopyPluginActionPluginActionSopClass = OHIF.redux.actions.addPlugin(
+  {
+    id: 'microscopy_sopClassHandler',
+    type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
+    component: DicomMicroscopySopClassHandlerPlugin
+  }
+);
+
+store.dispatch(cornerstonePluginAction);
+store.dispatch(pdfPluginAction);
+store.dispatch(pdfPluginActionSopClass);
+store.dispatch(microscopyPluginAction);
+store.dispatch(microscopyPluginActionPluginActionSopClass);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
@@ -168,9 +204,13 @@ function handleWebWorkerInit(basename) {
 
 class App extends Component {
   static propTypes = {
-    servers: PropTypes.array,
+    servers: PropTypes.object,
     oidc: PropTypes.array,
     routerBasename: PropTypes.string
+  };
+
+  static defaultProps = {
+    whiteLabelling: {}
   };
 
   constructor(props) {

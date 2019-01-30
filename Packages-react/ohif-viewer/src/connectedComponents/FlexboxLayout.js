@@ -35,7 +35,13 @@ class FlexboxLayout extends Component {
 
             const thumbnails = study.displaySets.map((displaySet) => {
                 const { displaySetInstanceUid, seriesDescription, seriesNumber, instanceNumber, numImageFrames } = displaySet;
-                const imageId = displaySet.images[0].getImageId();
+
+
+                let imageId;
+
+                if (displaySet.images && displaySet.images.length) {
+                    imageId = displaySet.images[0].getImageId();
+                }
 
                 return {
                     imageId,

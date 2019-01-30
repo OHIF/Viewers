@@ -12,7 +12,7 @@ import builtins from 'rollup-plugin-node-builtins';
 
 export default {
   external: ['react', 'react-dom'],
-  input: 'src/index.js',
+  input: 'src/index_publish.js',
   output: [
     {
         file: pkg.main,
@@ -61,6 +61,12 @@ export default {
             'node_modules/react-is/index.js': ['isValidElementType'],
             'node_modules/redux-oidc/dist/redux-oidc.js': [
               'reducer', 'CallbackComponent', 'loadUser', 'OidcProvider', 'createUserManager'
+            ],
+            'node_modules/dicom-microscopy-viewer/build/dicom-microscopy-viewer.js': [
+              'api'
+            ],
+            'node_modules/dicomweb-client/build/dicomweb-client.js': [
+              'api'
             ]
         }
     }),

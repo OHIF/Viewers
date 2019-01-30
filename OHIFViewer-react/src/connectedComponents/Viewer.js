@@ -1,18 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-import OHIF from 'ohif-core';
 //import { CineDialog } from 'react-viewerbase';
 
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
-import ConnectedToolbarRow from "./ConnectedToolbarRow";
+import ConnectedToolbarRow from './ConnectedToolbarRow';
 import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import './Viewer.css';
 import ConnectedHeader from "../components/Header/ConnectedHeader";
-
-const { StackManager } = OHIF.utils;
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -40,15 +35,6 @@ const { StackManager } = OHIF.utils;
     });
 };*/
 
-
-OHIF.viewer.defaultTool = {
-    left: 'wwwc',
-    right: 'zoom',
-    middle: 'pan'
-};
-
-OHIF.viewer.refLinesEnabled = true;
-
 /*const viewportUtils = OHIF.viewerbase.viewportUtils;
 
 OHIF.viewer.functionList = {
@@ -59,25 +45,15 @@ OHIF.viewer.functionList = {
     invert: viewportUtils.invert
 };*/
 
-// Create the synchronizer used to update reference lines
-OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer('cornerstonenewimage', cornerstoneTools.updateImageSynchronizer);
-
-// Metadata configuration
-const metadataProvider = new OHIF.cornerstone.MetadataProvider();
-cornerstone.metaData.addProvider(metadataProvider.provider.bind(metadataProvider));
-
-StackManager.setMetadataProvider(metadataProvider);
-
 class Viewer extends Component {
-    static propTypes = {
-        studies: PropTypes.array,
-    };
+  static propTypes = {
+    studies: PropTypes.array
+  };
 
     render() {
         return (<>
             <ConnectedHeader home={false} />
             <div className='viewerDialogs'>
-                {/*<CineDialog/>*/}
             </div>
             <div id="viewer" className='Viewer'>
                 <ConnectedToolbarRow />

@@ -7,7 +7,7 @@ import list from './HeaderMenuList.json';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 //import Icons from "../../images/icons.svg";
 
-const Icons = '/icons.svg';
+//const Icons = '/icons.svg';
 
 function Header({ home, location, children }) {
   const { state } = location;
@@ -19,21 +19,25 @@ function Header({ home, location, children }) {
   return (
     <div className={`entry-header ${home ? 'header-big' : ''}`}>
       <div className="header-left-box">
-        {/*
-          state && state.studyLink &&
+        {state && state.studyLink && (
           <Link to={state.studyLink} className="header-btn header-viewerLink">
             Back to Viewer
           </Link>
-        */}
+        )}
 
         {children}
 
-        {/*!home &&
-          <Link className='header-btn header-studyListLinkSection' to={{
-            pathname: "/",
-            state: { studyLink: location.pathname }
-          }}>Study list</Link>
-        */}
+        {!home && (
+          <Link
+            className="header-btn header-studyListLinkSection"
+            to={{
+              pathname: '/',
+              state: { studyLink: location.pathname }
+            }}
+          >
+            Study list
+          </Link>
+        )}
       </div>
 
       <div className="header-menu">
