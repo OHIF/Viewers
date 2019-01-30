@@ -49,15 +49,12 @@ class DicomMicroscopyViewport extends Component {
         return Promise.all(promises);
       })
       .then(metadata => {
-        console.warn(metadata);
         metadata = metadata.filter(m => m);
 
         const viewer = new microscopyViewer({
           client: dicomWebClient,
           metadata
         });
-
-        debugger;
 
         viewer.render({ container });
       });

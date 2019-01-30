@@ -1856,7 +1856,7 @@ babel-plugin-transform-react-remove-prop-types@0.4.20:
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-react-remove-prop-types/-/babel-plugin-transform-react-remove-prop-types-0.4.20.tgz#688bdea1e27ea0023775dea817fa2d3f8df8802b"
   integrity sha512-bWQ8e7LsgdFpyHU/RabjDAjVhL7KLAJXEt0nb0LANFje8YAGA8RlZv88a72aCswOxELWULkYuJqfFoKgs58Tng==
 
-babel-polyfill@>=6.9.1:
+babel-polyfill@>=6.9.1, babel-polyfill@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
   integrity sha1-N5k3q8Z9eJWXCtxiHyhM2WbPIVM=
@@ -3396,6 +3396,14 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
   integrity sha1-6vQ5/U1ISK105cx9vvIAZyueNFs=
+
+dcmjs@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.0.tgz#d065a65b3df14d6028542760de6143f0acdc2ed0"
+  integrity sha512-k6La/q+ROPjoAPQCWIWd49XUGUzolLG6qJhEMdSAhYEa4WP6CLyjIgL1Ul2NqM7Vxyd74ydHi537AWxOtdSxmA==
+  dependencies:
+    babel-polyfill "^6.26.0"
+    babel-runtime "^6.26.0"
 
 debug@*, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0:
   version "4.1.1"
@@ -8201,10 +8209,10 @@ octal@^1.0.0:
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
   integrity sha1-Y+cWKmjvvrniE1iNWOmJ0eXEUws=
 
-ohif-core@^0.1.7:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.8.tgz#af0ff273e9ad3096d5d98187191a336e08e72f93"
-  integrity sha512-e5fIKDHOfVaYkrkKFjyqhad/vP7D2ynn2q77mNFMAX49Lo5y/WgXiXytJTeaXNJzksnzTQquOxA93XAh8viuWg==
+ohif-core@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.9.tgz#66cc3243d45a56b3dfd9f352b96b2b77f0df43eb"
+  integrity sha512-ghW1IMhTYAcIkD1Ft2N88bqbApskH8Hbutp9b+mKVEQofSKVkN/Osu1KkvEx6PTSSbp0BcY9iSVF+/9wj6Z5wA==
   dependencies:
     "@babel/runtime" "^7.2.0"
     dicomweb-client "^0.4.1"

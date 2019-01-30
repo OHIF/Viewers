@@ -16,11 +16,7 @@ const DicomMicrscopySopClassHandlerPlugin = {
   sopClassUids: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
   getDisplaySetFromSeries(series, study) {
     const instance = series.getFirstInstance();
-
     const headers = OHIF.DICOMWeb.getAuthorizationHeader();
-    console.warn(headers);
-
-    debugger;
 
     const dicomWebClient = new dwc({
       url: study.getData().wadoRoot,
