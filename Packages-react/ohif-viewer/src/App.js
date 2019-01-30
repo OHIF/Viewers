@@ -96,6 +96,13 @@ const defaultButtons = [
     active: false
   },
   {
+    command: 'Brush',
+    type: 'tool',
+    text: 'Brush',
+    iconClasses: 'fa fa-circle',
+    active: false
+  },
+  {
     command: 'reset',
     type: 'command',
     text: 'Reset',

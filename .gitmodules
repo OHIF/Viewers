@@ -7,9 +7,3 @@
 [submodule "Packages-react/react-cornerstone-viewport"]
 	path = Packages-react/react-cornerstone-viewport
 	url = git@github.com:cornerstonejs/react-cornerstone-viewport.git
-[submodule "Packages-react/plugins/VTKPlugin"]
-	path = Packages-react/plugins/VTKPlugin
-	url = git@github.com:OHIF/VTKPlugin.git
-[submodule "Packages-react/plugins/OpenLayersPlugin"]
-	path = Packages-react/plugins/OpenLayersPlugin
-	url = git@github.com:OHIF/OpenLayersPlugin.git

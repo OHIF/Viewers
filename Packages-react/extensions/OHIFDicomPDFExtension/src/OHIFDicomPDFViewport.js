@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import OHIFComponentPlugin from './OHIFComponentPlugin.js';
 import DicomPDFViewport from './DicomPDFViewport';
@@ -10,13 +10,13 @@ class OHIFDicomPDFViewport extends Component {
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number,
+    viewportIndex: PropTypes.number
   };
 
   state = {
     byteArray: null,
     error: null
-  }
+  };
 
   static id = 'DicomPDFViewportPDF';
 
@@ -41,8 +41,9 @@ class OHIFDicomPDFViewport extends Component {
         error
       });
 
-      throw new Error(error);
-    });
+        throw new Error(error);
+      }
+    );
   }
 
   retrieveDicomData(studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri, authorizationHeaders) {
@@ -63,10 +64,10 @@ class OHIFDicomPDFViewport extends Component {
 
     return (
       <OHIFComponentPlugin {...pluginProps}>
-        {this.state.byteArray && <DicomPDFViewport byteArray={this.state.byteArray}/>}
-        {this.state.error &&
-        <h2>{JSON.stringify(this.state.error)}</h2>
-        }
+        {this.state.byteArray && (
+          <DicomPDFViewport byteArray={this.state.byteArray} />
+        )}
+        {this.state.error && <h2>{JSON.stringify(this.state.error)}</h2>}
       </OHIFComponentPlugin>
     );
   }
