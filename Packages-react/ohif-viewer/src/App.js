@@ -112,7 +112,10 @@ const cornerstonePluginAction = OHIF.redux.actions.addPlugin({
 store.dispatch(cornerstonePluginAction);
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-let extensions = [new OHIFDicomPDFExtension(), new OHIFDicomMicroscopyExtension()];
+let extensions = [
+  new OHIFDicomPDFExtension(),
+  new OHIFDicomMicroscopyExtension()
+];
 ExtensionManager.registerExtensions(store, extensions);
 
 // TODO[react] Use a provider when the whole tree is React

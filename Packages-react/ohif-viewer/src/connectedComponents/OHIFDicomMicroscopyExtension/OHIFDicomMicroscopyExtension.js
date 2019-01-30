@@ -1,29 +1,28 @@
-import DicomMicroscopyViewport from "./DicomMicroscopyViewport.js";
-import DicomMicroscopySopClassHandler from "./DicomMicroscopySopClassHandler.js";
+import DicomMicroscopyViewport from './DicomMicroscopyViewport.js';
+import DicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler.js';
 
 export default class OHIFDicomMicroscopyExtension {
 
-    getViewportModuleDefinition() {
-        return {
-            id: 'microscopy',
-            type: 'viewport',
-            component: DicomMicroscopyViewport
-        };
-    }
+  /** 
+   * Extension ID is a unique id, might be used for namespacing extension specific redux actions/reducers (?)
+  */
+  getExtensionId() {
+    return 'microscopy';
+  }  
 
-    getSopHandlerModuleDefinition() {
-        return {
-            id: 'microscopy_sopClassHandler',
-            type: 'sopClassHandler',
-            component: DicomMicroscopySopClassHandler
-        }
-    }
+  getViewportModule() {
+    return DicomMicroscopyViewport;
+  }
 
-    getPanelModuleDefinition() {
-        return null;
-    }
+  getSopClassHandler() {
+    return DicomMicroscopySopClassHandler;
+  }
 
-    getToolbarModuleDefinition() {
-        return null;
-    }
+  getPanelModule() {
+    return null;
+  }
+
+  getToolbarModule() {
+    return null;
+  }
 }

@@ -1,29 +1,28 @@
-import OHIFDicomPDFViewport from "./OHIFDicomPDFViewport.js";
-import OHIFDicomPDFSopClassHandler from "./OHIFDicomPDFSopClassHandler.js";
+import OHIFDicomPDFViewport from './OHIFDicomPDFViewport.js';
+import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
 
 export default class OHIFDicomPDFExtension {
-    getViewportModuleDefinition() {
-        return {
-            id: 'pdf',
-            type: 'viewport',
-            component: OHIFDicomPDFViewport
-        };
-    }
 
-    getSopHandlerModuleDefinition() {
-        return {
-            id: 'pdf_sopClassHandler',
-            type: 'sopClassHandler',
-            component: OHIFDicomPDFSopClassHandler
-        }
-    }
+  /** 
+   * Extension ID is a unique id, might be used for namespacing extension specific redux actions/reducers (?)
+   */
+  getExtensionId() {
+      return "pdf";
+  }  
 
-    getPanelModuleDefinition() {
-        return null;
-    }
+  getViewportModule() {
+    return OHIFDicomPDFViewport;
+  }
 
-    getToolbarModuleDefinition() {
-        return null;
-    }
+  getSopClassHandler() {
+    return OHIFDicomPDFSopClassHandler;
+  }
 
+  getPanelModuleDefinition() {
+    return null;
+  }
+
+  getToolbarModuleDefinition() {
+    return null;
+  }
 }
