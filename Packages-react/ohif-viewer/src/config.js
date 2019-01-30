@@ -8,9 +8,9 @@ import version from './version.js';
 import { homepage } from '../package.json';
 
 window.info = {
-    sha,
-    version,
-    homepage
+  sha,
+  version,
+  homepage
 };
 
 // For debugging
@@ -25,7 +25,7 @@ OHIF.external.cornerstoneMath = cornerstoneMath;
 OHIF.external.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
 
 // TODO: Is there a better way to guess ROOT_URL?
-let ROOT_URL = homepage;
+//let ROOT_URL = homepage;
 
 // If the page we are on is not a subset of the expected homepage
 // provided in the package.json file, we might be doing local development.
@@ -53,21 +53,21 @@ cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
 */
 
 OHIF.user.getAccessToken = () => {
-    // TODO: Get the Redux store from somewhere else
-    const state = window.store.getState();
-    if (!state.oidc || !state.oidc.user) {
-        return;
-    }
+  // TODO: Get the Redux store from somewhere else
+  const state = window.store.getState();
+  if (!state.oidc || !state.oidc.user) {
+    return;
+  }
 
-    return state.oidc.user.access_token;
-}
+  return state.oidc.user.access_token;
+};
 
 cornerstoneWADOImageLoader.configure({
-    beforeSend: function(xhr) {
-        const headers = OHIF.DICOMWeb.getAuthorizationHeader();
+  beforeSend: function(xhr) {
+    const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
-        if (headers.Authorization) {
-            xhr.setRequestHeader("Authorization", headers.Authorization);
-        }
+    if (headers.Authorization) {
+      xhr.setRequestHeader('Authorization', headers.Authorization);
     }
+  }
 });

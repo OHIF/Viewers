@@ -2,7 +2,6 @@
  * Entry point index.js for development
  */
 
-
 import App from './App.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -21,7 +20,7 @@ Example config with OIDC
 // Try going to:
 // http://localhost:5000/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 // http://ohif-viewer-react.s3-website-us-east-1.amazonaws.com/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
-props.servers = {
+/*props.servers = {
   "dicomWeb": [{
       "name": "DCM4CHEE",
       "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
@@ -49,7 +48,37 @@ props.oidc = [{
       "kc_idp_hint": "crowds-cure-cancer-auth0-oidc",
       "client_id": "crowds-cure-cancer"
     }
-}];
+}];*/
+
+props.servers = {
+  dicomWeb: [
+    {
+      name: 'DCM4CHEE',
+      wadoUriRoot:
+        'https://k8s-testing.ohif.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+      qidoRoot: 'https://k8s-testing.ohif.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+      wadoRoot: 'https://k8s-testing.ohif.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+      qidoSupportsIncludeField: true,
+      imageRendering: 'wadors',
+      thumbnailRendering: 'wadors',
+      requestOptions: {
+        requestFromBrowser: true
+      }
+    }
+  ]
+};
+
+props.oidc = [
+  {
+    authServerUrl: 'https://k8s-testing.ohif.org/auth/realms/dcm4che',
+    authRedirectUri: routerBasename + '/callback',
+    postLogoutRedirectUri: routerBasename + '/logout-redirect.html',
+    clientId: 'ohif-viewer',
+    responseType: 'id_token token',
+    scope: 'email profile openid',
+    revokeAccessTokenOnSignout: true
+  }
+];
 
 /* Example config without OIDC */
 // Try going to:
@@ -115,12 +144,10 @@ function RadicalImagingLogo() {
   );
 }
 
-props.whiteLabelling = {
+/*props.whiteLabelling = {
   logoComponent: RadicalImagingLogo()
-};
+};*/
 
-// TODO: Why do we need to do this? Something is wrong with our rollup settings
-//var Viewer = window.OHIFStandaloneViewer.App;
 var app = React.createElement(App, props, null);
 
 ReactDOM.render(app, document.getElementById('root'));

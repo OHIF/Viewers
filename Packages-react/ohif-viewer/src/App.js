@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
@@ -12,6 +11,8 @@ import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstone
 import WhiteLabellingContext from './WhiteLabellingContext';
 import OHIFDicomPDFViewportPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFViewportPlugin.js';
 import OHIFDicomPDFSopClassHandlerPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFSopClassHandlerPlugin.js';
+import DicomMicroscopySopClassHandlerPlugin from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopySopClassHandlerPlugin.js';
+import DicomMicroscopyViewport from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopyViewport.js';
 
 import {
   loadUser,
@@ -103,7 +104,6 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 
 store.dispatch(buttonsAction);
 
-
 const { plugins } = OHIF;
 const { PLUGIN_TYPES } = plugins;
 
@@ -125,9 +125,25 @@ const pdfPluginActionSopClass = OHIF.redux.actions.addPlugin({
   component: OHIFDicomPDFSopClassHandlerPlugin
 });
 
+const microscopyPluginAction = OHIF.redux.actions.addPlugin({
+  id: 'microscopy',
+  type: PLUGIN_TYPES.VIEWPORT,
+  component: DicomMicroscopyViewport
+});
+
+const microscopyPluginActionPluginActionSopClass = OHIF.redux.actions.addPlugin(
+  {
+    id: 'microscopy_sopClassHandler',
+    type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
+    component: DicomMicroscopySopClassHandlerPlugin
+  }
+);
+
 store.dispatch(cornerstonePluginAction);
 store.dispatch(pdfPluginAction);
 store.dispatch(pdfPluginActionSopClass);
+store.dispatch(microscopyPluginAction);
+store.dispatch(microscopyPluginActionPluginActionSopClass);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
@@ -191,6 +207,10 @@ class App extends Component {
     servers: PropTypes.object,
     oidc: PropTypes.array,
     routerBasename: PropTypes.string
+  };
+
+  static defaultProps = {
+    whiteLabelling: {}
   };
 
   constructor(props) {

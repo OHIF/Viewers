@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-import OHIF from 'ohif-core';
+//import OHIF from 'ohif-core';
 //import { CineDialog } from 'react-viewerbase';
 
 import WhiteLabellingContext from '../WhiteLabellingContext.js';
