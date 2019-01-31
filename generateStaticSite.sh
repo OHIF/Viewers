@@ -24,4 +24,4 @@ yarn run prepare
 sed -i "s,http://localhost:5000/,${ROOT_URL},g" index.html
 
 mkdir ../../../docs/_book/viewer/
-cp -R build/* ../../../docs/_book/viewer/
+cp -R * ../../../docs/_book/viewer/
