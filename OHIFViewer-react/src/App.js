@@ -27,6 +27,8 @@ class App extends Component {
     static propTypes = {
         history: PropTypes.object.isRequired,
         user: PropTypes.object,
+        userManager: PropTypes.object,
+        location: PropTypes.object,
     }
 
     componentDidMount() {
@@ -44,26 +46,26 @@ class App extends Component {
 
         const userNotLoggedIn = userManager && (!user || user.expired);
         if (userNotLoggedIn) {
-          const pathname = this.props.location.pathname;
+            const pathname = this.props.location.pathname;
 
-          if (pathname !== '/callback') {
-            sessionStorage.setItem('ohif-redirect-to', pathname);
-          }
+            if (pathname !== '/callback') {
+                sessionStorage.setItem('ohif-redirect-to', pathname);
+            }
 
-          return (
-            <Switch>
-              <Route exact path="/silent-refresh.html" onEnter={reload} />
-              <Route exact path="/logout-redirect.html" onEnter={reload} />
-              <Route path="/callback" render={
-                () => <CallbackPage userManager={userManager}/>
-              }/>
-              <Route component={() => {
-                userManager.signinRedirect();
+            return (
+                <Switch>
+                    <Route exact path="/silent-refresh.html" onEnter={reload} />
+                    <Route exact path="/logout-redirect.html" onEnter={reload} />
+                    <Route path="/callback" render={
+                        () => <CallbackPage userManager={userManager} />
+                    } />
+                    <Route component={() => {
+                        userManager.signinRedirect();
 
-                return null;
-              }}/>
-            </Switch>
-          )
+                        return null;
+                    }} />
+                </Switch>
+            )
         }
 
         return (
@@ -97,6 +99,13 @@ class App extends Component {
                     path="/IHEInvokeImageDisplay"
                     component={IHEInvokeImageDisplay}
                 />
+                <Route path="/silent-refresh.html" onEnter={reload} />
+                <Route path="/logout-redirect.html" onEnter={reload} />
+                <Route exact path='/login' component={() => {
+                    userManager.signinRedirect();
+                }}
+                />
+                <Route path="/callback" component={CallbackPage} />
                 <Route render={() =>
                     <div> Sorry, this page does not exist. </div>}
                 />

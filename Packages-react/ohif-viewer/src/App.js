@@ -13,7 +13,7 @@ import OHIFDicomPDFViewportPlugin from './connectedComponents/OHIFDicomPDFViewpo
 import OHIFDicomPDFSopClassHandlerPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFSopClassHandlerPlugin.js';
 import DicomMicroscopySopClassHandlerPlugin from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopySopClassHandlerPlugin.js';
 import DicomMicroscopyViewport from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopyViewport.js';
-
+import { loadState, saveState } from './redux/localStorageState.js';
 import {
   loadUser,
   OidcProvider,
@@ -26,13 +26,18 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 const Icons = '/icons.svg';
 
-const reducers = OHIF.redux.reducers;
+let reducers = OHIF.redux.reducers;
 reducers.ui = ui;
 reducers.oidc = oidcReducer;
 
 const combined = combineReducers(reducers);
+const store = createStore(combined, loadState());
 
-const store = createStore(combined);
+store.subscribe(() => {
+  saveState({
+    preferences: store.getState().preferences
+  });
+});
 
 const defaultButtons = [
   {
@@ -206,7 +211,9 @@ class App extends Component {
   static propTypes = {
     servers: PropTypes.object,
     oidc: PropTypes.array,
-    routerBasename: PropTypes.string
+    routerBasename: PropTypes.string,
+    userManager: PropTypes.object,
+    location: PropTypes.object
   };
 
   static defaultProps = {

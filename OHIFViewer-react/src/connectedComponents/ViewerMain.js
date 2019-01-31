@@ -14,6 +14,11 @@ class ViewerMain extends Component {
     studies: PropTypes.array.isRequired
   };
 
+  constructor(props) {
+    super(props);
+    OHIF.hotkeysUtil.setup('viewer');
+  }
+
   getDisplaySets(studies) {
     const displaySets = [];
     studies.forEach((study) => {
@@ -51,7 +56,7 @@ class ViewerMain extends Component {
     });
   }
 
-  setViewportData = ({viewportIndex, item}) => {
+  setViewportData = ({ viewportIndex, item }) => {
     // TODO: Replace this with mapDispatchToProps call
     // if we decide to put viewport info into redux
 
