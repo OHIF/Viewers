@@ -8234,32 +8234,16 @@ ohif-core@^0.2.0:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-dicom-pdf-extension@../extensions/OHIFDicomPDFExtension/ohif-dicom-pdf-extension-0.0.1.tgz:
+ohif-dicom-pdf-extension@^0.0.1:
   version "0.0.1"
-  uid "35cf3739c3b7e76b2e78d037db43d24a54d6d553"
-  resolved "../extensions/OHIFDicomPDFExtension/ohif-dicom-pdf-extension-0.0.1.tgz#35cf3739c3b7e76b2e78d037db43d24a54d6d553"
+  resolved "https://registry.yarnpkg.com/ohif-dicom-pdf-extension/-/ohif-dicom-pdf-extension-0.0.1.tgz#5f0d09e7de9a584804fe524bddd465219522e4a8"
+  integrity sha512-A/k31I0ThM0/rLcw+D927GeD34sGlNpz/88WtPudCMPNMZ6SeiPFV8e+0GvmLVuLSh3mRBqZy6GNaDu99AuPJw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
     ohif-core "^0.2.0"
     prop-types "^15.6.2"
-    react-bootstrap-modal "^4.2.0"
-    react-dnd "^7.0.2"
-    react-dnd-html5-backend "^7.0.2"
-
-"ohif-dicom-pdf-extension@file:../extensions/OHIFDicomPDFExtension/ohif-dicom-pdf-extension-0.0.1.tgz":
-  version "0.0.1"
-  resolved "file:../extensions/OHIFDicomPDFExtension/ohif-dicom-pdf-extension-0.0.1.tgz#35cf3739c3b7e76b2e78d037db43d24a54d6d553"
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    lodash.isequal "^4.5.0"
-    ohif-core "^0.2.0"
-    prop-types "^15.6.2"
-    react-bootstrap-modal "^4.2.0"
-    react-dnd "^7.0.2"
-    react-dnd-html5-backend "^7.0.2"
 
 oidc-client@^1.6.1:
   version "1.6.1"
