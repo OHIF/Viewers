@@ -18,7 +18,7 @@ class OHIFDicomPDFViewport extends Component {
     error: null
   }
 
-  static id = 'DicomPDFViewportP';
+  static id = 'DicomPDFViewportPDF';
 
   static init() {
     console.log('DicomPDFViewport init()');

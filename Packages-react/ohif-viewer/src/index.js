@@ -22,34 +22,38 @@ Example config with OIDC
 // http://localhost:5000/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 // http://ohif-viewer-react.s3-website-us-east-1.amazonaws.com/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 props.servers = {
-  "dicomWeb": [{
-      "name": "DCM4CHEE",
-      "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
-      "qidoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-      "wadoRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-      "qidoSupportsIncludeField": true,
-      "imageRendering": "wadors",
-      "thumbnailRendering": "wadors",
-      "requestOptions": {
-          "requestFromBrowser": true
+  dicomWeb: [
+    {
+      name: 'DCM4CHEE',
+      wadoUriRoot:
+        'https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+      qidoRoot: 'https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+      wadoRoot: 'https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+      qidoSupportsIncludeField: true,
+      imageRendering: 'wadors',
+      thumbnailRendering: 'wadors',
+      requestOptions: {
+        requestFromBrowser: true
       }
     }
   ]
 };
 
-props.oidc = [{
-    "authServerUrl": "https://cancer.crowds-cure.org/auth/realms/dcm4che",
-    "authRedirectUri": routerBasename + '/callback',
-    "postLogoutRedirectUri": routerBasename + '/logout-redirect.html',
-    "clientId": "crowds-cure-cancer",
-    "responseType": "id_token token",
-    "scope": "email profile openid",
-    "revokeAccessTokenOnSignout": true,
-    "extraQueryParams": {
-      "kc_idp_hint": "crowds-cure-cancer-auth0-oidc",
-      "client_id": "crowds-cure-cancer"
+props.oidc = [
+  {
+    authServerUrl: 'https://cancer.crowds-cure.org/auth/realms/dcm4che',
+    authRedirectUri: routerBasename + '/callback',
+    postLogoutRedirectUri: routerBasename + '/logout-redirect.html',
+    clientId: 'crowds-cure-cancer',
+    responseType: 'id_token token',
+    scope: 'email profile openid',
+    revokeAccessTokenOnSignout: true,
+    extraQueryParams: {
+      kc_idp_hint: 'crowds-cure-cancer-auth0-oidc',
+      client_id: 'crowds-cure-cancer'
     }
-}];
+  }
+];
 
 /* props.servers = {
   dicomWeb: [

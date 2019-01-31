@@ -46,5 +46,5 @@ export default {
     resolve(),
     commonjs()
   ],
-  external: ['dicom-parser', 'hammerjs']
+  external: ['hammerjs']
 }
