@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import OHIF from 'ohif-core';
-import OHIFComponentPlugin from '../OHIFComponentPlugin.js';
+import OHIFComponentPlugin from './OHIFComponentPlugin.js';
 import DicomPDFViewport from './DicomPDFViewport';
 
 const { DICOMWeb } = OHIF;
@@ -72,6 +72,5 @@ class OHIFDicomPDFViewport extends Component {
     );
   }
 }
-
 
 export default OHIFDicomPDFViewport;

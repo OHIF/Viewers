@@ -9,7 +9,7 @@ import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js';
 import WhiteLabellingContext from './WhiteLabellingContext';
-import OHIFDicomPDFExtension from './connectedComponents/OHIFDicomPDFExtension/OHIFDicomPDFExtension.js';
+import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFDicomMicroscopyExtension from './connectedComponents/OHIFDicomMicroscopyExtension/OHIFDicomMicroscopyExtension.js';
 import { loadState, saveState } from './redux/localStorageState.js';
 import {
