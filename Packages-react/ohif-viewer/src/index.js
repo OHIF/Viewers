@@ -21,7 +21,7 @@ Example config with OIDC
 // http://localhost:5000/viewer/1.2.276.0.7230010.3.1.2.0.94237.1537373823.634387 //PDF
 // http://localhost:5000/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 // http://ohif-viewer-react.s3-website-us-east-1.amazonaws.com/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
-props.servers = {
+/* props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
@@ -53,9 +53,9 @@ props.oidc = [
       client_id: 'crowds-cure-cancer'
     }
   }
-];
+]; */
 
-/* props.servers = {
+props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
@@ -83,7 +83,7 @@ props.oidc = [
     scope: 'email profile openid',
     revokeAccessTokenOnSignout: true
   }
-]; */
+];
 
 /* Example config without OIDC */
 // Try going to:
