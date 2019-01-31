@@ -1,6 +1,6 @@
 {
   "name": "ohif-dicom-pdf-extension",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "OHIF extension for Dicom PDF",
   "author": "OHIF",
   "license": "MIT",
@@ -80,7 +80,7 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "lodash.isequal": "^4.5.0",
-    "ohif-core": "^0.2.0",
+    "ohif-core": "^0.2.3",
     "prop-types": "^15.6.2"
   }
 }

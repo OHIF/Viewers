@@ -30,9 +30,9 @@ class OHIFDicomPDFViewport extends Component {
 
   componentDidMount() {
     const { displaySet } = this.props.viewportData;
-    const { studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri } = displaySet;
+    const { studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri, authorizationHeaders} = displaySet;
 
-    this.retrieveDicomData(studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri).then(byteArray => {
+    this.retrieveDicomData(studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri, authorizationHeaders).then(byteArray => {
       this.setState({
         byteArray
       });
@@ -45,15 +45,14 @@ class OHIFDicomPDFViewport extends Component {
     });
   }
 
-  retrieveDicomData(studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri) {
+  retrieveDicomData(studyInstanceUid, seriesInstanceUid, sopInstanceUid, wadoRoot, wadoUri, authorizationHeaders) {
     // TODO: Passing in a lot of data we aren't using
 
     // TODO: Authorization header depends on the server. If we ever have multiple servers
     // we will need to figure out how / when to pass this information in.
     return fetch(wadoUri, {
-      headers: DICOMWeb.getAuthorizationHeader()
+      headers: authorizationHeaders
     }).then(response => response.arrayBuffer()).then(arraybuffer => {
-      debugger;
       return new Uint8Array(arraybuffer);
     });
   }

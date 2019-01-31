@@ -14,7 +14,8 @@ const OHIFDicomPDFSopClassHandler = {
   sopClassUids: [
     SOP_CLASS_UIDS.ENCAPSULATED_PDF
   ],
-  getDisplaySetFromSeries(series, study) {
+  getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
+    debugger;
     const instance = series.getFirstInstance();
 
     return {
@@ -24,7 +25,8 @@ const OHIFDicomPDFSopClassHandler = {
       wadoUri: instance.getData().wadouri,
       sopInstanceUid: instance.getSOPInstanceUID(),
       seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID()
+      studyInstanceUid: study.getStudyInstanceUID(),
+      authorizationHeaders: authorizationHeaders
     };
   }
 }

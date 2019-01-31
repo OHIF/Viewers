@@ -6988,10 +6988,10 @@ octal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
 
-ohif-core@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.2.1.tgz#6f3b3aed29b9c709b8abe2a6f0155a1fa09f81af"
-  integrity sha512-X3/Jcw7EkgSqmaO2zIu19Wc5nJKcoS3AmgwbV0f7LHLQUkvJvVAtljslcBUMKgiaYFc/fJcTmr16oApsGJyGvA==
+ohif-core@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.2.2.tgz#8ed668e22afb1abeea083d67584f0b3385c7ccd8"
+  integrity sha512-Sb9Fc4fNaVRBFVTFZVQUKzE0kAMgOHI9du4l874m32w68wARIDVWvr97SrCC7HozC4v6QLMQieLf/yE0jX9G8g==
   dependencies:
     "@babel/runtime" "^7.2.0"
     cornerstone-core "^2.2.8"

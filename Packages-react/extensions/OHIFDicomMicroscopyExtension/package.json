@@ -1,6 +1,6 @@
 {
   "name": "ohif-dicom-microscopy-extension",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "OHIF extension for Dicom Microscopy",
   "author": "OHIF",
   "license": "MIT",
@@ -82,7 +82,7 @@
     "dicom-microscopy-viewer": "^0.2.0",
     "dicomweb-client": "^0.4.1",
     "lodash.isequal": "^4.5.0",
-    "ohif-core": "^0.2.0",
+    "ohif-core": "^0.2.3",
     "prop-types": "^15.6.2"
   }
 }
