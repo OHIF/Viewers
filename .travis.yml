@@ -28,6 +28,8 @@ jobs:
   include:
     - stage: build production docker image
       before_script:
+        - set -e
+        - if [ -z "${DOCKER_PASS}" ]; then echo "Build triggered by external PR. Skipping build production docker image stage" && exit 0; fi    
         - export REPO=ohif/viewer
         - export COMMIT=${TRAVIS_COMMIT::8}
         - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
@@ -49,6 +51,8 @@ jobs:
 
     - stage: build development docker image
       before_script:
+        - set -e
+        - if [ -z "${DOCKER_PASS}" ]; then echo "Build triggered by external PR. Skipping build production docker image stage" && exit 0; fi    
         - export REPO=ohif/viewer-dev
         - export COMMIT=${TRAVIS_COMMIT::8}
         - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
