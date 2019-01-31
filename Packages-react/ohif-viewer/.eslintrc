@@ -1,7 +1,7 @@
 {
   "extends": [
-  	"react-app",
-  	"eslint:recommended",
+    "react-app",
+    "eslint:recommended",
     "plugin:react/recommended"
   ],
   "parser": "babel-eslint",

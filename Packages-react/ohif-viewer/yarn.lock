@@ -2964,7 +2964,7 @@ cornerstone-core@^2.2.8:
   resolved "https://registry.yarnpkg.com/cornerstone-core/-/cornerstone-core-2.2.8.tgz#5f10c65c80f8efa7623ee1dd5c9a9d4605f5467c"
   integrity sha512-iJrmfXy1nvM4ZLTJawif2VYBPq8APQ1GYjRbUZAJPNqPYmfYfKWkToVyf9o/i8GMl81op7xLJ4ib3ZMSINKjjQ==
 
-cornerstone-math@^0.1.7, cornerstone-math@^0.1.8:
+cornerstone-math@^0.1.6, cornerstone-math@^0.1.7, cornerstone-math@^0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
@@ -2976,6 +2976,13 @@ cornerstone-tools@3.0.0-b.1512:
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "^0.1.7"
+
+cornerstone-tools@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-2.4.0.tgz#e8136d41b6140c8299a06296918b1eb6f99ea5d7"
+  integrity sha512-M0UcnqSnN8cUhjTnr+om0621yYOiL1rPP+LK5VsMqe1R3yKvfePZhSwhNjw8j4+qVXvliPsfcA7NwsvtOBOaOA==
+  dependencies:
+    cornerstone-math "^0.1.6"
 
 cornerstone-wado-image-loader@^2.2.3:
   version "2.2.3"
@@ -8209,12 +8216,16 @@ octal@^1.0.0:
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
   integrity sha1-Y+cWKmjvvrniE1iNWOmJ0eXEUws=
 
-ohif-core@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.1.9.tgz#66cc3243d45a56b3dfd9f352b96b2b77f0df43eb"
-  integrity sha512-ghW1IMhTYAcIkD1Ft2N88bqbApskH8Hbutp9b+mKVEQofSKVkN/Osu1KkvEx6PTSSbp0BcY9iSVF+/9wj6Z5wA==
+ohif-core@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.2.0.tgz#1384190811e23c953f63b1da26558aab238c7156"
+  integrity sha512-RMdMxDbCXAWBPbSkTWSfiwCyvmjE09wWyxaa7N285BXQY8mmIHT8J1WUX5NY6+srkvVe52G24LK/8JkULZMkXQ==
   dependencies:
     "@babel/runtime" "^7.2.0"
+    cornerstone-core "^2.2.8"
+    cornerstone-math "^0.1.7"
+    cornerstone-tools "^2.4.0"
+    dicom-parser "^1.8.3"
     dicomweb-client "^0.4.1"
     isomorphic-base64 "^1.0.2"
     jquery "^3.3.1"
