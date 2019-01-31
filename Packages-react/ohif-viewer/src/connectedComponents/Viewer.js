@@ -4,13 +4,12 @@ import PropTypes from 'prop-types';
 //import { CineDialog } from 'react-viewerbase';
 
 import WhiteLabellingContext from '../WhiteLabellingContext.js';
-import Header from '../components/Header';
+import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
-import ConnectedToolbarRow from './ConnectedToolbarRow';
+import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import './Viewer.css';
-
 /**
  * Inits OHIF Hanging Protocol's onReady.
  * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
@@ -57,7 +56,9 @@ class Viewer extends Component {
       <>
         <WhiteLabellingContext.Consumer>
           {whiteLabelling => (
-            <Header home={false}>{whiteLabelling.logoComponent}</Header>
+            <ConnectedHeader home={false}>
+              {whiteLabelling.logoComponent}
+            </ConnectedHeader>
           )}
         </WhiteLabellingContext.Consumer>
         <div id="viewer" className="Viewer">

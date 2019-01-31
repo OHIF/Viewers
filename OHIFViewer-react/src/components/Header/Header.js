@@ -1,22 +1,50 @@
-import React from 'react';
+import React, { Component } from "react";
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown } from "react-viewerbase";
 import './Header.css';
-import list from './HeaderMenuList.json';
-//import Icons from "../../images/icons.svg";
-
+import ConnectedUserPreferencesModal from "../../connectedComponents/ConnectedUserPreferencesModal";
 const Icons = '/icons.svg';
 
-function Header({ home, location }) {
-  const { state } = location
+class Header extends Component {
 
-  return (
-    <div className={`entry-header ${home ? 'header-big' : ''}`}>
+  static propTypes = {
+    home: PropTypes.bool.isRequired,
+    location: PropTypes.object,
+    openUserPreferencesModal: PropTypes.func,
+  };
+
+  static defaultProps = {
+    home: true
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      userPreferencesOpen: false,
+    };
+
+    this.options = [
+      {
+        title: 'Preferences ',
+        icon: 'fa fa-user',
+        onClick: this.props.openUserPreferencesModal,
+      },
+      {
+        title: 'About',
+        icon: 'fa fa-info',
+        link: 'http://ohif.org',
+      }
+    ];
+  }
+
+  render() {
+    return (<div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
       <div className='header-left-box'>
         {
-          state && state.studyLink &&
-          <Link to={state.studyLink} className="header-btn header-viewerLink">
+          this.props.location && this.props.location.studyLink &&
+          <Link to={this.props.location.studyLink} className="header-btn header-viewerLink">
             Back to Viewer
           </Link>
         }
@@ -28,10 +56,10 @@ function Header({ home, location }) {
           <div className="header-logo-text">Open Health Imaging Foundation</div>
         </a>
 
-        {!home &&
+        {!this.props.home &&
           <Link className='header-btn header-studyListLinkSection' to={{
             pathname: "/",
-            state: { studyLink: location.pathname }
+            state: { studyLink: this.props.location.pathname }
           }}>Study list</Link>
         }
       </div>
@@ -39,26 +67,19 @@ function Header({ home, location }) {
 
       <div className="header-menu">
         <span className="research-use">
-                INVESTIGATIONAL USE ONLY
+          INVESTIGATIONAL USE ONLY
         </span>
         <Dropdown
           title='Options'
-          list={list}
+          list={this.options}
           align='right'
         />
+        <ConnectedUserPreferencesModal />
       </div>
-
     </div>
-  )
+    );
+  }
 }
 
-Header.propTypes = {
-    home: PropTypes.bool.isRequired,
-    location: PropTypes.object.isRequired
-};
-
-Header.defaultProps = {
-    home: true
-};
 
 export default withRouter(Header)

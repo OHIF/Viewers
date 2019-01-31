@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 //import { CineDialog } from 'react-viewerbase';
 
-import Header from '../components/Header'
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow';
 import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
 import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import './Viewer.css';
+import ConnectedHeader from "../components/Header/ConnectedHeader";
 
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -52,7 +52,7 @@ class Viewer extends Component {
 
     render() {
         return (<>
-            <Header home={false}/>
+            <ConnectedHeader home={false} />
             <div className='viewerDialogs'>
             </div>
             <div id="viewer" className='Viewer'>

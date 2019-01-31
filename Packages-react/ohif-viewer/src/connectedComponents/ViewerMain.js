@@ -7,16 +7,21 @@ import './ViewerMain.css';
 
 class ViewerMain extends Component {
   state = {
-    viewportData: [],
+    viewportData: []
   };
 
   static propTypes = {
     studies: PropTypes.array.isRequired
   };
 
+  constructor(props) {
+    super(props);
+    OHIF.hotkeysUtil.setup('viewer');
+  }
+
   getDisplaySets(studies) {
     const displaySets = [];
-    studies.forEach((study) => {
+    studies.forEach(study => {
       study.displaySets.forEach(dSet => {
         displaySets.push(dSet);
       });
@@ -51,7 +56,7 @@ class ViewerMain extends Component {
     });
   }
 
-  setViewportData = ({viewportIndex, item}) => {
+  setViewportData = ({ viewportIndex, item }) => {
     // TODO: Replace this with mapDispatchToProps call
     // if we decide to put viewport info into redux
 
@@ -59,14 +64,18 @@ class ViewerMain extends Component {
     // would not trigger a re-render. We have to create a copy.
     const updatedViewportData = this.state.viewportData.slice(0);
 
-    const displaySet = this.findDisplaySet(this.props.studies, item.studyInstanceUid, item.displaySetInstanceUid);
+    const displaySet = this.findDisplaySet(
+      this.props.studies,
+      item.studyInstanceUid,
+      item.displaySetInstanceUid
+    );
 
     updatedViewportData[viewportIndex] = Object.assign({}, displaySet);
 
     this.setState({
       viewportData: updatedViewportData
     });
-  }
+  };
 
   render() {
     return (

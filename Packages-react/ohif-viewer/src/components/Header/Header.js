@@ -1,61 +1,84 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown } from 'react-viewerbase';
 import './Header.css';
-import list from './HeaderMenuList.json';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
+import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js';
 //import Icons from "../../images/icons.svg";
 
 //const Icons = '/icons.svg';
 
-function Header({ home, location, children }) {
-  const { state } = location;
+class Header extends Component {
+  static propTypes = {
+    home: PropTypes.bool.isRequired,
+    location: PropTypes.object.isRequired,
+    openUserPreferencesModal: PropTypes.func,
+    children: PropTypes.node
+  };
 
-  if (!children) {
-    children = OHIFLogo();
+  static defaultProps = {
+    home: true,
+    children: OHIFLogo()
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      userPreferencesOpen: false
+    };
+
+    this.options = [
+      {
+        title: 'Preferences ',
+        icon: 'fa fa-user',
+        onClick: this.props.openUserPreferencesModal
+      },
+      {
+        title: 'About',
+        icon: 'fa fa-info',
+        link: 'http://ohif.org'
+      }
+    ];
   }
 
-  return (
-    <div className={`entry-header ${home ? 'header-big' : ''}`}>
-      <div className="header-left-box">
-        {state && state.studyLink && (
-          <Link to={state.studyLink} className="header-btn header-viewerLink">
-            Back to Viewer
-          </Link>
-        )}
+  render() {
+    return (
+      <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
+        <div className="header-left-box">
+          {this.props.location && this.props.location.studyLink && (
+            <Link
+              to={this.props.location.studyLink}
+              className="header-btn header-viewerLink"
+            >
+              Back to Viewer
+            </Link>
+          )}
 
-        {children}
+          {this.props.children}
 
-        {!home && (
-          <Link
-            className="header-btn header-studyListLinkSection"
-            to={{
-              pathname: '/',
-              state: { studyLink: location.pathname }
-            }}
-          >
-            Study list
-          </Link>
-        )}
+          {!this.props.home && (
+            <Link
+              className="header-btn header-studyListLinkSection"
+              to={{
+                pathname: '/',
+                state: { studyLink: this.props.location.pathname }
+              }}
+            >
+              Study list
+            </Link>
+          )}
+        </div>
+
+        <div className="header-menu">
+          <span className="research-use">INVESTIGATIONAL USE ONLY</span>
+          <Dropdown title="Options" list={this.options} align="right" />
+          <ConnectedUserPreferencesModal />
+        </div>
       </div>
-
-      <div className="header-menu">
-        <span className="research-use">INVESTIGATIONAL USE ONLY</span>
-        <Dropdown title="Options" list={list} align="right" />
-      </div>
-    </div>
-  );
+    );
+  }
 }
-
-Header.propTypes = {
-  home: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
-  children: PropTypes.node
-};
-
-Header.defaultProps = {
-  home: true
-};
 
 export default withRouter(Header);

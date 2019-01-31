@@ -1,6 +1,7 @@
 const defaultState = {
     leftSidebarOpen: true,
     rightSidebarOpen: false,
+    userPreferencesModalOpen: false
 }
 
 const ui = (state = defaultState, action) => {
@@ -9,6 +10,8 @@ const ui = (state = defaultState, action) => {
             return Object.assign({}, state, { leftSidebarOpen: action.state });
         case 'SET_RIGHT_SIDEBAR_OPEN':
             return Object.assign({}, state, { rightSidebarOpen: action.state });
+        case 'SET_USER_PREFERENCES_MODAL_OPEN':
+            return Object.assign({}, state, { userPreferencesModalOpen: action.state });
         default:
             return state;
     }
