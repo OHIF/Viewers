@@ -107,6 +107,7 @@
     "lodash.isequal": "^4.5.0",
     "ohif-core": "^0.2.1",
     "ohif-dicom-pdf-extension": "^0.0.1",
+    "ohif-dicom-microscopy-extension": "^0.0.1",
     "oidc-client": "^1.6.1",
     "prop-types": "^15.6.2",
     "react-bootstrap-modal": "^4.2.0",
