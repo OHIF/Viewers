@@ -6,6 +6,7 @@ Disclaimer: Work in Progress
 
 1. `yarn install`
 1. `yarn start`
+1. `Go to http://localhost:5000`
 
 To user another DICOMWeb endpoint, adapt index.js
 
@@ -16,7 +17,6 @@ Please refer to the example in the example directory. To set the DICOMWeb endpoi
 ### Build 
 1. `yarn install`
 1. `yarn build`
-1. `Go to http://localhost:5000`
 
 ### Run the example 
 1. `cd example`
