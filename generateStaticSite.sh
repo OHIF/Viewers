@@ -12,7 +12,7 @@ cd ..
 # Build and copy the StandaloneViewer into the static directory
 echo $DEPLOY_PRIME_URL
 cd Packages-react/ohif-viewer
-export ROOT_URL=$DEPLOY_PRIME_URL/viewer/
+export ROOT_URL=$DEPLOY_PRIME_URL/viewer
 
 cat package.json
 yarn install
@@ -21,7 +21,7 @@ yarn build
 cd example
 yarn install
 yarn run prepare
-sed -i "s,http://localhost:5000/,${ROOT_URL},g" index.html
+sed -i "s,http://localhost:5000,${ROOT_URL},g" index.html
 rm -rf node_modules
 mkdir ../../../docs/_book/viewer/
 cp -R * ../../../docs/_book/viewer/
