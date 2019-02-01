@@ -19,11 +19,11 @@ import {
   reducer as oidcReducer
 } from 'redux-oidc';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import './App.css';
 
 const { ExtensionManager } = OHIF.extensions;
 
 //import Icons from "./images/icons.svg"
-
 const Icons = '/icons.svg';
 
 const { reducers, localStorage } = OHIF.redux;
