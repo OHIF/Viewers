@@ -25,3 +25,4 @@ sed -i "s,http://localhost:5000,${ROOT_URL},g" index.html
 rm -rf node_modules
 mkdir ../../../docs/_book/viewer/
 cp -R * ../../../docs/_book/viewer/
+cp ../../../_redirects ../../../docs/_book/_redirects
