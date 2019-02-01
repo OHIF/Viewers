@@ -185,6 +185,7 @@ class App extends Component {
     servers: PropTypes.object,
     oidc: PropTypes.array,
     routerBasename: PropTypes.string,
+    rootUrl: PropTypes.string,
     userManager: PropTypes.object,
     location: PropTypes.object
   };
@@ -198,7 +199,7 @@ class App extends Component {
 
     this.userManager = handleOIDC(this.props.oidc);
     handleServers(this.props.servers);
-    handleWebWorkerInit(this.props.routerBasename);
+    handleWebWorkerInit(this.props.rootUrl);
   }
 
   render() {
@@ -208,7 +209,7 @@ class App extends Component {
       return (
         <Provider store={store}>
           <OidcProvider store={store} userManager={userManager}>
-            <BrowserRouter>
+            <BrowserRouter basename={this.props.routerBasename}>
               <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
                 <OHIFStandaloneViewer userManager={userManager} />
               </WhiteLabellingContext.Provider>
@@ -220,7 +221,7 @@ class App extends Component {
 
     return (
       <Provider store={store}>
-        <BrowserRouter>
+        <BrowserRouter basename={this.props.routerBasename}>
           <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
             <OHIFStandaloneViewer />
           </WhiteLabellingContext.Provider>

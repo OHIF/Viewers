@@ -8,9 +8,11 @@ import ReactDOM from 'react-dom';
 
 export { App };
 
-var routerBasename = 'http://localhost:5000';
+var rootUrl = 'http://localhost:5000';
+var routerBasename = '/';
 var props = {
-  routerBasename: routerBasename
+  routerBasename: routerBasename,
+  rootUrl: rootUrl
 };
 
 /*
@@ -21,7 +23,7 @@ Example config with OIDC
 // http://localhost:5000/viewer/1.2.276.0.7230010.3.1.2.0.94237.1537373823.634387 //PDF
 // http://localhost:5000/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 // http://ohif-viewer-react.s3-website-us-east-1.amazonaws.com/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
-/* props.servers = {
+props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
@@ -42,8 +44,8 @@ Example config with OIDC
 props.oidc = [
   {
     authServerUrl: 'https://cancer.crowds-cure.org/auth/realms/dcm4che',
-    authRedirectUri: routerBasename + '/callback',
-    postLogoutRedirectUri: routerBasename + '/logout-redirect.html',
+    authRedirectUri: rootUrl + '/callback',
+    postLogoutRedirectUri: rootUrl + '/logout-redirect.html',
     clientId: 'crowds-cure-cancer',
     responseType: 'id_token token',
     scope: 'email profile openid',
@@ -53,9 +55,9 @@ props.oidc = [
       client_id: 'crowds-cure-cancer'
     }
   }
-]; */
+];
 
-props.servers = {
+/* props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
@@ -76,14 +78,14 @@ props.servers = {
 props.oidc = [
   {
     authServerUrl: 'https://k8s-testing.ohif.org/auth/realms/dcm4che',
-    authRedirectUri: routerBasename + '/callback',
-    postLogoutRedirectUri: routerBasename + '/logout-redirect.html',
+    authRedirectUri: rootUrl + '/callback',
+    postLogoutRedirectUri: rootUrl + '/logout-redirect.html',
     clientId: 'ohif-viewer',
     responseType: 'id_token token',
     scope: 'email profile openid',
     revokeAccessTokenOnSignout: true
   }
-];
+]; */
 
 /* Example config without OIDC */
 // Try going to:
