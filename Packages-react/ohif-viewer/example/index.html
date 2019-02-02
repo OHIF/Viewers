@@ -24,6 +24,7 @@
         crossorigin="anonymous">
 
     <title>OHIF Standalone Viewer</title>
+    <base href="http://localhost:5000/">
   </head>
 
   <body>
@@ -35,7 +36,7 @@
 
     <!-- Load React. -->
     <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <!--<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>!-->
@@ -52,14 +53,13 @@
         window.process = process;
     </script>
     <!--<script src="https://unpkg.com/ohif-viewer/dist/index.umd.js" crossorigin></script>!-->
-    <script src="/deps/index.umd.js" crossorigin></script>
+    <script src="deps/index.umd.js" crossorigin></script>
     <!--<script src="/node_modules/ohif-viewer/dist/index.umd.js" crossorigin></script>!-->
 
     <!-- Load our React component. -->
     <script>
-      var props = {
-        "routerBasename": "http://localhost:5000",
-        "servers": {
+      var props = {"routerBasename": "/", rootUrl: "http://localhost:5000"};
+      /* props.servers = {
           "dicomWeb": [{
                     "name": "DCM4CHEE",
                     "wadoUriRoot": "https://cancer.crowds-cure.org/dcm4chee-arc/aets/DCM4CHEE/wado",
@@ -87,7 +87,7 @@
                 "client_id": "crowds-cure-cancer"
               }
           }]
-      };
+      }; */
     </script>
     <script>
         'use strict';
@@ -103,7 +103,7 @@
         /* Example config without OIDC */
         // Try going to:
         // http://localhost:5000/viewer/1.3.6.1.4.1.14519.5.2.1.1706.4996.216859690032335293073513900362
-        /* props.servers = {
+        props.servers = {
             "dicomWeb": [
                 {
                     "name": "DCM4CHEE",
@@ -119,7 +119,7 @@
                     }
                 }
             ]
-        }; */
+        };
 
 
         /*

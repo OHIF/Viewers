@@ -62,9 +62,6 @@ export default {
             'node_modules/redux-oidc/dist/redux-oidc.js': [
               'reducer', 'CallbackComponent', 'loadUser', 'OidcProvider', 'createUserManager'
             ],
-            'node_modules/dicom-microscopy-viewer/build/dicom-microscopy-viewer.js': [
-              'api'
-            ],
             'node_modules/dicomweb-client/build/dicomweb-client.js': [
               'api'
             ]

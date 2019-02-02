@@ -9,10 +9,8 @@ import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js';
 import WhiteLabellingContext from './WhiteLabellingContext';
-import OHIFDicomPDFViewportPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFViewportPlugin.js';
-import OHIFDicomPDFSopClassHandlerPlugin from './connectedComponents/OHIFDicomPDFViewportPlugin/OHIFDicomPDFSopClassHandlerPlugin.js';
-import DicomMicroscopySopClassHandlerPlugin from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopySopClassHandlerPlugin.js';
-import DicomMicroscopyViewport from './connectedComponents/DicomMicroscopyPlugin/DicomMicroscopyViewport.js';
+import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
 import { loadState, saveState } from './redux/localStorageState.js';
 import {
   loadUser,
@@ -21,6 +19,7 @@ import {
   reducer as oidcReducer
 } from 'redux-oidc';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import ExtensionManager from './ExtensionManager';
 
 //import Icons from "./images/icons.svg"
 
@@ -109,46 +108,20 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 
 store.dispatch(buttonsAction);
 
-const { plugins } = OHIF;
-const { PLUGIN_TYPES } = plugins;
-
 const cornerstonePluginAction = OHIF.redux.actions.addPlugin({
   id: 'cornerstone',
   type: 'viewport',
   component: OHIFCornerstoneViewportPlugin
 });
 
-const pdfPluginAction = OHIF.redux.actions.addPlugin({
-  id: 'pdf',
-  type: PLUGIN_TYPES.VIEWPORT,
-  component: OHIFDicomPDFViewportPlugin
-});
-
-const pdfPluginActionSopClass = OHIF.redux.actions.addPlugin({
-  id: 'pdf_sopClassHandler',
-  type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
-  component: OHIFDicomPDFSopClassHandlerPlugin
-});
-
-const microscopyPluginAction = OHIF.redux.actions.addPlugin({
-  id: 'microscopy',
-  type: PLUGIN_TYPES.VIEWPORT,
-  component: DicomMicroscopyViewport
-});
-
-const microscopyPluginActionPluginActionSopClass = OHIF.redux.actions.addPlugin(
-  {
-    id: 'microscopy_sopClassHandler',
-    type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
-    component: DicomMicroscopySopClassHandlerPlugin
-  }
-);
-
 store.dispatch(cornerstonePluginAction);
-store.dispatch(pdfPluginAction);
-store.dispatch(pdfPluginActionSopClass);
-store.dispatch(microscopyPluginAction);
-store.dispatch(microscopyPluginActionPluginActionSopClass);
+
+/** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
+let extensions = [
+  new OHIFDicomPDFExtension(),
+  new OHIFDicomMicroscopyExtension()
+];
+ExtensionManager.registerExtensions(store, extensions);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
@@ -212,6 +185,7 @@ class App extends Component {
     servers: PropTypes.object,
     oidc: PropTypes.array,
     routerBasename: PropTypes.string,
+    rootUrl: PropTypes.string,
     userManager: PropTypes.object,
     location: PropTypes.object
   };
@@ -225,7 +199,7 @@ class App extends Component {
 
     this.userManager = handleOIDC(this.props.oidc);
     handleServers(this.props.servers);
-    handleWebWorkerInit(this.props.routerBasename);
+    handleWebWorkerInit(this.props.rootUrl);
   }
 
   render() {
@@ -235,7 +209,7 @@ class App extends Component {
       return (
         <Provider store={store}>
           <OidcProvider store={store} userManager={userManager}>
-            <BrowserRouter>
+            <BrowserRouter basename={this.props.routerBasename}>
               <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
                 <OHIFStandaloneViewer userManager={userManager} />
               </WhiteLabellingContext.Provider>
@@ -247,7 +221,7 @@ class App extends Component {
 
     return (
       <Provider store={store}>
-        <BrowserRouter>
+        <BrowserRouter basename={this.props.routerBasename}>
           <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
             <OHIFStandaloneViewer />
           </WhiteLabellingContext.Provider>
