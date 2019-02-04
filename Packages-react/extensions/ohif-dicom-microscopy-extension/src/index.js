@@ -1,7 +1,5 @@
 import OHIFDicomMicroscopyExtension from './OHIFDicomMicroscopyExtension.js';
 
-export {
-  OHIFDicomMicroscopyExtension
-};
+export { OHIFDicomMicroscopyExtension };
 
 export default OHIFDicomMicroscopyExtension;

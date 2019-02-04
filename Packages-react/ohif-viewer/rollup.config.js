@@ -62,8 +62,8 @@ export default {
             'node_modules/redux-oidc/dist/redux-oidc.js': [
               'reducer', 'CallbackComponent', 'loadUser', 'OidcProvider', 'createUserManager'
             ],
-            'node_modules/dicomweb-client/build/dicomweb-client.js': [
-              'api'
+            'node_modules/cornerstoneTools/dist/cornerstoneTools.min.js': [
+              'cornerstoneTools'
             ]
         }
     }),
