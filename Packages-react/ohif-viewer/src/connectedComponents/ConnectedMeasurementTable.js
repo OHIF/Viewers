@@ -33,9 +33,9 @@ function convertMeasurementsToTableData(measurements) {
 }
 
 const mapStateToProps = state => {
-  const { timepoints, measurements } = state;
+  const { timepoints, measurements } = state.timepointManager;
   return {
-    timepoints: convertTimepointsToTableData(timepoints.timepoints),
+    timepoints: convertTimepointsToTableData(timepoints),
     measurementCollection: convertMeasurementsToTableData(measurements)
   };
 };

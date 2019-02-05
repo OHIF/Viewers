@@ -76,7 +76,7 @@ class FlexboxLayout extends Component {
       mainContentClassName += ' sidebar-right-open';
     }
 
-    // TODO[react]: Add measurementLightTable
+    // TODO[react]: Make ConnectedMeasurementTable extension with state.timepointManager
     return (
       <div className="FlexboxLayout">
         <div
