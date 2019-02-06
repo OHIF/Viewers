@@ -3,10 +3,10 @@ const displayFunction = data => {
 };
 
 export default {
-  id: 'arrowAnnotate',
+  id: 'ArrowAnnotate',
   name: 'ArrowAnnotate',
   toolGroup: 'allTools',
-  cornerstoneToolType: 'arrowAnnotate',
+  cornerstoneToolType: 'ArrowAnnotate',
   options: {
     measurementTable: {
       displayFunction

@@ -10,10 +10,10 @@ const displayFunction = data => {
 };
 
 export default {
-  id: 'ellipticalRoi',
+  id: 'EllipticalRoi',
   name: 'Ellipse',
   toolGroup: 'allTools',
-  cornerstoneToolType: 'ellipticalRoi',
+  cornerstoneToolType: 'EllipticalRoi',
   options: {
     measurementTable: {
       displayFunction

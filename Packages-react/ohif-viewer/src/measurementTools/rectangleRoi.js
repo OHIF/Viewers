@@ -7,10 +7,10 @@ const displayFunction = data => {
 };
 
 export default {
-  id: 'rectangleRoi',
+  id: 'RectangleRoi',
   name: 'Rectangle',
   toolGroup: 'allTools',
-  cornerstoneToolType: 'rectangleRoi',
+  cornerstoneToolType: 'RectangleRoi',
   options: {
     measurementTable: {
       displayFunction

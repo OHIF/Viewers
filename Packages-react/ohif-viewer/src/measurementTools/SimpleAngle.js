@@ -7,10 +7,10 @@ const displayFunction = data => {
 };
 
 export default {
-  id: 'simpleAngle',
+  id: 'SimpleAngle',
   name: 'SimpleAngle',
   toolGroup: 'allTools',
-  cornerstoneToolType: 'simpleAngle',
+  cornerstoneToolType: 'SimpleAngle',
   options: {
     measurementTable: {
       displayFunction

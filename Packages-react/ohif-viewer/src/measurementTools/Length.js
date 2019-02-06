@@ -7,10 +7,10 @@ const displayFunction = data => {
 };
 
 export default {
-  id: 'length',
+  id: 'Length',
   name: 'Length',
   toolGroup: 'allTools',
-  cornerstoneToolType: 'length',
+  cornerstoneToolType: 'Length',
   options: {
     measurementTable: {
       displayFunction

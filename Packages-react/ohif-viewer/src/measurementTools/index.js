@@ -1,15 +1,15 @@
-import length from './length';
-import ellipticalRoi from './ellipticalRoi';
-import rectangleRoi from './rectangleRoi';
-import simpleAngle from './simpleAngle';
-import arrowAnnotate from './arrowAnnotate';
+import Length from './Length';
+import EllipticalRoi from './EllipticalRoi';
+import RectangleRoi from './rectangleRoi';
+import SimpleAngle from './SimpleAngle';
+import ArrowAnnotate from './ArrowAnnotate';
 
 const trackedTools = [
-  length,
-  ellipticalRoi,
-  rectangleRoi,
-  simpleAngle,
-  arrowAnnotate
+  Length,
+  EllipticalRoi,
+  RectangleRoi,
+  SimpleAngle,
+  ArrowAnnotate
 ];
 
 export default [
