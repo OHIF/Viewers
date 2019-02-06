@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
-  'healthcare-api-adapter': "git+https://github.com/quantumsoftgroup/healthcare-api-adapter#master"
+  'healthcare-api-adapter': "git+https://github.com/quantumsoftgroup/healthcare-api-adapter#v0.2.1"
 });
 
 
@@ -25,11 +25,11 @@ Package.onUse(function(api) {
   api.addFiles('client/index.js', 'client');
 
   var assets = [
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.0.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.2.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.3.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.4.min.js',
-    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/vue.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/img/Button_File.473e74a7.svg',
     '.npm/package/node_modules/healthcare-api-adapter/dist/img/Button_Folder.271da60b.svg',

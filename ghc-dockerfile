@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 	build-essential
 
 RUN curl https://install.meteor.com/ | sh
-RUN npm install -g meteor-build-client
+RUN npm install -g meteor-build-client-fixed2
 # Create a non-root user
 RUN useradd -ms /bin/bash user
 USER user
@@ -26,7 +26,7 @@ ENV METEOR_PACKAGE_DIRS=../Packages
 ENV METEOR_PROFILE=1
 ARG OHIF_CONFIG_FILE=../config/oidc.json
 RUN meteor npm install
-RUN meteor-build-client /home/user/app/ -s $OHIF_CONFIG_FILE
+RUN meteor-build-client-fixed2 /home/user/app/ -s $OHIF_CONFIG_FILE
 RUN ls /home/user/app/ 
 
 # Second stage of multi-stage build
