@@ -23,7 +23,7 @@ Example config with OIDC
 // http://localhost:5000/viewer/1.2.276.0.7230010.3.1.2.0.94237.1537373823.634387 //PDF
 // http://localhost:5000/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
 // http://ohif-viewer-react.s3-website-us-east-1.amazonaws.com/viewer/1.3.6.1.4.1.25403.345050719074.3824.20170126082328.1
-props.servers = {
+/*props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
@@ -55,7 +55,7 @@ props.oidc = [
       client_id: 'crowds-cure-cancer'
     }
   }
-];
+];*/
 
 /* props.servers = {
   dicomWeb: [
@@ -88,25 +88,22 @@ props.oidc = [
 ]; */
 
 /* Example config without OIDC */
-// Try going to:
-// http://localhost:5000/viewer/1.3.6.1.4.1.14519.5.2.1.1706.4996.216859690032335293073513900362
-/* props.servers = {
+props.servers = {
   dicomWeb: [
     {
       name: 'DCM4CHEE',
-      wadoUriRoot: 'https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado',
-      qidoRoot: 'https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs',
-      wadoRoot: 'https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs',
+      wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+      qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+      wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
       qidoSupportsIncludeField: true,
       imageRendering: 'wadors',
       thumbnailRendering: 'wadors',
       requestOptions: {
-        requestFromBrowser: true,
-        auth: 'cloud:healthcare'
+        requestFromBrowser: true
       }
     }
   ]
-}; */
+};
 
 /*props.servers = {
   "dicomWeb": [

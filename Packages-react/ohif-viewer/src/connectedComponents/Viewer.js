@@ -63,8 +63,8 @@ class Viewer extends Component {
         </WhiteLabellingContext.Consumer>
         <div id="viewer" className="Viewer">
           <ConnectedToolbarRow />
-          <ConnectedStudyLoadingMonitor studies={this.props.studies} />
-          <StudyPrefetcher studies={this.props.studies} />
+          {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
+          {/*<StudyPrefetcher studies={this.props.studies} />*/}
           <ConnectedFlexboxLayout studies={this.props.studies} />
         </div>
       </>

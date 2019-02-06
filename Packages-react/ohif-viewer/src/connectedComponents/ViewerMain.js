@@ -92,19 +92,15 @@ class ViewerMain extends Component {
   componentWillUnmount() {
     // Remove beforeUnload event handler...
     //window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
-
     // Destroy the synchronizer used to update reference lines
-    OHIF.viewer.updateImageSynchronizer.destroy();
-
+    //OHIF.viewer.updateImageSynchronizer.destroy();
     // TODO: Instruct all plugins to clean up themselves
     //
     // Clear references to all stacks in the StackManager
     //StackManager.clearStacks();
-
     // @TypeSafeStudies
     // Clears OHIF.viewer.Studies collection
     //OHIF.viewer.Studies.removeAll();
-
     // @TypeSafeStudies
     // Clears OHIF.viewer.StudyMetadataList collection
     //OHIF.viewer.StudyMetadataList.removeAll();

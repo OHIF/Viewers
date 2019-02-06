@@ -8,6 +8,12 @@ import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins';
 
+const globals = {
+  'react': 'React',
+  'react-dom': 'ReactDOM',
+  'ohif-core': 'OHIF'
+}
+
 export default {
   input: 'src/index.js',
   output: [
@@ -16,16 +22,13 @@ export default {
       format: 'umd',
       name: 'ohif-dicom-microscopy-extension',
       sourcemap: true,
-      exports: 'named',
-      globals: {
-        'react': 'React',
-        'react-dom': 'ReactDOM'
-      }
+      globals
     },
     {
       file: pkg.module,
       format: 'es',
-      sourcemap: true
+      sourcemap: true,
+      globals
     }
   ],
   plugins: [
@@ -35,7 +38,6 @@ export default {
       modules: false
     }),
     url(),
-    svgr(),
     babel({
       exclude: 'node_modules/**',
       plugins: [ '@babel/external-helpers' ],
@@ -51,5 +53,6 @@ export default {
           ]
       }
     })
-  ]
+  ],
+  external: Object.keys(pkg.peerDependencies || {}),
 }

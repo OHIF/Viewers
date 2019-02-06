@@ -3,7 +3,6 @@ import commonjs from 'rollup-plugin-commonjs'
 import external from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
 import resolve from 'rollup-plugin-node-resolve'
-import json from 'rollup-plugin-json'
 import url from 'rollup-plugin-url'
 import svgr from '@svgr/rollup'
 import pkg from './package.json'
@@ -12,57 +11,45 @@ import builtins from 'rollup-plugin-node-builtins';
 
 const globals = {
   'react': 'React',
-  'react-dom': 'ReactDOM'
+  'react-dom': 'ReactDOM',
+  'prop-types': 'PropTypes',
+  'ohif-core': 'OHIF',
+  'dicom-parser': 'dicomParser'
 };
 
 export default {
-  input: 'src/index_publish.js',
+  input: 'src/index.js',
   output: [
     {
       file: pkg.main,
       format: 'umd',
+      name: 'ohif-dicom-pdf-extension',
       sourcemap: true,
-      exports: 'named',
-      name: 'OHIFStandaloneViewer',
       globals
     },
     {
       file: pkg.module,
       format: 'es',
-      exports: 'named',
       sourcemap: true,
       globals
     }
   ],
   plugins: [
+    builtins(),
     external(),
     postcss({
       modules: false
     }),
     url(),
     svgr(),
-    json(),
-    resolve(),
     babel({
       exclude: 'node_modules/**',
+      plugins: [ '@babel/external-helpers' ],
+      externalHelpers: true,
       runtimeHelpers: true
     }),
-    commonjs({
-        include: 'node_modules/**',
-        namedExports: {
-            'node_modules/react-is/index.js': ['isValidElementType'],
-            'node_modules/redux-oidc/dist/redux-oidc.js': [
-              'reducer', 'CallbackComponent', 'loadUser', 'OidcProvider', 'createUserManager'
-            ],
-            'node_modules/cornerstoneTools/dist/cornerstoneTools.min.js': [
-              'cornerstoneTools'
-            ],
-            'node_modules/dcmjs/build/dcmjs.js': [
-              'data', 'adapters'
-            ]
-        }
-    }),
-    builtins(),
+    resolve(),
+    commonjs()
   ],
   external: Object.keys(pkg.peerDependencies || {}),
 }

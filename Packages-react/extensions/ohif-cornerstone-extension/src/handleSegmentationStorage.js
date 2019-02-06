@@ -1,4 +1,5 @@
 import OHIF from 'ohif-core';
+import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import * as dcmjs from 'dcmjs';
 
@@ -48,10 +49,11 @@ function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
   return stackClone;
 }
 
-function parseSeg(arrayBuffer, imageIds) {
+function parseSeg(arrayBuffer, imageIds, firstImagePlane) {
   return dcmjs.adapters.Cornerstone.Segmentation.readToolState(
     imageIds,
-    arrayBuffer
+    arrayBuffer,
+    firstImagePlane
   );
 }
 
@@ -115,10 +117,12 @@ async function handleSegmentationStorage(
   }
 
   const referenceDisplaySet = displaySets[0];
-  const imageIds = referenceDisplaySet.images
-    .reverse()
-    .map(image => image.getImageId());
-  const results = parseSeg(arrayBuffer, imageIds);
+  const imageIds = referenceDisplaySet.images.map(image => image.getImageId());
+  debugger;
+
+  const firstImagePlane = cornerstone.metadata.get('imagePlane', imageIds[0]);
+
+  const results = parseSeg(arrayBuffer, imageIds, firstImagePlane);
 
   if (!results) {
     throw new Error('Fractional segmentations are not supported');

@@ -7,8 +7,8 @@ import OHIF from 'ohif-core';
 import './config';
 import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-import OHIFCornerstoneViewportPlugin from './connectedComponents/OHIFCornerstoneViewportPlugin/OHIFCornerstoneViewportPlugin.js';
 import WhiteLabellingContext from './WhiteLabellingContext';
+import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
 import { loadState, saveState } from './redux/localStorageState.js';
@@ -115,16 +115,9 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 
 store.dispatch(buttonsAction);
 
-const cornerstonePluginAction = OHIF.redux.actions.addPlugin({
-  id: 'cornerstone',
-  type: 'viewport',
-  component: OHIFCornerstoneViewportPlugin
-});
-
-store.dispatch(cornerstonePluginAction);
-
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 let extensions = [
+  new OHIFCornerstoneExtension(),
   new OHIFDicomPDFExtension(),
   new OHIFDicomMicroscopyExtension()
 ];

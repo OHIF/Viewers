@@ -2629,23 +2629,6 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-cornerstone-core@^2.2.8:
-  version "2.2.8"
-  resolved "https://registry.yarnpkg.com/cornerstone-core/-/cornerstone-core-2.2.8.tgz#5f10c65c80f8efa7623ee1dd5c9a9d4605f5467c"
-  integrity sha512-iJrmfXy1nvM4ZLTJawif2VYBPq8APQ1GYjRbUZAJPNqPYmfYfKWkToVyf9o/i8GMl81op7xLJ4ib3ZMSINKjjQ==
-
-cornerstone-math@^0.1.6, cornerstone-math@^0.1.7:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
-  integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
-
-cornerstone-tools@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-2.4.0.tgz#e8136d41b6140c8299a06296918b1eb6f99ea5d7"
-  integrity sha512-M0UcnqSnN8cUhjTnr+om0621yYOiL1rPP+LK5VsMqe1R3yKvfePZhSwhNjw8j4+qVXvliPsfcA7NwsvtOBOaOA==
-  dependencies:
-    cornerstone-math "^0.1.6"
-
 cosmiconfig@5.0.6:
   version "5.0.6"
   resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-5.0.6.tgz#dca6cf680a0bd03589aff684700858c81abeeb39"
@@ -3194,11 +3177,6 @@ dicom-parser@^1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
-
-dicomweb-client@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.4.1.tgz#b846556e61677566e36f5ea3cf0c1b48014bcbe4"
-  integrity sha512-kTNklf8TTnLToybOFzpEArmdMx2ibOETkCVNTcHMHnV2P9dZSXAcbn0oWRbN9lt7/eGGeHAOQYYZwYjSfBlk5g==
 
 diff@^3.2.0:
   version "3.5.0"
@@ -5339,11 +5317,6 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
-isomorphic-base64@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/isomorphic-base64/-/isomorphic-base64-1.0.2.tgz#f426aae82569ba8a4ec5ca73ad21a44ab1ee7803"
-  integrity sha1-9Caq6CVpuopOxcpzrSGkSrHueAM=
-
 isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
@@ -5712,16 +5685,6 @@ joi@^11.1.1:
     hoek "4.x.x"
     isemail "3.x.x"
     topo "2.x.x"
-
-jquery.hotkeys@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/jquery.hotkeys/-/jquery.hotkeys-0.1.0.tgz#a88f636494fe75de41e4b753a059e5a523b83273"
-  integrity sha1-qI9jZJT+dd5B5LdToFnlpSO4MnM=
-
-jquery@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
-  integrity sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg==
 
 js-base64@^2.1.9:
   version "2.4.9"
@@ -6216,11 +6179,6 @@ lodash.isequal@^4.5.0:
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
-
-lodash.merge@^4.6.1:
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.1.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
-  integrity sha512-AOYza4+Hf5z1/0Hztxpm2/xiPZgi/cjMqdnKTUWTBSKchJlxXXuUSxCCl8rJlf4g6yww/j6mA8nC8Hw/EZWxKQ==
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
@@ -6987,24 +6945,6 @@ obuf@^1.0.0, obuf@^1.1.1:
 octal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
-
-ohif-core@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.2.2.tgz#8ed668e22afb1abeea083d67584f0b3385c7ccd8"
-  integrity sha512-Sb9Fc4fNaVRBFVTFZVQUKzE0kAMgOHI9du4l874m32w68wARIDVWvr97SrCC7HozC4v6QLMQieLf/yE0jX9G8g==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    cornerstone-core "^2.2.8"
-    cornerstone-math "^0.1.7"
-    cornerstone-tools "^2.4.0"
-    dicom-parser "^1.8.3"
-    dicomweb-client "^0.4.1"
-    isomorphic-base64 "^1.0.2"
-    jquery "^3.3.1"
-    jquery.hotkeys "^0.1.0"
-    lodash.clonedeep "^4.5.0"
-    lodash.merge "^4.6.1"
-    validate.js "^0.12.0"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -10438,11 +10378,6 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
-
-validate.js@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/validate.js/-/validate.js-0.12.0.tgz#17f989e37c192ea2f826bbf19bf4e97e6e4be68f"
-  integrity sha512-/x2RJSvbqEyxKj0RPN4xaRquK+EggjeVXiDDEyrJzsJogjtiZ9ov7lj/svVb4DM5Q5braQF4cooAryQbUwOxlA==
 
 vary@~1.1.2:
   version "1.1.2"

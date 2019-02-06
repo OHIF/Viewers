@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import OHIFComponentPlugin from '../OHIFComponentPlugin.js';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import './config';
@@ -34,7 +33,7 @@ specialCaseHandlers[
   SOP_CLASSES.SEGMENTATION_STORAGE
 ] = handleSegmentationStorage;
 
-class OHIFCornerstoneViewportPlugin extends Component {
+class OHIFCornerstoneViewport extends Component {
   state = {
     viewportData: null
   };
@@ -45,14 +44,14 @@ class OHIFCornerstoneViewportPlugin extends Component {
     viewportIndex: PropTypes.number
   };
 
-  static id = 'CornerstoneViewportPlugin';
+  static id = 'OHIFCornerstoneViewport';
 
   static init() {
-    console.log('CornerstoneViewportPlugin init()');
+    console.log('OHIFCornerstoneViewport init()');
   }
 
   static destroy() {
-    console.log('CornerstoneViewportPlugin destroy()');
+    console.log('OHIFCornerstoneViewport destroy()');
     StackManager.clearStacks();
   }
 
@@ -70,12 +69,12 @@ class OHIFCornerstoneViewportPlugin extends Component {
     return StackManager.findOrCreateStack(study, displaySet);
   }
 
-  static getPluginViewportData = (
+  static getViewportData = (
     studies,
     studyInstanceUid,
     displaySetInstanceUid
   ) => {
-    const currentStack = OHIFCornerstoneViewportPlugin.getCornerstoneStack(
+    const currentStack = OHIFCornerstoneViewport.getCornerstoneStack(
       studies,
       studyInstanceUid,
       displaySetInstanceUid
@@ -108,7 +107,7 @@ class OHIFCornerstoneViewportPlugin extends Component {
         );
         break;
       default:
-        const stack = OHIFCornerstoneViewportPlugin.getPluginViewportData(
+        const stack = OHIFCornerstoneViewport.getViewportData(
           studies,
           studyInstanceUid,
           displaySetInstanceUid
@@ -154,20 +153,16 @@ class OHIFCornerstoneViewportPlugin extends Component {
   }
 
   render() {
-    const { id, init, destroy } = OHIFCornerstoneViewportPlugin;
-    const pluginProps = { id, init, destroy };
-
-    return (
-      <OHIFComponentPlugin {...pluginProps}>
-        {this.state.viewportData && (
-          <ConnectedCornerstoneViewport
-            viewportData={this.state.viewportData}
-            viewportIndex={this.props.viewportIndex}
-          />
-        )}
-      </OHIFComponentPlugin>
+    return (<>
+      {this.state.viewportData && (
+        <ConnectedCornerstoneViewport
+          viewportData={this.state.viewportData}
+          viewportIndex={this.props.viewportIndex}
+        />
+      )}
+      </>
     );
   }
 }
 
-export default OHIFCornerstoneViewportPlugin;
+export default OHIFCornerstoneViewport;
