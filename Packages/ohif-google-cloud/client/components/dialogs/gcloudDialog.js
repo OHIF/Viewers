@@ -10,7 +10,7 @@ Template.gcloudDialog.onRendered(() => {
     {
       backdrop: 'static',
       keyboard: false,
-      width: 600,
+      width: 650,
     },
     instance.data.modalOptions
   );
