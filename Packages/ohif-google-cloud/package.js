@@ -25,6 +25,7 @@ Package.onUse(function(api) {
   api.addFiles('client/index.js', 'client');
 
   var assets = [
+    '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.0.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.2.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.3.min.js',
@@ -35,6 +36,7 @@ Package.onUse(function(api) {
     '.npm/package/node_modules/healthcare-api-adapter/dist/img/Icon-24px-Close.d1a4d6d2.svg',
     '.npm/package/node_modules/healthcare-api-adapter/dist/img/Icon-Arrow.e493b444.svg',
     '.npm/package/node_modules/healthcare-api-adapter/dist/img/Icon-Warn.f3b4b640.svg',
+    '.npm/package/node_modules/healthcare-api-adapter/dist/img/arrow_right.d8a5b209.svg',
   ];
 
   api.addAssets(assets, 'client');
