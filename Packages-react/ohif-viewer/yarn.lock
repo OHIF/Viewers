@@ -8229,10 +8229,10 @@ ohif-core@^0.2.6:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.3.tgz#621446db7eae99472a1283081634acd0990a1ee2"
-  integrity sha512-9q1JIH6UO/LV5XHmmUlLJ0FV+KljcG2Rc5QgGin5svl7EsDAlIG2ocrX12B9KtZ35vYyL1zigbsPd642xbCTOw==
+ohif-cornerstone-extension@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.4.tgz#b5d89a0993af88224b214ab6d9ef1a34033d4a97"
+  integrity sha512-385fRrlYj+e9vaY7KvWCqsi0zV714pzptrj/6MSD3+Aim87W2C9yMHQoSOnXSRpxSye93RIdtDuiZCYGDdsqpw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"

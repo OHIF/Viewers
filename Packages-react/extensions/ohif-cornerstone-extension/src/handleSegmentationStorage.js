@@ -49,11 +49,11 @@ function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
   return stackClone;
 }
 
-function parseSeg(arrayBuffer, imageIds, firstImagePlane) {
+function parseSeg(arrayBuffer, imageIds) {
   return dcmjs.adapters.Cornerstone.Segmentation.readToolState(
     imageIds,
     arrayBuffer,
-    firstImagePlane
+    //firstImagePlane
   );
 }
 
@@ -118,11 +118,11 @@ async function handleSegmentationStorage(
 
   const referenceDisplaySet = displaySets[0];
   const imageIds = referenceDisplaySet.images.map(image => image.getImageId());
-  debugger;
+  //debugger;
 
-  const firstImagePlane = cornerstone.metadata.get('imagePlane', imageIds[0]);
+  //const firstImagePlane = cornerstone.metadata.get('imagePlane', imageIds[0]);
 
-  const results = parseSeg(arrayBuffer, imageIds, firstImagePlane);
+  const results = parseSeg(arrayBuffer, imageIds);
 
   if (!results) {
     throw new Error('Fractional segmentations are not supported');
