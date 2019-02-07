@@ -41,7 +41,8 @@ class OHIFCornerstoneViewport extends Component {
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number
+    viewportIndex: PropTypes.number,
+    children: PropTypes.node
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -160,6 +161,7 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={this.props.viewportIndex}
         />
       )}
+      {this.props.children}
       </>
     );
   }

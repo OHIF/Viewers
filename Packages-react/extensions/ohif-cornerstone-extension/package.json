@@ -26,7 +26,7 @@
     "react-dom": "^15.0.0 || ^16.0.0",
     "react-redux": "^6.0.0",
     "redux": "^4.0.1",
-    "ohif-core": "^0.2.6"
+    "ohif-core": "^0.2.7"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
