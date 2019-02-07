@@ -11,7 +11,6 @@ import WhiteLabellingContext from './WhiteLabellingContext';
 import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
-import { loadState, saveState } from './redux/localStorageState.js';
 import {
   loadUser,
   OidcProvider,
@@ -19,21 +18,22 @@ import {
   reducer as oidcReducer
 } from 'redux-oidc';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import ExtensionManager from './ExtensionManager';
+
+const { ExtensionManager } = OHIF.extensions;
 
 //import Icons from "./images/icons.svg"
 
 const Icons = '/icons.svg';
 
-let reducers = OHIF.redux.reducers;
+const { reducers, localStorage } = OHIF.redux;
 reducers.ui = ui;
 reducers.oidc = oidcReducer;
 
 const combined = combineReducers(reducers);
-const store = createStore(combined, loadState());
+const store = createStore(combined, localStorage.loadState());
 
 store.subscribe(() => {
-  saveState({
+  localStorage.saveState({
     preferences: store.getState().preferences
   });
 });
