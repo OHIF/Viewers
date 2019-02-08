@@ -56,7 +56,7 @@ const MeasurementHandlers = {
         }
     },
 
-    onRemoved(eventData, instance) {
+    onRemoved(event, instance) {
         const eventData = event.detail;
         const { toolType } = eventData;
         const { toolGroupId, toolGroup, tool } = OHIF.measurements.getToolConfiguration(toolType);
