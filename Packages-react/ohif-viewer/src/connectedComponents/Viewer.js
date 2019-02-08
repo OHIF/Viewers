@@ -52,6 +52,7 @@ OHIF.viewer.functionList = {
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.array,
+    studyInstanceUids: PropTypes.array,
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func
   };
@@ -158,10 +159,12 @@ class Viewer extends Component {
   componentDidMount() {
     const { studies } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
+    const currentTimepointId = 'TimepointId';
 
-    const timepointApi = new TimepointApi('TimepointId', {
+    const timepointApi = new TimepointApi(currentTimepointId, {
       onTimepointsUpdated: this.onTimepointsUpdated
     });
+
     const measurementApi = new MeasurementApi(timepointApi, {
       onMeasurementsUpdated: this.onMeasurementsUpdated
     });
@@ -170,8 +173,8 @@ class Viewer extends Component {
     timepointApi.retrieveTimepoints({ patientId });
 
     // TODO: Retrieve measurements and sync them with tool data
-    // measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-    // measurementApi.syncMeasurementsAndToolData();
+    measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+    //measurementApi.syncMeasurementsAndToolData();
   }
 
   render() {

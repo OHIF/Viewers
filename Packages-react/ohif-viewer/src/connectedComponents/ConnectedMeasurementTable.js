@@ -19,15 +19,28 @@ function convertMeasurementsToTableData(measurements) {
   const tableData = [
     {
       groupName: 'Measurements',
-      measurements: []
+      measurements: [],
+      measurements1: measurements
     }
   ];
 
-  if (!measurements || !measurements.length) {
-    return tableData;
+  if (measurements && measurements.allTools) {
+    measurements.allTools.forEach(measurement => {
+      const tableMeasurement = {
+        label: '...',
+        hasWarnings: false,
+        warningTitle: '',
+        isSplitLesion: false,
+        warningList: [],
+        data: [
+          {
+            displayText: '...'
+          }
+        ]
+      };
+      tableData[0].measurements.push(tableMeasurement);
+    });
   }
-
-  // TODO: Add measurements into tableData
 
   return tableData;
 }
