@@ -10,6 +10,7 @@ import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
 import {
   loadUser,
@@ -116,9 +117,10 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 store.dispatch(buttonsAction);
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-let extensions = [
+const extensions = [
   new OHIFCornerstoneExtension(),
   new OHIFDicomPDFExtension(),
+  new OHIFDicomHtmlExtension(),
   new OHIFDicomMicroscopyExtension()
 ];
 ExtensionManager.registerExtensions(store, extensions);

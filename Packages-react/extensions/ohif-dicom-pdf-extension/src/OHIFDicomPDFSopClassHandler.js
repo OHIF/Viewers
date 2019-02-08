@@ -15,7 +15,6 @@ const OHIFDicomPDFSopClassHandler = {
     SOP_CLASS_UIDS.ENCAPSULATED_PDF
   ],
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
-    debugger;
     const instance = series.getFirstInstance();
 
     return {
