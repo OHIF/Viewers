@@ -52,7 +52,12 @@ class ViewerRetrieveStudyData extends Component {
       return <div>Loading...</div>;
     }
 
-    return <ConnectedViewer studies={this.state.studies} />;
+    return (
+      <ConnectedViewer
+        studies={this.state.studies}
+        studyInstanceUids={this.props.studyInstanceUids}
+      />
+    );
   }
 }
 
