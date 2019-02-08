@@ -3,8 +3,12 @@ import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
 import { StudyList } from 'react-viewerbase';
-import Header from '../components/Header';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
+
+const subtractDaysFromDate = (date, days) => {
+  date.setDate(date.getDate() - days);
+  return date;
+};
 
 class StudyListWithData extends Component {
   state = {
@@ -23,6 +27,13 @@ class StudyListWithData extends Component {
   static rowsPerPage = 25;
   static defaultSort = { field: 'patientName', order: 'desc' };
 
+  static studyListDateFilterNumDays = 25000; // TODO: put this in the settings
+  static defaultStudyDateFrom = subtractDaysFromDate(
+    new Date(),
+    StudyListWithData.studyListDateFilterNumDays
+  );
+  static defaultStudyDateTo = new Date();
+
   componentDidMount() {
     // TODO: Avoid using timepoints here
     //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
@@ -33,7 +44,9 @@ class StudyListWithData extends Component {
   searchForStudies = (
     searchData = {
       currentPage: 0,
-      rowsPerPage: StudyListWithData.rowsPerPage
+      rowsPerPage: StudyListWithData.rowsPerPage,
+      studyDateFrom: StudyListWithData.defaultStudyDateFrom,
+      studyDateTo: StudyListWithData.defaultStudyDateTo
     }
   ) => {
     const { server } = this.props;
@@ -43,6 +56,8 @@ class StudyListWithData extends Component {
       accessionNumber: searchData.accessionNumber,
       studyDescription: searchData.studyDescription,
       modalitiesInStudy: searchData.modalitiesInStudy,
+      studyDateFrom: searchData.studyDateFrom,
+      studyDateTo: searchData.studyDateTo,
       limit:
         searchData.currentPage * searchData.rowsPerPage +
         searchData.rowsPerPage,
@@ -113,6 +128,9 @@ class StudyListWithData extends Component {
           onSelectItem={this.onSelectItem}
           pageSize={this.rowsPerPage}
           defaultSort={StudyListWithData.defaultSort}
+          studyListDateFilterNumDays={
+            StudyListWithData.studyListDateFilterNumDays
+          }
           onSearch={this.onSearch}
         />
       </>
