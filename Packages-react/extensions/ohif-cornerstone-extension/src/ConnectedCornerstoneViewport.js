@@ -10,8 +10,8 @@ const mapStateToProps = (state, ownProps) => {
     const activeButton = state.tools.buttons.find(tool => tool.active === true);
     let availableTools;
 
-    if (state.extensions && state.extensions.cornerstone && state.extensions.availableTools) {
-      availableTools = state.extensions.availableTools;
+    if (state.extensions && state.extensions.cornerstone && state.extensions.cornerstone.availableTools) {
+      availableTools = state.extensions.cornerstone.availableTools;
     };
 
     // If this is the active viewport, enable prefetching.
