@@ -1,33 +1,148 @@
 import React, { Component } from 'react';
 import * as dcmjs from 'dcmjs';
 import TypedArrayProp from './TypedArrayProp';
+import './DicomHtmlViewport.css';
+
+function getRelationshipString(data) {
+  switch (data.RelationshipType) {
+    case 'HAS CONCEPT MOD':
+      return 'Concept modifier: ';
+    case 'HAS OBS CONTEXT':
+      return 'Observation context: ';
+    default:
+      return '';
+  }
+}
+
+const getMeaningString = data => {
+  if (data.ConceptNameCodeSequence) {
+    const { CodeMeaning } = data.ConceptNameCodeSequence;
+
+    return `${CodeMeaning} = `;
+  }
+
+  return '';
+};
+
+function getValueString(data) {
+  switch (data.ValueType) {
+    case 'CODE':
+      const {
+        CodeMeaning,
+        CodeValue,
+        CodingSchemeDesignator
+      } = data.ConceptNameCodeSequence;
+
+      return `${CodeMeaning} (${CodeValue}, ${CodingSchemeDesignator})`;
+
+    case 'PNAME':
+      return data.PersonName;
+
+    case 'TEXT':
+      return data.TextValue;
+
+    case 'UIDREF':
+      return data.UID;
+
+    case 'NUM':
+      const { MeasuredValueSequence } = data;
+      const numValue = MeasuredValueSequence.NumericValue;
+      const codeValue =
+        MeasuredValueSequence.MeasurementUnitsCodeSequence.CodeValue;
+      return `${numValue} ${codeValue}`;
+  }
+}
+
+function constructPlainValue(data) {
+  const value = getValueString(data);
+
+  if (value) {
+    return getRelationshipString(data) + getMeaningString(data) + value;
+  }
+}
+
+function constructContentSequence(data, header) {
+  if (!data.ContentSequence) {
+    return;
+  }
+
+  const items = data.ContentSequence.map(item => parseContent(item)).filter(
+    item => item
+  );
+
+  if (!items.length) {
+    return;
+  }
+
+  const result = {
+    items
+  };
+
+  if (header) {
+    result.header = header;
+  }
+
+  return result;
+}
+
+function parseContent(data) {
+  if (data.ValueType) {
+    if (data.ValueType === 'CONTAINER') {
+      const header = data.ConceptNameCodeSequence.CodeMeaning;
+
+      return constructContentSequence(data, header);
+    }
+
+    return constructPlainValue(data);
+  }
+
+  if (data.ContentSequence) {
+    return constructContentSequence(data);
+  }
+}
 
 const { DicomMetaDictionary, DicomMessage } = dcmjs.data;
 
-function getMainData(dataset) {
+function getMainData(data) {
   const root = [];
-  const {
-    CompletionFlag,
-    VerificationFlag,
-    Manufacturer,
-    ContentDateTime
-  } = dataset;
 
-  if (CompletionFlag) {
-    root.push(getMainDataItem('Completion flag', CompletionFlag));
-  }
+  const patientValue = `${data.PatientName} (${data.PatientSex}, #${
+    data.PatientID
+  })`;
+  root.push(getMainDataItem('Patient', patientValue));
 
-  if (VerificationFlag) {
-    root.push(getMainDataItem('Verification flag', VerificationFlag));
-  }
+  const studyValue = data.StudyDescription;
+  root.push(getMainDataItem('Study', studyValue));
 
-  if (Manufacturer) {
-    root.push(getMainDataItem('Manufacturer', Manufacturer));
-  }
+  const seriesValue = `${data.SeriesDescription} (#${data.SeriesNumber})`;
+  root.push(getMainDataItem('Series', seriesValue));
 
-  if (ContentDateTime) {
-    root.push(getMainDataItem('Content Date/Time', ContentDateTime));
-  }
+  const manufacturerValue = `${data.Manufacturer} (${
+    data.ManufacturerModelName
+  }, #${data.DeviceSerialNumber})`;
+
+  root.push(getMainDataItem('Manufacturer', manufacturerValue));
+
+  const mainDataObjects = {
+    CompletionFlag: 'Completion flag',
+    VerificationFlag: 'Verification flag'
+  };
+
+  Object.keys(mainDataObjects).forEach(key => {
+    if (!data[key]) {
+      return;
+    }
+
+    const item = getMainDataItem(mainDataObjects[key], data[key]);
+
+    root.push(item);
+  });
+
+  // TODO: Format these dates
+  const contentDateTimeValue = `${data.ContentDate} ${data.ContentTime}`;
+  root.push(getMainDataItem('Content Date/Time', contentDateTimeValue));
+
+  root.push();
 
   return <div>{root}</div>;
 }
@@ -100,11 +215,8 @@ class DicomHtmlViewport extends Component {
     const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);
     dataset._meta = DicomMetaDictionary.namifyDataset(dicomData.meta);
 
-    // TODO: not sure why this stuff was separated from the rest...
     const mainData = getMainData(dataset);
-    const contentSequence = getContentSequence(dataset.ContentSequence);
-
-    debugger;
+    const contentSequence = getContentSequence(dataset);
     const content = (
       <>
         {mainData}
@@ -118,9 +230,8 @@ class DicomHtmlViewport extends Component {
   }
 
   render() {
-    const style = { width: '100%', height: '100%', 'overflow-y': 'scroll' };
     return (
-      <div className={'DicomHtmlViewport'} style={style}>
+      <div className={'DicomHtmlViewport'}>
         {this.state.content}
         {this.state.error && <h2>{JSON.stringify(this.state.error)}</h2>}
       </div>

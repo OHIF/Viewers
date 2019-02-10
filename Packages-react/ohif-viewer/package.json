@@ -105,7 +105,7 @@
     "lodash.isequal": "^4.5.0",
     "ohif-core": "^0.2.7",
     "ohif-cornerstone-extension": "^0.0.6",
-    "ohif-dicom-html-extension": "^0.0.1",
+    "ohif-dicom-html-extension": "^0.0.2",
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.5",
     "oidc-client": "^1.6.1",
