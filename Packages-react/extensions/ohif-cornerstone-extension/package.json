@@ -1,6 +1,6 @@
 {
   "name": "ohif-cornerstone-extension",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -14,13 +14,14 @@
   },
   "scripts": {
     "build": "rollup -c",
+    "prepublishOnly": "npm run build",
     "start": "rollup -c -w",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}"
   },
   "peerDependencies": {
     "cornerstone-core": "^2.2.8",
     "cornerstone-wado-image-loader": "^2.2.3",
-    "dcmjs": "^0.3.2",
+    "dcmjs": "^0.3.3",
     "dicom-parser": "^1.8.3",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0",
