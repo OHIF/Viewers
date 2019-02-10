@@ -1373,10 +1373,10 @@ cornerstone-math@^0.1.7, cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.0.1.tgz#b7e3ac36963ee2a6e49238d9889f05b7b6356ea2"
-  integrity sha512-IcolnxbvNr/Pl8TSFaWkwuT59/CGlWmcD9k1E/eM9sE1x2qiLkCKxYfx/hrSP2aH7cayCWiYlaEcrpAlaQBsWA==
+cornerstone-tools@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.0.2.tgz#d1fb6c2a81b9cd090b51914ddbba0a3a90095b26"
+  integrity sha512-NLaqasV3eOcT21/g4yDNAqdS0YscCCK4Oedrux12QIyPDJja7X6FD7vwmS6boLpD26FIQK7m++VsJbK2lZHoeA==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "^0.1.7"
@@ -1644,10 +1644,10 @@ date-fns@^1.27.2:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
-dcmjs@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.2.tgz#18bdcccd0083e01269c588fbbb019e44897b952e"
-  integrity sha512-6tA4A+22c6AK+5wqtU3cS1lNtEPEvndgeRdZfbuMJNC+OiPQFhPmK8+TrNF13ca9QWHUCyRT9mAfAMuio6GnEg==
+dcmjs@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.3.tgz#c0e0564008fd8edc52574eb847a2123c95864cdf"
+  integrity sha512-hfdRfeb+Fqerrbr/lsqQerIjfJHNWbG1MOMyp772uO+n5rmkC/ASoBa9bURAHAJKwRVjkLraULMFmGJD+5oRnQ==
   dependencies:
     "@babel/polyfill" "^7.2.5"
     "@babel/runtime" "^7.3.1"
@@ -4553,10 +4553,10 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-cornerstone-viewport@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.9.tgz#28cbf2ec3b13976f271e7cc30e6386c5d97e854c"
-  integrity sha512-demadfvFX9uOp+lV0wV6Pom6g3Dagdt/97m3mTAN7o236mCDVBn1SBHBkVIjOeKkkPmXIV2q0dlHuINsnlK4TA==
+react-cornerstone-viewport@^0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.10.tgz#e90bed68f130db9cc3a4d505eab7a0cf437334f5"
+  integrity sha512-hOvGraquXJNMD8Di2RL38QX3K5Ei5sJbYMLM+p1dTVWLKnZQZpsFOHSjX7YnTk2nFAIR5CFZf9j3tlc1s776qg==
   dependencies:
     lodash.debounce "^4.0.8"
     moment "^2.23.0"

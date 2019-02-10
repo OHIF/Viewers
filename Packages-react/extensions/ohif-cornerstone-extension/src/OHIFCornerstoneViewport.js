@@ -125,7 +125,7 @@ class OHIFCornerstoneViewport extends Component {
     return viewportData;
   };
 
-  componentDidMount() {
+  setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
       studyInstanceUid,
@@ -151,6 +151,20 @@ class OHIFCornerstoneViewport extends Component {
         viewportData
       });
     });
+  }
+
+  componentDidMount() {
+    this.setStateFromProps();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { studies, displaySet } = this.props.viewportData;
+    const { displaySetInstanceUid } = displaySet;
+    const prevDisplaySet = prevProps.viewportData.displaySet;
+
+    if (displaySet.displaySetInstanceUid !== prevDisplaySet.displaySetInstanceUid) {
+      this.setStateFromProps();
+    }
   }
 
   render() {

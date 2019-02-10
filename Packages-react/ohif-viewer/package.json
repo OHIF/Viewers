@@ -1,6 +1,6 @@
 {
   "name": "ohif-viewer",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -104,7 +104,7 @@
     "hammerjs": "^2.0.8",
     "lodash.isequal": "^4.5.0",
     "ohif-core": "^0.2.7",
-    "ohif-cornerstone-extension": "^0.0.6",
+    "ohif-cornerstone-extension": "^0.0.7",
     "ohif-dicom-html-extension": "^0.0.2",
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.5",
@@ -117,7 +117,7 @@
     "react-redux": "^6.0.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-viewerbase": "^0.2.4",
+    "react-viewerbase": "^0.2.5",
     "redux": "^4.0.1",
     "redux-oidc": "^3.1.0"
   }
