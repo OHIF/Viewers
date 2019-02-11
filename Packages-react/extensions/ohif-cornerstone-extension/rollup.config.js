@@ -14,9 +14,12 @@ const globals =  {
   'react-redux': 'ReactRedux',
   'cornerstone-core': 'cornerstone',
   'cornerstone-wado-image-loader': 'cornerstoneWADOImageLoader',
+  'cornerstone-math': 'cornerstoneMath',
+  'cornerstone-tools': 'cornerstoneTools',
   'dcmjs': 'dcmjs',
   'dicom-parser': 'dicomParser',
-  'ohif-core': 'OHIF'
+  'ohif-core': 'OHIF',
+  'hammerjs': 'Hammer'
 };
 
 export default {

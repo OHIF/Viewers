@@ -8,10 +8,10 @@ const { setViewportActive, setViewportSpecificData, clearViewportSpecificData } 
 
 const mapStateToProps = (state, ownProps) => {
     const activeButton = state.tools.buttons.find(tool => tool.active === true);
-    let availableTools;
+    let dataFromStore;
 
-    if (state.extensions && state.extensions.cornerstone && state.extensions.cornerstone.availableTools) {
-      availableTools = state.extensions.cornerstone.availableTools;
+    if (state.extensions && state.extensions.cornerstone) {
+      dataFromStore = state.extensions.cornerstone;
     };
 
     // If this is the active viewport, enable prefetching.
@@ -23,7 +23,7 @@ const mapStateToProps = (state, ownProps) => {
         layout: state.viewports.layout,
         isActive,
         activeTool: activeButton && activeButton.command,
-        availableTools,
+        ...dataFromStore,
         enableStackPrefetch: isActive,
         //stack: viewportSpecificData.stack,
         cineToolData: viewportSpecificData.cine,
