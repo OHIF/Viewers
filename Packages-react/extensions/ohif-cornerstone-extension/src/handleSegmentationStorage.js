@@ -118,7 +118,6 @@ async function handleSegmentationStorage(
 
   const referenceDisplaySet = displaySets[0];
   const imageIds = referenceDisplaySet.images.map(image => image.getImageId());
-  //debugger;
 
   //const firstImagePlane = cornerstone.metadata.get('imagePlane', imageIds[0]);
 
