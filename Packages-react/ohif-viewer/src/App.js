@@ -20,7 +20,6 @@ import {
 } from 'redux-oidc';
 import timepointManager from './redux/timepointManager';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import './App.css';
 
 const { ExtensionManager } = OHIF.extensions;
 
@@ -141,7 +140,9 @@ const availableTools = [
   { name: 'StackScrollMultiTouch' }
 ];
 
-const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', { availableTools });
+const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
+  availableTools
+});
 
 store.dispatch(toolAction);
 
