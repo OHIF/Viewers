@@ -9,8 +9,6 @@ import WhiteLabellingContext from '../WhiteLabellingContext.js';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
-import ConnectedStudyLoadingMonitor from './ConnectedStudyLoadingMonitor.js';
-import StudyPrefetcher from '../components/StudyPrefetcher.js';
 import measurementTools from '../measurementTools';
 import './Viewer.css';
 /**

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
 import { StudyList } from 'react-viewerbase';
-import Header from '../components/Header';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 
 class StudyListWithData extends Component {
