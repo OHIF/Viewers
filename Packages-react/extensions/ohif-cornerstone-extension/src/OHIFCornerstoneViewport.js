@@ -9,12 +9,6 @@ import handleSegmentationStorage from './handleSegmentationStorage.js';
 
 const { StackManager } = OHIF.utils;
 
-// Create the synchronizer used to update reference lines
-OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer(
-  'cornerstonenewimage',
-  cornerstoneTools.updateImageSynchronizer
-);
-
 // Metadata configuration
 const metadataProvider = new OHIF.cornerstone.MetadataProvider();
 
@@ -162,7 +156,9 @@ class OHIFCornerstoneViewport extends Component {
     const { displaySetInstanceUid } = displaySet;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
-    if (displaySet.displaySetInstanceUid !== prevDisplaySet.displaySetInstanceUid) {
+    if (
+      displaySet.displaySetInstanceUid !== prevDisplaySet.displaySetInstanceUid
+    ) {
       this.setStateFromProps();
     }
   }
@@ -173,18 +169,22 @@ class OHIFCornerstoneViewport extends Component {
     // TODO: Does it make more sense to use Context?
     if (this.props.children && this.props.children.length) {
       childrenWithProps = this.props.children.map((child, index) => {
-        return React.cloneElement(child, { viewportIndex: this.props.viewportIndex, key: index})
+        return React.cloneElement(child, {
+          viewportIndex: this.props.viewportIndex,
+          key: index
+        });
       });
     }
 
-    return (<>
-      {this.state.viewportData && (
-        <ConnectedCornerstoneViewport
-          viewportData={this.state.viewportData}
-          viewportIndex={this.props.viewportIndex}
-        />
-      )}
-      {childrenWithProps}
+    return (
+      <>
+        {this.state.viewportData && (
+          <ConnectedCornerstoneViewport
+            viewportData={this.state.viewportData}
+            viewportIndex={this.props.viewportIndex}
+          />
+        )}
+        {childrenWithProps}
       </>
     );
   }
