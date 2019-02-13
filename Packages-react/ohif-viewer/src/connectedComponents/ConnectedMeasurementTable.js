@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { MeasurementTable } from 'react-viewerbase';
+import OHIF from 'ohif-core';
 import moment from 'moment';
 
 function convertTimepointsToTableData(timepoints) {
@@ -25,7 +26,16 @@ function convertMeasurementsToTableData(measurements) {
   ];
 
   if (measurements && measurements.allTools) {
+    const config = OHIF.measurements.MeasurementApi.getConfiguration();
+    const tools = config.measurementTools.find(
+      toolGroup => toolGroup.id === 'allTools'
+    ).childTools;
     measurements.allTools.forEach(measurement => {
+      const tool = tools.find(tool => tool.id === measurement.toolId);
+      console.warn(tool);
+
+      const data = measurement;
+
       const tableMeasurement = {
         label: '...',
         hasWarnings: false,
@@ -34,7 +44,7 @@ function convertMeasurementsToTableData(measurements) {
         warningList: [],
         data: [
           {
-            displayText: '...'
+            displayText: tool.options.measurementTable.displayFunction(data)
           }
         ]
       };
