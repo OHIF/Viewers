@@ -20,35 +20,38 @@ function convertMeasurementsToTableData(measurements) {
   const tableData = [
     {
       groupName: 'Measurements',
-      measurements: [],
-      measurements1: measurements
+      measurements: []
     }
   ];
 
-  if (measurements && measurements.allTools) {
+  if (measurements) {
     const config = OHIF.measurements.MeasurementApi.getConfiguration();
     const tools = config.measurementTools.find(
       toolGroup => toolGroup.id === 'allTools'
     ).childTools;
-    measurements.allTools.forEach(measurement => {
-      const tool = tools.find(tool => tool.id === measurement.toolId);
+    Object.keys(measurements).forEach(toolId => {
+      const tool = tools.find(tool => tool.id === toolId);
       console.warn(tool);
 
-      const data = measurement;
+      const measurementsData = measurements[toolId];
 
-      const tableMeasurement = {
-        label: '...',
-        hasWarnings: false,
-        warningTitle: '',
-        isSplitLesion: false,
-        warningList: [],
-        data: [
-          {
-            displayText: tool.options.measurementTable.displayFunction(data)
-          }
-        ]
-      };
-      tableData[0].measurements.push(tableMeasurement);
+      measurementsData.forEach(measurementData => {
+        const tableMeasurement = {
+          label: '...',
+          hasWarnings: false,
+          warningTitle: '',
+          isSplitLesion: false,
+          warningList: [],
+          data: [
+            {
+              displayText: tool.options.measurementTable.displayFunction(
+                measurementData
+              )
+            }
+          ]
+        };
+        tableData[0].measurements.push(tableMeasurement);
+      });
     });
   }
 
