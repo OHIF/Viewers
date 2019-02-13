@@ -1,4 +1,4 @@
-##### Looking for your Deploy Preview? - <a onclick="function redirect() { window.location.href='/viewer/?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/sampleDICOM.json'; } redirect();">Deploy Preview for Viewer</a>
+##### Looking for your Deploy Preview? - <a onclick="function redirect() { window.location.href='/demo/'; } redirect();">Deploy Preview for Viewer</a>
 
 # Introduction
 

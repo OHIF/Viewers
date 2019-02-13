@@ -23,8 +23,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 const { ExtensionManager } = OHIF.extensions;
 
-//import Icons from "./images/icons.svg"
-const Icons = '/icons.svg';
+const Icons = 'icons.svg';
 
 const { reducers, localStorage } = OHIF.redux;
 reducers.ui = ui;
