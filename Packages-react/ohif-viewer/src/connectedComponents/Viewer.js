@@ -170,9 +170,8 @@ class Viewer extends Component {
     const patientId = studies[0] && studies[0].patientId;
     timepointApi.retrieveTimepoints({ patientId });
 
-    // TODO: Retrieve measurements and sync them with tool data
     measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-    //measurementApi.syncMeasurementsAndToolData();
+    measurementApi.syncMeasurementsAndToolData();
   }
 
   render() {

@@ -31,17 +31,13 @@ function convertMeasurementsToTableData(measurements) {
     ).childTools;
     Object.keys(measurements).forEach(toolId => {
       const tool = tools.find(tool => tool.id === toolId);
-      console.warn(tool);
-
       const measurementsData = measurements[toolId];
 
       measurementsData.forEach(measurementData => {
         const tableMeasurement = {
-          label: '...',
+          label: '(No Location)',
           hasWarnings: false,
-          warningTitle: '',
           isSplitLesion: false,
-          warningList: [],
           data: [
             {
               displayText: tool.options.measurementTable.displayFunction(
