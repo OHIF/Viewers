@@ -88,7 +88,7 @@ class ToolbarRow extends Component {
           active={this.state.cineDialogOpen}
           onClick={this.onClickCineToolbarButton}
           text={'CINE'}
-          iconClasses={'fa fa-youtube'}
+          iconClasses={'fab fa-youtube'}
         />
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
           <ConnectedCineDialog />
