@@ -169,9 +169,7 @@ class Viewer extends Component {
 
     const patientId = studies[0] && studies[0].patientId;
     timepointApi.retrieveTimepoints({ patientId });
-
     measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-    measurementApi.syncMeasurementsAndToolData();
   }
 
   render() {
