@@ -9,12 +9,6 @@ import handleSegmentationStorage from './handleSegmentationStorage.js';
 
 const { StackManager } = OHIF.utils;
 
-// Create the synchronizer used to update reference lines
-OHIF.viewer.updateImageSynchronizer = new cornerstoneTools.Synchronizer(
-  'cornerstonenewimage',
-  cornerstoneTools.updateImageSynchronizer
-);
-
 // Metadata configuration
 const metadataProvider = new OHIF.cornerstone.MetadataProvider();
 
@@ -125,7 +119,7 @@ class OHIFCornerstoneViewport extends Component {
     return viewportData;
   };
 
-  componentDidMount() {
+  setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
       studyInstanceUid,
@@ -153,15 +147,44 @@ class OHIFCornerstoneViewport extends Component {
     });
   }
 
+  componentDidMount() {
+    this.setStateFromProps();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { studies, displaySet } = this.props.viewportData;
+    const { displaySetInstanceUid } = displaySet;
+    const prevDisplaySet = prevProps.viewportData.displaySet;
+
+    if (
+      displaySet.displaySetInstanceUid !== prevDisplaySet.displaySetInstanceUid
+    ) {
+      this.setStateFromProps();
+    }
+  }
+
   render() {
-    return (<>
-      {this.state.viewportData && (
-        <ConnectedCornerstoneViewport
-          viewportData={this.state.viewportData}
-          viewportIndex={this.props.viewportIndex}
-        />
-      )}
-      {this.props.children}
+    let childrenWithProps = null;
+
+    // TODO: Does it make more sense to use Context?
+    if (this.props.children && this.props.children.length) {
+      childrenWithProps = this.props.children.map((child, index) => {
+        return React.cloneElement(child, {
+          viewportIndex: this.props.viewportIndex,
+          key: index
+        });
+      });
+    }
+
+    return (
+      <>
+        {this.state.viewportData && (
+          <ConnectedCornerstoneViewport
+            viewportData={this.state.viewportData}
+            viewportIndex={this.props.viewportIndex}
+          />
+        )}
+        {childrenWithProps}
       </>
     );
   }

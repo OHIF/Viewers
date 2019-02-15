@@ -10,6 +10,7 @@ import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
 import {
   loadUser,
@@ -17,17 +18,17 @@ import {
   createUserManager,
   reducer as oidcReducer
 } from 'redux-oidc';
+import timepointManager from './redux/timepointManager';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 const { ExtensionManager } = OHIF.extensions;
 
-//import Icons from "./images/icons.svg"
-
-const Icons = '/icons.svg';
+const Icons = 'icons.svg';
 
 const { reducers, localStorage } = OHIF.redux;
 reducers.ui = ui;
 reducers.oidc = oidcReducer;
+reducers.timepointManager = timepointManager;
 
 const combined = combineReducers(reducers);
 const store = createStore(combined, localStorage.loadState());
@@ -103,6 +104,13 @@ const defaultButtons = [
     active: false
   },
   {
+    command: 'FreehandMouse',
+    type: 'tool',
+    text: 'Freehand',
+    iconClasses: 'fa fa-star',
+    active: false
+  },
+  {
     command: 'reset',
     type: 'command',
     text: 'Reset',
@@ -115,10 +123,33 @@ const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
 
 store.dispatch(buttonsAction);
 
+const availableTools = [
+  { name: 'Pan', mouseButtonMasks: [1, 4] },
+  { name: 'Zoom', mouseButtonMasks: [1, 2] },
+  { name: 'Wwwc', mouseButtonMasks: [1] },
+  { name: 'Bidirectional', mouseButtonMasks: [1] },
+  { name: 'Length', mouseButtonMasks: [1] },
+  { name: 'Angle', mouseButtonMasks: [1] },
+  { name: 'StackScroll', mouseButtonMasks: [1] },
+  { name: 'Brush', mouseButtonMasks: [1] },
+  { name: 'FreehandMouse', mouseButtonMasks: [1] },
+  { name: 'PanMultiTouch' },
+  { name: 'ZoomTouchPinch' },
+  { name: 'StackScrollMouseWheel' },
+  { name: 'StackScrollMultiTouch' }
+];
+
+const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
+  availableTools
+});
+
+store.dispatch(toolAction);
+
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-let extensions = [
+const extensions = [
   new OHIFCornerstoneExtension(),
   new OHIFDicomPDFExtension(),
+  new OHIFDicomHtmlExtension(),
   new OHIFDicomMicroscopyExtension()
 ];
 ExtensionManager.registerExtensions(store, extensions);

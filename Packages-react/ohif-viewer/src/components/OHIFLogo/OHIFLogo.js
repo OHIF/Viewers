@@ -1,7 +1,7 @@
 import React from 'react';
 import './OHIFLogo.css';
 
-const Icons = '/icons.svg';
+const Icons = 'icons.svg';
 
 function OHIFLogo() {
   return (

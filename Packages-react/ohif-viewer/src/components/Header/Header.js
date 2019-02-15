@@ -5,9 +5,6 @@ import { Dropdown } from 'react-viewerbase';
 import './Header.css';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js';
-//import Icons from "../../images/icons.svg";
-
-//const Icons = '/icons.svg';
 
 class Header extends Component {
   static propTypes = {

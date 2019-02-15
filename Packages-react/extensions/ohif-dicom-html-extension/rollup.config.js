@@ -4,24 +4,17 @@ import external from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
 import resolve from 'rollup-plugin-node-resolve'
 import url from 'rollup-plugin-url'
+import svgr from '@svgr/rollup'
 import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins';
 
-const globals =  {
+const globals = {
   'react': 'React',
   'react-dom': 'ReactDOM',
-  'react-redux': 'ReactRedux',
-  'react-resize-detector': 'ReactResizeDetector',
   'prop-types': 'PropTypes',
-  'cornerstone-core': 'cornerstone',
-  'cornerstone-wado-image-loader': 'cornerstoneWADOImageLoader',
-  'cornerstone-math': 'cornerstoneMath',
-  'cornerstone-tools': 'cornerstoneTools',
-  'dcmjs': 'dcmjs',
-  'dicom-parser': 'dicomParser',
   'ohif-core': 'OHIF',
-  'hammerjs': 'Hammer'
+  'dcmjs': 'dcmjs'
 };
 
 export default {
@@ -30,7 +23,7 @@ export default {
     {
       file: pkg.main,
       format: 'umd',
-      name: 'ohif-cornerstone-extension',
+      name: 'ohif-dicom-pdf-extension',
       sourcemap: true,
       globals
     },
@@ -48,20 +41,15 @@ export default {
       modules: false
     }),
     url(),
+    svgr(),
     babel({
       exclude: 'node_modules/**',
+      plugins: [ '@babel/external-helpers' ],
       externalHelpers: true,
       runtimeHelpers: true
     }),
     resolve(),
-    commonjs({
-      include: 'node_modules/**',
-      namedExports: {
-          'node_modules/react-is/index.js': [
-            'isValidElementType'
-          ]
-      }
-    })
+    commonjs()
   ],
   external: Object.keys(pkg.peerDependencies || {}),
 }

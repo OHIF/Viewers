@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
-import Viewer from './Viewer.js';
+import ConnectedViewer from './ConnectedViewer.js';
 
 const { createDisplaySets } = OHIF.utils;
 
@@ -18,6 +18,8 @@ class ViewerRetrieveStudyData extends Component {
   };
 
   componentDidMount() {
+    // TODO: Avoid using timepoints here
+    //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
     const { studyInstanceUids, seriesInstanceUids, server } = this.props;
     const promise = OHIF.studies.retrieveStudiesMetadata(
       server,
@@ -50,7 +52,12 @@ class ViewerRetrieveStudyData extends Component {
       return <div>Loading...</div>;
     }
 
-    return <Viewer studies={this.state.studies} />;
+    return (
+      <ConnectedViewer
+        studies={this.state.studies}
+        studyInstanceUids={this.props.studyInstanceUids}
+      />
+    );
   }
 }
 
