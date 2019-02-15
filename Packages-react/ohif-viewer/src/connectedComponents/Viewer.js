@@ -9,7 +9,6 @@ import WhiteLabellingContext from '../WhiteLabellingContext.js';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
-import measurementTools from '../measurementTools';
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -57,9 +56,7 @@ class Viewer extends Component {
 
   constructor(props) {
     super(props);
-
     OHIF.measurements.MeasurementApi.setConfiguration({
-      measurementTools,
       dataExchange: {
         retrieve: this.retrieveMeasurements,
         store: this.storeMeasurements

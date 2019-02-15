@@ -1,14 +1,16 @@
 import { connect } from 'react-redux';
 import Viewer from './Viewer.js';
-import actions from '../redux/actions.js';
+import OHIF from 'ohif-core';
+
+const { setTimepoints, setMeasurements } = OHIF.redux.actions;
 
 const mapDispatchToProps = dispatch => {
   return {
     onTimepointsUpdated: timepoints => {
-      dispatch(actions.setTimepoints(timepoints));
+      dispatch(setTimepoints(timepoints));
     },
     onMeasurementsUpdated: measurements => {
-      dispatch(actions.setMeasurements(measurements));
+      dispatch(setMeasurements(measurements));
     }
   };
 };

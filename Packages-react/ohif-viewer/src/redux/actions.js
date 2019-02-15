@@ -13,22 +13,10 @@ export const setUserPreferencesModalOpen = state => ({
   state
 });
 
-export const setTimepoints = state => ({
-  type: 'SET_TIMEPOINTS',
-  state
-});
-
-export const setMeasurements = state => ({
-  type: 'SET_MEASUREMENTS',
-  state
-});
-
 const actions = {
   setLeftSidebarOpen,
   setRightSidebarOpen,
   setUserPreferencesModalOpen,
-  setTimepoints,
-  setMeasurements
 };
 
 export default actions;
