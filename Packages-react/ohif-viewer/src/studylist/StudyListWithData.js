@@ -10,7 +10,6 @@ class StudyListWithData extends Component {
   state = {
     searchData: {},
     studies: null,
-    studyCount: 0,
     error: null
   };
 
@@ -98,8 +97,7 @@ class StudyListWithData extends Component {
           });
 
         this.setState({
-          studies: sortedStudies,
-          studyCount: studies.length
+          studies: sortedStudies
         });
       })
       .catch(error => {
@@ -136,7 +134,6 @@ class StudyListWithData extends Component {
         <ConnectedHeader home={true} user={this.props.user} />
         <StudyList
           studies={this.state.studies}
-          studyCount={this.state.studyCount}
           studyListFunctionsEnabled={false}
           onImport={this.onImport}
           onSelectItem={this.onSelectItem}
