@@ -14,6 +14,7 @@ class StudyListWithData extends Component {
   state = {
     searchData: {},
     studies: null,
+    studyCount: 0,
     error: null
   };
 
@@ -58,9 +59,7 @@ class StudyListWithData extends Component {
       modalitiesInStudy: searchData.modalitiesInStudy,
       studyDateFrom: searchData.studyDateFrom,
       studyDateTo: searchData.studyDateTo,
-      limit:
-        searchData.currentPage * searchData.rowsPerPage +
-        searchData.rowsPerPage,
+      limit: searchData.rowsPerPage,
       offset: searchData.currentPage * searchData.rowsPerPage
     };
 
@@ -83,7 +82,8 @@ class StudyListWithData extends Component {
         });
 
         this.setState({
-          studies: fixedStudies
+          studies: fixedStudies,
+          studyCount: fixedStudies.length
         });
       })
       .catch(error => {
@@ -115,14 +115,12 @@ class StudyListWithData extends Component {
       return <div>Loading...</div>;
     }
 
-    const studyCount = this.state.studies ? this.state.studies.length : 0;
-
     return (
       <>
         <ConnectedHeader home={true} user={this.props.user} />
         <StudyList
           studies={this.state.studies}
-          studyCount={studyCount}
+          studyCount={this.state.studyCount}
           studyListFunctionsEnabled={false}
           onImport={this.onImport}
           onSelectItem={this.onSelectItem}
