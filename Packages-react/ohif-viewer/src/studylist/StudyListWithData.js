@@ -47,7 +47,8 @@ class StudyListWithData extends Component {
       currentPage: 0,
       rowsPerPage: StudyListWithData.rowsPerPage,
       studyDateFrom: StudyListWithData.defaultStudyDateFrom,
-      studyDateTo: StudyListWithData.defaultStudyDateTo
+      studyDateTo: StudyListWithData.defaultStudyDateTo,
+      sortData: StudyListWithData.defaultSort
     }
   ) => {
     const { server } = this.props;
@@ -56,7 +57,7 @@ class StudyListWithData extends Component {
       patientName: searchData.patientName,
       accessionNumber: searchData.accessionNumber,
       studyDescription: searchData.studyDescription,
-      modalitiesInStudy: searchData.modalitiesInStudy,
+      modalitiesInStudy: searchData.modalities,
       studyDateFrom: searchData.studyDateFrom,
       studyDateTo: searchData.studyDateTo,
       limit: searchData.rowsPerPage,
@@ -73,17 +74,30 @@ class StudyListWithData extends Component {
           studies = [];
         }
 
-        // TODO: Fix casing of this property!
-        const fixedStudies = studies.map(study => {
-          const fixedStudy = study;
-          fixedStudy.studyInstanceUID = study.studyInstanceUid;
-
-          return fixedStudy;
+        const { field, order } = searchData.sortData;
+        const sortedStudies = studies.sort(function(a, b) {
+          if (order === 'desc') {
+            if (a[field] < b[field]) {
+              return -1;
+            }
+            if (a[field] > b[field]) {
+              return 1;
+            }
+            return 0;
+          } else {
+            if (a[field] > b[field]) {
+              return -1;
+            }
+            if (a[field] < b[field]) {
+              return 1;
+            }
+            return 0;
+          }
         });
 
         this.setState({
-          studies: fixedStudies,
-          studyCount: fixedStudies.length
+          studies: sortedStudies,
+          studyCount: studies.length
         });
       })
       .catch(error => {
