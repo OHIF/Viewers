@@ -6,11 +6,6 @@ import { StudyList } from 'react-viewerbase';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
 
-const subtractDaysFromDate = (date, days) => {
-  date.setDate(date.getDate() - days);
-  return date;
-};
-
 class StudyListWithData extends Component {
   state = {
     searchData: {},
@@ -30,10 +25,9 @@ class StudyListWithData extends Component {
   static defaultSort = { field: 'patientName', order: 'desc' };
 
   static studyListDateFilterNumDays = 25000; // TODO: put this in the settings
-  static defaultStudyDateFrom = subtractDaysFromDate(
-    new Date(),
-    StudyListWithData.studyListDateFilterNumDays
-  );
+  static defaultStudyDateFrom = moment()
+    .subtract(StudyListWithData.studyListDateFilterNumDays, 'days')
+    .toDate();
   static defaultStudyDateTo = new Date();
 
   componentDidMount() {
