@@ -4,6 +4,7 @@ import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
 import { StudyList } from 'react-viewerbase';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
+import moment from 'moment';
 
 const subtractDaysFromDate = (date, days) => {
   date.setDate(date.getDate() - days);
@@ -75,25 +76,32 @@ class StudyListWithData extends Component {
         }
 
         const { field, order } = searchData.sortData;
-        const sortedStudies = studies.sort(function(a, b) {
-          if (order === 'desc') {
-            if (a[field] < b[field]) {
-              return -1;
+        const sortedStudies = studies
+          .sort(function(a, b) {
+            if (order === 'desc') {
+              if (a[field] < b[field]) {
+                return -1;
+              }
+              if (a[field] > b[field]) {
+                return 1;
+              }
+              return 0;
+            } else {
+              if (a[field] > b[field]) {
+                return -1;
+              }
+              if (a[field] < b[field]) {
+                return 1;
+              }
+              return 0;
             }
-            if (a[field] > b[field]) {
-              return 1;
-            }
-            return 0;
-          } else {
-            if (a[field] > b[field]) {
-              return -1;
-            }
-            if (a[field] < b[field]) {
-              return 1;
-            }
-            return 0;
-          }
-        });
+          })
+          .map(study => {
+            study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
+              'MMM DD, YYYY'
+            );
+            return study;
+          });
 
         this.setState({
           studies: sortedStudies,
