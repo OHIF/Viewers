@@ -211,6 +211,26 @@ function handleWebWorkerInit(basename) {
   cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
 }
 
+/**
+ * Set or update the HTML Base tag present on the document
+ * to point to the provided ROOT Url.
+ *
+ * @param rootUrl
+ */
+function updateBaseTag(rootUrl) {
+  const bases = document.getElementsByTagName('base');
+  let baseHref = rootUrl;
+  baseHref += baseHref.endsWith('/') ? '' : '/';
+
+  if (bases.length > 1) {
+    throw new Error('For some reason there is more than one base tag present.');
+  } else if (bases.length === 1) {
+    bases[0].href = baseHref;
+  } else {
+    document.write(`<base href='${baseHref}'/>`);
+  }
+}
+
 class App extends Component {
   static propTypes = {
     servers: PropTypes.object,
@@ -231,6 +251,7 @@ class App extends Component {
     this.userManager = handleOIDC(this.props.oidc);
     handleServers(this.props.servers);
     handleWebWorkerInit(this.props.rootUrl);
+    updateBaseTag(this.props.rootUrl);
   }
 
   render() {

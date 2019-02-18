@@ -118,7 +118,6 @@ class StudyListWithData extends Component {
   };
 
   onSearch = searchData => {
-    // TODO: Update search filters
     this.searchForStudies(searchData);
   };
 

@@ -2751,10 +2751,10 @@ cornerstone-math@^0.1.7, cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.1.0.tgz#dedecfc038e2f0b984c77bfa74a12810c6fe95f3"
-  integrity sha512-wOolSXgRkG6wgjV4c44zocZhC9FmtWq+X5V1bAsc6VnIi8efSlwdRG3J6uUguQ+G5oYuCT+794Thj4LEPYb3RQ==
+cornerstone-tools@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.2.0.tgz#23b8bfe0f388cfb8e1b489822d53c57a0fd1c484"
+  integrity sha512-IXr2P5BqzASLvG4Ky1/E9odaA2iKpsPVqPGH07pQkW54gXv0c5oBuRYIwM0nY89C5A+XZtM0nMosKY0cG9cDbg==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "^0.1.7"
@@ -3142,14 +3142,14 @@ date-now@^0.1.4:
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
   integrity sha1-6vQ5/U1ISK105cx9vvIAZyueNFs=
 
-dcmjs@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.3.tgz#c0e0564008fd8edc52574eb847a2123c95864cdf"
-  integrity sha512-hfdRfeb+Fqerrbr/lsqQerIjfJHNWbG1MOMyp772uO+n5rmkC/ASoBa9bURAHAJKwRVjkLraULMFmGJD+5oRnQ==
+dcmjs@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.4.tgz#c9cf70843e66ad499cb7d3bd0c4a4fba1352a9d2"
+  integrity sha512-sVSB66dIIXWilSjs0wcp7b5ZF1jS+sEJWItx5pP0jlRTX7sZ/5nuzWGBCQfZo5VLgSo0a1NnHjljpLzbgDdzxA==
   dependencies:
     "@babel/polyfill" "^7.2.5"
     "@babel/runtime" "^7.3.1"
-    loglevel "^1.6.1"
+    loglevelnext "^3.0.0"
 
 debug@*, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0:
   version "4.1.1"
@@ -6963,10 +6963,15 @@ log-update@^2.3.0:
     cli-cursor "^2.0.0"
     wrap-ansi "^3.0.1"
 
-loglevel@^1.4.1, loglevel@^1.6.1:
+loglevel@^1.4.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.1.tgz#e0fc95133b6ef276cdc8887cdaf24aa6f156f8fa"
   integrity sha1-4PyVEztu8nbNyIh82vJKpvFW+Po=
+
+loglevelnext@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/loglevelnext/-/loglevelnext-3.0.0.tgz#cd0f094acc488adf143d7b099927054b1a296124"
+  integrity sha512-QpOjsecBDe3lI9sDcdCyVbuMsit3T15Qluf4C7MoYeeR6jmqSOvH3QFctZtygfIdGJLlchdN7JSjSVhOhZ3HxQ==
 
 longest-streak@^2.0.1:
   version "2.0.2"
@@ -7806,10 +7811,10 @@ octal@^1.0.0:
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
   integrity sha1-Y+cWKmjvvrniE1iNWOmJ0eXEUws=
 
-ohif-core@^0.2.9:
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.2.9.tgz#0e01e47bd71d6be0586732a50f9444c764352edf"
-  integrity sha512-SmlnL+nmej8elXx/kFveyVzhWn1POeis1NqeqMJa96vBJfpFXx+pT44d+uMXUtkbL49Lr1B3GGlInldsh8Za6w==
+ohif-core@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.3.0.tgz#c9dc35a6a9a2b92571facfc01a439a8408c336b2"
+  integrity sha512-FvlGHTyN2ZoR5wpxsz/oNsrh0u9uFSKyikJecFbZN2izEbHH60+KMVeG0uSJtlSymmEdoWtIottiQsm/pOyHhA==
   dependencies:
     "@babel/runtime" "^7.2.0"
     dicomweb-client "^0.4.2"
@@ -7820,15 +7825,15 @@ ohif-core@^0.2.9:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@^0.0.15:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.15.tgz#5e97987db8393aade2dbc41df58c7618db9e248d"
-  integrity sha512-uXUDmh164ifkmeYL48cqLYhUBKXwjUIArc8JaMq6DC6PU+/doXzc1yIaMa36c2U3mQ4N5WdOFl5dVEng0YIDFA==
+ohif-cornerstone-extension@0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.16.tgz#5320ced8b7599c6f9e27c966dff74f87e32de15b"
+  integrity sha512-qT0/FvutUlNC6TPZnSUh5DHUidcduf7zvml8MQESIfDp5nI0ffsMR2EjWK8R9+0DOpHwZjVttoxlDJJWuVsggw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.throttle "^4.1.1"
-    react-cornerstone-viewport "^0.1.13"
+    react-cornerstone-viewport "^0.1.14"
 
 ohif-dicom-html-extension@^0.0.2:
   version "0.0.2"
@@ -9435,10 +9440,10 @@ react-bootstrap-modal@^4.2.0:
     react-overlays "^0.8.0"
     react-transition-group "^2.0.0"
 
-react-cornerstone-viewport@^0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.13.tgz#ef95634e08a3fc12c8a2c8b01929610db515f041"
-  integrity sha512-J2FHcEj4igUfwdZV8y8c7YmBtwLhmGbytvnk5vecc4FQvM4/tYUiuvzJe1hZQtMvJpOqSzd0UKe2fs6u3OroJg==
+react-cornerstone-viewport@^0.1.14:
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.15.tgz#be2743cb027f9eb7848910bee53b37e85f46d9a4"
+  integrity sha512-GwrVRWeStycL15VrmVZezulIpb8fLGOpg/MrIM0va5s6EfFZSGRqwTcM/1WZZOvKAdRr8y+SDmITiacy5+r3kg==
   dependencies:
     lodash.debounce "^4.0.8"
     moment "^2.23.0"
@@ -9692,10 +9697,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.2.6.tgz#8209d8f063f9e1e20bf41ab6d5ef17d0839fd601"
-  integrity sha512-fHxnooBVgs+CvvAYPqisYpTaSuamswEC+bPEASkbQdnXnCqpI4He66eW44vEdizQcc4C+FBtPrZRG1fnUPcfsQ==
+react-viewerbase@^0.2.8:
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.2.8.tgz#bbb483c69e11ab49b33308e58c813443f7df033b"
+  integrity sha512-fEe4Ku6OqMZ4byi18v9i4v4RubMT21EITcKWNP+rvc4cqNKBVKBdc4OYfZCJn11ctR61p1uVCM8e6KeG/rE3Qg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
