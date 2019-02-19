@@ -7811,10 +7811,10 @@ octal@^1.0.0:
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
   integrity sha1-Y+cWKmjvvrniE1iNWOmJ0eXEUws=
 
-ohif-core@0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.3.1.tgz#65794e29081d97f30b9b00678b35132d5066d85d"
-  integrity sha512-tEJNINtvYlvnwq2PqoIU3hkK+Yh3G48Eo6Svxfsx2uOWuOqV5HZ2OYOVvdVf48TlBM3M46mNkjNX5Uxa/YQKxQ==
+ohif-core@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.3.2.tgz#33d5ea786919140ee3f972b5290e09e99fd46673"
+  integrity sha512-oqcp4IpTi5/BWk4vohXZIGNYa6OMJXz1ZrENB8iZcqjLRtMTA7UJuEtZCkombSp/5JTbALGY93IBVX4SGeqSxw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     dicomweb-client "^0.4.2"
@@ -9697,10 +9697,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@^0.2.8:
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.2.8.tgz#bbb483c69e11ab49b33308e58c813443f7df033b"
-  integrity sha512-fEe4Ku6OqMZ4byi18v9i4v4RubMT21EITcKWNP+rvc4cqNKBVKBdc4OYfZCJn11ctR61p1uVCM8e6KeG/rE3Qg==
+react-viewerbase@^0.2.10:
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.2.10.tgz#b6b6ec12b5568982d13b0a9733312fd39b68e121"
+  integrity sha512-daTLjCW4natY7cPatA/4AGyRanu+PyREYt5qI0YRRwCFtIcZTFnCYfZWX9hn6oXmbHiO5ceHzwa9i4x7oCEfkw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
