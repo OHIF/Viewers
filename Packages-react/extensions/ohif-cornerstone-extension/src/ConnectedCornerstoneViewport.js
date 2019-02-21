@@ -1,8 +1,6 @@
 import { connect } from 'react-redux';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from 'ohif-core';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
 import throttle from 'lodash.throttle';
 
 const {
@@ -32,9 +30,7 @@ const mapStateToProps = (state, ownProps) => {
     ...dataFromStore,
     enableStackPrefetch: isActive,
     //stack: viewportSpecificData.stack,
-    cineToolData: viewportSpecificData.cine,
-    cornerstone,
-    cornerstoneTools
+    cineToolData: viewportSpecificData.cine
   };
 };
 
