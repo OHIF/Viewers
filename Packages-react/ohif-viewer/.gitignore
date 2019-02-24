@@ -5,3 +5,6 @@ yarn.lock
 yarn-error.log
 src/sha.js
 src/version.js
+
+.yalc
+yalc.lock

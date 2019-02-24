@@ -17,11 +17,11 @@ export default class OHIFDicomPDFExtension {
     return OHIFDicomPDFSopClassHandler;
   }
 
-  getPanelModuleDefinition() {
+  getPanelModule() {
     return null;
   }
 
-  getToolbarModuleDefinition() {
+  getToolbarModule() {
     return null;
   }
 }

@@ -9,6 +9,7 @@ import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
+//import OHIFVTKExtension from 'ohif-vtk-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
@@ -146,6 +147,7 @@ store.dispatch(toolAction);
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 const extensions = [
   new OHIFCornerstoneExtension(),
+  //new OHIFVTKExtension(),
   new OHIFDicomPDFExtension(),
   new OHIFDicomHtmlExtension(),
   new OHIFDicomMicroscopyExtension()

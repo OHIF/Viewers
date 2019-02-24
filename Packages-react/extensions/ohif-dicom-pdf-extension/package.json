@@ -1,6 +1,6 @@
 {
   "name": "ohif-dicom-pdf-extension",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "OHIF extension for Dicom PDF",
   "author": "OHIF",
   "license": "MIT",
@@ -20,7 +20,7 @@
   },
   "peerDependencies": {
     "dicom-parser": "^1.8.3",
-    "ohif-core": "^0.2.6",
+    "ohif-core": "^0.3.4",
     "prop-types": "^15.6.2",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"

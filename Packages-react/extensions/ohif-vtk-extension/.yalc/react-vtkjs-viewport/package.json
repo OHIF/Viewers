@@ -1,0 +1,55 @@
+{
+  "name": "react-vtkjs-viewport",
+  "version": "0.0.6-76b678ec",
+  "description": "VTK.js image viewport component for React",
+  "author": "OHIF Contributors",
+  "license": "MIT",
+  "repository": "OHIF/react-vtkjs-viewport",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "scripts": {
+    "build": "webpack --progress --colors --mode development",
+    "build:release": "webpack --progress --colors --mode production",
+    "start": "webpack --watch --progress --colors --mode development",
+    "prepare": "npm run build:release",
+    "predeploy": "cd example && npm install && npm run build:release",
+    "prepublishOnly": "npm run build:release",
+    "deploy": "gh-pages -d example/build",
+    "generateStaticSite": "./generateStaticSite.sh"
+  },
+  "peerDependencies": {
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,json,css}": [
+      "prettier --single-quote --write",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "cornerstone-core": "^2.2.8",
+    "cornerstone-math": "^0.1.8",
+    "vtk.js": "^8.3.11"
+  }
+}

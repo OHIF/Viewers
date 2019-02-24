@@ -1,23 +1,20 @@
 import React, { Component } from 'react';
-import ConnectedToolbarSection from './ConnectedToolbarSection';
-import ConnectedLayoutButton from './ConnectedLayoutButton';
-import ConnectedCineDialog from './ConnectedCineDialog.js';
 import PropTypes from 'prop-types';
-import { ToolbarButton, RoundedButtonGroup } from 'react-viewerbase';
+import OHIF from 'ohif-core';
+import { RoundedButtonGroup } from 'react-viewerbase';
+import ConnectedLayoutButton from './ConnectedLayoutButton';
+///import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import './ToolbarRow.css';
 
 const Icons = 'icons.svg';
 
 class ToolbarRow extends Component {
-  state = {
-    cineDialogOpen: false
-  };
-
   static propTypes = {
     leftSidebarOpen: PropTypes.bool.isRequired,
     rightSidebarOpen: PropTypes.bool.isRequired,
     setLeftSidebarOpen: PropTypes.func,
-    setRightSidebarOpen: PropTypes.func
+    setRightSidebarOpen: PropTypes.func,
+    pluginId: PropTypes.string
   };
 
   static defaultProps = {
@@ -31,12 +28,6 @@ class ToolbarRow extends Component {
 
   onRightSidebarValueChanged = value => {
     this.props.setRightSidebarOpen(!!value);
-  };
-
-  onClickCineToolbarButton = () => {
-    this.setState({
-      cineDialogOpen: !this.state.cineDialogOpen
-    });
   };
 
   render() {
@@ -68,9 +59,23 @@ class ToolbarRow extends Component {
       ? rightSidebarToggle[0].value
       : null;
 
-    const cineDialogContainerStyle = {
-      display: this.state.cineDialogOpen ? 'inline-block' : 'none'
-    };
+    const currentPluginId = this.props.pluginId;
+
+    const { PLUGIN_TYPES, availablePlugins } = OHIF.plugins;
+    const plugin = availablePlugins.find(entry => {
+      return (
+        entry.type === PLUGIN_TYPES.TOOLBAR &&
+        entry.id === currentPluginId
+      );
+    });
+
+
+    let pluginComp;
+    if (plugin) {
+      const PluginComponent = plugin.component;
+
+      pluginComp = <PluginComponent/>
+    }
 
     return (
       <div className="ToolbarRow">
@@ -81,17 +86,9 @@ class ToolbarRow extends Component {
             onValueChanged={this.onLeftSidebarValueChanged}
           />
         </div>
-        <ConnectedToolbarSection />
+        { pluginComp }
         <ConnectedLayoutButton />
-        <ToolbarButton
-          active={this.state.cineDialogOpen}
-          onClick={this.onClickCineToolbarButton}
-          text={'CINE'}
-          iconClasses={'fab fa-youtube'}
-        />
-        <div className="CineDialogContainer" style={cineDialogContainerStyle}>
-          <ConnectedCineDialog />
-        </div>
+        {/*<ConnectedPluginSwitch/>*/}
         <div className="pull-right m-t-1 rm-x-1" style={{ marginLeft: 'auto' }}>
           <RoundedButtonGroup
             options={rightSidebarToggle}

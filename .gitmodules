@@ -7,3 +7,6 @@
 [submodule "Packages-react/react-cornerstone-viewport"]
 	path = Packages-react/react-cornerstone-viewport
 	url = https://github.com/cornerstonejs/react-cornerstone-viewport.git
+[submodule "Packages-react/react-vtkjs-viewport"]
+	path = Packages-react/react-vtkjs-viewport
+	url = https://github.com/OHIF/react-vtkjs-viewport.git
