@@ -8,7 +8,8 @@ import throttle from 'lodash.throttle';
 const {
   setViewportActive,
   setViewportSpecificData,
-  clearViewportSpecificData
+  clearViewportSpecificData,
+  onViewportInteraction,
 } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
@@ -52,6 +53,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
     clearViewportSpecificData: () => {
       dispatch(clearViewportSpecificData(viewportIndex));
+    },
+
+    onViewportInteraction: () => {
+      dispatch(onViewportInteraction());
     },
 
     onMeasurementsChanged: (event, action) => {
