@@ -11,3 +11,7 @@ LesionTracker/tests/nightwatch/reports/
 docs/_book
 .DS_Store
 **/.history/*
+
+# Development with YALC
+**/yalc.lock
+.yalc/
