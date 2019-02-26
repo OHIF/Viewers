@@ -9,7 +9,7 @@ const {
   setViewportActive,
   setViewportSpecificData,
   clearViewportSpecificData,
-  onViewportInteraction,
+  resetLabellingAndContextMenu,
 } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
@@ -55,8 +55,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(clearViewportSpecificData(viewportIndex));
     },
 
-    onViewportInteraction: () => {
-      dispatch(onViewportInteraction());
+    resetLabellingAndContextMenu: () => {
+      dispatch(resetLabellingAndContextMenu());
     },
 
     onMeasurementsChanged: (event, action) => {
