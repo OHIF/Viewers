@@ -1,6 +1,4 @@
 import OHIF from 'ohif-core';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
 import * as dcmjs from 'dcmjs';
 
 const { StackManager } = OHIF.utils;

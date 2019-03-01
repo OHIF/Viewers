@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import { RoundedButtonGroup } from 'react-viewerbase';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
-///import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
+import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import './ToolbarRow.css';
 
 const Icons = 'icons.svg';
@@ -64,17 +64,15 @@ class ToolbarRow extends Component {
     const { PLUGIN_TYPES, availablePlugins } = OHIF.plugins;
     const plugin = availablePlugins.find(entry => {
       return (
-        entry.type === PLUGIN_TYPES.TOOLBAR &&
-        entry.id === currentPluginId
+        entry.type === PLUGIN_TYPES.TOOLBAR && entry.id === currentPluginId
       );
     });
-
 
     let pluginComp;
     if (plugin) {
       const PluginComponent = plugin.component;
 
-      pluginComp = <PluginComponent/>
+      pluginComp = <PluginComponent />;
     }
 
     return (
@@ -86,9 +84,9 @@ class ToolbarRow extends Component {
             onValueChanged={this.onLeftSidebarValueChanged}
           />
         </div>
-        { pluginComp }
+        {pluginComp}
         <ConnectedLayoutButton />
-        {/*<ConnectedPluginSwitch/>*/}
+        <ConnectedPluginSwitch />
         <div className="pull-right m-t-1 rm-x-1" style={{ marginLeft: 'auto' }}>
           <RoundedButtonGroup
             options={rightSidebarToggle}

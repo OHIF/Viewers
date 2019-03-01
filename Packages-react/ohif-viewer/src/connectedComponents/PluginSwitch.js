@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown } from 'react-viewerbase';
+import { ExpandableToolMenu } from 'react-viewerbase';
+import './PluginSwitch.css';
 
 class PluginSwitch extends Component {
   static propTypes = {
-    options: PropTypes.array,
+    buttons: PropTypes.array
   };
 
-  static defaultProps = {
-  };
+  static defaultProps = {};
 
   render() {
     return (
       <div className="PluginSwitch">
-        {this.props.options && <Dropdown title={"View"} list={this.props.options}/>}
+        <ExpandableToolMenu buttons={this.props.buttons} />
       </div>
     );
   }

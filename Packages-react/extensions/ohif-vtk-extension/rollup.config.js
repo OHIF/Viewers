@@ -57,6 +57,12 @@ export default {
     commonjs({
       include: ['node_modules/**', '.yalc/**'],
       namedExports: {
+          'node_modules/react-vtkjs-viewport/dist/index.js': [
+            'getImageData',
+            'loadImageData',
+            'VTKViewport',
+            'VTKMPRViewport',
+          ],
           '.yalc/react-vtkjs-viewport/dist/index.js': [
             'getImageData',
             'loadImageData',

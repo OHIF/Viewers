@@ -131,22 +131,27 @@ class OHIFVTKViewport extends Component {
         frameIndex
       );
 
+      let imageDataObject;
+      let labelmapDataObject;
+      let doneLoadingCallback;
+      let callbacks;
+
       switch (sopClassUid) {
         case SOP_CLASSES.SEGMENTATION_STORAGE:
           throw new Error("Not yet implemented");
 
           const data = handleSegmentationStorage(stack.imageIds, displaySetInstanceUid, cornerstone);
-          const imageDataObject = data.referenceDataObject;
-          const labelmapDataObject = data.labelmapDataObject;
+          imageDataObject = data.referenceDataObject;
+          labelmapDataObject = data.labelmapDataObject;
 
-          const doneLoadingCallback = () => {
+          doneLoadingCallback = () => {
             resolve({
               data: imageDataObject.vtkImageData,
               labelmap: labelmapDataObject
             });
           };
 
-          const callbacks = [
+          callbacks = [
             doneLoadingCallback
           ];
 
@@ -154,14 +159,14 @@ class OHIFVTKViewport extends Component {
 
           break;
         default:
-          const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid, cornerstone);
-          const doneLoadingCallback = () => {
+          imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid, cornerstone);
+          doneLoadingCallback = () => {
             resolve({
               data: imageDataObject.vtkImageData,
             });
           };
 
-          const callbacks = [
+          callbacks = [
             doneLoadingCallback
           ];
 
