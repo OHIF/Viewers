@@ -9,7 +9,8 @@
     "github",
     "ga",
     "sitemap",
-    "anchors"
+    "anchors",
+    "versions"
   ],
   "pluginsConfig": {
     "edit-link": {
