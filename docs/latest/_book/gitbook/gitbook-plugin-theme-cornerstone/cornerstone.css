@@ -30,6 +30,10 @@ li a {
 /* set correct fonts on sidebar and main page */
 .book .book-body .page-wrapper .page-inner section.normal, .book-summary { font-family: 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif; }
 
+.page-inner {
+  max-width: 95%;
+}
+
 /* sidebar */
 .book-summary ul.summary li a,
 .book-summary ul.summary li span {
