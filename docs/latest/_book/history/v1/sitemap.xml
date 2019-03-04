@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<url> <loc>https://docs.ohif.org/./</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/essentials/installation.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/essentials/getting-started.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/essentials/architecture.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/essentials/configuration.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/essentials/troubleshooting.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/connecting-to-image-archives/options.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/connecting-to-image-archives/dicomweb.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/connecting-to-image-archives/dimse.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/connecting-to-image-archives/dcm4chee-with-docker.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/connecting-to-image-archives/orthanc-with-docker.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/connecting-to-image-archives/osirix.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/data/data-hierarchy.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/data/image-viewport.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/layout/layout-management.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/layout/hanging-protocols.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/packages/measurements.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/deployment/building-for-production.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/deployment/security.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/I-want-to/add-a-tool-to-the-viewer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/I-want-to/add-a-logo-to-the-viewer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/example-applications/ohif-viewer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/example-applications/lesion-tracker.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/example-applications/standalone-viewer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/standalone-viewer/usage.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/user-manual.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/installation-on-windows.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/manage-studies-in-orthanc.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/user-accounts.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/study-and-timepoint-management.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/using-the-viewer.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/user-preferences.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/server-management.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/lesion-tracker/audit-trail.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/faq/general.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/faq/technical.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://docs.ohif.org/contributing.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+</urlset>

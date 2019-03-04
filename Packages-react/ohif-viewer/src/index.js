@@ -170,6 +170,22 @@ props.whiteLabelling = {
   logoComponent: RadicalImagingLogo()
 };*/
 
+// Note: Run your build like this:
+// REACT_APP_CONFIG=$(cat ../config-react/ccc.json) yarn start
+//
+// If you change the JSON config, you need to re-run the command!
+const configString = process.env && process.env && process.env.REACT_APP_CONFIG;
+if (configString) {
+  const configJSON = JSON.parse(configString);
+  if (configJSON.servers) {
+    props.servers = configJSON.servers;
+  }
+
+  if (configJSON.oidc) {
+    props.oidc = configJSON.oidc;
+  }
+}
+
 var app = React.createElement(App, props, null);
 
 ReactDOM.render(app, document.getElementById('root'));

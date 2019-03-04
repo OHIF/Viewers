@@ -92,6 +92,6 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "^0.1.20"
+    "react-cornerstone-viewport": "^0.1.21"
   }
 }

@@ -24,6 +24,20 @@
     },
     "sitemap": {
       "hostname": "https://docs.ohif.org"
+    },
+    "versions": {
+      "gitbookConfigURL": "https://raw.githubusercontent.com/OHIF/Viewers/master/docs/book.json",
+      "options": [
+        {
+          "value": "https://docs.ohif.org/history/v1/",
+          "text": "Version 1.0.0 (Meteor)"
+        },
+        {
+          "value": "https://docs.ohif.org/",
+          "text": "Version 2.0.0",
+          "selected": true
+        }
+      ]
     }
   },
   "links": {

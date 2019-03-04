@@ -17,9 +17,9 @@
   },
   "oidc": [{
     "authServerUrl": "https://cancer.crowds-cure.org/auth/realms/dcm4che",
-    "authRedirectUri": "/callback",
+    "authRedirectUri": "https://localhost:5000/callback",
     "clientId": "crowds-cure-cancer",
-    "postLogoutRedirectUri": "/logout-redirect.html",
+    "postLogoutRedirectUri": "https://localhost:5000/logout-redirect.html",
     "responseType": "id_token token",
     "scope": "email profile openid",
     "revokeAccessTokenOnSignout": true,
