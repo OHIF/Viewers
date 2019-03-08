@@ -3386,14 +3386,15 @@ date-now@^0.1.4:
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
   integrity sha1-6vQ5/U1ISK105cx9vvIAZyueNFs=
 
-dcmjs@^0.3.6:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.6.tgz#d07d02299afb136fbbd6c9fc8370509aa01361f8"
-  integrity sha512-169vTK+dbdcmyggDv3G5hIDYwITvxhPA8seK6VwSiWnqyVks+FP4MB/TAdHkFxSkKXumi6wn0Ugr1xoXre9IHQ==
+dcmjs@^0.3.7:
+  version "0.3.7"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.7.tgz#2179aecf3e6c93e3b292d2ac54e6c85ebb68ceb8"
+  integrity sha512-68+T5+0HpIENAgFjbD3fTGlTp4sR81hHChx/BzWMKrTwHXsEnKO2WGvBmpwPPKpezZWlYwkOrCaXRSwy9yJN0Q==
   dependencies:
     "@babel/polyfill" "^7.2.5"
     "@babel/runtime" "^7.3.1"
     loglevelnext "^3.0.0"
+    ndarray "^1.0.18"
 
 debug@*, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0:
   version "4.1.1"
@@ -5899,6 +5900,11 @@ invert-kv@^2.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-2.0.0.tgz#7393f5afa59ec9ff5f67a27620d11c226e3eec02"
   integrity sha512-wPVv/y/QQ/Uiirj/vh3oP+1Ww+AWehmi1g5fFWGPF6IpCBCDVrhgHRMvrLfdYcwDh3QJbGXDW4JAuzxElLSqKA==
 
+iota-array@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/iota-array/-/iota-array-1.0.0.tgz#81ef57fe5d05814cd58c2483632a99c30a0e8087"
+  integrity sha1-ge9X/l0FgUzVjCSDYyqZwwoOgIc=
+
 ip-regex@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-2.1.0.tgz#fa78bf5d2e6913c911ce9f819ee5146bb6d844e9"
@@ -8155,6 +8161,14 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
+ndarray@^1.0.18:
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/ndarray/-/ndarray-1.0.18.tgz#b60d3a73224ec555d0faa79711e502448fd3f793"
+  integrity sha1-tg06cyJOxVXQ+qeXEeUCRI/T95M=
+  dependencies:
+    iota-array "^1.0.0"
+    is-buffer "^1.0.2"
+
 needle@^2.2.1:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.4.tgz#51931bff82533b1928b7d1d69e01f1b00ffd2a4e"
@@ -8816,15 +8830,15 @@ ohif-core@^0.3.5:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@^0.0.20:
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.20.tgz#831da61160338ba30b09d6454876d3d7b318445b"
-  integrity sha512-m/qmBFcV3vJ6+ma0UHXHqMN0Nz1Zw9I47T6zgnvz7ZwxJ3h8aQfUjVPGtRcuB2snna4c4NmEHaxoEGRR0bFdIg==
+ohif-cornerstone-extension@^0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.25.tgz#33da4c4d84ef9c7e395b3b5ec68eda217288af65"
+  integrity sha512-3uoclL5F2nqxrVivxcy0t/a4DJ8YaXnDjLYvQI1+fKt+mgoDJZ6I+tZ9XbRUQmgu1fEoAB8PLJeXmLTUV2zXFQ==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.throttle "^4.1.1"
-    react-cornerstone-viewport "^0.1.20"
+    react-cornerstone-viewport "^0.1.23"
 
 ohif-dicom-html-extension@^0.0.2:
   version "0.0.2"
@@ -10584,10 +10598,10 @@ react-bootstrap-modal@^4.2.0:
     react-overlays "^0.8.0"
     react-transition-group "^2.0.0"
 
-react-cornerstone-viewport@^0.1.20:
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.20.tgz#90e369a48e3f47dd5da69d42f0c8ee7e87e81543"
-  integrity sha512-SbaSjCAVFpQoUUXZ6d5F5QwKrP66zRJ4mN7JXPGyiL6+/m0jGkaBVci6pftkth66Lu5HRlCZUS8nh0plONPUtA==
+react-cornerstone-viewport@^0.1.23:
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.23.tgz#4f065c4d1a5e721a45b819d1b7e94489af69b5c1"
+  integrity sha512-uukvBIrtvExY0oOo6d/79CZRrALtU2Pq8NBovYVvD02Hg40yYtGYLZ2AnbjbQEtsf0LjpLhcfT/QU6ZOB2v8rw==
   dependencies:
     lodash.debounce "^4.0.8"
     moment "^2.23.0"

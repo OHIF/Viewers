@@ -50,10 +50,10 @@ function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
 }
 
 function parseSeg(arrayBuffer, imageIds) {
-  return dcmjs.adapters.Cornerstone.Segmentation.readToolState(
+  return dcmjs.adapters.Cornerstone.Segmentation.generateToolState(
     imageIds,
     arrayBuffer,
-    //firstImagePlane
+    cornerstone.metaData
   );
 }
 
@@ -118,9 +118,6 @@ async function handleSegmentationStorage(
 
   const referenceDisplaySet = displaySets[0];
   const imageIds = referenceDisplaySet.images.map(image => image.getImageId());
-
-  //const firstImagePlane = cornerstone.metadata.get('imagePlane', imageIds[0]);
-
   const results = parseSeg(arrayBuffer, imageIds);
 
   if (!results) {
