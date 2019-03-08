@@ -167,13 +167,13 @@ class OHIFCornerstoneViewport extends Component {
       frameIndex
     } = displaySet;
 
-    if (sopClassUids.length > 1) {
+    if (sopClassUids && sopClassUids.length > 1) {
       console.warn(
         'More than one SOPClassUid in the same series is not yet supported.'
       );
     }
 
-    const sopClassUid = sopClassUids[0];
+    const sopClassUid = sopClassUids && sopClassUids[0];
 
     this.getViewportData(
       studies,
