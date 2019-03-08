@@ -3386,10 +3386,10 @@ date-now@^0.1.4:
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
   integrity sha1-6vQ5/U1ISK105cx9vvIAZyueNFs=
 
-dcmjs@^0.3.7:
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.7.tgz#2179aecf3e6c93e3b292d2ac54e6c85ebb68ceb8"
-  integrity sha512-68+T5+0HpIENAgFjbD3fTGlTp4sR81hHChx/BzWMKrTwHXsEnKO2WGvBmpwPPKpezZWlYwkOrCaXRSwy9yJN0Q==
+dcmjs@^0.3.8:
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.3.8.tgz#cce165ee6e291d02e6631c279efe2711d575bed8"
+  integrity sha512-GW1WmhBknxpiJD7Daxh8hCO6gS/WtdBDMz7txlI+IXTXKgeNAsREdYQcdQI7id9N8QkWgVmZjtgr5dHv4udRmQ==
   dependencies:
     "@babel/polyfill" "^7.2.5"
     "@babel/runtime" "^7.3.1"
@@ -8830,10 +8830,10 @@ ohif-core@^0.3.5:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@^0.0.25:
-  version "0.0.25"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.25.tgz#33da4c4d84ef9c7e395b3b5ec68eda217288af65"
-  integrity sha512-3uoclL5F2nqxrVivxcy0t/a4DJ8YaXnDjLYvQI1+fKt+mgoDJZ6I+tZ9XbRUQmgu1fEoAB8PLJeXmLTUV2zXFQ==
+ohif-cornerstone-extension@^0.0.26:
+  version "0.0.26"
+  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.26.tgz#aac3ce9b5defd698b37064cf7b0af7efa2d71b9f"
+  integrity sha512-mriZWb9lgkIKE+hMGSNJLNz9qgIeQNfOR2/QDz8/Hfma0xrw80ZNyKOwuvSdGH1upUk3QpnY/H5uJrDDeHYUqQ==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
