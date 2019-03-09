@@ -7,6 +7,10 @@ Package.describe({
 Package.onUse(function(api) {
     api.versionsFrom('1.4');
 
+    Npm.depends({
+        'performance-now': '2.1.0'
+    });
+
     api.use(['ecmascript',
         'standard-app-packages',
         'http',
@@ -22,7 +26,7 @@ Package.onUse(function(api) {
         'ohif:design',
         'ohif:core',
         'ohif:hotkeys',
-        'ohif:log'
+        'ohif:wadoproxy'
     ]);
 
     const assets = [
@@ -129,7 +133,6 @@ Package.onUse(function(api) {
 
     api.addFiles('client/components/viewer/viewer3D/viewer3D.html', 'client');
     api.addFiles('client/components/viewer/viewer3D/viewer3D.js', 'client');
-    //api.addFiles('client/components/viewer/gridLayout/gridLayout.styl', 'client');
 
 
     api.addFiles('client/components/viewer/loadingIndicator/loadingIndicator.html', 'client');
@@ -213,6 +216,8 @@ Package.onUse(function(api) {
 
     api.export('dialogPolyfill', 'client');
 
+
+    api.use('gtajesgenga:ami');
     api.mainModule('main.js', 'client');
 
 });

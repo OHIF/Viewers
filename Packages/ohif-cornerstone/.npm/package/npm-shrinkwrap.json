@@ -17,16 +17,16 @@
       "integrity": "sha1-IBJj/j2Y6zdz1uPb+pfmZ9eE02c=",
       "dependencies": {
         "jquery": {
-          "version": "3.2.1",
-          "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
-          "integrity": "sha1-XE2d5lKvbNCncBVKYxu6ErAVx4c="
+          "version": "3.3.1",
+          "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.3.1.tgz",
+          "integrity": "sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg=="
         }
       }
     },
     "dicom-parser": {
-      "version": "1.7.6",
-      "resolved": "https://registry.npmjs.org/dicom-parser/-/dicom-parser-1.7.6.tgz",
-      "integrity": "sha1-qxRTTBCWXr7ebYC8aKe3N0LkihA="
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/dicom-parser/-/dicom-parser-1.8.1.tgz",
+      "integrity": "sha512-8lgmQ+p4KD9lWdDpte/goUFZW9BrNCqYM/mEpO2IZl1srHj+2kmzWNbIMnYdQH60IMreS0ECJ8BnWE0rHSvBGA=="
     },
     "gtajesgenga-cornerstone-tools": {
       "version": "1.0.4",
@@ -34,9 +34,9 @@
       "integrity": "sha512-hJonlEYFjn8yXhhXSFhoL6EyI0OxA7oTJKYz2yqV3Kya7gyP8l1zhgCzq0kAWr71cY1G68K0T5XMLRjPWXJn0g==",
       "dependencies": {
         "cornerstone-math": {
-          "version": "0.1.6",
-          "resolved": "https://registry.npmjs.org/cornerstone-math/-/cornerstone-math-0.1.6.tgz",
-          "integrity": "sha1-k7OtcvroFTg8zlGAryODZVAgDDo="
+          "version": "0.1.8",
+          "resolved": "https://registry.npmjs.org/cornerstone-math/-/cornerstone-math-0.1.8.tgz",
+          "integrity": "sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw=="
         }
       }
     },

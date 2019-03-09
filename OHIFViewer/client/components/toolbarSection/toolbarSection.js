@@ -259,12 +259,12 @@ Template.toolbarSection.helpers({
             subTools: extraTools
         });
 
-        buttonData.push({
-           id: 'render3D',
-           title: 'View 3D',
-           iconClasses: 'fa fa-eye',
-           classes: 'imageViewerCommand'
-        });
+        // buttonData.push({
+        //    id: 'render3D',
+        //    title: 'View 3D',
+        //    iconClasses: 'fa fa-eye',
+        //    classes: 'imageViewerCommand'
+        // });
 
         return buttonData;
     },
