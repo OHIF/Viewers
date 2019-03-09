@@ -1,21 +1,25 @@
 <template name="viewer">
-    {{#if and Template.subscriptionsReady}}
-        <div class="viewerDialogs">
-            {{>cineDialog}}
-            {{>downloadDialog}}
-            {{>layoutChooser}}
-            {{>annotationDialogs}}
+    <div class="viewerDialogs">
+        {{#if and Template.subscriptionsReady dataSourcesReady}}
+                {{>confirmDeleteDialog}}
+                {{>measurementTableHUD (clone this)}}
+                {{>cineDialog}}
+                {{>downloadDialog}}
+                {{>layoutChooser}}
+                {{>annotationDialogs}}
 
-            <!-- Hanging Protocol dialogs -->
-            {{>ruleEntryDialog}}
-            {{>settingEntryDialog}}
-            {{>textEntryDialog}}
-        </div>
-        <div id="viewer">
-            {{>toolbarSection (clone this state=state)}}
-            {{>flexboxLayout (clone this state=state)}}
-        </div>
-    {{else}}
-        {{>loadingText}}
-    {{/if}}
+                <!--&lt;!&ndash; Hanging Protocol dialogs &ndash;&gt;-->
+                <!--{{>ruleEntryDialog}}-->
+                <!--{{>settingEntryDialog}}-->
+                <!--{{>textEntryDialog}}-->
+        {{/if}}
+    </div>
+    <div id="viewer">
+        {{#if and Template.subscriptionsReady dataSourcesReady}}
+                {{>toolbarSection (clone this state=state)}}
+                {{>flexboxLayout (clone this state=state)}}
+        {{else}}
+            {{>loadingText}}
+        {{/if}}
+    </div>
 </template>

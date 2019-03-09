@@ -1,19 +1,103 @@
 import { Template } from 'meteor/templating';
-import 'meteor/fds:threejs';
-import 'meteor/polguixe:meteor-datgui';
+ import { Router } from 'meteor/iron:router';
+
+//import 'meteor/fds:threejs';
+//import 'meteor/polguixe:meteor-datgui';
+
 import { $ } from 'meteor/jquery';
 import { EffectController } from "./EffectController";
 import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 import {Session} from "meteor/session";
 import { getElementIfNotEmpty } from "../../../lib/getElementIfNotEmpty";
+//import  * as AMI from "../../../lib/ami/ami.js";
+// import {stackHelperFactory} from '../../../lib/ami/ami.min.js';
+// import "../../../lib/ami/ami.js";
+
+//var THREE = require('three');
+import "meteor/gtajesgenga:ami";
+import {viewportOverlayUtils} from "../../../lib/viewportOverlayUtils";
+
+const colors = {
+    red: 0xff0000,
+    blue: 0x0000ff,
+    darkGrey: 0x353535,
+};
+
+const ami_gui = stackHelper => {
+    const stack = stackHelper.stack;
+    gui = new dat.GUI({
+        autoPlace: false,
+    });
+    const customContainer = document.getElementById('my-gui-container');
+    customContainer.appendChild(gui.domElement);
+
+    // material
+    const materialfolder = gui.addFolder('Material');
+
+    const transparency = materialfolder
+        .add(material, 'transparent')
+        .listen();
+
+    const opacity = materialfolder
+        .add(material, 'opacity', 0.0, 1.0, 0.1)
+        .listen();
+
+    materialfolder.open();
+
+    // stack
+    const stackFolder = gui.addFolder('Stack');
+    // index range depends on stackHelper orientation.
+    const index = stackFolder
+        .add(stackHelper, 'index', 0, stack.dimensionsIJK.z - 1)
+        .step(1)
+        .listen();
+    const orientation = stackFolder
+        .add(stackHelper, 'orientation', 0, 2)
+        .step(1)
+        .listen();
+    orientation.onChange(value => {
+        index.__max = stackHelper.orientationMaxIndex;
+        stackHelper.index = Math.floor(index.__max / 2);
+    });
+    stackFolder.open();
+
+    // slice
+    const sliceFolder = gui.addFolder('Slice');
+    sliceFolder
+        .add(stackHelper.slice, 'windowWidth', 1, stack.minMax[1] - stack.minMax[0])
+        .step(1)
+        .listen();
+    sliceFolder
+        .add(stackHelper.slice, 'windowCenter', stack.minMax[0], stack.minMax[1])
+        .step(1)
+        .listen();
+    sliceFolder.add(stackHelper.slice, 'intensityAuto').listen();
+    sliceFolder.add(stackHelper.slice, 'invert');
+    sliceFolder.open();
+
+    // bbox
+    const bboxFolder = gui.addFolder('Bounding Box');
+    bboxFolder.add(stackHelper.bbox, 'visible');
+    bboxFolder.addColor(stackHelper.bbox, 'color');
+    bboxFolder.open();
+
+    // border
+    const borderFolder = gui.addFolder('Border');
+    borderFolder.add(stackHelper.border, 'visible');
+    borderFolder.addColor(stackHelper.border, 'color');
+    borderFolder.open();
+};
 
 var scene, camera, renderer, controls;
-var texture, geometry, material, plane, geometry2, material2, sphere2, edges;
+var texture, geometry, material, plane = undefined, geometry2, material2, sphere2, edges;
 var aspectRelation; // Width / Height
 var objects = new Map();
 var mouse , INTERSECTED, SELECTED_OBJECT, selectionMode;
-var canvas, raycaster, effectController, textureMagFilter, textureMinFilter, ftexture, ftextureMagFilter, ftextureMinFilter, gui, hasGeometry;
+var canvas, container, raycaster, effectController, textureMagFilter, textureMinFilter, ftexture, ftextureMagFilter, ftextureMinFilter, hasGeometry;
+var gui = {
+    domElement: undefined
+};
 var lengthX, lengthY, lengthZ, originX, originY, originZ;
 var arrowHelper_x, arrowHelper_y, arrowHelper_z;
 
@@ -253,7 +337,7 @@ function onImage2DRendered(e) {
 
         geometry = new THREE.PlaneGeometry(image.width, image.height, image.width, image.height);
         // geometry.center();
-
+        geometry.scale(0.961000025272369, 0.961000025272369, 1)
         //geometry.applyMatrix(mS);
         //mesh.applyMatrix(mS);
         //object.applyMatrix(mS);
@@ -261,8 +345,10 @@ function onImage2DRendered(e) {
         material = new THREE.MeshBasicMaterial({color: 0xff0000, map: texture, side: THREE.DoubleSide});
          material.transparent = false;
          material.opacity = 0.5;
-        scene.remove(plane);
-        objects.delete(plane.uuid);
+        if (plane !== undefined) {
+            scene.remove(plane);
+            objects.delete(plane.uuid);
+        }
 
 
         plane = new THREE.Mesh( geometry, material );
@@ -275,8 +361,7 @@ function onImage2DRendered(e) {
         console.log('Nueva:' + plane.position);
         scene.add(plane);
         objects.set(plane.uuid, plane);
-        camera.updateProjectionMatrix();
-        plane.updateMatrixWorld();
+        //camera.updateProjectionMatrix();
     }
 }
 
@@ -299,6 +384,7 @@ function init() {
 
     //Renderer
     canvas = document.getElementById('wglcanvas');
+    container = document.getElementById('imageViewerViewport3D');
     renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( renderer.domElement.offsetWidth, renderer.domElement.offsetHeight );
@@ -330,7 +416,7 @@ function init() {
     controls.addEventListener( 'change', render );
 
     //GUI
-    initializeGUI();
+    //initializeGUI();
 
     $("#enableSelectionButton").click(function (event) {
         event.preventDefault();
@@ -338,12 +424,12 @@ function init() {
         selectionMode = !selectionMode;
     });
 
-      geometry = new THREE.PlaneGeometry();
+     // geometry = new THREE.PlaneGeometry();
     // geometry.center();
-      material = new THREE.MeshBasicMaterial({color: 0xff0000});
+    //  material = new THREE.MeshBasicMaterial({color: 0xff0000});
     // material.transparent = false;
     // material.opacity = 0.5;
-      plane = new THREE.Mesh( geometry, material );
+    //  plane = new THREE.Mesh( geometry, material );
     // sphere.scale.set(1, 1, 1);
     // edges = new THREE.EdgesHelper(sphere);
     // geometry2 = new THREE.SphereGeometry(2, 64, 64, 0, 3 * Math.PI / 2);
@@ -355,7 +441,7 @@ function init() {
     // sphere2 = new THREE.Mesh( geometry2, material2 );
     // sphere2.scale.set(1, 1, 1);
 
-     scene.add(plane);
+     //scene.add(plane);
     // objects.push(sphere);
     // scene.add(sphere2);
     // objects.push(sphere2);
@@ -498,6 +584,212 @@ function parseResponse( data ) {
 
 }
 
+function setRequestHeaders(request) {
+    const userId = Meteor.userId();
+    const accessToken = OHIF.user.getAccessToken();
+    if (accessToken) {
+        request.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+    } else {
+        const loginToken = Accounts._storedLoginToken();
+        if (userId && loginToken) {
+            request.setRequestHeader("x-user-id", userId);
+            request.setRequestHeader("x-auth-token", loginToken);
+        }
+    }
+}
+
+function fetch(url, requests) {
+    return new Promise((resolve, reject) => {
+        const request = new XMLHttpRequest();
+        request.open('GET', url);
+        setRequestHeaders(request);
+        request.crossOrigin = true;
+        request.responseType = 'arraybuffer';
+
+        request.onloadstart = event => {
+            // emit 'fetch-start' event
+            this.emit('fetch-start', {
+                file: url,
+                time: new Date(),
+            });
+        };
+
+        request.onload = event => {
+            if (request.status === 200 || request.status === 0) {
+                this._loaded = event.loaded;
+                this._totalLoaded = event.total;
+
+                // will be removed after eventer set up
+                if (this._progressBar) {
+                    this._progressBar.update(this._loaded, this._totalLoaded, 'load', url);
+                }
+
+                let buffer = request.response;
+                let response = {
+                    url,
+                    buffer,
+                };
+
+                // emit 'fetch-success' event
+                this.emit('fetch-success', {
+                    file: url,
+                    time: new Date(),
+                    totalLoaded: event.total,
+                });
+
+                resolve(response);
+            } else {
+                reject(request.statusText);
+            }
+        };
+
+        request.onerror = () => {
+            // emit 'fetch-error' event
+            this.emit('fetch-error', {
+                file: url,
+                time: new Date(),
+            });
+
+            reject(request.statusText);
+        };
+
+        request.onabort = event => {
+            // emit 'fetch-abort' event
+            this.emit('fetch-abort', {
+                file: url,
+                time: new Date(),
+            });
+
+            reject(request.statusText || 'Aborted');
+        };
+
+        request.ontimeout = () => {
+            // emit 'fetch-timeout' event
+            this.emit('fetch-timeout', {
+                file: url,
+                time: new Date(),
+            });
+
+            reject(request.statusText);
+        };
+
+        request.onprogress = event => {
+            this._loaded = event.loaded;
+            this._totalLoaded = event.total;
+            // emit 'fetch-progress' event
+            this.emit('fetch-progress', {
+                file: url,
+                total: event.total,
+                loaded: event.loaded,
+                time: new Date(),
+            });
+            // will be removed after eventer set up
+            if (this._progressBar) {
+                this._progressBar.update(this._loaded, this._totalLoaded, 'load', url);
+            }
+        };
+
+        request.onloadend = event => {
+            // emit 'fetch-end' event
+            this.emit('fetch-end', {
+                file: url,
+                time: new Date(),
+            });
+            // just use onload when success and onerror when failure, etc onabort
+            // reject(request.statusText);
+        };
+
+        if (requests instanceof Map) {
+            requests.set(url, request);
+        }
+
+        request.send();
+    });
+}
+
+function renderSerieHandler(event) {
+    const viewportIndex = Session.get('activeViewport') || 0;
+    let activeElement = getElementIfNotEmpty(viewportIndex)
+    let element = OHIF.viewerbase.viewportUtils.getEnabledElement(activeElement);
+    let e = {imageId: element.image.imageId};
+    let serieInstanceUid = viewportOverlayUtils.getSeries.call(e, 'seriesInstanceUid');
+    let studyInstanceUid = viewportOverlayUtils.getStudy.call(e, 'studyInstanceUid');
+
+    Meteor.call('RenderSerie', studyInstanceUid, serieInstanceUid, function (error, response) {
+
+        if (error) {
+            const errorType = error.error;
+            let errorMessage = '';
+
+            if (errorType === 'server-connection-error') {
+                errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.';
+            } else if (errorType === 'server-internal-error') {
+                errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
+            } else {
+                errorMessage = `For some reason we could not retrieve the study\'s metadata for ${event.studyId}.`;
+            }
+
+            OHIF.log.error(errorMessage);
+            OHIF.log.error(error.stack);
+            return;
+        }
+
+        let geometry = parseResponse( response.vtk.content );
+
+
+        geometry.computeVertexNormals();
+        geometry.computeBoundingBox();
+        computeScale(geometry);
+        material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
+        scene.remove(scene.getObjectByName("volume3D"));
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.updateMatrixWorld();
+        mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
+        // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
+        // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
+        // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
+        mesh.name = "volume3D";
+
+        scene.add(mesh);
+        objects.set(mesh.name, mesh);
+        hasGeometry = hasGeometry || true;
+        // var helper = new THREE.BoxHelper( mesh, 0xffff00 );
+        // scene.add( helper );
+        if (gui.domElement !== undefined) {
+            gui.domElement.style.display = '';
+        }
+
+        var loader = new AMI.VolumeLoader(container);
+        loader
+            .load(response.instances)
+            .then(function () {
+                const series = loader.data[0].mergeSeries(loader.data);
+                const stack = series[0].stack[0];
+                loader.free();
+
+                const StackHelper = AMI.stackHelperFactory(THREE);
+                //const stackHelper = new StackHelper();
+
+                const stackHelper = new StackHelper(stack);
+                stackHelper.border.color = colors.red;
+                scene.add(stackHelper);
+
+                // build the gui
+                ami_gui(stackHelper);
+
+
+                const centerLPS = stackHelper.stack.worldCenter();
+                camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
+                camera.updateProjectionMatrix();
+                controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
+            })
+            .catch(function (error) {
+                window.console.log('oops... something went wrong...');
+                window.console.log(error);
+            });
+    });
+}
+
 Template.viewer3D.onRendered(function () {
 
     if ( ! Detector.webgl ) {
@@ -507,6 +799,7 @@ Template.viewer3D.onRendered(function () {
         animate();
     }
 
+/**
     var element = parentTemplate(this.view);
     element = element.findAll('.imageViewerViewport');
     var $element = $(element);
@@ -520,60 +813,22 @@ Template.viewer3D.onRendered(function () {
         $element.off('cornerstoneimagerendered', onImage2DRendered);
         $element.on('cornerstoneimagerendered', onImage2DRendered);
     });
+ **/
 
-    const viewportIndex = Session.get('activeViewport') || 0;
-    let activeElement = getElementIfNotEmpty(viewportIndex)
-
-    $element = $(activeElement);
-
-    $element.on('Render3D', function (event) {
-
-        Meteor.call('RenderSerie', event.studyId, event.serieId, function (error, response) {
-
-            if (error) {
-                const errorType = error.error;
-                let errorMessage = '';
-
-                if (errorType === 'server-connection-error') {
-                    errorMessage = 'There was an error connecting to the DICOM server, please verify if it is up and running.';
-                } else if (errorType === 'server-internal-error') {
-                    errorMessage = `There was an internal error with the DICOM server getting metadeta for ${studyInstanceUid}`;
-                } else {
-                    errorMessage = `For some reason we could not retrieve the study\'s metadata for ${event.studyId}.`;
-                }
-
-                OHIF.log.error(errorMessage);
-                OHIF.log.error(error.stack);
-                return;
-            }
-
-            let geometry = parseResponse( response.content );
-
-
-            geometry.computeVertexNormals();
-            //geometry.applyMatrix(mS);
-            //geometry.center();
-            computeScale(geometry);
-            var material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
-            scene.remove(scene.getObjectByName("volume3D"));
-            var mesh = new THREE.Mesh(geometry, material);
-            mesh.updateMatrixWorld();
-            mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
-            // document.getElementById("sp_x_sr").innerHTML = geometry.boundingBox.min.x + ' / ' + geometry.boundingBox.max.x;
-            // document.getElementById("sp_y_sr").innerHTML = geometry.boundingBox.min.y + ' / ' + geometry.boundingBox.max.y;
-            // document.getElementById("sp_z_sr").innerHTML = geometry.boundingBox.min.z + ' / ' + geometry.boundingBox.max.z;
-            mesh.name = "volume3D";
-
-            scene.add(mesh);
-            objects.set(mesh.name, mesh);
-            hasGeometry = hasGeometry || true;
-            geometry.computeBoundingBox();
-            var helper = new THREE.BoxHelper( mesh, 0xffff00 );
-            scene.add( helper );
-            gui.domElement.style.display = '';
-        });
-    });
+    // const viewportIndex = Session.get('activeViewport') || 0;
+    // let activeElement = getElementIfNotEmpty(viewportIndex);
+    //
+    // var $element = $(activeElement);
+    //
+    // $element.on('Render3D', renderSerieHandler);
 
     canvas.addEventListener('mousemove', onMouseMove, false);
     canvas.addEventListener('click', onMouseClick, false);
 });
+
+Template.viewer3D.onCreated(function () {
+    let toolbar = $('div.toolbarSection > div.clearfix > div.toolbarSectionTools').get(0);
+    var _div = $('<div><div class="svgContainer"><i class="fa fa-eye"></i></div><div class="buttonLabel"><span>View 3D</span></div></div>').addClass('toolbarSectionButton rp-x-1 imageViewerCommand').appendTo(toolbar);
+    _div.on('click', renderSerieHandler);
+});
+

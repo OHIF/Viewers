@@ -46,8 +46,9 @@ ohif:dicom-services
 ohif:hanging-protocols
 ohif:metadata
 
+ohif:measurements
 ohif:user-management
-#ohif:user-meteor-accounts
+ohif:user-meteor-accounts
 
 twbs:bootstrap
 fortawesome:fontawesome
@@ -60,3 +61,4 @@ u2622:persistent-session@0.4.4
 shell-server@0.3.0
 fds:threejs
 polguixe:meteor-datgui
+url

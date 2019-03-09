@@ -10,7 +10,7 @@ Npm.depends({
     'cornerstone-core': '1.1.2',
     'gtajesgenga-cornerstone-tools': '1.0.4',
     'cornerstone-math': '0.1.6',
-    'dicom-parser': '1.7.6',
+    'dicom-parser': '1.8.1',
     'cornerstone-wado-image-loader': '1.0.1'
 });
 

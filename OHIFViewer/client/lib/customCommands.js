@@ -12,12 +12,12 @@ Meteor.startup(() => {
         {
             id: 'seed',
             name: 'Seed'
-        },
+        }/*,
         {
             id: 'render3D',
             name: 'render3D',
             action: OHIF.viewerbase.viewportOverlayUtils.render3D
-        }
+        }*/
     ];
     customTools.forEach(tool => {
         _.defaults(OHIF.hotkeys.defaults.viewer, { [tool.id]: '' });

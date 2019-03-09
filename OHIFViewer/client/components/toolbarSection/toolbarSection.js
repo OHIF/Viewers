@@ -1,5 +1,5 @@
 import { Template } from 'meteor/templating';
-import { $ } from 'meteor/jquery';
+//import { $ } from 'meteor/jquery';
 
 import { OHIF } from 'meteor/ohif:core';
 import 'meteor/ohif:viewerbase';
@@ -65,9 +65,11 @@ Template.toolbarSection.helpers({
             key: 'rightSidebar',
             value: instance.data.state,
             options: [{
-                value: 'hangingprotocols',
-                iconClasses: 'fa fa-cog',
-                bottomLabel: 'Hanging'
+                value: 'measurements',
+                svgLink: '/packages/ohif_viewerbase/assets/icons.svg#icon-measurements-lesions',
+                svgWidth: 18,
+                svgHeight: 10,
+                bottomLabel: 'Measurements'
             }]
         };
     },
@@ -257,12 +259,12 @@ Template.toolbarSection.helpers({
             subTools: extraTools
         });
 
-        buttonData.push({
-           id: 'render3D',
-           title: 'View 3D',
-           iconClasses: 'fa fa-eye',
-           classes: 'imageViewerCommand'
-        });
+        // buttonData.push({
+        //    id: 'render3D',
+        //    title: 'View 3D',
+        //    iconClasses: 'fa fa-eye',
+        //    classes: 'imageViewerCommand'
+        // });
 
         return buttonData;
     },
@@ -311,15 +313,21 @@ Template.toolbarSection.onRendered(function() {
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = OHIF.viewerbase.toolManager.getToolDefaultStates();
     const disabledToolButtons = states.disabledToolButtons;
-    const allToolbarButtons = $('#toolbar').find('button');
+    const allToolbarButtons = $('.toolbarSection').find('.toolbarSectionButton:not(.nonAutoDisableState)');
+
+    // Additional toolbar buttons whose classes are not toolbarSectionButton
+    allToolbarButtons.push($('#toggleMeasurements')[0]);
+
     if (disabledToolButtons && disabledToolButtons.length > 0) {
         for (let i = 0; i < allToolbarButtons.length; i++) {
             const toolbarButton = allToolbarButtons[i];
-            $(toolbarButton).prop('disabled', false);
-
             const index = disabledToolButtons.indexOf($(toolbarButton).attr('id'));
             if (index !== -1) {
-                $(toolbarButton).prop('disabled', true);
+                $(toolbarButton).addClass('disabled');
+                $(toolbarButton).find('*').addClass('disabled');
+            } else {
+                $(toolbarButton).removeClass('disabled');
+                $(toolbarButton).find('*').removeClass('disabled');
             }
         }
     }

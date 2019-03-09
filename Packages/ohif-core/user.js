@@ -1,7 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { OHIF } from 'meteor/ohif:core';
 
-OHIF.user = OHIF.user || {};
+/*
+ * Defines the base OHIF user object
+ */
+const user = {};
+
+OHIF.user = OHIF.user || user;
 
 // These should be overridden by the implementation
 OHIF.user.schema = null;
@@ -14,3 +19,5 @@ OHIF.user.logout = () => new Promise((resolve, reject) => reject());
 OHIF.user.getData = (key) => null;
 OHIF.user.setData = (key, value) => null;
 OHIF.user.validate = () => null;
+
+export { user };
