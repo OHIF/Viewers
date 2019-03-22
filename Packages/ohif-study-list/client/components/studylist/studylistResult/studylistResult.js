@@ -84,10 +84,8 @@ let filter;
  */
 function getFilter(filter) {
     const server = OHIF.servers.getCurrentServer();
-    if (!server.isCloud) {
-        if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
-            filter += '*';
-        }
+    if (filter && filter.length && filter.substr(filter.length - 1) !== '*') {
+        filter += '*';
     }
 
     return filter;
@@ -133,13 +131,12 @@ function search(instance) {
         studyDescription: getFilter($('input#studyDescription').val()),
         studyDateFrom,
         studyDateTo,
-        modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : ''
+        modalitiesInStudy: $('input#modality').val() ? $('input#modality').val() : '',
+        offset: rowsPerPage * currentPage,
+        limit: rowsPerPage
     };
     const server = OHIF.servers.getCurrentServer();
-    if (!server.isCloud) {
-        filter.offset=rowsPerPage * currentPage;
-        filter.limit=rowsPerPage;
-    }
+
     // Make sure that modality has a reasonable value, since it is occasionally
     // returned as 'undefined'
     const modality = replaceUndefinedColumnValue($('input#modality').val());

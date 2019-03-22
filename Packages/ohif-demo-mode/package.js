@@ -16,5 +16,4 @@ Package.onUse(function(api) {
 
   // Main module
   api.mainModule('main.js', 'client');
-
 });

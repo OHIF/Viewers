@@ -19,12 +19,9 @@ Package.onUse(function(api) {
   api.use(['templating', 'stylus'], 'client');
 
   // Main module
-  api.mainModule('main.js', ['client']);
+  api.mainModule('client/main.js', ['client']);
 
-  // Client imports and routes
-  api.addFiles('client/index.js', 'client');
-
-  var assets = [
+  const assets = [
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.0.min.js',
     '.npm/package/node_modules/healthcare-api-adapter/dist/gcp.2.min.js',

@@ -1,3 +1,5 @@
+import { OHIF } from 'meteor/ohif:core';
+
 const GCloudAdapter = {};
 
 const GCP_HEALTHCARE_CONFIG = 'GCP_HEALTHCARE_CONFIG';
@@ -16,7 +18,9 @@ GCloudAdapter.setConfig = function(config) {
 
 GCloudAdapter.showDicomStorePicker = function(options) {
   return OHIF.ui.showDialog('dicomStorePicker', options).then(config => {
-    if (config) OHIF.gcloud.setConfig(config);
+    if (config) {
+      OHIF.gcloud.setConfig(config);
+    }
     return config;
   });
 };

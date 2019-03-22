@@ -21,6 +21,9 @@ if (Meteor.settings &&
     });
 
     const newServer = Servers.findOne();
+    if (!newServer) {
+      return;
+    }
 
     CurrentServer.insert({
         serverId: newServer._id

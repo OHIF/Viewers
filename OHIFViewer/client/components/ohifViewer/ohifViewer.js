@@ -61,10 +61,11 @@ Template.ohifViewer.onCreated(() => {
         Session.set('ViewerOpened', isViewer);
     });
 
-    if (OHIF.demoMode && OHIF.demoMode.userLoggedIn())
-        OHIF.demoMode.setDemoServerConfig();
-    else if (OHIF.gcloud && OHIF.gcloud.isEnabled()) {
+    if (OHIF.demoMode && OHIF.demoMode.userLoggedIn()) {
+      OHIF.demoMode.setDemoServerConfig();
+    } else if (OHIF.gcloud && OHIF.gcloud.isEnabled()) {
         const server = OHIF.servers.getCurrentServer();
+
         if (!server || !server.isCloud) {
             Session.set("IsStudyListReady", false);
             OHIF.gcloud.showDicomStorePicker({canClose: OHIF.demoMode}).then(config => {
@@ -94,7 +95,7 @@ Template.ohifViewer.events({
             }
         }
     },
-    
+
 });
 
 Template.ohifViewer.helpers({
