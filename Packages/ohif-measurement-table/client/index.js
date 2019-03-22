@@ -31,21 +31,29 @@ class MeasurementTable {
         Session.set('TimepointsReady', true);
            
         await measurementApi.retrieveMeasurements(patientId, [OHIF.viewer.data.currentTimepointId]);
-        Session.set('MeasurementsReady', true);
+        Session.set('MeasurementsReady', false);
 
         measurementApi.syncMeasurementsAndToolData();
+        this.jumpToFirstMeasurement();
 
+        const viewportUtils = OHIF.viewerbase.viewportUtils;
         this.firstMeasurementActivated = false;
-
+        this.dataIsavalible = false;
         instance.autorun(() => {
             if (!Session.get('TimepointsReady') ||
             !Session.get('MeasurementsReady') ||
             !Session.get('ViewerReady') ||
             this.firstMeasurementActivated) {
+                if (this.dataIsavalible) {
+                    viewportUtils.hideTools();
+                    this.dataIsavalible = false;
+                }
                 return;
             }
-            
-            this.jumpToFirstMeasurement();
+            if(!this.dataIsavalible){
+                viewportUtils.unhideTools();
+                this.dataIsavalible = true;
+            }
             
         });
         

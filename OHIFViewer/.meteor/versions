@@ -81,7 +81,9 @@ ohif:commands@0.0.1
 ohif:core@0.0.1
 ohif:cornerstone@0.0.1
 ohif:cornerstone-settings@0.0.1
+ohif:demo-mode@0.0.1
 ohif:design@0.0.1
+ohif:google-cloud@0.0.1
 ohif:hanging-protocols@0.0.1
 ohif:header@0.0.1
 ohif:hotkeys@0.0.1

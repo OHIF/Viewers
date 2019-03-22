@@ -1,0 +1,53 @@
+{
+  "public": {
+    "clientOnly": true,
+    "googleCloud": true,
+    "ui": {
+      "studyListFunctionsEnabled": true,
+      "studyListDateFilterNumDays": false
+    },
+    "servers": {
+      "dicomWeb": [{
+        "name": "dcm4chee-oidc-Client",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadors",
+        "thumbnailRendering": "wadors",
+        "metadataSource": "wado",
+        "requestOptions": {
+          "requestFromBrowser": true,
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+        }
+      },
+      {
+        "name": "demo-dcm4chee",
+        "wadoUriRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/wado",
+        "qidoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+        "wadoRoot": "https://dcm4che.ohif.club/dcm4chee-arc/aets/DCM4CHEE/rs",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadouri",
+        "thumbnailRendering": "wadors",
+        "requestOptions": {
+          "auth": "cloud:healthcare",
+          "requestFromBrowser": true,
+          "logRequests": true,
+          "logResponses": false,
+          "logTiming": true
+        }
+      }]
+    },
+    "custom": {
+      "oidc": [{
+        "authServerUrl": "https://accounts.google.com",
+        "authRedirectUri": "/_oauth/google",
+        "postLogoutRedirectUri": "/",
+        "clientId": "570420945968-pmtd0sjm7mmf3i5m7ld09aos1op3qva1.apps.googleusercontent.com",
+        "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare",
+        "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
+      }]
+    },
+    "userAuthenticationRoutesEnabled": true,
+    "demoMode": true
+  }
+}

@@ -1,0 +1,36 @@
+# First stage of multi-stage build
+# This stage is named 'builder'
+# The data for this intermediary image is not included
+# in the final image.
+FROM node:8.10.0-slim as builder
+
+RUN apt-get update && apt-get install -y \
+	curl \
+	g++ \
+	git \
+	python \
+	build-essential
+
+RUN curl https://install.meteor.com/ | sh
+RUN npm install -g meteor-build-client-fixed2
+# Create a non-root user
+RUN useradd -ms /bin/bash user
+USER user
+RUN mkdir /home/user/Viewers
+COPY OHIFViewer/package.json /home/user/Viewers/OHIFViewer/
+ADD --chown=user:user . /home/user/Viewers
+
+WORKDIR /home/user/Viewers/OHIFViewer
+
+ENV METEOR_PACKAGE_DIRS=../Packages
+ENV METEOR_PROFILE=1
+ARG OHIF_CONFIG_FILE=../config/oidc.json
+RUN meteor npm install
+RUN meteor-build-client-fixed2 /home/user/app/ -s $OHIF_CONFIG_FILE
+RUN ls /home/user/app/ 
+
+# Second stage of multi-stage build
+FROM nginx:stable-alpine-perl
+COPY ./clientImage/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /home/user/app /usr/share/nginx/html/
+

@@ -9,7 +9,7 @@ export function getWADORSImageUrl(instance, frame) {
     frame = (frame || 0) + 1;
 
     // Replaces /frame/1 by /frame/{frame}
-    wadorsuri = wadorsuri.replace(/(%2Fframes%2F)(\d+)/, `$1${frame}`);
+    wadorsuri = wadorsuri.replace(/(\/frames\/)(\d+)/, `$1${frame}`);
 
     return wadorsuri;
 }

@@ -1,0 +1,93 @@
+@require '{ohif:design}/app'
+
+.demoSignin
+  display flex
+  flex 1
+  flex-flow row nowrap
+  align-items stretch
+  height 100vh
+  min-height 600px
+  width 100%
+  background-color rgba(21, 25, 30, 0.7)
+
+.demo-content
+  margin auto
+  width 500px
+  position relative
+  top -150px
+
+.demoSigninButtons
+  margin auto
+  width 270px
+  font-weight 500
+
+#google-login-button
+  display flex
+  justify-content center
+  height 40px
+  width 100%
+  color #fff
+  border-color #4285F4
+  background #4285F4
+  border-radius 3px
+  box-shadow 0 0 1px 0 rgba(0, 0, 0, 0.12), 0 1px 1px 0 rgba(0, 0, 0, 0.24)
+  cursor pointer
+  position relative
+  align-items center
+
+#anonymous-login-button
+  display flex
+  justify-content center
+  height 40px
+  width 100%
+  color #757575
+  border-color white
+  background white
+  border-radius 3px
+  box-shadow 0 0 1px 0 rgba(0, 0, 0, 0.12), 0 1px 1px 0 rgba(0, 0, 0, 0.24)
+  cursor pointer
+  position relative
+  align-items center
+
+#google-login-button .sign-in-with-google-icon-tile
+  position absolute
+  top 1px
+  left 1px
+  background #fff
+  border-radius 2px
+  height 32px
+  width 32px
+  display flex
+  align-items center
+  justify-content center
+  font-weight 500
+
+svg.google-icon
+  width 24px
+  height 24px
+
+hr.tint
+  border-color hsla(0, 0%, 100%, 0.3)
+
+.demo-brand
+  height 60px
+  display inline-block
+  text-decoration none
+  margin-bottom 30px
+
+  .logo-image
+    display inline-block
+    fill transparent
+    float left
+    height 100%
+    margin 0 8px 0 0
+    width 60px
+    margin-right 20px
+
+  .logo-text
+    display inline-block
+    font-family Roboto, Arial, Helvetica, sans-serif
+    font-size 26px
+    font-weight 400
+    theme('color', '$textPrimaryColor')
+    line-height 60px

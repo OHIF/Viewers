@@ -1,0 +1,25 @@
+<template name="demoSignin">
+    <div class="demoSignin">
+        <div class="demo-content">
+            <div class="demo-brand">
+                <svg class="logo-image">
+                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#icon-ohif-logo"}}></use>
+                </svg>
+                <div class="logo-text">Open Health Imaging Foundation</div>
+                </div>
+        <div class="demoSigninButtons">
+            <button type="submit" id="google-login-button" class="button button--nostyle">
+                <span class="sign-in-with-google-icon-tile">
+                <svg class="google-icon">
+                    <use xlink:href={{absoluteUrl "packages/ohif_viewerbase/assets/icons.svg#google-icon"}}></use>
+                </svg></span>
+                <span>Sign in with Google</span>
+            </button>
+            <hr class="tint">
+            <button id="anonymous-login-button">
+                <span>Anonymous Sign in</span>
+            </button>
+            </div>
+        </div>
+    </div>
+</template>

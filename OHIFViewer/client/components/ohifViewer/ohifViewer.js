@@ -8,6 +8,7 @@ import { OHIF } from 'meteor/ohif:core';
 Template.ohifViewer.onCreated(() => {
     const instance = Template.instance();
     instance.headerClasses = new ReactiveVar('');
+    Session.set("IsStudyListReady", true);;
 
     const headerItems = [{
         action: () => OHIF.ui.showDialog('serverInformationModal'),
@@ -31,9 +32,11 @@ Template.ohifViewer.onCreated(() => {
         icon: 'fa fa-info'
     }];
 
-    if (OHIF.user.userLoggedIn() === true) {
+    const isUserLoggedIn = OHIF.user.userLoggedIn();
+    const isDemoUserLoggedIn = OHIF.demoMode && OHIF.demoMode.userLoggedIn();
+    if (isUserLoggedIn || isDemoUserLoggedIn) {
         headerItems.push({
-            action: OHIF.user.logout,
+            action: isDemoUserLoggedIn ? OHIF.demoMode.logout : OHIF.user.logout,
             text: 'Logout',
             iconClasses: 'logout',
             iconSvgUse: 'packages/ohif_viewerbase/assets/user-menu-icons.svg#logout'
@@ -57,6 +60,24 @@ Template.ohifViewer.onCreated(() => {
         // Set the viewer open state on session
         Session.set('ViewerOpened', isViewer);
     });
+
+    if (OHIF.demoMode && OHIF.demoMode.userLoggedIn())
+        OHIF.demoMode.setDemoServerConfig();
+    else if (OHIF.gcloud && OHIF.gcloud.isEnabled()) {
+        const server = OHIF.servers.getCurrentServer();
+        if (!server || !server.isCloud) {
+            Session.set("IsStudyListReady", false);
+            OHIF.gcloud.showDicomStorePicker({canClose: OHIF.demoMode}).then(config => {
+                if (!config) {
+                    if (OHIF.demoMode)
+                        Router.go('/demo-signin');
+                    return;
+                }
+                OHIF.servers.applyCloudServerConfig(config);
+                Session.set("IsStudyListReady", true);
+            });
+        }
+    }
 });
 
 Template.ohifViewer.events({
@@ -72,7 +93,8 @@ Template.ohifViewer.events({
                 Router.go('viewerStudies', { studyInstanceUids });
             }
         }
-    }
+    },
+    
 });
 
 Template.ohifViewer.helpers({
@@ -86,5 +108,8 @@ Template.ohifViewer.helpers({
         }
 
         return instance.hasViewerData ? 'Back to viewer' : '';
+    },
+    isStudyListReady() {
+        return !!Session.get('IsStudyListReady');
     }
 });

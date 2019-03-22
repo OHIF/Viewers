@@ -1,0 +1,9 @@
+<template name="uploadStudiesDialog">
+    {{#gcloudDialog (extend this
+    id='dicomFilesUploader' dialogClass='themed modal-lg'
+    )}}
+    <div class="dicom-files-uploader">
+        <gcp-dicom-uploader id={{dicomFilesUploaderId}} event={{eventName}} oidc-key={{oidcStorageKey}} url={{url}}></gcp-dicom-uploader>
+    </div>
+    {{/gcloudDialog}}
+</template>

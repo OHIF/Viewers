@@ -1,6 +1,9 @@
 <template name="studylistResult">
     <div class="studyListToolbar clearfix">
-        <div class="header pull-left">Study List</div>
+        <div class="header pull-left">
+            <span>Study List</span>
+            <span class="dicom-source">{{dicomSource}}</span>
+        </div>
         <div class="studyCount pull-right">{{numberOfStudies}}</div>
         <div class="pull-right">{{>studylistToolbar}}</div>
     </div>
@@ -56,7 +59,7 @@
                                class="form-control studylist-search"
                                id="modality">
                     </th>
-                    <th class="studyDescription">
+                    <!-- <th class="studyDescription">
                         <div id="_studyDescription" class="sortingCell">
                             <span>Study Description</span>
                             <i class="{{sortingColumnsIcons.studyDescription}}">&nbsp;</i>
@@ -64,7 +67,7 @@
                         <input type="text"
                                class="form-control studylist-search"
                                id="studyDescription">
-                    </th>
+                    </th> -->
                 </tr>
             </thead>
             <tbody id="studyListData">

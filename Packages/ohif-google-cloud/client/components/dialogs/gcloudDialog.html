@@ -1,0 +1,12 @@
+<template name="gcloudDialog">
+  <div id="{{this.id}}" class="modal fade gcloud-dialog {{this.class}}" tabindex="-1" role="dialog">
+      <div class="modal-dialog {{this.dialogClass}}" role="document">
+          <div class="modal-content">
+              <div class="modal-body">
+                  {{>UI.contentBlock}}
+              </div>
+              <div class="modal-footer">{{>section 'dialogFooter'}}</div>
+          </div>
+      </div>
+  </div>
+</template>

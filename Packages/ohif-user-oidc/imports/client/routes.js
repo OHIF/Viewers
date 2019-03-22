@@ -66,14 +66,21 @@ function urlHasSignInResponse() {
 }
 
 Router.onRun(function() {
-    const next = this.next;
-    const redirect_uri = Meteor.absoluteUrl(this.request.url);
+    const isSignedIn = OHIF.user.userLoggedIn() || OHIF.demoMode && OHIF.demoMode.userLoggedIn();
+    const isDemoPage = OHIF.demoMode && this.url === "/demo-signin";
 
-    if (OHIF.user.userLoggedIn()) {
-        next()
-    } else if (urlHasSignInResponse() === true) {
-        processSignInResponse().then(next);
-    } else {
+    if (isSignedIn || isDemoPage)
+        this.next();
+    else if (urlHasSignInResponse() === true)
+        processSignInResponse().then(this.next);
+    else {
+        const redirect_uri = Meteor.absoluteUrl(OHIF.user.getOidcRedirectUri());
         signIn({ redirect_uri });
     }
 });
+
+Router.route(OHIF.user.getOidcRedirectUri(), function() {
+    Router.go('/', {}, { replaceState: true });
+}, { name: 'oidc_redirect' });
+
+

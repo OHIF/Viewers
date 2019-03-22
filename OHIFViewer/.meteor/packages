@@ -39,6 +39,8 @@ ohif:viewerbase
 ohif:study-list
 ohif:hanging-protocols
 ohif:metadata
+ohif:google-cloud
+ohif:demo-mode
 ohif:user-oidc
 ohif:measurement-table
 

@@ -49,9 +49,15 @@ OHIF.studies.retrieveStudyMetadata = (studyInstanceUid, seriesInstanceUids) => {
         // If no study metadata is in the cache variable, we need to retrieve it from
         // the server with a call.
         if (server.type === 'dicomWeb' && server.requestOptions.requestFromBrowser === true) {
-            OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid).then(function (data) {
-                resolve(data)
-            }, reject);
+            if(server.metadataSource ==='qido') {
+                OHIF.studies.services.QIDO.RetrieveMetadata(server, studyInstanceUid).then(function (data) {
+                    resolve(data)
+                }, reject);
+            } else {
+                OHIF.studies.services.WADO.RetrieveMetadata(server, studyInstanceUid).then(function (data) {
+                    resolve(data)
+                }, reject);
+            }
         } else {
             Meteor.call('GetStudyMetadata', studyInstanceUid, function (error, study) {
                 OHIF.log.timeEnd(timingKey);
