@@ -1,26 +1,7 @@
 {
-  "servers": {
-    "dicomWeb": [
-      {
-        "name": "Orthanc",
-        "wadoUriRoot": "http://dicomweb.ohif.org/wado",
-        "qidoRoot": "http://dicomweb.ohif.org/dicom-web",
-        "wadoRoot": "http://dicomweb.ohif.org/dicom-web",
-        "qidoSupportsIncludeField": false,
-        "imageRendering": "wadouri",
-        "thumbnailRendering": "wadouri",
-        "requestOptions": {
-          "auth": "orthanc:orthanc",
-          "logRequests": true,
-          "logResponses": false,
-          "logTiming": true
-        }
-      }
-    ]
-  },
-  "defaultServiceType": "dicomWeb",
   "dropCollections": true,
   "public": {
+    "clientOnly": true,
     "verifyEmail": false,
     "ui": {
         "studyListFunctionsEnabled": true,
@@ -29,9 +10,25 @@
         "displaySetNavigationMultipleViewports": true,
         "autoPositionMeasurementsTextCallOuts": "TRLB",
         "studyListDateFilterNumDays": 1
+    },
+    "servers": {
+      "dicomWeb": [
+        {
+          "name": "Orthanc",
+          "wadoUriRoot": "https://server.dcmjs.org//dcm4chee-arc/aets/DCM4CHEE/wado",
+          "qidoRoot": "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+          "wadoRoot": "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+          "qidoSupportsIncludeField": true,
+          "imageRendering": "wadors",
+          "thumbnailRendering": "wadors",
+          "requestOptions": {
+            "requestFromBrowser": true,
+            "logRequests": true,
+            "logResponses": false,
+            "logTiming": true
+          }
+        }
+      ]
     }
-  },
-  "proxy": {
-    "enabled": true
   }
 }
