@@ -1,0 +1,25 @@
+{
+  "public": {
+    "clientOnly": true,
+    "googleCloud": true,
+    "ui": {
+      "studyListFunctionsEnabled": true,
+      "studyListDateFilterNumDays": false
+    },
+    "servers": {
+      "dicomWeb": []
+    },
+    "custom": {
+      "oidc": [{
+        "authServerUrl": "https://accounts.google.com",
+        "authRedirectUri": "/_oauth/google",
+        "postLogoutRedirectUri": "/",
+        "clientId": "YOURCLIENTID.apps.googleusercontent.com",
+        "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare",
+        "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
+      }]
+    },
+    "userAuthenticationRoutesEnabled": false,
+    "demoMode": false
+  }
+}
