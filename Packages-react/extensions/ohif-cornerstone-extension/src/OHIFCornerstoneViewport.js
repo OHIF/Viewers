@@ -32,6 +32,10 @@ class OHIFCornerstoneViewport extends Component {
     viewportData: null
   };
 
+  static defaultProps = {
+    customProps: {}
+  };
+
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
