@@ -32,11 +32,16 @@ class OHIFCornerstoneViewport extends Component {
     viewportData: null
   };
 
+  static defaultProps = {
+    customProps: {}
+  };
+
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
-    children: PropTypes.node
+    children: PropTypes.node,
+    customProps: PropTypes.object
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -226,6 +231,7 @@ class OHIFCornerstoneViewport extends Component {
           <ConnectedCornerstoneViewport
             viewportData={this.state.viewportData}
             viewportIndex={this.props.viewportIndex}
+            {...this.props.customProps}
           />
         )}
         {childrenWithProps}

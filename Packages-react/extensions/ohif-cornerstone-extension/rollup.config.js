@@ -13,6 +13,7 @@ const globals =  {
   'react-dom': 'ReactDOM',
   'react-redux': 'ReactRedux',
   'react-resize-detector': 'ReactResizeDetector',
+  'react-viewerbase': 'reactViewerbase',
   'prop-types': 'PropTypes',
   'cornerstone-core': 'cornerstone',
   'cornerstone-wado-image-loader': 'cornerstoneWADOImageLoader',
