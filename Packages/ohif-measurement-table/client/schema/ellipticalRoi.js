@@ -18,7 +18,25 @@ const handlesSchema = new SimpleSchema({
     },
 });
 
-const MeanStdDevSchema = new SimpleSchema({
+const MeanStdDevSUV = new SimpleSchema({
+    mean: {
+        type: Number,
+        label: 'meanSUV',
+        decimal: true
+    },
+    stdDev: {
+        type: Number,
+        label: 'stdDevSUV',
+        decimal: true
+    }
+});
+
+const CachedStatsSchema = new SimpleSchema({
+    area: {
+        type: Number,
+        label: 'area',
+        decimal: true
+    },
     count: {
         type: Number,
         label: 'count',
@@ -29,17 +47,31 @@ const MeanStdDevSchema = new SimpleSchema({
         label: 'mean',
         decimal: true
     },
+    variance: {
+        type: Number,
+        label: 'variance',
+        decimal: true
+    },
     stdDev: {
         type: Number,
         label: 'stdDev',
         decimal: true
     },
-    variance: {
+    min: {
         type: Number,
-        label: 'variance',
+        label: 'min',
         decimal: true
+    },
+    max: {
+        type: Number,
+        label: 'max',
+        decimal: true
+    },
+    meanStdDevSUV: {
+        type: MeanStdDevSUV,
+        label: 'meanStdDevSUV',
+        optional: true
     }
-
 });
 
 const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasurement, {
@@ -66,28 +98,19 @@ const toolSchema = new SimpleSchema([MeasurementSchemaTypes.CornerstoneToolMeasu
         label: 'Description',
         optional: true
     },
-    area: {
-        type: Number,
-        label: 'Ellipse Area value',
-        decimal: true,
-        optional: true
-    },
-    meanStdDev: {
-        type: MeanStdDevSchema,
-        label: 'MeanStd Values',
+    cachedStats: {
+        type: CachedStatsSchema,
+        label: 'Cached Stats',
         optional: true
     }
 }]);
 
 const displayFunction = data => {
     let meanValue = '';
-    if (data.meanStdDev && data.meanStdDev.mean) {
-        meanValue = data.meanStdDev.mean.toFixed(2) + ' HU';
+    if (data.cachedStats && data.cachedStats.mean) {
+        meanValue = data.cachedStats.mean.toFixed(2) + ' HU';
     }
     return meanValue;
-    // let meanValue = data.meanStdDev && data.meanStdDev.mean || 0;
-    // return numberWithCommas(meanValue).toFixed(2) + ' HU';
-    //return data.meanStdDev.mean.toFixed(2);
 };
 
 export default {
