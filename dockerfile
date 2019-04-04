@@ -5,6 +5,8 @@
 # in the final image.
 FROM node:8.10.0-slim as builder
 
+# Fix build now that jessie-updates has been archived
+RUN sed -i '/jessie-updates/d' /etc/apt/sources.list
 RUN apt-get update && apt-get install -y \
 	curl \
 	g++ \
