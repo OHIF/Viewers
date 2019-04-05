@@ -26,7 +26,7 @@
         "authServerUrl": "https://accounts.google.com",
         "authRedirectUri": "/_oauth/google",
         "postLogoutRedirectUri": "/",
-        "scope": "email profile openid  https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/cloud-healthcare",
+        "scope": "email profile openid  https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/cloud-healthcare",
         "revokeUrl": "https://accounts.google.com/o/oauth2/revoke?token="
       }]
     },
