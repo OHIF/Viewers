@@ -6,7 +6,7 @@ Package.describe({
 });
 
 Npm.depends({
-  'healthcare-api-adapter': "git+https://github.com/quantumsoftgroup/healthcare-api-adapter#v0.2.1"
+  'healthcare-api-adapter': "git+https://github.com/quantumsoftgroup/healthcare-api-adapter#v0.2.2"
 });
 
 
