@@ -11,11 +11,24 @@ An alternative to deploying your own PACS is to use a software-as-a-service prov
 1. Enable the [Cloud Healthcare API](https://cloud.google.com/healthcare/) for your project.
 1. (Optional): Create a Dataset and Data Store for storing your DICOM data
 1. Enable the [Cloud Resource Manager API](https://cloud.google.com/resource-manager/) for your project.
-1. Go to APIs & Services > Credentials > Credentials to set up an [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
-1. Add your domain (e.g. `http://localhost:3000`) to Authorized JavaScript origins. Add your domain, plus `_oauth/google` (e.g. `http://localhost:3000/_oauth/google`) to Authorized redirect URIs. Save your Client ID for later.
-1. Go to APIs & Services > Credentials > OAuth consent screen and fill in your application details.
 
-    Under Scopes for Google APIs, add `../auth/cloudplatformprojects.readonly` and `../auth/cloud-healthcare` in addition to `email`, `profile`, and `openid`.
+  *Note:* If you are having trouble finding the APIs, use the search box at the top of the Cloud console.
+
+1. Go to APIs & Services > Credentials to create an OAuth Consent screen and fill in your application details.
+
+    - Under Scopes for Google APIs, click "manually paste scopes".
+    - Add the following scopes:
+        - https://www.googleapis.com/auth/cloudplatformprojects.readonly
+        - https://www.googleapis.com/auth/cloud-healthcare
+
+1. Go to APIs & Services > Credentials to create a new set of credentials:
+  - Choose the "Web Application" type
+  - Set up an [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
+
+  - Add your domain (e.g. ```http://localhost:3000```) to Authorized JavaScript origins.
+  - Add your domain, plus `_oauth/google` (e.g. ```http://localhost:3000/_oauth/google```) to Authorized Redirect URIs.
+  - Save your Client ID for later.
+1. (Optional): Enable Public Datasets that are being hosted by Google: https://cloud.google.com/healthcare/docs/resources/public-datasets/
 
 ## Run the viewer with your OAuth Client ID
 
@@ -24,6 +37,7 @@ An alternative to deploying your own PACS is to use a software-as-a-service prov
 
 ````bash
 cd OHIFViewer
+METEOR_PACKAGE_DIRS="../Packages" meteor npm install
 METEOR_PACKAGE_DIRS="../Packages" meteor --settings ../config/oidc-googleCloud.json
 ````
 
@@ -32,10 +46,10 @@ METEOR_PACKAGE_DIRS="../Packages" meteor --settings ../config/oidc-googleCloud.j
 OHIF is also providing a Docker container which can connect to Google Cloud Healthcare with a Client ID which is provided at runtime. This is a very simple method to get up and running. Internally, the container is running [Nginx](https://nginx.org/) to serve the [Standalone Viewer](../standalone-viewer/usage.md).
 
 1. Install Docker (https://www.docker.com/)
-1. Run the Docker container, providing a Client ID as an environment variable
+1. Run the Docker container, providing a Client ID as an environment variable. Client IDs look like `xyz.apps.googleusercontent.com`.
 
 ````bash
-docker run --env CLIENT_ID={$CLIENTID}.apps.googleusercontent.com --publish 3000:80 ohif/viewer-google-cloud:latest
+docker run --env CLIENT_ID=$CLIENT_ID --publish 3000:80 ohif/viewer-google-cloud:latest
 ````
 
 ## Building the ohif/viewer-google-cloud Docker Image
@@ -57,6 +71,7 @@ npm install -g meteor-build-client-fixed2
 1. Build the Standalone client-only OHIF Viewer
 ```bash
 cd OHIFViewer/
+METEOR_PACKAGE_DIRS="../Packages" meteor npm install
 METEOR_PACKAGE_DIRS="../Packages" meteor-build-client-fixed2 ../dockersupport/viewer-google-cloud/build -s ../config/oidc.json
 ```
 
