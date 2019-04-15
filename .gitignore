@@ -1,13 +1,20 @@
-.idea/
-.meteor/local
-.meteor/meteorite
-.meteor/dev_bundle
-*/.meteor/dev_bundle
+# Packages
 node_modules
+
+# Output
+build
+dist
+docs/_book
+src/sha.js
+src/version.js
+
+# YALC (for Erik)
+.yalc
+yalc.lock
+
+# Logging, System files, misc.
+.idea/
 .npm
 npm-debug.log
-Packages/active-entry/helloworld/
-LesionTracker/tests/nightwatch/reports/
-docs/_book
+yarn-error.log
 .DS_Store
-**/.history/*
