@@ -121,7 +121,7 @@
     "react-resize-detector": "^3.4.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-viewerbase": "^0.2.11",
+    "react-viewerbase": "0.2.11",
     "react-vtkjs-viewport": "^0.0.7",
     "redux": "^4.0.1",
     "redux-oidc": "^3.1.0"
