@@ -2,12 +2,10 @@ import dicomParser from 'dicom-parser';
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import OHIF from 'ohif-core';
-import sha from './sha.js';
 import version from './version.js';
 import { homepage } from '../package.json';
 
 window.info = {
-  sha,
   version,
   homepage
 };
