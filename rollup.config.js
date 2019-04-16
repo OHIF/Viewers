@@ -50,7 +50,7 @@ export default {
     commonjs({
         include: 'node_modules/**',
         namedExports: {
-            'node_modules/react-is/index.js': ['isValidElementType'],
+            'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
             'node_modules/redux-oidc/dist/redux-oidc.js': [
               'reducer', 'CallbackComponent', 'loadUser', 'OidcProvider', 'createUserManager'
             ],
