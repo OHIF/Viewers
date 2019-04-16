@@ -1,6 +1,0 @@
-.idea
-.meteor/local
-.meteor/meteorite
-node_modules
-client/sha.js
-client/version.js

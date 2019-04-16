@@ -1,49 +1,29 @@
-# First stage of multi-stage build
-# Installs Meteor and builds node.js version
-# This stage is named 'builder'
-# The data for this intermediary image is not included
-# in the final image.
-FROM node:8.10.0-slim as builder
+# Stage 1: Build the application
+# docker build -t ohif/viewer:latest .
+FROM node:11.2.0-slim as builder
 
-RUN apt-get update && apt-get install -y \
-	curl \
-	g++ \
-	git \
-	python \
-	build-essential
+RUN apt-get update && apt-get install -y git yarn
+RUN mkdir /usr/src/app
 
-RUN curl https://install.meteor.com/ | sh
+WORKDIR /usr/src/app
 
-# Create a non-root user
-RUN useradd -ms /bin/bash user
-USER user
-RUN mkdir /home/user/Viewers
-COPY OHIFViewer/package.json /home/user/Viewers/OHIFViewer/
-ADD --chown=user:user . /home/user/Viewers
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+COPY package.json /usr/src/app/package.json
+COPY yarn.lock /usr/src/app/yarn.lock
 
-WORKDIR /home/user/Viewers/OHIFViewer
+ADD . /usr/src/app/
+RUN yarn install
+RUN yarn run build
+WORKDIR example
+RUN yarn install
+RUN yarn run prepare
+ADD example /usr/src/app/build
 
-ENV METEOR_PACKAGE_DIRS=../Packages
-ENV METEOR_PROFILE=1
-RUN meteor npm install
-RUN meteor build --directory /home/user/app
-WORKDIR /home/user/app/bundle/programs/server
-RUN npm install --production
-
-# Second stage of multi-stage build
-# Creates a slim production image for the node.js application
-FROM node:8.10.0-slim
-
-RUN npm install -g pm2
-
-WORKDIR /app
-COPY --from=builder /home/user/app .
-COPY dockersupport/app.json .
-
-ENV ROOT_URL http://localhost:3000
-ENV PORT 3000
-ENV NODE_ENV production
-
-EXPOSE 3000
-
-CMD ["pm2-runtime", "app.json"]
+# Stage 2: Bundle the built application into a Docker container
+# which runs Nginx using Alpine Linux
+FROM nginx:1.15.5-alpine
+RUN rm -rf /etc/nginx/conf.d
+COPY conf /etc/nginx
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
