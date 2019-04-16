@@ -18,7 +18,7 @@
     "build": "node --max-old-space-size=8192 node_modules/rollup/bin/rollup -c",
     "prepublishOnly": "npm run build",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
-    "prepare": "npm run build",
+    "prepare": "npm run prep && npm run build",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
     "generateStaticSite": "./generateStaticSite.sh",
