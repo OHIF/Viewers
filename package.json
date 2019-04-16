@@ -27,8 +27,7 @@
     "test": "cross-env CI=1 react-scripts test --env=jsdom",
     "copy:webworkers": "cpx 'node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
-    "sha": "echo \"export default '\"$(git rev-parse HEAD)\"';\" > src/sha.js",
-    "details": "npm run version && npm run sha",
+    "details": "npm run version",
     "prep": "npm run details && npm run copy:webworkers",
     "start": "npm run prep && cross-env PORT=5000 react-scripts start",
     "start:debug": "cross-env PORT=5000 react-scripts start"
