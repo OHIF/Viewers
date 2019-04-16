@@ -2,9 +2,9 @@
 
 - Documentation Version
 - <select>
-      <option value="v1">1.0 (Meteor)</option>
-      <option value="latest">Saab</option>
-    </select>
+    <option value="v1">1.0 (Meteor)</option>
+    <option value="latest">Saab</option>
+  </select>
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
