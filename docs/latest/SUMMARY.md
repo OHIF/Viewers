@@ -1,9 +1,9 @@
 # OHIF Viewers
 
-
 - Essentials
   - [Getting Started](essentials/getting-started.md)
   - [Troubleshooting](essentials/troubleshooting.md)
+- [Architecture](architecture/index.md)
 - Connecting to Image Archives
   - [DICOM Web](connecting-to-image-archives/dicomweb.md)
 
