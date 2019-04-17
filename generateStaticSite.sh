@@ -22,7 +22,7 @@ for D in *; do
 done
 
 # Move CNAME File into `latest`
-cp CNAME ./latest/CNAME
+cp CNAME ./latest/_book/CNAME
 
 # Create a history folder in our latest version's output
 mkdir ./latest/_book/history
@@ -41,20 +41,18 @@ done
 cd ..
 
 # Build and copy the StandaloneViewer into the static directory
-echo $DEPLOY_PRIME_URL
-cd Packages-react/ohif-viewer
-export ROOT_URL=$DEPLOY_PRIME_URL/demo
+# echo $DEPLOY_PRIME_URL
+# export ROOT_URL=$DEPLOY_PRIME_URL/demo
 
-cat package.json
-yarn install
-yarn build
+# cat package.json
+# yarn install
+# yarn build
 
-cd example
-yarn install
-yarn run prepare
-sed -i "s,http://localhost:5000,${ROOT_URL},g" index.html
-sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
-rm -rf node_modules
-mkdir ../../../docs/latest/_book/demo/
-cp -R * ../../../docs/latest/_book/demo/
-cp ../../../_redirects ../../../docs/latest/_book/_redirects
+# cd example
+# yarn install
+# yarn run prepare
+# sed -i "s,http://localhost:5000,${ROOT_URL},g" index.html
+# sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
+# rm -rf node_modules
+# mkdir docs/latest/_book/demo/
+# cp -R * docs/latest/_book/demo/
