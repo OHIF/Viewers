@@ -10,11 +10,13 @@ git clone git@github.com:OHIF/Viewers.git
 
 or [Download the latest Master as a ZIP File](https://github.com/OHIF/Viewers/archive/master.zip).
 
-## Test the archive against our public DICOM server
+## Run the OHIF Viewer application against our public DICOM server
+You can either spin up locally or run with Docker. 
 
-## Set up and test the OHIF Viewer application:
+### running everything
+
 1. [Install Node.js](https://nodejs.org/en/)
-2. Open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
+2. Open a new terminal tab, go under `ohif-viewer` directory and install all dependency packages via `yarn`
 
   ````bash
   cd Packages-react/ohif-viewer
@@ -24,18 +26,34 @@ or [Download the latest Master as a ZIP File](https://github.com/OHIF/Viewers/ar
 3. Run the application
 
   ````bash
-  npm start
+  yar start
   ````
 
 Note: This will connect to our public DICOMWeb server so you can verify your installation. Follow the next section to connect to your own local or remote DICOMWeb server.
 
-4. Launch the OHIF Viewer Study List by visiting [http://localhost:3000/](http://localhost:3000/) in a web browser.
+4. Launch the OHIF Viewer Study List. By default the address is [http://localhost:3000/](http://localhost:3000/). The port may vary so check the start up output messages such as:
+
+```bash
+Compiled successfully!
+
+You can now view ohif-viewer in the browser.
+
+  Local:            http://localhost:5000/
+  On Your Network:  http://10.74.20.83:5000/
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+```
 
 **If everything is working correctly, you should see the studies from our public archive when you visit the Study List.**
+
+![OHIF Viewer Home](../assets/img/homePage.png)
 
 5. Double-click on a Study in the Study List to launch it in the Viewer
 
   **If everything is working correctly, you should see your study load into the Viewer.**
+
+![Loading the first study](../assets/gif/loadingStudy.gif)  
 
 ## Set up a local DICOM server
 
