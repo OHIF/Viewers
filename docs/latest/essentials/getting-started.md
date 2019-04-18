@@ -13,7 +13,7 @@ or [Download the latest Master as a ZIP File](https://github.com/OHIF/Viewers/ar
 ## Run the OHIF Viewer application against our public DICOM server
 You can either spin up locally or run with Docker. 
 
-### running everything
+### running locally
 
 1. [Install Node.js](https://nodejs.org/en/)
 2. Open a new terminal tab, go under `ohif-viewer` directory and install all dependency packages via `yarn`
@@ -73,13 +73,54 @@ Archive                                    | Installation
 
 *Feel free to make a Pull Request if you want to add to this list.*
 
-## Set up and test the OHIF Viewer application:
-1. [Install Node.js](https://nodejs.org/en/)
-2. Open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
+#### Orthanc with Docker
+
+Depending on whether or not you want uploaded studies to persist in Orthanc after Docker has been closed, there are two different methods for starting the Docker image:
+
+##### Temporary data storage
+This command will start an instance of the jodogne/orthanc-plugins Docker image. *All data will be removed when the instance is stopped!*
+
+````
+docker run --rm -p 4242:4242 -p 8042:8042 jodogne/orthanc-plugins
+````
+
+##### Persistent data storage
+In order to allow your data to persist after the instance is stopped, you first need to create an image and attached data volume with Docker. The steps are as follows:
+
+1. Create a persistent data volume for Orthanc to use
+
+    ````
+    docker create --name sampledata -v /sampledata jodogne/orthanc-plugins
+    ````
+
+    **Note: On Windows, you need to use an absolute path for the data volume, like so:**
+
+    ````
+    docker create --name sampledata -v '//C/Users/erik/sampledata' jodogne/orthanc-plugins
+    ````
+
+2. Run Orthanc from Docker with the data volume attached
+
+    ````
+    docker run --volumes-from sampledata -p 4242:4242 -p 8042:8042 jodogne/orthanc-plugins
+    ````
+
+3. Upload your data and it will be persisted
+
+
+### Setting up OHIF Viewer with Orthanc as an example
+
+Once you have Orthanc running with docker either with temporary data storage or persistent data storage we con move forward with the next steps.
+
+1. Load orthanc with a dataset you might want to use. To upload data use [http://localhost:8042/app/explorer.html](http://localhost:8042/app/explorer.html). 
+
+**orthanc is username and password for orthanc docker**
+
+2. After you load the data, open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
 
   ````bash
   cd Packages-react/ohif-viewer
-  npm install
+  yarn install
   ````
 
 3. Run the application using one of the available configuration files.
