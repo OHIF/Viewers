@@ -1,3 +1,3 @@
 # Advanced
 
-Advanced topics are geared toward individuals that want a deeper understanding of the viewer's architecture.
+Advanced topics go beyond basic configuration and deployment. Their goal is to provide insight into this project's architecture and guidance on leveraging extensions.
