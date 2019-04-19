@@ -36,7 +36,7 @@ class myCustomExtension {
 
 ### Modules
 
-Modules, or [PLUGIN_TYPES](https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6), help us determine where, when, and how a plugin should be used. For example, 
+There are a few different kinds of modules. Each kind of module allows us to extend the viewer in a different way, and provides a consistent API for us to do so. You can find a full list of the [different types of modules `in ohif-core`](https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6). Information on each type of module, it's API, and how we determine when/where it should be used is included below:
 
 #### Viewport
 
@@ -58,14 +58,21 @@ Viewport components are managed by the `LayoutManager`. Which Viewport component
 - Registered SopClassHandlers
 - The SopClassUID for visible/selected datasets
 
-![Lesion Tracker Screenshot](../assets/img/extensions-viewport.png)
+![Cornerstone Viewport](../assets/img/extensions-viewport.png)
 <center><i>An example of three Viewports</i></center>
 
 For a complete example implementation, [check out the OHIFCornerstoneViewport](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/OHIFCornerstoneViewport.js).
 
 #### Toolbar
 
-...
+An extension can register a Toolbar Module by providing a `getToolbarModule()` method that returns a React Component. The component does not receive any props. If you want to modify or react to state, you will need to connect to the redux store.
+
+![Toolbar Extension](../assets/img/extensions-toolbar.gif)
+<center><i>A toolbar extension example</i></center>
+
+Toolbar components are rendered in the `ToolbarRow` component.
+
+For a complete example implementation, [check out the OHIFCornerstoneViewport's Toolbar Module](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/ToolbarModule.js).
 
 #### SopClassHandler
 
@@ -73,11 +80,11 @@ For a complete example implementation, [check out the OHIFCornerstoneViewport](h
 
 #### Panel
 
-...
+> The panel module is not yet in use.
 
 ### Registering Extensions
 
-Extensions are registered for the application at startup. The `ExtensionManager`, exposed by `ohif-core`, registers a list of extensions with our application's store. Each module provided by the extension becomes available via `state.plugins.availablePlugins`, and consists of three parts: id, type (PLUGIN_TYPE), and the return value of the module method.
+Extensions are registered for the application at startup. The `ExtensionManager`, exposed by `ohif-core`, registers a list of extensions with our application's store. Each module provided by the extension becomes available via `state.plugins.availablePlugins`, and consists of three parts: id, type ([PLUGIN_TYPE](https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6)), and the return value of the module method.
 
 In a future version, we will likely expose a way to provide the extensions you would like included at startup.
 
@@ -102,13 +109,3 @@ ExtensionManager.registerExtensions(store, extensions);
 A small number of powerful extensions for popular use cases are maintained by OHIF. They're co-located in the [`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react/) repository, in the top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions) directory. 
 
 {% include "./_maintained-extensions-table.md" %}
-
-
-https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/redux/reducers/plugins.js#L7-L30
-
-- Connected Layout Manager
-    - AvailablePlugins that match Viewport type
-
-ToolbarRow
-    - AvailablePlugins that match Toolbar type
-
