@@ -1,6 +1,6 @@
 # Extensions
 
-Extensions add new functionality to the viewer by extending existing functionality. This can be something as simple as adding a new button to the toolbar, or as complex as a new viewport capable of rendering volumes in 3D. 
+Extensions add new functionality to the viewer by registering one or more modules. They go one step further than configuration in that they allow us to inject custom React components, so long as they adhere to the module's interface. This can be something as simple as adding a new button to the toolbar, or as complex as a new viewport capable of rendering volumes in 3D.
 
 ## Overview
 
