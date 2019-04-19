@@ -114,9 +114,11 @@ Once you have Orthanc running with docker either with temporary data storage or 
 
 1. Load orthanc with a dataset you might want to use. To upload data use [http://localhost:8042/app/explorer.html](http://localhost:8042/app/explorer.html). 
 
-**orthanc is username and password for orthanc docker**
+  **orthanc is the username and password for orthanc docker**
 
-2. After you load the data, open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
+2. Go under [http://localhost:8042/app/explorer.html#upload](http://localhost:8042/app/explorer.html#upload) and upload your DICOM files there
+
+3. After you load the data, open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
 
   ````bash
   cd Packages-react/ohif-viewer
@@ -124,10 +126,11 @@ Once you have Orthanc running with docker either with temporary data storage or 
   ````
 
 3. Run the application using one of the available configuration files.
+  **the following command assumes you are under `Packages-react/ohif-viewer` folder**
 
   ````bash
-  REACT_APP_CONFIG=$(cat ../../config-react/ccc.json)
-  npm start
+  export REACT_APP_CONFIG=$(cat ../../config-react/local_orthanc.json)
+  yarn start
   ````
 
   This uses the [Custom Environment Variables of Create-React-App](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables) to pass in your configuration. The example above will not work on Windows. Please visit the link to read about how to set environment variables on Windows.
