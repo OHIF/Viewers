@@ -40,15 +40,28 @@ Modules, or [PLUGIN_TYPES](https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb
 
 #### Viewport
 
-A React Component
+An extension can register a Viewport Module by providing a `getViewportModule()` method that returns a React Component. The React component will receive the following props:
 
 ```js
-    studies: PropTypes.object,
-    displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number,
-    children: PropTypes.node,
-    customProps: PropTypes.object
+children: PropTypes.arrayOf(PropTypes.element)
+studies: PropTypes.object,
+displaySet: PropTypes.object,
+viewportData: PropTypes.object, // { studies, displaySet }
+viewportIndex: PropTypes.number,
+children: PropTypes.node,
+customProps: PropTypes.object
 ```
+
+Viewport components are managed by the `LayoutManager`. Which Viewport component is used depends on:
+
+- The Layout Configuration
+- Registered SopClassHandlers
+- The SopClassUID for visible/selected datasets
+
+![Lesion Tracker Screenshot](../assets/img/extensions-viewport.png)
+<center><i>An example of three Viewports</i></center>
+
+For a complete example implementation, [check out the OHIFCornerstoneViewport](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/OHIFCornerstoneViewport.js).
 
 #### Toolbar
 
@@ -69,6 +82,7 @@ Extensions are registered for the application at startup. The `ExtensionManager`
 In a future version, we will likely expose a way to provide the extensions you would like included at startup.
 
 _app.js_
+
 ```js
 import { createStore, combineReducers } from 'redux';
 import OHIF from 'ohif-core';
@@ -83,14 +97,11 @@ const extensions = [ new OHIFCornerstoneExtension() ];
 ExtensionManager.registerExtensions(store, extensions);
 ```
 
-
 ## OHIF Maintained Extensions
 
 A small number of powerful extensions for popular use cases are maintained by OHIF. They're co-located in the [`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react/) repository, in the top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions) directory. 
 
-
 {% include "./_maintained-extensions-table.md" %}
-
 
 
 https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/redux/reducers/plugins.js#L7-L30
