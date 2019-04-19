@@ -1,14 +1,9 @@
 # OHIF Viewers
 
-- Documentation Version
-- <select>
-    <option value="v1">1.0 (Meteor)</option>
-    <option value="latest">Saab</option>
-  </select>
-
 - Essentials
   - [Getting Started](essentials/getting-started.md)
   - [Troubleshooting](essentials/troubleshooting.md)
+- [Architecture](architecture/index.md)
 - Connecting to Image Archives
   - [DICOM Web](connecting-to-image-archives/dicomweb.md)
 
