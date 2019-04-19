@@ -1,0 +1,10 @@
+dist/
+node_modules/
+docs/
+.git
+Dockerfile
+.DS_Store
+.gitignore
+README.md
+Packages-react/ohif-viewer/dist/
+Packages-react/ohif-viewer/node_modules/
