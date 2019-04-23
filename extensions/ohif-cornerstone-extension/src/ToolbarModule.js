@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import ConnectedToolbarSection from './ConnectedToolbarSection';
 import { ToolbarButton } from 'react-viewerbase';
 import ConnectedCineDialog from './ConnectedCineDialog';
