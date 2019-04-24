@@ -14,6 +14,8 @@
   - [Modules](advanced/extensions.md#modules)
   - [Registering](advanced/extensions.md#registering-extensions)
   - [OHIF Maintained](advanced/extensions.md#ohif-maintained-extensions)
+- [Architecture](advanced/architecture.md)
+  - Overview
 
 - Connecting to Image Archives
   - [DICOM Web](connecting-to-image-archives/dicomweb.md)
