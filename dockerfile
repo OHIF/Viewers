@@ -2,28 +2,30 @@
 # docker build -t ohif/viewer:latest .
 FROM node:11.2.0-slim as builder
 
-RUN apt-get update && apt-get install -y git yarn
+# RUN apt-get update && apt-get install -y git yarn
 RUN mkdir /usr/src/app
 
 WORKDIR /usr/src/app
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
 COPY package.json /usr/src/app/package.json
 COPY yarn.lock /usr/src/app/yarn.lock
 
 ADD . /usr/src/app/
 RUN yarn install
-RUN yarn run build
-WORKDIR example
-RUN yarn install
 RUN yarn run prepare
-ADD example /usr/src/app/build
 
-# Stage 2: Bundle the built application into a Docker container
-# which runs Nginx using Alpine Linux
+WORKDIR /usr/src/app/example
+
+RUN sed -i "s,http://localhost:5000,http://localhost,g" index.html
+RUN sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
+
+# # Stage 2: Bundle the built application into a Docker container
+# # which runs Nginx using Alpine Linux
 FROM nginx:1.15.5-alpine
 RUN rm -rf /etc/nginx/conf.d
 COPY conf /etc/nginx
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+COPY --from=builder /usr/src/app/example /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

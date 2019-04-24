@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+
+  Viewer:
+    container_name: ohif-viewer
+    image: ohif/viewer:latest
+    ports:
+      - '80:80'
+    environment:
+      - NODE_ENV=production
