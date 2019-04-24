@@ -2,9 +2,11 @@ version: '3.5'
 
 services:
 
-  Viewer:
+  viewer:
     container_name: ohif-viewer
-    image: ohif/viewer:latest
+    build:
+      context: ../
+      dockerfile: Dockerfile
     ports:
       - '80:80'
     environment:
