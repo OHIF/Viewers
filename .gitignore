@@ -20,3 +20,4 @@ yarn-error.log
 .DS_Store
 
 example/deps/
+sampledata/
