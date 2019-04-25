@@ -21,6 +21,14 @@ Our goal is to maintain the majority of our business logic in [`OHIF/ohif-core`]
 It does this while remaining decoupled from any particular view library or
 rendering logic. While we use it to power our React Viewer, it can be used with Vue, React, Vanilla JS, or any number of other frameworks.
 
+### Misc. Extensions
+
+Want to add custom logic or UI Components to the OHIF Viewer, but don't want to maintain a fork? We expose common integration points via [extensions](./extensions.md) to make that possible. For a list of extensions maintained by OHIF, [check out this helpful table](./extensions.html#ohif-maintained-extensions).
+
+
+If you find yourself thinking "I wish the Viewer could do X", and you can't accomplish it with an extension today, create a GitHub issue! We're actively looking for ways to improve our extensibility ^_^
+
+[Click here to read more about extensions!](./extensions.md)
 ![Architecture Diagram](../assets/img/architecture-diagram.png)
 
 <center><i>architecture diagram</i></center>
