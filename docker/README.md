@@ -11,3 +11,13 @@ This folder contains docker-compose files used to spin up OHIF-Viewer with diffe
 `$ docker-compose -f docker-compose-publicserver.yml up -d`
 
 then, access the application at (http://localhost)[http://localhost]
+
+## Local Orthanc
+#### build
+
+`$ docker-compose -f docker-compose-orthanc.yml build`
+
+#### run
+`$ docker-compose -f docker-compose-orthanc.yml up -d`
+
+then, access the application at (http://localhost)[http://localhost]
