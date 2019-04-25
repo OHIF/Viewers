@@ -1,10 +1,13 @@
 # Architecture
 
+Looking to extend your instance of the OHIF Viewer? Want learn how to reuse _a portion_ of the Viewer in your own application? Or maybe you want to get involved and draft or suggest a new feature? Regardless, you're in the right place!
+
+The OHIF Viewer aims to be decoupled, configurable, and extensible; while this allows our code to be used in more ways, it also increases complexity. Below, we aim to demistify that complexity by providing insight into how our Viewer is architected, and the role each of it's dependent libraries plays.
+
 ## Overview
 
 The [`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react) repository contains the source code for the OHIF Medical Imaging Viewer. It is effectively a React [progressive web app](https://developers.google.com/web/progressive-web-apps/) (PWA) that combines the business logic housed in [`OHIF/ohif-core`](https://github.com/OHIF/ohif-core) and the components in our React Component library [`OHIF/react-viewerbase`](https://github.com/OHIF/react-viewerbase). It provides customization for common use cases through [configuration](../essentials/configuration.md) and for adding functionality via [extensions](./extensions.md).
 
-The purpose of this documentation is to better illustrate how these pieces work together to create a Viewer and where you should direct your attention for contributions.
 
 ### Business Logic
 
