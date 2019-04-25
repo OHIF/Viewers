@@ -68,6 +68,8 @@ For more advanced local development scenarios, like using your own locally hoste
 
 ### Contributing
 
+> Large portions of the Viewer's functionality are maintained in other repositories. To get a better understanding of the Viewer's architecture and "where things live", read [our docs on the Viewer's architecture](https://deploy-preview-398--ohif.netlify.com/advanced/architecture.html#diagram)
+
 It is notoriously difficult to setup multiple dependent repositories for
 end-to-end testing and development. That's why we recommend writing and running
 unit tests when adding and modifying features. This allows us to program in isolation without a complex setup, and has the added benefit of producing well-tested business logic.
