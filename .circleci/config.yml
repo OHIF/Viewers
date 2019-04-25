@@ -38,7 +38,18 @@ jobs:
 
       # Build & Test
       - run: yarn build
-      # - run: yarn test
+      # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
+      - run:
+          name: 'JavaScript Test Suite'
+          command: yarn test:ci
+          environment:
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+
+      # Store result
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 
       # Persist :+1:
       - persist_to_workspace:
