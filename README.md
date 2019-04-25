@@ -27,7 +27,43 @@ Building a web based medical imaging viewer from scratch is time intensive, hard
 
 If you're interested in using the OHIF Viewer, but you're not sure it supports your use case [check out our docs](https://deploy-preview-398--ohif.netlify.com/). Still not sure, or you would like to propose new features? Don't hesitate to [create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request ^_^
 
-Documentation is available here: http://docs.ohif.org/
+
+## Getting Started
+
+This readme is specific to testing and developing locally. If you're more interested in production deployment strategies, [you can check out our documentation on publishing](https://deploy-preview-398--ohif.netlify.com/).
+
+Want to play around before you dig in? [Check out our LIVE Demo](https://viewer.ohif.org/)
+
+### Setup
+
+_Requirements:_
+
+- [NodeJS & NPM](https://nodejs.org/en/download/)
+- [Yarn](https://yarnpkg.com/lang/en/docs/install/)
+
+_Steps:_
+
+1. Fork this repository
+2. Clone your forked repository (your `origin`)
+  - `git clone git@github.com:YOUR_GITHUB_USERNAME/Viewers.git`
+3. Add `OHIF/Viewers` as a `remote` repository (the `upstream`)
+  - `git remote add upstream git@github.com:OHIF/Viewers.git`
+
+
+### Developing Locally
+
+In your cloned repository's root folder, run:
+
+```js
+// Restore dependencies
+yarn install
+
+// Stands up local server to host Viewer.
+// Viewer connects to our public cloud PACS by default
+yarn start
+```
+
+
 ### Contributing
 
 It is notoriously difficult to setup multiple dependent repositories for
