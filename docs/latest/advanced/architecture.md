@@ -21,6 +21,14 @@ Our goal is to maintain the majority of our business logic in [`OHIF/ohif-core`]
 It does this while remaining decoupled from any particular view library or
 rendering logic. While we use it to power our React Viewer, it can be used with Vue, React, Vanilla JS, or any number of other frameworks.
 
+
+### React Component Library
+
+[`OHIF/react-viewerbase`](https://github.com/OHIF/react-viewerbase) is a React Component library that contains the reusable components that power the OHIF Viewer. It allows us to build, compose, and test components in isolation; easing the development process by reducing the need to stand-up a local PACS with test case data.
+
+[Check out our component library!](https://react.ohif.org/)
+
+
 ### Misc. Extensions
 
 Want to add custom logic or UI Components to the OHIF Viewer, but don't want to maintain a fork? We expose common integration points via [extensions](./extensions.md) to make that possible. For a list of extensions maintained by OHIF, [check out this helpful table](./extensions.html#ohif-maintained-extensions).
