@@ -24,3 +24,9 @@ rendering logic. While we use it to power our React Viewer, it can be used with 
 ![Architecture Diagram](../assets/img/architecture-diagram.png)
 
 <center><i>architecture diagram</i></center>
+
+## Common Questions
+
+> Can I create my own Viewer using Vue.js or Angular.js?
+
+You can, but you will not be able to leverage as much of the existing code and components. `ohif-core` could still be used for business logic, and to provide a model for extensions. `react-viewerbase` would then become a guide for the components you would need to recreate.
