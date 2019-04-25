@@ -28,6 +28,39 @@ Building a web based medical imaging viewer from scratch is time intensive, hard
 If you're interested in using the OHIF Viewer, but you're not sure it supports your use case [check out our docs](https://deploy-preview-398--ohif.netlify.com/). Still not sure, or you would like to propose new features? Don't hesitate to [create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request ^_^
 
 Documentation is available here: http://docs.ohif.org/
+## Issues
+
+_Looking to contribute? Look for the [Good First Issue][good-first-issue]
+label._
+
+### 🐛 Bugs
+
+Please file an issue for bugs, missing documentation, or unexpected behavior.
+
+[**See Bugs**][bugs]
+
+### 💡 Feature Requests
+
+Please file an issue to suggest new features. Vote on feature requests by adding
+a 👍. This helps maintainers prioritize what to work on.
+
+[**See Feature Requests**][requests-feature]
+
+### ❓ Questions
+
+For questions related to using the library, please visit our support community,
+or file an issue on GitHub.
+
+[Google Group][google-group]
+
+## License
+
+MIT © [OHIF](https://github.com/OHIF)
+
+<!--
+Links:
+-->
+
 <!-- prettier-ignore-start -->
 <!-- ROW -->
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
