@@ -21,3 +21,4 @@ yarn-error.log
 
 example/deps/
 sampledata/
+docker/dcm4che/dcm4che-arc

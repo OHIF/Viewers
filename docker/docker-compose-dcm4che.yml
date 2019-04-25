@@ -14,10 +14,10 @@ services:
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
       - ./dcm4che/etc/timezone:/etc/timezone:ro
-      - ./dcm4che/dcm4chee-arc/ldap:/var/lib/ldap
-      - ./dcm4che/dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
+      - ./dcm4che/dcm4che-arc/ldap:/var/lib/ldap
+      - ./dcm4che/dcm4che-arc/slapd.d:/etc/ldap/slapd.d
     networks:
-      - dcm4chee_default
+      - dcm4che_default
   db:
     image: dcm4che/postgres-dcm4chee:11.1-15
     logging:
@@ -30,9 +30,9 @@ services:
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
       - ./dcm4che/etc/timezone:/etc/timezone:ro
-      - ./dcm4che/dcm4chee-arc/db:/var/lib/postgresql/data
+      - ./dcm4che/dcm4che-arc/db:/var/lib/postgresql/data
     networks:
-      - dcm4chee_default
+      - dcm4che_default
   arc:
     image: dcm4che/dcm4chee-arc-psql:5.15.0
     logging:
@@ -55,10 +55,10 @@ services:
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
       - ./dcm4che/etc/timezone:/etc/timezone:ro
-      - ./dcm4che/dcm4chee-arc/wildfly:/opt/wildfly/standalone
-      - ./dcm4che/dcm4chee-arc/storage:/storage
+      - ./dcm4che/dcm4che-arc/wildfly:/opt/wildfly/standalone
+      - ./dcm4che/dcm4che-arc/storage:/storage
     networks:
-      - dcm4chee_default
+      - dcm4che_default
   viewer:
     container_name: ohif-viewer
     build:
@@ -72,7 +72,7 @@ services:
       - NODE_ENV=production
     restart: always
     networks:
-      - dcm4chee_default
+      - dcm4che_default
 
 networks:
-  dcm4chee_default:
+  dcm4che_default:
