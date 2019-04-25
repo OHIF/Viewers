@@ -29,6 +29,16 @@ Want to add custom logic or UI Components to the OHIF Viewer, but don't want to 
 If you find yourself thinking "I wish the Viewer could do X", and you can't accomplish it with an extension today, create a GitHub issue! We're actively looking for ways to improve our extensibility ^_^
 
 [Click here to read more about extensions!](./extensions.md)
+
+### Diagram
+
+This diagram is a conceptual illustration of how the Viewer is architected. 
+
+0. (optional) `extensions` can be registered with `ohif-core`'s extension manager
+1. `ohif-core` provides bussiness logic and a way for `viewer` to access registered extensions
+2. The `viewer` composes and provides data to components from our component library (`react-viewerbase`)
+3. The `viewer` can be built and served as a stand-alone PWA, or as an embeddable package ([`ohif-viewer`](https://www.npmjs.com/package/ohif-viewer))
+
 ![Architecture Diagram](../assets/img/architecture-diagram.png)
 
 <center><i>architecture diagram</i></center>
