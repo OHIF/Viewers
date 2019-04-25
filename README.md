@@ -1,5 +1,10 @@
 # Viewers
 This repo contains the OHIF DICOM Viewer and Lesion Tracker, and various shared meteor packages.
+## Why?
+
+Building a web based medical imaging viewer from scratch is time intensive, hard to get right, and expensive. Instead of re-inventing the wheel, you can use the OHIF Viewer as a rock solid platform to build on top of. The Viewer is a [React](https://reactjs.org/) [Progressive Web Application](https://developers.google.com/web/progressive-web-apps/) that can be embedded in existing applications via it's [packaged source (ohif-viewer)](https://www.npmjs.com/package/ohif-viewer) or hosted stand-alone. The Viewer exposes [configuration](https://deploy-preview-398--ohif.netlify.com/essentials/configuration.html) and [extensions](https://deploy-preview-398--ohif.netlify.com/advanced/extensions.html) to support workflow customization and advanced functionality at common integration points.
+
+If you're interested in using the OHIF Viewer, but you're not sure it supports your use case [check out our docs](https://deploy-preview-398--ohif.netlify.com/). Still not sure, or you would like to propose new features? Don't hesitate to [create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request ^_^
 
 Documentation is available here: http://docs.ohif.org/
 
