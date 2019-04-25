@@ -1,5 +1,10 @@
-# Viewers
-This repo contains the OHIF DICOM Viewer and Lesion Tracker, and various shared meteor packages.
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<div align="center">
+  <h1>ohif-viewer</h1>
+  <p><strong>ohif-viewer</strong> is a zero-footprint medical image viewer. It is a configurable and exstensible progressive web application with out of the box support for PACS like orthanc, dcm4che, and Google's Healthcare API.</p>
+</div>
+
 
 <div align="center">
   <a href="https://deploy-preview-398--ohif.netlify.com/"><strong>Read The Docs</strong></a> |
