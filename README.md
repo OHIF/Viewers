@@ -28,6 +28,33 @@ Building a web based medical imaging viewer from scratch is time intensive, hard
 If you're interested in using the OHIF Viewer, but you're not sure it supports your use case [check out our docs](https://deploy-preview-398--ohif.netlify.com/). Still not sure, or you would like to propose new features? Don't hesitate to [create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request ^_^
 
 Documentation is available here: http://docs.ohif.org/
+### Contributing
+
+It is notoriously difficult to setup multiple dependent repositories for
+end-to-end testing and development. That's why we recommend writing and running
+unit tests when adding and modifying features. This allows us to program in isolation without a complex setup, and has the added benefit of producing well-tested business logic.
+
+1. Clone this repository
+2. Navigate to the project directory, and `yarn install`
+3. To begin making changes, `yarn run dev`
+4. To commit changes, run `yarn run cm`
+
+When creating tests, place the test file "next to" the file you're testing.
+[For example](https://github.com/OHIF/Viewers/blob/react/src/index.test.js):
+
+```js
+// File
+index.js
+
+// Test for file
+index.test.js
+```
+
+As you add and modify code, `jest` will watch for uncommitted changes and run
+your tests, reporting the results to your terminal. Make a pull request with
+your changes to `master`, and a core team member will review your work. If you
+have any questions, please don't hesitate to reach out via a GitHub issue.
+
 ## Issues
 
 _Looking to contribute? Look for the [Good First Issue][good-first-issue]
