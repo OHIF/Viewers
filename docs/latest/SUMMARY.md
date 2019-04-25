@@ -2,6 +2,7 @@
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
+  - [Configuration](essentials/configuration.md)
   - [Troubleshooting](essentials/troubleshooting.md)
 - [Architecture](architecture/index.md)
   - Overview
@@ -9,6 +10,13 @@
 
 ---
 - [Advanced](advanced/index.md)
+- [Architecture](advanced/architecture.md)
+  - [Overview](advanced/architecture.md#overview)
+  - [Business Logic](advanced/architecture.md#business-logic)
+  - [Component Library](advanced/architecture.md#react-component-library)
+  - [Extensions](advanced/architecture.md#misc-extensions)
+  - [Diagram](advanced/architecture.md#diagram)
+  - [Common Questions](advanced/architecture.md#common-questions)
 - [Extensions](advanced/extensions.md)
   - [Overview](advanced/extensions.md#overview)
   - [Modules](advanced/extensions.md#modules)
