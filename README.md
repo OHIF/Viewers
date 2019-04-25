@@ -143,6 +143,20 @@ Links:
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- DOCS -->
+[react-url]: https://reactjs.org/
+[pwa-url]: https://developers.google.com/web/progressive-web-apps/
+[ohif-viewer-url]: https://www.npmjs.com/package/ohif-viewer
+[configuration-url]: https://deploy-preview-398--ohif.netlify.com/essentials/configuration.html
+[extensions-url]: https://deploy-preview-398--ohif.netlify.com/advanced/extensions.html
+<!-- Misc. -->
+[react-viewer]: https://github.com/OHIF/Viewers/tree/react
+<!-- Issue Boilerplate -->
+[bugs]: https://github.com/OHIF/Viewers/labels/bug
+[requests-feature]: https://github.com/OHIF/Viewers/labels/enhancement
+[good-first-issue]: https://github.com/OHIF/Viewers/labels/good%20first%20issue
+[google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform
+<!-- prettier-ignore-end -->
+
 
 ### Demos
 [OHIF Viewer](http://viewer.ohif.org/) - A general-purpose radiology viewer with a variety of tools exposed.
