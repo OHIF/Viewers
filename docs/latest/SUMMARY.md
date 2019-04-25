@@ -2,6 +2,7 @@
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
+  - [Configuration](essentials/configuration.md)
   - [Troubleshooting](essentials/troubleshooting.md)
 - [Architecture](architecture/index.md)
   - Overview
@@ -9,13 +10,13 @@
 
 ---
 - [Advanced](advanced/index.md)
+- [Architecture](advanced/architecture.md)
+  - [Overview](advanced/architecture.md#overview)
 - [Extensions](advanced/extensions.md)
   - [Overview](advanced/extensions.md#overview)
   - [Modules](advanced/extensions.md#modules)
   - [Registering](advanced/extensions.md#registering-extensions)
   - [OHIF Maintained](advanced/extensions.md#ohif-maintained-extensions)
-- [Architecture](advanced/architecture.md)
-  - Overview
 
 - Connecting to Image Archives
   - [DICOM Web](connecting-to-image-archives/dicomweb.md)
