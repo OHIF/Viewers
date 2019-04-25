@@ -53,6 +53,10 @@ This diagram is a conceptual illustration of how the Viewer is architected.
 
 ## Common Questions
 
+> When should I use the packaged source `ohif-viewer` versus building a PWA from the source?
+
+...
+
 > Can I create my own Viewer using Vue.js or Angular.js?
 
 You can, but you will not be able to leverage as much of the existing code and components. `ohif-core` could still be used for business logic, and to provide a model for extensions. `react-viewerbase` would then become a guide for the components you would need to recreate.
