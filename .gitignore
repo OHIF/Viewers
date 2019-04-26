@@ -6,6 +6,7 @@ build
 dist
 docs/_book
 src/version.js
+junit.xml
 
 # YALC (for Erik)
 .yalc
