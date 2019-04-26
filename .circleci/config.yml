@@ -55,19 +55,20 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-  # npm_publish:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - run:
-  #         name: Avoid hosts unknown for github
-  #         command:
-  #           mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
-  #           no\n" > ~/.ssh/config
-  #     - run:
-  #         name: Publish using Semantic Release
-  #         command: npx semantic-release
+
+  npm_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Avoid hosts unknown for github
+          command:
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
+            no\n" > ~/.ssh/config
+      - run:
+          name: Publish using Semantic Release
+          command: npx semantic-release
 
 workflows:
   version: 2
@@ -80,6 +81,7 @@ workflows:
             branches:
               ignore:
                 - master
+                - react
                 - feature/*
                 - hotfix/*
 
@@ -90,6 +92,6 @@ workflows:
           filters:
             branches:
               only: react
-      # - npm_publish:
-      #     requires:
-      #       - build_and_test
+      - npm_publish:
+          requires:
+            - build_and_test

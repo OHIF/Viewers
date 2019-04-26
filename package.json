@@ -15,6 +15,7 @@
     "npm": ">=5"
   },
   "scripts": {
+    "cm": "npx git-cz",
     "dev": "yarn run preBuild && cross-env PORT=5000 react-scripts start",
     "dev:debug": "cross-env PORT=5000 react-scripts start",
     "build": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
@@ -26,6 +27,31 @@
     "preBuild": "yarn run version && yarn run copy:webworkers",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
     "copy:webworkers": "cpx 'node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,json,css}": [
+      "prettier --single-quote --write",
+      "git add"
+    ]
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "files": [
+    "dist"
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
@@ -75,8 +101,10 @@
     "@svgr/rollup": "^4.1.0",
     "babel-eslint": "^9.0.0",
     "codecov": "3.3.0",
+    "commitizen": "3.1.x",
     "cpx": "1.5.0",
     "cross-env": "^5.2.0",
+    "cz-conventional-changelog": "2.1.0",
     "eslint": "5.12.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^8.0.0",
@@ -107,25 +135,5 @@
     "stylelint": "^9.9.0",
     "stylelint-config-recommended": "^2.1.0",
     "stylus": "^0.54.5"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,json,css}": [
-      "prettier --single-quote --write",
-      "git add"
-    ]
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "files": [
-    "dist"
-  ]
+  }
 }
