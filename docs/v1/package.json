@@ -1,5 +1,5 @@
 {
-  "name": "ohif-viewers-docs",
+  "name": "ohif-viewer-v1-docs",
   "version": "1.0.0",
   "description": "Open Health Imaging Foundation Viewers Metarepo for documentation",
   "main": ".eslintrc.js",
