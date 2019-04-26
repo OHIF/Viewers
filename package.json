@@ -15,9 +15,9 @@
     "npm": ">=5"
   },
   "scripts": {
-    "dev": "yarn run prep && cross-env PORT=5000 react-scripts start",
+    "dev": "yarn run preBuild && cross-env PORT=5000 react-scripts start",
     "dev:debug": "cross-env PORT=5000 react-scripts start",
-    "build": "yarn run prep && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
+    "build": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "test": "jest",
     "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
