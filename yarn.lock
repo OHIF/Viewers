@@ -6513,11 +6513,6 @@ joi@^11.1.1:
     isemail "3.x.x"
     topo "2.x.x"
 
-jquery.hotkeys@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/jquery.hotkeys/-/jquery.hotkeys-0.1.0.tgz#a88f636494fe75de41e4b753a059e5a523b83273"
-  integrity sha1-qI9jZJT+dd5B5LdToFnlpSO4MnM=
-
 jquery@^3.3.1:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.0.tgz#8de513fa0fa4b2c7d2e48a530e26f0596936efdf"
@@ -8023,17 +8018,16 @@ octal@^1.0.0:
   resolved "https://registry.yarnpkg.com/octal/-/octal-1.0.0.tgz#63e7162a68efbeb9e213588d58e989d1e5c4530b"
   integrity sha1-Y+cWKmjvvrniE1iNWOmJ0eXEUws=
 
-ohif-core@^0.3.5:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.3.9.tgz#359ea7451e70f06f67c4bf5fcecf5f844ad922fb"
-  integrity sha512-sdJzAHiK+PhJK+ID1CilqvPw9z3EY4sDYwKUFXqnJLmf+a42x5FWNb3F7iH5Hw4V3sn6V4H6YZApbk2NVdam7g==
+ohif-core@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.4.1.tgz#3a2b0b92b22f8da80b04fe487dc1faf6c0c2ed6c"
+  integrity sha512-QJRnx3NDf45a655JZQMCNj9tLtyh5YaH7X/tGPsA0Y2zPWEKxWKAQQDUE+TCZNsec135mB+xxYw++a/GkqLX0A==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
     dicomweb-client "^0.4.2"
     isomorphic-base64 "^1.0.2"
     jquery "^3.3.1"
-    jquery.hotkeys "^0.1.0"
     lodash.clonedeep "^4.5.0"
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
