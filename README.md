@@ -28,16 +28,30 @@
 
 ## Why?
 
-Building a web based medical imaging viewer from scratch is time intensive, hard to get right, and expensive. Instead of re-inventing the wheel, you can use the OHIF Viewer as a rock solid platform to build on top of. The Viewer is a [React][react-url] [Progressive Web Application][pwa-url] that can be embedded in existing applications via it's [packaged source (ohif-viewer)][ohif-viewer-url] or hosted stand-alone. The Viewer exposes [configuration][configuration-url] and [extensions][extensions-url] to support workflow customization and advanced functionality at common integration points.
+Building a web based medical imaging viewer from scratch is time intensive, hard
+to get right, and expensive. Instead of re-inventing the wheel, you can use the
+OHIF Viewer as a rock solid platform to build on top of. The Viewer is a
+[React][react-url] [Progressive Web Application][pwa-url] that can be embedded
+in existing applications via it's [packaged source
+(ohif-viewer)][ohif-viewer-url] or hosted stand-alone. The Viewer exposes
+[configuration][configuration-url] and [extensions][extensions-url] to support
+workflow customization and advanced functionality at common integration points.
 
-If you're interested in using the OHIF Viewer, but you're not sure it supports your use case [check out our docs](https://deploy-preview-398--ohif.netlify.com/). Still not sure, or you would like to propose new features? Don't hesitate to [create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request ^_^
-
+If you're interested in using the OHIF Viewer, but you're not sure it supports
+your use case
+[check out our docs](https://deploy-preview-398--ohif.netlify.com/). Still not
+sure, or you would like to propose new features? Don't hesitate to
+[create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request
+^\_^
 
 ## Getting Started
 
-This readme is specific to testing and developing locally. If you're more interested in production deployment strategies, [you can check out our documentation on publishing](https://deploy-preview-398--ohif.netlify.com/).
+This readme is specific to testing and developing locally. If you're more
+interested in production deployment strategies,
+[you can check out our documentation on publishing](https://deploy-preview-398--ohif.netlify.com/).
 
-Want to play around before you dig in? [Check out our LIVE Demo](https://viewer.ohif.org/)
+Want to play around before you dig in?
+[Check out our LIVE Demo](https://viewer.ohif.org/)
 
 ### Setup
 
@@ -50,10 +64,12 @@ _Steps:_
 
 1. Fork this repository
 2. Clone your forked repository (your `origin`)
-  - `git clone git@github.com:YOUR_GITHUB_USERNAME/Viewers.git`
-3. Add `OHIF/Viewers` as a `remote` repository (the `upstream`)
-  - `git remote add upstream git@github.com:OHIF/Viewers.git`
 
+- `git clone git@github.com:YOUR_GITHUB_USERNAME/Viewers.git`
+
+3. Add `OHIF/Viewers` as a `remote` repository (the `upstream`)
+
+- `git remote add upstream git@github.com:OHIF/Viewers.git`
 
 ### Developing Locally
 
@@ -68,16 +84,23 @@ yarn install
 yarn start
 ```
 
-For more advanced local development scenarios, like using your own locally hosted PACS and test data, [check out our Essential: Getting Started](https://deploy-preview-398--ohif.netlify.com/essentials/getting-started.html) guide.
-
+For more advanced local development scenarios, like using your own locally
+hosted PACS and test data,
+[check out our Essential: Getting Started](https://deploy-preview-398--ohif.netlify.com/essentials/getting-started.html)
+guide.
 
 ### Contributing
 
-> Large portions of the Viewer's functionality are maintained in other repositories. To get a better understanding of the Viewer's architecture and "where things live", read [our docs on the Viewer's architecture](https://deploy-preview-398--ohif.netlify.com/advanced/architecture.html#diagram)
+> Large portions of the Viewer's functionality are maintained in other
+> repositories. To get a better understanding of the Viewer's architecture and
+> "where things live", read
+> [our docs on the Viewer's architecture](https://deploy-preview-398--ohif.netlify.com/advanced/architecture.html#diagram)
 
 It is notoriously difficult to setup multiple dependent repositories for
 end-to-end testing and development. That's why we recommend writing and running
-unit tests when adding and modifying features. This allows us to program in isolation without a complex setup, and has the added benefit of producing well-tested business logic.
+unit tests when adding and modifying features. This allows us to program in
+isolation without a complex setup, and has the added benefit of producing
+well-tested business logic.
 
 1. Clone this repository
 2. Navigate to the project directory, and `yarn install`
