@@ -18,6 +18,9 @@ RUN yarn run prepare
 
 WORKDIR /usr/src/app/example
 
+RUN yarn install
+RUN yarn run prepare
+
 RUN sed -i "s,http://localhost:5000,http://localhost,g" index.html
 RUN sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
 

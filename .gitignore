@@ -19,6 +19,7 @@ package-lock.json
 yarn-error.log
 .DS_Store
 
-example/deps/
+# Common Example Data Directories
 sampledata/
+example/deps/
 docker/dcm4che/dcm4che-arc
