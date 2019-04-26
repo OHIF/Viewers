@@ -15,13 +15,13 @@
     "npm": ">=5"
   },
   "scripts": {
-    "build": "yarn run prep && node --max-old-space-size=8192 node_modules/rollup/bin/rollup -c",
+    "build": "yarn run prep && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
     "prepublishOnly": "yarn run build",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "prepare": "yarn run build",
     "predeploy": "cd example && npm install && yarn run build",
     "test": "jest",
-    "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
+    "test:ci": "jest --ci --max_old_space_size=4096 --maxWorkers=2 --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "copy:webworkers": "cpx 'node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public",
     "staticDeploy": "./generateStaticSite.sh",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
