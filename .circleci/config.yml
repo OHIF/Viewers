@@ -66,9 +66,11 @@ jobs:
           command:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
             no\n" > ~/.ssh/config
+      # --no-ci argument is not ideal; however, semantic-rlease thinks we're
+      # attempting to run it from a `pr`, which is not the case
       - run:
           name: Publish using Semantic Release
-          command: npx semantic-release --debug
+          command: npx semantic-release --debug --no-ci
 
 workflows:
   version: 2
