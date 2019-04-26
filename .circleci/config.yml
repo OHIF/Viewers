@@ -70,7 +70,7 @@ jobs:
       # attempting to run it from a `pr`, which is not the case
       - run:
           name: Publish using Semantic Release
-          command: npx semantic-release --debug --no-ci
+          command: npx semantic-release --debug --dry-run
 
 workflows:
   version: 2
