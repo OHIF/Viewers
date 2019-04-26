@@ -23,6 +23,8 @@ services:
     environment:
       - NODE_ENV=production
     restart: always
+    volumes:
+      - ../config/local_orthanc.js:/usr/share/nginx/html/servers.js
   proxy:
     image: nginx
     restart: always
@@ -30,3 +32,4 @@ services:
       - 8899:80
     volumes:
       - ./nginx-proxy/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+

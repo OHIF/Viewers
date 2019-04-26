@@ -11,3 +11,5 @@ services:
       - '80:80'
     environment:
       - NODE_ENV=production
+    volumes:
+      - ../config/public_dicomweb.js:/usr/share/nginx/html/servers.js
