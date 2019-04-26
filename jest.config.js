@@ -1,19 +1,13 @@
 module.exports = {
   verbose: true,
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/public/',
-    '<rootDir>/extensions/',
-  ],
+  testPathIgnorePatterns: ['!**/node_modules/**'],
   testMatch: ['<rootDir>/src/**/*.test.js'],
   //
   collectCoverage: false,
   collectCoverageFrom: [
-    '**/*.{js,jsx}',
+    '<rootDir>/src/**/*.{js,jsx}',
+    '!<rootDir>/src/**/*.test.js',
     '!**/node_modules/**',
-    '!<rootDir>/public/**',
-    '!<rootDir>/extensions/**',
-    '!<rootDir>/dist/**',
   ],
   reporters: ['default', 'jest-junit'],
   //
