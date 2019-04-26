@@ -68,7 +68,7 @@ jobs:
             no\n" > ~/.ssh/config
       - run:
           name: Publish using Semantic Release
-          command: npx semantic-release
+          command: npx semantic-release --debug
 
 workflows:
   version: 2
