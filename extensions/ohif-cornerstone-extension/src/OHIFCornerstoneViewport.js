@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import './config';
 import handleSegmentationStorage from './handleSegmentationStorage.js';
