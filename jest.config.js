@@ -1,6 +1,5 @@
 module.exports = {
   verbose: true,
-  testPathIgnorePatterns: ['!**/node_modules/**'],
   testMatch: ['<rootDir>/src/**/*.test.js'],
   //
   collectCoverage: false,
