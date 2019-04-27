@@ -10,7 +10,7 @@ This folder contains docker-compose files used to spin up OHIF-Viewer with diffe
 #### run
 `$ docker-compose -f docker-compose-publicserver.yml up -d`
 
-then, access the application at (http://localhost)[http://localhost]
+then, access the application at [http://localhost](http://localhost)
 
 ## Local Orthanc
 #### build
@@ -20,7 +20,7 @@ then, access the application at (http://localhost)[http://localhost]
 #### run
 `$ docker-compose -f docker-compose-orthanc.yml up -d`
 
-then, access the application at (http://localhost)[http://localhost]
+then, access the application at [http://localhost](http://localhost)
 
 **remember that you have to access orthanc application and include your studies there**
 
@@ -32,7 +32,7 @@ then, access the application at (http://localhost)[http://localhost]
 #### run
 `$ docker-compose -f docker-compose-dcm4chee.yml up -d`
 
-then, access the application at (http://localhost)[http://localhost]
+then, access the application at [http://localhost](http://localhost)
 
 **remember that you have to access dcm4chee application and include your studies there**
 You can use the following command to import your studies into dcm4che

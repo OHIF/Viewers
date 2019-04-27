@@ -117,7 +117,7 @@ Once you have Orthanc running with docker either with temporary data storage or 
 
 2. Go under [http://localhost:8042/app/explorer.html#upload](http://localhost:8042/app/explorer.html#upload) and upload your DICOM files there
 
-3. After you load the data, open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
+3. After you load the data, open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via Yarn
 
   ````bash
   yarn install
@@ -144,4 +144,5 @@ Once you have Orthanc running with docker either with temporary data storage or 
 #### Troubleshooting
 * If you receive a *"No Studies Found"* message and do not see your studies, try changing the Study Date filters to a wider range.
 * If you see a 'Loading' message which never resolves, check your browser JavaScript console inside the Developer Tools to identify any errors.
-* If you see any errors in your server console, check the [Troubleshooting](../troubleshooting.md) page for more in depth advice.
+* If you receive `exit code 137`, increase the amount of memory available to your docker instances.
+* If you see any errors in your server console, check the [Troubleshooting](./troubleshooting.md) page for more in depth advice.
