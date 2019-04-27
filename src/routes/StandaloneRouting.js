@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import qs from 'query-string';
+import qs from 'querystring';
 import Viewer from '../connectedComponents/Viewer';
 import OHIF from 'ohif-core';
 

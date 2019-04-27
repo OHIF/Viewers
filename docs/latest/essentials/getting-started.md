@@ -19,14 +19,13 @@ You can either spin up locally or run with Docker.
 2. Open a new terminal tab, go under `ohif-viewer` directory and install all dependency packages via `yarn`
 
   ````bash
-  cd Packages-react/ohif-viewer
-  npm install
+  yarn install
   ````
 
 3. Run the application
 
   ````bash
-  yar start
+  yarn start
   ````
 
 Note: This will connect to our public DICOMWeb server so you can verify your installation. Follow the next section to connect to your own local or remote DICOMWeb server.
@@ -121,15 +120,14 @@ Once you have Orthanc running with docker either with temporary data storage or 
 3. After you load the data, open a new terminal tab in the `ohif-viewer` directory and install all dependency packages via NPM
 
   ````bash
-  cd Packages-react/ohif-viewer
   yarn install
   ````
 
 3. Run the application using one of the available configuration files.
-  **the following command assumes you are under `Packages-react/ohif-viewer` folder**
+  **the following command assumes you are under the `root` folder**
 
   ````bash
-  export REACT_APP_CONFIG=$(cat ../../config-react/local_orthanc.json)
+  export REACT_APP_CONFIG=$(cat ./config/local_orthanc.js)
   yarn start
   ````
 

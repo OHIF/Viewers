@@ -175,14 +175,14 @@ props.whiteLabelling = {
 //
 // If you change the JSON config, you need to re-run the command!
 const configString = process.env && process.env && process.env.REACT_APP_CONFIG;
+
 if (configString) {
-  const configJSON = JSON.parse(configString);
-  if (configJSON.servers) {
-    props.servers = configJSON.servers;
+  if (configString.servers) {
+    props.servers = configString.servers;
   }
 
-  if (configJSON.oidc) {
-    props.oidc = configJSON.oidc;
+  if (configString.oidc) {
+    props.oidc = configString.oidc;
   }
 }
 
