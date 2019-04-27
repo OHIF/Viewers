@@ -17,7 +17,7 @@ class myCustomExtension {
      *  is used to help determine which component is used */
     getViewportModule: () => reactViewportComponent;
 
-    /** React component that adds buttons/behavior to the viewer Toolbar */ 
+    /** React component that adds buttons/behavior to the viewer Toolbar */
     getToolbarModule: () => reactToolbarComponent;
 
     /** Provides a whitelist of SOPClassUIDs the viewport is capable of rendering.
@@ -59,6 +59,7 @@ Viewport components are managed by the `LayoutManager`. Which Viewport component
 - The SopClassUID for visible/selected datasets
 
 ![Cornerstone Viewport](../assets/img/extensions-viewport.png)
+
 <center><i>An example of three Viewports</i></center>
 
 For a complete example implementation, [check out the OHIFCornerstoneViewport](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/OHIFCornerstoneViewport.js).
@@ -68,6 +69,7 @@ For a complete example implementation, [check out the OHIFCornerstoneViewport](h
 An extension can register a Toolbar Module by providing a `getToolbarModule()` method that returns a React Component. The component does not receive any props. If you want to modify or react to state, you will need to connect to the redux store.
 
 ![Toolbar Extension](../assets/img/extensions-toolbar.gif)
+
 <center><i>A toolbar extension example</i></center>
 
 Toolbar components are rendered in the `ToolbarRow` component.
@@ -91,13 +93,13 @@ In a future version, we will likely expose a way to provide the extensions you w
 _app.js_
 
 ```js
-import { createStore, combineReducers } from 'redux';
-import OHIF from 'ohif-core';
-import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
+import { createStore, combineReducers } from "redux";
+import OHIF from "ohif-core";
+import OHIFCornerstoneExtension from "ohif-cornerstone-extension";
 
 const combined = combineReducers(OHIF.redux.reducers);
 const store = createStore(combined);
-const extensions = [ new OHIFCornerstoneExtension() ];
+const extensions = [new OHIFCornerstoneExtension()];
 
 // Dispatches the `addPlugin` action to the store
 // Adding extension modules to `state.plugins.availablePlugins`
@@ -106,6 +108,6 @@ ExtensionManager.registerExtensions(store, extensions);
 
 ## OHIF Maintained Extensions
 
-A small number of powerful extensions for popular use cases are maintained by OHIF. They're co-located in the [`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react/) repository, in the top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions) directory. 
+A small number of powerful extensions for popular use cases are maintained by OHIF. They're co-located in the [`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react/) repository, in the top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions) directory.
 
 {% include "./_maintained-extensions-table.md" %}
