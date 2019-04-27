@@ -5,10 +5,10 @@
   - [Configuration](essentials/configuration.md)
   - [Troubleshooting](essentials/troubleshooting.md)
 - [Architecture](architecture/index.md)
-  - Overview
 - Deployment
 
 ---
+
 - [Advanced](advanced/index.md)
 - [Architecture](advanced/architecture.md)
   - [Overview](advanced/architecture.md#overview)
@@ -22,18 +22,15 @@
   - [Modules](advanced/extensions.md#modules)
   - [Registering](advanced/extensions.md#registering-extensions)
   - [OHIF Maintained](advanced/extensions.md#ohif-maintained-extensions)
+- [Custom Tools](advanced/custom-tools.md)
 
-- Connecting to Image Archives
-  - [DICOM Web](connecting-to-image-archives/dicomweb.md)
+---
 
-----
-- I Want To
-  - [Embed the viewer using a script tag](I-want-to/script-tag.md)
+- [Deployment](deployment/index.md)
+  - [Embed the Viewer](deployment/script-tag.md))
+- [Connecting to Image Archives](data/index.md)
 
+---
 
-----
-- FAQ
-  - [General](faq/general.md)
-
-----
+- [FAQ](frequently-asked-questions.md)
 - [Contributing](contributing.md)
