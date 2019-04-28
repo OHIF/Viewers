@@ -27,7 +27,7 @@
 ---
 
 - [Deployment](deployment/index.md)
-  - [Embed the Viewer](deployment/script-tag.md))
+  - [Embed the Viewer](deployment/embedded-viewer.md))
 - [Connecting to Image Archives](data/index.md)
 
 ---
