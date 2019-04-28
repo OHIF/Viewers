@@ -3,9 +3,10 @@
 - Essentials
   - [Getting Started](essentials/getting-started.md)
   - [Configuration](essentials/configuration.md)
+  - [Themeing](essentials/themeing.md)
   - [Troubleshooting](essentials/troubleshooting.md)
-- [Architecture](architecture/index.md)
-- Deployment
+- [Architecture](essentials/architecture.md)
+- [Deployment](essentials/deployment.md)
 
 ---
 
@@ -27,7 +28,17 @@
 ---
 
 - [Deployment](deployment/index.md)
-  - [Embed the Viewer](deployment/embedded-viewer.md))
+  - [Embedded](deployment/index.md#embedded-viewer)
+  - [Stand-alone](deployment/index.md#stand-alone-viewer)
+  - [Data]()
+- Recipes
+  - [Embedding the Viewer](deployment/recipes/embedded-viewer.md))
+  - [PWA: Static]()
+  - [PWA: Docker]()
+  - [PWA: Nginx + Orthanc]()
+  - [PWA: Nginx + dcm4chee]()
+  - [PWA: Nginx + DICOMCloud]()
+  - [PWA: User Access Control]()
 - [Connecting to Image Archives](data/index.md)
 
 ---
