@@ -1,6 +1,6 @@
 # Data
 
-## Hierarch
+## Hierarchy
 
 Studies, Series, Instances, Frames
 
