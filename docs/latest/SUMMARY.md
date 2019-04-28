@@ -32,5 +32,6 @@
 
 ---
 
-- [FAQ](frequently-asked-questions.md)
 - [Contributing](contributing.md)
+- [FAQ](frequently-asked-questions.md)
+- [Help](help.md)
