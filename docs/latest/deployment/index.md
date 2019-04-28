@@ -48,15 +48,60 @@ _In the future:_
 
 #### Hosted Static Assets
 
+_blocking:_ Generate files from `npm script` that we can host. IE. production
+ready build output
+
+- AWS S3 + Cloudfront
+- GCP + Cloudflare
+- Azure
+- Netlify (can use private repo)
+- Github pages
+
+Note: Include SSL instructions.
+
 ...
 
 #### Docker
+
+- Why Docker?
+  - Ship your environment
+  - "It works on my machine"
+
+_Ship Archive w/ Client:_ todo
 
 ...
 
 ## Data
 
-### Securing your data
+The OHIF Viewer is able to connect to any data source that implements the [DICOM
+Web Standard][dicom-web-standard]. [DICOM Web][dicom-web] refers to RESTful
+DICOM Services -- a recently standardized set of guidelines for exchanging
+medical images and imaging metadata over the internet. Not all archives fully
+support it yet, but it is gaining wider adoption.
+
+### Configure Connection
+
+...
+
+### What if I don't have an imaging archive?
+
+...
+
+#### Making sure your archive is accessible
+
+- CORS
+- Proxy (dangers)
+- Note: PACS not meant to be directly accesible from Web
+
+#### Securing your data
+
+- Reach out to experts
+- Recipes
+
+### What if my archive doesn't support DICOM Web?
+
+- Mapping layer
+- GraphQL?
 
 <!--
   Links
@@ -68,5 +113,7 @@ _In the future:_
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [static-assets-url]: https://www.maxcdn.com/one/visual-glossary/static-content/
 [app-store]: https://medium.freecodecamp.org/i-built-a-pwa-and-published-it-in-3-app-stores-heres-what-i-learned-7cb3f56daf9b
+[dicom-web-standard]: https://www.dicomstandard.org/dicomweb/
+[dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 
 <!-- prettier-ignore-end -->
