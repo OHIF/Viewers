@@ -1,42 +1,42 @@
-import React, { Component } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
-import './config';
-import ui from './redux/ui.js';
-import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-import WhiteLabellingContext from './WhiteLabellingContext';
-import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
-import OHIFVTKExtension from 'ohif-vtk-extension';
-import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
-import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
-import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
+import React, { Component } from 'react'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { createStore, combineReducers } from 'redux'
+import PropTypes from 'prop-types'
+import OHIF from 'ohif-core'
+import './config'
+import ui from './redux/ui.js'
+import OHIFStandaloneViewer from './OHIFStandaloneViewer'
+import WhiteLabellingContext from './WhiteLabellingContext'
+import OHIFCornerstoneExtension from 'ohif-cornerstone-extension'
+import OHIFVTKExtension from 'ohif-vtk-extension'
+import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension'
+import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension'
+import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension'
 import {
   loadUser,
   OidcProvider,
   createUserManager,
-  reducer as oidcReducer
-} from 'redux-oidc';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+  reducer as oidcReducer,
+} from 'redux-oidc'
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader'
 
-const { ExtensionManager } = OHIF.extensions;
+const { ExtensionManager } = OHIF.extensions
 
-const Icons = 'icons.svg';
+const Icons = 'icons.svg'
 
-const { reducers, localStorage } = OHIF.redux;
-reducers.ui = ui;
-reducers.oidc = oidcReducer;
+const { reducers, localStorage } = OHIF.redux
+reducers.ui = ui
+reducers.oidc = oidcReducer
 
-const combined = combineReducers(reducers);
-const store = createStore(combined, localStorage.loadState());
+const combined = combineReducers(reducers)
+const store = createStore(combined, localStorage.loadState())
 
 store.subscribe(() => {
   localStorage.saveState({
-    preferences: store.getState().preferences
-  });
-});
+    preferences: store.getState().preferences,
+  })
+})
 
 const defaultButtons = [
   {
@@ -44,35 +44,35 @@ const defaultButtons = [
     type: 'tool',
     text: 'Stack Scroll',
     svgUrl: `${Icons}#icon-tools-stack-scroll`,
-    active: false
+    active: false,
   },
   {
     command: 'Zoom',
     type: 'tool',
     text: 'Zoom',
     svgUrl: `${Icons}#icon-tools-zoom`,
-    active: false
+    active: false,
   },
   {
     command: 'Wwwc',
     type: 'tool',
     text: 'Levels',
     svgUrl: `${Icons}#icon-tools-levels`,
-    active: true
+    active: true,
   },
   {
     command: 'Pan',
     type: 'tool',
     text: 'Pan',
     svgUrl: `${Icons}#icon-tools-pan`,
-    active: false
+    active: false,
   },
   {
     command: 'Length',
     type: 'tool',
     text: 'Length',
     svgUrl: `${Icons}#icon-tools-measure-temp`,
-    active: false
+    active: false,
   },
   /*{
       command: 'Annotate',
@@ -86,41 +86,41 @@ const defaultButtons = [
     type: 'tool',
     text: 'Angle',
     iconClasses: 'fa fa-angle-left',
-    active: false
+    active: false,
   },
   {
     command: 'Bidirectional',
     type: 'tool',
     text: 'Bidirectional',
     svgUrl: `${Icons}#icon-tools-measure-target`,
-    active: false
+    active: false,
   },
   {
     command: 'Brush',
     type: 'tool',
     text: 'Brush',
     iconClasses: 'fa fa-circle',
-    active: false
+    active: false,
   },
   {
     command: 'FreehandMouse',
     type: 'tool',
     text: 'Freehand',
     iconClasses: 'fa fa-star',
-    active: false
+    active: false,
   },
   {
     command: 'reset',
     type: 'command',
     text: 'Reset',
     svgUrl: `${Icons}#icon-tools-reset`,
-    active: false
-  }
-];
+    active: false,
+  },
+]
 
-const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons);
+const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons)
 
-store.dispatch(buttonsAction);
+store.dispatch(buttonsAction)
 
 const availableTools = [
   { name: 'Pan', mouseButtonMasks: [1, 4] },
@@ -135,14 +135,14 @@ const availableTools = [
   { name: 'PanMultiTouch' },
   { name: 'ZoomTouchPinch' },
   { name: 'StackScrollMouseWheel' },
-  { name: 'StackScrollMultiTouch' }
-];
+  { name: 'StackScrollMultiTouch' },
+]
 
 const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
-  availableTools
-});
+  availableTools,
+})
 
-store.dispatch(toolAction);
+store.dispatch(toolAction)
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 const extensions = [
@@ -150,25 +150,25 @@ const extensions = [
   new OHIFVTKExtension(),
   new OHIFDicomPDFExtension(),
   new OHIFDicomHtmlExtension(),
-  new OHIFDicomMicroscopyExtension()
-];
-ExtensionManager.registerExtensions(store, extensions);
+  new OHIFDicomMicroscopyExtension(),
+]
+ExtensionManager.registerExtensions(store, extensions)
 
 // TODO[react] Use a provider when the whole tree is React
-window.store = store;
+window.store = store
 
 function handleServers(servers) {
   if (servers) {
-    OHIF.utils.addServers(servers, store);
+    OHIF.utils.addServers(servers, store)
   }
 }
 
 function handleOIDC(oidc) {
   if (!oidc) {
-    return;
+    return
   }
 
-  const oidcClient = oidc[0];
+  const oidcClient = oidc[0]
 
   const settings = {
     authority: oidcClient.authServerUrl,
@@ -182,14 +182,14 @@ function handleOIDC(oidc) {
     revokeAccessTokenOnSignout: true,
     filterProtocolClaims: true,
     loadUserInfo: true,
-    extraQueryParams: oidcClient.extraQueryParams
-  };
+    extraQueryParams: oidcClient.extraQueryParams,
+  }
 
-  const userManager = createUserManager(settings);
+  const userManager = createUserManager(settings)
 
-  loadUser(store, userManager);
+  loadUser(store, userManager)
 
-  return userManager;
+  return userManager
 }
 
 function handleWebWorkerInit(basename) {
@@ -203,12 +203,12 @@ function handleWebWorkerInit(basename) {
         initializeCodecsOnStartup: false,
         codecsPath: basename + '/cornerstoneWADOImageLoaderCodecs.min.js',
         usePDFJS: false,
-        strict: false
-      }
-    }
-  };
+        strict: false,
+      },
+    },
+  }
 
-  cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+  cornerstoneWADOImageLoader.webWorkerManager.initialize(config)
 }
 
 /**
@@ -218,16 +218,16 @@ function handleWebWorkerInit(basename) {
  * @param rootUrl
  */
 function updateBaseTag(rootUrl) {
-  const bases = document.getElementsByTagName('base');
-  let baseHref = rootUrl;
-  baseHref += baseHref.endsWith('/') ? '' : '/';
+  const bases = document.getElementsByTagName('base')
+  let baseHref = rootUrl
+  baseHref += baseHref.endsWith('/') ? '' : '/'
 
   if (bases.length > 1) {
-    throw new Error('For some reason there is more than one base tag present.');
+    throw new Error('For some reason there is more than one base tag present.')
   } else if (bases.length === 1) {
-    bases[0].href = baseHref;
+    bases[0].href = baseHref
   } else {
-    document.write(`<base href='${baseHref}'/>`);
+    document.write(`<base href='${baseHref}'/>`)
   }
 }
 
@@ -238,49 +238,49 @@ class App extends Component {
     routerBasename: PropTypes.string,
     rootUrl: PropTypes.string,
     userManager: PropTypes.object,
-    location: PropTypes.object
-  };
+    location: PropTypes.object,
+  }
 
   static defaultProps = {
-    whiteLabelling: {}
-  };
+    whiteLabelling: {},
+  }
 
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.userManager = handleOIDC(this.props.oidc);
-    handleServers(this.props.servers);
-    handleWebWorkerInit(this.props.rootUrl);
-    updateBaseTag(this.props.rootUrl);
+    this.userManager = handleOIDC(this.props.oidc)
+    handleServers(this.props.servers)
+    handleWebWorkerInit(this.props.rootUrl)
+    updateBaseTag(this.props.rootUrl)
   }
 
   render() {
-    const userManager = this.userManager;
+    const userManager = this.userManager
 
     if (userManager) {
       return (
         <Provider store={store}>
           <OidcProvider store={store} userManager={userManager}>
-            <BrowserRouter basename={this.props.routerBasename}>
+            <Router basename={this.props.routerBasename}>
               <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
                 <OHIFStandaloneViewer userManager={userManager} />
               </WhiteLabellingContext.Provider>
-            </BrowserRouter>
+            </Router>
           </OidcProvider>
         </Provider>
-      );
+      )
     }
 
     return (
       <Provider store={store}>
-        <BrowserRouter basename={this.props.routerBasename}>
+        <Router basename={this.props.routerBasename}>
           <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
             <OHIFStandaloneViewer />
           </WhiteLabellingContext.Provider>
-        </BrowserRouter>
+        </Router>
       </Provider>
-    );
+    )
   }
 }
 
-export default App;
+export default App
