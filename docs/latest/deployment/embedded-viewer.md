@@ -75,7 +75,7 @@ var props = {
 }
 ```
 
-<ol start="3"><li>
+<ol start="5"><li>
   Render the viewer in the web page's target <code>div</code>
 </li></ol>
 
