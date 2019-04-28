@@ -44,15 +44,17 @@ cd ..
 echo $DEPLOY_PRIME_URL
 export ROOT_URL=$DEPLOY_PRIME_URL/demo
 
-# cat package.json
-# yarn install
-# yarn build
+yarn install
+yarn build:web
 
+# OLD DEPLOY
 # cd example
 # yarn install
 # yarn run prepare
 # sed -i "s,http://localhost:5000,${ROOT_URL},g" index.html
 # sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
 # rm -rf node_modules
-# mkdir docs/latest/_book/demo/
-# cp -R * docs/latest/_book/demo/
+
+# NEW DEPLOY
+mkdir docs/latest/_book/demo/
+cp -R /build/**/* docs/latest/_book/demo/
