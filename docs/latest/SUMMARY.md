@@ -18,6 +18,10 @@
   - [Extensions](advanced/architecture.md#misc-extensions)
   - [Diagram](advanced/architecture.md#diagram)
   - [Common Questions](advanced/architecture.md#common-questions)
+- [Data](advanced/data.md)
+  - [Hierarchy](advanced/data.md#hierarchy)
+  - [Display Sets](advanced/data.md#display-sets)
+  - [Measurements & Annotations](advanced/data.md#measurements-and-annotations)
 - [Extensions](advanced/extensions.md)
   - [Overview](advanced/extensions.md#overview)
   - [Modules](advanced/extensions.md#modules)
@@ -39,7 +43,6 @@
   - [PWA: Nginx + dcm4chee]()
   - [PWA: Nginx + DICOMCloud]()
   - [PWA: User Access Control]()
-- [Connecting to Image Archives](data/index.md)
 
 ---
 
