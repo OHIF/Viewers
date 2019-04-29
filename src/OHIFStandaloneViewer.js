@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import asyncComponent from './components/AsyncComponent.js'
+// import asyncComponent from './components/AsyncComponent.js'
+import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js'
+import ViewerRouting from './routes/ViewerRouting.js'
+import StudyListRouting from './studylist/StudyListRouting.js'
+import StandaloneRouting from './routes/StandaloneRouting.js'
+import CallbackPage from './CallbackPage.js'
 import { withRouter } from 'react-router'
 import { Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -11,17 +16,17 @@ import './variables.css'
 import './theme-tide.css'
 
 // Dynamic Import Routes (CodeSplitting)
-const IHEInvokeImageDisplay = asyncComponent(() =>
-  import('./routes/IHEInvokeImageDisplay.js')
-)
-const ViewerRouting = asyncComponent(() => import('./routes/ViewerRouting.js'))
-const StudyListRouting = asyncComponent(() =>
-  import('./studylist/StudyListRouting.js')
-)
-const StandaloneRouting = asyncComponent(() =>
-  import('./routes/StandaloneRouting.js')
-)
-const CallbackPage = asyncComponent(() => import('./CallbackPage.js'))
+// const IHEInvokeImageDisplay = asyncComponent(() =>
+//   import('./routes/IHEInvokeImageDisplay.js')
+// )
+// const ViewerRouting = asyncComponent(() => import('./routes/ViewerRouting.js'))
+// const StudyListRouting = asyncComponent(() =>
+//   import('./studylist/StudyListRouting.js')
+// )
+// const StandaloneRouting = asyncComponent(() =>
+//   import('./routes/StandaloneRouting.js')
+// )
+// const CallbackPage = asyncComponent(() => import('./CallbackPage.js'))
 //
 
 const reload = () => window.location.reload()
