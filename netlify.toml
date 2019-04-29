@@ -20,6 +20,6 @@
 #   status = 200
 
 [[redirects]]
-  from = "/demo/*"
+  from = "/*"
   to ="/demo/index.html"
   status = 200
