@@ -57,4 +57,4 @@ yarn build:web
 
 # NEW DEPLOY
 mkdir docs/latest/_book/demo/
-cp -R build/* docs/latest/_book/demo/
+cpx 'build/*' docs/latest/_book/demo --verbose
