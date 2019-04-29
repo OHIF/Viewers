@@ -13,19 +13,16 @@ import OHIFVTKExtension from 'ohif-vtk-extension'
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension'
 import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension'
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension'
+import { OidcProvider, reducer as oidcReducer } from 'redux-oidc'
 import {
-  loadUser,
-  OidcProvider,
-  createUserManager,
-  reducer as oidcReducer,
-} from 'redux-oidc'
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader'
-
-const { ExtensionManager } = OHIF.extensions
+  getUserManagerForOpenIdConnectClient,
+  initWebWorkers,
+} from './utils/index.js'
 
 const Icons = 'icons.svg'
-
+const { ExtensionManager } = OHIF.extensions
 const { reducers, localStorage } = OHIF.redux
+
 reducers.ui = ui
 reducers.oidc = oidcReducer
 
@@ -163,60 +160,6 @@ function handleServers(servers) {
   }
 }
 
-function handleOIDC(oidc) {
-  if (!oidc) {
-    return
-  }
-
-  const oidcClient = oidc[0]
-
-  const settings = {
-    authority: oidcClient.authServerUrl,
-    client_id: oidcClient.clientId,
-    redirect_uri: oidcClient.authRedirectUri,
-    silent_redirect_uri: '/silent-refresh.html',
-    post_logout_redirect_uri: oidcClient.postLogoutRedirectUri,
-    response_type: oidcClient.responseType,
-    scope: 'email profile openid', // Note: Request must have scope 'openid' to be considered an OpenID Connect request
-    automaticSilentRenew: true,
-    revokeAccessTokenOnSignout: true,
-    filterProtocolClaims: true,
-    loadUserInfo: true,
-    extraQueryParams: oidcClient.extraQueryParams,
-  }
-
-  const userManager = createUserManager(settings)
-
-  loadUser(store, userManager)
-
-  return userManager
-}
-
-/**
- *
- * @param {String} baseDirectory
- * @param {String} webWorkScriptsPath
- */
-function handleWebWorkerInit(baseDirectory, webWorkScriptsPath) {
-  const scriptsPath = `${baseDirectory}/${webWorkScriptsPath}`
-  const config = {
-    maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
-    startWebWorkersOnDemand: true,
-    webWorkerPath: `${scriptsPath}/cornerstoneWADOImageLoaderWebWorker.min.js`,
-    taskConfiguration: {
-      decodeTask: {
-        loadCodecsOnStartup: true,
-        initializeCodecsOnStartup: false,
-        codecsPath: `${scriptsPath}/cornerstoneWADOImageLoaderCodecs.min.js`,
-        usePDFJS: false,
-        strict: false,
-      },
-    },
-  }
-
-  cornerstoneWADOImageLoader.webWorkerManager.initialize(config)
-}
-
 class App extends Component {
   static propTypes = {
     routerBasename: PropTypes.string,
@@ -238,9 +181,12 @@ class App extends Component {
   constructor(props) {
     super(props)
 
-    this.userManager = handleOIDC(this.props.oidc)
+    this.userManager = getUserManagerForOpenIdConnectClient(
+      store,
+      this.props.oidc
+    )
     handleServers(this.props.servers)
-    handleWebWorkerInit(
+    initWebWorkers(
       this.props.routerBasename,
       this.props.relativeWebWorkerScriptsPath
     )
