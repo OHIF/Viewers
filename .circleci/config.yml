@@ -37,7 +37,7 @@ jobs:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       # Build & Test
-      - run: yarn build:package
+      - run: yarn build:package:ci
       # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
       - run:
           name: 'JavaScript Test Suite'
