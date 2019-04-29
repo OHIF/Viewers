@@ -14,4 +14,10 @@ describe('getUserManagerForOpenIdConnectClient', () => {
 
     expect(returnVal).toEqual(expectedReturnVal)
   })
+
+  it('does not return undefined when store and oidcSettings are defined', () => {
+    const returnVal = getUserManagerForOpenIdConnectClient({}, {})
+
+    expect(returnVal).not.toBe(undefined)
+  })
 })
