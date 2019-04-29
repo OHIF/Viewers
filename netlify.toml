@@ -14,12 +14,7 @@
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
 
 # COMMENT: This a rule for Single Page Applications
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
-
 [[redirects]]
   from = "/*"
-  to ="/demo/index.html"
+  to = "/index.html"
   status = 200

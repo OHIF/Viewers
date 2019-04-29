@@ -226,9 +226,12 @@ class App extends Component {
     oidc: PropTypes.array,
     userManager: PropTypes.object,
     location: PropTypes.object,
+    whiteLabelling: PropTypes.object,
   }
 
   static defaultProps = {
+    routerBasename: '/',
+    relativeWebWorkerScriptsPath: '',
     whiteLabelling: {},
   }
 
