@@ -2,6 +2,7 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "sysoev.language-stylus",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "mikestead.dotenv"
   ]
 }

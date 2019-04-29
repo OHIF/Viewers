@@ -9,7 +9,6 @@
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
-  "homepage": "http://localhost:5000",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -18,12 +17,15 @@
     "cm": "npx git-cz",
     "dev": "yarn run preBuild && cross-env PORT=5000 react-scripts start",
     "dev:debug": "cross-env PORT=5000 react-scripts start",
-    "build": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
+    "build:package": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
+    "build:package:ci": "yarn run preBuild && cross-env REACT_APP_CONFIG=config/default node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
+    "build:web": "yarn run preBuild && react-scripts build",
+    "build:web:ci": "yarn run preBuild && react-scripts --max_old_space_size=4096 build && cpx 'build/**/*' docs/latest/_book/demo --verbose",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "test": "jest",
     "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "staticDeploy": "./generateStaticSite.sh",
-    "predeploy": "cd example && npm install && yarn run build",
+    "predeploy": "cd example && npm install && yarn run build:package",
     "preBuild": "yarn run version && yarn run copy:webworkers",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
     "copy:webworkers": "cpx 'node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public"
@@ -95,6 +97,7 @@
     "@babel/core": "^7.2.2",
     "@babel/plugin-external-helpers": "^7.2.0",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
