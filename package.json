@@ -9,7 +9,6 @@
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
-  "homepage": "https://deploy-preview-408--ohif.netlify.com/demo",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
