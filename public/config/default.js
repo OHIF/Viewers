@@ -1,6 +1,8 @@
 window.config = {
+  // default: '/'
   routerBasename: '/',
-  rootUrl: 'http://localhost:5000',
+  // default: ''
+  relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
       {

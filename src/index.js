@@ -8,7 +8,12 @@ import ReactDOM from 'react-dom'
 
 export { App }
 
-const applicationProps = window.config
+window.config = window.config || {}
+const applicationDefaults = {
+  routerBasename: '/',
+  relativeWebWorkerScriptsPath: '',
+}
+const applicationProps = Object.assign({}, applicationDefaults, window.config)
 const app = React.createElement(App, applicationProps, null)
 
 ReactDOM.render(app, document.getElementById('root'))
