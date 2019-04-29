@@ -44,8 +44,9 @@ cd ..
 echo $DEPLOY_PRIME_URL
 export ROOT_URL=$DEPLOY_PRIME_URL/demo
 
+mkdir ./docs/latest/_book/demo/
 yarn install
-yarn build:web
+yarn build:web:ci
 
 # OLD DEPLOY
 # cd example
@@ -56,5 +57,4 @@ yarn build:web
 # rm -rf node_modules
 
 # NEW DEPLOY
-mkdir docs/latest/_book/demo/
-cpx 'build/*' docs/latest/_book/demo --verbose
+# cpx 'build/*' docs/latest/_book/demo --verbose
