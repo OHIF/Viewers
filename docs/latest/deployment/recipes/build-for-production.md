@@ -1,8 +1,10 @@
 # Build for Production
 
-Note about setting up for contributing, then skip X
+> If you've already followed the
+> ["Getting Started" Guide](/essentials/getting-started.md), you can skip ahead
+> to [Configuration](#configuration)
 
-## Overview?
+## Overview
 
 ### Build Machine Requirements
 
@@ -10,11 +12,11 @@ Note about setting up for contributing, then skip X
 - [Yarn](https://yarnpkg.com/lang/en/docs/install/)
 - [Git](https://www.atlassian.com/git/tutorials/install-git)
 
-### Get a Copy of the source
+### Getting the Code
 
 _With Git:_
 
-```shell
+```bash
 # Clone the remote repository to your local machine
 git clone https://github.com/OHIF/Viewers.git
 
@@ -29,35 +31,91 @@ _From .zip:_
 
 [OHIF/Viewers: react.zip](https://github.com/OHIF/Viewers/archive/react.zip)
 
-### Restore Dependencies?
+### Restore Dependencies & Build
 
-...
-
-### Configure?
-
-...
-
-- env vars
-- `REACT_APP_*`
-- config file(s)
-
-### Build
-
-From your projects
+Open your terminal, and navigate to the directory containing the source files.
+Next run these commands:
 
 ```js
+// Restore dependencies
+yarn install
+
+// Build source code for production
 yarn run build:web
 ```
 
-```js
-file tree of project, highlighting contents in `/buld`
+If everything worked as expected, you should have a new `build/` directory in
+the project's folder. It should roughly resemble the following:
+
+```bash
+build
+├── config/
+├── static/
+├── index.html
+├── manifest.json
+├── service-worker.js
+└── ...
 ```
+
+By default, the build output will connect to OHIF's publicly accessible PACS. If
+this is your first time setting up the OHIF Viewer, it is recommended that you
+test with these default settings. After testing, you can find instructions on
+how to configure the project for your own imaging archive below.
+
+### Configuration
+
+> This step assumes you have an imaging archive. If you need assistance setting
+> one up, check out the [`Data` section](./../index.md#data) of our Deployment
+> Guide, or `Getting Started`'s
+> ["Set up a local DICOM server"](./../../essentials/getting-started.md#set-up-a-local-dicom-server),
+> or a deployment recipe that contains an open source Image Archive
+
+#### How It Works
+
+The configuration for our project is in the `/public/config` directory. Our
+build process knows which configuration file to use based on the
+`REACT_APP_CONFIG` environment variable. By default, its value is
+[`default.js`](https://github.com/OHIF/Viewers/blob/react/public/config/default.js).
+When we build, the `%REACT_APP_CONFIG%` value in
+our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/react/public/index.html#L12-L15)`file is substituted for the correct configuration file's name. Ultimately setting the`window.config`
+equal to our configuration file's value.
+
+- Modify its values directly
+- Create a new config file, and set the `REACT_APP_CONFIG` environement variable
+-
+
+The build process knows which file to use based on the `REACT_APP_CONFIG`
+environment variable. You can set the value of this environment variable a few
+different ways:
+
+- [Add a temporary environment variable in your shell](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-temporary-environment-variables-in-your-shell)
+- [Add environment specific variables in `.env` file(s)](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-development-environment-variables-in-env)
+-
+
+* env vars
+* `REACT_APP_*`
+* config file(s)
 
 ## Next Steps
 
 ### Deploying our Production Build
 
 TODO: List of recipes
+
+### Testing Build Output Locally
+
+A quick way to test your build output locally is to spin up a small webserver.
+You can do this by running the following commands in the `build/` output
+directory:
+
+```js
+// Install http-server as a globally available package
+yarn global add http-server
+
+// Serve the files in our current directory
+// Accessible at: `http://localhost:8080`
+http-server
+```
 
 ### Automating Builds and Deployments
 
@@ -70,6 +128,12 @@ web application. For a starting point, check out this repository's own use of:
 - [Netlify][netlify]: [netlify.toml][netlify.toml] |
   [generateStaticSite.sh][generatestaticsite.sh]
 - [Semantic-Release][semantic-release]: [.releaserc][releaserc]
+
+## Troubleshooting
+
+> Issues and resolutions for common GitHub issues will be summarized here
+
+...
 
 <!-- prettier-ignore-start -->
 [circleci]: https://circleci.com/gh/OHIF/Viewers
