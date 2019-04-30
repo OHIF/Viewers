@@ -70,15 +70,18 @@ how to configure the project for your own imaging archive below.
 > ["Set up a local DICOM server"](./../../essentials/getting-started.md#set-up-a-local-dicom-server),
 > or a deployment recipe that contains an open source Image Archive
 
-#### How It Works
+#### How it Works
 
 The configuration for our project is in the `/public/config` directory. Our
 build process knows which configuration file to use based on the
 `REACT_APP_CONFIG` environment variable. By default, its value is
 [`default.js`](https://github.com/OHIF/Viewers/blob/react/public/config/default.js).
 When we build, the `%REACT_APP_CONFIG%` value in
-our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/react/public/index.html#L12-L15)`file is substituted for the correct configuration file's name. Ultimately setting the`window.config`
-equal to our configuration file's value.
+our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/react/public/index.html#L12-L15)
+file is substituted for the correct configuration file's name. This sets
+the`window.config` equal to our configuration file's value.
+
+#### How do I configure my project?
 
 - Modify its values directly
 - Create a new config file, and set the `REACT_APP_CONFIG` environement variable
