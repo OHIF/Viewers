@@ -1,19 +1,22 @@
 /**
- * Entry point index.js for development
+ * Entry point for development and production PWA builds.
+ * Packaged (NPM) builds go through `index_publish.js`
  */
+import App from './App.js'
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-import App from './App.js';
-import React from 'react';
-import ReactDOM from 'react-dom';
+export { App }
 
-export { App };
+window.config = window.config || {}
+const applicationDefaults = {
+  routerBasename: '/',
+  relativeWebWorkerScriptsPath: '',
+}
+const applicationProps = Object.assign({}, applicationDefaults, window.config)
+const app = React.createElement(App, applicationProps, null)
 
-var rootUrl = 'http://localhost:5000';
-var routerBasename = '/';
-var props = {
-  routerBasename: routerBasename,
-  rootUrl: rootUrl
-};
+ReactDOM.render(app, document.getElementById('root'))
 
 /*
 Example config with OIDC
@@ -87,24 +90,6 @@ props.oidc = [
   }
 ]; */
 
-/* Example config without OIDC */
-props.servers = {
-  dicomWeb: [
-    {
-      name: 'DCM4CHEE',
-      wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-      qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-      wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-      qidoSupportsIncludeField: true,
-      imageRendering: 'wadors',
-      thumbnailRendering: 'wadors',
-      requestOptions: {
-        requestFromBrowser: true
-      }
-    }
-  ]
-};
-
 /*props.servers = {
   "dicomWeb": [
     {
@@ -169,23 +154,3 @@ White labelling example
 props.whiteLabelling = {
   logoComponent: RadicalImagingLogo()
 };*/
-
-// Note: Run your build like this:
-// REACT_APP_CONFIG=$(cat ../config-react/ccc.json) yarn start
-//
-// If you change the JSON config, you need to re-run the command!
-const configString = process.env && process.env && process.env.REACT_APP_CONFIG;
-
-if (configString) {
-  if (configString.servers) {
-    props.servers = configString.servers;
-  }
-
-  if (configString.oidc) {
-    props.oidc = configString.oidc;
-  }
-}
-
-var app = React.createElement(App, props, null);
-
-ReactDOM.render(app, document.getElementById('root'));

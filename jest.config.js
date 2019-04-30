@@ -7,6 +7,7 @@ module.exports = {
     '<rootDir>/src/**/*.{js,jsx}',
     '!<rootDir>/src/**/*.test.js',
     '!**/node_modules/**',
+    '!**/__tests__/**',
   ],
   reporters: ['default', 'jest-junit'],
   //
