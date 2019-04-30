@@ -74,7 +74,7 @@
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
     "ohif-core": "0.4.1",
-    "ohif-cornerstone-extension": "^0.0.26",
+    "ohif-cornerstone-extension": "^0.0.28",
     "ohif-dicom-html-extension": "^0.0.2",
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.6",
@@ -88,7 +88,7 @@
     "react-resize-detector": "^3.4.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-viewerbase": "0.2.17",
+    "react-viewerbase": "0.3.2",
     "react-vtkjs-viewport": "^0.0.7",
     "redux": "^4.0.1",
     "redux-oidc": "^3.1.0"

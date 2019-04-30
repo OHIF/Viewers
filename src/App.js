@@ -143,7 +143,7 @@ store.dispatch(toolAction)
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 const extensions = [
-  new OHIFCornerstoneExtension(),
+  new OHIFCornerstoneExtension({}),
   new OHIFVTKExtension(),
   new OHIFDicomPDFExtension(),
   new OHIFDicomHtmlExtension(),
