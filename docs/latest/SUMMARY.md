@@ -36,14 +36,16 @@
   - [Stand-alone](deployment/index.md#stand-alone-viewer)
   - [Data]()
 - Recipes
-  - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
-  - [Build for Production](deployment/recipes/build-for-production.md)
-  - [PWA: Static]()
-  - [PWA: Docker]()
-  - [PWA: Nginx + Orthanc]()
-  - [PWA: Nginx + dcm4chee]()
-  - [PWA: Nginx + DICOMCloud]()
-  - [PWA: User Access Control]()
+  - Script Include
+    - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
+  - Stand-Alone
+    - [Build for Production](deployment/recipes/build-for-production.md)
+    - [Static]()
+    - [Docker]()
+    - [Nginx + Orthanc]()
+    - [Nginx + dcm4chee]()
+    - [Nginx + DICOMCloud]()
+    - [User Access Control]()
 
 ---
 

@@ -4,7 +4,7 @@
 > ["Getting Started" Guide](/essentials/getting-started.md), you can skip ahead
 > to [Configuration](#configuration)
 
-## Overview?
+## Overview
 
 ### Build Machine Requirements
 
@@ -57,7 +57,10 @@ build
 └── ...
 ```
 
-These files can be hosted using
+By default, the build output will connect to OHIF's publicly accessible PACS. If
+this is your first time setting up the OHIF Viewer, it is recommended that you
+test with these default settings. After testing, you can find instructions on
+how to configure the project for your own imaging archive below.
 
 ### Configuration
 
@@ -72,6 +75,21 @@ These files can be hosted using
 ### Deploying our Production Build
 
 TODO: List of recipes
+
+### Testing Build Output Locally
+
+A quick way to test your build output locally is to spin up a small webserver.
+You can do this by running the following commands in the `build/` output
+directory:
+
+```js
+// Install http-server as a globally available package
+yarn global add http-server
+
+// Serve the files in our current directory
+// Accessible at: `http://localhost:8080`
+http-server
+```
 
 ### Automating Builds and Deployments
 
