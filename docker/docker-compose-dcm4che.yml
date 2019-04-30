@@ -1,15 +1,14 @@
 version: '3.5'
 
 services:
-
   ldap:
     image: dcm4che/slapd-dcm4chee:2.4.44-15.0
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "389:389"
+      - '389:389'
     env_file: ./dcm4che/docker-compose-dcm4che.env
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
@@ -23,9 +22,9 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "5432:5432"
+      - '5432:5432'
     env_file: ./dcm4che/docker-compose-dcm4che.env
     volumes:
       - ./dcm4che/etc/localtime:/etc/localtime:ro
@@ -38,13 +37,13 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "8080:8080"
-      - "8443:8443"
-      - "9990:9990"
-      - "11112:11112"
-      - "2575:2575"
+      - '8080:8080'
+      - '8443:8443'
+      - '9990:9990'
+      - '11112:11112'
+      - '2575:2575'
     env_file: ./dcm4che/docker-compose-dcm4che.env
     environment:
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
@@ -70,9 +69,9 @@ services:
     #   - orthanc
     environment:
       - NODE_ENV=production
+      - REACT_APP_CONFIG=config/local_dcm4chee
     restart: always
     networks:
       - dcm4che_default
 
-networks:
-  dcm4che_default:
+networks: dcm4che_default:

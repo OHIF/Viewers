@@ -1,15 +1,14 @@
 version: '3.5'
 
 services:
-
   orthanc:
     container_name: orthanc
     image: jodogne/orthanc-plugins
     volumes:
       - ../sampledata:/sampledata
     ports:
-      - "4242:4242"
-      - "8042:8042"
+      - '4242:4242'
+      - '8042:8042'
     restart: always
   viewer:
     container_name: ohif-viewer
@@ -22,6 +21,7 @@ services:
       - orthanc
     environment:
       - NODE_ENV=production
+      - REACT_APP_CONFIG=config/local_orthanc
     restart: always
     volumes:
       - ../config/local_orthanc.js:/usr/share/nginx/html/servers.js
@@ -32,4 +32,3 @@ services:
       - 8899:80
     volumes:
       - ./nginx-proxy/conf/nginx.conf:/etc/nginx/nginx.conf:ro
-

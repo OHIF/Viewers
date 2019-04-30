@@ -1,7 +1,6 @@
 version: '3.5'
 
 services:
-
   viewer:
     container_name: ohif-viewer
     build:
@@ -11,5 +10,4 @@ services:
       - '80:80'
     environment:
       - NODE_ENV=production
-    volumes:
-      - ../config/public_dicomweb.js:/usr/share/nginx/html/servers.js
+      - REACT_APP_CONFIG=config/public_dicomweb
