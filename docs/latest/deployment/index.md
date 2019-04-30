@@ -48,10 +48,10 @@ _In the future:_
 
 #### Hosted Static Assets
 
-At the end of the day, the OHIF Viewer is a collection of HTML, CSS, JS, Font
-Files, and Images. We "build" those files from our `source code` with
-configuration specific to our project. We then make those files publicly
-accessible by hosting them on a Web Server.
+At the end of the day, a production OHIF Viewer instance is a collection of
+HTML, CSS, JS, Font Files, and Images. We "build" those files from our
+`source code` with configuration specific to our project. We then make those
+files publicly accessible by hosting them on a Web Server.
 
 If you have not deployed a web application before, this may be a good time to
 [reach out for help](/help.md), as these steps assume prior web development and
@@ -59,8 +59,10 @@ deployment experience.
 
 ##### Part 1 - Build Production Assets
 
-"Building", or creating, the files you will need to host is the same regardless
-of the host you choose. []
+"Building", or creating, the files you will need is the same regardless of the
+web host you choose. You can find detailed instructions on how to configure and
+build the OHIF Viewer in our
+["Build for Production" guide](./build-for-production.md).
 
 ##### Part 2 - Host Your App
 
