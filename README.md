@@ -163,7 +163,7 @@ Links:
 [circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
 [circleci-url]: https://circleci.com/gh/OHIF/Viewers
 [codecov-image]: https://codecov.io/gh/OHIF/Viewers/branch/react/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/OHIF/Viewers
+[codecov-url]: https://codecov.io/gh/OHIF/Viewers/branch/react
 [prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
 [prettier-url]: https://github.com/prettier/prettier
 [semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
