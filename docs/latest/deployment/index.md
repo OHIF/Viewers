@@ -62,7 +62,7 @@ deployment experience.
 "Building", or creating, the files you will need is the same regardless of the
 web host you choose. You can find detailed instructions on how to configure and
 build the OHIF Viewer in our
-["Build for Production" guide](./build-for-production.md).
+["Build for Production" guide](./recipes/build-for-production.md).
 
 ##### Part 2 - Host Your App
 
