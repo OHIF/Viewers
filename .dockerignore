@@ -5,3 +5,6 @@ Dockerfile
 .DS_Store
 .gitignore
 README.md
+.vscode
+.circleci
+example/

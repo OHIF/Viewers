@@ -14,21 +14,13 @@ COPY yarn.lock /usr/src/app/yarn.lock
 
 ADD . /usr/src/app/
 RUN yarn install
-RUN yarn run prepare
-
-WORKDIR /usr/src/app/example
-
-RUN yarn install
-RUN yarn run prepare
-
-RUN sed -i "s,http://localhost:5000,http://localhost,g" index.html
-RUN sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
+RUN yarn run build:web
 
 # # Stage 2: Bundle the built application into a Docker container
 # # which runs Nginx using Alpine Linux
 FROM nginx:1.15.5-alpine
 RUN rm -rf /etc/nginx/conf.d
 COPY conf /etc/nginx
-COPY --from=builder /usr/src/app/example /usr/share/nginx/html
+COPY --from=builder /usr/src/app/public /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
