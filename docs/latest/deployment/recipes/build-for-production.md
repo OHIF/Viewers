@@ -1,6 +1,8 @@
 # Build for Production
 
-Note about setting up for contributing, then skip X
+> If you've already followed the
+> ["Getting Started" Guide](/essentials/getting-started.md), you can skip ahead
+> to [Configuration](#configuration)
 
 ## Overview?
 
@@ -10,11 +12,11 @@ Note about setting up for contributing, then skip X
 - [Yarn](https://yarnpkg.com/lang/en/docs/install/)
 - [Git](https://www.atlassian.com/git/tutorials/install-git)
 
-### Get a Copy of the source
+### Getting the Code
 
 _With Git:_
 
-```shell
+```bash
 # Clone the remote repository to your local machine
 git clone https://github.com/OHIF/Viewers.git
 
@@ -29,29 +31,41 @@ _From .zip:_
 
 [OHIF/Viewers: react.zip](https://github.com/OHIF/Viewers/archive/react.zip)
 
-### Restore Dependencies?
+### Restore Dependencies & Build
 
-...
+Open PowerShell, Terminal, or a Command Prompt, and navigate to the directory
+containing the source files. Next run these commands:
 
-### Configure?
+```js
+// Restore dependencies
+yarn install
+
+// Build source code for production
+yarn run build:web
+```
+
+If everything worked as expected, you should have a new `build/` directory in
+the project's folder. It should roughly resemble the following:
+
+```bash
+build
+├── config/
+├── static/
+├── index.html
+├── manifest.json
+├── service-worker.js
+└── ...
+```
+
+These files can be hosted using
+
+### Configuration
 
 ...
 
 - env vars
 - `REACT_APP_*`
 - config file(s)
-
-### Build
-
-From your projects
-
-```js
-yarn run build:web
-```
-
-```js
-file tree of project, highlighting contents in `/buld`
-```
 
 ## Next Steps
 
@@ -70,6 +84,12 @@ web application. For a starting point, check out this repository's own use of:
 - [Netlify][netlify]: [netlify.toml][netlify.toml] |
   [generateStaticSite.sh][generatestaticsite.sh]
 - [Semantic-Release][semantic-release]: [.releaserc][releaserc]
+
+## Troubleshooting
+
+> Issues and resolutions for common GitHub issues will be summarized here
+
+...
 
 <!-- prettier-ignore-start -->
 [circleci]: https://circleci.com/gh/OHIF/Viewers
