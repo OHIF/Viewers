@@ -5,7 +5,11 @@ describe('utils', () => {
     const utilExports = Object.keys(utils).sort()
 
     expect(utilExports).toEqual(
-      ['getUserManagerForOpenIdConnectClient', 'initWebWorkers'].sort()
+      [
+        'getDefaultToolbarButtons',
+        'getUserManagerForOpenIdConnectClient',
+        'initWebWorkers',
+      ].sort()
     )
   })
 })

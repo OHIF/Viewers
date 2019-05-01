@@ -1,42 +1,42 @@
-import { connect } from 'react-redux';
-import PluginSwitch from './PluginSwitch.js';
-import OHIF from 'ohif-core';
+import { connect } from 'react-redux'
+import PluginSwitch from './PluginSwitch.js'
+import OHIF from 'ohif-core'
 
-const { setLayout } = OHIF.redux.actions;
+const { setLayout } = OHIF.redux.actions
 
 const mapStateToProps = state => {
-  const { activeViewportIndex, layout } = state.viewports;
+  const { activeViewportIndex, layout } = state.viewports
 
   return {
     activeViewportIndex,
-    layout
-  };
-};
+    layout,
+  }
+}
 
 const mapDispatchToProps = dispatch => {
   return {
     setLayout: data => {
-      dispatch(setLayout(data));
-    }
-  };
-};
+      dispatch(setLayout(data))
+    },
+  }
+}
 
 function setSingleLayoutData(originalArray, viewportIndex, data) {
-  const viewports = originalArray.slice();
-  const layoutData = Object.assign({}, viewports[viewportIndex], data);
+  const viewports = originalArray.slice()
+  const layoutData = Object.assign({}, viewports[viewportIndex], data)
 
-  viewports[viewportIndex] = layoutData;
+  viewports[viewportIndex] = layoutData
 
-  return viewports;
+  return viewports
 }
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  const { activeViewportIndex, layout } = propsFromState;
-  const { setLayout } = propsFromDispatch;
+  const { activeViewportIndex, layout } = propsFromState
+  const { setLayout } = propsFromDispatch
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
-  const Icons = 'icons.svg';
+  const Icons = `${window.config.routerBasename}/icons.svg`
   const buttons = [
     {
       text: 'Acquired',
@@ -44,16 +44,16 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       iconClasses: 'fa fa-bars',
       active: false,
       onClick: click => {
-        console.warn('Original Acquisition');
+        console.warn('Original Acquisition')
 
         const layoutData = setSingleLayoutData(
           layout.viewports,
           activeViewportIndex,
           { plugin: 'cornerstone' }
-        );
+        )
 
-        setLayout({ viewports: layoutData });
-      }
+        setLayout({ viewports: layoutData })
+      },
     },
     {
       text: 'Axial',
@@ -61,46 +61,46 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       svgClasses: 'icon-rotate-120',
       active: false,
       onClick: click => {
-        console.warn('Axial');
+        console.warn('Axial')
         const data = {
           plugin: 'vtk',
           vtk: {
             mode: 'mpr',
-            sliceNormal: [0, 0, 1]
-          }
-        };
+            sliceNormal: [0, 0, 1],
+          },
+        }
 
         const layoutData = setSingleLayoutData(
           layout.viewports,
           activeViewportIndex,
           data
-        );
+        )
 
-        setLayout({ viewports: layoutData });
-      }
+        setLayout({ viewports: layoutData })
+      },
     },
     {
       text: 'Sagittal',
       svgUrl: `${Icons}#cube`,
       active: false,
       onClick: click => {
-        console.warn('Sagittal');
+        console.warn('Sagittal')
         const data = {
           plugin: 'vtk',
           vtk: {
             mode: 'mpr',
-            sliceNormal: [1, 0, 0]
-          }
-        };
+            sliceNormal: [1, 0, 0],
+          },
+        }
 
         const layoutData = setSingleLayoutData(
           layout.viewports,
           activeViewportIndex,
           data
-        );
+        )
 
-        setLayout({ viewports: layoutData });
-      }
+        setLayout({ viewports: layoutData })
+      },
     },
     {
       text: 'Coronal',
@@ -108,24 +108,24 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       svgClasses: 'fa-rotate-90 fa-flip-horizontal',
       active: false,
       onClick: click => {
-        console.warn('Coronal');
+        console.warn('Coronal')
         const data = {
           plugin: 'vtk',
           vtk: {
             mode: 'mpr',
-            sliceNormal: [0, 1, 0]
-          }
-        };
+            sliceNormal: [0, 1, 0],
+          },
+        }
 
         const layoutData = setSingleLayoutData(
           layout.viewports,
           activeViewportIndex,
           data
-        );
+        )
 
-        setLayout({ viewports: layoutData });
-      }
-    }
+        setLayout({ viewports: layoutData })
+      },
+    },
     /*{
       text: '3D',
       svgUrl: `${Icons}#cube`,
@@ -143,17 +143,17 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
         setLayout({ viewports: layoutData });
       }
     }*/
-  ];
+  ]
 
   return {
-    buttons
-  };
-};
+    buttons,
+  }
+}
 
 const ConnectedPluginSwitch = connect(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps
-)(PluginSwitch);
+)(PluginSwitch)
 
-export default ConnectedPluginSwitch;
+export default ConnectedPluginSwitch

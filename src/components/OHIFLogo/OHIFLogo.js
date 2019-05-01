@@ -1,7 +1,7 @@
-import React from 'react';
-import './OHIFLogo.css';
+import React from 'react'
+import './OHIFLogo.css'
 
-const Icons = 'icons.svg';
+const Icons = `${window.config.routerBasename}/icons.svg`
 
 function OHIFLogo() {
   return (
@@ -16,7 +16,7 @@ function OHIFLogo() {
       </svg>
       <div className="header-logo-text">Open Health Imaging Foundation</div>
     </a>
-  );
+  )
 }
 
-export default OHIFLogo;
+export default OHIFLogo
