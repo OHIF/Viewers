@@ -4,7 +4,6 @@ FROM node:11.2.0-slim as builder
 
 # RUN apt-get update && apt-get install -y git yarn
 RUN mkdir /usr/src/app
-
 WORKDIR /usr/src/app
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
