@@ -1,5 +1,9 @@
 # Deploy Static Assets
 
+> WARNING! All of these solutions stand-up a publicly accessible web viewer. Do
+> not hook your hosted viewer up to a sensitive source of data without
+> implementing authentication.
+
 There are a lot of options for deploying static assets. Some services, like
 `netlify` and `surge.sh`, specialize in static websites. You'll notice that
 deploying with them requires much less time and effort, but comes at the cost of
@@ -124,25 +128,21 @@ avoid using a proxy or to simplify authentication.
 If that is the case, check out some of our more advanced `docker` deployments
 that target these providers from the left-hand sidebar.
 
+These guides can be a bit longer and a update more frequently. To provide
+accurate documentation, we will link to each provider's own recommended steps:
+
 ### AWS S3 + Cloudfront
 
-...
-
-Reference:
-[Use Cloudfront to Serve Static Website](https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-serve-static-website/)
+- [Host a Static Website](https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html)
+- [Speed Up Your Website with Cloudfront](https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-cloudfront-walkthrough.html)
 
 ### GCP + Cloudflare
 
-...
-
-References:
-
-- https://cloud.google.com/storage/docs/hosting-static-website
-- https://hackernoon.com/hosting-a-free-static-website-on-google-cloud-storage-d0d83704173b
-- https://code.luasoftware.com/tutorials/google-cloud-storage/things-to-know-before-hosting-static-website-on-google-cloud-storage/
+- [Things to Know Before Getting Started](https://code.luasoftware.com/tutorials/google-cloud-storage/things-to-know-before-hosting-static-website-on-google-cloud-storage/)
+- [Hosting a Static Website on GCP](https://cloud.google.com/storage/docs/hosting-static-website)
 
 ### Azure
 
-...
-
-- https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website
+- [Host a Static Website](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)
+- [Add SSL Support](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-https-custom-domain-cdn)
+- [Configure a Custom Domain](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-custom-domain-name)
