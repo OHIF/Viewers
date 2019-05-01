@@ -3,7 +3,7 @@ import { ToolbarSection } from 'react-viewerbase';
 import OHIF from 'ohif-core';
 
 const { setToolActive } = OHIF.redux.actions;
-const Icons = `${window.config.routerBasename}icons.svg`;
+const Icons = `${window.config.routerBasename}/icons.svg`;
 
 const mapStateToProps = state => {
   const activeButton = state.tools.buttons.find(tool => tool.active === true);

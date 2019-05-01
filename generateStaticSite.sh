@@ -47,14 +47,3 @@ export ROOT_URL=$DEPLOY_PRIME_URL/demo
 mkdir ./docs/latest/_book/demo/
 yarn install
 yarn build:web:ci
-
-# OLD DEPLOY
-# cd example
-# yarn install
-# yarn run prepare
-# sed -i "s,http://localhost:5000,${ROOT_URL},g" index.html
-# sed -i 's,"routerBasename": "/","routerBasename": "/demo",g' index.html
-# rm -rf node_modules
-
-# NEW DEPLOY
-# cpx 'build/*' docs/latest/_book/demo --verbose

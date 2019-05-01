@@ -4,7 +4,11 @@
  */
 export default function(baseDirectory = '/') {
   const iconsFileName = 'icons.svg'
-  const relativePathToIcons = `${baseDirectory}${iconsFileName}`
+  const sanitizedBaseDirectory =
+    baseDirectory[baseDirectory.length - 1] === '/'
+      ? baseDirectory
+      : `${baseDirectory}/`
+  const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`
 
   return [
     {

@@ -36,7 +36,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
-  const Icons = `${window.config.routerBasename}icons.svg`
+  const Icons = `${window.config.routerBasename}/icons.svg`
   const buttons = [
     {
       text: 'Acquired',
