@@ -50,5 +50,8 @@
         "studyListFunctionsEnabled": true,
         "studyListDateFilterNumDays": 1
     }
+  },
+  "proxy": {
+    "enabled": true
   }
 }

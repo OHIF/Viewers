@@ -433,8 +433,8 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
             contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
             radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
             baseWadoRsUri: baseWadoRsUri,
-            wadouri: wadouri,
-            wadorsuri: wadorsuri,
+            wadouri: WADOProxy.convertURL(wadouri, server),
+            wadorsuri: WADOProxy.convertURL(wadorsuri, server),
             imageRendering: server.imageRendering,
             thumbnailRendering: server.thumbnailRendering
         };

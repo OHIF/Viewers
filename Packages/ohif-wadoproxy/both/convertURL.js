@@ -11,6 +11,10 @@ WADOProxy.convertURL = (url, serverConfiguration) => {
     }
 
     const { settings } = WADOProxy;
+    if (!settings.enabled) {
+        return url;
+    }
+
     const serverId = serverConfiguration._id;
     const query = queryString.stringify({url, serverId});
 
