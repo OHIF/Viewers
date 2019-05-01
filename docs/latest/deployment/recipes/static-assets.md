@@ -71,7 +71,8 @@ Learn more about [Netlify on their website](https://www.netlify.com/)
 _GIF demonstrating deployment with surge_
 
 ```shell
-yarn add global surge
+# Add surge command
+yarn global add surge
 
 # In the build directory
 surge
