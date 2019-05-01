@@ -92,9 +92,37 @@ Learn more about [surge.sh on their website](https://surge.sh/)
 > GitHub Pages for production workloads. Please consider using a different
 > service for mission critical applications.
 
-https://pages.github.com/
+> Websites for you and your projects. Hosted directly from your GitHub
+> repository. Just edit, push, and your changes are live.
+
+This deploy strategy makes more sense if you intend to maintain your project in
+a GitHub repository. It allows you to specify a `branch` or `folder` as the
+target for a GitHub Page's website. As you push code changes, the hosted content
+updates to reflect those changes.
+
+1. Head over to GitHub.com and create a new repository, or go to an existing
+   one. Click on the Settings tab.
+2. Scroll down to the GitHub Pages section. Choose the `branch` or `folder` you
+   would like as the "root" of your website.
+3. Fire up a browser and go to `http://username.github.io/repository`
+
+Configuring Your Site:
+
+- [Setting up a custom domain](https://help.github.com/en/articles/using-a-custom-domain-with-github-pages)
+- [Setting up SSL](https://help.github.com/en/articles/securing-your-github-pages-site-with-https)
+
+Learn more about [GitHub Pages on its website](https://pages.github.com/)
 
 ## Advanced
+
+All of these options, while using providers with more service offerings,
+demonstrate how to host the viewer with their respective file storage and CDN
+offerings. While you can serve your static assets this way, if you're going
+through the trouble of using AWS/GCP/Azure, it's more likely you're doing so to
+avoid using a proxy or to simplify authentication.
+
+If that is the case, check out some of our more advanced `docker` deployments
+that target these providers from the left-hand sidebar.
 
 ### AWS S3 + Cloudfront
 
