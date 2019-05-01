@@ -124,9 +124,15 @@ output.
 
 ## Next Steps
 
-### Deploying our Production Build
+### Deploying Build Output
 
-- [Netlify: Drop]()
+_Drag-n-Drop_
+
+- [Netlify: Drop](/deployment/recipes/static-assets.md#netlify-drop)
+
+_Easy_
+
+_Advanced_
 
 ### Testing Build Output Locally
 
