@@ -66,15 +66,24 @@ build the OHIF Viewer in our
 
 ##### Part 2 - Host Your App
 
-There are a lot of [benefits to hosting static assets][host-static-assets]
+There are a lot of [benefits to hosting static assets][host-static-assets] over
+dynamic content. You can find instructions on how to host your build's output
+via one of these guides:
 
-- AWS S3 + Cloudfront
-- GCP + Cloudflare
-- Azure
-- Netlify (can use private repo)
-- Github pages
+_Drag-n-drop_
 
-Note: Include SSL instructions.
+- [Netlify: Drop](/deployment/recipes/static-assets.md#netlify-drop)
+
+_Easy_
+
+- [Surge.sh](/deployment/recipes/static-assets.md#surgesh)
+- [GitHub Pages](/deployment/recipes/static-assets.md#github-pages)
+
+_Advanced_
+
+- [AWS S3 + Cloudfront](/deployment/recipes/static-assets.md#aws-s3--cloudfront)
+- [GCP + Cloudflare](/deployment/recipes/static-assets.md#gcp--cloudflare)
+- [Azure](/deployment/recipes/static-assets.md#azure)
 
 ...
 

@@ -40,7 +40,7 @@
     - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
   - Stand-Alone
     - [Build for Production](deployment/recipes/build-for-production.md)
-    - [Static]()
+    - [Static](deployment/recipes/static-assets.md)
     - [Docker]()
     - [Nginx + Orthanc]()
     - [Nginx + dcm4chee]()

@@ -83,27 +83,63 @@ the`window.config` equal to our configuration file's value.
 
 #### How do I configure my project?
 
-- Modify its values directly
-- Create a new config file, and set the `REACT_APP_CONFIG` environement variable
--
+The simplest way is to update the existing default config:
 
-The build process knows which file to use based on the `REACT_APP_CONFIG`
-environment variable. You can set the value of this environment variable a few
-different ways:
+_/public/config/default.js_
+
+```js
+window.config = {
+  routerBasename: '/',
+  relativeWebWorkerScriptsPath: '',
+  servers: {
+    dicomWeb: [
+      {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        requestOptions: {
+          requestFromBrowser: true,
+        },
+      },
+    ],
+  },
+}
+```
+
+You can also create a new config file and specify its path relative to the build
+output's root by setting the `REACT_APP_CONFIG` environment variable. You can
+set the value of this environment variable a few different ways:
 
 - [Add a temporary environment variable in your shell](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-temporary-environment-variables-in-your-shell)
 - [Add environment specific variables in `.env` file(s)](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-development-environment-variables-in-env)
--
+- Using the `cross-env` package in an npm script:
+  - `"build": "cross-env REACT_APP_CONFIG=config/my-config.js react-scripts build"`
 
-* env vars
-* `REACT_APP_*`
-* config file(s)
+After updating the configuration, `yarn run build:web` to generate updated build
+output.
 
 ## Next Steps
 
-### Deploying our Production Build
+### Deploying Build Output
 
-TODO: List of recipes
+_Drag-n-drop_
+
+- [Netlify: Drop](/deployment/recipes/static-assets.md#netlify-drop)
+
+_Easy_
+
+- [Surge.sh](/deployment/recipes/static-assets.md#surgesh)
+- [GitHub Pages](/deployment/recipes/static-assets.md#github-pages)
+
+_Advanced_
+
+- [AWS S3 + Cloudfront](/deployment/recipes/static-assets.md#aws-s3--cloudfront)
+- [GCP + Cloudflare](/deployment/recipes/static-assets.md#gcp--cloudflare)
+- [Azure](/deployment/recipes/static-assets.md#azure)
 
 ### Testing Build Output Locally
 
