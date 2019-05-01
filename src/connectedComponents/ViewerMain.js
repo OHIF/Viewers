@@ -8,7 +8,8 @@ import './ViewerMain.css';
 class ViewerMain extends Component {
   static propTypes = {
     studies: PropTypes.array.isRequired,
-    setViewportSpecificData: PropTypes.func.isRequired
+    setViewportSpecificData: PropTypes.func.isRequired,
+    clearViewportSpecificData: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -24,6 +25,9 @@ class ViewerMain extends Component {
     const displaySets = [];
     studies.forEach(study => {
       study.displaySets.forEach(dSet => {
+        if (!dSet.plugin) {
+          dSet.plugin = 'cornerstone';
+        }
         displaySets.push(dSet);
       });
     });
@@ -55,17 +59,13 @@ class ViewerMain extends Component {
     this.setState({
       displaySets
     });
-
-    displaySets.forEach((displaySet, index) => {
-      this.props.setViewportSpecificData(index, displaySet);
-    });
   }
 
   getViewportData = () => {
     const viewportData = [];
+    const { layout, viewportSpecificData } = this.props;
 
-    const { viewportSpecificData } = this.props;
-    Object.keys(viewportSpecificData).sort().forEach((viewportIndex) => {
+    for (let viewportIndex = 0; viewportIndex < layout.viewports.length; viewportIndex++) {
       let displaySet = viewportSpecificData[viewportIndex];
 
       // If the viewport is empty, get one available in study
@@ -75,7 +75,7 @@ class ViewerMain extends Component {
       }
 
       viewportData.push(displaySet);
-    });
+    }
 
     return viewportData;
   };
@@ -103,6 +103,12 @@ class ViewerMain extends Component {
   }
 
   componentWillUnmount() {
+    // Clear the entire viewport specific data
+    const { viewportSpecificData } = this.props;
+    Object.keys(viewportSpecificData).forEach((viewportIndex) => {
+      this.props.clearViewportSpecificData(viewportIndex);
+    });
+
     // Remove beforeUnload event handler...
     //window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
     // Destroy the synchronizer used to update reference lines
