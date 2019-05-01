@@ -1,7 +1,7 @@
 import React from 'react'
 import './OHIFLogo.css'
 
-const Icons = `${window.config.routerBasenameicons}icons.svg`
+const Icons = `${window.config.routerBasename}icons.svg`
 
 function OHIFLogo() {
   return (
