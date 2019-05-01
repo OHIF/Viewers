@@ -6,17 +6,18 @@ import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import './ViewerMain.css';
 
 class ViewerMain extends Component {
-  state = {
-    viewportData: []
-  };
-
   static propTypes = {
-    studies: PropTypes.array.isRequired
+    studies: PropTypes.array.isRequired,
+    setViewportSpecificData: PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
     OHIF.hotkeysUtil.setup('viewer');
+
+    this.state = {
+      displaySets: []
+    }
   }
 
   getDisplaySets(studies) {
@@ -52,29 +53,41 @@ class ViewerMain extends Component {
     const displaySets = this.getDisplaySets(this.props.studies);
 
     this.setState({
-      viewportData: displaySets
+      displaySets
+    });
+
+    displaySets.forEach((displaySet, index) => {
+      this.props.setViewportSpecificData(index, displaySet);
     });
   }
 
+  getViewportData = () => {
+    const viewportData = [];
+
+    const { viewportSpecificData } = this.props;
+    Object.keys(viewportSpecificData).sort().forEach((viewportIndex) => {
+      let displaySet = viewportSpecificData[viewportIndex];
+
+      // If the viewport is empty, get one available in study
+      if (!displaySet || !displaySet.displaySetInstanceUid) {
+        const { displaySets } = this.state;
+        displaySet = displaySets.find(ds => !viewportData.some(v => v.displaySetInstanceUid === ds.displaySetInstanceUid));
+      }
+
+      viewportData.push(displaySet);
+    });
+
+    return viewportData;
+  };
+
   setViewportData = ({ viewportIndex, item }) => {
-    // TODO: Replace this with mapDispatchToProps call
-    // if we decide to put viewport info into redux
-
-    // Note: Use Slice because React does a shallow equality check. Mutating the array
-    // would not trigger a re-render. We have to create a copy.
-    const updatedViewportData = this.state.viewportData.slice(0);
-
     const displaySet = this.findDisplaySet(
       this.props.studies,
       item.studyInstanceUid,
       item.displaySetInstanceUid
     );
 
-    updatedViewportData[viewportIndex] = Object.assign({}, displaySet);
-
-    this.setState({
-      viewportData: updatedViewportData
-    });
+    this.props.setViewportSpecificData(viewportIndex, displaySet);
   };
 
   render() {
@@ -82,7 +95,7 @@ class ViewerMain extends Component {
       <div className="ViewerMain">
         <ConnectedLayoutManager
           studies={this.props.studies}
-          viewportData={this.state.viewportData}
+          viewportData={this.getViewportData()}
           setViewportData={this.setViewportData}
         />
       </div>

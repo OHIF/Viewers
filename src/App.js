@@ -19,6 +19,7 @@ import {
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js'
+import setupTools from './setupTools';
 
 const { ExtensionManager } = OHIF.extensions
 const { reducers, localStorage } = OHIF.redux
@@ -35,27 +36,7 @@ store.subscribe(() => {
   })
 })
 
-const availableTools = [
-  { name: 'Pan', mouseButtonMasks: [1, 4] },
-  { name: 'Zoom', mouseButtonMasks: [1, 2] },
-  { name: 'Wwwc', mouseButtonMasks: [1] },
-  { name: 'Bidirectional', mouseButtonMasks: [1] },
-  { name: 'Length', mouseButtonMasks: [1] },
-  { name: 'Angle', mouseButtonMasks: [1] },
-  { name: 'StackScroll', mouseButtonMasks: [1] },
-  { name: 'Brush', mouseButtonMasks: [1] },
-  { name: 'FreehandMouse', mouseButtonMasks: [1] },
-  { name: 'PanMultiTouch' },
-  { name: 'ZoomTouchPinch' },
-  { name: 'StackScrollMouseWheel' },
-  { name: 'StackScrollMultiTouch' },
-]
-
-const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
-  availableTools,
-})
-
-store.dispatch(toolAction)
+setupTools(store)
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 const extensions = [
@@ -105,13 +86,13 @@ class App extends Component {
 
     //
     this.userManager = getUserManagerForOpenIdConnectClient(
-      store,
-      this.props.oidc
+        store,
+        this.props.oidc
     )
     handleServers(this.props.servers)
     initWebWorkers(
-      this.props.routerBasename,
-      this.props.relativeWebWorkerScriptsPath
+        this.props.routerBasename,
+        this.props.relativeWebWorkerScriptsPath
     )
   }
 
@@ -120,26 +101,26 @@ class App extends Component {
 
     if (userManager) {
       return (
-        <Provider store={store}>
-          <OidcProvider store={store} userManager={userManager}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <OHIFStandaloneViewer userManager={userManager} />
-              </WhiteLabellingContext.Provider>
-            </Router>
-          </OidcProvider>
-        </Provider>
+          <Provider store={store}>
+            <OidcProvider store={store} userManager={userManager}>
+              <Router basename={this.props.routerBasename}>
+                <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+                  <OHIFStandaloneViewer userManager={userManager} />
+                </WhiteLabellingContext.Provider>
+              </Router>
+            </OidcProvider>
+          </Provider>
       )
     }
 
     return (
-      <Provider store={store}>
-        <Router basename={this.props.routerBasename}>
-          <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-            <OHIFStandaloneViewer />
-          </WhiteLabellingContext.Provider>
-        </Router>
-      </Provider>
+        <Provider store={store}>
+          <Router basename={this.props.routerBasename}>
+            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+              <OHIFStandaloneViewer />
+            </WhiteLabellingContext.Provider>
+          </Router>
+        </Provider>
     )
   }
 }

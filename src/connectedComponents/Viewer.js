@@ -9,6 +9,7 @@ import WhiteLabellingContext from '../WhiteLabellingContext.js';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
+import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -184,6 +185,7 @@ class Viewer extends Component {
           {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
           {/*<StudyPrefetcher studies={this.props.studies} />*/}
           <ConnectedFlexboxLayout studies={this.props.studies} />
+          <ConnectedLabellingOverlay />
         </div>
       </>
     );
