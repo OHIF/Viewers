@@ -19,6 +19,8 @@ import {
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js'
+import setupTools from './setupTools'
+import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu'
 
 const { ExtensionManager } = OHIF.extensions
 const { reducers, localStorage } = OHIF.redux
@@ -35,31 +37,15 @@ store.subscribe(() => {
   })
 })
 
-const availableTools = [
-  { name: 'Pan', mouseButtonMasks: [1, 4] },
-  { name: 'Zoom', mouseButtonMasks: [1, 2] },
-  { name: 'Wwwc', mouseButtonMasks: [1] },
-  { name: 'Bidirectional', mouseButtonMasks: [1] },
-  { name: 'Length', mouseButtonMasks: [1] },
-  { name: 'Angle', mouseButtonMasks: [1] },
-  { name: 'StackScroll', mouseButtonMasks: [1] },
-  { name: 'Brush', mouseButtonMasks: [1] },
-  { name: 'FreehandMouse', mouseButtonMasks: [1] },
-  { name: 'PanMultiTouch' },
-  { name: 'ZoomTouchPinch' },
-  { name: 'StackScrollMouseWheel' },
-  { name: 'StackScrollMultiTouch' },
-]
+setupTools(store)
 
-const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
-  availableTools,
-})
-
-store.dispatch(toolAction)
+const children = {
+  viewport: [<ConnectedToolContextMenu />],
+}
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 const extensions = [
-  new OHIFCornerstoneExtension({}),
+  new OHIFCornerstoneExtension({ children }),
   new OHIFVTKExtension(),
   new OHIFDicomPDFExtension(),
   new OHIFDicomHtmlExtension(),
