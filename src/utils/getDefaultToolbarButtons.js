@@ -61,13 +61,6 @@ export default function(baseDirectory = '/') {
       active: false,
     },
     {
-      command: 'Bidirectional',
-      type: 'tool',
-      text: 'Bidirectional',
-      svgUrl: `${relativePathToIcons}#icon-tools-measure-target`,
-      active: false,
-    },
-    {
       command: 'Brush',
       type: 'tool',
       text: 'Brush',

@@ -145,7 +145,6 @@ export default function setupTools(store) {
     { name: 'Pan', mouseButtonMasks: [1, 4] },
     { name: 'Zoom', mouseButtonMasks: [1, 2] },
     { name: 'Wwwc', mouseButtonMasks: [1] },
-    { name: 'Bidirectional', mouseButtonMasks: [1] },
     {
       name: 'Length',
       configuration: {
@@ -155,7 +154,15 @@ export default function setupTools(store) {
       },
       mouseButtonMasks: [1],
     },
-    { name: 'Angle', mouseButtonMasks: [1] },
+    {
+      name: 'Angle',
+      configuration: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+      mouseButtonMasks: [1],
+    },
     { name: 'StackScroll', mouseButtonMasks: [1] },
     { name: 'Brush', mouseButtonMasks: [1] },
     { name: 'FreehandMouse', mouseButtonMasks: [1] },
