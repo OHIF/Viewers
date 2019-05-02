@@ -4,7 +4,6 @@ FROM node:11.2.0-slim as builder
 
 # RUN apt-get update && apt-get install -y git yarn
 RUN mkdir /usr/src/app
-
 WORKDIR /usr/src/app
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
@@ -21,6 +20,6 @@ RUN yarn run build:web
 FROM nginx:1.15.5-alpine
 RUN rm -rf /etc/nginx/conf.d
 COPY conf /etc/nginx
-COPY --from=builder /usr/src/app/public /usr/share/nginx/html
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

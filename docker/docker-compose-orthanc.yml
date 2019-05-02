@@ -1,3 +1,6 @@
+# docker-compose:
+# https://docs.docker.com/compose/overview/
+
 version: '3.5'
 
 services:
@@ -13,15 +16,17 @@ services:
   viewer:
     container_name: ohif-viewer
     build:
+      # Up to the root directory
       context: ../
-      dockerfile: Dockerfile
+      # Use our dockerfile to build the viewer
+      dockerfile: dockerfile
     ports:
       - '80:80'
     depends_on:
       - orthanc
     environment:
       - NODE_ENV=production
-      - REACT_APP_CONFIG=config/local_orthanc
+      - REACT_APP_CONFIG=config/local_orthanc.js
     restart: always
     volumes:
       - ../config/local_orthanc.js:/usr/share/nginx/html/servers.js
