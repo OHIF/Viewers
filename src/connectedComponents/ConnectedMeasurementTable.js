@@ -319,6 +319,20 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
         viewportsState
       )
     },
+    onDeleteClick: (event, measurementData) => {
+      const { MeasurementHandlers } = OHIF.measurements;
+
+      MeasurementHandlers.onRemoved({
+        detail: {
+          toolType: measurementData.toolType,
+          measurementData: {
+            _id: measurementData.measurementId,
+            lesionNamingNumber: measurementData.lesionNamingNumber,
+            measurementNumber: measurementData.measurementNumber
+          }
+        }
+      });
+    }
   }
 }
 
