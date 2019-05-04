@@ -2,10 +2,10 @@
 # docker build -t ohif/viewer:latest .
 FROM node:11.2.0-slim as builder
 
-# RUN apt-get update && apt-get install -y git yarn
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
+ENV REACT_APP_CONFIG=config/example_openidc.js
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 COPY package.json /usr/src/app/package.json
