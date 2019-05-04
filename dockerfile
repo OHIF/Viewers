@@ -15,11 +15,20 @@ ADD . /usr/src/app/
 RUN yarn install
 RUN yarn run build:web
 
-# # Stage 2: Bundle the built application into a Docker container
-# # which runs Nginx using Alpine Linux
-FROM nginx:1.15.5-alpine
-RUN rm -rf /etc/nginx/conf.d
-COPY conf /etc/nginx
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Stage 2: Bundle the built application into a Docker container
+# which runs openresty (nginx) using Alpine Linux
+FROM openresty/openresty:alpine-fat
+
+RUN mkdir /var/log/nginx
+RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl-dev
+RUN apk add --no-cache git
+RUN apk add --no-cache gcc
+# RUN luarocks install lua-resty-openidc
+
+RUN luarocks install lua-resty-jwt
+RUN luarocks install lua-resty-session
+RUN luarocks install lua-resty-jwt
+RUN luarocks install lua-resty-http
+RUN luarocks install lua-resty-openidc
+RUN luarocks install luacrypto
