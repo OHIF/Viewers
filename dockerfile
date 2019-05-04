@@ -32,3 +32,8 @@ RUN luarocks install lua-resty-jwt
 RUN luarocks install lua-resty-http
 RUN luarocks install lua-resty-openidc
 RUN luarocks install luacrypto
+
+# Copy build output to image
+COPY --from=builder /usr/src/app/build /var/www/html
+
+ENTRYPOINT ["/usr/local/openresty/nginx/sbin/nginx", "-g", "daemon off;"]
