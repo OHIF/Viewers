@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import cloneDeep from 'lodash.clonedeep'
-
 import EditDescriptionDialog from './../EditDescriptionDialog/EditDescriptionDialog.js'
 import LabellingFlow from './LabellingFlow.js'
 
@@ -32,7 +30,7 @@ export default class LabellingManager extends Component {
   constructor(props) {
     super(props)
 
-    const measurementData = cloneDeep(props.measurementData)
+    const measurementData = JSON.parse(JSON.stringify(props.measurementData))
     this.treatMeasurementData(measurementData)
 
     let editLocation = props.editLocation
