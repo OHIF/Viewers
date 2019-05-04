@@ -1,3 +1,13 @@
+# Build docker container using
+# `docker build -t authproxy .`
+#
+# This will create a container named `authproxy`
+# that can be run with an Nginx configuration
+#
+# OpenResty is functionally identical to Nginx with the addition of Lua out of
+# the box.
+
+
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
 FROM node:11.2.0-slim as builder
