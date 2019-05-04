@@ -104,9 +104,11 @@ class App extends Component {
     store.dispatch(buttonsAction)
 
     //
+    const firstOpenIdClient = this.props.oidc[0]
+
     this.userManager = getUserManagerForOpenIdConnectClient(
       store,
-      this.props.oidc
+      firstOpenIdClient
     )
     handleServers(this.props.servers)
     initWebWorkers(
