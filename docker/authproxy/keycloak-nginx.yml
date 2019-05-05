@@ -1,0 +1,82 @@
+# https://eclipsesource.com/blogs/2018/01/11/authenticating-reverse-proxy-with-keycloak/
+
+version: '3.5'
+
+services:
+  # Exposed server that's handling incoming web requests
+  # Underlying image: openresty/openresty:alpine-fat
+  authproxy:
+    image: authproxy:latest
+    container_name: authproxy
+    restart: on-failure
+    volumes:
+      # Nginx config
+      # - ./config/nginx.conf:/etc/nginx.conf:ro
+      - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      # Nginx static html
+      # - ./html/:/usr/share/nginx/html
+      # Access Log
+      - ./access.log:/var/log/nginx/test.com.access.log
+      #     # Let's Encrypt
+      # - letsencrypt_certificates:/etc/letsencrypt
+      # - letsencrypt_challenges:/var/www/letsencrypt
+    ports:
+      # HOST_PORT:CONTAINER_PORT
+      # EXTERNAL:INTERNAL
+      - '443:443' # SSL
+      - '80:80' # Web
+    depends_on:
+      - orthanc
+      - keycloak
+
+  # Our image archive (PACS)
+  # A client protected by keycloak
+  # authenticated reverse proxy via `authproxy`
+  orthanc:
+    container_name: orthanc
+    image: jodogne/orthanc-plugins
+    # volumes:
+    #  - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+    #   - ../sampledata:/sampledata
+    restart: always
+
+  # Database for our Keycloak instance
+  keycloak_postgres:
+    hostname: keycloak-db
+    restart: on-failure
+    image: postgres:11.2
+    volumes:
+      # Should maybe be /var/lib/postgresql/data
+      - ./keycloak_postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_ROOT_PASSWORD: password
+    dns:
+      - 8.8.8.8
+
+  #
+  keycloak:
+    hostname: keycloak
+    restart: on-failure
+    image: jboss/keycloak:6.0.1
+    environment:
+      # Keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      # DB
+      POSTGRES_PORT_5432_TCP_ADDR: keycloak_postgres
+      # POSTGRES_PORT_5432_TCP_PORT: 5432
+      POSTGRES_DATABASE: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      PROXY_ADDRESS_FORWARDING: 'true'
+    #    volumes:
+    #      - ./keycloak_data/themes:/opt/jboss/keycloak/themes
+    depends_on:
+      - keycloak_postgres
+    dns:
+      - 8.8.8.8
+    links:
+      - keycloak_postgres
