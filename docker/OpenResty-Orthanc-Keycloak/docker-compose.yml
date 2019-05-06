@@ -2,6 +2,12 @@
 
 version: '3.5'
 
+# https://docs.docker.com/compose/compose-file/#volume-configuration-reference
+volumes:
+  keycloak_postgres_data:
+    driver: local
+    external: true
+
 services:
   # Exposed server that's handling incoming web requests
   # Underlying image: openresty/openresty:alpine-fat
@@ -11,6 +17,7 @@ services:
     build:
       # Project root
       context: ./../../
+      # Relative to context
       dockerfile: ./docker/OpenResty-Orthanc-Keycloak/dockerfile
     #
     #
@@ -20,8 +27,9 @@ services:
     volumes:
       # Nginx config
       - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
-      # Access Log
-      - ./access.log:/var/log/nginx/test.com.access.log
+      # Logs
+      - ./logs/nginx/access.log:/var/logs/nginx/mydomain.access.log
+      - ./logs/nginx/error.log:/var/logs/nginx/mydomain.error.log
       # Let's Encrypt
       # - letsencrypt_certificates:/etc/letsencrypt
       # - letsencrypt_challenges:/var/www/letsencrypt
@@ -34,36 +42,14 @@ services:
       - orthanc
       - keycloak
 
-  # authproxy:
-  # image: authproxy:latest
-  # container_name: authproxy
-  # restart: on-failure
-  # volumes:
-  #   # Nginx config
-  #   - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
-  #   # Access Log
-  #   - ./access.log:/var/log/nginx/test.com.access.log
-  #   # Let's Encrypt
-  #   # - letsencrypt_certificates:/etc/letsencrypt
-  #   # - letsencrypt_challenges:/var/www/letsencrypt
-  # ports:
-  #   # HOST_PORT:CONTAINER_PORT
-  #   # EXTERNAL:INTERNAL
-  #   - '443:443' # SSL
-  #   - '80:80' # Web
-  # depends_on:
-  #   - orthanc
-  #   - keycloak
-
   # Our image archive (PACS)
   # A client protected by keycloak
   # authenticated reverse proxy via `authproxy`
   orthanc:
     container_name: orthanc
     image: jodogne/orthanc-plugins
-    # volumes:
-    #  - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
-    #   - ../sampledata:/sampledata
+    volumes:
+      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
     restart: always
 
   # Database for our Keycloak instance
@@ -72,8 +58,7 @@ services:
     restart: on-failure
     image: postgres:11.2
     volumes:
-      # Should maybe be /var/lib/postgresql/data
-      - ./volumes/keycloak_postgres_data:/var/lib/postgresql
+      - keycloak_postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -82,6 +67,8 @@ services:
     dns:
       - 8.8.8.8
 
+  # Example Config:
+  # https://github.com/jboss-dockerfiles/keycloak/blob/master/docker-compose-examples/keycloak-postgres.yml
   #
   keycloak:
     hostname: keycloak
@@ -93,7 +80,7 @@ services:
       KEYCLOAK_PASSWORD: password
       # DB
       POSTGRES_PORT_5432_TCP_ADDR: keycloak_postgres
-      # POSTGRES_PORT_5432_TCP_PORT: 5432
+      POSTGRES_PORT_5432_TCP_PORT: 5432
       POSTGRES_DATABASE: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
