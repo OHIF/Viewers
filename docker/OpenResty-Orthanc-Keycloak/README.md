@@ -29,27 +29,6 @@ https://github.com/maxmantz/redux-oidc
 
 - Set admin user/pass in `docker-compose`
 - What are realms?
-- Configure Clients
-  - Create client
-    - ClientID: `pacs`; save
-  - Details page
-    - Client Protocol: `openid-connect`
-    - AccessType: `Confidential`
-    - Picking a grant type:
-      https://auth0.com/docs/api-auth/which-oauth-flow-to-use
-      - Standard Flow: `off`
-      - Implicit Flow: `on`
-      - Direct Access: `off`
-    - Root URL: `http://127.0.0.1`
-    - Valid Redirect URIs: `/studylist/*`
-    - Web Origins: `*`
-  - Credentials Tab
-    - Copy `secret`
-- Manage: Users
-  - Add User
-    - Username: `test`
-  - Credentials Tab
-    - Password: `test`
 
 ## Useful Commands
 
@@ -65,6 +44,10 @@ Interact w/ running container:
 `docker exec -it CONTAINER_NAME bash`
 
 To delete containers not in use: `docker prune`
+
+Test nginx.conf:
+
+`docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t`
 
 ## Resources
 

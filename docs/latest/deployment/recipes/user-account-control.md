@@ -48,7 +48,58 @@ in command prompt or terminal_
 
 ## Getting Started
 
-...
+1. Navigate to `<project-root>/docker/OpenResty-Orthanc-Keycloak` in your shell
+2. Run `docker volume create --name=keycloak_postgres_data`
+3. Run `docker-compose build`
+4. Run `docker-compose up`
+
+### Create a new "Client" in Keycloak
+
+- What is a realm?
+- What is a client?
+- OAuth 2.0 and implict flow; why?
+- Can we set all of this up via config instead of manual?
+
+- Navigate to `http://127.0.0.1/auth/admin/` in your browser. You should see:
+
+<!-- Login Screen -->
+
+- Sign in with `admin`/`password`
+- Configure: Clients --> Create Client
+  - ClientID: `pacs`
+  - Client Protocol: `openid-connect`
+  - Click "save"
+- Under our new client's `Settings` tab:
+  - Client Protocol: `openid-connect`
+  - AccessType: `Confidential`
+  - Standard Flow: `off`
+  - Implicit Flow: `on`
+  - Direct Access: `off`
+  - Root URL: `http://127.0.0.1`
+  - Valid Redirect URIs: `/callback*`
+  - Web Origins: `*`
+  - Click "save"
+- Select the "Credentials" Tab
+  - Copy the `secret` value and save it for later
+- From the left hand sidebar, select `Users`
+  - Click "Add User"
+    - Username: `test`
+    - Email Verfied: `ON`
+    - Click "Save"
+  - Select the "Credentials" Tab
+    - New Password: `test`
+    - Password Confirmation: `test`
+    - Temporary: `OFF`
+    - Click "Reset Password"
+
+### Rebuild Client
+
+- Set in `config/nginx.conf`?
+  - Env variable???
+  - `2dc6244a-1cba-4dbd-b3d6-f7409c2f68b3`
+- stop, `docker-compose up`
+
+### Configuration
 
 ## How it works
 
@@ -94,6 +145,8 @@ The inspiration for our setup was driven largely by these articles:
 For more documentation on the software we've chosen to use, you may find the
 following resources helpful:
 
+- [Clientside library we use to manage OpenID-Connect `implicit` flow](https://github.com/maxmantz/redux-oidc)
 - [Orthanc for Docker](http://book.orthanc-server.com/users/docker.html)
 - [OpenResty Guide](http://www.staticshin.com/programming/definitely-an-open-resty-guide/)
 - [Lua Ngx API](https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/)
+- [Auth0: Picking a Grant Type](https://auth0.com/docs/api-auth/which-oauth-flow-to-use)
