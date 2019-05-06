@@ -1,10 +1,24 @@
-# Build docker container using
-# `docker build -t authproxy .`
+# docker-compose
+# --------------
+# This dockerfile is used by the `docker-compose.yml` adjacent file. When
+# running `docker-compose build`, this dockerfile helps build the "webapp" image.
+# All paths are relative to the `context`, which is the project root directory.
 #
-# This will create a container named `authproxy`
-# that can be run with an Nginx configuration
+# docker build
+# --------------
+# If you would like to use this dockerfile to build and tag an image, make sure
+# you set the context to the project's root directory:
+# https://docs.docker.com/engine/reference/commandline/build/
 #
-# OpenResty is functionally identical to Nginx with the addition of Lua out of
+#
+# SUMMARY
+# --------------
+# This dockerfile has two stages:
+#
+# 1. Building the React application for production
+# 2. Setting up our Nginx (OpenResty*) image w/ step one's output
+#
+# * OpenResty is functionally identical to Nginx with the addition of Lua out of
 # the box.
 
 
@@ -38,7 +52,6 @@ RUN apk add --no-cache gcc
 
 RUN luarocks install lua-resty-jwt
 RUN luarocks install lua-resty-session
-RUN luarocks install lua-resty-jwt
 RUN luarocks install lua-resty-http
 RUN luarocks install lua-resty-openidc
 RUN luarocks install luacrypto

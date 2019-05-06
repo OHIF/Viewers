@@ -12,7 +12,6 @@ services:
       # Project root
       context: ./../../
       dockerfile: ./docker/OpenResty-Orthanc-Keycloak/dockerfile
-      # image: authproxy:latest
     #
     #
     image: webapp:latest

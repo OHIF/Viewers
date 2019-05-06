@@ -64,6 +64,8 @@ Interact w/ running container:
 
 `docker exec -it CONTAINER_NAME bash`
 
+To delete containers not in use: `docker prune`
+
 ## Resources
 
 - http://www.staticshin.com/programming/definitely-an-open-resty-guide/#access_by_lua
