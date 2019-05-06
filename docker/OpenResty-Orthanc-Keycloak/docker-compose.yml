@@ -5,19 +5,25 @@ version: '3.5'
 services:
   # Exposed server that's handling incoming web requests
   # Underlying image: openresty/openresty:alpine-fat
-  authproxy:
-    image: authproxy:latest
-    container_name: authproxy
+  ohif_viewer:
+    #
+    #
+    build:
+      # Project root
+      context: ./../../
+      dockerfile: ./docker/OpenResty-Orthanc-Keycloak/dockerfile
+      # image: authproxy:latest
+    #
+    #
+    image: webapp:latest
+    container_name: webapp
     restart: on-failure
     volumes:
       # Nginx config
-      # - ./config/nginx.conf:/etc/nginx.conf:ro
       - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
-      # Nginx static html
-      # - ./html/:/usr/share/nginx/html
       # Access Log
       - ./access.log:/var/log/nginx/test.com.access.log
-      #     # Let's Encrypt
+      # Let's Encrypt
       # - letsencrypt_certificates:/etc/letsencrypt
       # - letsencrypt_challenges:/var/www/letsencrypt
     ports:
@@ -28,6 +34,27 @@ services:
     depends_on:
       - orthanc
       - keycloak
+
+  # authproxy:
+  # image: authproxy:latest
+  # container_name: authproxy
+  # restart: on-failure
+  # volumes:
+  #   # Nginx config
+  #   - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+  #   # Access Log
+  #   - ./access.log:/var/log/nginx/test.com.access.log
+  #   # Let's Encrypt
+  #   # - letsencrypt_certificates:/etc/letsencrypt
+  #   # - letsencrypt_challenges:/var/www/letsencrypt
+  # ports:
+  #   # HOST_PORT:CONTAINER_PORT
+  #   # EXTERNAL:INTERNAL
+  #   - '443:443' # SSL
+  #   - '80:80' # Web
+  # depends_on:
+  #   - orthanc
+  #   - keycloak
 
   # Our image archive (PACS)
   # A client protected by keycloak
@@ -47,7 +74,7 @@ services:
     image: postgres:11.2
     volumes:
       # Should maybe be /var/lib/postgresql/data
-      - ./keycloak_postgres_data:/var/lib/postgresql
+      - ./volumes/keycloak_postgres_data:/var/lib/postgresql
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak

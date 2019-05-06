@@ -1,10 +1,16 @@
+# Output
 dist/
+
+# Dependencies
 node_modules/
-.git
+
+# Root
+README.md
 Dockerfile
+
+# Misc. Config
+.git
 .DS_Store
 .gitignore
-README.md
 .vscode
 .circleci
-example/
