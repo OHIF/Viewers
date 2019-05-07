@@ -1,4 +1,6 @@
-# https://eclipsesource.com/blogs/2018/01/11/authenticating-reverse-proxy-with-keycloak/
+# Reference:
+# - https://docs.docker.com/compose/compose-file
+# - https://eclipsesource.com/blogs/2018/01/11/authenticating-reverse-proxy-with-keycloak/
 
 version: '3.5'
 
@@ -13,24 +15,21 @@ services:
       dockerfile: ./docker/OpenResty-Orthanc-Keycloak/dockerfile
     image: webapp:latest
     container_name: webapp
-    restart: on-failure
     volumes:
       # Nginx config
       - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
       # Logs
-      - ./logs/nginx/access.log:/var/logs/nginx/mydomain.access.log
-      - ./logs/nginx/error.log:/var/logs/nginx/mydomain.error.log
+      - ./logs/nginx:/var/logs/nginx
       # Let's Encrypt
       # - letsencrypt_certificates:/etc/letsencrypt
       # - letsencrypt_challenges:/var/www/letsencrypt
     ports:
-      # HOST_PORT:CONTAINER_PORT
-      # EXTERNAL:INTERNAL
       - '443:443' # SSL
       - '80:80' # Web
     depends_on:
-      - orthanc
       - keycloak
+      - orthanc
+    restart: on-failure
 
   # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
   # TODO: Update to use Postgres
