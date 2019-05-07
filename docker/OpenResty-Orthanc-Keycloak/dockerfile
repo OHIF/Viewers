@@ -41,7 +41,8 @@ RUN yarn run build:web
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs openresty (nginx) using Alpine Linux
-FROM openresty/openresty:alpine-fat
+# LINK: https://hub.docker.com/r/openresty/openresty
+FROM openresty/openresty:1.15.8.1rc1-0-alpine-fat
 
 RUN mkdir /var/log/nginx
 RUN apk add --no-cache openssl
