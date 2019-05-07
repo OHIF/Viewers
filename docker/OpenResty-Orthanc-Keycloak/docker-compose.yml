@@ -2,25 +2,15 @@
 
 version: '3.5'
 
-# https://docs.docker.com/compose/compose-file/#volume-configuration-reference
-volumes:
-  keycloak_postgres_data:
-    driver: local
-    external: true
-
 services:
   # Exposed server that's handling incoming web requests
   # Underlying image: openresty/openresty:alpine-fat
   ohif_viewer:
-    #
-    #
     build:
       # Project root
       context: ./../../
       # Relative to context
       dockerfile: ./docker/OpenResty-Orthanc-Keycloak/dockerfile
-    #
-    #
     image: webapp:latest
     container_name: webapp
     restart: on-failure
@@ -67,29 +57,51 @@ services:
     dns:
       - 8.8.8.8
 
-  # Example Config:
-  # https://github.com/jboss-dockerfiles/keycloak/blob/master/docker-compose-examples/keycloak-postgres.yml
-  #
+  # LINK: https://hub.docker.com/r/jboss/keycloak
   keycloak:
-    hostname: keycloak
-    restart: on-failure
     image: jboss/keycloak:6.0.1
+    hostname: keycloak
+    container_name: keycloak
+    volumes:
+      # Theme: https://www.keycloak.org/docs/latest/server_development/index.html#creating-a-theme
+      # - ./volumes/keycloak-themes:/opt/jboss/keycloak/themes
+      # Previous Realm Config
+      - ./config/ohif-keycloak-realm.json:/tmp/ohif-keycloak-realm.json
     environment:
+      # Database
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_PORT: 5432
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: keycloak
+      DB_PASSWORD: password
       # Keycloak
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
-      # DB
-      POSTGRES_PORT_5432_TCP_ADDR: keycloak_postgres
-      POSTGRES_PORT_5432_TCP_PORT: 5432
-      POSTGRES_DATABASE: keycloak
+      KEYCLOAK_IMPORT: /tmp/ohif-keycloak-realm.json
+      # KEYCLOAK_WELCOME_THEME: <theme-name>
+      # KEYCLOAK_DEFAULT_THEME: <theme-name>
+      # KEYCLOAK_HOSTNAME: (recommended in prod)
+      # KEYCLOAK_LOGLEVEL: DEBUG
+      PROXY_ADDRESS_FORWARDING: 'true'
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # LINK: https://hub.docker.com/_/postgres/
+  postgres:
+    image: postgres:11.2
+    hostname: postgres
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
-      PROXY_ADDRESS_FORWARDING: 'true'
-    #    volumes:
-    #      - ./keycloak_data/themes:/opt/jboss/keycloak/themes
-    depends_on:
-      - keycloak_postgres
-    dns:
-      - 8.8.8.8
-    links:
-      - keycloak_postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
