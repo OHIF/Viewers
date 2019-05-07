@@ -79,7 +79,7 @@
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.6",
     "ohif-vtk-extension": "^0.0.1",
-    "oidc-client": "^1.6.1",
+    "oidc-client": "1.7.x",
     "prop-types": "^15.6.2",
     "react-bootstrap-modal": "^4.2.0",
     "react-dnd": "^7.0.2",
@@ -91,7 +91,7 @@
     "react-viewerbase": "0.3.2",
     "react-vtkjs-viewport": "^0.0.7",
     "redux": "^4.0.1",
-    "redux-oidc": "^3.1.0"
+    "redux-oidc": "3.1.x"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
