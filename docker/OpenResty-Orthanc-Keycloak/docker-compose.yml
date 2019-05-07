@@ -32,30 +32,19 @@ services:
       - orthanc
       - keycloak
 
-  # Our image archive (PACS)
-  # A client protected by keycloak
-  # authenticated reverse proxy via `authproxy`
+  # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
+  # TODO: Update to use Postgres
+  # https://github.com/mrts/docker-postgresql-multiple-databases
   orthanc:
+    image: jodogne/orthanc-plugins:1.5.6
+    hostname: orthanc
     container_name: orthanc
-    image: jodogne/orthanc-plugins
     volumes:
+      # Config
       - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
-    restart: always
-
-  # Database for our Keycloak instance
-  keycloak_postgres:
-    hostname: keycloak-db
-    restart: on-failure
-    image: postgres:11.2
-    volumes:
-      - keycloak_postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
-      POSTGRES_ROOT_PASSWORD: password
-    dns:
-      - 8.8.8.8
+      # Persist data
+      # - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+    restart: unless-stopped
 
   # LINK: https://hub.docker.com/r/jboss/keycloak
   keycloak:
