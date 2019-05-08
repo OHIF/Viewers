@@ -13,11 +13,14 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        // REQUIRED TAG:
+        // https://github.com/OHIF/ohif-core/blob/59e1e04b92be24aee5d4402445cb3dcedb746995/src/studies/retrieveStudyMetadata.js#L54
         requestOptions: {
-          auth: 'orthanc:orthanc',
-          logRequests: true,
-          logResponses: false,
-          logTiming: true,
+          //   auth: 'orthanc:orthanc', // undefined to use JWT + Bearer auth
+          requestFromBrowser: true,
+          //   logRequests: true,
+          //   logResponses: false,
+          //   logTiming: true,
         },
       },
     ],
