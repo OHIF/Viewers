@@ -54,12 +54,62 @@ This setup allows us to create a setup similar to the one pictured below:
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
 
-### Spinning Things Up
+### Setup
 
-1. Navigate to `<project-root>/docker/OpenResty-Orthanc-Keycloak` in your shell
-2. Run `docker volume create --name=keycloak_postgres_data`
-3. Run `docker-compose build`
-4. Run `docker-compose up`
+_Spin Things Up_
+
+- Navigate to `<project-root>/docker/OpenResty-Orthanc-Keycloak` in your shell
+- Run `docker-compose up`
+
+_Create Your First User_
+
+- Navigate to: `http://127.0.0.1/auth/admin`
+- Sign in with: `admin`/`password`
+- From the top left dropdown, select the `Ohif` realm (it should say `Master`)
+- From the left sidebar, under `Manage`, select `Users`
+- Click `Add User`
+  - Username: `test`
+  - Email Verified: `ON`
+  - Click `Save`
+- Click the `Credentials` Tab
+  - New Pasword: `test`
+  - Password Confirmation: `test`
+  - Temporary: `OFF`
+  - Click: `Reset Password`
+- From the top right dropdown, select `Admin`, then `Sign Out`
+
+_Sign In_
+
+- Navigate to `http://127.0.0.1/`
+- Username: `test`, Password: `test`
+- Click `Log In`
+
+_Upload Your First Study_
+
+- Navigate to `http://127.0.0.1/pacs-admin`
+- If you're not already logged in, use `test`/`test`
+- From the top right, select "Upload"
+- Click "Select files to upload..." (DICOM)
+- Click "Start the upload"
+- Navigate back to `http://127.0.0.1/` to view your studies in the Study List
+
+### Troubleshooting
+
+_Exit code 137_
+
+This means Docker ran out of memory. Open Docker Desktop, go to the `advanced`
+tab, and increase the amount of Memory available.
+
+_Cannot create container for service X_
+
+Use this one with caution: `docker system prune`
+
+_X is already running_
+
+Stop running all containers:
+
+- Win: `docker ps -a -q | ForEach { docker stop $_ }`
+- Linux: `docker stop $(docker ps -a -q)`
 
 ### Configuration
 
@@ -91,28 +141,6 @@ in command prompt or terminal_
   - ClientID: `pacs`
   - Client Protocol: `openid-connect`
   - Click "save"
-- Under our new client's `Settings` tab:
-  - Client Protocol: `openid-connect`
-  - AccessType: `Confidential`
-  - Standard Flow: `off`
-  - Implicit Flow: `on`
-  - Direct Access: `off`
-  - Root URL: `http://127.0.0.1`
-  - Valid Redirect URIs: `/callback*`
-  - Web Origins: `*`
-  - Click "save"
-- Select the "Credentials" Tab
-  - Copy the `secret` value and save it for later
-- From the left hand sidebar, select `Users`
-  - Click "Add User"
-    - Username: `test`
-    - Email Verfied: `ON`
-    - Click "Save"
-  - Select the "Credentials" Tab
-    - New Password: `test`
-    - Password Confirmation: `test`
-    - Temporary: `OFF`
-    - Click "Reset Password"
 
 ### Rebuild Client
 
