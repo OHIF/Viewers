@@ -113,6 +113,25 @@ Stop running all containers:
 
 ### Configuration
 
+#### OHIF Viewer
+
+The OHIF Viewer's configuration is imported from a static `.js` file and made
+available globally at `window.config`. The configuration we use is set to a
+specific file when we build the viewer, and determined by the env variable:
+`REACT_APP_CONFIG`. You can see where we set its value in the `dockerfile` for
+this solution:
+
+`ENV REACT_APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
+
+You can find the configuration we're using here:
+`/public/config/docker_openresty-orthanc-keycloak.js`
+
+To rebuild the `webapp` image created by our `dockerfile` after updating the
+Viewer's configuration, you can run:
+
+- `docker-compose build` OR
+- `docker-compose up --build`
+
 - [Env vars in Nginx](https://blog.doismellburning.co.uk/environment-variables-in-nginx-config/)
 
 ### Authentication Flow
