@@ -222,6 +222,14 @@ for communication between services.
 
 - [SSL Termination for TCP Upstream Servers](https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/)
 
+### Use PostgresSQL w/ Orthanc
+
+Orthanc can handle a large amount of data and requests, but if you find that
+requests start to slow as you add more and more studies, you may want to
+configure your Orthanc instance to use PostgresSQL. Instructions on how to do
+that can be found in the
+[`Orthanc Server Book`](http://book.orthanc-server.com/users/docker.html), under
+"PostgreSQL and Orthanc inside Docker"
 ## Resources
 
 ### Misc. Helpful Commands
