@@ -220,7 +220,9 @@ more than happy to accept Pull Requests for:
 
 _Check if `nginx.conf` is valid:_
 
-`docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t`
+```bash
+docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t
+```
 
 _Interact w/ running container:_
 
