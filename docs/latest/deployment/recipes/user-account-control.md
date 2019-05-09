@@ -113,6 +113,13 @@ Stop running all containers:
 
 ### Configuration
 
+After verifying that everything runs with default configuration values, you will
+likely want to update:
+
+- The domain: `http://127.0.0.1`
+- Set secure, non-default passwords
+- Regenerate Keycloak Client Secrets
+
 #### OHIF Viewer
 
 The OHIF Viewer's configuration is imported from a static `.js` file and made
