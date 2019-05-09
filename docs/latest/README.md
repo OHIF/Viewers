@@ -18,6 +18,16 @@ yourself unable to extend the viewer for your purposes, please reach out via our
 [GitHub issues][gh-issues]. We are actively seeking feedback on ways to improve
 our integration and extension points.
 
+## Where to Next?
+
+Check out these helpful links:
+
+- Ready to dive into some code? Check out our
+  [Getting Started Guide](./essentials/getting-started.md).
+- We're an active, vibrant community.
+  [Learn how you can be more involved.](./contributing.md)
+- Feeling lost? Read our [help page](./help.md).
+
 <!--
   Links
   -->
