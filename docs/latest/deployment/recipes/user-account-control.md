@@ -182,6 +182,20 @@ for production, they are not easy to deploy "as is". You can either:
 - Find and follow your preferred provider's guide on setting up
   [swarms and stacks](https://docs.docker.com/get-started/)
 
+### Add SSL
+
+Adding SSL registration and renewal for your domain with Let's Encrypt that
+terminates at Nginx is an incredibly important step toward securing your data.
+Here are some resources, specific to this setup, that may be helpful:
+
+- [lua-resty-auto-ssl](https://github.com/GUI/lua-resty-auto-ssl)
+- [Let's Encrypt + Nginx](https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/)
+
+While we terminate SSL at Nginx, it may be worth using self signed certificates
+for communication between services.
+
+- [SSL Termination for TCP Upstream Servers](https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/)
+
 ## Resources
 
 ### Misc. Helpful Commands
