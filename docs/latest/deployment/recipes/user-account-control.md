@@ -184,6 +184,27 @@ for production, they are not easy to deploy "as is". You can either:
 
 ## Resources
 
+### Misc. Helpful Commands
+
+_Check if `nginx.conf` is valid:_
+
+`docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t`
+
+_Interact w/ running container:_
+
+`docker exec -it CONTAINER_NAME bash`
+
+_List running containers:_
+
+`docker ps`
+
+_Clear Keycloak DB so you can re-seed values:_
+
+- `docker volume prune` OR
+- `docker volume ls` and `docker volume rm VOLUME_NAME VOLUME_NAME`
+
+### Referenced Articles
+
 The inspiration for our setup was driven largely by these articles:
 
 - [Securing Nginx with Keycloak](https://edhull.co.uk/blog/2018-06-06/keycloak-nginx)
