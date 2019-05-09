@@ -1,49 +1,42 @@
-/**
- *
- * @param {String} [baseDirectory='/']
- */
-export default function(baseDirectory = '/') {
-  const iconsFileName = 'icons.svg'
-  const sanitizedBaseDirectory =
-    baseDirectory[baseDirectory.length - 1] === '/'
-      ? baseDirectory
-      : `${baseDirectory}/`
-  const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`
+import OHIF from 'ohif-core'
 
-  return [
+const Icons = 'icons.svg'
+
+export default function setupButtons(store) {
+  const defaultButtons = [
     {
       command: 'StackScroll',
       type: 'tool',
       text: 'Stack Scroll',
-      svgUrl: `${relativePathToIcons}#icon-tools-stack-scroll`,
+      svgUrl: `${Icons}#icon-tools-stack-scroll`,
       active: false,
     },
     {
       command: 'Zoom',
       type: 'tool',
       text: 'Zoom',
-      svgUrl: `${relativePathToIcons}#icon-tools-zoom`,
+      svgUrl: `${Icons}#icon-tools-zoom`,
       active: false,
     },
     {
       command: 'Wwwc',
       type: 'tool',
       text: 'Levels',
-      svgUrl: `${relativePathToIcons}#icon-tools-levels`,
+      svgUrl: `${Icons}#icon-tools-levels`,
       active: true,
     },
     {
       command: 'Pan',
       type: 'tool',
       text: 'Pan',
-      svgUrl: `${relativePathToIcons}#icon-tools-pan`,
+      svgUrl: `${Icons}#icon-tools-pan`,
       active: false,
     },
     {
       command: 'Length',
       type: 'tool',
       text: 'Length',
-      svgUrl: `${relativePathToIcons}#icon-tools-measure-temp`,
+      svgUrl: `${Icons}#icon-tools-measure-temp`,
       active: false,
     },
     /*{
@@ -58,6 +51,13 @@ export default function(baseDirectory = '/') {
       type: 'tool',
       text: 'Angle',
       iconClasses: 'fa fa-angle-left',
+      active: false,
+    },
+    {
+      command: 'Bidirectional',
+      type: 'tool',
+      text: 'Bidirectional',
+      svgUrl: `${Icons}#icon-tools-measure-target`,
       active: false,
     },
     {
@@ -78,8 +78,12 @@ export default function(baseDirectory = '/') {
       command: 'reset',
       type: 'command',
       text: 'Reset',
-      svgUrl: `${relativePathToIcons}#icon-tools-reset`,
+      svgUrl: `${Icons}#icon-tools-reset`,
       active: false,
     },
   ]
+
+  const buttonsAction = OHIF.redux.actions.setAvailableButtons(defaultButtons)
+
+  store.dispatch(buttonsAction)
 }
