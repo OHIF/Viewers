@@ -69,8 +69,6 @@ class App extends Component {
     //
     servers: PropTypes.object,
     oidc: PropTypes.array,
-    userManager: PropTypes.object,
-    location: PropTypes.object,
     whiteLabelling: PropTypes.object,
   }
 
