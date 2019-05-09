@@ -1,9 +1,8 @@
 window.config = {
-  // default: '/'
   routerBasename: '/',
-  // default: ''
   relativeWebWorkerScriptsPath: '',
   servers: {
+    // This is an array, but we'll only use the first entry for now
     dicomWeb: [
       {
         name: 'Orthanc',
@@ -17,20 +16,19 @@ window.config = {
         // https://github.com/OHIF/ohif-core/blob/59e1e04b92be24aee5d4402445cb3dcedb746995/src/studies/retrieveStudyMetadata.js#L54
         // TODO: Remove tag after https://github.com/OHIF/ohif-core/pull/19 is merged and we bump version
         requestOptions: {
-          //   auth: 'orthanc:orthanc', // undefined to use JWT + Bearer auth
+          // undefined to use JWT + Bearer auth
+          // auth: 'orthanc:orthanc',
           requestFromBrowser: true,
-          //   logRequests: true,
-          //   logResponses: false,
-          //   logTiming: true,
         },
       },
     ],
   },
+  // This is an array, but we'll only use the first entry for now
   oidc: [
     {
       // ~ REQUIRED
       // Authorization Server URL
-      authority: 'http://127.0.0.1/auth/realms/master',
+      authority: 'http://127.0.0.1/auth/realms/ohif',
       client_id: 'ohif-viewer',
       redirect_uri: 'http://127.0.0.1/callback', // `OHIFStandaloneViewer.js`
       // "Authorization Code Flow"
