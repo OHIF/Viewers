@@ -1,5 +1,10 @@
 ##### Looking for a Deploy Preview? - <a onclick="function redirect() { window.location.href='/demo/'; } redirect();">Deploy Preview for Viewer</a>
 
+> ATTENTION! You are looking at the docs for the `React` version of the OHIF
+> Viewer. If you're looking for the `Meteor` version's documentation (now
+> deprecated), select it's version from the dropdown box in the top left corner
+> of this page.
+
 # Introduction
 
 The [Open Health Imaging Foundation][ohif-org] (OHIF) Viewer is an open source,
