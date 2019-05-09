@@ -139,45 +139,20 @@ Viewer's configuration, you can run:
 - `docker-compose build` OR
 - `docker-compose up --build`
 
-- [Env vars in Nginx](https://blog.doismellburning.co.uk/environment-variables-in-nginx-config/)
+#### Other
 
-### Authentication Flow
+All other files are found in: `/docker/OpenResty-Orthanc-Keycloak/`
 
-- [Keycloak JavaScript Adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter)
-  - Not used, as to not lock vendor
-- [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki)
-- [Diagrams of OpenID Connect Flows](https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660)
-- [KeyCloak: OpenID Connect Flows](https://www.keycloak.org/docs/latest/securing_apps/index.html#authorization-code)
-  - [Good description on SSO Protocols](https://www.keycloak.org/docs/2.5/server_admin/topics/sso-protocols/oidc.html)
-- [Lua Resty Openidc Docs](https://github.com/zmartzone/lua-resty-openidc)
+| Service           | Configuration                                    | Docs                                          |
+| ----------------- | ------------------------------------------------ | --------------------------------------------- |
+| OHIF Viewer       | [dockerfile][dockerfile] / [config.js][config]   | You're reading them now!                      |
+| OpenResty (Nginx) | [`/nginx.conf`][config-nginx]                    | [lua-resty-openidc][lua-resty-openidc-docs] / |
+| Orthanc           | [`/orthanc.json`][config-orthanc]                | [Here][orthanc-docs]                          |
+| Keycloak          | [`/ohif-keycloak-realm.json`][config-keycloak]\* |                                               |
 
-### Create a new "Client" in Keycloak
+- \* These are the seed values for Keycloak. They can be manually updated at
+  `http://127.0.0.1/auth/admin`
 
-- What is a realm?
-- What is a client?
-- OAuth 2.0 and implict flow; why?
-- Can we set all of this up via config instead of manual?
-
-- Navigate to `http://127.0.0.1/auth/admin/` in your browser. You should see:
-
-<!-- Login Screen -->
-
-- Sign in with `admin`/`password`
-- Configure: Clients --> Create Client
-  - ClientID: `pacs`
-  - Client Protocol: `openid-connect`
-  - Click "save"
-
-### Rebuild Client
-
-- Set in `config/nginx.conf`?
-  - Env variable???
-  - `2dc6244a-1cba-4dbd-b3d6-f7409c2f68b3`
-- stop, `docker-compose up`
-
-## How it works
-
-_reverse proxy_
 #### Keycloak Themeing
 
 The `Login` screen for the `ohif-viewer` client is using a Custom Keycloak
@@ -205,7 +180,7 @@ for production, they are not easy to deploy "as is". You can either:
 - Find and follow your preferred provider's guide on setting up
   [swarms and stacks](https://docs.docker.com/get-started/)
 
-### Add SSL
+### Adding SSL
 
 Adding SSL registration and renewal for your domain with Let's Encrypt that
 terminates at Nginx is an incredibly important step toward securing your data.
@@ -271,8 +246,43 @@ The inspiration for our setup was driven largely by these articles:
 For more documentation on the software we've chosen to use, you may find the
 following resources helpful:
 
-- [Clientside library we use to manage OpenID-Connect `implicit` flow](https://github.com/maxmantz/redux-oidc)
 - [Orthanc for Docker](http://book.orthanc-server.com/users/docker.html)
 - [OpenResty Guide](http://www.staticshin.com/programming/definitely-an-open-resty-guide/)
 - [Lua Ngx API](https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/)
 - [Auth0: Picking a Grant Type](https://auth0.com/docs/api-auth/which-oauth-flow-to-use)
+
+We chose to use a generic OpenID Connect library on the client, but it's worth
+noting that Keycloak comes packaged with its own:
+
+- [redux-oidc](https://github.com/maxmantz/redux-oidc)
+  - Which wraps
+    [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki)
+- [Keycloak JavaScript Adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter)
+
+If you're not already drowning in links, here are some good security resources
+for OAuth:
+
+- [Diagrams of OpenID Connect Flows](https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660)
+- [KeyCloak: OpenID Connect Flows](https://www.keycloak.org/docs/latest/securing_apps/index.html#authorization-code)
+  - [Good description on SSO Protocols](https://www.keycloak.org/docs/2.5/server_admin/topics/sso-protocols/oidc.html)
+
+For a different take on this setup, check out the repository one of our
+community members put together:
+
+- [mjstealey/ohif-orthanc-dimse-docker](https://github.com/mjstealey/ohif-orthanc-dimse-docker)
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+<!-- DOCS -->
+[orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
+[lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
+<!-- SRC -->
+[config]: #
+[dockerfile]: #
+[config-nginx]: #
+[config-orthanc]: #
+[config-keycloak]: #
+<!-- prettier-ignore-end -->
