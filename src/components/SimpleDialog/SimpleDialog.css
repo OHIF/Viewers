@@ -1,0 +1,133 @@
+.simpleDialog {
+  position: fixed;
+  border: 0;
+  border-radius: 6px;
+  background-color: #151a1f;
+}
+.simpleDialog .header {
+  border-bottom-width: 3px;
+  border-bottom-style: solid;
+  border-bottom-color: #000;
+  padding: 19px 22px 17px;
+  position: relative;
+}
+
+.simpleDialog .header .title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+  padding-right: 40px;
+  color: #91b9cd;
+  margin: 0;
+}
+
+.simpleDialog .header .closeBtn {
+  height: 20px;
+  opacity: 1;
+  overflow: hidden;
+  padding: 2px;
+  text-align: center;
+  text-shadow: none;
+  width: 20px;
+  color: #91b9cd;
+  cursor: pointer;
+  position: absolute;
+  right: 21px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  transition: color 0.3s ease;
+}
+
+.simpleDialog .header .closeIcon {
+  color: transparent;
+  display: block;
+  font-size: 0;
+  height: 100%;
+  line-height: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.simpleDialog .header .closeIcon:after,
+.simpleDialog .header .closeIcon:before {
+  content: ' ';
+  display: block;
+  height: 2px;
+  transition: background-color 0.3s ease;
+  width: 19px;
+  background-color: #91b9cd;
+}
+
+.simpleDialog .header .closeIcon:before {
+  left: 1px;
+  position: absolute;
+  top: 1px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform-origin: 1px 50%;
+  transform-origin: 1px 50%;
+}
+
+.simpleDialog .header .closeIcon:after {
+  right: 1px;
+  position: absolute;
+  top: 1px;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transform-origin: calc(100% - 1px) 50%;
+  transform-origin: calc(100% - 1px) 50%;
+}
+
+.simpleDialog .content {
+  padding: 16px 22px 25px;
+  position: relative;
+  color: #fff;
+}
+
+.simpleDialog .content .simpleDialogSelect,
+.simpleDialog .content .simpleDialogInput {
+  background-color: #fff;
+  color: #000;
+  border: 0;
+  border-radius: 2px;
+  font-size: 14px;
+  height: 30px;
+  width: 100%;
+  line-height: 16px;
+  padding: 8px 9px 6px;
+  margin-top: 10px;
+  display: block;
+}
+
+.simpleDialog .content .simpleDialogInputLabel {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+  color: #fff;
+}
+
+.simpleDialog .footer {
+  padding: 15px;
+  text-align: right;
+}
+
+.simpleDialog .footer .btn {
+  transition: background-color 0.3s ease;
+  color: #000;
+  border: 0;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 400;
+  height: 37px;
+  line-height: 37px;
+  padding: 0 12px;
+  margin-bottom: 0;
+  margin-left: 5px;
+}
+
+.simpleDialog .footer .btn-confirm {
+  color: #fff;
+  background-color: #337ab7;
+}
