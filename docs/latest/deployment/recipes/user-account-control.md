@@ -230,6 +230,18 @@ configure your Orthanc instance to use PostgresSQL. Instructions on how to do
 that can be found in the
 [`Orthanc Server Book`](http://book.orthanc-server.com/users/docker.html), under
 "PostgreSQL and Orthanc inside Docker"
+
+### Improving This Guide
+
+Here are some improvements this guide would benefit from, and that we would be
+more than happy to accept Pull Requests for:
+
+- SSL Support
+- Complete configuration with `.env` file (or something similar)
+- Keycloak Theme improvements
+- Any security issues
+- One-click deploy to a cloud provider
+
 ## Resources
 
 ### Misc. Helpful Commands
