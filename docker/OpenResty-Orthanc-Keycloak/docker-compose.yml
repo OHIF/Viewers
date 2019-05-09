@@ -51,8 +51,8 @@ services:
     hostname: keycloak
     container_name: keycloak
     volumes:
-      # Theme: https://www.keycloak.org/docs/latest/server_development/index.html#creating-a-theme
-      # - ./volumes/keycloak-themes:/opt/jboss/keycloak/themes
+      # Theme: https://www.keycloak.org/docs/latest/server_development/index.html#_themes
+      - ./volumes/keycloak-themes/ohif:/opt/jboss/keycloak/themes/ohif
       # Previous Realm Config
       - ./config/ohif-keycloak-realm.json:/tmp/ohif-keycloak-realm.json
     environment:
