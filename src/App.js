@@ -64,18 +64,16 @@ function handleServers(servers) {
 
 class App extends Component {
   static propTypes = {
-    routerBasename: PropTypes.string,
-    relativeWebWorkerScriptsPath: PropTypes.string,
-    //
-    servers: PropTypes.object,
+    routerBasename: PropTypes.string.isRequired,
+    relativeWebWorkerScriptsPath: PropTypes.string.isRequired,
+    servers: PropTypes.object.isRequired,
     oidc: PropTypes.array,
     whiteLabelling: PropTypes.object,
   }
 
   static defaultProps = {
-    routerBasename: '/',
-    relativeWebWorkerScriptsPath: '',
     whiteLabelling: {},
+    oidc: [],
   }
 
   constructor(props) {
