@@ -143,12 +143,12 @@ Viewer's configuration, you can run:
 
 All other files are found in: `/docker/OpenResty-Orthanc-Keycloak/`
 
-| Service           | Configuration                                    | Docs                                          |
-| ----------------- | ------------------------------------------------ | --------------------------------------------- |
-| OHIF Viewer       | [dockerfile][dockerfile] / [config.js][config]   | You're reading them now!                      |
-| OpenResty (Nginx) | [`/nginx.conf`][config-nginx]                    | [lua-resty-openidc][lua-resty-openidc-docs] / |
-| Orthanc           | [`/orthanc.json`][config-orthanc]                | [Here][orthanc-docs]                          |
-| Keycloak          | [`/ohif-keycloak-realm.json`][config-keycloak]\* |                                               |
+| Service           | Configuration                                    | Docs                                        |
+| ----------------- | ------------------------------------------------ | ------------------------------------------- |
+| OHIF Viewer       | [dockerfile][dockerfile] / [config.js][config]   | You're reading them now!                    |
+| OpenResty (Nginx) | [`/nginx.conf`][config-nginx]                    | [lua-resty-openidc][lua-resty-openidc-docs] |
+| Orthanc           | [`/orthanc.json`][config-orthanc]                | [Here][orthanc-docs]                        |
+| Keycloak          | [`/ohif-keycloak-realm.json`][config-keycloak]\* |                                             |
 
 - \* These are the seed values for Keycloak. They can be manually updated at
   `http://127.0.0.1/auth/admin`
@@ -254,9 +254,8 @@ following resources helpful:
 We chose to use a generic OpenID Connect library on the client, but it's worth
 noting that Keycloak comes packaged with its own:
 
-- [redux-oidc](https://github.com/maxmantz/redux-oidc)
-  - Which wraps
-    [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki)
+- [redux-oidc](https://github.com/maxmantz/redux-oidc) (Which wraps
+  [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki))
 - [Keycloak JavaScript Adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter)
 
 If you're not already drowning in links, here are some good security resources
