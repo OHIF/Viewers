@@ -89,13 +89,14 @@ class App extends Component {
 
     store.dispatch(buttonsAction)
 
-    //
-    const firstOpenIdClient = this.props.oidc[0]
+    if (this.props.oidc.length) {
+      const firstOpenIdClient = this.props.oidc[0]
 
-    this.userManager = getUserManagerForOpenIdConnectClient(
-      store,
-      firstOpenIdClient
-    )
+      this.userManager = getUserManagerForOpenIdConnectClient(
+        store,
+        firstOpenIdClient
+      )
+    }
     handleServers(this.props.servers)
     initWebWorkers(
       this.props.routerBasename,
