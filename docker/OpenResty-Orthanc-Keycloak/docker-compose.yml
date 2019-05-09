@@ -42,7 +42,7 @@ services:
       # Config
       - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
       # Persist data
-      # - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+      - ./volumes/orthanc-db/:/var/lib/orthanc/db/
     restart: unless-stopped
 
   # LINK: https://hub.docker.com/r/jboss/keycloak
