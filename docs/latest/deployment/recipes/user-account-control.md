@@ -15,9 +15,9 @@ sensitive data.
 ## Overview
 
 This guide builds on top of our
-[Nginx + Orthanc guide](/deployment/recipes/nginx--image-archive.md), wherein we
-used a [`reverse proxy`](https://en.wikipedia.org/wiki/Reverse_proxy) to
-retrieve resources from our image archive (Orthanc).
+[Nginx + Image Archive guide](/deployment/recipes/nginx--image-archive.md),
+wherein we used a [`reverse proxy`](https://en.wikipedia.org/wiki/Reverse_proxy)
+to retrieve resources from our image archive (Orthanc).
 
 To add support for "User Account Control" we introduce
 [Keycloak](https://www.keycloak.org/about.html). Keycloak is an open source
@@ -30,14 +30,22 @@ applications and services with little to no code. We improve upon our
 > resources on behalf of a client if the client has been authenticated. If a
 > client is not authenticated they can be redirected to a login page.
 
-This setup allows us to...
+This setup allows us to create a setup similar to the one pictured below:
 
-> https://www.nginx.com/blog/authenticating-users-existing-applications-openid-connect-nginx-plus/
+{% include "./../_user-account-control-flow-diagram.md" %}
 
-_Keycloak validates user identity using OAuth 2.0 and OpenID Connect for
-Google-based SSO_
+- All web requests are routed through `nginx` on our `OpenResty` image
+- `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints
+  - Requires valid `Authorization: Bearer <token>` header
+- `/pacs-admin` is a reverse proxy for `orthanc`'s Web Admin
+- `/auth` is a reverse proxy for `keycloak`
+- All static resources for OHIF Viewer are unprotected and accessible. We have
+  application logic that will redirect unauthenticated users to the appropriate
+  `keycloak` login screen.
 
-## Requirements
+## Getting Started
+
+### Requirements
 
 - Docker
   - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
@@ -46,12 +54,26 @@ Google-based SSO_
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
 
-## Getting Started
+### Spinning Things Up
 
 1. Navigate to `<project-root>/docker/OpenResty-Orthanc-Keycloak` in your shell
 2. Run `docker volume create --name=keycloak_postgres_data`
 3. Run `docker-compose build`
 4. Run `docker-compose up`
+
+### Configuration
+
+- [Env vars in Nginx](https://blog.doismellburning.co.uk/environment-variables-in-nginx-config/)
+
+### Authentication Flow
+
+- [Keycloak JavaScript Adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter)
+  - Not used, as to not lock vendor
+- [oidc-client-js](https://github.com/IdentityModel/oidc-client-js/wiki)
+- [Diagrams of OpenID Connect Flows](https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660)
+- [KeyCloak: OpenID Connect Flows](https://www.keycloak.org/docs/latest/securing_apps/index.html#authorization-code)
+  - [Good description on SSO Protocols](https://www.keycloak.org/docs/2.5/server_admin/topics/sso-protocols/oidc.html)
+- [Lua Resty Openidc Docs](https://github.com/zmartzone/lua-resty-openidc)
 
 ### Create a new "Client" in Keycloak
 
@@ -98,8 +120,6 @@ in command prompt or terminal_
   - Env variable???
   - `2dc6244a-1cba-4dbd-b3d6-f7409c2f68b3`
 - stop, `docker-compose up`
-
-### Configuration
 
 ## How it works
 
