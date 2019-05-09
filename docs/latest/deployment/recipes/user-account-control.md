@@ -178,21 +178,18 @@ Viewer's configuration, you can run:
 ## How it works
 
 _reverse proxy_
+#### Keycloak Themeing
 
-A reverse proxy is a type of proxy server that retrieves resources on behalf of
-a client from one or more servers. The resources from these servers are returned
-to the client as if they originate from the Web server itself.
+The `Login` screen for the `ohif-viewer` client is using a Custom Keycloak
+theme. You can find the source files for it in
+`/docker/OpenResty-Orthanc-Keycloak/volumes/keycloak-themes/`. You can see how
+we add it to Keycloak in the `docker-compose` file, and you can read up on how
+to leverage custom themes in
+[Keycloak's own docs](https://www.keycloak.org/docs/latest/server_development/index.html#_themes).
 
-[OpenResty](https://openresty.org/en/)
-
-> OpenResty® is a full-fledged web platform that integrates the standard Nginx
-> core, LuaJIT, many carefully written Lua libraries, lots of high quality
-> 3rd-party Nginx modules, and most of their external dependencies. It is
-> designed to help developers easily build scalable web applications, web
-> services, and dynamic web gateways.
-
-[Lua Nginx Module](https://github.com/openresty/lua-nginx-module)
-[access_by_lua_block](https://github.com/openresty/lua-nginx-module#access_by_lua_block)
+| Default Theme                                                          | OHIF Theme                                                       |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| ![Keycloak Default Theme](../../assets/img/keycloak-default-theme.png) | ![Keycloak OHIF Theme](../../assets/img/keycloak-ohif-theme.png) |
 
 ## Next Steps
 
