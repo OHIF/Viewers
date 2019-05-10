@@ -57,3 +57,41 @@ open to pull requests and discussion issues.
   --viewport-border-thickness: 1px;
 }
 ```
+
+## White Labeling
+
+> A white-label product is a product or service produced by one company (the
+> producer) that other companies (the marketers) rebrand to make it appear as if
+> they had made it - [Wikipedia: White-Label Product][wikipedia]
+
+Current white-labeling options are limited. We expose the ability to replace the
+"Logo" section of the application with a custom "Logo" component. You can do
+this by adding a `whiteLabelling` key to your
+[configuration file](./configuration.md).
+
+```js
+function RadicalImagingLogo() {
+  return React.createElement(
+    'a',
+    {
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      className: 'header-brand',
+      href: 'http://radicalimaging.com',
+    },
+    React.createElement('h5', {}, 'RADICAL IMAGING')
+  )
+}
+
+props.whiteLabelling = {
+  logoComponent: RadicalImagingLogo(),
+}
+```
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+[wikipedia]: https://en.wikipedia.org/wiki/White-label_product
+<!-- prettier-ignore-end -->

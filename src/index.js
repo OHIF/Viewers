@@ -130,27 +130,3 @@ Plugins
       "displaySetCount": 1
     }
  */
-
-/*
-
-White labelling example
-
-// Note that you can't write JSX here, so you can use the online JSX compiler:
-// https://babeljs.io/repl/#?babili=false&browsers=&build=&builtIns=false&spec=false&loose=false&code_lz=GYVwdgxgLglg9mABACwKYBt1wBQEpEDeAUIogE6pQhlIA8AholPWQOaUC8ARAPoBG6emADWXchm5g4cAA6owqMoikVgiimTERBAZx0A5egFtU3NPQAmigLR8yQi2OSqzUKDIBcAei_2LMCHp0GCN6VhgwVgA6CDgjLgA-ElIU1LS02hDWRB0yCA4AcmQ3Tx8_AKCQsIjo2KMvAHcZa1iwKHkoLxAZLEsdLwAmAAYARgB2LxGRrwgyWTkLFrmZBetwMGNURYGomUiCxC8k9JOU2i96BIBuIgBfIiA&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=true&presets=react&prettier=false&targets=&version=6.26.0&envVersion=
-*/
-/*function RadicalImagingLogo() {
-  return React.createElement(
-    'a',
-    {
-      target: '_blank',
-      rel: 'noopener noreferrer',
-      className: 'header-brand',
-      href: 'http://radicalimaging.com'
-    },
-    React.createElement('h5', {}, 'RADICAL IMAGING')
-  );
-}
-
-props.whiteLabelling = {
-  logoComponent: RadicalImagingLogo()
-};*/
