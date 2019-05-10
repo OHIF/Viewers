@@ -85,18 +85,6 @@ _Advanced_
 - [GCP + Cloudflare](/deployment/recipes/static-assets.md#gcp--cloudflare)
 - [Azure](/deployment/recipes/static-assets.md#azure)
 
-...
-
-#### Docker
-
-- Why Docker?
-  - Ship your environment
-  - "It works on my machine"
-
-_Ship Archive w/ Client:_ todo
-
-...
-
 ## Data
 
 The OHIF Viewer is able to connect to any data source that implements the [DICOM
@@ -107,27 +95,101 @@ support it yet, but it is gaining wider adoption.
 
 ### Configure Connection
 
+If you have an existing archive and intend to host the OHIF Viewer at the same
+domain name as your archive, then connecting the two is as simple as following
+the steps layed out in our
+[Configuration Essentials Guide](./../essentials/configuration.md).
+
+#### What if I don't have an imaging archive?
+
+We provide some guidance on configuring a local image archive in our
+[Data Source Essentials](./../essentials/data-source.md) guide. Hosting an
+archive remotely is a little trickier. You can check out some of our
+[advanced recipes](#recipes) for modeled setups that may work for you.
+
+#### What if I intend to host the OHIF Viewer at a different domain?
+
+There are two important steps to making sure this setup works:
+
+1. Your Image Archive needs to be exposed, in some way, to the open web. This
+   can be directly, or through a `reverse proxy`, but the Viewer needs _some
+   way_ to request it's data.
+2. \* Your Image Archive needs to have appropriate CORS (Cross-Origin Resource
+   Sharing) Headers
+
+> \* Cross-Origin Resource Sharing (CORS) is a mechanism that uses additional
+> HTTP headers to tell a browser to let a web application running at one origin
+> (domain) have permission to access selected resources from a server at a
+> different origin. - [MDN Web Docs: Web - Http - CORS][cors]
+
+Most image archives do not provide either of these features "out of the box".
+It's common to use IIS, Nginx, or Apache to route incoming requests and append
+appropriate headers. You can find an example of this setup in our
+[Nginx + Image Archive Deployment Recipe](deployment/recipes/nginx--image-archive.md).
+
+#### What if my archive doesn't support DicomWeb?
+
+> This is possible to do with the OHIF Viewer, but not as straightforward. Look
+> out for documentation on this subject in the near future.
+
 ...
 
-### What if I don't have an imaging archive?
+### Securing Your Data
 
-...
+> Feeling lost? Securing your data is important, and it can be hard to tell if
+> you've gotten it right. Don't hesitate to work with professional auditors, or
+> [enlist help from experts](./../help.md).
 
-#### Making sure your archive is accessible
+The OHIF Viewer can be configured to work with authorization servers that
+support one or more of the OpenID-Connect authorization flows. The Viewer finds
+it's OpenID-Connect settings on the `oidc` configuration key. You can set these
+values following the instructions laid out in the
+[Configuration Essentials Guide](./../essentials/configuration.md).
 
-- CORS
-- Proxy (dangers)
-- Note: PACS not meant to be directly accesible from Web
+_Example OpenID-Connect Settings:_
 
-#### Securing your data
+```js
+window.config = {
+  ...
+  oidc: [
+    {
+      // ~ REQUIRED
+      // Authorization Server URL
+      authority: 'http://127.0.0.1/auth/realms/ohif',
+      client_id: 'ohif-viewer',
+      redirect_uri: 'http://127.0.0.1/callback', // `OHIFStandaloneViewer.js`
+      response_type: 'code', // "Authorization Code Flow"
+      scope: 'openid', // email profile openid
+      // ~ OPTIONAL
+      post_logout_redirect_uri: '/logout-redirect.html',
+    },
+  ],
+}
+```
 
-- Reach out to experts
-- Recipes
+You can find an example of this setup in our
+[User Account Control Deployment Recipe](deployment/recipes/user-account-control.md).
 
-### What if my archive doesn't support DICOM Web?
+#### Choosing a Flow for the Viewer
 
-- Mapping layer
-- GraphQL?
+In general, we recommend using the "Authorization Code Flow" ( [see
+`response_type=code` here][code-flows]); however, the "Implicit Flow" ( [see
+`response_type=token` here][code-flows]) can work if additonal precautions are
+taken. If the flow you've chosen produces a JWT Token, it's validity can be used
+to secure access to your Image Archive as well.
+
+### Recipes
+
+We've included a few recipes for common deployment scenarios. There are many,
+many possible configurations, so please don't feel limited to these setups.
+
+- Script Include
+  - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
+- Stand-Alone
+  - [Build for Production](deployment/recipes/build-for-production.md)
+  - [Static](deployment/recipes/static-assets.md)
+  - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
+  - [User Account Control](deployment/recipes/user-account-control.md)
 
 <!--
   Links
@@ -142,5 +204,6 @@ support it yet, but it is gaining wider adoption.
 [dicom-web-standard]: https://www.dicomstandard.org/dicomweb/
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [host-static-assets]: https://www.netlify.com/blog/2016/05/18/9-reasons-your-site-should-be-static/
-
+[cors]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+[code-flows]: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
 <!-- prettier-ignore-end -->

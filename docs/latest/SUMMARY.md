@@ -2,12 +2,12 @@
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
+  - [Installation](essentials/installation.md)
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
   - [Themeing](essentials/themeing.md)
   - [Troubleshooting](essentials/troubleshooting.md)
-- [Architecture](essentials/architecture.md)
-- [Deployment](essentials/deployment.md)
+- [Scope of Project](essentials/scope-of-project.md)
 
 ---
 
@@ -19,10 +19,6 @@
   - [Extensions](advanced/architecture.md#misc-extensions)
   - [Diagram](advanced/architecture.md#diagram)
   - [Common Questions](advanced/architecture.md#common-questions)
-- [Data](advanced/data.md)
-  - [Hierarchy](advanced/data.md#hierarchy)
-  - [Display Sets](advanced/data.md#display-sets)
-  - [Measurements & Annotations](advanced/data.md#measurements-and-annotations)
 - [Extensions](advanced/extensions.md)
   - [Overview](advanced/extensions.md#overview)
   - [Modules](advanced/extensions.md#modules)
@@ -35,7 +31,7 @@
 - [Deployment](deployment/index.md)
   - [Embedded](deployment/index.md#embedded-viewer)
   - [Stand-alone](deployment/index.md#stand-alone-viewer)
-  - [Data]()
+  - [Data](deployment/index.md#data)
 - Recipes
   - Script Include
     - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
