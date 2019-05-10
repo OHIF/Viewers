@@ -2,6 +2,7 @@
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
+  - [Installation](essentials/installation.md)
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
   - [Themeing](essentials/themeing.md)
