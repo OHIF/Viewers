@@ -95,7 +95,10 @@ support it yet, but it is gaining wider adoption.
 
 ### Configure Connection
 
-...
+If you have an existing archive and intend to host the OHIF Viewer at the same
+domain name as your archive, then connecting the two is as simple as following
+the steps layed out in our
+[Configuration Essentials Guide](./../essentials/configuration.md).
 
 ### What if I don't have an imaging archive?
 
