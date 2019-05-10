@@ -1,5 +1,9 @@
 # Troubleshooting
 
+Common GitHub issues that are not easily remedied with cleaner code or
+documentation will be recorded here. Please feel free to make PRs to update this
+page.
+
 ## Common Problems
 
 | Problem                                      | Most Common Reasons                                                                                                                                         |
