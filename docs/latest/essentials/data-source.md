@@ -92,7 +92,31 @@ cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-script
 
 The `REACT_APP_CONFIG` value tells our app which file to load on to
 `window.config`. By default, our app uses the file at
-`<project-root>/public/config/default.js`.
+`<project-root>/public/config/default.js`. Here is what that configuration looks
+like:
+
+```js
+window.config = {
+  routerBasename: '/',
+  relativeWebWorkerScriptsPath: '',
+  servers: {
+    dicomWeb: [
+      {
+        name: 'Orthanc',
+        wadoUriRoot: 'http://localhost:8899/wado',
+        qidoRoot: 'http://localhost:8899/dicom-web',
+        wadoRoot: 'http://localhost:8899/dicom-web',
+        qidoSupportsIncludeField: false,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+      },
+    ],
+  },
+}
+```
+
+To learn more about how you can configure the OHIF Viewer, check out our
+[Configuration Guide](./configuration.md).
 
 ## Open Source DICOM Image Archives
 
