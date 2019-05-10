@@ -124,7 +124,8 @@ There are two important steps to making sure this setup works:
 
 Most image archives do not provide either of these features "out of the box".
 It's common to use IIS, Nginx, or Apache to route incoming requests and append
-appropriate headers. You
+appropriate headers. You can find an example of this setup in our
+[Nginx + Image Archive Deployment Recipe](deployment/recipes/nginx--image-archive.md).
 
 #### What if my archive doesn't support DicomWeb?
 
@@ -139,8 +140,43 @@ appropriate headers. You
 > you've gotten it right. Don't hesitate to work with professional auditors, or
 > [enlist help from experts](./../help.md).
 
-- Oauth OpenID-Connect
-- Experts
+The OHIF Viewer can be configured to work with authorization servers that
+support one or more of the OpenID-Connect authorization flows. The Viewer finds
+it's OpenID-Connect settings on the `oidc` configuration key. You can set these
+values following the instructions laid out in the
+[Configuration Essentials Guide](./../essentials/configuration.md).
+
+_Example OpenID-Connect Settings:_
+
+```js
+window.config = {
+  ...
+  oidc: [
+    {
+      // ~ REQUIRED
+      // Authorization Server URL
+      authority: 'http://127.0.0.1/auth/realms/ohif',
+      client_id: 'ohif-viewer',
+      redirect_uri: 'http://127.0.0.1/callback', // `OHIFStandaloneViewer.js`
+      response_type: 'code', // "Authorization Code Flow"
+      scope: 'openid', // email profile openid
+      // ~ OPTIONAL
+      post_logout_redirect_uri: '/logout-redirect.html',
+    },
+  ],
+}
+```
+
+You can find an example of this setup in our
+[User Account Control Deployment Recipe](deployment/recipes/user-account-control.md).
+
+#### Choosing a Flow for the Viewer
+
+In general, we recommend using the "Authorization Code Flow" ( [see
+`response_type=code` here][code-flows]); however, the "Implicit Flow" ( [see
+`response_type=token` here][code-flows]) can work if additonal precautions are
+taken. If the flow you've chosen produces a JWT Token, it's validity can be used
+to secure access to your Image Archive as well.
 
 ### Recipes
 
@@ -169,4 +205,5 @@ many possible configurations, so please don't feel limited to these setups.
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [host-static-assets]: https://www.netlify.com/blog/2016/05/18/9-reasons-your-site-should-be-static/
 [cors]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+[code-flows]: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
 <!-- prettier-ignore-end -->
