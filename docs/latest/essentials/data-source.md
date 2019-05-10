@@ -1,66 +1,48 @@
 # Data Source
 
-After following the steps outlined in [Getting Started](./getting-started.md)
+After following the steps outlined in [Getting Started](./getting-started.md),
+you'll notice that the OHIF Viewer has data for several studies and their
+images. You didn't add this data, so where is it coming from?
 
-####
-
-Note: This will connect to our public DICOMWeb server so you can verify your
-installation. Follow the next section to connect to your own local or remote
-DICOMWeb server.
+By default, the viewer is configured to connect to a remote server hosted by the
+nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
+the time may come when you want to develop using your own data either locally or
+remotely.
 
 ## Set up a local DICOM server
 
+> ATTENTION! Already have a remote or local server? Skip to the
+> [configuration section](#) below.
+
+While the OHIF Viewer can work with any data source, the easiest to configure
+are the ones that follow the [DICOMWeb][dicom-web] spec.
+
 1. Choose and install an Image Archive
-2. Upload some data into your archive (e.g. with DCMTK's
-   [storescu](http://support.dcmtk.org/docs/storescu.html) or your archive's web
-   interface)
+2. Upload data to your archive (e.g. with DCMTK's [storescu][storescu] or your
+   archive's web interface)
 3. Keep the server running
 
-#### Open Source DICOM Image Archive Options
+For our purposes, we will be using `Orthanc`, but you can see a list of
+[other Open Source options](#open-source-dicom-image-archives) below.
 
+### Requirements
 
+...
 
-#### Orthanc with Docker
+### Running Orthanc
 
-Depending on whether or not you want uploaded studies to persist in Orthanc
-after Docker has been closed, there are two different methods for starting the
-Docker image:
-
-##### Temporary data storage
-
-This command will start an instance of the jodogne/orthanc-plugins Docker image.
-_All data will be removed when the instance is stopped!_
-
-```
-docker run --rm -p 4242:4242 -p 8042:8042 jodogne/orthanc-plugins
+```bash
+# Runs orthanc so long as window remains open
+yarn run orthanc:up
 ```
 
-##### Persistent data storage
+After running this command, you can access
+[Orthanc's web interface](http://127.0.0.1:8042) at `http://127.0.0.1:8042` to
+upload DICOM files.
 
-In order to allow your data to persist after the instance is stopped, you first
-need to create an image and attached data volume with Docker. The steps are as
-follows:
-
-1. Create a persistent data volume for Orthanc to use
-
-   ```
-   docker create --name sampledata -v /sampledata jodogne/orthanc-plugins
-   ```
-
-   **Note: On Windows, you need to use an absolute path for the data volume,
-   like so:**
-
-   ```
-   docker create --name sampledata -v '//C/Users/erik/sampledata' jodogne/orthanc-plugins
-   ```
-
-2. Run Orthanc from Docker with the data volume attached
-
-   ```
-   docker run --volumes-from sampledata -p 4242:4242 -p 8042:8042 jodogne/orthanc-plugins
-   ```
-
-3. Upload your data and it will be persisted
+You can see the `docker-compose.yml` file this command runs at
+`<project-root>/docker/Orthanc/`, and more on Orthanc for Docker in [Orthanc's
+documentation][orthanc-docker].
 
 ### Setting up OHIF Viewer with Orthanc as an example
 
