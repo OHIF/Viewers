@@ -1,7 +1,5 @@
 window.config = {
-  // default: '/'
   routerBasename: '/',
-  // default: ''
   relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
