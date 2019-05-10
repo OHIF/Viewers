@@ -133,21 +133,27 @@ appropriate headers. You
 
 ...
 
-#### Making sure your archive is accessible
+### Securing Your Data
 
-- CORS
-- Proxy (dangers)
-- Note: PACS not meant to be directly accesible from Web
+> Feeling lost? Securing your data is important, and it can be hard to tell if
+> you've gotten it right. Don't hesitate to work with professional auditors, or
+> [enlist help from experts](./../help.md).
 
-#### Securing your data
+- Oauth OpenID-Connect
+- Experts
 
-- Reach out to experts
-- Recipes
+### Recipes
 
-### What if my archive doesn't support DICOM Web?
+We've included a few recipes for common deployment scenarios. There are many,
+many possible configurations, so please don't feel limited to these setups.
 
-- Mapping layer
-- GraphQL?
+- Script Include
+  - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
+- Stand-Alone
+  - [Build for Production](deployment/recipes/build-for-production.md)
+  - [Static](deployment/recipes/static-assets.md)
+  - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
+  - [User Account Control](deployment/recipes/user-account-control.md)
 
 <!--
   Links
@@ -162,5 +168,5 @@ appropriate headers. You
 [dicom-web-standard]: https://www.dicomstandard.org/dicomweb/
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [host-static-assets]: https://www.netlify.com/blog/2016/05/18/9-reasons-your-site-should-be-static/
-
+[cors]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 <!-- prettier-ignore-end -->
