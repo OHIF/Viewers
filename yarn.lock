@@ -9661,7 +9661,7 @@ ohif-vtk-extension@^0.0.1:
     classnames "^2.2.6"
     react-vtkjs-viewport "^0.0.7"
 
-oidc-client@^1.6.1:
+oidc-client@1.7.x:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/oidc-client/-/oidc-client-1.7.1.tgz#8b9d8d50fd7f878968b1cda17712c1747eef9a54"
   integrity sha512-qsPBQVa/BY6AmdY89erANJbfDXrX1dqu9lKgvYZzkVDzIj5mmw6wGjFeQuV2HDm4TiJA0VT5HSTWOWnXZUYu0g==
@@ -11988,7 +11988,7 @@ redeyed@~2.1.0:
   dependencies:
     esprima "~4.0.0"
 
-redux-oidc@^3.1.0:
+redux-oidc@3.1.x:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/redux-oidc/-/redux-oidc-3.1.2.tgz#31a771b0e05a65879626262e1e63ba70a0936ffd"
   integrity sha512-1kwm3SxzgUg4h1oFpPOOzofKyWJvwhVJ3BHnm/d+h29NjZ4BF3wfJbpdubnPUF0lMrl6KNOJTz8rVlkacj+f4g==

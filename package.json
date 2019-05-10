@@ -25,8 +25,11 @@
     "test": "jest",
     "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "staticDeploy": "./generateStaticSite.sh",
+    "start": "yarn run dev",
     "predeploy": "cd example && npm install && yarn run build:package",
     "preBuild": "yarn run version && yarn run copy:webworkers",
+    "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
+    "dev:orthanc": "yarn run preBuild && cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
     "copy:webworkers": "cpx 'node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public"
   },
@@ -79,7 +82,7 @@
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.6",
     "ohif-vtk-extension": "^0.0.1",
-    "oidc-client": "^1.6.1",
+    "oidc-client": "1.7.x",
     "prop-types": "^15.6.2",
     "react-bootstrap-modal": "^4.2.0",
     "react-dnd": "^7.0.2",
@@ -91,7 +94,7 @@
     "react-viewerbase": "0.3.2",
     "react-vtkjs-viewport": "^0.0.7",
     "redux": "^4.0.1",
-    "redux-oidc": "^3.1.0"
+    "redux-oidc": "3.1.x"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

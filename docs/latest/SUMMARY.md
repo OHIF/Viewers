@@ -2,6 +2,7 @@
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
+  - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
   - [Themeing](essentials/themeing.md)
   - [Troubleshooting](essentials/troubleshooting.md)
@@ -41,11 +42,8 @@
   - Stand-Alone
     - [Build for Production](deployment/recipes/build-for-production.md)
     - [Static](deployment/recipes/static-assets.md)
-    - [Docker]()
-    - [Nginx + Orthanc]()
-    - [Nginx + dcm4chee]()
-    - [Nginx + DICOMCloud]()
-    - [User Access Control]()
+    - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
+    - [User Account Control](deployment/recipes/user-account-control.md)
 
 ---
 
