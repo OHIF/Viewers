@@ -96,6 +96,9 @@ The `REACT_APP_CONFIG` value tells our app which file to load on to
 
 ## Open Source DICOM Image Archives
 
+Our example uses `Orthanc`, but there are a lot of options available to you.
+Here are some of the more popular ones:
+
 | Archive                                       | Installation                       |
 | --------------------------------------------- | ---------------------------------- |
 | [DCM4CHEE Archive 5.x][dcm4chee]              | [W/ Docker][dcm4chee-docker]       |
