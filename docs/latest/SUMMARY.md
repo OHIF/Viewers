@@ -35,7 +35,7 @@
 - [Deployment](deployment/index.md)
   - [Embedded](deployment/index.md#embedded-viewer)
   - [Stand-alone](deployment/index.md#stand-alone-viewer)
-  - [Data]()
+  - [Data](deployment/index.md#data)
 - Recipes
   - Script Include
     - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
