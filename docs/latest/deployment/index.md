@@ -107,6 +107,24 @@ We provide some guidance on configuring a local image archive in our
 archive remotely is a little trickier. You can check out some of our
 [advanced recipes](#recipes) for modeled setups that may work for you.
 
+#### What if I intend to host the OHIF Viewer at a different domain?
+
+There are two important steps to making sure this setup works:
+
+1. Your Image Archive needs to be exposed, in some way, to the open web. This
+   can be directly, or through a `reverse proxy`, but the Viewer needs _some
+   way_ to request it's data.
+2. \* Your Image Archive needs to have appropriate CORS (Cross-Origin Resource
+   Sharing) Headers
+
+> \* Cross-Origin Resource Sharing (CORS) is a mechanism that uses additional
+> HTTP headers to tell a browser to let a web application running at one origin
+> (domain) have permission to access selected resources from a server at a
+> different origin. - [MDN Web Docs: Web - Http - CORS][cors]
+
+Most image archives do not provide either of these features "out of the box".
+It's common to use IIS, Nginx, or Apache to route incoming requests and append
+appropriate headers. You
 ...
 
 #### Making sure your archive is accessible
