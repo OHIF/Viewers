@@ -12,7 +12,7 @@ remotely.
 ## Set up a local DICOM server
 
 > ATTENTION! Already have a remote or local server? Skip to the
-> [configuration section](#) below.
+> [configuration section](#configuration-learn-more) below.
 
 While the OHIF Viewer can work with any data source, the easiest to configure
 are the ones that follow the [DICOMWeb][dicom-web] spec.
@@ -31,63 +31,63 @@ For our purposes, we will be using `Orthanc`, but you can see a list of
 
 ### Running Orthanc
 
+_Start Orthanc:_
+
 ```bash
 # Runs orthanc so long as window remains open
 yarn run orthanc:up
 ```
 
-After running this command, you can access
-[Orthanc's web interface](http://127.0.0.1:8042) at `http://127.0.0.1:8042` to
-upload DICOM files.
+_Upload your first Study:_
+
+1. Navigate to [Orthanc's web interface](http://localhost:8899) at
+   `http://localhost:8899` in a web browser.
+2. In the top right corner, click "Upload"
+3. Click "Select files to upload..." and select one or more DICOM files
+4. Click "Start the upload"
+
+#### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-`<project-root>/docker/Orthanc/`, and more on Orthanc for Docker in [Orthanc's
-documentation][orthanc-docker].
+[`<project-root>/docker/Nginx-Docker/`](#), and more on Orthanc for Docker in
+[Orthanc's documentation][orthanc-docker].
 
-### Setting up OHIF Viewer with Orthanc as an example
+### Connecting to Orthanc
 
-Once you have Orthanc running with docker either with temporary data storage or
-persistent data storage we con move forward with the next steps.
-
-1. Load orthanc with a dataset you might want to use. To upload data use
-   [http://localhost:8042/app/explorer.html](http://localhost:8042/app/explorer.html).
-
-   **orthanc is the username and password for orthanc docker**
-
-2. Go under
-   [http://localhost:8042/app/explorer.html#upload](http://localhost:8042/app/explorer.html#upload)
-   and upload your DICOM files there
-
-3. After you load the data, open a new terminal tab in the `ohif-viewer`
-   directory and install all dependency packages via Yarn
+Now that we have a local Orthanc instance up and running, we need to configure
+our web application to connect to it. Open a new terminal window, navigate to
+this project's root directory, and run:
 
 ```bash
+# If you haven't already, restore dependencies
 yarn install
+
+# Run our dev command, but with the local orthanc config
+yarn run dev:orthanc
 ```
 
-3. Run the application using one of the available configuration files. **the
-   following command assumes you are under the `root` folder**
+#### Configuration: Learn More
 
-```bash
-export REACT_APP_CONFIG=$(cat ./config/local_orthanc.js)
-yarn start
+> For more configuration fun, check out the
+> [Essentials Configuration](./configuration.md) guide.
+
+Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
+is running the `dev:orthanc` script in our project's `package.json`. That script
+is:
+
+```js
+cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start
 ```
 
-This uses the
-[Custom Environment Variables of Create-React-App](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables)
-to pass in your configuration. The example above will not work on Windows.
-Please visit the link to read about how to set environment variables on Windows.
+- `cross-env` sets two environment variables
+  - PORT: 5000
+  - REACT_APP_CONFIG: `config/docker_nginx-orthanc.js`
+- `react-scripts` runs it's `start` script. This is [the de-facto
+  way][cra-start] to run a "Create React App" in development mode.
 
-4. Launch the OHIF Viewer Study List by visiting
-   [http://localhost:3000/](http://localhost:3000/) in a web browser.
-
-   **If everything is working correctly, you should see the Study List from your
-   archive when you visit the Study List.**
-
-5. Double-click on a Study in the Study List to launch it in the Viewer
-
-   **If everything is working correctly, you should see your study load into the
-   Viewer.**
+The `REACT_APP_CONFIG` value tells our app which file to load on to
+`window.config`. By default, our app uses the file at
+`<project-root>/public/config/default.js`.
 
 ## Open Source DICOM Image Archives
 
@@ -109,6 +109,7 @@ _Feel free to make a Pull Request if you want to add to this list._
 [dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [storescu]: http://support.dcmtk.org/docs/storescu.html
+[cra-start]: https://github.com/facebook/create-react-app#npm-start-or-yarn-start
 <!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
