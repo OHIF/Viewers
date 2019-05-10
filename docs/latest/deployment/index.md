@@ -85,18 +85,6 @@ _Advanced_
 - [GCP + Cloudflare](/deployment/recipes/static-assets.md#gcp--cloudflare)
 - [Azure](/deployment/recipes/static-assets.md#azure)
 
-...
-
-#### Docker
-
-- Why Docker?
-  - Ship your environment
-  - "It works on my machine"
-
-_Ship Archive w/ Client:_ todo
-
-...
-
 ## Data
 
 The OHIF Viewer is able to connect to any data source that implements the [DICOM
