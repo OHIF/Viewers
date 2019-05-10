@@ -7,7 +7,7 @@
   - [Configuration](essentials/configuration.md)
   - [Themeing](essentials/themeing.md)
   - [Troubleshooting](essentials/troubleshooting.md)
-- [Architecture](essentials/architecture.md)
+- [Scope of Project](essentials/scope-of-project.md)
 
 ---
 
