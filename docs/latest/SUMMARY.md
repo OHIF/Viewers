@@ -7,7 +7,6 @@
   - [Themeing](essentials/themeing.md)
   - [Troubleshooting](essentials/troubleshooting.md)
 - [Architecture](essentials/architecture.md)
-- [Deployment](essentials/deployment.md)
 
 ---
 
