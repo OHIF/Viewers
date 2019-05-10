@@ -65,8 +65,8 @@ how to configure the project for your own imaging archive below.
 ### Configuration
 
 > This step assumes you have an imaging archive. If you need assistance setting
-> one up, check out the [`Data Source` Guide](./../essentials/data-source.md) or
-> a deployment recipe that contains an open source Image Archive
+> one up, check out the [`Data Source` Guide](./../../essentials/data-source.md)
+> or a deployment recipe that contains an open source Image Archive
 
 #### How it Works
 
