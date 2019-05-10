@@ -65,7 +65,7 @@ _Create Your First User_
 
 - Navigate to: `http://127.0.0.1/auth/admin`
 - Sign in with: `admin`/`password`
-- From the top left dropdown, select the `Ohif` realm (it should say `Master`)
+- From the top left dropdown, select the `Ohif` realm
 - From the left sidebar, under `Manage`, select `Users`
 - Click `Add User`
   - Username: `test`
