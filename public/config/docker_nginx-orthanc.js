@@ -12,10 +12,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         requestOptions: {
-          auth: 'orthanc:orthanc',
-          logRequests: true,
-          logResponses: false,
-          logTiming: true,
+          requestFromBrowser: true,
         },
       },
     ],
