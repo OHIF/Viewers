@@ -125,6 +125,12 @@ There are two important steps to making sure this setup works:
 Most image archives do not provide either of these features "out of the box".
 It's common to use IIS, Nginx, or Apache to route incoming requests and append
 appropriate headers. You
+
+#### What if my archive doesn't support DicomWeb?
+
+> This is possible to do with the OHIF Viewer, but not as straightforward. Look
+> out for documentation on this subject in the near future.
+
 ...
 
 #### Making sure your archive is accessible
