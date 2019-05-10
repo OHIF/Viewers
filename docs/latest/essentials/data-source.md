@@ -18,15 +18,7 @@ DICOMWeb server.
 
 #### Open Source DICOM Image Archive Options
 
-| Archive                                                                     | Installation                                                                                     |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| [DCM4CHEE Archive 5.x](https://github.com/dcm4che/dcm4chee-arc-light)       | [Installation with Docker](https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker) |
-| [Orthanc](https://www.orthanc-server.com/)                                  | [Installation with Docker](http://book.orthanc-server.com/users/docker.html)                     |
-| [DICOMcloud](https://github.com/DICOMcloud/DICOMcloud) (**DICOM Web only**) | [Installation](https://github.com/DICOMcloud/DICOMcloud#running-the-code)                        |
-| [OsiriX](http://www.osirix-viewer.com/) (**Mac OSX only**)                  |
-| [Horos](https://www.horosproject.org/) (**Mac OSX only**)                   |
 
-_Feel free to make a Pull Request if you want to add to this list._
 
 #### Orthanc with Docker
 
@@ -114,3 +106,34 @@ Please visit the link to read about how to set environment variables on Windows.
 
    **If everything is working correctly, you should see your study load into the
    Viewer.**
+
+## Open Source DICOM Image Archives
+
+| Archive                                       | Installation                       |
+| --------------------------------------------- | ---------------------------------- |
+| [DCM4CHEE Archive 5.x][dcm4chee]              | [W/ Docker][dcm4chee-docker]       |
+| [Orthanc][orthanc]                            | [W/ Docker][orthanc-docker]        |
+| [DICOMcloud][dicomcloud] (**DICOM Web only**) | [Installation][dicomcloud-install] |
+| [OsiriX][osirix] (**Mac OSX only**)           | Desktop Client                     |
+| [Horos][horos] (**Mac OSX only**)             | Desktop Client                     |
+
+_Feel free to make a Pull Request if you want to add to this list._
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+[dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
+[dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
+[storescu]: http://support.dcmtk.org/docs/storescu.html
+<!-- Archives -->
+[dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
+[dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
+[orthanc]: https://www.orthanc-server.com/
+[orthanc-docker]: http://book.orthanc-server.com/users/docker.html
+[dicomcloud]: https://github.com/DICOMcloud/DICOMcloud
+[dicomcloud-install]: https://github.com/DICOMcloud/DICOMcloud#running-the-code
+[osirix]: http://www.osirix-viewer.com/
+[horos]: https://www.horosproject.org/
+<!-- prettier-ignore-end -->
