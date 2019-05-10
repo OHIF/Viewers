@@ -27,7 +27,12 @@ For our purposes, we will be using `Orthanc`, but you can see a list of
 
 ### Requirements
 
-...
+- Docker
+  - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
+  - [Docker for Windows](https://docs.docker.com/docker-for-windows/)
+
+_Not sure if you have `docker` installed already? Try running `docker --version`
+in command prompt or terminal_
 
 ### Running Orthanc
 
