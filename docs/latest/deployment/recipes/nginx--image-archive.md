@@ -78,3 +78,37 @@ This setup allows us to create a setup similar to the one pictured below:
 
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
+
+### Setup
+
+_Spin Things Up_
+
+- Navigate to `<project-root>/docker/OpenResty-Orthanc` in your shell
+- Run `docker-compose up`
+
+_Upload Your First Study_
+
+- Navigate to `http://127.0.0.1/pacs-admin`
+- From the top right, select "Upload"
+- Click "Select files to upload..." (DICOM)
+- Click "Start the upload"
+- Navigate back to `http://127.0.0.1/` to view your studies in the Study List
+
+### Troubleshooting
+
+_Exit code 137_
+
+This means Docker ran out of memory. Open Docker Desktop, go to the `advanced`
+tab, and increase the amount of Memory available.
+
+_Cannot create container for service X_
+
+Use this one with caution: `docker system prune`
+
+_X is already running_
+
+Stop running all containers:
+
+- Win: `docker ps -a -q | ForEach { docker stop $_ }`
+- Linux: `docker stop $(docker ps -a -q)`
+
