@@ -40,6 +40,7 @@
     - [Static](deployment/recipes/static-assets.md)
     - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
     - [User Account Control](deployment/recipes/user-account-control.md)
+    - [Google Cloud Healthcare](connecting-to-image-archives/google-cloud-healthcare.md)
 
 ---
 
