@@ -68,3 +68,13 @@ This setup allows us to create a setup similar to the one pictured below:
 - All static resources for OHIF Viewer are served up by `nginx` when a matching
   route for that resource is requested
 
+## Getting Started
+
+### Requirements
+
+- Docker
+  - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
+  - [Docker for Windows](https://docs.docker.com/docker-for-windows/)
+
+_Not sure if you have `docker` installed already? Try running `docker --version`
+in command prompt or terminal_
