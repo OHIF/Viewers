@@ -112,3 +112,39 @@ Stop running all containers:
 - Win: `docker ps -a -q | ForEach { docker stop $_ }`
 - Linux: `docker stop $(docker ps -a -q)`
 
+### Configuration
+
+After verifying that everything runs with default configuration values, you will
+likely want to update:
+
+- The domain: `http://127.0.0.1`
+
+#### OHIF Viewer
+
+The OHIF Viewer's configuration is imported from a static `.js` file and made
+available globally at `window.config`. The configuration we use is set to a
+specific file when we build the viewer, and determined by the env variable:
+`REACT_APP_CONFIG`. You can see where we set its value in the `dockerfile` for
+this solution:
+
+`ENV REACT_APP_CONFIG=config/docker_openresty-orthanc.js`
+
+You can find the configuration we're using here:
+`/public/config/docker_openresty-orthanc.js`
+
+To rebuild the `webapp` image created by our `dockerfile` after updating the
+Viewer's configuration, you can run:
+
+- `docker-compose build` OR
+- `docker-compose up --build`
+
+#### Other
+
+All other files are found in: `/docker/OpenResty-Orthanc/`
+
+| Service           | Configuration                                  | Docs                                        |
+| ----------------- | ---------------------------------------------- | ------------------------------------------- |
+| OHIF Viewer       | [dockerfile][dockerfile] / [config.js][config] | You're reading them now!                    |
+| OpenResty (Nginx) | [`/nginx.conf`][config-nginx]                  | [lua-resty-openidc][lua-resty-openidc-docs] |
+| Orthanc           | [`/orthanc.json`][config-orthanc]              | [Here][orthanc-docs]                        |
+
