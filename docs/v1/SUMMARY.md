@@ -13,6 +13,7 @@
   - Examples
     - [dcm4chee w/ Docker](connecting-to-image-archives/dcm4chee-with-docker.md)
     - [Orthanc w/ Docker](connecting-to-image-archives/orthanc-with-docker.md)
+    - [Google Cloud Healthcare](connecting-to-image-archives/google-cloud-healthcare.md)
     - [Osirix](connecting-to-image-archives/osirix.md)
 - Data Organization
   - [Data Hierarchy](data/data-hierarchy.md)
