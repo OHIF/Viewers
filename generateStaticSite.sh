@@ -30,7 +30,7 @@ mkdir ./latest/_book/history
 # Move each version's files to latest's history folder
 for D in *; do
 	if [ -d "${D}" ]; then
-		if [[ "${D}" == v* ]] ; then
+		if [ "${D}" == v* ] ; then
     		echo "Moving ${D} to the latest version's history folder"
 
 			mkdir "./latest/_book/history/${D}"
