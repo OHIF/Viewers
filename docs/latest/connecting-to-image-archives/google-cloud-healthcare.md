@@ -1,9 +1,10 @@
 # Google Cloud Healthcare
 
 > ATTENTION: The original documentation for this integration lives in the legacy
-> `version 1` Meteor documentation. You can [find it here](). These docs will
-> mirror the Meteor documentation until our `React` implementation has been
-> updated to work with Goolg Cloud Healthcare.
+> `version 1` Meteor documentation. You can
+> [find it here](/history/v1/connecting-to-image-archives/google-cloud-healthcare.html).
+> These docs will mirror the Meteor documentation until our `React`
+> implementation has been updated to work with Goolg Cloud Healthcare.
 
 > The [Google Cloud Healthcare API](https://cloud.google.com/healthcare/) is a
 > powerful option for storing medical imaging data in the cloud.
@@ -22,40 +23,35 @@ static site application.
 
 ## Setup a Google Cloud Healthcare Project
 
-1. Create a Google Cloud account
-1. Create a project in Google Cloud
-1. Enable the [Cloud Healthcare API](https://cloud.google.com/healthcare/) for
-   your project.
-1. (Optional): Create a Dataset and Data Store for storing your DICOM data
-1. Enable the
-   [Cloud Resource Manager API](https://cloud.google.com/resource-manager/) for
-   your project.
+- Create a Google Cloud account
+- Create a project in Google Cloud
+- Enable the [Cloud Healthcare API](https://cloud.google.com/healthcare/) for
+  your project.
+  - (Optional): Create a Dataset and Data Store for storing your DICOM data
+- Enable the
+  [Cloud Resource Manager API](https://cloud.google.com/resource-manager/) for
+  your project.
+  - _Note:_ If you are having trouble finding the APIs, use the search box at
+    the top of the Cloud console.
+- Go to APIs & Services > Credentials to create an OAuth Consent screen and fill
+  in your application details.
+  - Under Scopes for Google APIs, click "manually paste scopes".
+  - Add the following scopes:
+    - `https://www.googleapis.com/auth/cloudplatformprojects.readonly`
+    - `https://www.googleapis.com/auth/cloud-healthcare`
+- Go to APIs & Services > Credentials to create a new set of credentials:
 
-   _Note:_ If you are having trouble finding the APIs, use the search box at the
-   top of the Cloud console.
+  - Choose the "Web Application" type
+  - Set up an
+    [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
+  - Add your domain (e.g. `http://localhost:3000`) to Authorized JavaScript
+    origins.
+  - Add your domain, plus `_oauth/google` (e.g.
+    `http://localhost:3000/_oauth/google`) to Authorized Redirect URIs.
+  - Save your Client ID for later.
 
-1. Go to APIs & Services > Credentials to create an OAuth Consent screen and
-   fill in your application details.
-
-   - Under Scopes for Google APIs, click "manually paste scopes".
-   - Add the following scopes:
-     - https://www.googleapis.com/auth/cloudplatformprojects.readonly
-     - https://www.googleapis.com/auth/cloud-healthcare
-
-1. Go to APIs & Services > Credentials to create a new set of credentials:
-
-- Choose the "Web Application" type
-- Set up an
-  [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
-
-- Add your domain (e.g. `http://localhost:3000`) to Authorized JavaScript
-  origins.
-- Add your domain, plus `_oauth/google` (e.g.
-  `http://localhost:3000/_oauth/google`) to Authorized Redirect URIs.
-- Save your Client ID for later.
-
-1. (Optional): Enable Public Datasets that are being hosted by Google:
-   https://cloud.google.com/healthcare/docs/resources/public-datasets/
+- (Optional): Enable Public Datasets that are being hosted by Google:
+  https://cloud.google.com/healthcare/docs/resources/public-datasets/
 
 ## Run the viewer with your OAuth Client ID
 
