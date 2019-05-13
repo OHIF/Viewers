@@ -148,3 +148,98 @@ All other files are found in: `/docker/OpenResty-Orthanc/`
 | OpenResty (Nginx) | [`/nginx.conf`][config-nginx]                  | [lua-resty-openidc][lua-resty-openidc-docs] |
 | Orthanc           | [`/orthanc.json`][config-orthanc]              | [Here][orthanc-docs]                        |
 
+## Next Steps
+
+### Deploying to Production
+
+While these configuration and docker-compose files model an environment suitable
+for production, they are not easy to deploy "as is". You can either:
+
+- Manually recreate this environment and deploy built application files **OR**
+- Deploy to a cloud kubernetes provider like
+  [Digital Ocean](https://www.digitalocean.com/products/kubernetes/) **OR**
+  - [See a full list of cloud providers here](https://landscape.cncf.io/category=cloud&format=card-mode&grouping=category)
+- Find and follow your preferred provider's guide on setting up
+  [swarms and stacks](https://docs.docker.com/get-started/)
+
+### Adding SSL
+
+Adding SSL registration and renewal for your domain with Let's Encrypt that
+terminates at Nginx is an incredibly important step toward securing your data.
+Here are some resources, specific to this setup, that may be helpful:
+
+- [lua-resty-auto-ssl](https://github.com/GUI/lua-resty-auto-ssl)
+- [Let's Encrypt + Nginx](https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/)
+
+While we terminate SSL at Nginx, it may be worth using self signed certificates
+for communication between services.
+
+- [SSL Termination for TCP Upstream Servers](https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/)
+
+### Use PostgresSQL w/ Orthanc
+
+Orthanc can handle a large amount of data and requests, but if you find that
+requests start to slow as you add more and more studies, you may want to
+configure your Orthanc instance to use PostgresSQL. Instructions on how to do
+that can be found in the
+[`Orthanc Server Book`](http://book.orthanc-server.com/users/docker.html), under
+"PostgreSQL and Orthanc inside Docker"
+
+### Improving This Guide
+
+Here are some improvements this guide would benefit from, and that we would be
+more than happy to accept Pull Requests for:
+
+- SSL Support
+- Complete configuration with `.env` file (or something similar)
+- Any security issues
+- One-click deploy to a cloud provider
+
+## Resources
+
+### Misc. Helpful Commands
+
+_Check if `nginx.conf` is valid:_
+
+```bash
+docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t
+```
+
+_Interact w/ running container:_
+
+`docker exec -it CONTAINER_NAME bash`
+
+_List running containers:_
+
+`docker ps`
+
+### Referenced Articles
+
+For more documentation on the software we've chosen to use, you may find the
+following resources helpful:
+
+- [Orthanc for Docker](http://book.orthanc-server.com/users/docker.html)
+- [OpenResty Guide](http://www.staticshin.com/programming/definitely-an-open-resty-guide/)
+- [Lua Ngx API](https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/)
+
+For a different take on this setup, check out the repository one of our
+community members put together:
+
+- [mjstealey/ohif-orthanc-dimse-docker](https://github.com/mjstealey/ohif-orthanc-dimse-docker)
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+<!-- DOCS -->
+[nginx]: https://www.nginx.com/resources/glossary/nginx/
+[understanding-cors]: https://medium.com/@baphemot/understanding-cors-18ad6b478e2b
+[orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
+[lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
+<!-- SRC -->
+[config]: #
+[dockerfile]: #
+[config-nginx]: #
+[config-orthanc]: #
+<!-- prettier-ignore-end -->
