@@ -6,12 +6,12 @@ import cornerstone from 'cornerstone-core'
 import jumpToRowItem from '../lib/jumpToRowItem.js'
 import getMeasurementLocationCallback from '../lib/getMeasurementLocationCallback'
 
-const { setViewportSpecificData } = OHIF.redux.actions;
+const { setViewportSpecificData } = OHIF.redux.actions
 const { MeasurementApi } = OHIF.measurements
 
 function groupBy(list, props) {
   return list.reduce((a, b) => {
-    (a[b[props]] = a[b[props]] || []).push(b)
+    ;(a[b[props]] = a[b[props]] || []).push(b)
     return a
   }, {})
 }
@@ -84,17 +84,18 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
     Object.keys(groupedMeasurements).forEach(groupedMeasurementsIndex => {
       const measurementNumberList =
         groupedMeasurements[groupedMeasurementsIndex]
-
+      const measurementData = measurementNumberList[0]
       const {
         measurementNumber,
         lesionNamingNumber,
         toolType,
-      } = measurementNumberList[0]
-      const measurementId = measurementNumberList[0]._id
+      } = measurementData
+      const measurementId = measurementData._id
 
       //check if all measurements with same measurementNumber will have same LABEL
       const tableMeasurement = {
-        label: getMeasurementText(measurementNumberList[0]),
+        itemNumber: lesionNamingNumber,
+        label: getMeasurementText(measurementData),
         measurementId,
         measurementNumber,
         lesionNamingNumber,
@@ -117,6 +118,13 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
       // inject the new measurement for this measurementNumer
       toolGroupMeasurements.measurements.push(tableMeasurement)
     })
+  })
+
+  // Sort measurements by lesion naming number
+  tableMeasurements.forEach(tm => {
+    tm.measurements.sort((m1, m2) =>
+      m1.lesionNamingNumber > m2.lesionNamingNumber ? 1 : -1
+    )
   })
 
   return tableMeasurements
@@ -230,9 +238,9 @@ const mapDispatchToProps = dispatch => {
       )
 
       actionData.viewportSpecificData.forEach(viewportSpecificData => {
-        const { viewportIndex, displaySet } = viewportSpecificData;
+        const { viewportIndex, displaySet } = viewportSpecificData
 
-        dispatch(setViewportSpecificData(viewportIndex, displaySet));
+        dispatch(setViewportSpecificData(viewportIndex, displaySet))
       })
 
       const { toolType, measurementNumber } = measurementData
@@ -320,7 +328,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       )
     },
     onDeleteClick: (event, measurementData) => {
-      const { MeasurementHandlers } = OHIF.measurements;
+      const { MeasurementHandlers } = OHIF.measurements
 
       MeasurementHandlers.onRemoved({
         detail: {
@@ -328,11 +336,11 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
           measurementData: {
             _id: measurementData.measurementId,
             lesionNamingNumber: measurementData.lesionNamingNumber,
-            measurementNumber: measurementData.measurementNumber
-          }
-        }
-      });
-    }
+            measurementNumber: measurementData.measurementNumber,
+          },
+        },
+      })
+    },
   }
 }
 

@@ -6,7 +6,15 @@ import getMeasurementLocationCallback from '../lib/getMeasurementLocationCallbac
 
 import './ToolContextMenu.css'
 
-const toolTypes = ['Angle', 'Length']
+const toolTypes = [
+  'Angle',
+  'Bidirectional',
+  'Length',
+  'FreehandMouse',
+  'EllipticalRoi',
+  'CircleRoi',
+  'RectangleRoi',
+]
 
 let defaultDropdownItems = [
   {

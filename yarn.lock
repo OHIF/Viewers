@@ -3465,10 +3465,10 @@ cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@^3.2.4:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.7.0.tgz#203c126843537cb73b97324f47d02fec6e575db8"
-  integrity sha512-dVlkKf1jDq/ShiJR5zs2kp44tERioXByVe+ZCvc6zVkltnDAFYqObPvuu3XHbO8rsFra/PM3xvTYF1rW+si4Lg==
+cornerstone-tools@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.9.0.tgz#6e5a2865fe2ba6d80bf907b1b9734848b83132a0"
+  integrity sha512-gi+KhxYx3OEr4E0vt7Rp+MiQ5SRf1Qf/qf/D12i/VywDg3mPTLpe588nZZoUxeBJc0wF2s+Zybyv15NrbkoP2Q==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
@@ -9603,10 +9603,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.4.2.tgz#1ed2db0cddbd9ac15d5c97b9c789793d791be258"
-  integrity sha512-Wddeta9hKZDe1yyPp2QgtxhL0nM3vSudq52gRXcIVmtl0xCHzRrWqPqCTX10R3BU8OUXsHEF66RQ2gSVJmjH7g==
+ohif-core@0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.2.tgz#104a68824d35c5399d4da87ca6adb1de9bdd39ae"
+  integrity sha512-2Mt1b5iOgAGgP3TpGZfgoeR5AhF84XLaTEIz83TfQ4tCdRfXhSM1nMUk5bRzYpKAppZqTpYSdOlKChmqIaMwCg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -11681,10 +11681,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.3.2.tgz#03908eac75a325c1dca5c7fb7755e21119f7145a"
-  integrity sha512-o1xM7kWgsnaXuvaZt8BeA+NJjIZvU9HWA12m5pvNfCB4a1YfKIyYXNtaP39MbuA7sIS3vHDaBU3IKHL/uFPd2w==
+react-viewerbase@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.4.1.tgz#82a381f25d1c00ea4efd5fed460748aee4ee7706"
+  integrity sha512-UG5yR515JG7natLavMa61X58xX/LBVaPQraQWFBvO2DfB2LzvFI8B8S+N7BVWZY8aGKlSHhwQWK9fHzO/GceMw==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
