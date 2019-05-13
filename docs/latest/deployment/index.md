@@ -182,6 +182,7 @@ to secure access to your Image Archive as well.
 
 We've included a few recipes for common deployment scenarios. There are many,
 many possible configurations, so please don't feel limited to these setups.
+Please feel free to suggest or contribute your own recipes.
 
 - Script Include
   - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)

@@ -4,16 +4,14 @@
 
 We accept and triage bug reports through Github primarily.
 
-1. [Create a Github account](https://github.com/join)
-2. Search the current [Issue List](https://github.com/OHIF/Viewers/issues) to
-   ensure you are not creating a duplicate issue.
-
-If your issue already exists, post a comment to show us that this issue also
-affects you.
-
-3. If no prior issue exists,
-   [Create a New Issue](https://github.com/OHIF/Viewers/issues/new) on the
-   repository.
+- [Create a Github account](https://github.com/join)
+- Search the current [Issue List](https://github.com/OHIF/Viewers/issues) to
+  ensure you are not creating a duplicate issue.
+  - If your issue already exists, post a comment to show us that this issue also
+    affects you.
+- If no prior issue exists,
+  [Create a New Issue](https://github.com/OHIF/Viewers/issues/new) on the
+  repository.
 
 Some tips for filing a new issue:
 
