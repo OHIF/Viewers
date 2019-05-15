@@ -1,4 +1,9 @@
-cd docs
+#!/bin/bash
+
+# Set directory to location of this script
+# https://stackoverflow.com/a/3355423/1867984
+cd "$(dirname "$0")"
+
 yarn -v
 node -v
 echo 'Installing Gitbook CLI'
@@ -7,18 +12,22 @@ yarn global add gitbook-cli
 echo 'Running Gitbook installation'
 
 # Generate all version's GitBook output
+# For each directory in /docs ...
+cd ./docs/
 for D in *; do
     if [ -d "${D}" ]; then
-        echo "Generating output for: ${D}"
-		cd "${D}"
 
-		# Clear previous output, generate new
-		rm -rf _book
-		gitbook install
-		gitbook build
+			echo "Generating output for: ${D}"
+			cd "${D}"
 
-		cd ..
-    fi
+			# Clear previous output, generate new
+			rm -rf _book
+			gitbook install
+			gitbook build
+
+			cd ..
+
+		fi
 done
 
 # Move CNAME File into `latest`
@@ -30,11 +39,13 @@ mkdir ./latest/_book/history
 # Move each version's files to latest's history folder
 for D in *; do
 	if [ -d "${D}" ]; then
-		if [[ "${D}" == v* ]] ; then
-    		echo "Moving ${D} to the latest version's history folder"
+		if [ "${D}" == v* ] ; then
+
+			echo "Moving ${D} to the latest version's history folder"
 
 			mkdir "./latest/_book/history/${D}"
-			mv -v "./${D}/_book"/* "./latest/_book/history/${D}"
+			cp -v -r "./${D}/_book"/* "./latest/_book/history/${D}"
+
 		fi
 	fi
 done

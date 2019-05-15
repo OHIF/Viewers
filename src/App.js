@@ -64,20 +64,16 @@ function handleServers(servers) {
 
 class App extends Component {
   static propTypes = {
-    routerBasename: PropTypes.string,
-    relativeWebWorkerScriptsPath: PropTypes.string,
-    //
-    servers: PropTypes.object,
+    routerBasename: PropTypes.string.isRequired,
+    relativeWebWorkerScriptsPath: PropTypes.string.isRequired,
+    servers: PropTypes.object.isRequired,
     oidc: PropTypes.array,
-    userManager: PropTypes.object,
-    location: PropTypes.object,
     whiteLabelling: PropTypes.object,
   }
 
   static defaultProps = {
-    routerBasename: '/',
-    relativeWebWorkerScriptsPath: '',
     whiteLabelling: {},
+    oidc: [],
   }
 
   constructor(props) {
@@ -89,11 +85,14 @@ class App extends Component {
 
     store.dispatch(buttonsAction)
 
-    //
-    this.userManager = getUserManagerForOpenIdConnectClient(
-      store,
-      this.props.oidc
-    )
+    if (this.props.oidc.length) {
+      const firstOpenIdClient = this.props.oidc[0]
+
+      this.userManager = getUserManagerForOpenIdConnectClient(
+        store,
+        firstOpenIdClient
+      )
+    }
     handleServers(this.props.servers)
     initWebWorkers(
       this.props.routerBasename,

@@ -65,9 +65,7 @@ how to configure the project for your own imaging archive below.
 ### Configuration
 
 > This step assumes you have an imaging archive. If you need assistance setting
-> one up, check out the [`Data` section](./../index.md#data) of our Deployment
-> Guide, or `Getting Started`'s
-> ["Set up a local DICOM server"](./../../essentials/getting-started.md#set-up-a-local-dicom-server),
+> one up, check out the [`Data Source` Guide](./../../essentials/data-source.md)
 > or a deployment recipe that contains an open source Image Archive
 
 #### How it Works

@@ -2,11 +2,12 @@
 
 - Essentials
   - [Getting Started](essentials/getting-started.md)
+  - [Installation](essentials/installation.md)
+  - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
   - [Themeing](essentials/themeing.md)
   - [Troubleshooting](essentials/troubleshooting.md)
-- [Architecture](essentials/architecture.md)
-- [Deployment](essentials/deployment.md)
+- [Scope of Project](essentials/scope-of-project.md)
 
 ---
 
@@ -18,10 +19,6 @@
   - [Extensions](advanced/architecture.md#misc-extensions)
   - [Diagram](advanced/architecture.md#diagram)
   - [Common Questions](advanced/architecture.md#common-questions)
-- [Data](advanced/data.md)
-  - [Hierarchy](advanced/data.md#hierarchy)
-  - [Display Sets](advanced/data.md#display-sets)
-  - [Measurements & Annotations](advanced/data.md#measurements-and-annotations)
 - [Extensions](advanced/extensions.md)
   - [Overview](advanced/extensions.md#overview)
   - [Modules](advanced/extensions.md#modules)
@@ -34,18 +31,16 @@
 - [Deployment](deployment/index.md)
   - [Embedded](deployment/index.md#embedded-viewer)
   - [Stand-alone](deployment/index.md#stand-alone-viewer)
-  - [Data]()
+  - [Data](deployment/index.md#data)
 - Recipes
   - Script Include
     - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
   - Stand-Alone
     - [Build for Production](deployment/recipes/build-for-production.md)
     - [Static](deployment/recipes/static-assets.md)
-    - [Docker]()
-    - [Nginx + Orthanc]()
-    - [Nginx + dcm4chee]()
-    - [Nginx + DICOMCloud]()
-    - [User Access Control]()
+    - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
+    - [User Account Control](deployment/recipes/user-account-control.md)
+    - [Google Cloud Healthcare](connecting-to-image-archives/google-cloud-healthcare.md)
 
 ---
 
