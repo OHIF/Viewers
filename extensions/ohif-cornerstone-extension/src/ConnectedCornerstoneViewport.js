@@ -50,6 +50,21 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(clearViewportSpecificData(viewportIndex));
     },
 
+    /**
+     * Our component "enables" the underlying dom element on "componentDidMount"
+     * It listens for that event, and then emits the enabledElement. We can grab
+     * a reference to it here, to make playing with cornerstone's native methods
+     * easier.
+     */
+    onElementEnabled: event => {
+      const enabledElement = event.detail;
+      dispatch(
+        setViewportSpecificData(viewportIndex, {
+          dom: enabledElement
+        })
+      );
+    },
+
     onMeasurementsChanged: (event, action) => {
       const {
         onAdded,
