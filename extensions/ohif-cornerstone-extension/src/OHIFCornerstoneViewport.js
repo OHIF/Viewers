@@ -93,6 +93,8 @@ class OHIFCornerstoneViewport extends Component {
 
       if (index > -1) {
         stack.currentImageIdIndex = index;
+      } else {
+        stack.currentImageIdIndex = 0;
       }
     } else {
       stack.currentImageIdIndex = 0;
