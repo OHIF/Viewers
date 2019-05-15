@@ -57,7 +57,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
      * easier.
      */
     onElementEnabled: event => {
-      const enabledElement = event.detail;
+      const enabledElement = event.detail.element;
       dispatch(
         setViewportSpecificData(viewportIndex, {
           dom: enabledElement
