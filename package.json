@@ -77,7 +77,7 @@
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
     "ohif-core": "0.5.2",
-    "ohif-cornerstone-extension": "0.0.29",
+    "ohif-cornerstone-extension": "0.0.30",
     "ohif-dicom-html-extension": "^0.0.2",
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.6",
