@@ -9617,15 +9617,15 @@ ohif-core@0.5.2:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@^0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.28.tgz#79e07133e0b08f2c38f4bdb77032c4c7182266c4"
-  integrity sha512-GPXMqrmB+kmRAEOlSD0nBO4vwOvYLyn4gt9AtP016JMCLADpAsEDymUzE8Psr0NPLSvk6QrPL0/bKglfsGl7sA==
+ohif-cornerstone-extension@0.0.29:
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.29.tgz#288f3acb9b85b2434e39cae728ffd6dd2d67e0c2"
+  integrity sha512-1tFQokdYhW6Z5bhABvU84vLo4u7SHkFqgNpqwyw4mz3UlsbUBB30P9K88a68Txu8/wsMxTa9h8cAEZa1WfJo+g==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.throttle "^4.1.1"
-    react-cornerstone-viewport "^0.1.25"
+    react-cornerstone-viewport "0.1.26"
 
 ohif-dicom-html-extension@^0.0.2:
   version "0.0.2"
@@ -11401,10 +11401,10 @@ react-bootstrap-modal@4.2.0, react-bootstrap-modal@^4.2.0:
     react-overlays "^0.8.0"
     react-transition-group "^2.0.0"
 
-react-cornerstone-viewport@^0.1.25:
-  version "0.1.25"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.25.tgz#8d55d35db76f56c4844770ad14b21aeb20640724"
-  integrity sha512-h+00YdJubWiPylVAeRLhbOA3908ST3aB+ideoMsnDzNH3PGhL0KIgey5e8caAhWXkmFOS+SRJbXjpLCD8aGcLw==
+react-cornerstone-viewport@0.1.26:
+  version "0.1.26"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.26.tgz#eb09ae7c5d0f24e20a852fdc3ce648935d182370"
+  integrity sha512-t4onVJeib+FHWNHZNVrJyndLw8dCf7cI/69r5pNE4Sefjxw7pDuPdXfmZdcT8VWpl9cLairTqtqaLW+gXxTxIA==
   dependencies:
     lodash.debounce "^4.0.8"
     moment "^2.23.0"

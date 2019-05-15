@@ -20,7 +20,6 @@ OHIF.user.getAccessToken = () => {
   // TODO: Get the Redux store from somewhere else
   const state = window.store.getState()
   if (!state.oidc || !state.oidc.user) {
-    console.warn('failed to grab access token')
     return
   }
 

@@ -1,111 +1,102 @@
 import { connect } from 'react-redux';
 import { CineDialog } from 'react-viewerbase';
 import OHIF from 'ohif-core';
+import csTools from 'cornerstone-tools';
+// Our target output kills the `as` and "import" throws a keyword error
+// import { import as toolImport, getToolState } from 'cornerstone-tools';
 import cloneDeep from 'lodash.clonedeep';
 
+const toolImport = csTools.import;
+const scrollToIndex = toolImport('util/scrollToIndex');
 const { setViewportSpecificData } = OHIF.redux.actions;
 
-// TODO: I'm guessing this function will be used in other connect locations
-// so we might want to put it somewhere shared
-function getActiveViewportSpecificData(state) {
-    const { viewportSpecificData, activeViewportIndex } = state.viewports;
-    return viewportSpecificData[activeViewportIndex];
-}
-
+// Why do I need or care about any of this info?
+// A dispatch action should be able to pull this at the time of an event?
+// `isPlaying` and `cineFrameRate` might matter, but I think we can prop pass for those.
 const mapStateToProps = state => {
-    // TODO:
-    // - Test if including CineDialog in the toolbarRow will prevent it
-    // from hovering over the rest of the UI when visible.
-    //
-    // - Create custom ToolbarButton which just shows Play state
-    // - Connect this ToolbarButton to Redux
-    const activeViewportSpecificData = getActiveViewportSpecificData(state);
+  // Get activeViewport's `cine` and `stack`
+  const { viewportSpecificData, activeViewportIndex } = state.viewports;
+  const { cine, dom } = viewportSpecificData[activeViewportIndex] || {};
 
-    let stack = {
-        imageIds: [],
-        currentImageIdIndex: 0
-    };
-    if (activeViewportSpecificData && activeViewportSpecificData.stack) {
-        stack = activeViewportSpecificData.stack
-    }
+  const cineData = cine || {
+    isPlaying: false,
+    cineFrameRate: 24
+  };
 
-    let cine = {
-        isPlaying: false,
-        cineFrameRate: 24
-    };
-    if (activeViewportSpecificData && activeViewportSpecificData.cine) {
-        cine = activeViewportSpecificData.cine
-    }
-
-
-    // TODO: activeViewportStackData won't currently change anything on
-    // CornerstoneViewport. The updates are too frequent and it's killing
-    // performance. Need to revisit how we can do this.
-    return {
-        activeViewportStackData: stack,
-        activeViewportCineData: cine,
-        activeViewportIndex: state.viewports.activeViewportIndex
-    };
+  // New props we're creating?
+  return {
+    activeEnabledElement: dom,
+    activeViewportCineData: cineData,
+    activeViewportIndex: state.viewports.activeViewportIndex
+  };
 };
 
 const mapDispatchToProps = dispatch => {
-    return {
-        dispatchSetViewportSpecificData: (viewportIndex, data) => {
-            dispatch(setViewportSpecificData(viewportIndex, data));
-        },
-    };
+  return {
+    dispatchSetViewportSpecificData: (viewportIndex, data) => {
+      dispatch(setViewportSpecificData(viewportIndex, data));
+    }
+  };
 };
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-    const { activeViewportStackData, activeViewportCineData, activeViewportIndex } = propsFromState;
+  const {
+    activeEnabledElement,
+    activeViewportCineData,
+    activeViewportIndex
+  } = propsFromState;
 
-    return {
-        cineFrameRate: activeViewportCineData.cineFrameRate,
-        isPlaying: activeViewportCineData.isPlaying,
-        onPlayPauseChanged: isPlaying => {
-            const cine = cloneDeep(activeViewportCineData);
-            cine.isPlaying = !cine.isPlaying;
+  return {
+    cineFrameRate: activeViewportCineData.cineFrameRate,
+    isPlaying: activeViewportCineData.isPlaying,
+    onPlayPauseChanged: isPlaying => {
+      const cine = cloneDeep(activeViewportCineData);
+      cine.isPlaying = !cine.isPlaying;
 
-            propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, { cine });
-        },
-        onFrameRateChanged: frameRate => {
-            const cine = cloneDeep(activeViewportCineData);
-            cine.cineFrameRate = frameRate;
+      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
+        cine
+      });
+    },
+    onFrameRateChanged: frameRate => {
+      const cine = cloneDeep(activeViewportCineData);
+      cine.cineFrameRate = frameRate;
 
-            propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, { cine });
-        },
-        onClickNextButton: () => {
-            const stack = cloneDeep(activeViewportStackData);
-            const largestPossibleIndex = stack.imageIds.length - 1;
-            stack.currentImageIdIndex = Math.min(stack.currentImageIdIndex + 1, largestPossibleIndex)
-
-            propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, { stack });
-        },
-        onClickBackButton: () => {
-            const stack = cloneDeep(activeViewportStackData);
-            stack.currentImageIdIndex = Math.max(stack.currentImageIdIndex - 1, 0);
-
-            propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, { stack });
-        },
-        onClickSkipToStart: () => {
-            const stack = cloneDeep(activeViewportStackData);
-            stack.currentImageIdIndex = 0;
-
-            propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, { stack });
-        },
-        onClickSkipToEnd: () => {
-            const stack = cloneDeep(activeViewportStackData);
-            stack.currentImageIdIndex = stack.imageIds.length;
-
-            propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, { stack });
-        }
-    };
+      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
+        cine
+      });
+    },
+    onClickNextButton: () => {
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const { currentImageIdIndex, imageIds } = stackData.data[0];
+      if (currentImageIdIndex >= imageIds.length - 1) return;
+      scrollToIndex(activeEnabledElement, currentImageIdIndex + 1);
+    },
+    onClickBackButton: () => {
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const { currentImageIdIndex } = stackData.data[0];
+      if (currentImageIdIndex === 0) return;
+      scrollToIndex(activeEnabledElement, currentImageIdIndex - 1);
+    },
+    onClickSkipToStart: () => {
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      scrollToIndex(activeEnabledElement, 0);
+    },
+    onClickSkipToEnd: () => {
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const lastIndex = stackData.data[0].imageIds.length - 1;
+      scrollToIndex(activeEnabledElement, lastIndex);
+    }
+  };
 };
 
 const ConnectedCineDialog = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-    mergeProps
+  mapStateToProps,
+  mapDispatchToProps,
+  mergeProps
 )(CineDialog);
 
 export default ConnectedCineDialog;
