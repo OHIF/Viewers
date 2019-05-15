@@ -1,8 +1,10 @@
 import { connect } from 'react-redux';
 import { CineDialog } from 'react-viewerbase';
 import OHIF from 'ohif-core';
+import { import as toolImport, getToolState } from 'cornerstone-tools';
 import cloneDeep from 'lodash.clonedeep';
 
+const scrollToIndex = toolImport('util/scrollToIndex');
 const { setViewportSpecificData } = OHIF.redux.actions;
 
 // Why do I need or care about any of this info?
@@ -11,25 +13,16 @@ const { setViewportSpecificData } = OHIF.redux.actions;
 const mapStateToProps = state => {
   // Get activeViewport's `cine` and `stack`
   const { viewportSpecificData, activeViewportIndex } = state.viewports;
-  const { cine, stack } = viewportSpecificData[activeViewportIndex] || {};
-
-  const stackData = stack || {
-    imageIds: [],
-    currentImageIdIndex: 0
-  };
+  const { cine, dom } = viewportSpecificData[activeViewportIndex] || {};
 
   const cineData = cine || {
     isPlaying: false,
     cineFrameRate: 24
   };
 
-  // TODO: activeViewportStackData won't currently change anything on
-  // CornerstoneViewport. The updates are too frequent and it's killing
-  // performance. Need to revisit how we can do this.
-
   // New props we're creating?
   return {
-    activeViewportStackData: stackData,
+    activeEnabledElement: dom,
     activeViewportCineData: cineData,
     activeViewportIndex: state.viewports.activeViewportIndex
   };
@@ -45,7 +38,7 @@ const mapDispatchToProps = dispatch => {
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const {
-    activeViewportStackData,
+    activeEnabledElement,
     activeViewportCineData,
     activeViewportIndex
   } = propsFromState;
@@ -70,40 +63,29 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       });
     },
     onClickNextButton: () => {
-      const stack = cloneDeep(activeViewportStackData);
-      const largestPossibleIndex = stack.imageIds.length - 1;
-      stack.currentImageIdIndex = Math.min(
-        stack.currentImageIdIndex + 1,
-        largestPossibleIndex
-      );
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const { currentImageIdIndex, imageIds } = stackData.data[0];
+      if (currentImageIdIndex >= imageIds.length - 1) return;
+      scrollToIndex(activeEnabledElement, currentImageIdIndex + 1);
     },
     onClickBackButton: () => {
-      const stack = cloneDeep(activeViewportStackData);
-      stack.currentImageIdIndex = Math.max(stack.currentImageIdIndex - 1, 0);
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const { currentImageIdIndex } = stackData.data[0];
+      if (currentImageIdIndex === 0) return;
+      scrollToIndex(activeEnabledElement, currentImageIdIndex - 1);
     },
     onClickSkipToStart: () => {
-      const stack = cloneDeep(activeViewportStackData);
-      stack.currentImageIdIndex = 0;
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      scrollToIndex(activeEnabledElement, 0);
     },
     onClickSkipToEnd: () => {
-      const stack = cloneDeep(activeViewportStackData);
-      stack.currentImageIdIndex = stack.imageIds.length;
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const lastIndex = stackData.data[0].imageIds.length - 1;
+      scrollToIndex(activeEnabledElement, lastIndex);
     }
   };
 };
