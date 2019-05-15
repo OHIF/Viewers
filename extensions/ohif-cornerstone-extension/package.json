@@ -35,6 +35,12 @@
     "react-viewerbase": "^0.2.10",
     "redux": "^4.0.1"
   },
+  "dependencies": {
+    "@babel/runtime": "^7.2.0",
+    "classnames": "^2.2.6",
+    "lodash.throttle": "^4.1.1",
+    "react-cornerstone-viewport": "0.1.25-expose-dom"
+  },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/plugin-external-helpers": "^7.2.0",
@@ -87,11 +93,5 @@
   ],
   "files": [
     "dist"
-  ],
-  "dependencies": {
-    "@babel/runtime": "^7.2.0",
-    "classnames": "^2.2.6",
-    "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "^0.1.25"
-  }
+  ]
 }
