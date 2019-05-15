@@ -16,7 +16,10 @@ class ToolbarModule extends Component {
 
   render() {
     const cineDialogContainerStyle = {
-      display: this.state.cineDialogOpen ? 'inline-block' : 'none'
+      display: this.state.cineDialogOpen ? 'block' : 'none',
+      position: 'absolute',
+      top: '82px',
+      zIndex: 999
     };
 
     return (
