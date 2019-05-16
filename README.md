@@ -1,3 +1,5 @@
+> ATTENTION! You're viewing the `v1.x` branch of the OHIF Viewer. This version is Meteor based and receives reduced development efforts. If you're creating a new project, you're likely looking for the React version of the OHIF Viewer. The React version is maintained in this [repository's `master` branch](https://github.com/OHIF/Viewers)
+
 # Viewers
 This repo contains the OHIF DICOM Viewer and Lesion Tracker, and various shared meteor packages.
 
