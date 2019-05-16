@@ -72,6 +72,18 @@ jobs:
           name: Publish using Semantic Release
           command: npx semantic-release --debug --dry-run
 
+  docs_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Generate Docs
+          command: yarn run staticDeploy
+      - run:
+          name: Publish Docs
+          command: yarn run docs:publish
+
 workflows:
   version: 2
 
@@ -94,5 +106,8 @@ workflows:
             branches:
               only: master
       - npm_publish:
+          requires:
+            - build_and_test
+      - docs_publish:
           requires:
             - build_and_test
