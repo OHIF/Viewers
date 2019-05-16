@@ -1,2 +1,0 @@
-import './mixin';
-import './components';

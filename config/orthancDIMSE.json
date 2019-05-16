@@ -20,7 +20,7 @@
         {
           "host": "0.0.0.0",
           "port": 11112,
-          "aeTitle": "ORTHANC",
+          "aeTitle": "OHIFDCM",
           "default": true,
           "server": true
         }
@@ -37,7 +37,7 @@
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true,
         "autoPositionMeasurementsTextCallOuts": "TRLB",
-        "studyListDateFilterNumDays": 1
+        "studyListDateFilterNumDays": 10000
     }
   }
 }

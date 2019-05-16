@@ -1,12 +1,27 @@
-.idea/
-.vscode/
-.meteor/local
-.meteor/meteorite
-.meteor/dev_bundle
-*/.meteor/dev_bundle
+# Packages
 node_modules
+
+# Output
+build
+dist
+docs/_book
+src/version.js
+junit.xml
+coverage/
+
+# YALC (for Erik)
+.yalc
+yalc.lock
+
+# Logging, System files, misc.
+.idea/
 .npm
 npm-debug.log
-Packages/active-entry/helloworld/
-LesionTracker/tests/nightwatch/reports/
-docs/_book
+package-lock.json
+yarn-error.log
+.DS_Store
+
+# Common Example Data Directories
+sampledata/
+example/deps/
+docker/dcm4che/dcm4che-arc

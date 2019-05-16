@@ -1,24 +1,60 @@
-cd docs
-npm -v
-node -v 
+#!/bin/bash
+
+# Set directory to location of this script
+# https://stackoverflow.com/a/3355423/1867984
+cd "$(dirname "$0")"
+
+yarn -v
+node -v
 echo 'Installing Gitbook CLI'
-npm install
+yarn global add gitbook-cli
 
 echo 'Running Gitbook installation'
-./node_modules/gitbook-cli/bin/gitbook.js install
-./node_modules/gitbook-cli/bin/gitbook.js build
+
+# Generate all version's GitBook output
+# For each directory in /docs ...
+cd ./docs/
+for D in *; do
+    if [ -d "${D}" ]; then
+
+			echo "Generating output for: ${D}"
+			cd "${D}"
+
+			# Clear previous output, generate new
+			rm -rf _book
+			gitbook install
+			gitbook build
+
+			cd ..
+
+		fi
+done
+
+# Move CNAME File into `latest`
+cp CNAME ./latest/_book/CNAME
+
+# Create a history folder in our latest version's output
+mkdir ./latest/_book/history
+
+# Move each version's files to latest's history folder
+for D in *; do
+	if [ -d "${D}" ]; then
+		if [ "${D}" == v* ] ; then
+
+			echo "Moving ${D} to the latest version's history folder"
+
+			mkdir "./latest/_book/history/${D}"
+			cp -v -r "./${D}/_book"/* "./latest/_book/history/${D}"
+
+		fi
+	fi
+done
 cd ..
 
 # Build and copy the StandaloneViewer into the static directory
-cd StandaloneViewer
 echo $DEPLOY_PRIME_URL
-export ROOT_URL=$DEPLOY_PRIME_URL:/viewer/
-export METEOR_PACKAGE_DIRS="../../Packages"
-mkdir buildDirectory
-cd StandaloneViewer
-npm install -g meteor-build-client-fixed2@0.4.3-b
-meteor-build-client-fixed2 --version
-curl https://install.meteor.com | /bin/sh
-export PATH=$HOME/.meteor:$PATH
-meteor npm install
-meteor-build-client-fixed2 ../../docs/_book/viewer -u $ROOT_URL --path './' --legacy
+export ROOT_URL=$DEPLOY_PRIME_URL/demo
+
+mkdir ./docs/latest/_book/demo/
+yarn install
+yarn build:web:ci
