@@ -82,6 +82,8 @@ jobs:
           command:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
             no\n" > ~/.ssh/config
+      - run: git config --global user.email "gh-pages@localhost"
+      - run: git config --global user.name "npm gh-pages"
       - run:
           name: Generate Docs
           command: yarn run staticDeploy
