@@ -72,6 +72,26 @@ jobs:
           name: Publish using Semantic Release
           command: npx semantic-release --debug --dry-run
 
+  docs_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Avoid hosts unknown for github
+          command:
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
+            no\n" > ~/.ssh/config
+      - run: git config --global user.email "gh-pages@localhost"
+      - run: git config --global user.name "npm gh-pages"
+      - run: yarn global add gh-pages
+      - run:
+          name: Generate Docs
+          command: yarn run staticDeploy
+      - run:
+          name: Publish Docs
+          command: yarn run docs:publish
+
 workflows:
   version: 2
 
@@ -83,17 +103,19 @@ workflows:
             branches:
               ignore:
                 - master
-                - react
                 - feature/*
                 - hotfix/*
 
-  # MERGE TO REACT
+  # MERGE TO MASTER
   cut_release:
     jobs:
       - build_and_test:
           filters:
             branches:
-              only: react
+              only: master
       - npm_publish:
+          requires:
+            - build_and_test
+      - docs_publish:
           requires:
             - build_and_test
