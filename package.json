@@ -25,7 +25,7 @@
     "test": "jest",
     "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "staticDeploy": "./generateStaticSite.sh",
-    "docs:deploy": "gh-pages -d docs/latest/_book",
+    "docs:publish": "gh-pages -d docs/latest/_book",
     "start": "yarn run dev",
     "predeploy": "cd example && npm install && yarn run build:package",
     "preBuild": "yarn run version && yarn run copy:webworkers",
