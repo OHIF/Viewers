@@ -83,17 +83,16 @@ workflows:
             branches:
               ignore:
                 - master
-                - react
                 - feature/*
                 - hotfix/*
 
-  # MERGE TO REACT
+  # MERGE TO MASTER
   cut_release:
     jobs:
       - build_and_test:
           filters:
             branches:
-              only: react
+              only: master
       - npm_publish:
           requires:
             - build_and_test
