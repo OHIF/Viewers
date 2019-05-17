@@ -4,7 +4,7 @@
 > `version 1` Meteor documentation. You can
 > [find it here](/history/v1/connecting-to-image-archives/google-cloud-healthcare.html).
 > These docs will mirror the Meteor documentation until our `React`
-> implementation has been updated to work with Goolg Cloud Healthcare.
+> implementation has been updated to work with Google Cloud Healthcare.
 
 > The [Google Cloud Healthcare API](https://cloud.google.com/healthcare/) is a
 > powerful option for storing medical imaging data in the cloud.
