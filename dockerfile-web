@@ -7,12 +7,14 @@ RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV GENERATE_SOURCEMAP=false
 
 COPY package.json /usr/src/app/package.json
 COPY yarn.lock /usr/src/app/yarn.lock
 
 ADD . /usr/src/app/
 RUN yarn install
+
 RUN yarn run build:web
 
 # # Stage 2: Bundle the built application into a Docker container
