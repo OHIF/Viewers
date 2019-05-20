@@ -48,7 +48,9 @@ yalc push .
 
 // 3. Use the local package in our Viewers project. Navigate to the Viewers
 //    Project root.
+yarn install
 yalc add ohif-core
+yarn run dev
 ```
 
 ## Any guidance on submitting changes?
