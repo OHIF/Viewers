@@ -36,11 +36,11 @@ there**
 
 #### build
 
-`$ docker-compose -f docker-compose-dcm4chee.yml build`
+`$ docker-compose -f ./Nginx-Dcm4che/docker-compose-dcm4che.yml build`
 
 #### run
 
-`$ docker-compose -f docker-compose-dcm4chee.yml up -d`
+`$ docker-compose -f ./Nginx-Dcm4che/docker-compose-dcm4chee.yml up -d`
 
 then, access the application at [http://localhost](http://localhost)
 
