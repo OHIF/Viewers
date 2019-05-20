@@ -13,6 +13,44 @@ Fork the repository, make your change and submit a pull request.
   - [Essentials: Getting Started](./essentials/getting-started.md)
   - [Advanced: Architecture](./advanced/architecture.md)
 
+### When changes impact multiple repositories
+
+This is a particularly tricky scenario. We don't want to publish code in one
+repository, just so we can test and complete the other half of its requirements
+in another. Thankfully, there are a couple of ways you can test unpublished
+dependent changes locally before publishing:
+
+- [Use `yarn link`](https://yarnpkg.com/en/docs/cli/link)
+
+For example if you are working on `ohif-core` and would like to use your local
+version to debug a problem in `Viewers`, simply run yarn link inside of the
+`ohif-core` project.
+
+- If you're experiencing issues with `yarn link`,
+  [try `yalc`](https://github.com/whitecolor/yalc)
+
+Yalc provides an improved workflow as we add more and more dependent packages
+that are "in-progress". This comes into play as we begin working on extensions
+and their dependencies.
+
+```js
+// Install yalc for the first time
+yarn global add yalc
+
+// EXAMPLE: using an in-development version of ohif-core w/ Viewers locally
+// 1. Navigate to ohif-core's project root
+yarn install
+yalc publish
+
+// 2. Run the following after each change to ohif-core
+yarn build
+yalc push .
+
+// 3. Use the local package in our Viewers project. Navigate to the Viewers
+//    Project root.
+yalc add ohif-core
+```
+
 ## Any guidance on submitting changes?
 
 While we do appreciate code contributions, triaging and integrating contributed
