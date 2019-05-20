@@ -1,4 +1,5 @@
 <!-- prettier-ignore-start -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 <!-- markdownlint-disable -->
 <div align="center">
   <h1>ohif-viewer</h1>
@@ -203,3 +204,15 @@ Links:
 [good-first-issue]: https://github.com/OHIF/Viewers/labels/good%20first%20issue
 [google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform
 <!-- prettier-ignore-end -->
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://github.com/swederik"><img src="https://avatars3.githubusercontent.com/u/607793?v=4" width="100px;" alt="Erik Ziegler"/><br /><sub><b>Erik Ziegler</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=swederik" title="Code">💻</a></td></tr></table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
