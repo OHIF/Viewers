@@ -16,7 +16,7 @@
 
 [![CircleCI][circleci-image]][circleci-url]
 [![codecov][codecov-image]][codecov-url]
-[![All Contributors][all-contributors-image]][contributing-url]
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors)
 [![code style: prettier][prettier-image]][prettier-url]
 [![semantic-release][semantic-image]][semantic-url]
 
@@ -38,10 +38,10 @@ in existing applications via it's [packaged source
 workflow customization and advanced functionality at common integration points.
 
 If you're interested in using the OHIF Viewer, but you're not sure it supports
-your use case
-[check out our docs](https://docs.ohif.org/). Still not
-sure, or you would like to propose new features? Don't hesitate to
-[create an issue](https://github.com/OHIF/Viewers/issues) or open a pull request.
+your use case [check out our docs](https://docs.ohif.org/). Still not sure, or
+you would like to propose new features? Don't hesitate to
+[create an issue](https://github.com/OHIF/Viewers/issues) or open a pull
+request.
 
 ## Getting Started
 
@@ -147,6 +147,21 @@ or file an issue on GitHub.
 
 [Google Group][google-group]
 
+## Contributors
+
+Thanks goes to these wonderful people
+([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://github.com/swederik"><img src="https://avatars3.githubusercontent.com/u/607793?v=4" width="100px;" alt="Erik Ziegler"/><br /><sub><b>Erik Ziegler</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=swederik" title="Code">💻</a></td><td align="center"><a href="https://github.com/evren217"><img src="https://avatars1.githubusercontent.com/u/4920551?v=4" width="100px;" alt="Evren Ozkan"/><br /><sub><b>Evren Ozkan</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=evren217" title="Code">💻</a></td><td align="center"><a href="https://github.com/galelis"><img src="https://avatars3.githubusercontent.com/u/2378326?v=4" width="100px;" alt="Gustavo André Lelis"/><br /><sub><b>Gustavo André Lelis</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=galelis" title="Code">💻</a></td><td align="center"><a href="http://dannyrb.com/"><img src="https://avatars1.githubusercontent.com/u/5797588?v=4" width="100px;" alt="Danny Brown"/><br /><sub><b>Danny Brown</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=dannyrb" title="Code">💻</a></td><td align="center"><a href="https://github.com/all-contributors/all-contributors-bot"><img src="https://avatars3.githubusercontent.com/u/46843839?v=4" width="100px;" alt="allcontributors[bot]"/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=allcontributors" title="Documentation">📖</a></td></tr></table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the
+[all-contributors](https://github.com/all-contributors/all-contributors)
+specification. Contributions of any kind welcome!
+
 ## License
 
 MIT © [OHIF](https://github.com/OHIF)
@@ -155,17 +170,23 @@ MIT © [OHIF](https://github.com/OHIF)
 
 To acknowledge the OHIF Viewer in an academic publication, please cite
 
-> *LesionTracker: Extensible Open-Source Zero-Footprint Web Viewer for Cancer Imaging Research and Clinical Trials*
+> _LesionTracker: Extensible Open-Source Zero-Footprint Web Viewer for Cancer
+> Imaging Research and Clinical Trials_
 >
-> Trinity Urban, Erik Ziegler, Rob Lewis, Chris Hafey, Cheryl Sadow, Annick D. Van den Abbeele and Gordon J. Harris
+> Trinity Urban, Erik Ziegler, Rob Lewis, Chris Hafey, Cheryl Sadow, Annick D.
+> Van den Abbeele and Gordon J. Harris
 >
-> _Cancer Research_, November 1 2017 (77) (21) e119-e122
-> DOI: [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
+> _Cancer Research_, November 1 2017 (77) (21) e119-e122 DOI:
+> [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
 
+**Note:** If you use or find this repository helpful, please take the time to
+star this repository on Github. This is an easy way for us to assess adoption
+and it can help us obtain future funding for the project.
 
-**Note:** If you use or find this repository helpful, please take the time to star this repository on Github. This is an easy way for us to assess adoption and it can help us obtain future funding for the project.
-
-This work is supported primarily by the National Institutes of Health, National Cancer Institute, Informatics Technology for Cancer Research (ITCR) program, under a [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
+This work is supported primarily by the National Institutes of Health, National
+Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
+under a
+[grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
 
 <!--
 Links:
