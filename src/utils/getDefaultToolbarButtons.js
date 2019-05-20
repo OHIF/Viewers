@@ -8,7 +8,10 @@ export default function(baseDirectory = '/') {
     baseDirectory[baseDirectory.length - 1] === '/'
       ? baseDirectory
       : `${baseDirectory}/`
-  const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`
+  const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`.replace(
+    '//',
+    '/'
+  )
 
   return [
     {
