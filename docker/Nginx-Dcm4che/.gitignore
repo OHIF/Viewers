@@ -1,0 +1,3 @@
+
+#ignore dcm4che presistent volumes
+dcm4che-arc/
