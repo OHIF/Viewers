@@ -103,6 +103,8 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
+            # This file will exist if a new version was published by
+            # our `semantic-release` command in the previous job
             if [[ ! -e tmp/updated-version.txt ]]; then
               exit 0
             else
@@ -114,9 +116,10 @@ jobs:
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
               # Build our image, auth, and push
-              docker build -t ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL .
+              docker build --tag ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL --tag ohif/$IMAGE_NAME:latest .
               echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
               docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
+              docker push ohif/$IMAGE_NAME:latest
             fi
 
 workflows:
