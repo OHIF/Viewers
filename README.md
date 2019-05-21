@@ -22,9 +22,14 @@
 
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
+[![Pulls][docker-pulls-img]][docker-image-url]
 [![MIT License][license-image]][license-url]
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
+> ATTENTION: If you are looking for Version 1 (the Meteor Version) of this
+> repository, it lives on
+> [the `v1.x` branch](https://github.com/OHIF/Viewers/tree/v1.x)
 
 ## Why?
 
@@ -208,6 +213,8 @@ Links:
 [npm-url]: https://npmjs.org/package/ohif-viewer
 [npm-downloads-image]: https://img.shields.io/npm/dm/ohif-viewer.svg?style=flat-square
 [npm-version-image]: https://img.shields.io/npm/v/ohif-viewer.svg?style=flat-square
+[docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
+[docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- DOCS -->
