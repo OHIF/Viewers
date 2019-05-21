@@ -70,21 +70,7 @@ jobs:
       # attempting to run it from a `pr`, which is not the case
       - run:
           name: Publish using Semantic Release
-          command: npx semantic-release --debug --dry-run
-
-  docker_publish:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build and push Docker image
-          command: |
-            docker build -t ohif/$IMAGE_NAME:$TAG .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:$TAG
+          command: npx semantic-release --debug
 
   docs_publish:
     <<: *defaults
@@ -105,6 +91,23 @@ jobs:
       - run:
           name: Publish Docs
           command: yarn run docs:publish
+
+    docker_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Skip if no new version
+          command: [ ! -e /tmp/updated-version ] || exit 1
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and push Docker image
+          command: |
+            docker build -t ohif/$IMAGE_NAME:{{ checksum "/tmp/updated-version" }}.${CIRCLE_BUILD_NUM} .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push ohif/$IMAGE_NAME:{{ checksum "/tmp/updated-version" }}.${CIRCLE_BUILD_NUM}
 
 workflows:
   version: 2
@@ -136,3 +139,4 @@ workflows:
       - docker_publish:
           requires:
             - build_and_test
+            - npm_publish
