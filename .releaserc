@@ -7,7 +7,7 @@
     [
       "@semantic-release/exec",
       {
-        "publishCmd": "echo ${nextRelease.version} > ~/tmp/updated-version.txt"
+        "publishCmd": "mkdir ~/tmp && echo ${nextRelease.version} > ~/tmp/updated-version.txt"
       }
     ]
   ]
