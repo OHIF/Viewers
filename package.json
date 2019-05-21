@@ -32,7 +32,7 @@
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
     "dev:orthanc": "yarn run preBuild && cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
-    "copy:webworkers": "cpx 'node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public"
+    "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v"
   },
   "husky": {
     "hooks": {

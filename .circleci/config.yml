@@ -72,6 +72,20 @@ jobs:
           name: Publish using Semantic Release
           command: npx semantic-release --debug --dry-run
 
+  docker_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and push Docker image
+          command: |
+            docker build -t ohif/$IMAGE_NAME:$TAG .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push ohif/$IMAGE_NAME:$TAG
+
   docs_publish:
     <<: *defaults
     steps:
@@ -117,5 +131,8 @@ workflows:
           requires:
             - build_and_test
       - docs_publish:
+          requires:
+            - build_and_test
+      - docker_publish:
           requires:
             - build_and_test
