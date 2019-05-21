@@ -113,12 +113,12 @@ jobs:
           name: Build and push Docker image
           command: |
             export IMAGE_VERSION=$(cat tmp/updated-version.txt)
+            export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
             echo $IMAGE_VERSION
-            echo v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
-            docker build -t ohif/$IMAGE_NAME:v$IMAGE_VERSION.${CIRCLE_BUILD_NUM} ohif/$IMAGE_NAME:latest .
+            echo IMAGE_VERSION_FULL
+            docker build -t ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
-            docker push ohif/$IMAGE_NAME:latest
+            docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
 
 workflows:
   version: 2
