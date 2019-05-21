@@ -20,7 +20,7 @@ RUN yarn run build:web
 # # Stage 2: Bundle the built application into a Docker container
 # # which runs Nginx using Alpine Linux
 FROM nginx:1.15.5-alpine
-RUN rm -rf /etc/nginx/conf.d
+#RUN rm -rf /etc/nginx/conf.d
 #COPY conf /etc/nginx
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
