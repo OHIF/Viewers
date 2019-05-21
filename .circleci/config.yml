@@ -98,8 +98,13 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Skip if no new version
-          command: [ ! -e /tmp/updated-version ] || exit 1
+          name: Skip if no new NPM version was released
+          command: |
+            #
+            #
+            if [[ ! -e /tmp/updated-version ]]; then
+              exit 1
+            fi
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
