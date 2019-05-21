@@ -112,9 +112,12 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
-            docker build -t ohif/$IMAGE_NAME:{{ checksum "tmp/updated-version.txt" }}.${CIRCLE_BUILD_NUM} ohif/$IMAGE_NAME:latest .
+            export IMAGE_VERSION=$(cat tmp/updated-version.txt)
+            echo $IMAGE_VERSION
+            echo v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
+            docker build -t ohif/$IMAGE_NAME:v$IMAGE_VERSION.${CIRCLE_BUILD_NUM} ohif/$IMAGE_NAME:latest .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:{{ checksum "tmp/updated-version.txt" }}.${CIRCLE_BUILD_NUM}
+            docker push ohif/$IMAGE_NAME:v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
             docker push ohif/$IMAGE_NAME:latest
 
 workflows:
