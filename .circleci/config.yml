@@ -103,7 +103,8 @@ jobs:
           command: |
             #
             #
-            if [[ ! -e ~/tmp/updated-version.txt ]]; then
+            cat tmp/updated-version.txt
+            if [[ ! -e tmp/updated-version.txt ]]; then
               exit 1
             fi
       - setup_remote_docker:
@@ -111,9 +112,9 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
-            docker build -t ohif/$IMAGE_NAME:{{ checksum "~/tmp/updated-version.txt" }}.${CIRCLE_BUILD_NUM} ohif/$IMAGE_NAME:latest .
+            docker build -t ohif/$IMAGE_NAME:{{ checksum "tmp/updated-version.txt" }}.${CIRCLE_BUILD_NUM} ohif/$IMAGE_NAME:latest .
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:{{ checksum "~/tmp/updated-version.txt" }}.${CIRCLE_BUILD_NUM}
+            docker push ohif/$IMAGE_NAME:{{ checksum "tmp/updated-version.txt" }}.${CIRCLE_BUILD_NUM}
             docker push ohif/$IMAGE_NAME:latest
 
 workflows:
