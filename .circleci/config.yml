@@ -98,27 +98,26 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run:
-          name: Skip if no new NPM version was released
-          command: |
-            #
-            #
-            cat tmp/updated-version.txt
-            if [[ ! -e tmp/updated-version.txt ]]; then
-              exit 1
-            fi
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
           name: Build and push Docker image
           command: |
-            export IMAGE_VERSION=$(cat tmp/updated-version.txt)
-            export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
-            echo $IMAGE_VERSION
-            echo IMAGE_VERSION_FULL
-            docker build -t ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
+            if [[ ! -e tmp/updated-version.txt ]]; then
+              exit 0
+            else
+              # Remove npm config
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat tmp/updated-version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+              docker build -t ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+              docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
+            fi
 
 workflows:
   version: 2
