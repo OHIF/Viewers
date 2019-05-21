@@ -92,7 +92,7 @@ jobs:
           name: Publish Docs
           command: yarn run docs:publish
 
-    docker_publish:
+  docker_publish:
     <<: *defaults
     steps:
       - attach_workspace:
