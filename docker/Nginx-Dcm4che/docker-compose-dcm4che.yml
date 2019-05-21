@@ -11,8 +11,8 @@ services:
       - '389:389'
     env_file: ./docker-compose-dcm4che.env
     volumes:
-      - ./dcm4che/etc/localtime:/etc/localtime:ro
-      - ./dcm4che/etc/timezone:/etc/timezone:ro
+      - ./etc/localtime:/etc/localtime:ro
+      - ./etc/timezone:/etc/timezone:ro
       - ./dcm4che/dcm4che-arc/ldap:/var/lib/ldap
       - ./dcm4che/dcm4che-arc/slapd.d:/etc/ldap/slapd.d
     networks:
@@ -27,8 +27,8 @@ services:
       - '5432:5432'
     env_file: ./docker-compose-dcm4che.env
     volumes:
-      - ./dcm4che/etc/localtime:/etc/localtime:ro
-      - ./dcm4che/etc/timezone:/etc/timezone:ro
+      - ./etc/localtime:/etc/localtime:ro
+      - ./etc/timezone:/etc/timezone:ro
       - ./dcm4che/dcm4che-arc/db:/var/lib/postgresql/data
     networks:
       - dcm4che_default
@@ -52,27 +52,30 @@ services:
       - ldap
       - db
     volumes:
-      - ./dcm4che/etc/localtime:/etc/localtime:ro
-      - ./dcm4che/etc/timezone:/etc/timezone:ro
+      - ./etc/localtime:/etc/localtime:ro
+      - ./etc/timezone:/etc/timezone:ro
       - ./dcm4che/dcm4che-arc/wildfly:/opt/wildfly/standalone
       - ./dcm4che/dcm4che-arc/storage:/storage
     networks:
       - dcm4che_default
+#disable below viewer section for dcm4che without viewer.
   viewer:
     container_name: ohif-viewer
     build:
       context: ../../
       dockerfile: dockerfile-web
     ports:
-      - '80:80'
-    # depends_on:
-    #   - orthanc
+      - '5000:80'
+    depends_on:
+      - arc
     environment:
       - NODE_ENV=production
       - REACT_APP_CONFIG=config/local_dcm4chee
     restart: always
     networks:
       - dcm4che_default
+    volumes:
+      - ./nginx-proxy/conf/nginx.conf:/etc/nginx/nginx.conf:ro
 
 networks:
   dcm4che_default:

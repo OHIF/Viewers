@@ -32,11 +32,13 @@ then, access the application at [http://localhost](http://localhost)
 **remember that you have to access orthanc application and include your studies
 there**
 
-## Local Dcm4chee
+## Local Dcm4chee & OHIF
 
 #### build
 
 `$ docker-compose -f ./Nginx-Dcm4che/docker-compose-dcm4che.yml build`
+
+Disable "viewer" section in docker-compose-dcm4che.yml if you like to run dcm4che without OHIF Viewer.
 
 #### run
 
