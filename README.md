@@ -27,6 +27,10 @@
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 
+> ATTENTION: If you are looking for Version 1 (the Meteor Version) of this
+> repository, it lives on
+> [the `v1.x` branch](https://github.com/OHIF/Viewers/tree/v1.x)
+
 ## Why?
 
 Building a web based medical imaging viewer from scratch is time intensive, hard
