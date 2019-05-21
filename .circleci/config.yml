@@ -35,7 +35,6 @@ jobs:
           paths:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-
       # Build & Test
       - run: yarn build:package:ci
       # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
@@ -44,13 +43,11 @@ jobs:
           command: yarn test:ci
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
-
       # Store result
       - store_test_results:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
-
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -71,6 +68,10 @@ jobs:
       - run:
           name: Publish using Semantic Release
           command: npx semantic-release --debug
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
 
   docs_publish:
     <<: *defaults
