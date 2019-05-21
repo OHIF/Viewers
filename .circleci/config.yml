@@ -133,3 +133,6 @@ workflows:
       - docs_publish:
           requires:
             - build_and_test
+      - docker_publish:
+          requires:
+            - build_and_test
