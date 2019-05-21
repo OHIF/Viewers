@@ -63,14 +63,14 @@ services:
     container_name: ohif-viewer
     build:
       context: ../../
-      dockerfile: dockerfile
+      dockerfile: dockerfile-web
     ports:
       - '80:80'
     depends_on:
       - arc
     environment:
       - NODE_ENV=production
-      - REACT_APP_CONFIG=config/local_dcm4chee
+      - REACT_APP_CONFIG=config/docker_nginx-dcm4chee.js
     restart: always
     networks:
       - dcm4che_default
