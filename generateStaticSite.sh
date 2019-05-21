@@ -52,9 +52,6 @@ done
 cd ..
 
 # Build and copy the StandaloneViewer into the static directory
-echo $DEPLOY_PRIME_URL
-export ROOT_URL=$DEPLOY_PRIME_URL/demo
-
 mkdir ./docs/latest/_book/demo/
 yarn install
 yarn build:web:ci
