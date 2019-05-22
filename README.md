@@ -10,6 +10,10 @@
   <a href="https://docs.ohif.org/"><strong>Read The Docs</strong></a> |
   <a href="https://github.com/OHIF/Viewers/tree/master/docs/latest">Edit the docs</a>
 </div>
+<div align="center">
+  <a href="https://docs.ohif.org/demo">Demo</a> |
+  <a href="https://ohif.canny.io/">Roadmap</a>
+</div>
 
 
 <hr />
