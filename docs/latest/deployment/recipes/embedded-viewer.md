@@ -44,7 +44,6 @@ include tags. Here's how it works:
 </ul>
 
 <ol start="2">
-  <li>the HTML <code>base</code> tag</li>
   <li>The <a href="">WADO Image Loader Codecs and Web Worker source code</a>
   should be accessible from your server's root</li>
   <li>Create a JS Object to hold the OHIF Viewer's configuration. Here are some
@@ -52,10 +51,12 @@ include tags. Here's how it works:
 </ol>
 
 ```js
-var props = {
-  // Directory your application runs in (e.g. /viewer/)
+// Set before importing `ohif-viewer`
+window.config = {
+  // default: '/'
   routerBasename: '/',
-  rootUrl: 'https://lrjoo3znxm.codesandbox.io',
+  // default: ''
+  relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
       {
@@ -82,7 +83,7 @@ var props = {
 ```js
 // Made available by the `ohif-viewer` script included in step 1
 var Viewer = window.OHIFStandaloneViewer.App
-var app = React.createElement(Viewer, props, null)
+var app = React.createElement(Viewer, window.config, null)
 
 ReactDOM.render(app, document.getElementById('ohif-viewer-target'))
 ```
@@ -92,9 +93,9 @@ ReactDOM.render(app, document.getElementById('ohif-viewer-target'))
 > I'm having trouble getting this to work. Where can I go for help?
 
 First, check out this fully functional
-[CodeSandbox](https://codesandbox.io/s/lrjoo3znxm) example. If you're still
-having trouble, feel free to search or GitHub issues. Can't find anything
-related your problem? Create a new one.
+[CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9)
+example. If you're still having trouble, feel free to search or GitHub issues.
+Can't find anything related your problem? Create a new one.
 
 > When I include bootstrap, other styles on my page no longer work correctly.
 > What can I do?
