@@ -6,7 +6,7 @@ import ConnectedLayoutButton from './ConnectedLayoutButton'
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js'
 import './ToolbarRow.css'
 
-const Icons = `${window.config.routerBasename}/icons.svg`
+const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/')
 
 class ToolbarRow extends Component {
   static propTypes = {

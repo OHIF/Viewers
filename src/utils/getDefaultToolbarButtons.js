@@ -8,7 +8,10 @@ export default function(baseDirectory = '/') {
     baseDirectory[baseDirectory.length - 1] === '/'
       ? baseDirectory
       : `${baseDirectory}/`
-  const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`
+  const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`.replace(
+    '//',
+    '/'
+  )
 
   return [
     {
@@ -61,6 +64,13 @@ export default function(baseDirectory = '/') {
       active: false,
     },
     {
+      command: 'Bidirectional',
+      type: 'tool',
+      text: 'Bidirectional',
+      svgUrl: `${relativePathToIcons}#icon-tools-measure-target`,
+      active: false,
+    },
+    {
       command: 'Brush',
       type: 'tool',
       text: 'Brush',
@@ -72,6 +82,27 @@ export default function(baseDirectory = '/') {
       type: 'tool',
       text: 'Freehand',
       iconClasses: 'fa fa-star',
+      active: false,
+    },
+    {
+      command: 'EllipticalRoi',
+      type: 'tool',
+      text: 'EllipticalRoi',
+      iconClasses: 'far fa-circle',
+      active: false,
+    },
+    {
+      command: 'CircleRoi',
+      type: 'tool',
+      text: 'CircleRoi',
+      iconClasses: 'far fa-dot-circle',
+      active: false,
+    },
+    {
+      command: 'RectangleRoi',
+      type: 'tool',
+      text: 'RectangleRoi',
+      iconClasses: 'far fa-square',
       active: false,
     },
     {

@@ -146,6 +146,15 @@ export default function setupTools(store) {
     { name: 'Zoom', mouseButtonMasks: [1, 2] },
     { name: 'Wwwc', mouseButtonMasks: [1] },
     {
+      name: 'Bidirectional',
+      configuration: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+      mouseButtonMasks: [1],
+    },
+    {
       name: 'Length',
       configuration: {
         configuration: {
@@ -165,7 +174,42 @@ export default function setupTools(store) {
     },
     { name: 'StackScroll', mouseButtonMasks: [1] },
     { name: 'Brush', mouseButtonMasks: [1] },
-    { name: 'FreehandMouse', mouseButtonMasks: [1] },
+    {
+      name: 'FreehandMouse',
+      configuration: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+      mouseButtonMasks: [1],
+    },
+    {
+      name: 'EllipticalRoi',
+      configuration: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+      mouseButtonMasks: [1],
+    },
+    {
+      name: 'CircleRoi',
+      configuration: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+      mouseButtonMasks: [1],
+    },
+    {
+      name: 'RectangleRoi',
+      configuration: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+      mouseButtonMasks: [1],
+    },
     { name: 'PanMultiTouch' },
     { name: 'ZoomTouchPinch' },
     { name: 'StackScrollMouseWheel' },

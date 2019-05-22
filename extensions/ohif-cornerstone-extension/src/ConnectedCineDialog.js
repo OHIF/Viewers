@@ -1,47 +1,32 @@
 import { connect } from 'react-redux';
 import { CineDialog } from 'react-viewerbase';
 import OHIF from 'ohif-core';
+import csTools from 'cornerstone-tools';
+// Our target output kills the `as` and "import" throws a keyword error
+// import { import as toolImport, getToolState } from 'cornerstone-tools';
+import cloneDeep from 'lodash.clonedeep';
 
+const toolImport = csTools.import;
+const scrollToIndex = toolImport('util/scrollToIndex');
 const { setViewportSpecificData } = OHIF.redux.actions;
 
-// TODO: I'm guessing this function will be used in other connect locations
-// so we might want to put it somewhere shared
-function getActiveViewportSpecificData(state) {
-  const { viewportSpecificData, activeViewportIndex } = state.viewports;
-  return viewportSpecificData[activeViewportIndex];
-}
-
+// Why do I need or care about any of this info?
+// A dispatch action should be able to pull this at the time of an event?
+// `isPlaying` and `cineFrameRate` might matter, but I think we can prop pass for those.
 const mapStateToProps = state => {
-  // TODO:
-  // - Test if including CineDialog in the toolbarRow will prevent it
-  // from hovering over the rest of the UI when visible.
-  //
-  // - Create custom ToolbarButton which just shows Play state
-  // - Connect this ToolbarButton to Redux
-  const activeViewportSpecificData = getActiveViewportSpecificData(state);
+  // Get activeViewport's `cine` and `stack`
+  const { viewportSpecificData, activeViewportIndex } = state.viewports;
+  const { cine, dom } = viewportSpecificData[activeViewportIndex] || {};
 
-  let stack = {
-    imageIds: [],
-    currentImageIdIndex: 0
-  };
-  if (activeViewportSpecificData && activeViewportSpecificData.stack) {
-    stack = activeViewportSpecificData.stack;
-  }
-
-  let cine = {
+  const cineData = cine || {
     isPlaying: false,
     cineFrameRate: 24
   };
-  if (activeViewportSpecificData && activeViewportSpecificData.cine) {
-    cine = activeViewportSpecificData.cine;
-  }
 
-  // TODO: activeViewportStackData won't currently change anything on
-  // CornerstoneViewport. The updates are too frequent and it's killing
-  // performance. Need to revisit how we can do this.
+  // New props we're creating?
   return {
-    activeViewportStackData: stack,
-    activeViewportCineData: cine,
+    activeEnabledElement: dom,
+    activeViewportCineData: cineData,
     activeViewportIndex: state.viewports.activeViewportIndex
   };
 };
@@ -56,7 +41,7 @@ const mapDispatchToProps = dispatch => {
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const {
-    activeViewportStackData,
+    activeEnabledElement,
     activeViewportCineData,
     activeViewportIndex
   } = propsFromState;
@@ -65,7 +50,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     cineFrameRate: activeViewportCineData.cineFrameRate,
     isPlaying: activeViewportCineData.isPlaying,
     onPlayPauseChanged: isPlaying => {
-      const cine = JSON.parse(JSON.stringify(activeViewportCineData));
+      const cine = cloneDeep(activeViewportCineData);
       cine.isPlaying = !cine.isPlaying;
 
       propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
@@ -73,7 +58,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       });
     },
     onFrameRateChanged: frameRate => {
-      const cine = JSON.parse(JSON.stringify(activeViewportCineData));
+      const cine = cloneDeep(activeViewportCineData);
       cine.cineFrameRate = frameRate;
 
       propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
@@ -81,40 +66,29 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       });
     },
     onClickNextButton: () => {
-      const stack = JSON.parse(JSON.stringify(activeViewportStackData));
-      const largestPossibleIndex = stack.imageIds.length - 1;
-      stack.currentImageIdIndex = Math.min(
-        stack.currentImageIdIndex + 1,
-        largestPossibleIndex
-      );
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const { currentImageIdIndex, imageIds } = stackData.data[0];
+      if (currentImageIdIndex >= imageIds.length - 1) return;
+      scrollToIndex(activeEnabledElement, currentImageIdIndex + 1);
     },
     onClickBackButton: () => {
-      const stack = JSON.parse(JSON.stringify(activeViewportStackData));
-      stack.currentImageIdIndex = Math.max(stack.currentImageIdIndex - 1, 0);
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const { currentImageIdIndex } = stackData.data[0];
+      if (currentImageIdIndex === 0) return;
+      scrollToIndex(activeEnabledElement, currentImageIdIndex - 1);
     },
     onClickSkipToStart: () => {
-      const stack = JSON.parse(JSON.stringify(activeViewportStackData));
-      stack.currentImageIdIndex = 0;
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      scrollToIndex(activeEnabledElement, 0);
     },
     onClickSkipToEnd: () => {
-      const stack = JSON.parse(JSON.stringify(activeViewportStackData));
-      stack.currentImageIdIndex = stack.imageIds.length;
-
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        stack
-      });
+      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      if (!stackData || !stackData.data || !stackData.data.length) return;
+      const lastIndex = stackData.data[0].imageIds.length - 1;
+      scrollToIndex(activeEnabledElement, lastIndex);
     }
   };
 };

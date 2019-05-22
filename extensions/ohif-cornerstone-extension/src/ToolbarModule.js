@@ -6,7 +6,7 @@ import ConnectedCineDialog from './ConnectedCineDialog';
 class ToolbarModule extends Component {
   state = {
     cineDialogOpen: false
-  }
+  };
 
   onClickCineToolbarButton = () => {
     this.setState({
@@ -16,16 +16,20 @@ class ToolbarModule extends Component {
 
   render() {
     const cineDialogContainerStyle = {
-      display: this.state.cineDialogOpen ? 'inline-block' : 'none'
+      display: this.state.cineDialogOpen ? 'block' : 'none',
+      position: 'absolute',
+      top: '82px',
+      zIndex: 999
     };
 
-    return (<div className="ToolbarModule">
-      <ConnectedToolbarSection />
-      <ToolbarButton
-        active={this.state.cineDialogOpen}
-        onClick={this.onClickCineToolbarButton}
-        text={'CINE'}
-        iconClasses={'fab fa-youtube'}
+    return (
+      <div className="ToolbarModule">
+        <ConnectedToolbarSection />
+        <ToolbarButton
+          active={this.state.cineDialogOpen}
+          onClick={this.onClickCineToolbarButton}
+          text={'CINE'}
+          iconClasses={'fab fa-youtube'}
         />
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
           <ConnectedCineDialog />

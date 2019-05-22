@@ -92,6 +92,8 @@ export default class LabellingFlow extends Component {
       locationLabel,
     } = this.state
 
+    const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/')
+
     if (!skipAddLabelButton) {
       return (
         <>
@@ -123,7 +125,7 @@ export default class LabellingFlow extends Component {
               onClick={this.fadeOutAndLeaveFast}
             >
               <svg className="checkIcon">
-                <use xlinkHref="/icons.svg#check-solid" />
+                <use xlinkHref={`${Icons}#check-solid`} />
               </svg>
             </div>
             <div className="locationDescriptionWrapper">
