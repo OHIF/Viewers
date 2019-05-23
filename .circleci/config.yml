@@ -35,7 +35,6 @@ jobs:
           paths:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-
       # Build & Test
       - run: yarn build:package:ci
       # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
@@ -44,13 +43,11 @@ jobs:
           command: yarn test:ci
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
-
       # Store result
       - store_test_results:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
-
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -70,21 +67,11 @@ jobs:
       # attempting to run it from a `pr`, which is not the case
       - run:
           name: Publish using Semantic Release
-          command: npx semantic-release --debug --dry-run
-
-  docker_publish:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build and push Docker image
-          command: |
-            docker build -t ohif/$IMAGE_NAME:$TAG .
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:$TAG
+          command: npx semantic-release --debug
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
 
   docs_publish:
     <<: *defaults
@@ -105,6 +92,35 @@ jobs:
       - run:
           name: Publish Docs
           command: yarn run docs:publish
+
+  docker_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and push Docker image
+          command: |
+            # This file will exist if a new version was published by
+            # our `semantic-release` command in the previous job
+            if [[ ! -e tmp/updated-version.txt ]]; then
+              exit 0
+            else
+              # Remove npm config
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat tmp/updated-version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+              docker build --tag ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL --tag ohif/$IMAGE_NAME:latest .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+              docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
+              docker push ohif/$IMAGE_NAME:latest
+            fi
 
 workflows:
   version: 2
@@ -136,3 +152,4 @@ workflows:
       - docker_publish:
           requires:
             - build_and_test
+            - npm_publish

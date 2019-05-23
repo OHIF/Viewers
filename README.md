@@ -10,21 +10,31 @@
   <a href="https://docs.ohif.org/"><strong>Read The Docs</strong></a> |
   <a href="https://github.com/OHIF/Viewers/tree/master/docs/latest">Edit the docs</a>
 </div>
+<div align="center">
+  <a href="https://docs.ohif.org/demo">Demo</a> |
+  <a href="https://ohif.canny.io/">Roadmap</a> |
+  <a href="https://react.ohif.org/">Component Library</a>
+</div>
 
 
 <hr />
 
 [![CircleCI][circleci-image]][circleci-url]
 [![codecov][codecov-image]][codecov-url]
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
 [![code style: prettier][prettier-image]][prettier-url]
 [![semantic-release][semantic-image]][semantic-url]
 
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
+[![Pulls][docker-pulls-img]][docker-image-url]
 [![MIT License][license-image]][license-url]
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
+> ATTENTION: If you are looking for Version 1 (the Meteor Version) of this
+> repository, it lives on
+> [the `v1.x` branch](https://github.com/OHIF/Viewers/tree/v1.x)
 
 ## Why?
 
@@ -147,6 +157,32 @@ or file an issue on GitHub.
 
 [Google Group][google-group]
 
+## Roadmap
+
+If you want to know what's planned for the very near future,
+[check out our roadmap](https://ohif.canny.io/). The best way to influence when
+and what is worked on is to contribute to the conversation by creating GitHub
+issues, and contributing code through pull requests. OHIF's high level
+priorities for the near future are:
+
+- Feature parity with version 1
+- Extension and configuration improvements with key integration partners
+- Continued Developer Experience Improvements
+- Segmentation Tools, and improved VTK.js support
+
+More granular information will make it's way to the backlog as these items
+become scoped for development by core maintainers.
+
+> Don't hesitate to ask questions, propose features, or create pull requests.
+> We're here, we're listening, and we're ready to build the best open source
+> medical imaging viewer on the web.
+
+#### Roadmap Generously Powered by Canny.io
+
+<a href="https://ohif.canny.io/">
+  <img height="30" src="docs/latest/assets/img/canny-full.png" />
+</a>
+
 ## Contributors
 
 Thanks goes to these wonderful people
@@ -154,7 +190,7 @@ Thanks goes to these wonderful people
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-<table><tr><td align="center"><a href="https://github.com/swederik"><img src="https://avatars3.githubusercontent.com/u/607793?v=4" width="100px;" alt="Erik Ziegler"/><br /><sub><b>Erik Ziegler</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=swederik" title="Code">💻</a></td><td align="center"><a href="https://github.com/evren217"><img src="https://avatars1.githubusercontent.com/u/4920551?v=4" width="100px;" alt="Evren Ozkan"/><br /><sub><b>Evren Ozkan</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=evren217" title="Code">💻</a></td><td align="center"><a href="https://github.com/galelis"><img src="https://avatars3.githubusercontent.com/u/2378326?v=4" width="100px;" alt="Gustavo André Lelis"/><br /><sub><b>Gustavo André Lelis</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=galelis" title="Code">💻</a></td><td align="center"><a href="http://dannyrb.com/"><img src="https://avatars1.githubusercontent.com/u/5797588?v=4" width="100px;" alt="Danny Brown"/><br /><sub><b>Danny Brown</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=dannyrb" title="Code">💻</a></td><td align="center"><a href="https://github.com/all-contributors/all-contributors-bot"><img src="https://avatars3.githubusercontent.com/u/46843839?v=4" width="100px;" alt="allcontributors[bot]"/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=allcontributors" title="Documentation">📖</a></td></tr></table>
+<table><tr><td align="center"><a href="https://github.com/swederik"><img src="https://avatars3.githubusercontent.com/u/607793?v=4" width="100px;" alt="Erik Ziegler"/><br /><sub><b>Erik Ziegler</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=swederik" title="Code">💻</a></td><td align="center"><a href="https://github.com/evren217"><img src="https://avatars1.githubusercontent.com/u/4920551?v=4" width="100px;" alt="Evren Ozkan"/><br /><sub><b>Evren Ozkan</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=evren217" title="Code">💻</a></td><td align="center"><a href="https://github.com/galelis"><img src="https://avatars3.githubusercontent.com/u/2378326?v=4" width="100px;" alt="Gustavo André Lelis"/><br /><sub><b>Gustavo André Lelis</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=galelis" title="Code">💻</a></td><td align="center"><a href="http://dannyrb.com/"><img src="https://avatars1.githubusercontent.com/u/5797588?v=4" width="100px;" alt="Danny Brown"/><br /><sub><b>Danny Brown</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=dannyrb" title="Code">💻</a></td><td align="center"><a href="https://github.com/all-contributors/all-contributors-bot"><img src="https://avatars3.githubusercontent.com/u/46843839?v=4" width="100px;" alt="allcontributors[bot]"/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=allcontributors" title="Documentation">📖</a></td><td align="center"><a href="https://www.linkedin.com/in/siliconvalleynextgeneration/"><img src="https://avatars0.githubusercontent.com/u/1230575?v=4" width="100px;" alt="Esref Durna"/><br /><sub><b>Esref Durna</b></sub></a><br /><a href="#question-EsrefDurna" title="Answering Questions">💬</a></td></tr></table>
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
@@ -208,6 +244,8 @@ Links:
 [npm-url]: https://npmjs.org/package/ohif-viewer
 [npm-downloads-image]: https://img.shields.io/npm/dm/ohif-viewer.svg?style=flat-square
 [npm-version-image]: https://img.shields.io/npm/v/ohif-viewer.svg?style=flat-square
+[docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
+[docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- DOCS -->
