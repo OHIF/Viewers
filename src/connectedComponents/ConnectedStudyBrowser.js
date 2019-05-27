@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import cloneDeep from 'lodash.clonedeep'
 import { StudyBrowser } from 'react-viewerbase'
 
 // TODO
@@ -9,7 +10,7 @@ const mapStateToProps = (state, ownProps) => {
   // we can try to update the component state so that the thumbnail
   // progress bar is updated
   const stackLoadingProgressMap = state.loading.progress
-  const studiesWithLoadingData = JSON.parse(JSON.stringify(ownProps.studies))
+  const studiesWithLoadingData = cloneDeep(ownProps.studies)
 
   studiesWithLoadingData.forEach(study => {
     study.thumbnails.forEach(data => {

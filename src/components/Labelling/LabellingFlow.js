@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
@@ -48,7 +49,7 @@ export default class LabellingFlow extends Component {
     this.descriptionInput = React.createRef()
 
     this.initialItems = OHIFLabellingData
-    this.currentItems = JSON.parse(JSON.stringify(this.initialItems))
+    this.currentItems = cloneDeep(this.initialItems)
   }
 
   componentDidUpdate = () => {
@@ -193,7 +194,7 @@ export default class LabellingFlow extends Component {
   }
 
   descriptionCancel = () => {
-    const { description = '' } = JSON.parse(JSON.stringify(this.state))
+    const { description = '' } = cloneDeep(this.state)
     this.descriptionInput.current.value = description
 
     this.setState({

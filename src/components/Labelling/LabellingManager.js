@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
@@ -30,7 +31,7 @@ export default class LabellingManager extends Component {
   constructor(props) {
     super(props)
 
-    const measurementData = JSON.parse(JSON.stringify(props.measurementData))
+    const measurementData = cloneDeep(props.measurementData)
     this.treatMeasurementData(measurementData)
 
     let editLocation = props.editLocation
