@@ -1,19 +1,19 @@
-import { connect } from 'react-redux'
-import ViewerRetrieveStudyData from './ViewerRetrieveStudyData.js'
+import { connect } from 'react-redux';
+import ViewerRetrieveStudyData from './ViewerRetrieveStudyData.js';
 
-const isActive = a => a.active === true
+const isActive = (a) => a.active === true;
 
 const mapStateToProps = state => {
-  const activeServer = state.servers.servers.find(isActive)
+    const activeServer = state.servers.servers.find(isActive);
 
-  return {
-    server: activeServer,
-  }
-}
+    return {
+        server: activeServer,
+    };
+};
 
 const ConnectedViewerRetrieveStudyData = connect(
-  mapStateToProps,
-  null
-)(ViewerRetrieveStudyData)
+    mapStateToProps,
+    null
+)(ViewerRetrieveStudyData);
 
-export default ConnectedViewerRetrieveStudyData
+export default ConnectedViewerRetrieveStudyData;
