@@ -1,52 +1,61 @@
-import { Component } from 'react';
-import React from 'react';
-import PropTypes from 'prop-types';
-import { OHIF } from 'ohif-core';
-import ConnectedLayoutManager from './ConnectedLayoutManager.js';
-import './ViewerMain.css';
+import { Component } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
+import { OHIF } from 'ohif-core'
+import ConnectedLayoutManager from './ConnectedLayoutManager.js'
+import './ViewerMain.css'
 
 class ViewerMain extends Component {
   static propTypes = {
     studies: PropTypes.array.isRequired,
     setViewportSpecificData: PropTypes.func.isRequired,
-    clearViewportSpecificData: PropTypes.func.isRequired
-  };
+    clearViewportSpecificData: PropTypes.func.isRequired,
+    setToolActive: PropTypes.func.isRequired,
+    setActiveViewportSpecificData: PropTypes.func.isRequired,
+  }
 
   constructor(props) {
-    super(props);
-    OHIF.hotkeysUtil.setup('viewer');
+    super(props)
+
+    // OHIF.hotkeysUtil.setup('viewer')
+    const hotkeysUtil = new OHIF.HotkeysUtil('viewer', {
+      setViewportSpecificData: props.setViewportSpecificData,
+      clearViewportSpecificData: props.clearViewportSpecificData,
+      setToolActive: props.setToolActive,
+      setActiveViewportSpecificData: props.setActiveViewportSpecificData,
+    })
 
     this.state = {
-      displaySets: []
+      displaySets: [],
     }
   }
 
   getDisplaySets(studies) {
-    const displaySets = [];
+    const displaySets = []
     studies.forEach(study => {
       study.displaySets.forEach(dSet => {
         if (!dSet.plugin) {
-          dSet.plugin = 'cornerstone';
+          dSet.plugin = 'cornerstone'
         }
-        displaySets.push(dSet);
-      });
-    });
+        displaySets.push(dSet)
+      })
+    })
 
-    return displaySets;
+    return displaySets
   }
 
   findDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
     const study = studies.find(study => {
-      return study.studyInstanceUid === studyInstanceUid;
-    });
+      return study.studyInstanceUid === studyInstanceUid
+    })
 
     if (!study) {
-      return;
+      return
     }
 
     return study.displaySets.find(displaySet => {
-      return displaySet.displaySetInstanceUid === displaySetInstanceUid;
-    });
+      return displaySet.displaySetInstanceUid === displaySetInstanceUid
+    })
   }
 
   componentDidMount() {
@@ -54,41 +63,50 @@ class ViewerMain extends Component {
     //window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
     // Get all the display sets for the viewer studies
-    const displaySets = this.getDisplaySets(this.props.studies);
+    const displaySets = this.getDisplaySets(this.props.studies)
 
     this.setState({
-      displaySets
-    });
+      displaySets,
+    })
   }
 
   getViewportData = () => {
-    const viewportData = [];
-    const { layout, viewportSpecificData } = this.props;
+    const viewportData = []
+    const { layout, viewportSpecificData } = this.props
 
-    for (let viewportIndex = 0; viewportIndex < layout.viewports.length; viewportIndex++) {
-      let displaySet = viewportSpecificData[viewportIndex];
+    for (
+      let viewportIndex = 0;
+      viewportIndex < layout.viewports.length;
+      viewportIndex++
+    ) {
+      let displaySet = viewportSpecificData[viewportIndex]
 
       // If the viewport is empty, get one available in study
       if (!displaySet || !displaySet.displaySetInstanceUid) {
-        const { displaySets } = this.state;
-        displaySet = displaySets.find(ds => !viewportData.some(v => v.displaySetInstanceUid === ds.displaySetInstanceUid));
+        const { displaySets } = this.state
+        displaySet = displaySets.find(
+          ds =>
+            !viewportData.some(
+              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
+            )
+        )
       }
 
-      viewportData.push(displaySet);
+      viewportData.push(displaySet)
     }
 
-    return viewportData;
-  };
+    return viewportData
+  }
 
   setViewportData = ({ viewportIndex, item }) => {
     const displaySet = this.findDisplaySet(
       this.props.studies,
       item.studyInstanceUid,
       item.displaySetInstanceUid
-    );
+    )
 
-    this.props.setViewportSpecificData(viewportIndex, displaySet);
-  };
+    this.props.setViewportSpecificData(viewportIndex, displaySet)
+  }
 
   render() {
     return (
@@ -99,15 +117,15 @@ class ViewerMain extends Component {
           setViewportData={this.setViewportData}
         />
       </div>
-    );
+    )
   }
 
   componentWillUnmount() {
     // Clear the entire viewport specific data
-    const { viewportSpecificData } = this.props;
-    Object.keys(viewportSpecificData).forEach((viewportIndex) => {
-      this.props.clearViewportSpecificData(viewportIndex);
-    });
+    const { viewportSpecificData } = this.props
+    Object.keys(viewportSpecificData).forEach(viewportIndex => {
+      this.props.clearViewportSpecificData(viewportIndex)
+    })
 
     // Remove beforeUnload event handler...
     //window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
@@ -126,4 +144,4 @@ class ViewerMain extends Component {
   }
 }
 
-export default ViewerMain;
+export default ViewerMain
