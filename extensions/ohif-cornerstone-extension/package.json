@@ -39,7 +39,7 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "0.1.27"
+    "react-cornerstone-viewport": "0.1.28"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
