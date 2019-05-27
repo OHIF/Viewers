@@ -30,8 +30,7 @@ const mapStateToProps = (state, ownProps) => {
     ...dataFromStore,
     enableStackPrefetch: isActive,
     //stack: viewportSpecificData.stack,
-    cineToolData: viewportSpecificData.cine,
-    viewport: viewportSpecificData.viewport
+    cineToolData: viewportSpecificData.cine
   };
 };
 
