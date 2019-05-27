@@ -17,8 +17,8 @@ class ViewerMain extends Component {
   constructor(props) {
     super(props)
 
-    // OHIF.hotkeysUtil.setup('viewer')
-    const hotkeysUtil = new OHIF.HotkeysUtil('viewer', {
+    // Initialize hotkeys
+    new OHIF.HotkeysUtil('viewer', {
       setViewportSpecificData: props.setViewportSpecificData,
       clearViewportSpecificData: props.clearViewportSpecificData,
       setToolActive: props.setToolActive,

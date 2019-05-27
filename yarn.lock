@@ -9674,10 +9674,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.5.3:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.3.tgz#cf78f0e4b28ed5a602b032483cdd44f3baea34f2"
-  integrity sha512-pdzVz9WkdXVm99TuBSx1JYEed9aPaD9/CKd/+YM4R3lgchDNLxuz0l76HBPHpFV2XDIKmu1q5EyETyMiOxhZsw==
+ohif-core@0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.5.tgz#78ace87fa06b3b23a004414a702cc23cb00edf9d"
+  integrity sha512-BORJCxOWuVAx2CE6+LSdL5+1+PG6gkYgl6tyAZhHhAgT46DWAfbq8nkAIX7Rhwot0BWpAcHkkBWIavGOBOH24Q==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
