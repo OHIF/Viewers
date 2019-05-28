@@ -81,18 +81,25 @@ class ViewerMain extends Component {
     ) {
       let displaySet = viewportSpecificData[viewportIndex]
 
-      // If the viewport is empty, get one available in study
-      if (!displaySet || !displaySet.displaySetInstanceUid) {
+      if (displaySet && displaySet.studyInstanceUid && displaySet.displaySetInstanceUid) {
+        // Get missing fields from original display set
+        const originalDisplaySet = this.findDisplaySet(
+            this.props.studies,
+            displaySet.studyInstanceUid,
+            displaySet.displaySetInstanceUid
+        )
+        viewportData.push(Object.assign({}, originalDisplaySet, displaySet))
+      } else {
+        // If the viewport is empty, get one available in study
         const { displaySets } = this.state
         displaySet = displaySets.find(
-          ds =>
-            !viewportData.some(
-              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
-            )
+            ds =>
+                !viewportData.some(
+                    v => v.displaySetInstanceUid === ds.displaySetInstanceUid
+                )
         )
+        viewportData.push(Object.assign({}, displaySet))
       }
-
-      viewportData.push(displaySet)
     }
 
     return viewportData
