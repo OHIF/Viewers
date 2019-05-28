@@ -28,6 +28,8 @@ class ViewerMain extends Component {
     this.state = {
       displaySets: [],
     }
+
+    this.cachedViewportData = {}
   }
 
   getDisplaySets(studies) {
@@ -81,26 +83,37 @@ class ViewerMain extends Component {
     ) {
       let displaySet = viewportSpecificData[viewportIndex]
 
-      if (displaySet && displaySet.studyInstanceUid && displaySet.displaySetInstanceUid) {
+      // Use the cached display set in viewport if the new one is empty
+      if (displaySet && !displaySet.displaySetInstanceUid) {
+        displaySet = this.cachedViewportData[viewportIndex]
+      }
+
+      if (
+        displaySet &&
+        displaySet.studyInstanceUid &&
+        displaySet.displaySetInstanceUid
+      ) {
         // Get missing fields from original display set
         const originalDisplaySet = this.findDisplaySet(
-            this.props.studies,
-            displaySet.studyInstanceUid,
-            displaySet.displaySetInstanceUid
+          this.props.studies,
+          displaySet.studyInstanceUid,
+          displaySet.displaySetInstanceUid
         )
         viewportData.push(Object.assign({}, originalDisplaySet, displaySet))
       } else {
         // If the viewport is empty, get one available in study
         const { displaySets } = this.state
         displaySet = displaySets.find(
-            ds =>
-                !viewportData.some(
-                    v => v.displaySetInstanceUid === ds.displaySetInstanceUid
-                )
+          ds =>
+            !viewportData.some(
+              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
+            )
         )
         viewportData.push(Object.assign({}, displaySet))
       }
     }
+
+    this.cachedViewportData = viewportData
 
     return viewportData
   }
