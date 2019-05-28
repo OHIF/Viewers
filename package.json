@@ -21,6 +21,7 @@
     "build:package:ci": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
     "build:web": "yarn run preBuild && react-scripts --max_old_space_size=4096 build",
     "build:web:ci": "yarn run preBuild && cross-env PUBLIC_URL=/demo REACT_APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build && cpx 'build/**/*' docs/latest/_book/demo --verbose",
+    "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/public_dicomweb.js react-scripts --max_old_space_size=4096 build",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "test": "jest",
     "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
