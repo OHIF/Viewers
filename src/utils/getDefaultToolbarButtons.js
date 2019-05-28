@@ -39,7 +39,7 @@ export default function() {
         command: 'Annotate',
         type: 'tool',
         text: 'Annotate',
-        icon: `${Icons}#icon-tools-measure-non-target`,
+        icon: `icon-tools-measure-non-target`,
         active: false
     },*/
     {

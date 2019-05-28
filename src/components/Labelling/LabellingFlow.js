@@ -5,7 +5,7 @@ import cloneDeep from 'lodash.clonedeep'
 import bounding from '../../lib/utils/bounding.js'
 
 import LabellingTransition from './LabellingTransition.js'
-import { SelectTree } from 'react-viewerbase'
+import { SelectTree, Icon } from 'react-viewerbase'
 import { getAddLabelButtonStyle } from './labellingPositionUtils.js'
 
 import OHIFLabellingData from './OHIFLabellingData.js'
@@ -93,8 +93,6 @@ export default class LabellingFlow extends Component {
       locationLabel,
     } = this.state
 
-    const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/')
-
     if (!skipAddLabelButton) {
       return (
         <>
@@ -125,9 +123,7 @@ export default class LabellingFlow extends Component {
               className="checkIconWrapper"
               onClick={this.fadeOutAndLeaveFast}
             >
-              <svg className="checkIcon">
-                <use xlinkHref={`${Icons}#check-solid`} />
-              </svg>
+              <Icon name="check-solid" className="checkIcon" />
             </div>
             <div className="locationDescriptionWrapper">
               <div className="location">{locationLabel}</div>

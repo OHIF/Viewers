@@ -125,7 +125,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     },
     /*{
       text: '3D',
-      icon: `${Icons}#cube`,
+      icon: `#cube`,
       onClick: (click) => {
         console.warn('3D Perspective');
         const data = {
