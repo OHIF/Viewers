@@ -36,14 +36,13 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
-  const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/')
   const buttons = [
     {
       text: 'Acquired',
       type: 'command',
-      iconClasses: 'fa fa-bars',
+      icon: 'bars',
       active: false,
-      onClick: click => {
+      onClick: () => {
         console.warn('Original Acquisition')
 
         const layoutData = setSingleLayoutData(
@@ -57,10 +56,9 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     },
     {
       text: 'Axial',
-      svgUrl: `${Icons}#cube`,
-      svgClasses: 'icon-rotate-120',
+      icon: 'cube',
       active: false,
-      onClick: click => {
+      onClick: () => {
         console.warn('Axial')
         const data = {
           plugin: 'vtk',
@@ -81,9 +79,9 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     },
     {
       text: 'Sagittal',
-      svgUrl: `${Icons}#cube`,
+      icon: 'cube',
       active: false,
-      onClick: click => {
+      onClick: () => {
         console.warn('Sagittal')
         const data = {
           plugin: 'vtk',
@@ -104,10 +102,9 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     },
     {
       text: 'Coronal',
-      svgUrl: `${Icons}#cube`,
-      svgClasses: 'fa-rotate-90 fa-flip-horizontal',
+      icon: 'cube',
       active: false,
-      onClick: click => {
+      onClick: () => {
         console.warn('Coronal')
         const data = {
           plugin: 'vtk',
@@ -128,7 +125,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     },
     /*{
       text: '3D',
-      svgUrl: `${Icons}#cube`,
+      icon: `${Icons}#cube`,
       onClick: (click) => {
         console.warn('3D Perspective');
         const data = {
