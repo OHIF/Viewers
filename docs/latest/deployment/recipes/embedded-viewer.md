@@ -92,10 +92,9 @@ ReactDOM.render(app, document.getElementById('ohif-viewer-target'))
 
 > I'm having trouble getting this to work. Where can I go for help?
 
-First, check out this fully functional
-[CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9)
-example. If you're still having trouble, feel free to search or GitHub issues.
-Can't find anything related your problem? Create a new one.
+First, check out this fully functional [CodeSandbox][code-sandbox] example. If
+you're still having trouble, feel free to search or GitHub issues. Can't find
+anything related your problem? Create a new one.
 
 > When I include bootstrap, other styles on my page no longer work correctly.
 > What can I do?
@@ -108,3 +107,5 @@ Have that working? Good. Now `embed` that new page using an
 
 This should produce the expected result while also protecting your page from any
 globally defined styles/scripts.
+
+[code-sandbox]: https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9

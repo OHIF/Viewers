@@ -24,8 +24,7 @@ add a powerful medical imaging viewer to an existing web page using only a few
 include tags.
 
 - Read more about it here: [Embedded Viewer](./recipes/embedded-viewer.md)
-- And check out our
-  [live demo on CodeSandbox](https://codesandbox.io/s/lrjoo3znxm)
+- And check out our [live demo on CodeSandbox][code-sandbox]
 
 {% include "./_embedded-viewer-diagram.md" %}
 
@@ -207,4 +206,5 @@ Please feel free to suggest or contribute your own recipes.
 [host-static-assets]: https://www.netlify.com/blog/2016/05/18/9-reasons-your-site-should-be-static/
 [cors]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 [code-flows]: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
+[code-sandbox]: https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9
 <!-- prettier-ignore-end -->
