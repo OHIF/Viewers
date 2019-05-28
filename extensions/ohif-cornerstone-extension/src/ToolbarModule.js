@@ -29,7 +29,7 @@ class ToolbarModule extends Component {
           active={this.state.cineDialogOpen}
           onClick={this.onClickCineToolbarButton}
           text={'CINE'}
-          iconClasses={'fab fa-youtube'}
+          icon="tool-cineplay-toggle"
         />
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
           <ConnectedCineDialog />
