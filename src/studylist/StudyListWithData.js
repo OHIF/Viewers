@@ -94,8 +94,9 @@ class StudyListWithData extends Component {
               study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
                 'MMM DD, YYYY'
               )
-              study.patientName =
-                study.patientName === undefined ? '(empty)' : study.patientName
+              study.patientName = !study.patientName
+                ? '(empty)'
+                : study.patientName
             }
             return study
           })
