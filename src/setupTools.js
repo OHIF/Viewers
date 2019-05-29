@@ -1,15 +1,15 @@
-import OHIF from 'ohif-core'
-import updateTableWithNewMeasurementData from './lib/updateTableWithNewMeasurementData'
+import OHIF from 'ohif-core';
+import updateTableWithNewMeasurementData from './lib/updateTableWithNewMeasurementData';
 
 function getToolLabellingFlowCallback(store) {
   const setLabellingFlowDataAction = labellingFlowData => ({
     type: 'SET_LABELLING_FLOW_DATA',
     labellingFlowData,
-  })
+  });
 
   const setLabellingFlowData = labellingFlowData => {
-    store.dispatch(setLabellingFlowDataAction(labellingFlowData))
-  }
+    store.dispatch(setLabellingFlowDataAction(labellingFlowData));
+  };
 
   return function toolLabellingFlowCallback(
     measurementData,
@@ -21,21 +21,21 @@ function getToolLabellingFlowCallback(store) {
       // Update the measurement data with the labelling parameters
 
       if (location) {
-        measurementData.location = location
+        measurementData.location = location;
       }
       if (description) {
-        measurementData.description = description
+        measurementData.description = description;
       }
       if (response) {
-        measurementData.response = response
+        measurementData.response = response;
       }
 
-      updateTableWithNewMeasurementData(measurementData)
-    }
+      updateTableWithNewMeasurementData(measurementData);
+    };
 
     const labellingDoneCallback = () => {
-      setLabellingFlowData({ visible: false })
-    }
+      setLabellingFlowData({ visible: false });
+    };
 
     const labellingFlowData = {
       visible: true,
@@ -48,99 +48,99 @@ function getToolLabellingFlowCallback(store) {
       editDescriptionOnDialog: options.editDescriptionOnDialog,
       labellingDoneCallback,
       updateLabelling,
-    }
+    };
 
-    setLabellingFlowData(labellingFlowData)
-  }
+    setLabellingFlowData(labellingFlowData);
+  };
 }
 
 const resetLabellingAndContextMenuAction = state => ({
   type: 'RESET_LABELLING_AND_CONTEXT_MENU',
   state,
-})
+});
 
 const setToolContextMenuDataAction = (viewportIndex, toolContextMenuData) => ({
   type: 'SET_TOOL_CONTEXT_MENU_DATA',
   viewportIndex,
   toolContextMenuData,
-})
+});
 
 function getOnRightClickCallback(store) {
   const setToolContextMenuData = (viewportIndex, toolContextMenuData) => {
-    store.dispatch(resetLabellingAndContextMenuAction())
+    store.dispatch(resetLabellingAndContextMenuAction());
     store.dispatch(
       setToolContextMenuDataAction(viewportIndex, toolContextMenuData)
-    )
-  }
+    );
+  };
 
   const getOnCloseCallback = viewportIndex => {
     return function onClose() {
       const toolContextMenuData = {
         visible: false,
-      }
+      };
 
       store.dispatch(
         setToolContextMenuDataAction(viewportIndex, toolContextMenuData)
-      )
-    }
-  }
+      );
+    };
+  };
 
   return function onRightClick(event) {
-    const eventData = event.detail
-    const viewportIndex = parseInt(eventData.element.dataset.viewportIndex, 10)
+    const eventData = event.detail;
+    const viewportIndex = parseInt(eventData.element.dataset.viewportIndex, 10);
 
     const toolContextMenuData = {
       eventData,
       isTouchEvent: false,
       onClose: getOnCloseCallback(viewportIndex),
-    }
+    };
 
-    setToolContextMenuData(viewportIndex, toolContextMenuData)
-  }
+    setToolContextMenuData(viewportIndex, toolContextMenuData);
+  };
 }
 
 function getOnTouchPressCallback(store) {
   const setToolContextMenuData = (viewportIndex, toolContextMenuData) => {
-    store.dispatch(resetLabellingAndContextMenuAction())
+    store.dispatch(resetLabellingAndContextMenuAction());
     store.dispatch(
       setToolContextMenuDataAction(viewportIndex, toolContextMenuData)
-    )
-  }
+    );
+  };
 
   const getOnCloseCallback = viewportIndex => {
     return function onClose() {
       const toolContextMenuData = {
         visible: false,
-      }
+      };
 
       store.dispatch(
         setToolContextMenuDataAction(viewportIndex, toolContextMenuData)
-      )
-    }
-  }
+      );
+    };
+  };
 
   return function onTouchPress(event) {
-    const eventData = event.detail
-    const viewportIndex = parseInt(eventData.element.dataset.viewportIndex, 10)
+    const eventData = event.detail;
+    const viewportIndex = parseInt(eventData.element.dataset.viewportIndex, 10);
 
     const toolContextMenuData = {
       eventData,
       isTouchEvent: true,
       onClose: getOnCloseCallback(viewportIndex),
-    }
+    };
 
-    setToolContextMenuData(viewportIndex, toolContextMenuData)
-  }
+    setToolContextMenuData(viewportIndex, toolContextMenuData);
+  };
 }
 
 function getResetLabellingAndContextMenu(store) {
   return function resetLabellingAndContextMenu() {
-    store.dispatch(resetLabellingAndContextMenuAction())
-  }
+    store.dispatch(resetLabellingAndContextMenuAction());
+  };
 }
 
 export default function setupTools(store) {
-  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store)
+  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
   const availableTools = [
     { name: 'Pan', mouseButtonMasks: [1, 4] },
     { name: 'Zoom', mouseButtonMasks: [1, 2] },
@@ -214,13 +214,13 @@ export default function setupTools(store) {
     { name: 'ZoomTouchPinch' },
     { name: 'StackScrollMouseWheel' },
     { name: 'StackScrollMultiTouch' },
-  ]
+  ];
 
-  const onRightClick = getOnRightClickCallback(store)
-  const onTouchPress = getOnTouchPressCallback(store)
-  const onNewImage = getResetLabellingAndContextMenu(store)
-  const onMouseClick = getResetLabellingAndContextMenu(store)
-  const onTouchStart = getResetLabellingAndContextMenu(store)
+  const onRightClick = getOnRightClickCallback(store);
+  const onTouchPress = getOnTouchPressCallback(store);
+  const onNewImage = getResetLabellingAndContextMenu(store);
+  const onMouseClick = getResetLabellingAndContextMenu(store);
+  const onTouchStart = getResetLabellingAndContextMenu(store);
   const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
     availableTools,
     onNewImage,
@@ -228,7 +228,7 @@ export default function setupTools(store) {
     onTouchPress,
     onTouchStart,
     onMouseClick,
-  })
+  });
 
-  store.dispatch(toolAction)
+  store.dispatch(toolAction);
 }

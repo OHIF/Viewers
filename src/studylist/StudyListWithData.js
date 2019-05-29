@@ -10,14 +10,14 @@ class StudyListWithData extends Component {
   state = {
     searchData: {},
     studies: null,
-    error: null
+    error: null,
   };
 
   static propTypes = {
     patientId: PropTypes.string,
     server: PropTypes.object,
     user: PropTypes.object,
-    history: PropTypes.object
+    history: PropTypes.object,
   };
 
   static rowsPerPage = 25;
@@ -42,7 +42,7 @@ class StudyListWithData extends Component {
       rowsPerPage: StudyListWithData.rowsPerPage,
       studyDateFrom: StudyListWithData.defaultStudyDateFrom,
       studyDateTo: StudyListWithData.defaultStudyDateTo,
-      sortData: StudyListWithData.defaultSort
+      sortData: StudyListWithData.defaultSort,
     }
   ) => {
     const { server } = this.props;
@@ -55,7 +55,7 @@ class StudyListWithData extends Component {
       studyDateFrom: searchData.studyDateFrom,
       studyDateTo: searchData.studyDateTo,
       limit: searchData.rowsPerPage,
-      offset: searchData.currentPage * searchData.rowsPerPage
+      offset: searchData.currentPage * searchData.rowsPerPage,
     };
 
     // TODO: add sorting
@@ -97,12 +97,12 @@ class StudyListWithData extends Component {
           });
 
         this.setState({
-          studies: sortedStudies
+          studies: sortedStudies,
         });
       })
       .catch(error => {
         this.setState({
-          error: true
+          error: true,
         });
 
         throw new Error(error);

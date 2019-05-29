@@ -1,18 +1,18 @@
-import { Component } from 'react'
-import React from 'react'
-import PropTypes from 'prop-types'
-import SimpleDialog from '../SimpleDialog/SimpleDialog.js'
+import { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import SimpleDialog from '../SimpleDialog/SimpleDialog.js';
 
-import bounding from '../../lib/utils/bounding.js'
-import { getDialogStyle } from './../Labelling/labellingPositionUtils.js'
+import bounding from '../../lib/utils/bounding.js';
+import { getDialogStyle } from './../Labelling/labellingPositionUtils.js';
 
-import './EditDescriptionDialog.css'
+import './EditDescriptionDialog.css';
 
 export default class EditDescriptionDialog extends Component {
   static defaultProps = {
     componentRef: React.createRef(),
     componentStyle: {},
-  }
+  };
 
   static propTypes = {
     measurementData: PropTypes.object.isRequired,
@@ -20,32 +20,32 @@ export default class EditDescriptionDialog extends Component {
     componentRef: PropTypes.object,
     componentStyle: PropTypes.object,
     onUpdate: PropTypes.func.isRequired,
-  }
+  };
 
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       description: props.measurementData.description || '',
-    }
+    };
 
-    this.mainElement = React.createRef()
+    this.mainElement = React.createRef();
   }
 
   componentDidMount = () => {
-    bounding(this.mainElement)
-  }
+    bounding(this.mainElement);
+  };
 
   componentDidUpdate(prevProps) {
     if (this.props.description !== prevProps.description) {
       this.setState({
         description: this.props.description,
-      })
+      });
     }
   }
 
   render() {
-    const style = getDialogStyle(this.props.componentStyle)
+    const style = getDialogStyle(this.props.componentStyle);
 
     return (
       <SimpleDialog
@@ -65,18 +65,18 @@ export default class EditDescriptionDialog extends Component {
           onChange={this.handleChange}
         />
       </SimpleDialog>
-    )
+    );
   }
 
   onClose = () => {
-    this.props.onCancel()
-  }
+    this.props.onCancel();
+  };
 
   onConfirm = () => {
-    this.props.onUpdate(this.state.description)
-  }
+    this.props.onUpdate(this.state.description);
+  };
 
   handleChange = event => {
-    this.setState({ description: event.target.value })
-  }
+    this.setState({ description: event.target.value });
+  };
 }

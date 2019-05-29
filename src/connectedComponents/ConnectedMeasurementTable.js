@@ -1,41 +1,41 @@
-import { connect } from 'react-redux'
-import { MeasurementTable } from 'react-viewerbase'
-import OHIF from 'ohif-core'
-import moment from 'moment'
-import cornerstone from 'cornerstone-core'
-import jumpToRowItem from '../lib/jumpToRowItem.js'
-import getMeasurementLocationCallback from '../lib/getMeasurementLocationCallback'
+import { connect } from 'react-redux';
+import { MeasurementTable } from 'react-viewerbase';
+import OHIF from 'ohif-core';
+import moment from 'moment';
+import cornerstone from 'cornerstone-core';
+import jumpToRowItem from '../lib/jumpToRowItem.js';
+import getMeasurementLocationCallback from '../lib/getMeasurementLocationCallback';
 
-const { setViewportSpecificData } = OHIF.redux.actions
-const { MeasurementApi } = OHIF.measurements
+const { setViewportSpecificData } = OHIF.redux.actions;
+const { MeasurementApi } = OHIF.measurements;
 
 function groupBy(list, props) {
   return list.reduce((a, b) => {
-    ;(a[b[props]] = a[b[props]] || []).push(b)
-    return a
-  }, {})
+    (a[b[props]] = a[b[props]] || []).push(b);
+    return a;
+  }, {});
 }
 
 function getAllTools() {
-  const config = OHIF.measurements.MeasurementApi.getConfiguration()
-  let tools = []
+  const config = OHIF.measurements.MeasurementApi.getConfiguration();
+  let tools = [];
   config.measurementTools.forEach(
     toolGroup => (tools = tools.concat(toolGroup.childTools))
-  )
+  );
 
-  return tools
+  return tools;
 }
 
 function getMeasurementText(measurementData) {
-  const { location, description } = measurementData
-  let text = '...'
+  const { location, description } = measurementData;
+  let text = '...';
   if (location) {
-    text = location
+    text = location;
     if (description) {
-      text += `(${description})`
+      text += `(${description})`;
     }
   }
-  return text
+  return text;
 }
 
 function getDataForEachMeasurementNumber(
@@ -43,54 +43,54 @@ function getDataForEachMeasurementNumber(
   timepoints,
   displayFunction
 ) {
-  const data = []
+  const data = [];
   // on each measurement number we should get each measurement data by available timepoint
   measurementNumberList.forEach(measurement => {
     timepoints.forEach(timepoint => {
       const eachData = {
         displayText: '...',
-      }
+      };
       if (measurement.timepointId === timepoint.timepointId) {
-        eachData.displayText = displayFunction(measurement)
+        eachData.displayText = displayFunction(measurement);
       }
-      data.push(eachData)
-    })
-  })
+      data.push(eachData);
+    });
+  });
 
-  return data
+  return data;
 }
 
 function convertMeasurementsToTableData(toolCollections, timepoints) {
-  const config = OHIF.measurements.MeasurementApi.getConfiguration()
-  const toolGroups = config.measurementTools
-  const tools = getAllTools()
+  const config = OHIF.measurements.MeasurementApi.getConfiguration();
+  const toolGroups = config.measurementTools;
+  const tools = getAllTools();
 
   const tableMeasurements = toolGroups.map(toolGroup => {
     return {
       groupName: toolGroup.name,
       groupId: toolGroup.id,
       measurements: [],
-    }
-  })
+    };
+  });
 
   Object.keys(toolCollections).forEach(toolId => {
-    const toolMeasurements = toolCollections[toolId]
-    const tool = tools.find(tool => tool.id === toolId)
-    const { displayFunction } = tool.options.measurementTable
+    const toolMeasurements = toolCollections[toolId];
+    const tool = tools.find(tool => tool.id === toolId);
+    const { displayFunction } = tool.options.measurementTable;
 
     // Group by measurementNumber so we can display then all in the same line
-    const groupedMeasurements = groupBy(toolMeasurements, 'measurementNumber')
+    const groupedMeasurements = groupBy(toolMeasurements, 'measurementNumber');
 
     Object.keys(groupedMeasurements).forEach(groupedMeasurementsIndex => {
       const measurementNumberList =
-        groupedMeasurements[groupedMeasurementsIndex]
-      const measurementData = measurementNumberList[0]
+        groupedMeasurements[groupedMeasurementsIndex];
+      const measurementData = measurementNumberList[0];
       const {
         measurementNumber,
         lesionNamingNumber,
         toolType,
-      } = measurementData
-      const measurementId = measurementData._id
+      } = measurementData;
+      const measurementId = measurementData._id;
 
       //check if all measurements with same measurementNumber will have same LABEL
       const tableMeasurement = {
@@ -109,30 +109,30 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
           timepoints,
           displayFunction
         ),
-      }
+      };
 
       // find the group object for the tool
       const toolGroupMeasurements = tableMeasurements.find(group => {
-        return group.groupId === tool.toolGroup
-      })
+        return group.groupId === tool.toolGroup;
+      });
       // inject the new measurement for this measurementNumer
-      toolGroupMeasurements.measurements.push(tableMeasurement)
-    })
-  })
+      toolGroupMeasurements.measurements.push(tableMeasurement);
+    });
+  });
 
   // Sort measurements by lesion naming number
   tableMeasurements.forEach(tm => {
     tm.measurements.sort((m1, m2) =>
       m1.lesionNamingNumber > m2.lesionNamingNumber ? 1 : -1
-    )
-  })
+    );
+  });
 
-  return tableMeasurements
+  return tableMeasurements;
 }
 
 function convertTimepointsToTableData(timepoints) {
   if (!timepoints || !timepoints.length) {
-    return []
+    return [];
   }
 
   return [
@@ -140,11 +140,11 @@ function convertTimepointsToTableData(timepoints) {
       label: 'Study date:',
       date: moment(timepoints[0].latestDate).format('DD-MMM-YY'),
     },
-  ]
+  ];
 }
 
 const mapStateToProps = state => {
-  const { timepoints, measurements } = state.timepointManager
+  const { timepoints, measurements } = state.timepointManager;
   return {
     timepoints: convertTimepointsToTableData(timepoints),
     measurementCollection: convertMeasurementsToTableData(
@@ -153,22 +153,22 @@ const mapStateToProps = state => {
     ),
     timepointManager: state.timepointManager,
     viewports: state.viewports,
-  }
-}
+  };
+};
 
 const mapDispatchToProps = dispatch => {
   return {
     dispatchRelabel: (event, measurementData, viewportsState) => {
       const activeViewportIndex =
-        (viewportsState && viewportsState.activeViewportIndex) || 0
+        (viewportsState && viewportsState.activeViewportIndex) || 0;
 
-      const enabledElements = cornerstone.getEnabledElements()
+      const enabledElements = cornerstone.getEnabledElements();
       if (!enabledElements || enabledElements.length <= activeViewportIndex) {
-        OHIF.log.error('Failed to find the enabled element')
-        return
+        OHIF.log.error('Failed to find the enabled element');
+        return;
       }
 
-      const { element } = enabledElements[activeViewportIndex]
+      const { element } = enabledElements[activeViewportIndex];
 
       const eventData = {
         event: {
@@ -176,33 +176,33 @@ const mapDispatchToProps = dispatch => {
           clientY: event.clientY,
         },
         element,
-      }
+      };
 
-      const { toolType, measurementId } = measurementData
+      const { toolType, measurementId } = measurementData;
       const tool = MeasurementApi.Instance.tools[toolType].find(measurement => {
-        return measurement._id === measurementId
-      })
+        return measurement._id === measurementId;
+      });
 
       const options = {
         skipAddLabelButton: true,
         editLocation: true,
-      }
+      };
 
       // Clone the tool not to set empty location initially
-      const toolForLocation = Object.assign({}, tool, { location: null })
-      getMeasurementLocationCallback(eventData, toolForLocation, options)
+      const toolForLocation = Object.assign({}, tool, { location: null });
+      getMeasurementLocationCallback(eventData, toolForLocation, options);
     },
     dispatchEditDescription: (event, measurementData, viewportsState) => {
       const activeViewportIndex =
-        (viewportsState && viewportsState.activeViewportIndex) || 0
+        (viewportsState && viewportsState.activeViewportIndex) || 0;
 
-      const enabledElements = cornerstone.getEnabledElements()
+      const enabledElements = cornerstone.getEnabledElements();
       if (!enabledElements || enabledElements.length <= activeViewportIndex) {
-        OHIF.log.error('Failed to find the enabled element')
-        return
+        OHIF.log.error('Failed to find the enabled element');
+        return;
       }
 
-      const { element } = enabledElements[activeViewportIndex]
+      const { element } = enabledElements[activeViewportIndex];
 
       const eventData = {
         event: {
@@ -210,18 +210,18 @@ const mapDispatchToProps = dispatch => {
           clientY: event.clientY,
         },
         element,
-      }
+      };
 
-      const { toolType, measurementId } = measurementData
+      const { toolType, measurementId } = measurementData;
       const tool = MeasurementApi.Instance.tools[toolType].find(measurement => {
-        return measurement._id === measurementId
-      })
+        return measurement._id === measurementId;
+      });
 
       const options = {
         editDescriptionOnDialog: true,
-      }
+      };
 
-      getMeasurementLocationCallback(eventData, tool, options)
+      getMeasurementLocationCallback(eventData, tool, options);
     },
     dispatchJumpToRowItem: (
       measurementData,
@@ -235,40 +235,40 @@ const mapDispatchToProps = dispatch => {
         timepointManagerState,
         dispatch,
         options
-      )
+      );
 
       actionData.viewportSpecificData.forEach(viewportSpecificData => {
-        const { viewportIndex, displaySet } = viewportSpecificData
+        const { viewportIndex, displaySet } = viewportSpecificData;
 
-        dispatch(setViewportSpecificData(viewportIndex, displaySet))
-      })
+        dispatch(setViewportSpecificData(viewportIndex, displaySet));
+      });
 
-      const { toolType, measurementNumber } = measurementData
-      const measurementApi = MeasurementApi.Instance
+      const { toolType, measurementNumber } = measurementData;
+      const measurementApi = MeasurementApi.Instance;
 
       Object.keys(measurementApi.tools).forEach(toolType => {
-        const measurements = measurementApi.tools[toolType]
+        const measurements = measurementApi.tools[toolType];
 
         measurements.forEach(measurement => {
-          measurement.active = false
-        })
-      })
+          measurement.active = false;
+        });
+      });
 
       const measurementsToActive = measurementApi.tools[toolType].filter(
         measurement => {
-          return measurement.measurementNumber === measurementNumber
+          return measurement.measurementNumber === measurementNumber;
         }
-      )
+      );
 
       measurementsToActive.forEach(measurementToActive => {
-        measurementToActive.active = true
-      })
+        measurementToActive.active = true;
+      });
 
-      measurementApi.syncMeasurementsAndToolData()
+      measurementApi.syncMeasurementsAndToolData();
 
       cornerstone.getEnabledElements().forEach(enabledElement => {
-        cornerstone.updateImage(enabledElement.element)
-      })
+        cornerstone.updateImage(enabledElement.element);
+      });
 
       // Needs to update viewports.layout state to set layout
       //const layout = actionData.layout;
@@ -284,8 +284,8 @@ const mapDispatchToProps = dispatch => {
 
       // (later): Needs to set some property on state.extensions.cornerstone to synchronize viewport scrolling
     },
-  }
-}
+  };
+};
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   return {
@@ -298,37 +298,37 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       // TODO: Tooltype should be on the level below? This should
       // provide the entire row item?
 
-      const viewportsState = propsFromState.viewports
-      const timepointManagerState = propsFromState.timepointManager
+      const viewportsState = propsFromState.viewports;
+      const timepointManagerState = propsFromState.timepointManager;
 
       // TODO: invertViewportTimepointsOrder should be stored in / read from user preferences
       // TODO: childToolKey should come from the measurement table when it supports child tools
       const options = {
         invertViewportTimepointsOrder: false,
         childToolKey: null,
-      }
+      };
 
       propsFromDispatch.dispatchJumpToRowItem(
         measurementData,
         viewportsState,
         timepointManagerState,
         options
-      )
+      );
     },
     onRelabelClick: (event, measurementData) => {
-      const viewportsState = propsFromState.viewports
-      propsFromDispatch.dispatchRelabel(event, measurementData, viewportsState)
+      const viewportsState = propsFromState.viewports;
+      propsFromDispatch.dispatchRelabel(event, measurementData, viewportsState);
     },
     onEditDescriptionClick: (event, measurementData) => {
-      const viewportsState = propsFromState.viewports
+      const viewportsState = propsFromState.viewports;
       propsFromDispatch.dispatchEditDescription(
         event,
         measurementData,
         viewportsState
-      )
+      );
     },
     onDeleteClick: (event, measurementData) => {
-      const { MeasurementHandlers } = OHIF.measurements
+      const { MeasurementHandlers } = OHIF.measurements;
 
       MeasurementHandlers.onRemoved({
         detail: {
@@ -339,15 +339,15 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
             measurementNumber: measurementData.measurementNumber,
           },
         },
-      })
+      });
     },
-  }
-}
+  };
+};
 
 const ConnectedMeasurementTable = connect(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps
-)(MeasurementTable)
+)(MeasurementTable);
 
-export default ConnectedMeasurementTable
+export default ConnectedMeasurementTable;

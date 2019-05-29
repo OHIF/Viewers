@@ -27,13 +27,13 @@ const items = [
   'Spleen',
   'Stomach',
   'Subcutaneous',
-]
+];
 
 const OHIFLabellingData = items.map(item => {
   return {
     label: item,
     value: item,
-  }
-})
+  };
+});
 
-export default OHIFLabellingData
+export default OHIFLabellingData;

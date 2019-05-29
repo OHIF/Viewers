@@ -1,38 +1,38 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import ConnectedStudyBrowser from './ConnectedStudyBrowser.js'
-import ConnectedViewerMain from './ConnectedViewerMain.js'
-import ConnectedMeasurementTable from './ConnectedMeasurementTable'
-import './FlexboxLayout.css'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
+import ConnectedViewerMain from './ConnectedViewerMain.js';
+import ConnectedMeasurementTable from './ConnectedMeasurementTable';
+import './FlexboxLayout.css';
 
 class FlexboxLayout extends Component {
   static propTypes = {
     studies: PropTypes.array.isRequired,
     leftSidebarOpen: PropTypes.bool.isRequired,
     rightSidebarOpen: PropTypes.bool.isRequired,
-  }
+  };
 
   state = {
     studiesForBrowser: [],
-  }
+  };
 
   componentDidMount() {
-    const studiesForBrowser = this.getStudiesForBrowser()
+    const studiesForBrowser = this.getStudiesForBrowser();
 
     this.setState({
       studiesForBrowser,
-    })
+    });
   }
 
   getStudiesForBrowser = () => {
-    const { studies } = this.props
+    const { studies } = this.props;
 
     // TODO[react]:
     // - Add sorting of display sets
     // - Add useMiddleSeriesInstanceAsThumbnail
     // - Add showStackLoadingProgressBar option
     return studies.map(study => {
-      const { studyInstanceUid } = study
+      const { studyInstanceUid } = study;
 
       const thumbnails = study.displaySets.map(displaySet => {
         const {
@@ -41,12 +41,12 @@ class FlexboxLayout extends Component {
           seriesNumber,
           instanceNumber,
           numImageFrames,
-        } = displaySet
+        } = displaySet;
 
-        let imageId
+        let imageId;
 
         if (displaySet.images && displaySet.images.length) {
-          imageId = displaySet.images[0].getImageId()
+          imageId = displaySet.images[0].getImageId();
         }
 
         return {
@@ -56,24 +56,24 @@ class FlexboxLayout extends Component {
           seriesNumber,
           instanceNumber,
           numImageFrames,
-        }
-      })
+        };
+      });
 
       return {
         studyInstanceUid,
         thumbnails,
-      }
-    })
-  }
+      };
+    });
+  };
 
   render() {
-    let mainContentClassName = 'main-content'
+    let mainContentClassName = 'main-content';
     if (this.props.leftSidebarOpen) {
-      mainContentClassName += ' sidebar-left-open'
+      mainContentClassName += ' sidebar-left-open';
     }
 
     if (this.props.rightSidebarOpen) {
-      mainContentClassName += ' sidebar-right-open'
+      mainContentClassName += ' sidebar-right-open';
     }
 
     // TODO[react]: Make ConnectedMeasurementTable extension with state.timepointManager
@@ -101,8 +101,8 @@ class FlexboxLayout extends Component {
           <ConnectedMeasurementTable />
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default FlexboxLayout
+export default FlexboxLayout;

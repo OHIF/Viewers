@@ -4,7 +4,7 @@ import { setUserPreferencesModalOpen } from '../redux/actions.js';
 
 const mapStateToProps = state => {
   return {
-    isOpen: state.ui.userPreferencesModalOpen
+    isOpen: state.ui.userPreferencesModalOpen,
   };
 };
 
@@ -12,7 +12,7 @@ const mapDispatchToProps = dispatch => {
   return {
     openUserPreferencesModal: () => {
       dispatch(setUserPreferencesModalOpen(true));
-    }
+    },
   };
 };
 
