@@ -11,32 +11,32 @@ class Header extends Component {
     home: PropTypes.bool.isRequired,
     location: PropTypes.object.isRequired,
     openUserPreferencesModal: PropTypes.func,
-    children: PropTypes.node
+    children: PropTypes.node,
   };
 
   static defaultProps = {
     home: true,
-    children: OHIFLogo()
+    children: OHIFLogo(),
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      userPreferencesOpen: false
+      userPreferencesOpen: false,
     };
 
     this.options = [
       {
         title: 'Preferences ',
         icon: 'fa fa-user',
-        onClick: this.props.openUserPreferencesModal
+        onClick: this.props.openUserPreferencesModal,
       },
       {
         title: 'About',
         icon: 'fa fa-info',
-        link: 'http://ohif.org'
-      }
+        link: 'http://ohif.org',
+      },
     ];
   }
 
@@ -60,7 +60,7 @@ class Header extends Component {
               className="header-btn header-studyListLinkSection"
               to={{
                 pathname: '/',
-                state: { studyLink: this.props.location.pathname }
+                state: { studyLink: this.props.location.pathname },
               }}
             >
               Study list

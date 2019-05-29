@@ -3,15 +3,15 @@
  * @param {String} [baseDirectory='/']
  */
 export default function(baseDirectory = '/') {
-  const iconsFileName = 'icons.svg'
+  const iconsFileName = 'icons.svg';
   const sanitizedBaseDirectory =
     baseDirectory[baseDirectory.length - 1] === '/'
       ? baseDirectory
-      : `${baseDirectory}/`
+      : `${baseDirectory}/`;
   const relativePathToIcons = `${sanitizedBaseDirectory}${iconsFileName}`.replace(
     '//',
     '/'
-  )
+  );
 
   return [
     {
@@ -112,5 +112,5 @@ export default function(baseDirectory = '/') {
       svgUrl: `${relativePathToIcons}#icon-tools-reset`,
       active: false,
     },
-  ]
+  ];
 }

@@ -27,7 +27,7 @@ const mapStateToProps = state => {
     layout: state.viewports.layout,
     activeViewportIndex: state.viewports.activeViewportIndex,
     availablePlugins,
-    defaultPlugin
+    defaultPlugin,
   };
 };
 

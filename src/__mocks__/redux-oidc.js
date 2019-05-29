@@ -1,4 +1,4 @@
-const createUserManager = () => jest.fn().mockReturnValue({})
-const loadUser = () => jest.fn()
+const createUserManager = () => jest.fn().mockReturnValue({});
+const loadUser = () => jest.fn();
 
-export { createUserManager, loadUser }
+export { createUserManager, loadUser };

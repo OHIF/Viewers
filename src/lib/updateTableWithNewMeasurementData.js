@@ -1,5 +1,5 @@
-import OHIF from 'ohif-core'
-import cornerstone from 'cornerstone-core'
+import OHIF from 'ohif-core';
+import cornerstone from 'cornerstone-core';
 
 export default function updateTableWithNewMeasurementData({
   toolType,
@@ -8,22 +8,22 @@ export default function updateTableWithNewMeasurementData({
   description,
 }) {
   // Update all measurements by measurement number
-  const measurementApi = OHIF.measurements.MeasurementApi.Instance
+  const measurementApi = OHIF.measurements.MeasurementApi.Instance;
   const measurements = measurementApi.tools[toolType].filter(
     m => m.measurementNumber === measurementNumber
-  )
+  );
 
   measurements.forEach(measurement => {
-    measurement.location = location
-    measurement.description = description
+    measurement.location = location;
+    measurement.description = description;
 
-    measurementApi.updateMeasurement(measurement.toolType, measurement)
-  })
+    measurementApi.updateMeasurement(measurement.toolType, measurement);
+  });
 
-  measurementApi.syncMeasurementsAndToolData()
+  measurementApi.syncMeasurementsAndToolData();
 
   // Update images in all active viewports
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element)
-  })
+    cornerstone.updateImage(enabledElement.element);
+  });
 }

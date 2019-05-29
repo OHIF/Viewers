@@ -1,14 +1,14 @@
-import { Component } from 'react'
-import React from 'react'
-import PropTypes from 'prop-types'
+import { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import './SimpleDialog.css'
+import './SimpleDialog.css';
 
 class SimpleDialog extends Component {
   static defaultProps = {
     componentStyle: {},
     rootClass: '',
-  }
+  };
 
   render() {
     return (
@@ -43,7 +43,7 @@ class SimpleDialog extends Component {
           </div>
         </form>
       </div>
-    )
+    );
   }
 }
 
@@ -51,6 +51,6 @@ SimpleDialog.propTypes = {
   headerTitle: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
-}
+};
 
-export default SimpleDialog
+export default SimpleDialog;

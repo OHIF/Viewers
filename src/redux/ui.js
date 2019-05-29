@@ -4,39 +4,39 @@ const defaultState = {
   userPreferencesModalOpen: false,
   labelling: {},
   contextMenu: {},
-}
+};
 
 const ui = (state = defaultState, action) => {
   switch (action.type) {
     case 'SET_LEFT_SIDEBAR_OPEN':
-      return Object.assign({}, state, { leftSidebarOpen: action.state })
+      return Object.assign({}, state, { leftSidebarOpen: action.state });
     case 'SET_RIGHT_SIDEBAR_OPEN':
-      return Object.assign({}, state, { rightSidebarOpen: action.state })
+      return Object.assign({}, state, { rightSidebarOpen: action.state });
     case 'SET_USER_PREFERENCES_MODAL_OPEN':
       return Object.assign({}, state, {
         userPreferencesModalOpen: action.state,
-      })
+      });
     case 'SET_LABELLING_FLOW_DATA':
-      const labelling = Object.assign({}, action.labellingFlowData)
+      const labelling = Object.assign({}, action.labellingFlowData);
 
-      return Object.assign({}, state, { labelling })
+      return Object.assign({}, state, { labelling });
     case 'SET_TOOL_CONTEXT_MENU_DATA':
-      const contextMenu = Object.assign({}, state.contextMenu)
+      const contextMenu = Object.assign({}, state.contextMenu);
 
       contextMenu[action.viewportIndex] = Object.assign(
         {},
         action.toolContextMenuData
-      )
+      );
 
-      return Object.assign({}, state, { contextMenu })
+      return Object.assign({}, state, { contextMenu });
     case 'RESET_LABELLING_AND_CONTEXT_MENU':
       return Object.assign({}, state, {
         labelling: defaultState.labelling,
         contextMenu: defaultState.contextMenu,
-      })
+      });
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default ui
+export default ui;
