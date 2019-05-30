@@ -10,7 +10,9 @@
   font-family: var(--logo-font-family);
 }
 
-.header-brand:hover {
+.header-brand:hover,
+.header-brand:active,
+.header-band:visited {
   color: var(--text-primary-color);
   text-decoration: none;
 }
