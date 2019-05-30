@@ -1,14 +1,12 @@
+import { Icon, SelectTree } from 'react-viewerbase';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
-import cloneDeep from 'lodash.clonedeep';
-import bounding from '../../lib/utils/bounding.js';
 
 import LabellingTransition from './LabellingTransition.js';
-import { SelectTree, Icon } from 'react-viewerbase';
-import { getAddLabelButtonStyle } from './labellingPositionUtils.js';
-
 import OHIFLabellingData from './OHIFLabellingData.js';
+import PropTypes from 'prop-types';
+import bounding from '../../lib/utils/bounding.js';
+import cloneDeep from 'lodash.clonedeep';
+import { getAddLabelButtonStyle } from './labellingPositionUtils.js';
 
 export default class LabellingFlow extends Component {
   static propTypes = {
@@ -123,7 +121,7 @@ export default class LabellingFlow extends Component {
               className="checkIconWrapper"
               onClick={this.fadeOutAndLeaveFast}
             >
-              <Icon name="check-solid" className="checkIcon" />
+              <Icon name="check" className="checkIcon" />
             </div>
             <div className="locationDescriptionWrapper">
               <div className="location">{locationLabel}</div>
