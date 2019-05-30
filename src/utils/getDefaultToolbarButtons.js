@@ -74,7 +74,7 @@ export default function() {
       command: 'EllipticalRoi',
       type: 'tool',
       text: 'EllipticalRoi',
-      icon: 'circle',
+      icon: 'oval',
       active: false,
     },
     {
