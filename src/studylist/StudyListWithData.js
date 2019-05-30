@@ -69,34 +69,40 @@ class StudyListWithData extends Component {
         }
 
         const { field, order } = searchData.sortData
-        const sortedStudies = studies
-          .sort(function(a, b) {
-            if (order === 'desc') {
-              if (a[field] < b[field]) {
-                return -1
-              }
-              if (a[field] > b[field]) {
-                return 1
-              }
-              return 0
-            } else {
-              if (a[field] > b[field]) {
-                return -1
-              }
-              if (a[field] < b[field]) {
-                return 1
-              }
-              return 0
+        let sortedStudies = studies.map(study => {
+          if (!moment(study.studyDate, 'MMM DD, YYYY', true).isValid()) {
+            study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
+              'MMM DD, YYYY'
+            )
+          }
+          return study
+        })
+
+        sortedStudies.sort(function(a, b) {
+          let fieldA = a[field]
+          let fieldB = b[field]
+          if (field === 'studyDate') {
+            fieldA = moment(fieldA).toISOString()
+            fieldB = moment(fieldB).toISOString()
+          }
+          if (order === 'desc') {
+            if (fieldA < fieldB) {
+              return -1
             }
-          })
-          .map(study => {
-            if (!moment(study.studyDate, 'MMM DD, YYYY', true).isValid()) {
-              study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
-                'MMM DD, YYYY'
-              )
+            if (fieldA > fieldB) {
+              return 1
             }
-            return study
-          })
+            return 0
+          } else {
+            if (fieldA > fieldB) {
+              return -1
+            }
+            if (fieldA < fieldB) {
+              return 1
+            }
+            return 0
+          }
+        })
 
         this.setState({
           studies: sortedStudies,
