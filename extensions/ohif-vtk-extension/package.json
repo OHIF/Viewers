@@ -83,7 +83,8 @@
     "not op_mini all"
   ],
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
