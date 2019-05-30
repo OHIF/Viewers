@@ -9688,10 +9688,10 @@ ohif-core@0.5.5:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@0.0.31:
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.31.tgz#39669e5d8a5e39a4e84f0bdae02b39e222c222aa"
-  integrity sha512-7skySEBTkQ2cVOvHXI1Q4rPsjynD1xQ9xQTnPskNNvMEiH4/XJbBXsmbg37D3hocXL16CKIztHoYpNqF0cruYQ==
+ohif-cornerstone-extension@0.0.33:
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.33.tgz#d93f433d21e005fc67f463730c5cdf3e2ef7ea9a"
+  integrity sha512-TOF1AZWlaI1/KErX8MHkvN6P6ts+Z2gC8tSn9ESF6xCEtQhZzurTpE7xrlUpaRrO3y++7Vs3kTrFu77Wroq41A==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -11760,10 +11760,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.4.2.tgz#a890db450c0f6d1ec495dc2ceb85dbe38fcb7fda"
-  integrity sha512-1rqdXZ3gQIuRtuxOTKwg9D4EJ1NJ8ug9mQWOAFxx+7PSFhfbjXn55O4Fko92qXrlKqd+Rba1jqBvzTXPr0h0fQ==
+react-viewerbase@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.5.0.tgz#5805dfb9774e6c049aa50bb4764e6e43da73d91f"
+  integrity sha512-r7aVWPPZ0V7W3saiP+7phjV5YMWdQoCGbBrKuL58rJv55NBIb5HB6yil5ifrcE8YLbIY6WVtGA9ea1PGe9g+MQ==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
