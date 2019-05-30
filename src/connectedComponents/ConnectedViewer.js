@@ -11,7 +11,7 @@ const mapDispatchToProps = dispatch => {
     },
     onMeasurementsUpdated: measurements => {
       dispatch(setMeasurements(measurements));
-    }
+    },
   };
 };
 

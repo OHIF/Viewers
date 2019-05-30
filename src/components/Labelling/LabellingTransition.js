@@ -1,20 +1,20 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { CSSTransition } from 'react-transition-group'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { CSSTransition } from 'react-transition-group';
 
-import './LabellingTransition.css'
+import './LabellingTransition.css';
 
 // If these variables changes, CSS must be updated
-const transitionDuration = 500
-const transitionClassName = 'labelling'
-const transitionOnAppear = true
+const transitionDuration = 500;
+const transitionClassName = 'labelling';
+const transitionOnAppear = true;
 
 export default class LabellingTransition extends Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     displayComponent: PropTypes.bool.isRequired,
     onTransitionExit: PropTypes.func.isRequired,
-  }
+  };
   render() {
     return (
       <CSSTransition
@@ -26,6 +26,6 @@ export default class LabellingTransition extends Component {
       >
         {this.props.children}
       </CSSTransition>
-    )
+    );
   }
 }

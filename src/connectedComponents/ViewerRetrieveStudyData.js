@@ -9,12 +9,12 @@ class ViewerRetrieveStudyData extends Component {
   static propTypes = {
     studyInstanceUids: PropTypes.array.isRequired,
     seriesInstanceUids: PropTypes.array,
-    server: PropTypes.object
+    server: PropTypes.object,
   };
 
   state = {
     studies: null,
-    error: null
+    error: null,
   };
 
   componentDidMount() {
@@ -33,12 +33,12 @@ class ViewerRetrieveStudyData extends Component {
         const updatedStudies = createDisplaySets(studies);
 
         this.setState({
-          studies: updatedStudies
+          studies: updatedStudies,
         });
       })
       .catch(error => {
         this.setState({
-          error: true
+          error: true,
         });
 
         throw new Error(error);

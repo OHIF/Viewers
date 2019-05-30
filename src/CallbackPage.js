@@ -6,7 +6,7 @@ import { CallbackComponent } from 'redux-oidc';
 class CallbackPage extends Component {
   static propTypes = {
     userManager: PropTypes.object.isRequired,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
   };
 
   render() {

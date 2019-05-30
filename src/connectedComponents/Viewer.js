@@ -52,7 +52,7 @@ class Viewer extends Component {
     studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
     onTimepointsUpdated: PropTypes.func,
-    onMeasurementsUpdated: PropTypes.func
+    onMeasurementsUpdated: PropTypes.func,
   };
 
   constructor(props) {
@@ -60,8 +60,8 @@ class Viewer extends Component {
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
         retrieve: this.retrieveMeasurements,
-        store: this.storeMeasurements
-      }
+        store: this.storeMeasurements,
+      },
     });
 
     OHIF.measurements.TimepointApi.setConfiguration({
@@ -70,8 +70,8 @@ class Viewer extends Component {
         store: this.storeTimepoints,
         remove: this.removeTimepoint,
         update: this.updateTimepoint,
-        disassociate: this.disassociateStudy
-      }
+        disassociate: this.disassociateStudy,
+      },
     });
   }
 
@@ -115,8 +115,8 @@ class Viewer extends Component {
         patientId: filter.patientId,
         earliestDate,
         latestDate,
-        isLocked: false
-      }
+        isLocked: false,
+      },
     ]);
   };
 
@@ -158,11 +158,11 @@ class Viewer extends Component {
     const currentTimepointId = 'TimepointId';
 
     const timepointApi = new TimepointApi(currentTimepointId, {
-      onTimepointsUpdated: this.onTimepointsUpdated
+      onTimepointsUpdated: this.onTimepointsUpdated,
     });
 
     const measurementApi = new MeasurementApi(timepointApi, {
-      onMeasurementsUpdated: this.onMeasurementsUpdated
+      onMeasurementsUpdated: this.onMeasurementsUpdated,
     });
 
     const patientId = studies[0] && studies[0].patientId;

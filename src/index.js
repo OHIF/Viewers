@@ -2,21 +2,21 @@
  * Entry point for development and production PWA builds.
  * Packaged (NPM) builds go through `index_publish.js`
  */
-import App from './App.js'
-import React from 'react'
-import ReactDOM from 'react-dom'
+import App from './App.js';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-export { App }
+export { App };
 
-window.config = window.config || {}
+window.config = window.config || {};
 const applicationDefaults = {
   routerBasename: '/',
   relativeWebWorkerScriptsPath: '',
-}
-const applicationProps = Object.assign({}, applicationDefaults, window.config)
-const app = React.createElement(App, applicationProps, null)
+};
+const applicationProps = Object.assign({}, applicationDefaults, window.config);
+const app = React.createElement(App, applicationProps, null);
 
-ReactDOM.render(app, document.getElementById('root'))
+ReactDOM.render(app, document.getElementById('root'));
 
 /*
 Example config with OIDC

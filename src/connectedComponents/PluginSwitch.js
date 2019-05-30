@@ -5,7 +5,7 @@ import './PluginSwitch.css';
 
 class PluginSwitch extends Component {
   static propTypes = {
-    buttons: PropTypes.array
+    buttons: PropTypes.array,
   };
 
   static defaultProps = {};
