@@ -9,7 +9,7 @@ import ui from './redux/ui.js';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
-import OHIFVTKExtension from 'ohif-vtk-extension';
+import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
