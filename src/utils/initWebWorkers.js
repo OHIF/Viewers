@@ -1,4 +1,4 @@
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader'
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 /**
  *
@@ -8,7 +8,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader'
 export default function(baseDirectory, webWorkScriptsPath) {
   const scriptsPath = `${window.location.protocol}//${
     window.location.host
-  }${baseDirectory}/${webWorkScriptsPath}`
+  }${baseDirectory}/${webWorkScriptsPath}`;
   const config = {
     maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
     startWebWorkersOnDemand: true,
@@ -22,7 +22,7 @@ export default function(baseDirectory, webWorkScriptsPath) {
         strict: false,
       },
     },
-  }
+  };
 
-  cornerstoneWADOImageLoader.webWorkerManager.initialize(config)
+  cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
 }

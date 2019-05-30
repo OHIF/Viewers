@@ -9,12 +9,12 @@ const { createDisplaySets } = OHIF.utils;
 class StandaloneRouting extends Component {
   state = {
     studies: null,
-    error: null
+    error: null,
   };
 
   static propTypes = {
     location: PropTypes.object,
-    store: PropTypes.object
+    store: PropTypes.object,
   };
 
   static parseQueryAndFetchStudies(query) {

@@ -15,7 +15,7 @@ const mapStateToProps = state => {
       : {},
     hotKeysData: state.preferences[contextName]
       ? state.preferences[contextName].hotKeysData
-      : {}
+      : {},
   };
 };
 
@@ -36,7 +36,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(setUserPreferences());
       dispatch(setUserPreferencesModalOpen(false));
       OHIF.hotkeysUtil.setHotkeys();
-    }
+    },
   };
 };
 
