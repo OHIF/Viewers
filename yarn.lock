@@ -11760,10 +11760,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.0.tgz#465bb9aaf71a6a21832b1107ace69a0e121cd65a"
-  integrity sha512-TEfc0V3j/EWpUZ1AbhFLKM8jm2GOmMODspalGvLTyEWx8smveZWg4EzCltxoTOPjd8xZnVMt0d2+kVHIzx/3eg==
+react-viewerbase@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.1.tgz#60cb6d1b9e90f627b3756f1e426505b9551d0485"
+  integrity sha512-1wGW4a8lHaG/j5WeC9/R9TZrJLthL6cm5IPDEmthTKF8PNiImMY1VgLR80aXDhfKYi8AVEyCEhOkvvXbPgBl1A==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
