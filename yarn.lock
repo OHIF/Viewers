@@ -1014,6 +1014,15 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
+"@ohif/extension-vtk@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
+  integrity sha512-WDuQVwK4RlHgXwbmKIECZrP90x8cVOwESQz8bJOeNG2eVPDBVlNWx/zOXShAhn6J62QG6Sn1RnHQWLedgGnhyA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    react-vtkjs-viewport "^0.0.7"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
@@ -9722,15 +9731,6 @@ ohif-dicom-pdf-extension@^0.0.6:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
-
-ohif-vtk-extension@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/ohif-vtk-extension/-/ohif-vtk-extension-0.0.1.tgz#aec448c1d0a905d162154c65982227b3503f5f15"
-  integrity sha512-JfLh0AyEc2hOstpiXj9wMwvuYIQathOmsbb49SZFTw9Y9jMjgdxzdTJaiGtERsVT/92I9u42YrMYk6w5TQCT6A==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    react-vtkjs-viewport "^0.0.7"
 
 oidc-client@1.7.x:
   version "1.7.1"
