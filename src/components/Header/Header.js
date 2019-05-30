@@ -29,12 +29,16 @@ class Header extends Component {
     this.options = [
       {
         title: 'Preferences ',
-        icon: 'fa fa-user',
+        icon: {
+          name: 'user',
+        },
         onClick: this.props.openUserPreferencesModal,
       },
       {
         title: 'About',
-        icon: 'fa fa-info',
+        icon: {
+          name: 'info',
+        },
         link: 'http://ohif.org',
       },
     ];
