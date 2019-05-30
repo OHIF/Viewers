@@ -1,10 +1,12 @@
+import './ToolbarRow.css'
+
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import OHIF from 'ohif-core'
-import { RoundedButtonGroup, Icon } from 'react-viewerbase'
+
 import ConnectedLayoutButton from './ConnectedLayoutButton'
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js'
-import './ToolbarRow.css'
+import OHIF from 'ohif-core'
+import PropTypes from 'prop-types'
+import { RoundedButtonGroup } from 'react-viewerbase'
 
 class ToolbarRow extends Component {
   static propTypes = {
@@ -32,11 +34,7 @@ class ToolbarRow extends Component {
     const leftSidebarToggle = [
       {
         value: 'studies',
-        icon: {
-          name: 'studies',
-          width: 15,
-          height: 13,
-        },
+        icon: 'th-large',
         bottomLabel: 'Series',
       },
     ]
@@ -44,11 +42,7 @@ class ToolbarRow extends Component {
     const rightSidebarToggle = [
       {
         value: 'measurements',
-        icon: {
-          name: 'measurement-lesions',
-          width: 15,
-          height: 13,
-        },
+        icon: 'list',
         bottomLabel: 'Measurements',
       },
     ]
