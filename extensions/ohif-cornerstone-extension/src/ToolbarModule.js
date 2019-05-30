@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+
+import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedToolbarSection from './ConnectedToolbarSection';
 import { ToolbarButton } from 'react-viewerbase';
-import ConnectedCineDialog from './ConnectedCineDialog';
 
 class ToolbarModule extends Component {
   state = {
@@ -28,8 +29,8 @@ class ToolbarModule extends Component {
         <ToolbarButton
           active={this.state.cineDialogOpen}
           onClick={this.onClickCineToolbarButton}
-          text={'CINE'}
-          icon="tool-cineplay-toggle"
+          text="CINE"
+          icon="youtube"
         />
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
           <ConnectedCineDialog />
