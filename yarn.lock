@@ -1014,6 +1014,16 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
+"@ohif/extension-cornerstone@0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.34.tgz#b3e0ddd21e21f15b67ee1288dd83b833763cfa73"
+  integrity sha512-Q20FRXvyaeR8pgNJWPJ6oPrYgVtbO+CvAsn0TWqWvuMyuT1kGGlcmrGHjOt++dflx2Do7fVf/qCPFagHbrU9rA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    lodash.throttle "^4.1.1"
+    react-cornerstone-viewport "0.1.29"
+
 "@ohif/extension-vtk@0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
@@ -9697,16 +9707,6 @@ ohif-core@0.5.5:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@0.0.33:
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.33.tgz#d93f433d21e005fc67f463730c5cdf3e2ef7ea9a"
-  integrity sha512-TOF1AZWlaI1/KErX8MHkvN6P6ts+Z2gC8tSn9ESF6xCEtQhZzurTpE7xrlUpaRrO3y++7Vs3kTrFu77Wroq41A==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    lodash.throttle "^4.1.1"
-    react-cornerstone-viewport "0.1.28"
-
 ohif-dicom-html-extension@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/ohif-dicom-html-extension/-/ohif-dicom-html-extension-0.0.2.tgz#5dd80836ee8f12f6ddf6de2b88c72af96d8c347b"
@@ -11480,10 +11480,10 @@ react-bootstrap-modal@4.2.0, react-bootstrap-modal@^4.2.0:
     react-overlays "^0.8.0"
     react-transition-group "^2.0.0"
 
-react-cornerstone-viewport@0.1.28:
-  version "0.1.28"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.28.tgz#ca1b0062c9f08868c653c11d6cdef8f5d519f90a"
-  integrity sha512-lGXFB1pxUJE+tozAHjQD8KcmnGuGG/nD3CGrK44cFqx8e3W/CKU9/bZM6qomy/X1fK5TlnJUaZ9NOCaDLhzJrQ==
+react-cornerstone-viewport@0.1.29:
+  version "0.1.29"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.29.tgz#7ef3c2f3d7dc45339b14c17a53e05db367a28394"
+  integrity sha512-KUjdqjti53v4eNyFTT3tXJ4cTyb64eMW3QF1cQqd+1+Re8UXSF1+k9uku15vR/Qt/YOv9Bsh74PabBct7BxWog==
   dependencies:
     lodash.debounce "^4.0.8"
     moment "^2.23.0"

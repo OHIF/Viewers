@@ -1,26 +1,28 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
 import './config';
-import ui from './redux/ui.js';
-import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-import WhiteLabellingContext from './WhiteLabellingContext';
-import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
-import OHIFVTKExtension from '@ohif/extension-vtk';
-import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
-import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
-import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
+
 import { OidcProvider, reducer as oidcReducer } from 'redux-oidc';
+import React, { Component } from 'react';
+import { combineReducers, createStore } from 'redux';
 import {
   getDefaultToolbarButtons,
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js';
-import setupTools from './setupTools';
+
 import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
+import OHIF from 'ohif-core';
+import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
+import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
+import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+import OHIFStandaloneViewer from './OHIFStandaloneViewer';
+import OHIFVTKExtension from '@ohif/extension-vtk';
+import PropTypes from 'prop-types';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import WhiteLabellingContext from './WhiteLabellingContext';
+import setupTools from './setupTools';
+import ui from './redux/ui.js';
 
 const { ExtensionManager } = OHIF.extensions;
 const { reducers, localStorage } = OHIF.redux;
