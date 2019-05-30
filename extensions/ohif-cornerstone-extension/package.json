@@ -32,7 +32,7 @@
     "react-dom": "^15.0.0 || ^16.0.0",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
-    "react-viewerbase": "^0.5.0",
+    "react-viewerbase": "^0.6.0",
     "redux": "^4.0.1"
   },
   "dependencies": {
