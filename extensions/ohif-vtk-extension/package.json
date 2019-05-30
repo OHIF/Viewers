@@ -1,6 +1,6 @@
 {
   "name": "ohif-vtk-extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -30,6 +30,7 @@
     "react-dom": "^15.0.0 || ^16.0.0",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
+    "react-viewerbase": "^0.6.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {
@@ -52,7 +53,6 @@
     "prettier": "^1.15.3",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-viewerbase": "^0.2.11",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
