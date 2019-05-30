@@ -43,18 +43,22 @@ class FlexboxLayout extends Component {
           seriesNumber,
           instanceNumber,
           numImageFrames,
-          modality,
+          // TODO: This is undefined
+          // modality,
         } = displaySet;
 
         let imageId;
+        let altImageText = ' '; // modality
 
         if (displaySet.images && displaySet.images.length) {
           imageId = displaySet.images[0].getImageId();
+        } else {
+          altImageText = 'SR';
         }
 
         return {
           imageId,
-          altImageText: modality,
+          altImageText,
           displaySetInstanceUid,
           seriesDescription,
           seriesNumber,
