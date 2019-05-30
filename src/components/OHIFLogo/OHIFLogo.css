@@ -1,23 +1,27 @@
 .header-brand {
   height: 30px;
   text-decoration: none;
-  float: left;
-  clear: both;
+  text-decoration-color: none;
+
+  display: flex;
+  color: var(--text-primary-color);
+  font-size: 14px;
+  font-weight: var(--logo-font-weight);
+  font-family: var(--logo-font-family);
+}
+
+.header-brand:hover {
+  color: var(--text-primary-color);
+  text-decoration: none;
 }
 
 .header-logo-text {
-  display: inline-block;
-  font-family: var(--logo-font-family);
-  font-size: 14px;
-  font-weight: var(--logo-font-weight);
-  color: var(--text-primary-color);
   line-height: 30px;
+  margin-left: 8px;
 }
 
 .header-logo-image {
-  fill: transparent;
-  height: 100%;
-  margin: 0 8px 0 0;
+  height: 30px;
   width: 30px;
-  float: left;
+  font-size: 30px;
 }
