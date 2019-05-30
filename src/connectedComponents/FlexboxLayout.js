@@ -1,9 +1,11 @@
+import './FlexboxLayout.css';
+
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+
+import ConnectedMeasurementTable from './ConnectedMeasurementTable';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import ConnectedMeasurementTable from './ConnectedMeasurementTable';
-import './FlexboxLayout.css';
+import PropTypes from 'prop-types';
 
 class FlexboxLayout extends Component {
   static propTypes = {
@@ -41,6 +43,7 @@ class FlexboxLayout extends Component {
           seriesNumber,
           instanceNumber,
           numImageFrames,
+          modality,
         } = displaySet;
 
         let imageId;
@@ -51,6 +54,7 @@ class FlexboxLayout extends Component {
 
         return {
           imageId,
+          altImageText: modality,
           displaySetInstanceUid,
           seriesDescription,
           seriesNumber,
