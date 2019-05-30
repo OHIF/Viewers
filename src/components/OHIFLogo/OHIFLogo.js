@@ -1,7 +1,7 @@
-import './OHIFLogo.css'
+import './OHIFLogo.css';
 
-import { Icon } from 'react-viewerbase'
-import React from 'react'
+import { Icon } from 'react-viewerbase';
+import React from 'react';
 
 function OHIFLogo() {
   return (
@@ -14,7 +14,7 @@ function OHIFLogo() {
       <Icon name="ohif-logo" className="header-logo-image" />
       <div className="header-logo-text">Open Health Imaging Foundation</div>
     </a>
-  )
+  );
 }
 
-export default OHIFLogo
+export default OHIFLogo;

@@ -1,9 +1,9 @@
-import getDefaultToolbarButtons from './getDefaultToolbarButtons.js'
+import getDefaultToolbarButtons from './getDefaultToolbarButtons.js';
 
 describe('getDefaultToolbarButtons.js', () => {
   it('returns a non-empty array', () => {
-    const buttons = getDefaultToolbarButtons()
+    const buttons = getDefaultToolbarButtons();
 
-    expect(buttons.length).toBeGreaterThan(0)
-  })
-})
+    expect(buttons.length).toBeGreaterThan(0);
+  });
+});

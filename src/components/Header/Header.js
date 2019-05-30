@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { Link, withRouter } from 'react-router-dom'
-import { Dropdown } from 'react-viewerbase'
-import './Header.css'
-import OHIFLogo from '../OHIFLogo/OHIFLogo.js'
-import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Link, withRouter } from 'react-router-dom';
+import { Dropdown } from 'react-viewerbase';
+import './Header.css';
+import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
+import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js';
 
 class Header extends Component {
   static propTypes = {
@@ -12,19 +12,19 @@ class Header extends Component {
     location: PropTypes.object.isRequired,
     openUserPreferencesModal: PropTypes.func,
     children: PropTypes.node,
-  }
+  };
 
   static defaultProps = {
     home: true,
     children: OHIFLogo(),
-  }
+  };
 
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       userPreferencesOpen: false,
-    }
+    };
 
     this.options = [
       {
@@ -41,7 +41,7 @@ class Header extends Component {
         },
         link: 'http://ohif.org',
       },
-    ]
+    ];
   }
 
   render() {
@@ -78,8 +78,8 @@ class Header extends Component {
           <ConnectedUserPreferencesModal />
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default withRouter(Header)
+export default withRouter(Header);

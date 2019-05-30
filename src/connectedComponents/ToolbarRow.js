@@ -1,12 +1,12 @@
-import './ToolbarRow.css'
+import './ToolbarRow.css';
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import ConnectedLayoutButton from './ConnectedLayoutButton'
-import ConnectedPluginSwitch from './ConnectedPluginSwitch.js'
-import OHIF from 'ohif-core'
-import PropTypes from 'prop-types'
-import { RoundedButtonGroup } from 'react-viewerbase'
+import ConnectedLayoutButton from './ConnectedLayoutButton';
+import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
+import OHIF from 'ohif-core';
+import PropTypes from 'prop-types';
+import { RoundedButtonGroup } from 'react-viewerbase';
 
 class ToolbarRow extends Component {
   static propTypes = {
@@ -15,20 +15,20 @@ class ToolbarRow extends Component {
     setLeftSidebarOpen: PropTypes.func,
     setRightSidebarOpen: PropTypes.func,
     pluginId: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     leftSidebarOpen: false,
     rightSidebarOpen: false,
-  }
+  };
 
   onLeftSidebarValueChanged = value => {
-    this.props.setLeftSidebarOpen(!!value)
-  }
+    this.props.setLeftSidebarOpen(!!value);
+  };
 
   onRightSidebarValueChanged = value => {
-    this.props.setRightSidebarOpen(!!value)
-  }
+    this.props.setRightSidebarOpen(!!value);
+  };
 
   render() {
     const leftSidebarToggle = [
@@ -37,7 +37,7 @@ class ToolbarRow extends Component {
         icon: 'th-large',
         bottomLabel: 'Series',
       },
-    ]
+    ];
 
     const rightSidebarToggle = [
       {
@@ -45,28 +45,30 @@ class ToolbarRow extends Component {
         icon: 'list',
         bottomLabel: 'Measurements',
       },
-    ]
+    ];
 
     const leftSidebarValue = this.props.leftSidebarOpen
       ? leftSidebarToggle[0].value
-      : null
+      : null;
 
     const rightSidebarValue = this.props.rightSidebarOpen
       ? rightSidebarToggle[0].value
-      : null
+      : null;
 
-    const currentPluginId = this.props.pluginId
+    const currentPluginId = this.props.pluginId;
 
-    const { PLUGIN_TYPES, availablePlugins } = OHIF.plugins
+    const { PLUGIN_TYPES, availablePlugins } = OHIF.plugins;
     const plugin = availablePlugins.find(entry => {
-      return entry.type === PLUGIN_TYPES.TOOLBAR && entry.id === currentPluginId
-    })
+      return (
+        entry.type === PLUGIN_TYPES.TOOLBAR && entry.id === currentPluginId
+      );
+    });
 
-    let pluginComp
+    let pluginComp;
     if (plugin) {
-      const PluginComponent = plugin.component
+      const PluginComponent = plugin.component;
 
-      pluginComp = <PluginComponent />
+      pluginComp = <PluginComponent />;
     }
 
     return (
@@ -89,8 +91,8 @@ class ToolbarRow extends Component {
           />
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default ToolbarRow
+export default ToolbarRow;

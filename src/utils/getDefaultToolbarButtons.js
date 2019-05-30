@@ -98,5 +98,5 @@ export default function() {
       icon: 'reset',
       active: false,
     },
-  ]
+  ];
 }
