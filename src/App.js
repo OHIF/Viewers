@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import PropTypes from 'prop-types';
+import { I18nextProvider } from 'react-i18next';
 import OHIF from 'ohif-core';
 import './config';
 import ui from './redux/ui.js';
@@ -21,6 +22,7 @@ import {
 } from './utils/index.js';
 import setupTools from './setupTools';
 import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
+import i18n from './i18n';
 
 const { ExtensionManager } = OHIF.extensions;
 const { reducers, localStorage } = OHIF.redux;
@@ -107,15 +109,19 @@ class App extends Component {
 
     if (userManager) {
       return (
-        <Provider store={store}>
-          <OidcProvider store={store} userManager={userManager}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <OHIFStandaloneViewer userManager={userManager} />
-              </WhiteLabellingContext.Provider>
-            </Router>
-          </OidcProvider>
-        </Provider>
+        <I18nextProvider i18n={i18n}>
+          <Provider store={store}>
+            <OidcProvider store={store} userManager={userManager}>
+              <Router basename={this.props.routerBasename}>
+                <WhiteLabellingContext.Provider
+                  value={this.props.whiteLabelling}
+                >
+                  <OHIFStandaloneViewer userManager={userManager} />
+                </WhiteLabellingContext.Provider>
+              </Router>
+            </OidcProvider>
+          </Provider>
+        </I18nextProvider>
       );
     }
 

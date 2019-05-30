@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown } from 'react-viewerbase';
+import { withTranslation } from 'react-i18next';
 import './Header.css';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js';
@@ -69,7 +70,9 @@ class Header extends Component {
         </div>
 
         <div className="header-menu">
-          <span className="research-use">INVESTIGATIONAL USE ONLY</span>
+          <span className="research-use">
+            INVESTIGATIONAL USE ONLY {this.props.t('header_test')}
+          </span>
           <Dropdown title="Options" list={this.options} align="right" />
           <ConnectedUserPreferencesModal />
         </div>
@@ -78,4 +81,4 @@ class Header extends Component {
   }
 }
 
-export default withRouter(Header);
+export default withTranslation('Header')(withRouter(Header));
