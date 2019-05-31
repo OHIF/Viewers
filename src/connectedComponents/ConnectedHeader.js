@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
 import Header from '../components/Header/Header.js';
-import { setUserPreferencesModalOpen } from '../redux/actions.js';
+import { connect } from 'react-redux';
+import { setUserPreferencesModalOpen } from '../store/layout/actions.js';
 
 const mapStateToProps = state => {
   return {

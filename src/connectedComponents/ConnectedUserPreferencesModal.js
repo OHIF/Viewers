@@ -1,8 +1,8 @@
-import { connect } from 'react-redux';
-import { UserPreferencesModal } from 'react-viewerbase';
 import OHIF from 'ohif-core';
-import { setUserPreferencesModalOpen } from '../redux/actions.js';
+import { UserPreferencesModal } from 'react-viewerbase';
 import cloneDeep from 'lodash.clonedeep';
+import { connect } from 'react-redux';
+import { setUserPreferencesModalOpen } from './../store/layout/actions.js';
 
 const { setUserPreferences } = OHIF.redux.actions;
 

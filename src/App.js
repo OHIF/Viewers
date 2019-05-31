@@ -1,8 +1,6 @@
 import './config';
 
-import { OidcProvider, reducer as oidcReducer } from 'redux-oidc';
 import React, { Component } from 'react';
-import { combineReducers, createStore } from 'redux';
 import {
   getDefaultToolbarButtons,
   getUserManagerForOpenIdConnectClient,
@@ -17,32 +15,20 @@ import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
+import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import setupTools from './setupTools';
-import ui from './redux/ui.js';
+import store from './store';
 
 const { ExtensionManager } = OHIF.extensions;
-const { reducers, localStorage } = OHIF.redux;
-
-reducers.ui = ui;
-reducers.oidc = oidcReducer;
-
-const combined = combineReducers(reducers);
-const store = createStore(combined, localStorage.loadState());
-
-store.subscribe(() => {
-  localStorage.saveState({
-    preferences: store.getState().preferences,
-  });
-});
 
 setupTools(store);
 
 const children = {
-  viewport: [<ConnectedToolContextMenu />],
+  viewport: [<ConnectedToolContextMenu key="tool-context" />],
 };
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
