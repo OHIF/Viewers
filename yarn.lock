@@ -1014,6 +1014,25 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
+"@ohif/extension-cornerstone@0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.34.tgz#b3e0ddd21e21f15b67ee1288dd83b833763cfa73"
+  integrity sha512-Q20FRXvyaeR8pgNJWPJ6oPrYgVtbO+CvAsn0TWqWvuMyuT1kGGlcmrGHjOt++dflx2Do7fVf/qCPFagHbrU9rA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    lodash.throttle "^4.1.1"
+    react-cornerstone-viewport "0.1.29"
+
+"@ohif/extension-vtk@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
+  integrity sha512-WDuQVwK4RlHgXwbmKIECZrP90x8cVOwESQz8bJOeNG2eVPDBVlNWx/zOXShAhn6J62QG6Sn1RnHQWLedgGnhyA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    react-vtkjs-viewport "^0.0.7"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
@@ -9688,16 +9707,6 @@ ohif-core@0.5.5:
     lodash.merge "^4.6.1"
     validate.js "^0.12.0"
 
-ohif-cornerstone-extension@0.0.32:
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/ohif-cornerstone-extension/-/ohif-cornerstone-extension-0.0.32.tgz#607852e2e300b320e29a37f0f8c9ced3cf4b07e5"
-  integrity sha512-qHpYno6pYT3UqqAVd+SsMvwIei2sPRxkasqt8uxDSA+tbsM/TaY8daICMknC5aRGvr5XrY9+gSztE6GPJbX0Og==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    lodash.throttle "^4.1.1"
-    react-cornerstone-viewport "0.1.29"
-
 ohif-dicom-html-extension@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/ohif-dicom-html-extension/-/ohif-dicom-html-extension-0.0.2.tgz#5dd80836ee8f12f6ddf6de2b88c72af96d8c347b"
@@ -9722,15 +9731,6 @@ ohif-dicom-pdf-extension@^0.0.6:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
-
-ohif-vtk-extension@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/ohif-vtk-extension/-/ohif-vtk-extension-0.0.1.tgz#aec448c1d0a905d162154c65982227b3503f5f15"
-  integrity sha512-JfLh0AyEc2hOstpiXj9wMwvuYIQathOmsbb49SZFTw9Y9jMjgdxzdTJaiGtERsVT/92I9u42YrMYk6w5TQCT6A==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    react-vtkjs-viewport "^0.0.7"
 
 oidc-client@1.7.x:
   version "1.7.1"
@@ -11760,10 +11760,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.4.2.tgz#a890db450c0f6d1ec495dc2ceb85dbe38fcb7fda"
-  integrity sha512-1rqdXZ3gQIuRtuxOTKwg9D4EJ1NJ8ug9mQWOAFxx+7PSFhfbjXn55O4Fko92qXrlKqd+Rba1jqBvzTXPr0h0fQ==
+react-viewerbase@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.1.tgz#60cb6d1b9e90f627b3756f1e426505b9551d0485"
+  integrity sha512-1wGW4a8lHaG/j5WeC9/R9TZrJLthL6cm5IPDEmthTKF8PNiImMY1VgLR80aXDhfKYi8AVEyCEhOkvvXbPgBl1A==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"

@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
-import { RoundedButtonGroup } from 'react-viewerbase';
-import ConnectedLayoutButton from './ConnectedLayoutButton';
-import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import './ToolbarRow.css';
 
-const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/');
+import React, { Component } from 'react';
+
+import ConnectedLayoutButton from './ConnectedLayoutButton';
+import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
+import OHIF from 'ohif-core';
+import PropTypes from 'prop-types';
+import { RoundedButtonGroup } from 'react-viewerbase';
 
 class ToolbarRow extends Component {
   static propTypes = {
@@ -34,9 +34,7 @@ class ToolbarRow extends Component {
     const leftSidebarToggle = [
       {
         value: 'studies',
-        svgLink: `${Icons}#icon-studies`,
-        svgWidth: 15,
-        svgHeight: 13,
+        icon: 'th-large',
         bottomLabel: 'Series',
       },
     ];
@@ -44,9 +42,7 @@ class ToolbarRow extends Component {
     const rightSidebarToggle = [
       {
         value: 'measurements',
-        svgLink: `${Icons}#icon-measurements-lesions`,
-        svgWidth: 15,
-        svgHeight: 13,
+        icon: 'list',
         bottomLabel: 'Measurements',
       },
     ];

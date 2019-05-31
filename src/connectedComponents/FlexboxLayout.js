@@ -1,9 +1,11 @@
+import './FlexboxLayout.css';
+
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+
+import ConnectedMeasurementTable from './ConnectedMeasurementTable';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
-import ConnectedMeasurementTable from './ConnectedMeasurementTable';
-import './FlexboxLayout.css';
+import PropTypes from 'prop-types';
 
 class FlexboxLayout extends Component {
   static propTypes = {
@@ -41,16 +43,22 @@ class FlexboxLayout extends Component {
           seriesNumber,
           instanceNumber,
           numImageFrames,
+          // TODO: This is undefined
+          // modality,
         } = displaySet;
 
         let imageId;
+        let altImageText = ' '; // modality
 
         if (displaySet.images && displaySet.images.length) {
           imageId = displaySet.images[0].getImageId();
+        } else {
+          altImageText = 'SR';
         }
 
         return {
           imageId,
+          altImageText,
           displaySetInstanceUid,
           seriesDescription,
           seriesNumber,
