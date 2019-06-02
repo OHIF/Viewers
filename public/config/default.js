@@ -19,4 +19,22 @@ window.config = {
       },
     ],
   },
-}
+  //
+  userPreferences: [
+    {
+      order: 0,
+      title: 'preference page title',
+      items: [
+        {
+          order: 0,
+          label: 'Scale Viewport Up',
+          command: 'ScaleViewport',
+        },
+      ],
+    },
+  ],
+  //
+  hotkeys: {
+    ScaleViewport: ['+'],
+  },
+};
