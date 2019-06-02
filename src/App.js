@@ -23,7 +23,18 @@ import WhiteLabellingContext from './WhiteLabellingContext';
 import setupTools from './setupTools';
 import store from './store';
 
+// Register all of our commands and hotkeys
+import commands from './commands';
+
 const { ExtensionManager } = OHIF.extensions;
+
+commands.init();
+// window.config.userPreferences
+Object.keys(window.config.hotkeys).forEach(commandName => {
+  const keys = window.config.hotkeys[commandName];
+  // OHIF.HotkeysManager.set();
+  OHIF.HotkeysManager.registerHotkeys(commandName, keys);
+});
 
 setupTools(store);
 
