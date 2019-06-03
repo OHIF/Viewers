@@ -1,59 +1,51 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-const currentLanguage = process.env.APP_LANG || 'en-US';
+const currentLanguage = process.env.APP_LANG || 'es-MX';
 
 function getDefaultLanguage() {
   const mainLanguage = currentLanguage.match(/(.*.)(-)/);
   return mainLanguage !== null ? mainLanguage[1] : null;
 }
 
-function getCleanKeyForNameSpaces(key) {
-  const regexKeyCleaner = new RegExp(
-    `^(\\.\\/${currentLanguage}\\/)(.*.)(\\.json)$`
-  );
-  const cleanedKey = key.match(regexKeyCleaner);
-  return cleanedKey !== null ? cleanedKey[2] : null;
+function getNameSpaceString(key) {
+  const nameSpaceMatcher = key.match(/[^/]+$/g);
+  let finalNameSpace;
+
+  if (nameSpaceMatcher !== null) {
+    finalNameSpace = nameSpaceMatcher[0].replace('.json', '');
+  }
+
+  return finalNameSpace;
 }
 
-function getCleanKeyForDefaults(key) {
-  const regexKeyCleaner = new RegExp(
-    `^(\\.\\/${getDefaultLanguage()}\\/)(.*.)(\\.json)$`
-  );
-  const cleanedKey = key.match(regexKeyCleaner);
-  return cleanedKey !== null ? cleanedKey[2] : null;
+function getCleanKeyForNameSpaces(key) {
+  const cleanedKey = key.match(/[/\\].+(?=[/\\])/);
+  let finalKey;
+
+  if (cleanedKey !== null) {
+    finalKey = cleanedKey[0].replace(/[/\\]/, '');
+    finalKey = finalKey.replace(/[/\\]/, '-');
+  }
+
+  return finalKey;
 }
 
 function getLocales() {
-  const currentLangList = {};
-  const defaultLangList = {};
-  const locales = {};
   const context = require.context(`./locales`, true, /\.json$/);
+  const locales = {};
 
   context.keys().forEach(key => {
-    const isTheSameOfCurrentLang = key.indexOf(currentLanguage) >= 0;
-    const isADefaultLang = key.indexOf(`${getDefaultLanguage()}/`) >= 0;
-
-    if (isTheSameOfCurrentLang) {
-      currentLangList[getCleanKeyForNameSpaces(key)] = context(key);
-    }
-
-    if (isADefaultLang) {
-      defaultLangList[getCleanKeyForDefaults(key)] = context(key);
-    }
+    locales[getCleanKeyForNameSpaces(key)] = {
+      ...locales[getCleanKeyForNameSpaces(key)],
+      [getNameSpaceString(key)]: context(key),
+    };
   });
 
-  locales[currentLanguage] = { ...currentLangList };
-  locales[getDefaultLanguage()] = { ...defaultLangList };
   return locales;
 }
 
-console.log(getLocales(), ' > ', getDefaultLanguage());
-
-// console.log(getLocales(), currentLanguage, getDefaultLanguage());
-
 i18n.use(initReactI18next).init({
-  // resources: getLocales(),
   resources: getLocales(),
   fallbackLng: getDefaultLanguage(),
   lng: currentLanguage,
@@ -64,6 +56,9 @@ i18n.use(initReactI18next).init({
   interpolation: {
     escapeValue: false,
   },
+
+  fallbackNS: ['common'],
+  defaultNS: 'common',
 
   react: {
     wait: true,

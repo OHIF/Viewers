@@ -93,7 +93,7 @@ class Header extends Component {
           </button>
           <button
             className="research-use"
-            onClick={() => this.changeLanguage('en-ES')}
+            onClick={() => this.changeLanguage('es-MX')}
           >
             ES
           </button>

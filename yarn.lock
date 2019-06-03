@@ -11782,13 +11782,12 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.4.2.tgz#a890db450c0f6d1ec495dc2ceb85dbe38fcb7fda"
-  integrity sha512-1rqdXZ3gQIuRtuxOTKwg9D4EJ1NJ8ug9mQWOAFxx+7PSFhfbjXn55O4Fko92qXrlKqd+Rba1jqBvzTXPr0h0fQ==
+"react-viewerbase@file:.yalc/react-viewerbase":
+  version "0.2.17-1a8178ff"
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
+    i18next "^15.1.3"
     lodash.isequal "4.5.0"
     moment "2.24.0"
     prop-types "15.6.2"
@@ -11796,6 +11795,7 @@ react-viewerbase@0.4.2:
     react-dates "18.4.1"
     react-dnd "7.0.2"
     react-dnd-html5-backend "7.0.2"
+    react-i18next "^10.11.0"
     react-with-direction "1.3.0"
 
 react-vtkjs-viewport@^0.0.7:
