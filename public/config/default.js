@@ -28,13 +28,13 @@ window.config = {
         {
           order: 0,
           label: 'Scale Viewport Up',
-          command: 'ScaleViewport',
+          command: 'scaleUpViewport',
         },
       ],
     },
   ],
   //
   hotkeys: {
-    ScaleViewport: ['+'],
+    scaleUpViewport: ['s'],
   },
 };
