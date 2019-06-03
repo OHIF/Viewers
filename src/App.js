@@ -31,7 +31,7 @@ import setupTools from './setupTools';
 import store from './store';
 
 // ~~~~ APP SETUP
-const _commandsManager = new CommandsManager();
+const _commandsManager = new CommandsManager(store);
 const _hotkeysManager = new HotkeysManager(_commandsManager);
 
 appCommands.init(_commandsManager);
@@ -41,6 +41,16 @@ Object.keys(window.config.hotkeys).forEach(commandName => {
   // HotkeysManager.set();
   console.log(`registering hotkey: ${commandName} to binding: ${keys}`);
   _hotkeysManager.registerHotkeys(commandName, keys);
+});
+
+// Force active contexts for now. These should be set in Viewer/ActiveViewer
+store.dispatch({
+  type: 'ADD_ACTIVE_CONTEXT',
+  item: 'VIEWER',
+});
+store.dispatch({
+  type: 'ADD_ACTIVE_CONTEXT',
+  item: 'VIEWER::CORNERSTONE',
 });
 
 // ~~~~ END EPP SETUP
