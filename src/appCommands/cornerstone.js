@@ -1,69 +1,5 @@
 import cornerstone from 'cornerstone-core';
 
-const definitions = {
-  rotateViewportCW: {
-    commandFn: actions.rotateViewport,
-    storeContexts: ['viewports'],
-    options: { rotation: 90 },
-  },
-  rotateViewportCCW: {
-    commandFn: actions.rotateViewport,
-    storeContexts: ['viewports'],
-    options: { rotation: -90 },
-  },
-  invertViewport: {
-    commandFn: actions.invertViewport,
-    storeContexts: ['viewports'],
-    options: {},
-  },
-  flipViewportVertical: {
-    commandFn: actions.flipViewportVertical,
-    storeContexts: ['viewports'],
-    options: {},
-  },
-  flipViewportHorizontal: {
-    commandFn: actions.flipViewportHorizontal,
-    storeContexts: ['viewports'],
-    options: {},
-  },
-  scaleUpViewport: {
-    keys: '',
-    commandFn: actions.scaleViewport,
-    storeContexts: ['viewports'],
-    options: { direction: 1 },
-  },
-  scaleDownViewport: {
-    keys: '',
-    commandFn: actions.scaleViewport,
-    storeContexts: ['viewports'],
-    options: { direction: -1 },
-  },
-  fitViewportToWindow: {
-    commandFn: actions.scaleViewport,
-    storeContexts: ['viewports'],
-    options: { direction: 0 },
-  },
-  resetViewport: {
-    commandFn: actions.resetViewport,
-    storeContexts: ['viewports'],
-    options: {},
-  },
-  // TODO: Clear Annotations
-  // TODO: Next/Previous image
-  // TODO: First/Last image
-  // Next/Previous series/DisplaySet
-  nextViewportDisplaySet: {
-    commandFn: actions.updateViewportDisplaySet,
-    storeContexts: [],
-    options: { direction: 1 },
-  },
-  previousViewportDisplaySet: {
-    commandFn: actions.updateViewportDisplaySet,
-    storeContexts: [],
-    options: { direction: 1 },
-  },
-};
-
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
     const enabledElement = _getActiveViewportEnabledElement(
@@ -154,6 +90,70 @@ const actions = {
     //   if (!cornerstoneImageId || cornerstoneImageId === imageId)
     //     delete toolState[imageId];
     // });
+  },
+};
+
+const definitions = {
+  rotateViewportCW: {
+    commandFn: actions.rotateViewport,
+    storeContexts: ['viewports'],
+    options: { rotation: 90 },
+  },
+  rotateViewportCCW: {
+    commandFn: actions.rotateViewport,
+    storeContexts: ['viewports'],
+    options: { rotation: -90 },
+  },
+  invertViewport: {
+    commandFn: actions.invertViewport,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  flipViewportVertical: {
+    commandFn: actions.flipViewportVertical,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  flipViewportHorizontal: {
+    commandFn: actions.flipViewportHorizontal,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  scaleUpViewport: {
+    keys: '',
+    commandFn: actions.scaleViewport,
+    storeContexts: ['viewports'],
+    options: { direction: 1 },
+  },
+  scaleDownViewport: {
+    keys: '',
+    commandFn: actions.scaleViewport,
+    storeContexts: ['viewports'],
+    options: { direction: -1 },
+  },
+  fitViewportToWindow: {
+    commandFn: actions.scaleViewport,
+    storeContexts: ['viewports'],
+    options: { direction: 0 },
+  },
+  resetViewport: {
+    commandFn: actions.resetViewport,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  // TODO: Clear Annotations
+  // TODO: Next/Previous image
+  // TODO: First/Last image
+  // Next/Previous series/DisplaySet
+  nextViewportDisplaySet: {
+    commandFn: actions.updateViewportDisplaySet,
+    storeContexts: [],
+    options: { direction: 1 },
+  },
+  previousViewportDisplaySet: {
+    commandFn: actions.updateViewportDisplaySet,
+    storeContexts: [],
+    options: { direction: 1 },
   },
 };
 
