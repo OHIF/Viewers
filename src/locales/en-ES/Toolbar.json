@@ -1,0 +1,13 @@
+{
+  "toolbar_series": "Series",
+  "toolbar_measurements": "Medidas",
+  "toolbar_stack_scroll": "Avance X slice",
+  "toolbar_zoom": "Zoom",
+  "toolbar_levels": "Niveles",
+  "toolbar_pan": "Mover",
+  "toolbar_length": "Medición",
+  "toolbar_annotate": "Anotación",
+  "toolbar_angle": "Ángulo",
+  "toolbar_reset": "Reiniciar",
+  "toolbar_cine": "CINE"
+}

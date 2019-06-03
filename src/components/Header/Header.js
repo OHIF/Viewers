@@ -13,6 +13,8 @@ class Header extends Component {
     location: PropTypes.object.isRequired,
     openUserPreferencesModal: PropTypes.func,
     children: PropTypes.node,
+    t: PropTypes.func,
+    i18n: PropTypes.object,
   };
 
   static defaultProps = {
@@ -27,21 +29,33 @@ class Header extends Component {
       userPreferencesOpen: false,
     };
 
+    this.loadOptions();
+  }
+
+  loadOptions() {
+    const { t } = this.props;
     this.options = [
       {
-        title: 'Preferences ',
+        title: t('header_preferences'),
         icon: 'fa fa-user',
         onClick: this.props.openUserPreferencesModal,
       },
       {
-        title: 'About',
+        title: t('header_about'),
         icon: 'fa fa-info',
         link: 'http://ohif.org',
       },
     ];
   }
 
+  changeLanguage(language) {
+    const { i18n } = this.props;
+    i18n.changeLanguage(language);
+    this.loadOptions();
+  }
+
   render() {
+    const { t } = this.props;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">
@@ -50,7 +64,7 @@ class Header extends Component {
               to={this.props.location.studyLink}
               className="header-btn header-viewerLink"
             >
-              Back to Viewer
+              {t('header_back_to_viewer')}
             </Link>
           )}
 
@@ -64,16 +78,30 @@ class Header extends Component {
                 state: { studyLink: this.props.location.pathname },
               }}
             >
-              Study list
+              {t('header_study_list')}
             </Link>
           )}
         </div>
 
         <div className="header-menu">
-          <span className="research-use">
-            INVESTIGATIONAL USE ONLY {this.props.t('header_test')}
-          </span>
-          <Dropdown title="Options" list={this.options} align="right" />
+          <span className="research-use">{t('header_research_use')}</span>
+          <button
+            className="research-use"
+            onClick={() => this.changeLanguage('en-US')}
+          >
+            US
+          </button>
+          <button
+            className="research-use"
+            onClick={() => this.changeLanguage('en-ES')}
+          >
+            ES
+          </button>
+          <Dropdown
+            title={t('header_options')}
+            list={this.options}
+            align="right"
+          />
           <ConnectedUserPreferencesModal />
         </div>
       </div>
