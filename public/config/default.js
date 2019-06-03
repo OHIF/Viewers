@@ -35,6 +35,26 @@ window.config = {
   ],
   //
   hotkeys: {
-    scaleUpViewport: ['s'],
+    // ~ Global
+    incrementActiveViewport: ['right'],
+    decrementActiveViewport: ['left'],
+    // Supported Keys: https://craig.is/killing/mice
+    // ~ Cornerstone Extension
+    rotateViewportCW: ['r'],
+    rotateViewportCCW: ['l'],
+    invertViewport: ['i'],
+    flipViewportVertical: ['h'],
+    flipViewportHorizontal: ['v'],
+    scaleUpViewport: ['+'],
+    scaleDownViewport: ['-'],
+    fitViewportToWindow: ['='],
+    resetViewport: ['space'],
+    // clearAnnotations
+    // nextImage
+    // previousImage
+    // firstImage
+    // lastImage
+    nextViewportDisplaySet: ['pageup'],
+    previousViewportDisplaySet: ['pagedown'],
   },
 };

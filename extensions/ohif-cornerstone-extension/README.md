@@ -23,6 +23,29 @@ You can read more about [`Commands`](), [`Hotkeys`](), and the [`UserPreferences
 | `nextViewportDisplaySet`     |             | none           |
 | `previousViewportDisplaySet` |             | none           |
 
+### TODO:
+
+_SET TOOL_
+
+- [] Default Tool
+- [] Set Zoom Tool
+- [] Set WWWC Tool
+- [] Set Pan Tool
+- [] Set Angle Measurement Tool
+- [] Set Stack Scroll Tool
+- [] Set Magnify Tool
+- [] Set Length Tool
+- [] Set Annotate Tool
+- [] Set Pixel Probe Tool
+- [] Set Elliptical ROI Tool
+- [] Set Rectangle ROI Tool
+
+_OTHER_
+
+- Show/Hide CINE
+- W/L Presets
+- W/L Presets config
+
 <!--
   Links
   -->
