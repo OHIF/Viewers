@@ -5,7 +5,6 @@ import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import { OHIF } from 'ohif-core';
 import PropTypes from 'prop-types';
 import React from 'react';
-import hotkeys from './../hotkeys.js';
 
 class ViewerMain extends Component {
   static propTypes = {
@@ -26,7 +25,7 @@ class ViewerMain extends Component {
     //   setToolActive: props.setToolActive,
     //   setActiveViewportSpecificData: props.setActiveViewportSpecificData,
     // });
-    hotkeys.init();
+    // hotkeys.init();
 
     this.state = {
       displaySets: [],
@@ -150,7 +149,9 @@ class ViewerMain extends Component {
       this.props.clearViewportSpecificData(viewportIndex);
     });
 
-    hotkeys.clear();
+    // TODO: These don't have to be viewer specific?
+    // Could qualify for other routes?
+    // hotkeys.destroy();
 
     // Remove beforeUnload event handler...
     //window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
