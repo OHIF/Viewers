@@ -1,5 +1,12 @@
 import './config';
 
+import {
+  CommandsManager,
+  HotkeysManager,
+  extensions,
+  redux,
+  utils,
+} from 'ohif-core';
 import React, { Component } from 'react';
 import {
   getDefaultToolbarButtons,
@@ -8,33 +15,34 @@ import {
 } from './utils/index.js';
 
 import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
-import {
-  CommandsManager,
-  HotkeysManager,
-  extensions,
-  redux,
-  utils,
-} from 'ohif-core';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
-import appCommands from './appCommands';
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
+import appCommands from './appCommands';
 import setupTools from './setupTools';
 import store from './store';
 
 // ~~~~ APP SETUP
-const _commandsManager = new CommandsManager(store);
+const commandsManagerConfig = {
+  getAppState: () => store.getState(),
+  getActiveContexts: () => store.getState().ui.activeContexts,
+};
+
+const _commandsManager = new CommandsManager(commandsManagerConfig);
 const _hotkeysManager = new HotkeysManager(_commandsManager);
 
+// TODO: Should be done in extensions w/ commandsModule
+// ADD COMMANDS
 appCommands.init(_commandsManager);
+
 // window.config.userPreferences
 Object.keys(window.config.hotkeys).forEach(commandName => {
   const keys = window.config.hotkeys[commandName];
