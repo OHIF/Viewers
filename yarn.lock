@@ -1024,6 +1024,15 @@
     lodash.throttle "^4.1.1"
     react-cornerstone-viewport "0.1.29"
 
+"@ohif/extension-dicom-microscopy@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.6.tgz#18e0c128689695a7af505bc3dd7ede97df7f8be2"
+  integrity sha512-5On3GdZgeyMse2CKI0sbxJJ269IqlFXZ0Wi+8+D9lsp0Wdt2AOx15ZmmFA9MJ6GGluMHNrrTY2gZBwLyLUZyRw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    dicom-microscopy-viewer "^0.4.3"
+
 "@ohif/extension-vtk@0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
@@ -4187,12 +4196,12 @@ dezalgo@^1.0.0, dezalgo@~1.0.3:
     asap "^2.0.0"
     wrappy "1"
 
-dicom-microscopy-viewer@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.2.0.tgz#3281fccdab99eb96e7f19e18adddf567a8c15b06"
-  integrity sha512-niNZBUy7S6bk5AJ/8D02xFi3YFt579P5i9wBE6NVcP7GIAIzM+gceG1dwyj0/VxG9K0wqKE/t12SxDuhSzxPRA==
+dicom-microscopy-viewer@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.4.3.tgz#defaa821026765bcd109b97258742df72a9b92bb"
+  integrity sha512-PjT3qH0hv6dKOQzXFIHw4w/d8QCbiUOJOGZHvAkkRvnjeNRP7/ri8vbFvcSev+nYxKskNb1Tn0xd1+dsDpPGNw==
   dependencies:
-    dicomweb-client "^0.4.0"
+    dicomweb-client "^0.4.2"
     ol "^5.3.0"
 
 dicom-parser@^1.8.1, dicom-parser@^1.8.3:
@@ -4200,7 +4209,7 @@ dicom-parser@^1.8.1, dicom-parser@^1.8.3:
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
 
-dicomweb-client@^0.4.0, dicomweb-client@^0.4.2:
+dicomweb-client@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.4.2.tgz#f1f5167d935810423ad2599e5160306bde2458ed"
   integrity sha512-Raf2SVjWDrNaVIVt4CmfXWdKVacyEX5ux+pY2Qop0mhluG+OiCkbnESljz4PjglFRnprETEk6C0ELGDru0haew==
@@ -9713,15 +9722,6 @@ ohif-dicom-html-extension@^0.0.2:
   integrity sha512-7/YkaKrgnydiypFl39mvWO5vxCoGecudkdyCFedgDnG10UvkDF4nBcgNvoBupwBtGKYhXTfqye6fPWxQO0NWyw==
   dependencies:
     "@babel/runtime" "^7.2.0"
-
-ohif-dicom-microscopy-extension@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/ohif-dicom-microscopy-extension/-/ohif-dicom-microscopy-extension-0.0.5.tgz#c61ca7ae9bfae25de8c964a436ea95187ec98de8"
-  integrity sha512-FyqeS+Vt0P+W7VX0wrlEzkDqVXC1NTM/U4xJz+b3Cuv4MJEAZCqlE3zGnpxRIOxq/VzfjKrtVxHr8jEUlb9GwQ==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    dicom-microscopy-viewer "^0.2.0"
 
 ohif-dicom-pdf-extension@^0.0.6:
   version "0.0.6"

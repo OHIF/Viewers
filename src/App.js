@@ -13,7 +13,7 @@ import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContext
 import OHIF from 'ohif-core';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
-import OHIFDicomMicroscopyExtension from 'ohif-dicom-microscopy-extension';
+import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
