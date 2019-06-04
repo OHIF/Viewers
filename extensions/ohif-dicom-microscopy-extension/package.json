@@ -1,6 +1,6 @@
 {
-  "name": "ohif-dicom-microscopy-extension",
-  "version": "0.0.5",
+  "name": "@ohif/extension-dicom-microscopy",
+  "version": "0.0.6",
   "description": "OHIF extension for Dicom Microscopy",
   "author": "OHIF",
   "license": "MIT",
@@ -21,7 +21,7 @@
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0",
-    "ohif-core": "^0.2.6"
+    "ohif-core": "^0.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -75,9 +75,12 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
-    "dicom-microscopy-viewer": "^0.2.0"
+    "dicom-microscopy-viewer": "^0.4.3"
   }
 }
