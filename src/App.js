@@ -109,8 +109,8 @@ class App extends Component {
 
     if (userManager) {
       return (
-        <I18nextProvider i18n={i18n}>
-          <Provider store={store}>
+        <Provider store={store}>
+          <I18nextProvider i18n={i18n}>
             <OidcProvider store={store} userManager={userManager}>
               <Router basename={this.props.routerBasename}>
                 <WhiteLabellingContext.Provider
@@ -120,8 +120,8 @@ class App extends Component {
                 </WhiteLabellingContext.Provider>
               </Router>
             </OidcProvider>
-          </Provider>
-        </I18nextProvider>
+          </I18nextProvider>
+        </Provider>
       );
     }
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown } from 'react-viewerbase';
 import { withTranslation } from 'react-i18next';
+import i18n, { t } from 'ohif-i18n';
 import './Header.css';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js';
@@ -12,9 +13,7 @@ class Header extends Component {
     home: PropTypes.bool.isRequired,
     location: PropTypes.object.isRequired,
     openUserPreferencesModal: PropTypes.func,
-    children: PropTypes.node,
-    t: PropTypes.func,
-    i18n: PropTypes.object,
+    children: PropTypes.node
   };
 
   static defaultProps = {
@@ -33,7 +32,6 @@ class Header extends Component {
   }
 
   loadOptions() {
-    const { t } = this.props;
     this.options = [
       {
         title: t('preferences'),
@@ -49,15 +47,14 @@ class Header extends Component {
   }
 
   changeLanguage(language) {
-    const { i18n } = this.props;
     i18n.init({
+      fallbackLng: language.substring(0, 2),
       lng: language
     });
     this.loadOptions();
   }
 
   render() {
-    const { t } = this.props;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">

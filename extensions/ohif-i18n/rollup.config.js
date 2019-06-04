@@ -7,6 +7,7 @@ import url from 'rollup-plugin-url'
 import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins';
+import copy from 'rollup-plugin-copy'
 
 const globals =  {
   'react': 'React',
@@ -39,6 +40,12 @@ export default {
     postcss({
       modules: false
     }),
+    copy({
+      targets: [
+        'src/locales'
+      ],
+      outputFolder: 'dist'
+    }),
     url(),
     babel({
       exclude: 'node_modules/**',
@@ -47,21 +54,7 @@ export default {
     }),
     resolve(),
     commonjs({
-      include: ['node_modules/**', '.yalc/**'],
-      namedExports: {
-          'node_modules/react-vtkjs-viewport/dist/index.js': [
-            'getImageData',
-            'loadImageData',
-            'VTKViewport',
-            'VTKMPRViewport',
-          ],
-          '.yalc/react-vtkjs-viewport/dist/index.js': [
-            'getImageData',
-            'loadImageData',
-            'VTKViewport',
-            'VTKMPRViewport',
-          ]
-      }
+      include: ['node_modules/**', '.yalc/**']
     })
   ],
   external: Object.keys(pkg.peerDependencies || {}),

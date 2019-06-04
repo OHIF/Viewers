@@ -1,3 +1,8 @@
 {
-  "header_test": "$t(common:test)"
+  "preferences": "Preferences",
+  "options": "Options",
+  "about": "About",
+  "back_to_viewer": "Back to Viewer",
+  "study_list": "Study list",
+  "research_use": "INVESTIGATIONAL USE ONLY"
 }
