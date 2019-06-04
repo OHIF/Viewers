@@ -1356,6 +1356,34 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
+"@ohif/extension-cornerstone@0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.34.tgz#b3e0ddd21e21f15b67ee1288dd83b833763cfa73"
+  integrity sha512-Q20FRXvyaeR8pgNJWPJ6oPrYgVtbO+CvAsn0TWqWvuMyuT1kGGlcmrGHjOt++dflx2Do7fVf/qCPFagHbrU9rA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    lodash.throttle "^4.1.1"
+    react-cornerstone-viewport "0.1.29"
+
+"@ohif/extension-dicom-microscopy@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.6.tgz#18e0c128689695a7af505bc3dd7ede97df7f8be2"
+  integrity sha512-5On3GdZgeyMse2CKI0sbxJJ269IqlFXZ0Wi+8+D9lsp0Wdt2AOx15ZmmFA9MJ6GGluMHNrrTY2gZBwLyLUZyRw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    dicom-microscopy-viewer "^0.4.3"
+
+"@ohif/extension-vtk@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
+  integrity sha512-WDuQVwK4RlHgXwbmKIECZrP90x8cVOwESQz8bJOeNG2eVPDBVlNWx/zOXShAhn6J62QG6Sn1RnHQWLedgGnhyA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    react-vtkjs-viewport "^0.0.7"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
@@ -3834,10 +3862,10 @@ cornerstone-math@^0.1.8, cornerstone-math@^0.1.x:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@^3.9.x:
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.10.0.tgz#cf50ba4a18e4d7fa4add117033687c83cd97c8d4"
-  integrity sha512-PQe+9/ni6c6/TF4NmUYC4g+txcq2JP5jUN+IA2Q3mp+ONjZOj7hpU+HXlt0VrAfBE7AW8xmlfXmKk4WsTHQkyw==
+cornerstone-tools@^3.11.x:
+  version "3.12.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.12.1.tgz#7370f1419252569cc1879177e9239f2e5c7c2872"
+  integrity sha512-kj+AZeov0z78PrtT+1wKtb1QMswM2E1trTWVCMYhgARXTxPALspwho0Eg+R6BfV6UR64PPwlojq1GvxKYCBkiw==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
@@ -4533,12 +4561,25 @@ dicom-microscopy-viewer@^0.2.0:
     dicomweb-client "^0.4.0"
     ol "^5.3.0"
 
+dicom-microscopy-viewer@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.4.3.tgz#defaa821026765bcd109b97258742df72a9b92bb"
+  integrity sha512-PjT3qH0hv6dKOQzXFIHw4w/d8QCbiUOJOGZHvAkkRvnjeNRP7/ri8vbFvcSev+nYxKskNb1Tn0xd1+dsDpPGNw==
+  dependencies:
+    dicomweb-client "^0.4.2"
+    ol "^5.3.0"
+
 dicom-parser@^1.8.1, dicom-parser@^1.8.x:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
 
-dicomweb-client@^0.4.0, dicomweb-client@^0.4.2:
+dicomweb-client@^0.4.0:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.4.4.tgz#0ca0c7706556f3114330a3c40946ee66808148e4"
+  integrity sha512-5S7wLYxQgHnOyEgR1zlZlt79IjzOk+YDB/Jjzte6ijRZsAoj9RUiIZcsTyxvBD9gLMYs/954n2kYHdbz83Xbtw==
+
+dicomweb-client@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.4.2.tgz#f1f5167d935810423ad2599e5160306bde2458ed"
   integrity sha512-Raf2SVjWDrNaVIVt4CmfXWdKVacyEX5ux+pY2Qop0mhluG+OiCkbnESljz4PjglFRnprETEk6C0ELGDru0haew==
@@ -10078,9 +10119,9 @@ octokit-pagination-methods@^1.1.0:
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
 ohif-core@0.5.x:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.4.tgz#d1303139e08f23b0971bc316e2eac27f1c50168e"
-  integrity sha512-pRuGx9jnvmSL1ej9r80Bh/4uxNOM6VxQIFWinlvWCWAGYor2CFmC2R4+on8sDEjDcRho5BUdJ5wmOZye1bZsOg==
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.5.tgz#78ace87fa06b3b23a004414a702cc23cb00edf9d"
+  integrity sha512-BORJCxOWuVAx2CE6+LSdL5+1+PG6gkYgl6tyAZhHhAgT46DWAfbq8nkAIX7Rhwot0BWpAcHkkBWIavGOBOH24Q==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -11906,6 +11947,15 @@ react-cornerstone-viewport@0.1.27:
     moment "^2.23.0"
     stylus "^0.54.5"
 
+react-cornerstone-viewport@0.1.29:
+  version "0.1.29"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.29.tgz#7ef3c2f3d7dc45339b14c17a53e05db367a28394"
+  integrity sha512-KUjdqjti53v4eNyFTT3tXJ4cTyb64eMW3QF1cQqd+1+Re8UXSF1+k9uku15vR/Qt/YOv9Bsh74PabBct7BxWog==
+  dependencies:
+    lodash.debounce "^4.0.8"
+    moment "^2.23.0"
+    stylus "^0.54.5"
+
 react-dates@18.4.1:
   version "18.4.1"
   resolved "https://registry.yarnpkg.com/react-dates/-/react-dates-18.4.1.tgz#82aa0bb4faaa9cdb9547d61c791af2180beda20e"
@@ -12159,10 +12209,10 @@ react-transition-group@^4.0.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-viewerbase@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.3.2.tgz#03908eac75a325c1dca5c7fb7755e21119f7145a"
-  integrity sha512-o1xM7kWgsnaXuvaZt8BeA+NJjIZvU9HWA12m5pvNfCB4a1YfKIyYXNtaP39MbuA7sIS3vHDaBU3IKHL/uFPd2w==
+react-viewerbase@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.1.tgz#60cb6d1b9e90f627b3756f1e426505b9551d0485"
+  integrity sha512-1wGW4a8lHaG/j5WeC9/R9TZrJLthL6cm5IPDEmthTKF8PNiImMY1VgLR80aXDhfKYi8AVEyCEhOkvvXbPgBl1A==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"

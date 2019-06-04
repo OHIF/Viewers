@@ -1,4 +1,4 @@
-import { OHIF } from 'ohif-core'
+import { OHIF } from 'ohif-core';
 
 // TODO: Move this function to OHIF itself so we can use it on the OHIF measurment table (when it is finished)
 
@@ -16,48 +16,48 @@ export default function jumpToRowItem(
   timepointManagerState,
   options = { invertViewportTimepointsOrder: false, childToolKey: null }
 ) {
-  const numViewports = viewportsState.layout.viewports.length
-  const numTimepoints = timepointManagerState.timepoints.length
-  const { measurements, timepoints } = timepointManagerState
-  const numViewportsToUpdate = Math.min(numTimepoints, numViewports)
-  const { toolType, measurementNumber } = measurementData
+  const numViewports = viewportsState.layout.viewports.length;
+  const numTimepoints = timepointManagerState.timepoints.length;
+  const { measurements, timepoints } = timepointManagerState;
+  const numViewportsToUpdate = Math.min(numTimepoints, numViewports);
+  const { toolType, measurementNumber } = measurementData;
 
   if (options.invertViewportTimepointsOrder) {
-    timepoints.reverse()
+    timepoints.reverse();
   }
 
-  const measurementsForToolGroup = measurements[toolType]
+  const measurementsForToolGroup = measurements[toolType];
 
   // Retrieve the measurements data
-  const measurementsToJumpTo = []
+  const measurementsToJumpTo = [];
   for (let i = 0; i < numViewportsToUpdate; i++) {
-    const { timepointId } = timepoints[i]
+    const { timepointId } = timepoints[i];
 
     const dataAtThisTimepoint = measurementsForToolGroup.find(entry => {
       return (
         entry.timepointId === timepointId &&
         entry.measurementNumber === measurementNumber
-      )
-    })
+      );
+    });
 
     if (!dataAtThisTimepoint) {
-      measurementsToJumpTo.push(null)
-      continue
+      measurementsToJumpTo.push(null);
+      continue;
     }
 
-    let measurement = dataAtThisTimepoint
+    let measurement = dataAtThisTimepoint;
 
     const { tool } = OHIF.measurements.MeasurementApi.getToolConfiguration(
       toolType
-    )
+    );
     if (options.childToolKey) {
-      measurement = dataAtThisTimepoint[options.childToolKey]
+      measurement = dataAtThisTimepoint[options.childToolKey];
     } else if (Array.isArray(tool.childTools)) {
-      const key = tool.childTools.find(key => !!dataAtThisTimepoint[key])
-      measurement = dataAtThisTimepoint[key]
+      const key = tool.childTools.find(key => !!dataAtThisTimepoint[key]);
+      measurement = dataAtThisTimepoint[key];
     }
 
-    measurementsToJumpTo.push(measurement)
+    measurementsToJumpTo.push(measurement);
   }
 
   // TODO: Add a single viewports state action which allows
@@ -70,41 +70,41 @@ export default function jumpToRowItem(
   const displaySetContainsSopInstance = (displaySet, sopInstanceUid) =>
     displaySet.images.find(
       image => image.getSOPInstanceUID() === sopInstanceUid
-    )
+    );
 
-  const viewportSpecificData = []
+  const viewportSpecificData = [];
   measurementsToJumpTo.forEach((data, viewportIndex) => {
     // Skip if there is no measurement to jump
     if (!data) {
-      return
+      return;
     }
 
-    const study = OHIF.utils.studyMetadataManager.get(data.studyInstanceUid)
+    const study = OHIF.utils.studyMetadataManager.get(data.studyInstanceUid);
     if (!study) {
-      throw new Error('Study not found.')
+      throw new Error('Study not found.');
     }
 
     const displaySet = study.findDisplaySet(displaySet => {
-      return displaySetContainsSopInstance(displaySet, data.sopInstanceUid)
-    })
+      return displaySetContainsSopInstance(displaySet, data.sopInstanceUid);
+    });
 
     if (!displaySet) {
-      throw new Error('Display set not found.')
+      throw new Error('Display set not found.');
     }
 
-    displaySet.sopInstanceUid = data.sopInstanceUid
+    displaySet.sopInstanceUid = data.sopInstanceUid;
     if (data.frameIndex) {
-      displaySet.frameIndex = data.frameIndex
+      displaySet.frameIndex = data.frameIndex;
     }
 
     viewportSpecificData.push({
       viewportIndex,
       displaySet,
-    })
-  })
+    });
+  });
 
   return {
     viewportSpecificData,
     layout: [], // TODO: if we need to change layout, we should return this here
-  }
+  };
 }

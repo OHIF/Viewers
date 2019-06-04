@@ -1,11 +1,12 @@
-import cloneDeep from 'lodash.clonedeep'
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import EditDescriptionDialog from './../EditDescriptionDialog/EditDescriptionDialog.js'
-import LabellingFlow from './LabellingFlow.js'
+import cloneDeep from 'lodash.clonedeep';
 
-import './LabellingManager.css'
+import EditDescriptionDialog from './../EditDescriptionDialog/EditDescriptionDialog.js';
+import LabellingFlow from './LabellingFlow.js';
+
+import './LabellingManager.css';
 
 export default class LabellingManager extends Component {
   static propTypes = {
@@ -19,24 +20,24 @@ export default class LabellingManager extends Component {
     editLocation: PropTypes.bool,
     editDescription: PropTypes.bool,
     editDescriptionOnDialog: PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     skipAddLabelButton: false,
     editLocation: false,
     editDescription: false,
     editDescriptionOnDialog: false,
-  }
+  };
 
   constructor(props) {
-    super(props)
+    super(props);
 
-    const measurementData = cloneDeep(props.measurementData)
-    this.treatMeasurementData(measurementData)
+    const measurementData = cloneDeep(props.measurementData);
+    this.treatMeasurementData(measurementData);
 
-    let editLocation = props.editLocation
+    let editLocation = props.editLocation;
     if (!props.editDescription && !props.editLocation) {
-      editLocation = true
+      editLocation = true;
     }
 
     this.state = {
@@ -46,19 +47,19 @@ export default class LabellingManager extends Component {
       editDescription: props.editDescription,
       editDescriptionOnDialog: props.editDescriptionOnDialog,
       measurementData: measurementData,
-    }
+    };
   }
 
   componentDidMount = () => {
-    document.addEventListener('touchstart', this.onTouchStart)
-  }
+    document.addEventListener('touchstart', this.onTouchStart);
+  };
 
   componentWillUnmount = () => {
-    document.removeEventListener('touchstart', this.onTouchStart)
-  }
+    document.removeEventListener('touchstart', this.onTouchStart);
+  };
 
   render() {
-    return this.getRenderComponent()
+    return this.getRenderComponent();
   }
 
   getRenderComponent = () => {
@@ -67,7 +68,7 @@ export default class LabellingManager extends Component {
       editDescription,
       editDescriptionOnDialog,
       measurementData,
-    } = this.state
+    } = this.state;
 
     if (editDescriptionOnDialog) {
       return (
@@ -78,7 +79,7 @@ export default class LabellingManager extends Component {
           componentStyle={this.state.componentStyle}
           measurementData={measurementData}
         />
-      )
+      );
     }
 
     if (editLocation || editDescription) {
@@ -87,43 +88,43 @@ export default class LabellingManager extends Component {
           {...this.props}
           componentStyle={this.state.componentStyle}
         />
-      )
+      );
     }
-  }
+  };
 
   treatMeasurementData = measurementData => {
-    const { editDescription, editLocation } = this.props
+    const { editDescription, editLocation } = this.props;
 
     if (editDescription) {
-      measurementData.description = undefined
+      measurementData.description = undefined;
     }
     if (editLocation) {
-      measurementData.location = undefined
+      measurementData.location = undefined;
     }
-  }
+  };
 
   responseDialogUpdate = response => {
     this.props.updateLabelling({
       response,
-    })
-    this.props.labellingDoneCallback()
-  }
+    });
+    this.props.labellingDoneCallback();
+  };
 
   descriptionDialogUpdate = description => {
     this.props.updateLabelling({
       description,
-    })
-    this.props.labellingDoneCallback()
-  }
+    });
+    this.props.labellingDoneCallback();
+  };
 }
 
 function getComponentPosition(eventData) {
   const {
     event: { clientX: left, clientY: top },
-  } = eventData
+  } = eventData;
 
   return {
     left,
     top,
-  }
+  };
 }

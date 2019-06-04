@@ -1,5 +1,5 @@
 // https://github.com/maxmantz/redux-oidc/blob/master/docs/API.md
-import { loadUser, createUserManager } from 'redux-oidc'
+import { loadUser, createUserManager } from 'redux-oidc';
 
 /**
  * Creates a userManager from oidcSettings;
@@ -17,7 +17,7 @@ import { loadUser, createUserManager } from 'redux-oidc'
  */
 export default function(store, oidcSettings) {
   if (!store || !oidcSettings) {
-    return
+    return;
   }
 
   const settings = {
@@ -27,11 +27,11 @@ export default function(store, oidcSettings) {
     revokeAccessTokenOnSignout: true,
     filterProtocolClaims: true,
     loadUserInfo: true,
-  }
+  };
 
-  const userManager = createUserManager(settings)
+  const userManager = createUserManager(settings);
 
-  loadUser(store, userManager)
+  loadUser(store, userManager);
 
-  return userManager
+  return userManager;
 }

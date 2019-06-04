@@ -1,12 +1,12 @@
-import { connect } from 'react-redux'
-import { UserPreferencesModal } from 'react-viewerbase'
-import OHIF from 'ohif-core'
-import { setUserPreferencesModalOpen } from '../redux/actions.js'
+import { connect } from 'react-redux';
+import { UserPreferencesModal } from 'react-viewerbase';
+import OHIF from 'ohif-core';
+import { setUserPreferencesModalOpen } from '../redux/actions.js';
 
-const { setUserPreferences } = OHIF.redux.actions
+const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
-  const contextName = window.store.getState().commandContext.context
+  const contextName = window.store.getState().commandContext.context;
   return {
     isOpen: state.ui.userPreferencesModalOpen,
     windowLevelData: state.preferences[contextName]
@@ -15,35 +15,35 @@ const mapStateToProps = state => {
     hotKeysData: state.preferences[contextName]
       ? state.preferences[contextName].hotKeysData
       : {},
-  }
-}
+  };
+};
 
 const mapDispatchToProps = dispatch => {
   return {
     onCancel: () => {
-      dispatch(setUserPreferencesModalOpen(false))
+      dispatch(setUserPreferencesModalOpen(false));
     },
     onSave: data => {
-      const contextName = window.store.getState().commandContext.context
+      const contextName = window.store.getState().commandContext.context;
       const preferences = JSON.parse(
         JSON.stringify(window.store.getState().preferences)
-      )
-      preferences[contextName] = data
-      dispatch(setUserPreferences(preferences))
-      dispatch(setUserPreferencesModalOpen(false))
-      OHIF.hotkeysUtil.setHotkeys(data.hotKeysData)
+      );
+      preferences[contextName] = data;
+      dispatch(setUserPreferences(preferences));
+      dispatch(setUserPreferencesModalOpen(false));
+      OHIF.hotkeysUtil.setHotkeys(data.hotKeysData);
     },
     onResetToDefaults: () => {
-      dispatch(setUserPreferences())
-      dispatch(setUserPreferencesModalOpen(false))
-      OHIF.hotkeysUtil.setHotkeys()
+      dispatch(setUserPreferences());
+      dispatch(setUserPreferencesModalOpen(false));
+      OHIF.hotkeysUtil.setHotkeys();
     },
-  }
-}
+  };
+};
 
 const ConnectedUserPreferencesModal = connect(
   mapStateToProps,
   mapDispatchToProps
-)(UserPreferencesModal)
+)(UserPreferencesModal);
 
-export default ConnectedUserPreferencesModal
+export default ConnectedUserPreferencesModal;
