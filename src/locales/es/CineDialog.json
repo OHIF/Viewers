@@ -1,3 +1,8 @@
 {
-  "fps": "ES RAIZ cps"
+  "fps":  "fps",
+  "Skip to first image":  "Avanza para la primera imagen",
+  "Previous image":  "Imagen anterior",
+  "Play / Stop":  "Play / Stop",
+  "Next image":  "Próximo image",
+  "Skip to last image":  "Pular para la ultima imagen"
 }

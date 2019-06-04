@@ -36,12 +36,12 @@ class Header extends Component {
     const { t } = this.props;
     this.options = [
       {
-        title: t('header_preferences'),
+        title: t('preferences'),
         icon: 'fa fa-user',
         onClick: this.props.openUserPreferencesModal,
       },
       {
-        title: t('header_about'),
+        title: t('about'),
         icon: 'fa fa-info',
         link: 'http://ohif.org',
       },
@@ -50,7 +50,9 @@ class Header extends Component {
 
   changeLanguage(language) {
     const { i18n } = this.props;
-    i18n.changeLanguage(language);
+    i18n.init({
+      lng: language
+    });
     this.loadOptions();
   }
 
@@ -64,7 +66,7 @@ class Header extends Component {
               to={this.props.location.studyLink}
               className="header-btn header-viewerLink"
             >
-              {t('header_back_to_viewer')}
+              {t('back_to_viewer')}
             </Link>
           )}
 
@@ -78,27 +80,39 @@ class Header extends Component {
                 state: { studyLink: this.props.location.pathname },
               }}
             >
-              {t('header_study_list')}
+              {t('study_list')}
             </Link>
           )}
         </div>
 
         <div className="header-menu">
-          <span className="research-use">{t('header_research_use')}</span>
+          <span className="research-use">{t('research_use')}</span>
           <button
             className="research-use"
             onClick={() => this.changeLanguage('en-US')}
           >
-            US
+            EN-US
+          </button>
+          <button
+            className="research-use"
+            onClick={() => this.changeLanguage('en-UK')}
+          >
+            EN-UK
+          </button>
+          <button
+            className="research-use"
+            onClick={() => this.changeLanguage('es-AR')}
+          >
+            ES-AR
           </button>
           <button
             className="research-use"
             onClick={() => this.changeLanguage('es-MX')}
           >
-            ES
+            ES-MX
           </button>
           <Dropdown
-            title={t('header_options')}
+            title={t('options')}
             list={this.options}
             align="right"
           />

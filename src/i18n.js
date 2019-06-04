@@ -3,10 +3,10 @@ import { initReactI18next } from 'react-i18next';
 
 const currentLanguage = process.env.APP_LANG || 'es-MX';
 
-function getDefaultLanguage() {
+/*function getDefaultLanguage() {
   const mainLanguage = currentLanguage.match(/(.*.)(-)/);
   return mainLanguage !== null ? mainLanguage[1] : null;
-}
+}*/
 
 function getNameSpaceString(key) {
   const nameSpaceMatcher = key.match(/[^/]+$/g);
@@ -47,7 +47,19 @@ function getLocales() {
 
 i18n.use(initReactI18next).init({
   resources: getLocales(),
-  fallbackLng: getDefaultLanguage(),
+  // fallbackLng: getDefaultLanguage(),
+  fallbackLng:{
+    'es-MX': ['es'],
+    'default': ['en']
+  },
+
+  /*fallbackLng: {
+    'de-CH': ['fr', 'it'],
+    'zh-Hant': ['zh-Hans', 'en'],
+    'es': ['fr'],
+    'default': ['en']
+  },*/
+
   lng: currentLanguage,
   debug: true,
 
@@ -57,7 +69,7 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
 
-  fallbackNS: ['common'],
+  fallbackNS: ['Header'],
   defaultNS: 'common',
 
   react: {

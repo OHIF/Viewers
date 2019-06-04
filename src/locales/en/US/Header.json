@@ -1,9 +1,4 @@
 {
-  "header_preferences": "Preferences",
-  "header_options": "Options",
-  "header_about": "About",
-  "header_back_to_viewer": "Back to Viewer",
-  "header_study_list": "Study list",
-  "header_research_use": "INVESTIGATIONAL USE ONLY",
-  "header_test": "$t(common:test)"
+  "options": "Options",
+  "about": "About"
 }

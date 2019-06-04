@@ -1,7 +1,8 @@
 {
-  "header_research_use": "SOLO USO DE INVESTIGACIÓN",
-  "header_options": "Opciones",
-  "header_about": "Sobre",
-  "header_preferences": "Preferencias",
-  "header_study_list": "Lista de estudio"
+  "preferences": "Preferences",
+  "options": "Options",
+  "about": "About",
+  "back_to_viewer": "Back to Viewer",
+  "study_list": "Study list",
+  "research_use": "INVESTIGATIONAL USE ONLY"
 }

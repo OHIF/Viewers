@@ -30,7 +30,9 @@
     "react-dom": "^15.0.0 || ^16.0.0",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "i18next": "^15.1.3",
+    "react-i18next": "^10.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
