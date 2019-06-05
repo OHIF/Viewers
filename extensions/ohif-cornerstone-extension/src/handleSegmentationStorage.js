@@ -2,6 +2,8 @@ import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import * as dcmjs from 'dcmjs';
+import { api } from 'dicomweb-client';
+import DICOMWeb from '../../../ohif-core/src/DICOMWeb';
 
 const { StackManager } = OHIF.utils;
 
@@ -73,12 +75,25 @@ function addSegMetadataToCornerstoneToolState(
   }
 }
 
-function retrieveDicomData(wadoUri) {
+function retrieveDicomData(studyInstanceUID,
+                           seriesInstanceUID,
+                           sopInstanceUID, wadoRoot) {
   // TODO: Authorization header depends on the server. If we ever have multiple servers
   // we will need to figure out how / when to pass this information in.
-  return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
-  }).then(response => response.arrayBuffer());
+
+  const config = {
+    url: wadoRoot,
+    headers: DICOMWeb.getAuthorizationHeader()
+  };
+
+  const dicomWeb = new api.DICOMwebClient(config);
+  const options = {
+    studyInstanceUID,
+    seriesInstanceUID,
+    sopInstanceUID
+  };
+
+  return dicomWeb.retrieveInstance(options);
 }
 
 async function handleSegmentationStorage(
@@ -94,8 +109,15 @@ async function handleSegmentationStorage(
     studyInstanceUid,
     displaySetInstanceUid
   );
-  const segWadoUri = displaySet.images[0].getData().wadouri;
-  const arrayBuffer = await retrieveDicomData(segWadoUri);
+
+  // TODO: This is terrible
+  const wadoRoot = displaySet.images[0].getData().wadoRoot;
+
+  const StudyInstanceUID = displaySet.images[0].getStudyInstanceUID();
+  const SeriesInstanceUID = displaySet.images[0].getSeriesInstanceUID();
+  const SOPInstanceUID = displaySet.images[0].getSOPInstanceUID();
+
+  const arrayBuffer = await retrieveDicomData(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, wadoRoot);
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict

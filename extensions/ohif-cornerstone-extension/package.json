@@ -25,6 +25,7 @@
     "cornerstone-wado-image-loader": "^2.2.3",
     "dcmjs": "^0.3.8",
     "dicom-parser": "^1.8.3",
+    "dicomweb-client": "file:.yalc/dicomweb-client",
     "hammerjs": "^2.0.8",
     "ohif-core": "^0.3.5",
     "prop-types": "^15.6.2",
