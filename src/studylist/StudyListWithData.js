@@ -5,12 +5,16 @@ import { withRouter } from 'react-router-dom';
 import { StudyList } from 'react-viewerbase';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
+import Modal from 'react-modal';
+import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
+import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 
 class StudyListWithData extends Component {
   state = {
     searchData: {},
-    studies: null,
+    studies: [],
     error: null,
+    modalComponentId: null,
   };
 
   static propTypes = {
@@ -30,10 +34,23 @@ class StudyListWithData extends Component {
   static defaultStudyDateTo = new Date();
 
   componentDidMount() {
-    // TODO: Avoid using timepoints here
-    //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
+    if (!this.props.server) {
+      this.setState({
+        modalComponentId: 'DicomStorePicker',
+      });
+    } else {
+      this.searchForStudies();
+    }
+  }
 
-    this.searchForStudies();
+  componentDidUpdate(prevProps) {
+    if (this.props.server !== prevProps.server) {
+      this.setState({
+        modalComponentId: null,
+      });
+
+      this.searchForStudies();
+    }
   }
 
   searchForStudies = (
@@ -121,6 +138,16 @@ class StudyListWithData extends Component {
     //console.log('onImport');
   };
 
+  openModal = modalComponentId => {
+    this.setState({
+      modalComponentId,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({ modalComponentId: null });
+  };
+
   onSelectItem = studyInstanceUID => {
     this.props.history.push(`/viewer/${studyInstanceUID}`);
   };
@@ -132,13 +159,33 @@ class StudyListWithData extends Component {
   render() {
     if (this.state.error) {
       return <div>Error: {JSON.stringify(this.state.error)}</div>;
-    } else if (this.state.studies === null) {
+    } else if (this.state.studies === null && !this.state.modalComponentId) {
       return <div>Loading...</div>;
+    }
+
+    let modalContent = '';
+    if (this.state.modalComponentId === 'DicomStorePicker') {
+      modalContent = <ConnectedDicomStorePicker />;
+    } else if (this.state.modalComponentId === 'DicomFilesUploader') {
+      modalContent = <ConnectedDicomFilesUploader />;
     }
 
     return (
       <>
         <ConnectedHeader home={true} user={this.props.user} />
+        <button onClick={() => this.openModal('DicomStorePicker')}>
+          Open Dicom Store Picker
+        </button>
+        <button onClick={() => this.openModal('DicomFilesUploader')}>
+          Open Dicom Uploader
+        </button>
+        <Modal
+          isOpen={!!this.state.modalComponentId}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+        >
+          {modalContent}
+        </Modal>
         <StudyList
           studies={this.state.studies}
           studyListFunctionsEnabled={false}

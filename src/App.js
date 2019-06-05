@@ -23,6 +23,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import setupTools from './setupTools';
 import ui from './redux/ui.js';
+import loadHealthcareApiAdapter from './googleCloud/loadHealthcareApiAdapter';
 
 const { ExtensionManager } = OHIF.extensions;
 const { reducers, localStorage } = OHIF.redux;
@@ -97,6 +98,11 @@ class App extends Component {
         firstOpenIdClient
       );
     }
+
+    if (this.props.enableGoogleCloudAdapter) {
+      loadHealthcareApiAdapter();
+    }
+
     handleServers(this.props.servers);
     initWebWorkers(
       this.props.routerBasename,

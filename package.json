@@ -88,6 +88,7 @@
     "react-bootstrap-modal": "^4.2.0",
     "react-dnd": "^7.0.2",
     "react-dnd-html5-backend": "^7.0.2",
+    "react-modal": "^3.8.1",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
     "react-router": "^4.3.1",

@@ -12,7 +12,9 @@ window.config = window.config || {};
 const applicationDefaults = {
   routerBasename: '/',
   relativeWebWorkerScriptsPath: '',
+  enableGoogleCloudAdapter: false,
 };
+
 const applicationProps = Object.assign({}, applicationDefaults, window.config);
 const app = React.createElement(App, applicationProps, null);
 
