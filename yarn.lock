@@ -12159,10 +12159,10 @@ react-transition-group@^4.0.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-viewerbase@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.1.tgz#60cb6d1b9e90f627b3756f1e426505b9551d0485"
-  integrity sha512-1wGW4a8lHaG/j5WeC9/R9TZrJLthL6cm5IPDEmthTKF8PNiImMY1VgLR80aXDhfKYi8AVEyCEhOkvvXbPgBl1A==
+react-viewerbase@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.7.0.tgz#b0f48a0f003b849c280b8ca67927d4780c68b0dc"
+  integrity sha512-1VQXREKSsqxtOSSHRou0gjBODrSOjE8SBJ6/dHG0gPgdmeotOg68xPMKYf9K7fYyGZ6CDA7oVCAmdTE4SVYP5Q==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
