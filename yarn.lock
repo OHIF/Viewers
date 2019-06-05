@@ -9702,10 +9702,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.5.tgz#78ace87fa06b3b23a004414a702cc23cb00edf9d"
-  integrity sha512-BORJCxOWuVAx2CE6+LSdL5+1+PG6gkYgl6tyAZhHhAgT46DWAfbq8nkAIX7Rhwot0BWpAcHkkBWIavGOBOH24Q==
+ohif-core@0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.6.tgz#b626b2fdd5bebf53f4914a8701bedf2dc2c43b71"
+  integrity sha512-qe5/tHjnyPAGoNEdYZBJEejojBBOE9G5Y54vuTUnu2TUKkdbFPg2Kj/WzmLBMG/3PHcjMCqFm1JllEwcntRvOg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -11760,10 +11760,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.1.tgz#60cb6d1b9e90f627b3756f1e426505b9551d0485"
-  integrity sha512-1wGW4a8lHaG/j5WeC9/R9TZrJLthL6cm5IPDEmthTKF8PNiImMY1VgLR80aXDhfKYi8AVEyCEhOkvvXbPgBl1A==
+react-viewerbase@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.7.0.tgz#b0f48a0f003b849c280b8ca67927d4780c68b0dc"
+  integrity sha512-1VQXREKSsqxtOSSHRou0gjBODrSOjE8SBJ6/dHG0gPgdmeotOg68xPMKYf9K7fYyGZ6CDA7oVCAmdTE4SVYP5Q==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
