@@ -1,4 +1,8 @@
 import cornerstone from 'cornerstone-core';
+import { redux } from 'ohif-core';
+import store from './../store/';
+
+const { setToolActive } = redux.actions;
 
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
@@ -64,7 +68,6 @@ const actions = {
       cornerstone.reset(enabledElement);
     }
   },
-
   invertViewport: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
       viewports.viewportSpecificData,
@@ -76,6 +79,13 @@ const actions = {
       viewport.invert = !viewport.invert;
       cornerstone.setViewport(enabledElement, viewport);
     }
+  },
+  // This has a weird hard dependency on the tools that are available as toolbar
+  // buttons. You can see this in `ohif-core/src/redux/reducers/tools.js`
+  // the `toolName` needs to equal the button's `command` property.
+  // NOTE: It would be nice if `hotkeys` could set this, instead of creating a command per tool
+  setCornerstoneToolActive: ({ toolName }) => {
+    store.dispatch(setToolActive(toolName));
   },
   updateViewportDisplaySet: ({ direction }) => {
     // TODO
@@ -154,6 +164,12 @@ const definitions = {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: [],
     options: { direction: 1 },
+  },
+  // TOOLS
+  setZoomTool: {
+    commandFn: actions.setCornerstoneToolActive,
+    storeContexts: [],
+    options: { toolName: 'Zoom' },
   },
 };
 

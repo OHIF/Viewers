@@ -56,5 +56,7 @@ window.config = {
     // lastImage
     nextViewportDisplaySet: ['pageup'],
     previousViewportDisplaySet: ['pagedown'],
+    // ~ Cornerstone Tools
+    setZoomTool: ['z'],
   },
 };
