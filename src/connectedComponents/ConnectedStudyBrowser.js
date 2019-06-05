@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import cloneDeep from 'lodash.clonedeep';
 import { StudyBrowser } from 'react-viewerbase';
+import cloneDeep from 'lodash.clonedeep';
 
 // TODO
 // - Determine in which display set is active from Redux (activeViewportIndex and layout viewportData)
