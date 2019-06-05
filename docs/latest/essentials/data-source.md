@@ -29,10 +29,14 @@ For our purposes, we will be using `Orthanc`, but you can see a list of
 
 - Docker
   - [Docker for Mac](https://docs.docker.com/docker-for-mac/)
-  - [Docker for Windows](https://docs.docker.com/docker-for-windows/)
+  - [Docker for Windows (recommended)](https://docs.docker.com/docker-for-windows/)
+  - [Docker Toolbox for Windows](https://docs.docker.com/toolbox/toolbox_install_windows/)
 
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
+
+If you are using Docker Toolbox you need to change the _proxy_ parameter in
+_package.json_ to http://192.168.99.100:8042 or the ip docker-machine ip throws.
 
 ### Running Orthanc
 
@@ -112,7 +116,7 @@ window.config = {
       },
     ],
   },
-}
+};
 ```
 
 To learn more about how you can configure the OHIF Viewer, check out our
