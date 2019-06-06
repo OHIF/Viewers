@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 class FlexboxLayout extends Component {
   static propTypes = {
-    studies: PropTypes.array.isRequired,
+    studies: PropTypes.array,
     leftSidebarOpen: PropTypes.bool.isRequired,
     rightSidebarOpen: PropTypes.bool.isRequired,
   };
@@ -19,11 +19,23 @@ class FlexboxLayout extends Component {
   };
 
   componentDidMount() {
-    const studiesForBrowser = this.getStudiesForBrowser();
+    if (this.props.studies) {
+      const studiesForBrowser = this.getStudiesForBrowser();
 
-    this.setState({
-      studiesForBrowser,
-    });
+      this.setState({
+        studiesForBrowser,
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.studies !== prevProps.studies) {
+      const studiesForBrowser = this.getStudiesForBrowser();
+
+      this.setState({
+        studiesForBrowser,
+      });
+    }
   }
 
   getStudiesForBrowser = () => {

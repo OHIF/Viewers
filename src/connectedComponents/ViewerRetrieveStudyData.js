@@ -75,8 +75,6 @@ class ViewerRetrieveStudyData extends Component {
   render() {
     if (this.state.error) {
       return <div>Error: {JSON.stringify(this.state.error)}</div>;
-    } else if (!this.state.studies) {
-      return <div>Loading...</div>;
     }
 
     return (

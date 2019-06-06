@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter, matchPath } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
+import { NProgress } from '@tanem/react-nprogress';
+import { CSSTransition } from 'react-transition-group';
+import { connect } from 'react-redux';
+import { ViewerbaseDragDropContext } from 'react-viewerbase';
 // import asyncComponent from './components/AsyncComponent.js'
 import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
 import ViewerRouting from './routes/ViewerRouting.js';
 import StudyListRouting from './studylist/StudyListRouting.js';
 import StandaloneRouting from './routes/StandaloneRouting.js';
-import CallbackPage from './CallbackPage.js';
-import { withRouter } from 'react-router';
-import { Route, Switch } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { ViewerbaseDragDropContext } from 'react-viewerbase';
-
+import CallbackPage from './routes/CallbackPage.js';
+import NotFound from './routes/NotFound.js';
+import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
@@ -32,6 +35,10 @@ import './theme-tide.css';
 const reload = () => window.location.reload();
 
 class OHIFStandaloneViewer extends Component {
+  state = {
+    isLoading: false,
+  };
+
   static propTypes = {
     history: PropTypes.object.isRequired,
     user: PropTypes.object,
@@ -79,24 +86,84 @@ class OHIFStandaloneViewer extends Component {
       );
     }
 
+    /**
+     * Note: this approach for routing is caused by the conflict between
+     * react-transition-group and react-router's <Switch> component.
+     *
+     * See http://reactcommunity.org/react-transition-group/with-react-router/
+     */
+    const routes = [
+      {
+        path: '/',
+        Component: StudyListRouting,
+      },
+      {
+        path: '/studylist',
+        Component: StudyListRouting,
+      },
+      {
+        path: '/viewer',
+        Component: StandaloneRouting,
+      },
+      {
+        path: '/viewer/:studyInstanceUids',
+        Component: ViewerRouting,
+      },
+      {
+        path: '/study/:studyInstanceUid/series/:seriesInstanceUids',
+        Component: ViewerRouting,
+      },
+      {
+        path: '/IHEInvokeImageDisplay',
+        Component: IHEInvokeImageDisplay,
+      },
+    ];
+
+    const currentPath = this.props.location.pathname;
+    const noMatchingRoutes = !routes.find(r =>
+      matchPath(currentPath, {
+        path: r.path,
+        exact: true,
+      })
+    );
+
     return (
-      <Switch>
+      <>
+        <NProgress isAnimating={this.state.isLoading}>
+          {({ isFinished, progress, animationDuration }) => (
+            <Container
+              isFinished={isFinished}
+              animationDuration={animationDuration}
+            >
+              <Bar progress={progress} animationDuration={animationDuration} />
+            </Container>
+          )}
+        </NProgress>
         <Route exact path="/silent-refresh.html" onEnter={reload} />
         <Route exact path="/logout-redirect.html" onEnter={reload} />
-        <Route exact path="/studylist" component={StudyListRouting} />
-        <Route exact path="/" component={StudyListRouting} />
-        <Route exact path="/viewer" component={StandaloneRouting} />
-        <Route path="/viewer/:studyInstanceUids" component={ViewerRouting} />
-        <Route
-          path="/study/:studyInstanceUid/series/:seriesInstanceUids"
-          component={ViewerRouting}
-        />
-        <Route
-          path="/IHEInvokeImageDisplay"
-          component={IHEInvokeImageDisplay}
-        />
-        <Route render={() => <div> Sorry, this page does not exist. </div>} />
-      </Switch>
+        {!noMatchingRoutes &&
+          routes.map(({ path, Component }) => (
+            <Route key={path} exact path={path}>
+              {({ match }) => (
+                <CSSTransition
+                  in={match !== null}
+                  timeout={300}
+                  classNames="fade"
+                  unmountOnExit
+                  onEnter={() => {
+                    this.setState({ isLoading: true });
+                  }}
+                  onEntered={() => {
+                    this.setState({ isLoading: false });
+                  }}
+                >
+                  {match === null ? <></> : <Component match={match} />}
+                </CSSTransition>
+              )}
+            </Route>
+          ))}
+        {noMatchingRoutes && <NotFound />}
+      </>
     );
   }
 }
