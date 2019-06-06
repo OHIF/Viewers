@@ -1,6 +1,5 @@
 import Header from '../components/Header/Header.js';
 import { connect } from 'react-redux';
-import { setUserPreferencesModalOpen } from '../store/layout/actions.js';
 
 const mapStateToProps = state => {
   return {
@@ -8,17 +7,6 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    openUserPreferencesModal: () => {
-      dispatch(setUserPreferencesModalOpen(true));
-    },
-  };
-};
-
-const ConnectedHeader = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Header);
+const ConnectedHeader = connect(mapStateToProps)(Header);
 
 export default ConnectedHeader;

@@ -36,13 +36,13 @@ const commandsManagerConfig = {
   getActiveContexts: () => store.getState().ui.activeContexts,
 };
 
-const _commandsManager = new CommandsManager(commandsManagerConfig);
-const _hotkeysManager = new HotkeysManager(_commandsManager);
+const commandsManager = new CommandsManager(commandsManagerConfig);
+const hotkeysManager = new HotkeysManager(commandsManager);
 
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
-appCommands.init(_commandsManager);
-_hotkeysManager.setHotkeys(window.config.hotkeys, true);
+appCommands.init(commandsManager);
+hotkeysManager.setHotkeys(window.config.hotkeys, true);
 
 // Force active contexts for now. These should be set in Viewer/ActiveViewer
 store.dispatch({
@@ -148,3 +148,5 @@ class App extends Component {
 }
 
 export default App;
+
+export { commandsManager, hotkeysManager };
