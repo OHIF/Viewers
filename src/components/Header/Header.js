@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { Dropdown } from 'react-viewerbase';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import PropTypes from 'prop-types';
-import { UserPreferencesModal } from 'react-viewerbase';
+// import { UserPreferencesModal } from 'react-viewerbase';
 import { hotkeysManager } from './../../App.js';
 
 class Header extends Component {
@@ -42,13 +42,13 @@ class Header extends Component {
     const onClick = this.toggleUserPreferences.bind(this);
 
     this.options = [
-      {
-        title: 'Preferences ',
-        icon: {
-          name: 'user',
-        },
-        onClick: onClick,
-      },
+      // {
+      //   title: 'Preferences ',
+      //   icon: {
+      //     name: 'user',
+      //   },
+      //   onClick: onClick,
+      // },
       {
         title: 'About',
         icon: {
@@ -108,14 +108,14 @@ class Header extends Component {
         <div className="header-menu">
           <span className="research-use">INVESTIGATIONAL USE ONLY</span>
           <Dropdown title="Options" list={this.options} align="right" />
-          <UserPreferencesModal
+          {/* <UserPreferencesModal
             isOpen={this.state.isUserPreferencesOpen}
             onCancel={this.toggleUserPreferences.bind(this)}
             onSave={this.toggleUserPreferences.bind(this)}
             onResetToDefaults={this.toggleUserPreferences.bind(this)}
             windowLevelData={{}}
             hotKeysData={this.hotKeysData}
-          />
+          /> */}
         </div>
       </div>
     );
