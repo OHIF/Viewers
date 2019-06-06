@@ -145,6 +145,10 @@ extendLanguage(myJsonFileWithLanguage);
 // TODO - This example is a working in progress
 ```
 
+
+#Debugging translations
+#TODO - WIP
+
 ### Contributing with new languages
 This project follows the
 [all-contributors](https://github.com/all-contributors/all-contributors)
