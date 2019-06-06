@@ -14,6 +14,7 @@ class Header extends Component {
     location: PropTypes.object.isRequired,
     openUserPreferencesModal: PropTypes.func,
     children: PropTypes.node,
+    t: PropTypes.func.isRequired,
   };
 
   static defaultProps = {

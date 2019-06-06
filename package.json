@@ -95,7 +95,7 @@
     "react-resize-detector": "^3.4.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-viewerbase": "file:.yalc/react-viewerbase",
+    "react-viewerbase": "0.4.2",
     "react-vtkjs-viewport": "^0.0.7",
     "redux": "^4.0.1",
     "redux-oidc": "3.1.x"
