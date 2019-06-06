@@ -150,7 +150,5 @@ extendLanguage(myJsonFileWithLanguage);
 #TODO - WIP
 
 ### Contributing with new languages
-This project follows the
-[all-contributors](https://github.com/all-contributors/all-contributors)
-specification. Contributions of any kind are welcome!
+Contributions of any kind are welcome! Please check the [instructions](https://docs.ohif.org/contributing.html).
 
