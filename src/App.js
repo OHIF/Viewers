@@ -127,11 +127,13 @@ class App extends Component {
 
     return (
       <Provider store={store}>
-        <Router basename={this.props.routerBasename}>
-          <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-            <OHIFStandaloneViewer />
-          </WhiteLabellingContext.Provider>
-        </Router>
+        <I18nextProvider i18n={i18n}>
+          <Router basename={this.props.routerBasename}>
+            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+              <OHIFStandaloneViewer />
+            </WhiteLabellingContext.Provider>
+          </Router>
+        </I18nextProvider>
       </Provider>
     );
   }
