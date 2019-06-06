@@ -22,11 +22,6 @@ include tags. Here's how it works:
     </a>
   </li>
   <li>
-    <a href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
-      <code>fontawesome@5.7.2</code>
-    </a>
-  </li>
-  <li>
     <a href="https://unpkg.com/react@16/umd/react.production.min.js">
       <code>react@16.8.6</code>
     </a>
@@ -73,7 +68,7 @@ window.config = {
       },
     ],
   },
-}
+};
 ```
 
 <ol start="5"><li>
@@ -82,10 +77,10 @@ window.config = {
 
 ```js
 // Made available by the `ohif-viewer` script included in step 1
-var Viewer = window.OHIFStandaloneViewer.App
-var app = React.createElement(Viewer, window.config, null)
+var Viewer = window.OHIFStandaloneViewer.App;
+var app = React.createElement(Viewer, window.config, null);
 
-ReactDOM.render(app, document.getElementById('ohif-viewer-target'))
+ReactDOM.render(app, document.getElementById('ohif-viewer-target'));
 ```
 
 #### Tips & Tricks

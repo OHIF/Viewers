@@ -1024,6 +1024,15 @@
     lodash.throttle "^4.1.1"
     react-cornerstone-viewport "0.1.29"
 
+"@ohif/extension-dicom-microscopy@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.6.tgz#18e0c128689695a7af505bc3dd7ede97df7f8be2"
+  integrity sha512-5On3GdZgeyMse2CKI0sbxJJ269IqlFXZ0Wi+8+D9lsp0Wdt2AOx15ZmmFA9MJ6GGluMHNrrTY2gZBwLyLUZyRw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    dicom-microscopy-viewer "^0.4.3"
+
 "@ohif/extension-vtk@0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
@@ -4187,12 +4196,12 @@ dezalgo@^1.0.0, dezalgo@~1.0.3:
     asap "^2.0.0"
     wrappy "1"
 
-dicom-microscopy-viewer@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.2.0.tgz#3281fccdab99eb96e7f19e18adddf567a8c15b06"
-  integrity sha512-niNZBUy7S6bk5AJ/8D02xFi3YFt579P5i9wBE6NVcP7GIAIzM+gceG1dwyj0/VxG9K0wqKE/t12SxDuhSzxPRA==
+dicom-microscopy-viewer@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.4.3.tgz#defaa821026765bcd109b97258742df72a9b92bb"
+  integrity sha512-PjT3qH0hv6dKOQzXFIHw4w/d8QCbiUOJOGZHvAkkRvnjeNRP7/ri8vbFvcSev+nYxKskNb1Tn0xd1+dsDpPGNw==
   dependencies:
-    dicomweb-client "^0.4.0"
+    dicomweb-client "^0.4.2"
     ol "^5.3.0"
 
 dicom-parser@^1.8.1, dicom-parser@^1.8.3:
@@ -4200,7 +4209,7 @@ dicom-parser@^1.8.1, dicom-parser@^1.8.3:
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
 
-dicomweb-client@^0.4.0, dicomweb-client@^0.4.2:
+dicomweb-client@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.4.2.tgz#f1f5167d935810423ad2599e5160306bde2458ed"
   integrity sha512-Raf2SVjWDrNaVIVt4CmfXWdKVacyEX5ux+pY2Qop0mhluG+OiCkbnESljz4PjglFRnprETEk6C0ELGDru0haew==
@@ -9693,10 +9702,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.5.tgz#78ace87fa06b3b23a004414a702cc23cb00edf9d"
-  integrity sha512-BORJCxOWuVAx2CE6+LSdL5+1+PG6gkYgl6tyAZhHhAgT46DWAfbq8nkAIX7Rhwot0BWpAcHkkBWIavGOBOH24Q==
+ohif-core@0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.6.tgz#b626b2fdd5bebf53f4914a8701bedf2dc2c43b71"
+  integrity sha512-qe5/tHjnyPAGoNEdYZBJEejojBBOE9G5Y54vuTUnu2TUKkdbFPg2Kj/WzmLBMG/3PHcjMCqFm1JllEwcntRvOg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -9713,15 +9722,6 @@ ohif-dicom-html-extension@^0.0.2:
   integrity sha512-7/YkaKrgnydiypFl39mvWO5vxCoGecudkdyCFedgDnG10UvkDF4nBcgNvoBupwBtGKYhXTfqye6fPWxQO0NWyw==
   dependencies:
     "@babel/runtime" "^7.2.0"
-
-ohif-dicom-microscopy-extension@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/ohif-dicom-microscopy-extension/-/ohif-dicom-microscopy-extension-0.0.5.tgz#c61ca7ae9bfae25de8c964a436ea95187ec98de8"
-  integrity sha512-FyqeS+Vt0P+W7VX0wrlEzkDqVXC1NTM/U4xJz+b3Cuv4MJEAZCqlE3zGnpxRIOxq/VzfjKrtVxHr8jEUlb9GwQ==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    dicom-microscopy-viewer "^0.2.0"
 
 ohif-dicom-pdf-extension@^0.0.6:
   version "0.0.6"
@@ -11760,10 +11760,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.6.1.tgz#60cb6d1b9e90f627b3756f1e426505b9551d0485"
-  integrity sha512-1wGW4a8lHaG/j5WeC9/R9TZrJLthL6cm5IPDEmthTKF8PNiImMY1VgLR80aXDhfKYi8AVEyCEhOkvvXbPgBl1A==
+react-viewerbase@0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.7.0.tgz#b0f48a0f003b849c280b8ca67927d4780c68b0dc"
+  integrity sha512-1VQXREKSsqxtOSSHRou0gjBODrSOjE8SBJ6/dHG0gPgdmeotOg68xPMKYf9K7fYyGZ6CDA7oVCAmdTE4SVYP5Q==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
