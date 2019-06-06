@@ -19,44 +19,56 @@ window.config = {
       },
     ],
   },
-  //
-  userPreferences: [
-    {
-      order: 0,
-      title: 'preference page title',
-      items: [
-        {
-          order: 0,
-          label: 'Scale Viewport Up',
-          command: 'scaleUpViewport',
-        },
-      ],
-    },
-  ],
-  //
-  hotkeys: {
+  /**
+   * This maps registered commands to default hotkey values.
+   */
+  hotkeys: [
     // ~ Global
-    incrementActiveViewport: ['right'],
-    decrementActiveViewport: ['left'],
+    {
+      commandName: 'incrementActiveViewport',
+      label: 'Next Image Viewport',
+      keys: ['right'],
+    },
+    {
+      commandName: 'decrementActiveViewport',
+      label: 'Previous Image Viewport',
+      keys: ['left'],
+    },
     // Supported Keys: https://craig.is/killing/mice
     // ~ Cornerstone Extension
-    rotateViewportCW: ['r'],
-    rotateViewportCCW: ['l'],
-    invertViewport: ['i'],
-    flipViewportVertical: ['h'],
-    flipViewportHorizontal: ['v'],
-    scaleUpViewport: ['+'],
-    scaleDownViewport: ['-'],
-    fitViewportToWindow: ['='],
-    resetViewport: ['space'],
+    { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
+    { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
+    { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
+    {
+      commandName: 'flipViewportVertical',
+      label: 'Flip Horizontally',
+      keys: ['h'],
+    },
+    {
+      commandName: 'flipViewportHorizontal',
+      label: 'Flip Vertically',
+      keys: ['v'],
+    },
+    { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
+    { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
+    { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
+    { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
     // clearAnnotations
     // nextImage
     // previousImage
     // firstImage
     // lastImage
-    nextViewportDisplaySet: ['pageup'],
-    previousViewportDisplaySet: ['pagedown'],
+    {
+      commandName: 'nextViewportDisplaySet',
+      label: 'Previous Series',
+      keys: ['pagedown'],
+    },
+    {
+      commandName: 'previousViewportDisplaySet',
+      label: 'Next Series',
+      keys: ['pageup'],
+    },
     // ~ Cornerstone Tools
-    setZoomTool: ['z'],
-  },
+    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
+  ],
 };

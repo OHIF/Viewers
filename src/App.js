@@ -40,16 +40,9 @@ const _commandsManager = new CommandsManager(commandsManagerConfig);
 const _hotkeysManager = new HotkeysManager(_commandsManager);
 
 // TODO: Should be done in extensions w/ commandsModule
-// ADD COMMANDS
+// ~~ ADD COMMANDS
 appCommands.init(_commandsManager);
-
-// window.config.userPreferences
-Object.keys(window.config.hotkeys).forEach(commandName => {
-  const keys = window.config.hotkeys[commandName];
-  // HotkeysManager.set();
-  console.log(`registering hotkey: ${commandName} to binding: ${keys}`);
-  _hotkeysManager.registerHotkeys(commandName, keys);
-});
+_hotkeysManager.setHotkeys(window.config.hotkeys, true);
 
 // Force active contexts for now. These should be set in Viewer/ActiveViewer
 store.dispatch({
@@ -61,7 +54,7 @@ store.dispatch({
   item: 'VIEWER::CORNERSTONE',
 });
 
-// ~~~~ END EPP SETUP
+// ~~~~ END APP SETUP
 
 setupTools(store);
 
