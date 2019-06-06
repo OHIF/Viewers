@@ -1472,6 +1472,15 @@
     "@svgr/plugin-svgo" "^4.0.3"
     loader-utils "^1.1.0"
 
+"@tanem/react-nprogress@^1.1.25":
+  version "1.1.25"
+  resolved "https://registry.yarnpkg.com/@tanem/react-nprogress/-/react-nprogress-1.1.25.tgz#1c8e75a30181d5f9da3f99f8c97414d25bd7d398"
+  integrity sha512-SpHAd1ln3KeJf1UWIioPKXclzZ82UrmIH0piGY0J3llx30OAROEML6EWbIpHledMg7qAuB4NpJbHG0uPldBJmg==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+    hoist-non-react-statics "^3.3.0"
+    prop-types "^15.7.2"
+
 "@types/babel__core@^7.1.0":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.2.tgz#608c74f55928033fce18b99b213c16be4b3d114f"
@@ -12508,6 +12517,16 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
+
+react-transition-group@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.1.1.tgz#16efe9ac8c68306f6bef59c7da5a96b4dfd9fb32"
+  integrity sha512-K/N1wqJ2GRP2yj3WBqEUYa0KV5fiaAWpUfU9SpHOHefeKvyrO+VrnMBML21M19QZoVbDZKmuQFHZYoMMi1xuJA==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+    dom-helpers "^3.4.0"
+    loose-envify "^1.4.0"
+    prop-types "^15.6.2"
 
 react-viewerbase@0.12.0:
   version "0.12.0"
