@@ -1,5 +1,9 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import {
+  initReactI18next,
+  withTranslation,
+  I18nextProvider,
+} from 'react-i18next';
 
 const currentLanguage = process.env.APP_LANG || 'en-US';
 const debugMode = process.env.I18N_DEBUG || false;
@@ -74,5 +78,5 @@ i18n
     translate = t;
   });
 
-export { translate as t };
+export { translate as t, withTranslation, I18nextProvider };
 export default i18n;
