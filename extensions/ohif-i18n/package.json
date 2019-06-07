@@ -17,9 +17,9 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
+    "i18next": "^15.1.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "i18next": "^15.1.3",
     "react-i18next": "^10.11.0"
   },
   "devDependencies": {
@@ -51,7 +51,8 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-url": "^2.1.0"
+    "rollup-plugin-url": "^2.1.0",
+    "i18next-browser-languagedetector": "^3.0.1"
   },
   "husky": {
     "hooks": {
