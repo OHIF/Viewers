@@ -1043,7 +1043,7 @@
     react-vtkjs-viewport "^0.0.7"
 
 "@ohif/i18n@file:.yalc/@ohif/i18n":
-  version "0.0.2-4597feaf"
+  version "0.0.2-f8005bc6"
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -11788,10 +11788,8 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.7.0.tgz#b0f48a0f003b849c280b8ca67927d4780c68b0dc"
-  integrity sha512-1VQXREKSsqxtOSSHRou0gjBODrSOjE8SBJ6/dHG0gPgdmeotOg68xPMKYf9K7fYyGZ6CDA7oVCAmdTE4SVYP5Q==
+"react-viewerbase@file:.yalc/react-viewerbase":
+  version "0.2.17-1a0125ef"
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
