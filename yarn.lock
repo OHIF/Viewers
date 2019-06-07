@@ -9738,15 +9738,13 @@ ohif-dicom-pdf-extension@^0.0.6:
     lodash.isequal "^4.5.0"
 
 "ohif-i18n@file:.yalc/ohif-i18n":
-  version "0.0.1-b9613c88"
+  version "0.0.1-57e63603"
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
 
-ohif-vtk-extension@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/ohif-vtk-extension/-/ohif-vtk-extension-0.0.1.tgz#aec448c1d0a905d162154c65982227b3503f5f15"
-  integrity sha512-JfLh0AyEc2hOstpiXj9wMwvuYIQathOmsbb49SZFTw9Y9jMjgdxzdTJaiGtERsVT/92I9u42YrMYk6w5TQCT6A==
+"ohif-vtk-extension@file:.yalc/ohif-vtk-extension":
+  version "0.0.1-cbcfa41e"
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -11789,7 +11787,7 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     react-lifecycles-compat "^3.0.4"
 
 "react-viewerbase@file:.yalc/react-viewerbase":
-  version "0.2.17-3da063a9"
+  version "0.2.17-f0fa6ce6"
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"

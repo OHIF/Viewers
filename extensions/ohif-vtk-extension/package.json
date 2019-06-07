@@ -24,16 +24,17 @@
     "dcmjs": "^0.3.6",
     "dicom-parser": "^1.8.3",
     "hammerjs": "^2.0.8",
+    "i18next": "^15.1.3",
     "ohif-core": "^0.3.3",
+    "ohif-i18n": "file:.yalc/ohif-i18n",
     "prop-types": "^15.6.2",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0",
+    "react-i18next": "^10.11.0",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
-    "redux": "^4.0.1",
-    "i18next": "^15.1.3",
-    "react-i18next": "^10.11.0",
-    "react-viewerbase": "^0.6.1"
+    "react-viewerbase": "^0.6.1",
+    "redux": "^4.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -58,6 +59,7 @@
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-copy": "^2.0.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
@@ -90,7 +92,6 @@
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
-    "ohif-vtk-extension": "file:.yalc/ohif-vtk-extension",
     "react-vtkjs-viewport": "^0.0.7"
   }
 }

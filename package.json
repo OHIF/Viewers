@@ -84,7 +84,7 @@
     "ohif-dicom-microscopy-extension": "^0.0.5",
     "ohif-dicom-pdf-extension": "^0.0.6",
     "ohif-i18n": "file:.yalc/ohif-i18n",
-    "ohif-vtk-extension": "^0.0.1",
+    "ohif-vtk-extension": "file:.yalc/ohif-vtk-extension",
     "oidc-client": "1.7.x",
     "prop-types": "^15.6.2",
     "react-bootstrap-modal": "^4.2.0",
@@ -95,7 +95,7 @@
     "react-resize-detector": "^3.4.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-viewerbase": "0.4.2",
+    "react-viewerbase": "file:.yalc/react-viewerbase",
     "react-vtkjs-viewport": "^0.0.7",
     "redux": "^4.0.1",
     "redux-oidc": "3.1.x"

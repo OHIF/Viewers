@@ -50,6 +50,18 @@ function getLocales() {
   return locales;
 }
 
+function addLocales(context) {
+  context.keys().forEach(key => {
+    i18n.addResourceBundle(
+      getCleanKeyForNameSpaces(key),
+      getNameSpaceString(key),
+      context(key),
+      true,
+      true
+    );
+  });
+}
+
 let translate;
 
 i18n
@@ -78,5 +90,5 @@ i18n
     translate = t;
   });
 
-export { translate as t, withTranslation, I18nextProvider };
+export { translate as t, withTranslation, I18nextProvider, addLocales };
 export default i18n;
