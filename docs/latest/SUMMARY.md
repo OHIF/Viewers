@@ -47,4 +47,5 @@
 
 - [Contributing](contributing.md)
 - [FAQ](frequently-asked-questions.md)
+- [Roadmap](roadmap.md)
 - [Help](help.md)

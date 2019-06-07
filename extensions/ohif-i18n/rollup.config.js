@@ -15,6 +15,8 @@ const globals = {
   'react-redux': 'ReactRedux',
   'react-resize-detector': 'ReactResizeDetector',
   'prop-types': 'PropTypes',
+  'i18next': 'i18next',
+  'react-i18next': 'react-i18next',
 };
 
 export default {
@@ -26,12 +28,14 @@ export default {
       name: 'ohif-i18n',
       sourcemap: true,
       globals,
+      exports: 'named',
     },
     {
       file: pkg.module,
       format: 'es',
       sourcemap: true,
       globals,
+      exports: 'named',
     },
   ],
   plugins: [
@@ -55,5 +59,5 @@ export default {
       include: ['node_modules/**', '.yalc/**'],
     }),
   ],
-  external: Object.keys(pkg.peerDependencies || {}),
+  external: Object.keys(pkg.peerDependencies || {})
 };

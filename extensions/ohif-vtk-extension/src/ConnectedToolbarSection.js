@@ -3,7 +3,6 @@ import { ToolbarSection } from 'react-viewerbase';
 import OHIF from 'ohif-core';
 
 const { setToolActive } = OHIF.redux.actions;
-const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/');
 
 const mapStateToProps = state => {
   const activeButton = state.tools.buttons.find(tool => tool.active === true);
@@ -14,7 +13,7 @@ const mapStateToProps = state => {
         command: 'Rotate',
         type: 'tool',
         text: 'Rotate',
-        svgUrl: `${Icons}#3d-rotate`,
+        icon: '3d-rotate',
         active: true
       }
     ],

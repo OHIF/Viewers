@@ -1,8 +1,8 @@
 {
-  "preferences": "Preferences",
-  "options": "Options",
-  "about": "About",
-  "back_to_viewer": "Back to Viewer",
-  "study_list": "Study list",
-  "research_use": "INVESTIGATIONAL USE ONLY"
+  "INVESTIGATIONAL USE ONLY": "Preferences",
+  "Options": "Options",
+  "About": "About",
+  "Preferences": "Preferences",
+  "Study list": "Study list",
+  "Back to Viewer": "Back to Viewer"
 }

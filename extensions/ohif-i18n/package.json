@@ -1,6 +1,6 @@
 {
-  "name": "ohif-i18n",
-  "version": "0.0.1",
+  "name": "@ohif/i18n",
+  "version": "0.0.2",
   "description": "OHIF extension for internationalization",
   "author": "OHIF",
   "license": "MIT",
@@ -17,6 +17,8 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "i18next": "^15.1.3",
     "react-i18next": "^10.11.0"
   },
@@ -35,8 +37,12 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-react": "^7.11.1",
     "husky": "^1.3.1",
+    "i18next": "^15.1.3",
     "lint-staged": "^8.1.0",
     "prettier": "^1.15.3",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-i18next": "^10.11.0",
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
@@ -67,6 +73,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6"

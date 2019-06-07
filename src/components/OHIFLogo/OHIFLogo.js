@@ -1,7 +1,7 @@
-import React from 'react';
 import './OHIFLogo.css';
 
-const Icons = `${window.config.routerBasename}/icons.svg`.replace('//', '/');
+import { Icon } from 'react-viewerbase';
+import React from 'react';
 
 function OHIFLogo() {
   return (
@@ -11,9 +11,7 @@ function OHIFLogo() {
       className="header-brand"
       href="http://ohif.org"
     >
-      <svg className="header-logo-image">
-        <use xlinkHref={`${Icons}#icon-ohif-logo`} />
-      </svg>
+      <Icon name="ohif-logo" className="header-logo-image" />
       <div className="header-logo-text">Open Health Imaging Foundation</div>
     </a>
   );

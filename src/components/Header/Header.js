@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { Dropdown } from 'react-viewerbase';
+import i18n from '@ohif/i18n';
 import { withTranslation } from 'react-i18next';
-import i18n from 'ohif-i18n';
 import './Header.css';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal.js';
@@ -36,13 +36,15 @@ class Header extends Component {
     const { t } = this.props;
     this.options = [
       {
-        title: t('preferences'),
-        icon: 'fa fa-user',
+        title: t('Preferences'),
+        icon: { name: 'user' },
         onClick: this.props.openUserPreferencesModal,
       },
       {
-        title: t('about'),
-        icon: 'fa fa-info',
+        title: t('About'),
+        icon: {
+          name: 'info'
+        },
         link: 'http://ohif.org',
       },
     ];
@@ -66,7 +68,7 @@ class Header extends Component {
               to={this.props.location.studyLink}
               className="header-btn header-viewerLink"
             >
-              {t('back_to_viewer')}
+              {t('Back to Viewer')}
             </Link>
           )}
 
@@ -80,13 +82,13 @@ class Header extends Component {
                 state: { studyLink: this.props.location.pathname },
               }}
             >
-              {t('study_list')}
+              {t('Study list')}
             </Link>
           )}
         </div>
 
         <div className="header-menu">
-          <span className="research-use">{t('research_use')}</span>
+          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
           <button
             className="research-use"
             onClick={() => this.changeLanguage('en-US')}
@@ -111,7 +113,7 @@ class Header extends Component {
           >
             ES-MX
           </button>
-          <Dropdown title={t('options')} list={this.options} align="right" />
+          <Dropdown title={t('Options')} list={this.options} align="right" />
           <ConnectedUserPreferencesModal />
         </div>
       </div>

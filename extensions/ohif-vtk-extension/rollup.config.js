@@ -1,19 +1,21 @@
 import babel from 'rollup-plugin-babel';
+import builtins from 'rollup-plugin-node-builtins';
 import commonjs from 'rollup-plugin-commonjs';
 import external from 'rollup-plugin-peer-deps-external';
+import pkg from './package.json';
 import postcss from 'rollup-plugin-postcss';
 import resolve from 'rollup-plugin-node-resolve';
 import url from 'rollup-plugin-url';
-import copy from 'rollup-plugin-copy';
-import pkg from './package.json';
+
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
-import builtins from 'rollup-plugin-node-builtins';
+
 
 const globals = {
   react: 'React',
   'react-dom': 'ReactDOM',
   'react-redux': 'ReactRedux',
   'react-resize-detector': 'ReactResizeDetector',
+  'react-viewerbase': 'reactViewerbase',
   'prop-types': 'PropTypes',
   'cornerstone-core': 'cornerstone',
   'cornerstone-wado-image-loader': 'cornerstoneWADOImageLoader',
@@ -47,10 +49,6 @@ export default {
     external(),
     postcss({
       modules: false
-    }),
-    copy({
-      targets: ['src/locales'],
-      outputFolder: 'dist'
     }),
     url(),
     babel({

@@ -1,12 +1,10 @@
 import i18n from 'i18next';
-import {
-  initReactI18next,
-  withTranslation,
-  I18nextProvider,
-} from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 
-const currentLanguage = process.env.APP_LANG || 'en-US';
-const debugMode = process.env.I18N_DEBUG || false;
+const currentLanguage = process.env.REACT_APP_LANG || 'en-US';
+const debugMode = !!(
+  process.env.NODE_ENV !== 'production' && process.env.REACT_APP_I18N_DEBUG
+);
 
 function getDefaultLanguage() {
   const mainLanguage = currentLanguage.match(/(.*.)(-)/);
@@ -90,5 +88,5 @@ i18n
     translate = t;
   });
 
-export { translate as t, withTranslation, I18nextProvider, addLocales };
+export { translate as t, addLocales };
 export default i18n;

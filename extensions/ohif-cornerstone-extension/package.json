@@ -1,6 +1,6 @@
 {
-  "name": "ohif-cornerstone-extension",
-  "version": "0.0.32",
+  "name": "@ohif/extension-cornerstone",
+  "version": "0.0.34",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -32,14 +32,14 @@
     "react-dom": "^15.0.0 || ^16.0.0",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
-    "react-viewerbase": "^0.2.10",
+    "react-viewerbase": "^0.6.0",
     "redux": "^4.0.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "0.1.29"
+    "react-cornerstone-viewport": "0.1.30"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -92,6 +92,10 @@
     "not op_mini all"
   ],
   "files": [
-    "dist"
-  ]
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
