@@ -1,21 +1,3 @@
 {
-  "Themes": "Temas",
-  "Previous": "Anterior",
-  "Next": "Próximo",
-  "Play": "Play",
-  "Stop": "Stop",
-  "Layout": "Esquema",
-  "More": "Más",
-  "Crosshairs": "Cruces",
-  "Magnify": "Lupa",
-  "ROI Window": "Ventana ROI",
-  "Probe": "Probar",
-  "Ellipse": "Elipse",
-  "Rectangle": "Rectángulo",
-  "Invert": "Invertido",
-  "Rotate Right": "Rotar ->",
-  "Flip H": "Espejo Hor.",
-  "Flip V": "Espejo Ver.",
-  "Clear": "Limpiar",
-  "Brush": "Escoba"
+  "Welcome to React": "Bienvenido a React"
 }
