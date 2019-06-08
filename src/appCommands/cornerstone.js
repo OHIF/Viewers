@@ -163,7 +163,7 @@ const definitions = {
   previousViewportDisplaySet: {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: [],
-    options: { direction: 1 },
+    options: { direction: -1 },
   },
   // TOOLS
   setZoomTool: {
