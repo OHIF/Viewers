@@ -1,3 +1,5 @@
+import hotkeys from 'defaults/hotkeys.js';
+
 window.config = {
   routerBasename: '/demo',
   servers: {
@@ -16,4 +18,5 @@ window.config = {
       },
     ],
   },
-}
+  hotkeys,
+};
