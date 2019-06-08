@@ -42,7 +42,9 @@ const hotkeysManager = new HotkeysManager(commandsManager);
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
 appCommands.init(commandsManager);
-hotkeysManager.setHotkeys(window.config.hotkeys, true);
+if (window.config.hotkeys) {
+  hotkeysManager.setHotkeys(window.config.hotkeys, true);
+}
 
 // Force active contexts for now. These should be set in Viewer/ActiveViewer
 store.dispatch({
