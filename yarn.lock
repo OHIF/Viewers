@@ -7609,11 +7609,6 @@ joi@^11.1.1:
     isemail "3.x.x"
     topo "2.x.x"
 
-jquery@^3.3.1:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.0.tgz#8de513fa0fa4b2c7d2e48a530e26f0596936efdf"
-  integrity sha512-ggRCXln9zEqv6OqAGXFEcshF5dSBvCkzj6Gm2gzuR5fWawaX8t7cxKVkkygKODrDAzKdoYw3l/e3pm3vlT4IbQ==
-
 js-levenshtein@^1.1.3:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/js-levenshtein/-/js-levenshtein-1.1.6.tgz#c6cee58eb3550372df8deb85fad5ce66ce01d59d"
@@ -8938,6 +8933,11 @@ moment@2.24.0, moment@>=1.6.0, moment@^2.23.0, moment@^2.24.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
+mousetrap@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/mousetrap/-/mousetrap-1.6.3.tgz#80fee49665fd478bccf072c9d46bdf1bfed3558a"
+  integrity sha512-bd+nzwhhs9ifsUrC2tWaSgm24/oo2c83zaRyZQF06hYA6sANfsXHtnZ19AbbbDXCDzeH5nZBSQ4NvCjgD62tJA==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -9702,18 +9702,18 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.6.tgz#b626b2fdd5bebf53f4914a8701bedf2dc2c43b71"
-  integrity sha512-qe5/tHjnyPAGoNEdYZBJEejojBBOE9G5Y54vuTUnu2TUKkdbFPg2Kj/WzmLBMG/3PHcjMCqFm1JllEwcntRvOg==
+ohif-core@0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.7.tgz#698ddff79f96fec68e4546e0386c850d5dccdd18"
+  integrity sha512-ymxojfaTQqsRZ5X2T2zWlVlTMUOYAz0V8BFgo6aWyZTEHw2u/3GgKPZiZ/OeRNTQOmam+KQj1jncuYbOecZ4nQ==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
     dicomweb-client "^0.4.2"
     isomorphic-base64 "^1.0.2"
-    jquery "^3.3.1"
     lodash.clonedeep "^4.5.0"
     lodash.merge "^4.6.1"
+    mousetrap "^1.6.3"
     validate.js "^0.12.0"
 
 ohif-dicom-html-extension@^0.0.2:

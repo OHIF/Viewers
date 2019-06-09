@@ -1,29 +1,31 @@
-import { Component } from 'react';
-import React from 'react';
-import PropTypes from 'prop-types';
-import { OHIF } from 'ohif-core';
-import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 import './ViewerMain.css';
+
+import { Component } from 'react';
+import ConnectedLayoutManager from './ConnectedLayoutManager.js';
+import { OHIF } from 'ohif-core';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 class ViewerMain extends Component {
   static propTypes = {
-    studies: PropTypes.array.isRequired,
+    activeViewportIndex: PropTypes.number.isRequired,
+    layout: PropTypes.object,
+    viewportSpecificData: PropTypes.object,
     setViewportSpecificData: PropTypes.func.isRequired,
     clearViewportSpecificData: PropTypes.func.isRequired,
-    setToolActive: PropTypes.func.isRequired,
-    setActiveViewportSpecificData: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
 
     // Initialize hotkeys
-    new OHIF.HotkeysUtil('viewer', {
-      setViewportSpecificData: props.setViewportSpecificData,
-      clearViewportSpecificData: props.clearViewportSpecificData,
-      setToolActive: props.setToolActive,
-      setActiveViewportSpecificData: props.setActiveViewportSpecificData,
-    });
+    // new OHIF.HotkeysUtil('viewer', {
+    //   setViewportSpecificData: props.setViewportSpecificData,
+    //   clearViewportSpecificData: props.clearViewportSpecificData,
+    //   setToolActive: props.setToolActive,
+    //   setActiveViewportSpecificData: props.setActiveViewportSpecificData,
+    // });
+    // hotkeys.init();
 
     this.state = {
       displaySets: [],
@@ -146,6 +148,10 @@ class ViewerMain extends Component {
     Object.keys(viewportSpecificData).forEach(viewportIndex => {
       this.props.clearViewportSpecificData(viewportIndex);
     });
+
+    // TODO: These don't have to be viewer specific?
+    // Could qualify for other routes?
+    // hotkeys.destroy();
 
     // Remove beforeUnload event handler...
     //window.removeEventListener('beforeunload', unloadHandlers.beforeUnload);
