@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LngDetector from 'i18next-browser-languagedetector';
 
 const currentLanguage = process.env.REACT_APP_LANG || 'en-US';
 const debugMode = !!(
@@ -63,6 +64,7 @@ function addLocales(context) {
 let translate;
 
 i18n
+  .use(LngDetector)
   .use(initReactI18next)
   .init({
     resources: getLocales(),

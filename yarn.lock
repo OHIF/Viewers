@@ -1033,10 +1033,8 @@
     classnames "^2.2.6"
     dicom-microscopy-viewer "^0.4.3"
 
-"@ohif/extension-vtk@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.2.tgz#99f0ea796ddae14d7e64cff958c0656b5d964f4e"
-  integrity sha512-WDuQVwK4RlHgXwbmKIECZrP90x8cVOwESQz8bJOeNG2eVPDBVlNWx/zOXShAhn6J62QG6Sn1RnHQWLedgGnhyA==
+"@ohif/extension-vtk@file:.yalc/@ohif/extension-vtk":
+  version "0.0.3-3bee9176"
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -1046,12 +1044,6 @@
   version "0.0.1-rc-001"
   resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.1-rc-001.tgz#47286daa1411efb5f0219f0310484c8919bfe607"
   integrity sha512-CJ9wqd15DpJ6adVMyXkyqQqcRZgSnMWJ7L3WyUpMqf66CvAFKzCUuckyiFeCupIq8ZGv7w4jaADSYKrLcpviUw==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-
-"@ohif/i18n@file:.yalc/@ohif/i18n":
-  version "0.0.2-a44efe70"
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -11797,7 +11789,7 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     react-lifecycles-compat "^3.0.4"
 
 "react-viewerbase@file:.yalc/react-viewerbase":
-  version "0.2.17-bffd4836"
+  version "0.2.17-0cc70fd6"
   dependencies:
     "@babel/runtime" "7.2.0"
     "@ohif/i18n" "0.0.1-rc-001"

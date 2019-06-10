@@ -41,7 +41,6 @@
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
-    "@ohif/i18n": "0.0.1-rc-001",
     "babel-eslint": "^10.0.1",
     "cross-env": "^5.2.0",
     "eslint": "5.13.0",
@@ -58,6 +57,7 @@
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-copy": "^2.0.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
@@ -93,7 +93,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
-    "@ohif/extension-vtk": "file:.yalc/@ohif/extension-vtk",
     "classnames": "^2.2.6",
     "react-vtkjs-viewport": "^0.0.7"
   }
