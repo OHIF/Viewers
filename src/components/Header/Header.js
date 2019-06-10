@@ -39,7 +39,7 @@ class Header extends Component {
     super(props);
     this.state = { isUserPreferencesOpen: false };
 
-    const onClick = this.toggleUserPreferences.bind(this);
+    // const onClick = this.toggleUserPreferences.bind(this);
 
     this.options = [
       // {
@@ -70,9 +70,8 @@ class Header extends Component {
   }
 
   onUserPreferencesSave({ windowLevelData, hotKeysData }) {
-    console.log(windowLevelData);
-    console.log(hotKeysData);
-
+    // console.log(windowLevelData);
+    // console.log(hotKeysData);
     // TODO: Update hotkeysManager
     // TODO: reset `this.hotKeysData`
   }
