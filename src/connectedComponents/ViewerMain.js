@@ -3,6 +3,7 @@ import './ViewerMain.css';
 import { Component } from 'react';
 import ConnectedLayoutManager from './ConnectedLayoutManager.js';
 // import { OHIF } from 'ohif-core';
+//
 import PropTypes from 'prop-types';
 import React from 'react';
 
