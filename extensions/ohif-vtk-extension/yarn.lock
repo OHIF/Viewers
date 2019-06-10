@@ -727,6 +727,21 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@ohif/extension-vtk@file:.yalc/@ohif/extension-vtk":
+  version "0.0.3-9acf58f8"
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    react-vtkjs-viewport "^0.0.7"
+
+"@ohif/i18n@0.0.1-rc-001":
+  version "0.0.1-rc-001"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.1-rc-001.tgz#47286daa1411efb5f0219f0310484c8919bfe607"
+  integrity sha512-CJ9wqd15DpJ6adVMyXkyqQqcRZgSnMWJ7L3WyUpMqf66CvAFKzCUuckyiFeCupIq8ZGv7w4jaADSYKrLcpviUw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"

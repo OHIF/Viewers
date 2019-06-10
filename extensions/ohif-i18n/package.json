@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "0.0.2",
+  "version": "0.0.1-rc-001",
   "description": "OHIF extension for internationalization",
   "author": "OHIF",
   "license": "MIT",
