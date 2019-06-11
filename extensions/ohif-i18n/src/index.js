@@ -1,16 +1,11 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LngDetector from 'i18next-browser-languagedetector';
+import customDebug from './debugger';
+import pkg from '../package.json';
+import { debugMode, detectionOptions } from './config';
 
-const currentLanguage = process.env.REACT_APP_LANG || 'en-US';
-const debugMode = !!(
-  process.env.NODE_ENV !== 'production' && process.env.REACT_APP_I18N_DEBUG
-);
-
-function getDefaultLanguage() {
-  const mainLanguage = currentLanguage.match(/(.*.)(-)/);
-  return mainLanguage !== null ? mainLanguage[1] : null;
-}
+let translate;
 
 function getNameSpaceString(key) {
   const nameSpaceMatcher = key.match(/[^/]+$/g);
@@ -23,7 +18,7 @@ function getNameSpaceString(key) {
   return finalNameSpace;
 }
 
-function getCleanKeyForNameSpaces(key) {
+function getKeyForNameSpaces(key) {
   const cleanedKey = key.match(/[/\\].+(?=[/\\])/);
   let finalKey;
 
@@ -40,8 +35,8 @@ function getLocales() {
   const locales = {};
 
   context.keys().forEach(key => {
-    locales[getCleanKeyForNameSpaces(key)] = {
-      ...locales[getCleanKeyForNameSpaces(key)],
+    locales[getKeyForNameSpaces(key)] = {
+      ...locales[getKeyForNameSpaces(key)],
       [getNameSpaceString(key)]: context(key),
     };
   });
@@ -52,43 +47,48 @@ function getLocales() {
 function addLocales(context) {
   context.keys().forEach(key => {
     i18n.addResourceBundle(
-      getCleanKeyForNameSpaces(key),
+      getKeyForNameSpaces(key),
       getNameSpaceString(key),
       context(key),
       true,
       true
     );
   });
+  customDebug(`Locales added successfully`, 'info');
 }
 
-let translate;
+function initI18n(detection = detectionOptions) {
+  i18n
+    .use(LngDetector)
+    .use(initReactI18next)
+    .init({
+      resources: getLocales(),
+      debug: debugMode,
+      keySeparator: false,
+      interpolation: {
+        escapeValue: false,
+      },
+      detection,
+      fallbackNS: ['common'],
+      defaultNS: 'common',
+      react: {
+        wait: true,
+      },
+    })
+    .then(function(t) {
+      translate = t;
+      customDebug(`t function available.`, 'info');
+    });
+}
 
-i18n
-  .use(LngDetector)
-  .use(initReactI18next)
-  .init({
-    resources: getLocales(),
-    fallbackLng: getDefaultLanguage(),
+customDebug(`@ohif/i18n version ${pkg.version} loaded.`, 'info');
 
-    lng: currentLanguage,
-    debug: debugMode,
+initI18n();
 
-    // have a common namespace used around the full app
-    keySeparator: false, // uses content as keys
-    interpolation: {
-      escapeValue: false,
-    },
+export {
+  translate as t,
+  addLocales,
+  initI18n
+};
 
-    fallbackNS: ['common'],
-    defaultNS: 'common',
-
-    react: {
-      wait: true,
-    },
-  })
-  .then(function(t) {
-    translate = t;
-  });
-
-export { translate as t, addLocales };
 export default i18n;

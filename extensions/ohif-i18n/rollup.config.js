@@ -8,6 +8,7 @@ import pkg from './package.json';
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins';
 import copy from 'rollup-plugin-copy';
+import json from 'rollup-plugin-json';
 
 const globals = {
   react: 'React',
@@ -17,6 +18,7 @@ const globals = {
   'prop-types': 'PropTypes',
   'i18next': 'i18next',
   'react-i18next': 'react-i18next',
+  'i18next-browser-languagedetector': 'LngDetector'
 };
 
 export default {
@@ -47,6 +49,13 @@ export default {
     copy({
       targets: ['src/locales'],
       outputFolder: 'dist',
+    }),
+    json({
+      // ignores indent and generates the smallest code
+      compact: true, // Default: false
+
+      // generate a named export for every property of the JSON object
+      namedExports: true // Default: true
     }),
     url(),
     babel({

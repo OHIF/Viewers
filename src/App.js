@@ -24,7 +24,7 @@ import WhiteLabellingContext from './WhiteLabellingContext';
 import setupTools from './setupTools';
 import ui from './redux/ui.js';
 import i18n from '@ohif/i18n';
-import { I18nextProvider  } from 'react-i18next';
+import { I18nextProvider } from 'react-i18next';
 
 const { ExtensionManager } = OHIF.extensions;
 const { reducers, localStorage } = OHIF.redux;
