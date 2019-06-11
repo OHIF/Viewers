@@ -11789,7 +11789,7 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     react-lifecycles-compat "^3.0.4"
 
 "react-viewerbase@file:.yalc/react-viewerbase":
-  version "0.2.17-0cc70fd6"
+  version "0.2.17-a5956254"
   dependencies:
     "@babel/runtime" "7.2.0"
     "@ohif/i18n" "0.0.1-rc-001"

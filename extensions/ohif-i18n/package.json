@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "0.0.1-rc-001",
+  "version": "0.0.1-rc-003",
   "description": "OHIF extension for internationalization",
   "author": "OHIF",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "i18next": "^15.1.3",
+    "i18next": "^17.0.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-i18next": "^10.11.0",
