@@ -28,7 +28,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import appCommands from './appCommands';
 import setupTools from './setupTools';
-import ui from './redux/ui.js';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import store from './store';
