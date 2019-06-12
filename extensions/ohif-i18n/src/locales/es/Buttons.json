@@ -1,11 +1,11 @@
 {
   "Themes": "Temas",
-  "Previous": "Anterior",
-  "Next": "Próximo",
-  "Play": "Play",
-  "Stop": "Stop",
-  "Layout": "Esquema",
-  "More": "Más",
+  "Previous": "$t(Common:Previous)",
+  "Next": "$t(Common:Next)",
+  "Play": "$t(Common:Play)",
+  "Stop": "$t(Common:Stop)",
+  "Layout": "$t(Common:Layout)",
+  "More": "$t(Common:More)",
   "Crosshairs": "Cruces",
   "Magnify": "Lupa",
   "ROI Window": "Ventana ROI",
@@ -32,8 +32,14 @@
   "CircleRoi": "CircleRoi",
   "RectangleRoi": "RectangleRoi",
   "Reset": "Reiniciar",
+  "Reset 2": "Reiniciar 2",
   "CINE": "CINE",
   "Acquired": "Acquired",
   "Sagittal": "Sagittal",
-  "Axial": "Axial"
+  "Axial": "Axial",
+  "Manual": "Manual",
+  "Manual 2": "Manual 2",
+  "Save": "Guardar",
+  "Reset to Defaults": "$t(Common:reset) por defectos",
+  "Cancel": "Cancelar"
 }

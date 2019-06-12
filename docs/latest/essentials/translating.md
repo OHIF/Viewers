@@ -56,7 +56,7 @@ function easily.
 
 In most cases we used
 [High Order Components](https://react.i18next.com/latest/withtranslation-hoc) to
-get the `t` tool between OHIF's components.
+share the `t` function among OHIF's components.
 
 E.g.
 
@@ -79,15 +79,14 @@ export default withTranslation('MyNameSpace')(MyComponent);
 
 Also, it's possible to get the `t` tool using
 [React Hooks](https://react.i18next.com/latest/usetranslation-hook), but it
-requires at least React > 16.8.
+requires at least React > 16.8 😉
 
 #### Using outside of OHIF viewer
 
 OHIF Viewer already sets a main
 [I18nextProvider](https://react.i18next.com/latest/i18nextprovider) connected to
-the shared i18n instance from `@ohif/i18n`, all extensions inside the Viewer
-will share this same provider at the end, you don't need a provider when
-developing a react Extension if you use `@ohif/i18n`;
+the shared i18n instance from `@ohif/i18n`, all extensions inside OHIF Viewer
+will share this same provider at the end, you don't need to set new providers at all.
 
 But, if you need to use it completely outside of OHIF viewer, you can set the
 I18nextProvider this way:
@@ -102,7 +101,7 @@ import App from './App';
 ```
 
 After setting `I18nextProvider` in your React App, all translations from
-`@ohif/i18n` should be available following [With React](#with-react) usage.
+`@ohif/i18n` should be available following the basic [With React](#with-react) usage.
 
 ---
 
@@ -115,13 +114,14 @@ E.g.
 ```js
 import { t } from '@ohif/i18n';
 console.log(t('my translated text'));
+console.log(t('$t(Common:Play) my translated text'));
 ```
 
 ---
 
 # Main Concepts While Translating
 
-### - Namespaces
+## - Namespaces
 
 Namespaces are being used to organize translations in smaller portions, combined
 semantically or by use. Each `.json` file inside `@ohif/i18n` npm package
@@ -129,26 +129,36 @@ becomes a new namespace automatically.
 
 - Buttons: All buttons translations
 - CineDialog: Translations for the toll tips inside the Cine Player Dialog
-- common: all common jargons that can be reused like `t('$t(common:image)')`
+- Common: all common jargons that can be reused like `t('$t(common:image)')`
 - Header: translations related to OHIF's Header Top Bar
+- MeasurementTable - Translations for the react-viewerbase Measurement Table
+- UserPreferencesModal - Translations for the react-viewerbase Preferences Modal
 
-### - Extending Languages in @ohif/i18n
+### How to use another NameSpace inside the current NameSpace?
+i18next provides a parsing feature able to get translations strings from any NameSpace,
+ like this following example getting data from `Common` NameSpace:
+```
+$t(Common:Reset)
+```
 
-Sometimes, even in the same language, some nouns or jargons can change in
-different countries, states or even from Hospital to Hospital, in this cases, we
-can extend languages.
+## - Extending Languages in @ohif/i18n
 
-To extend a language, create a new folder inside a language with two characters
-as name, like the `UK` in the following file tree:
+Sometimes, even using the same language, some nouns or jargons can change according to 
+the country, states or even from Hospital to Hospital. 
+
+In this cases, you don't need to set an entire language again, you can extend languages creating a new folder inside a pre existent language folder and @ohif/i18n will do the hard work.
+
+This new folder must to be called with a double character name, like the `UK` in the following file tree:
 
 <img src="/assets/img/ohif-i18n-extending-files-tree.png" alt="Files Tree for Extending Purpouses" style="margin: 0 auto;" />
 
-All properties inside a Namespace (.json file) will be replaced in the new sub
-language, e.g en-US, en-UK, es-AR, es-MX, etc.
+All properties inside a Namespace will be merged in the new sub language, e.g `en-US` and `en-UK` will merge the props with `en`.
 
-#### - Extending languages dynamically
+This feature is based on i18next's fallback languages tool.
 
-Once you have access to the i18n instance, you can use the
+### - Extending languages dynamically
+
+Once you have access to the i18n instance, you can use the 
 [addResourceBundle](https://www.i18next.com/how-to/add-or-load-translations#add-after-init)
 method to add and change language resources.
 
@@ -168,45 +178,74 @@ i18next.addResourceBundle('pt-BR', 'Buttons', {
 To set a brand new language you can do it in two different ways:
 
 - Opening a pull request for `@ohif/i18n` and sharing the translation with the
-  community. Please see [Contributing](#contributing-with-new-languages) section
-  for further information
-- Setting it only in your project or extension
+  community. 😍 Please see [Contributing](#contributing-with-new-languages) section
+  for further information.
+  
+- Setting it only in your project or extension:
 
-To set it apart of `@ohif/i18n`, follow this snippet:
+You'll need a folder structure like the following, which you can load using the `node context` and send it to `addLocales` method.
 
-File: myJsonFileWithLanguage.json // TODO - This example is a working in
-progress
-
-```json
-{
-  "en": {
-    "ns": {
-      "prop1": "value1",
-      "prop2": "value2",
-      "prop3": "value3",
-      "prop4": "value4"
-    }
-  }
-}
+Folder structure:
+```bash
+ |-- ...
+ |-- src
+    |-- locales
+        |-- en
+            |-- Buttons.json
+        |-- es
+            | CO
+               |-- Buttons.js
+            |-- Buttons.json
+  ...
 ```
 
+E.g. of `addLocales` usage
 ```js
-import { extendLanguage } from '@ohif/i18n';
-import myJsonFileWithLanguage from './myJsonFileWithLanguage.json';
+import { addLocales } from '@ohif/i18n';
 
-extendLanguage(myJsonFileWithLanguage);
-// TODO - This example is a working in progress
+const localesPath = './locales';
+const context = require.context(localesPath, true, /\.json$/);
+addLocales(context);
 ```
+
+Also, [i18next](https://www.i18next.com/how-to/add-or-load-translations#add-after-init) provides a few methods to deal with languages, you have access to it's instance importing the default of @ohif/i18n;
+Fell fre to play around with i18next like this:
+
+```
+import i18next from '@ohif/i18n';
+
+i18next.addResourceBundle('en', 'namespace1', {
+  key: 'hello from namespace 1'
+});
+   
+```
+
+---
+
+## language Detections
+@ohif/i18n uses [i18next-browser-languageDetector](https://github.com/i18next/i18next-browser-languageDetector) to manage detections, also exports a method called initI18n that accepts a new detector config as parameter.
+
+### Changing the language
+OHIF Viewer accepts a query param called `lng` in the url to change the language.
+
+E.g. 
+```
+https://docs.ohif.org/demo/?lng=es-MX
+```
+
+### Language Persistence
+The user's language preference is kept automatically by the detector and stored at a cookie called 'i18next', and in a localstorage key called 'i18nextLng'. 
+These names can be changed with a new [Detector Config](https://github.com/i18next/i18next-browser-languageDetector).
+
 
 ## Debugging translations
 
-There are two environment variables responsible for debugging the translations:
-`REACT_APP_I18N_DEBUG` and `REACT_APP_LANG`.
+There is an environment variable responsible for debugging the translations, called `REACT_APP_I18N_DEBUG`.
 
-For debugging, you can run the project as following:
+Run the project as following to get full debug information:
 
 ```bash
-yarn; REACT_APP_I18N_DEBUG=true REACT_APP_LANG=es-MX yarn run dev
+REACT_APP_I18N_DEBUG=true yarn run dev
 ```
 
 ### Contributing with new languages

@@ -69,8 +69,8 @@ function initI18n(detection = detectionOptions) {
         escapeValue: false,
       },
       detection,
-      fallbackNS: ['common'],
-      defaultNS: 'common',
+      fallbackNS: ['Common'],
+      defaultNS: 'Common',
       react: {
         wait: true,
       },
@@ -81,7 +81,7 @@ function initI18n(detection = detectionOptions) {
     });
 }
 
-customDebug(`@ohif/i18n version ${pkg.version} loaded.`, 'info');
+customDebug(`version ${pkg.version} loaded.`, 'info');
 
 initI18n();
 
