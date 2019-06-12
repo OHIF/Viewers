@@ -142,7 +142,17 @@ jobs:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Build & Test
-      - run: yarn build:demo:ci
+      - run:
+          name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
+          command: |
+            yarn build:demo:ci
+            export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
+            export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
+            export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
+            curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
+            curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
+            curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
+            curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
