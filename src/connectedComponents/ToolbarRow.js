@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
-import OHIF from 'ohif-core';
+import { MODULE_TYPES } from 'ohif-core';
 import PropTypes from 'prop-types';
 import { RoundedButtonGroup } from 'react-viewerbase';
 
@@ -57,10 +57,9 @@ class ToolbarRow extends Component {
 
     const currentPluginId = this.props.pluginId;
 
-    const { PLUGIN_TYPES, availablePlugins } = OHIF.plugins;
     const plugin = availablePlugins.find(entry => {
       return (
-        entry.type === PLUGIN_TYPES.TOOLBAR && entry.id === currentPluginId
+        entry.type === MODULE_TYPES.TOOLBAR && entry.id === currentPluginId
       );
     });
 
