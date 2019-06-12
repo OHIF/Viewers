@@ -9702,10 +9702,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.5.7:
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.7.tgz#698ddff79f96fec68e4546e0386c850d5dccdd18"
-  integrity sha512-ymxojfaTQqsRZ5X2T2zWlVlTMUOYAz0V8BFgo6aWyZTEHw2u/3GgKPZiZ/OeRNTQOmam+KQj1jncuYbOecZ4nQ==
+ohif-core@0.5.8:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.8.tgz#d2feab1c2c8440464123318aca8d55e9f228d51e"
+  integrity sha512-yI4nq1Vxi8CVno6codLJttjiyPkmjjYIl12QcAGDGmpYcLt2LopOCLZ2M2eeJbxt8yfh5nwSYMcjC3cYIr6C9A==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -11540,20 +11540,20 @@ react-dev-utils@^8.0.0:
     strip-ansi "5.0.0"
     text-table "0.2.0"
 
-react-dnd-html5-backend@7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-7.0.2.tgz#f74181ca0ff05be13eb6094629c5ad560f558a7e"
-  integrity sha512-BPhmHeQjvhPXRykHvFLbM+TJFrrarcuf/mIArNEmXzZuNhLfbOnHtMSzR8lPwodABcDAYj7hEF7vTABXX298vA==
-  dependencies:
-    dnd-core "^7.0.2"
-    lodash "^4.17.11"
-
 react-dnd-html5-backend@^7.0.2:
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-7.4.4.tgz#3372e5af4af24f680cd75900c782606539c01220"
   integrity sha512-X/lP92ateY0glHan8mU0JzjBuZL6VHv2Gc/H9OBBxaf/ZCN1oC16MLKdesqG4x1f/NWFTNtuG3W4B99r5gPVog==
   dependencies:
     dnd-core "^7.4.4"
+
+react-dnd-touch-backend@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/react-dnd-touch-backend/-/react-dnd-touch-backend-0.8.3.tgz#85d961ec8578dc9efa5b78000ea904d37e01e60f"
+  integrity sha512-LLJlpeJftRreP9ixm3yfd1JEXf+6BeKo5dkfJFHvNSOEOu+FDSwNl5l8uAG0FeD4z2ZVi7RDQ/jUxdjkBV3zBg==
+  dependencies:
+    dnd-core "^7.4.4"
+    invariant "^2.2.4"
 
 react-dnd@7.0.2:
   version "7.0.2"
@@ -11760,10 +11760,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.7.0.tgz#b0f48a0f003b849c280b8ca67927d4780c68b0dc"
-  integrity sha512-1VQXREKSsqxtOSSHRou0gjBODrSOjE8SBJ6/dHG0gPgdmeotOg68xPMKYf9K7fYyGZ6CDA7oVCAmdTE4SVYP5Q==
+react-viewerbase@0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.7.1.tgz#5a27f2f7d327dfd8f8dfe26e6d5d3a911deeee85"
+  integrity sha512-xQVK8s3Etk51zR0mW8eVh49emWM6X8sgwnVO3WXtdWf6rewePYqFcFTZ2n4iV/Ru+NeZHNlC4lpOq9wN8SjcpA==
   dependencies:
     "@babel/runtime" "7.2.0"
     classnames "2.2.6"
@@ -11773,7 +11773,7 @@ react-viewerbase@0.7.0:
     react-bootstrap-modal "4.2.0"
     react-dates "18.4.1"
     react-dnd "7.0.2"
-    react-dnd-html5-backend "7.0.2"
+    react-dnd-touch-backend "^0.8.3"
     react-with-direction "1.3.0"
 
 react-vtkjs-viewport@^0.0.7:
