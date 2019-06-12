@@ -2,8 +2,8 @@ import './config';
 
 import {
   CommandsManager,
+  ExtensionManager,
   HotkeysManager,
-  extensions,
   redux,
   utils,
 } from 'ohif-core';
@@ -36,6 +36,7 @@ const commandsManagerConfig = {
   getActiveContexts: () => store.getState().ui.activeContexts,
 };
 
+const extensionManager = new ExtensionManager();
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 
@@ -65,7 +66,7 @@ const children = {
 };
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-extensions.ExtensionManager.registerExtensions(store, [
+extensionManager.registerExtensions([
   new OHIFCornerstoneExtension({ children }),
   new OHIFVTKExtension(),
   new OHIFDicomPDFExtension(),
@@ -151,4 +152,5 @@ class App extends Component {
 
 export default App;
 
-export { commandsManager, hotkeysManager };
+// Make our managers accessible
+export { commandsManager, extensionManager, hotkeysManager };
