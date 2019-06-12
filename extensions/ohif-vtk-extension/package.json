@@ -93,7 +93,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
-    "@ohif/i18n": "file:.yalc/@ohif/i18n",
+    "@ohif/i18n": "0.0.1",
     "classnames": "^2.2.6",
     "react-vtkjs-viewport": "^0.0.7"
   }
