@@ -31,6 +31,12 @@ function getKeyForNameSpaces(key) {
 }
 
 function getLocales() {
+  const isWebpackEnv = typeof require.context === 'function';
+  // require.context is exclusive from webpack, it's needed to escape inside jest
+  if (!isWebpackEnv) {
+    return {};
+  }
+
   const context = require.context(`./locales`, true, /\.json$/);
   const locales = {};
 
@@ -85,10 +91,6 @@ customDebug(`version ${pkg.version} loaded.`, 'info');
 
 initI18n();
 
-export {
-  translate as t,
-  addLocales,
-  initI18n
-};
+export { translate as t, addLocales, initI18n };
 
 export default i18n;
