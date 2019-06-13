@@ -7,6 +7,7 @@ import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from 'ohif-core';
 import PropTypes from 'prop-types';
 import { RoundedButtonGroup } from 'react-viewerbase';
+import { extensionManager } from './../App.js';
 
 class ToolbarRow extends Component {
   static propTypes = {
@@ -55,17 +56,14 @@ class ToolbarRow extends Component {
       ? rightSidebarToggle[0].value
       : null;
 
-    const currentPluginId = this.props.pluginId;
-
-    const plugin = availablePlugins.find(entry => {
-      return (
-        entry.type === MODULE_TYPES.TOOLBAR && entry.id === currentPluginId
-      );
-    });
+    const availableToolbarModules = extensionManager[MODULE_TYPES.TOOLBAR];
+    const toolbarModuleDefinition = availableToolbarModules.find(
+      moduleDefinition => moduleDefinition.extensionId === this.props.pluginId
+    );
 
     let pluginComp;
-    if (plugin) {
-      const PluginComponent = plugin.component;
+    if (toolbarModuleDefinition) {
+      const PluginComponent = toolbarModuleDefinition.module;
 
       pluginComp = <PluginComponent />;
     }

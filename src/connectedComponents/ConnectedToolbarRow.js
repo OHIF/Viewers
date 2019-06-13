@@ -18,7 +18,6 @@ const mapStateToProps = state => {
     viewportSpecificData[activeViewportIndex].plugin;
   const pluginInActiveViewport =
     pluginInLayout || pluginInViewportData || defaultPlugin;
-  //     const extensionData = state.extensions[pluginInActiveViewport];
 
   return {
     pluginId: pluginInActiveViewport,
