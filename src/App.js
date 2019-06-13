@@ -54,7 +54,7 @@ store.dispatch({
 });
 store.dispatch({
   type: 'ADD_ACTIVE_CONTEXT',
-  item: 'VIEWER::CORNERSTONE',
+  item: 'ACTIVE_VIEWPORT::CORNERSTONE',
 });
 
 // ~~~~ END APP SETUP
