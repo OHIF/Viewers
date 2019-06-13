@@ -31,10 +31,10 @@ function getKeyForNameSpaces(key) {
 }
 
 function getLocales() {
-  const isWebpackEnv = !!require.context('./locales', true, /\.json$/);
+  var isTestEnvironment = process.env.NODE_ENV === 'test';
 
-  // require.context is exclusive from webpack, it's needed to escape inside jest
-  if (!isWebpackEnv) {
+  // require.context is exclusive from webpack. This conditional is needed to escape while running tests
+  if (isTestEnvironment) {
     return {};
   }
 
