@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
-import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import cornerstone from 'cornerstone-core';
 import './config';
+
+import React, { Component } from 'react';
+
+import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
+import OHIF from 'ohif-core';
+import PropTypes from 'prop-types';
+import cornerstone from 'cornerstone-core';
 import handleSegmentationStorage from './handleSegmentationStorage.js';
 
 const { StackManager } = OHIF.utils;

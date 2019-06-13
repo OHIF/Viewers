@@ -14,13 +14,13 @@ import {
   initWebWorkers,
 } from './utils/index.js';
 
-import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
+// import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
-import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+// import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
+// import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
+// import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-import OHIFVTKExtension from '@ohif/extension-vtk';
+// import OHIFVTKExtension from '@ohif/extension-vtk';
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
@@ -36,9 +36,9 @@ const commandsManagerConfig = {
   getActiveContexts: () => store.getState().ui.activeContexts,
 };
 
-const extensionManager = new ExtensionManager();
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
+const extensionManager = new ExtensionManager({ commandsManager });
 
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
@@ -61,17 +61,18 @@ store.dispatch({
 
 setupTools(store);
 
-const children = {
-  viewport: [<ConnectedToolContextMenu key="tool-context" />],
-};
+// const children = {
+//   viewport: [<ConnectedToolContextMenu key="tool-context" />],
+// };
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
-  new OHIFCornerstoneExtension({ children }),
-  new OHIFVTKExtension(),
-  new OHIFDicomPDFExtension(),
-  new OHIFDicomHtmlExtension(),
-  new OHIFDicomMicroscopyExtension(),
+  OHIFCornerstoneExtension,
+  // new OHIFCornerstoneExtension({ children }),
+  // new OHIFVTKExtension(),
+  // new OHIFDicomPDFExtension(),
+  // new OHIFDicomHtmlExtension(),
+  // new OHIFDicomMicroscopyExtension(),
 ]);
 
 // TODO[react] Use a provider when the whole tree is React

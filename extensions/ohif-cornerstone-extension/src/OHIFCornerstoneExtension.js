@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
 import OHIFCornerstoneViewport from './OHIFCornerstoneViewport.js';
+import React from 'react';
 import ToolbarModule from './ToolbarModule.js';
 
 /**
