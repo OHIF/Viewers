@@ -150,7 +150,17 @@ In this cases, you don't need to set an entire language again, you can extend la
 
 This new folder must to be called with a double character name, like the `UK` in the following file tree:
 
-<img src="/assets/img/ohif-i18n-extending-files-tree.png" alt="Files Tree for Extending Purpouses" style="margin: 0 auto;" />
+```bash
+ |-- src
+    |-- locales
+        |-- en
+            |-- Buttons.json
+            | UK
+               |-- Buttons.js
+            | US
+               |-- Buttons.js
+  ...
+```
 
 All properties inside a Namespace will be merged in the new sub language, e.g `en-US` and `en-UK` will merge the props with `en`.
 
