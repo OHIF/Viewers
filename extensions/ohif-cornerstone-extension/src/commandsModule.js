@@ -1,8 +1,12 @@
 import cornerstone from 'cornerstone-core';
-import { redux } from 'ohif-core';
-import store from './../store/';
 
-const { setToolActive } = redux.actions;
+// TODO: Just emit the tool's name?
+// TODO: Let local context handle the active tool propogation to redux?
+
+// import { redux } from 'ohif-core';
+// import store from './../store/';
+
+// const { setToolActive } = redux.actions;
 
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
@@ -85,7 +89,8 @@ const actions = {
   // the `toolName` needs to equal the button's `command` property.
   // NOTE: It would be nice if `hotkeys` could set this, instead of creating a command per tool
   setCornerstoneToolActive: ({ toolName }) => {
-    store.dispatch(setToolActive(toolName));
+    console.warn(toolName);
+    // store.dispatch(setToolActive(toolName));
   },
   updateViewportDisplaySet: ({ direction }) => {
     // TODO
@@ -100,56 +105,56 @@ const actions = {
     //   if (!cornerstoneImageId || cornerstoneImageId === imageId)
     //     delete toolState[imageId];
     // });
-  },
+  }
 };
 
 const definitions = {
   rotateViewportCW: {
     commandFn: actions.rotateViewport,
     storeContexts: ['viewports'],
-    options: { rotation: 90 },
+    options: { rotation: 90 }
   },
   rotateViewportCCW: {
     commandFn: actions.rotateViewport,
     storeContexts: ['viewports'],
-    options: { rotation: -90 },
+    options: { rotation: -90 }
   },
   invertViewport: {
     commandFn: actions.invertViewport,
     storeContexts: ['viewports'],
-    options: {},
+    options: {}
   },
   flipViewportVertical: {
     commandFn: actions.flipViewportVertical,
     storeContexts: ['viewports'],
-    options: {},
+    options: {}
   },
   flipViewportHorizontal: {
     commandFn: actions.flipViewportHorizontal,
     storeContexts: ['viewports'],
-    options: {},
+    options: {}
   },
   scaleUpViewport: {
     keys: '',
     commandFn: actions.scaleViewport,
     storeContexts: ['viewports'],
-    options: { direction: 1 },
+    options: { direction: 1 }
   },
   scaleDownViewport: {
     keys: '',
     commandFn: actions.scaleViewport,
     storeContexts: ['viewports'],
-    options: { direction: -1 },
+    options: { direction: -1 }
   },
   fitViewportToWindow: {
     commandFn: actions.scaleViewport,
     storeContexts: ['viewports'],
-    options: { direction: 0 },
+    options: { direction: 0 }
   },
   resetViewport: {
     commandFn: actions.resetViewport,
     storeContexts: ['viewports'],
-    options: {},
+    options: {}
   },
   // TODO: Clear Annotations
   // TODO: Next/Previous image
@@ -158,19 +163,19 @@ const definitions = {
   nextViewportDisplaySet: {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: [],
-    options: { direction: 1 },
+    options: { direction: 1 }
   },
   previousViewportDisplaySet: {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: [],
-    options: { direction: -1 },
+    options: { direction: -1 }
   },
   // TOOLS
   setZoomTool: {
     commandFn: actions.setCornerstoneToolActive,
     storeContexts: [],
-    options: { toolName: 'Zoom' },
-  },
+    options: { toolName: 'Zoom' }
+  }
 };
 
 /**
@@ -182,4 +187,7 @@ function _getActiveViewportEnabledElement(viewports, activeIndex) {
   return activeViewport.dom;
 }
 
-export default definitions;
+export default {
+  actions,
+  definitions
+};
