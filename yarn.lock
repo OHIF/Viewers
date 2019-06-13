@@ -1042,11 +1042,14 @@
     classnames "^2.2.6"
     react-vtkjs-viewport "^0.0.7"
 
-"@ohif/i18n@file:.yalc/@ohif/i18n":
-  version "0.0.1-rc-003-18e6caf4"
+"@ohif/i18n@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.2.tgz#3f00d10d18c17765b4b48e408e2267f5a5119933"
+  integrity sha512-kb+0fkySMJJaS10eB3T9UXlCTzhaKooKOsa3Ijg/ODIsv3htT0ZP3g0HinpV/3I0hJ8CwL025AqPnULl4R2jpg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
+    rollup-plugin-json "^4.0.0"
 
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
@@ -4841,6 +4844,11 @@ estree-walker@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.6.0.tgz#5d865327c44a618dde5699f763891ae31f257dae"
   integrity sha512-peq1RfVAVzr3PU/jL31RaOjUKLoZJpObQWJJ+LgfcxDUifyLZ1RjPQZTl0pzj2uJ45b7A7XpyppXvxdEqzo4rw==
+
+estree-walker@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.6.1.tgz#53049143f40c6eb918b23671d1fe3219f3a1b362"
+  integrity sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
 
 esutils@^2.0.0, esutils@^2.0.2:
   version "2.0.2"
@@ -12545,6 +12553,13 @@ rollup-plugin-json@^3.1.0:
   dependencies:
     rollup-pluginutils "^2.3.1"
 
+rollup-plugin-json@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-json/-/rollup-plugin-json-4.0.0.tgz#a18da0a4b30bf5ca1ee76ddb1422afbb84ae2b9e"
+  integrity sha512-hgb8N7Cgfw5SZAkb3jf0QXii6QX/FOkiIq2M7BAQIEydjHvTyxXHQiIzZaTFgx1GK0cRCHOCBHIyEkkLdWKxow==
+  dependencies:
+    rollup-pluginutils "^2.5.0"
+
 rollup-plugin-node-builtins@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/rollup-plugin-node-builtins/-/rollup-plugin-node-builtins-2.1.2.tgz#24a1fed4a43257b6b64371d8abc6ce1ab14597e9"
@@ -12606,6 +12621,13 @@ rollup-pluginutils@^2.0.1, rollup-pluginutils@^2.3.0, rollup-pluginutils@^2.3.1,
   dependencies:
     estree-walker "^0.6.0"
     micromatch "^3.1.10"
+
+rollup-pluginutils@^2.5.0:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.8.1.tgz#8fa6dd0697344938ef26c2c09d2488ce9e33ce97"
+  integrity sha512-J5oAoysWar6GuZo0s+3bZ6sVZAC0pfqKz68De7ZgDi5z63jOVZn1uJL/+z1jeKHNbGII8kAyHF5q8LnxSX5lQg==
+  dependencies:
+    estree-walker "^0.6.1"
 
 rollup@^1.1.2:
   version "1.10.0"
