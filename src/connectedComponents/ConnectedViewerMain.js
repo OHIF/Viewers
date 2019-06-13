@@ -1,12 +1,12 @@
-import { connect } from 'react-redux';
-import ViewerMain from './ViewerMain';
 import OHIF from 'ohif-core';
+import ViewerMain from './ViewerMain';
+import { connect } from 'react-redux';
 
 const {
   setViewportSpecificData,
   clearViewportSpecificData,
-  setToolActive,
-  setActiveViewportSpecificData,
+  // setToolActive,
+  // setActiveViewportSpecificData,
 } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
@@ -16,6 +16,7 @@ const mapStateToProps = state => {
     activeViewportIndex,
     layout,
     viewportSpecificData,
+    viewports: state.viewports,
   };
 };
 
@@ -27,12 +28,12 @@ const mapDispatchToProps = dispatch => {
     clearViewportSpecificData: () => {
       dispatch(clearViewportSpecificData());
     },
-    setToolActive: tool => {
-      dispatch(setToolActive(tool));
-    },
-    setActiveViewportSpecificData: viewport => {
-      dispatch(setActiveViewportSpecificData(viewport));
-    },
+    // setToolActive: tool => {
+    //   dispatch(setToolActive(tool));
+    // },
+    // setActiveViewportSpecificData: viewport => {
+    //   dispatch(setActiveViewportSpecificData(viewport));
+    // },
   };
 };
 
