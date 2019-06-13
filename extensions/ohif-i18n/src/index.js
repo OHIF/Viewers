@@ -31,7 +31,8 @@ function getKeyForNameSpaces(key) {
 }
 
 function getLocales() {
-  const isWebpackEnv = typeof require.context === 'function';
+  const isWebpackEnv = !!require.context('./locales', true, /\.json$/);
+
   // require.context is exclusive from webpack, it's needed to escape inside jest
   if (!isWebpackEnv) {
     return {};
