@@ -1,7 +1,8 @@
+import * as dcmjs from 'dcmjs';
+
 import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import * as dcmjs from 'dcmjs';
 
 const { StackManager } = OHIF.utils;
 
@@ -27,27 +28,28 @@ function getDisplaySetsBySeries(studies, studyInstanceUid, seriesInstanceUid) {
   });
 }
 
-function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
-  const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
-  );
+// Unused? Delete me.
+// function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
+//   const study = studies.find(
+//     study => study.studyInstanceUid === studyInstanceUid
+//   );
 
-  // Create shortcut to displaySet
-  const displaySet = getDisplaySet(
-    studies,
-    studyInstanceUid,
-    displaySetInstanceUid
-  );
+//   // Create shortcut to displaySet
+//   const displaySet = getDisplaySet(
+//     studies,
+//     studyInstanceUid,
+//     displaySetInstanceUid
+//   );
 
-  // Get stack from Stack Manager
-  const stack = StackManager.findOrCreateStack(study, displaySet);
+//   // Get stack from Stack Manager
+//   const stack = StackManager.findOrCreateStack(study, displaySet);
 
-  // Clone the stack here so we don't mutate it later
-  const stackClone = Object.assign({}, stack);
-  stackClone.currentImageIdIndex = 0;
+//   // Clone the stack here so we don't mutate it later
+//   const stackClone = Object.assign({}, stack);
+//   stackClone.currentImageIdIndex = 0;
 
-  return stackClone;
-}
+//   return stackClone;
+// }
 
 function parseSeg(arrayBuffer, imageIds) {
   return dcmjs.adapters.Cornerstone.Segmentation.generateToolState(
