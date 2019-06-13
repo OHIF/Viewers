@@ -1042,10 +1042,10 @@
     classnames "^2.2.6"
     react-vtkjs-viewport "^0.0.7"
 
-"@ohif/i18n@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.3.tgz#815574468856c01ca7b9ab4de2c1ef67681a4c19"
-  integrity sha512-XlE+lPfWUVTqerKQ16U3XlD/Sz18X6PBLD8nQsOQI5zb4PtgthJPdwUUfk1i72K47/klVe2ibY8R8V91DzpYkA==
+"@ohif/i18n@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.4.tgz#e54176e7799e311dbaff37995f9d2745b58cbd0f"
+  integrity sha512-lW+S9weZbJS300yCRR8Ygb1KTULbD1Qx5ZGcYUXyseJIWr5jeJ4V/6FdS30w8u8ejiIVwF8rYOguHsmueQrkdw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
