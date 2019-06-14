@@ -28,6 +28,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import appCommands from './appCommands';
 import setupTools from './setupTools';
+import i18n from '@ohif/i18n';
+import { I18nextProvider } from 'react-i18next';
 import store from './store';
 
 // ~~~~ APP SETUP
@@ -126,24 +128,30 @@ class App extends Component {
     if (userManager) {
       return (
         <Provider store={store}>
-          <OidcProvider store={store} userManager={userManager}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <OHIFStandaloneViewer userManager={userManager} />
-              </WhiteLabellingContext.Provider>
-            </Router>
-          </OidcProvider>
+          <I18nextProvider i18n={i18n}>
+            <OidcProvider store={store} userManager={userManager}>
+              <Router basename={this.props.routerBasename}>
+                <WhiteLabellingContext.Provider
+                  value={this.props.whiteLabelling}
+                >
+                  <OHIFStandaloneViewer userManager={userManager} />
+                </WhiteLabellingContext.Provider>
+              </Router>
+            </OidcProvider>
+          </I18nextProvider>
         </Provider>
       );
     }
 
     return (
       <Provider store={store}>
-        <Router basename={this.props.routerBasename}>
-          <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-            <OHIFStandaloneViewer />
-          </WhiteLabellingContext.Provider>
-        </Router>
+        <I18nextProvider i18n={i18n}>
+          <Router basename={this.props.routerBasename}>
+            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+              <OHIFStandaloneViewer />
+            </WhiteLabellingContext.Provider>
+          </Router>
+        </I18nextProvider>
       </Provider>
     );
   }
