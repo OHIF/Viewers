@@ -10,8 +10,6 @@
 
 .sidebar-menu {
   height: 100%;
-  /* required transformation to make inner fixed elements relative to this one*/
-  transform: scale(1);
   transition: var(--sidebar-transition);
 }
 
