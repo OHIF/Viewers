@@ -1454,10 +1454,10 @@
     classnames "^2.2.6"
     dicom-microscopy-viewer "^0.4.3"
 
-"@ohif/extension-vtk@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.4.tgz#b04d5044cc12772c5c009802ae60ef03b1672969"
-  integrity sha512-m+fQOFawOPpxVCPetZXWlzjvp5NanDJL7lqaYY0JdZII1a/Y1QGNJyqItuakfl1mMZoeT8u65+bL4OmgqgMDfA==
+"@ohif/extension-vtk@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.5.tgz#91e096cf57516a4f1808708de8d0406f7b9f547a"
+  integrity sha512-klUbYuM8SH138exWCNcv6CSiN5NVZCg0qMEJfdMFsXdb6knqVoaUiVGPxmgxVKIhX6+/VIrILheEDArtcfGvJw==
   dependencies:
     "@babel/runtime" "^7.4.5"
     "@ohif/i18n" "0.0.4"
