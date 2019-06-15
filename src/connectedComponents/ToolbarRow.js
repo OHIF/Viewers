@@ -56,7 +56,8 @@ class ToolbarRow extends Component {
       ? rightSidebarToggle[0].value
       : null;
 
-    const availableToolbarModules = extensionManager[MODULE_TYPES.TOOLBAR];
+    const availableToolbarModules =
+      extensionManager.modules[MODULE_TYPES.TOOLBAR];
     const toolbarModuleDefinition = availableToolbarModules.find(
       moduleDefinition => moduleDefinition.extensionId === this.props.pluginId
     );
