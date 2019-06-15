@@ -28,8 +28,7 @@ const mapStateToProps = state => {
           // TODO: Make these use setToolActive instead
           window.commandsManager.runCommand('enableLevelTool', {}, 'vtk');
         }
-      }
-      /* Disabled temporarily due to issues with the interactor style
+      },
       {
         command: 'Rotate',
         type: 'tool',
@@ -40,7 +39,7 @@ const mapStateToProps = state => {
           // TODO: Make these use setToolActive instead
           window.commandsManager.runCommand('enableRotateTool', {}, 'vtk');
         }
-      },*/
+      },
     ],
     activeCommand: 'Crosshairs'
   };
