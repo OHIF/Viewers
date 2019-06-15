@@ -68,7 +68,7 @@
     "@babel/runtime": "^7.4.5",
     "@ohif/extension-cornerstone": "0.0.36",
     "@ohif/extension-dicom-microscopy": "0.0.6",
-    "@ohif/extension-vtk": "0.0.4",
+    "@ohif/extension-vtk": "0.0.5",
     "@ohif/i18n": "0.0.4",
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.2.8",
