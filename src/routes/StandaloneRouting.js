@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import qs from 'querystring';
-import Viewer from '../connectedComponents/Viewer';
-import OHIF from 'ohif-core';
+import { log, metadata, studies, utils } from 'ohif-core';
 
-const { createDisplaySets } = OHIF.utils;
+import PropTypes from 'prop-types';
+import Viewer from '../connectedComponents/Viewer';
+import { extensionManager } from './../App.js';
+import qs from 'querystring';
+
+const { OHIFStudyMetadata } = metadata;
+const { retrieveStudiesMetadata } = studies;
+const { studyMetadataManager, updateMetaDataManager } = utils;
 
 class StandaloneRouting extends Component {
   state = {
@@ -31,7 +35,7 @@ class StandaloneRouting extends Component {
 
       // Add event listeners for request failure
       oReq.addEventListener('error', error => {
-        OHIF.log.warn('An error occurred while retrieving the JSON data');
+        log.warn('An error occurred while retrieving the JSON data');
         reject(error);
       });
 
@@ -41,11 +45,11 @@ class StandaloneRouting extends Component {
         // Parse the response content
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText
         if (!oReq.responseText) {
-          OHIF.log.warn('Response was undefined');
+          log.warn('Response was undefined');
           reject(new Error('Response was undefined'));
         }
 
-        OHIF.log.info(JSON.stringify(oReq.responseText, null, 2));
+        log.info(JSON.stringify(oReq.responseText, null, 2));
 
         const data = JSON.parse(oReq.responseText);
         if (data.servers && query.studyInstanceUids) {
@@ -55,20 +59,18 @@ class StandaloneRouting extends Component {
           const studyInstanceUids = query.studyInstanceUids.split(';');
           const seriesInstanceUids = [];
 
-          OHIF.studies
-            .retrieveStudiesMetadata(
-              server,
-              studyInstanceUids,
-              seriesInstanceUids
-            )
-            .then(
-              studies => {
-                resolve(studies);
-              },
-              error => {
-                reject(error);
-              }
-            );
+          retrieveStudiesMetadata(
+            server,
+            studyInstanceUids,
+            seriesInstanceUids
+          ).then(
+            studies => {
+              resolve(studies);
+            },
+            error => {
+              reject(error);
+            }
+          );
         } else {
           resolve(data.studies);
         }
@@ -77,7 +79,7 @@ class StandaloneRouting extends Component {
       // Open the Request to the server for the JSON data
       // In this case we have a server-side route called /api/
       // which responds to GET requests with the study data
-      OHIF.log.info(`Sending Request to: ${url}`);
+      log.info(`Sending Request to: ${url}`);
       oReq.open('GET', url);
       oReq.setRequestHeader('Accept', 'application/json');
 
@@ -86,18 +88,39 @@ class StandaloneRouting extends Component {
     });
   }
 
-  componentDidMount() {
-    const query = qs.parse(this.props.location.search);
-    StandaloneRouting.parseQueryAndFetchStudies(query).then(
-      studies => {
-        const updatedStudies = createDisplaySets(studies);
+  async componentDidMount() {
+    try {
+      const query = qs.parse(this.props.location.search);
+      const studies = await StandaloneRouting.parseQueryAndFetchStudies(query);
 
-        this.setState({ studies: updatedStudies });
-      },
-      error => {
-        this.setState({ error });
-      }
-    );
+      studyMetadataManager.purge();
+
+      // Map studies to new format, update metadata manager?
+      const updatedStudies = studies.map(study => {
+        const studyMetadata = new OHIFStudyMetadata(
+          study,
+          study.studyInstanceUid
+        );
+        const sopClassHandlerModules =
+          extensionManager.modules['sopClassHandlerModule'];
+
+        study.displaySets =
+          study.displaySets ||
+          studyMetadata.createDisplaySets(sopClassHandlerModules);
+        studyMetadata.setDisplaySets(study.displaySets);
+
+        // Updates WADO-RS metaDataManager
+        updateMetaDataManager(study);
+
+        studyMetadataManager.add(studyMetadata);
+
+        return study;
+      });
+
+      this.setState({ studies: updatedStudies });
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
   render() {

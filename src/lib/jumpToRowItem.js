@@ -1,4 +1,7 @@
-import { OHIF } from 'ohif-core';
+import { measurements, utils } from 'ohif-core';
+
+const { MeasurementApi } = measurements;
+const { studyMetadataManager } = utils;
 
 // TODO: Move this function to OHIF itself so we can use it on the OHIF measurment table (when it is finished)
 
@@ -47,9 +50,7 @@ export default function jumpToRowItem(
 
     let measurement = dataAtThisTimepoint;
 
-    const { tool } = OHIF.measurements.MeasurementApi.getToolConfiguration(
-      toolType
-    );
+    const { tool } = MeasurementApi.getToolConfiguration(toolType);
     if (options.childToolKey) {
       measurement = dataAtThisTimepoint[options.childToolKey];
     } else if (Array.isArray(tool.childTools)) {
@@ -79,7 +80,7 @@ export default function jumpToRowItem(
       return;
     }
 
-    const study = OHIF.utils.studyMetadataManager.get(data.studyInstanceUid);
+    const study = studyMetadataManager.get(data.studyInstanceUid);
     if (!study) {
       throw new Error('Study not found.');
     }
