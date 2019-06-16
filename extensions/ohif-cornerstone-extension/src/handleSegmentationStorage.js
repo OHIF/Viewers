@@ -28,29 +28,6 @@ function getDisplaySetsBySeries(studies, studyInstanceUid, seriesInstanceUid) {
   });
 }
 
-// Unused? Delete me.
-// function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
-//   const study = studies.find(
-//     study => study.studyInstanceUid === studyInstanceUid
-//   );
-
-//   // Create shortcut to displaySet
-//   const displaySet = getDisplaySet(
-//     studies,
-//     studyInstanceUid,
-//     displaySetInstanceUid
-//   );
-
-//   // Get stack from Stack Manager
-//   const stack = StackManager.findOrCreateStack(study, displaySet);
-
-//   // Clone the stack here so we don't mutate it later
-//   const stackClone = Object.assign({}, stack);
-//   stackClone.currentImageIdIndex = 0;
-
-//   return stackClone;
-// }
-
 function parseSeg(arrayBuffer, imageIds) {
   return dcmjs.adapters.Cornerstone.Segmentation.generateToolState(
     imageIds,

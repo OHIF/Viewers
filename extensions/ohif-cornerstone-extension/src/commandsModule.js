@@ -1,4 +1,5 @@
 import cornerstone from 'cornerstone-core';
+import cornerstoneTools from 'cornerstone-tools';
 
 // TODO: Just emit the tool's name?
 // TODO: Let local context handle the active tool propogation to redux?
@@ -90,6 +91,7 @@ const actions = {
   // NOTE: It would be nice if `hotkeys` could set this, instead of creating a command per tool
   setCornerstoneToolActive: ({ toolName }) => {
     console.warn(toolName);
+    cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
     // store.dispatch(setToolActive(toolName));
   },
   updateViewportDisplaySet: ({ direction }) => {
@@ -175,6 +177,11 @@ const definitions = {
     commandFn: actions.setCornerstoneToolActive,
     storeContexts: [],
     options: { toolName: 'Zoom' }
+  },
+  setToolActive: {
+    commandFn: actions.setCornerstoneToolActive,
+    storeContexts: [],
+    options: {}
   }
 };
 
