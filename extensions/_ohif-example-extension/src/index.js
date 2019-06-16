@@ -8,7 +8,9 @@ export default {
   id: 'example-extension',
 
   getViewportModule() {},
-  getSopClassHandler() {},
+  getSopClassHandlerModule() {
+    return sopClassHandlerModule;
+  },
   getPanelModule() {},
   getToolbarModule() {},
   getCommandsModule(/* store */) {
@@ -33,5 +35,35 @@ const commandsModule = {
       storeContexts: ['viewports'],
       options: { param1: 'hello world' },
     },
+  },
+};
+
+/**
+ *
+ */
+const sopClassHandlerModule = {
+  id: 'OHIFDicomHtmlSopClassHandler',
+  sopClassUids: Object.values({
+    BASIC_TEXT_SR: '1.2.840.10008.5.1.4.1.1.88.11',
+    ENHANCED_SR: '1.2.840.10008.5.1.4.1.1.88.22',
+    COMPREHENSIVE_SR: '1.2.840.10008.5.1.4.1.1.88.33',
+    PROCEDURE_LOG_STORAGE: '1.2.840.10008.5.1.4.1.1.88.40',
+    MAMMOGRAPHY_CAD_SR: '1.2.840.10008.5.1.4.1.1.88.50',
+    CHEST_CAD_SR: '1.2.840.10008.5.1.4.1.1.88.65',
+    X_RAY_RADIATION_DOSE_SR: '1.2.840.10008.5.1.4.1.1.88.67',
+  }),
+  getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
+    const instance = series.getFirstInstance();
+
+    return {
+      plugin: 'html',
+      displaySetInstanceUid: 0, //utils.guid(),
+      wadoRoot: study.getData().wadoRoot,
+      wadoUri: instance.getData().wadouri,
+      sopInstanceUid: instance.getSOPInstanceUID(),
+      seriesInstanceUid: series.getSeriesInstanceUID(),
+      studyInstanceUid: study.getStudyInstanceUID(),
+      authorizationHeaders,
+    };
   },
 };
