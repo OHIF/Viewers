@@ -1,43 +1,94 @@
-import React, { Component } from 'react';
+// TODO: A way to add Icons that don't already exist?
+// - Register them and add
+// - Include SVG Source/Inline?
+// - By URL, or own component?
 
-import ConnectedCineDialog from './ConnectedCineDialog';
-import ConnectedToolbarSection from './ConnectedToolbarSection';
-import { ToolbarButton } from 'react-viewerbase';
+// TODO: `ohif-core` toolbar builder?
 
-class ToolbarModule extends Component {
-  state = {
-    cineDialogOpen: false
-  };
+// What KINDS of toolbar buttons do we have...
+// - One's that dispatch commands
+// - One's that set tool's active
+// - More custom, like CINE
+//    - Built in for one's like this, or custom components?
 
-  onClickCineToolbarButton = () => {
-    this.setState({
-      cineDialogOpen: !this.state.cineDialogOpen
-    });
-  };
+// Visible?
+// Disabled?
+// Based on contexts or misc. criteria?
+//  -- ACTIVE_ROUTE::VIEWER
+//  -- ACTIVE_VIEWPORT::CORNERSTONE
+// setToolActive commands should receive the button event that triggered
+// so we can do the "bind to this butyon" magic
 
-  render() {
-    const cineDialogContainerStyle = {
-      display: this.state.cineDialogOpen ? 'block' : 'none',
-      position: 'absolute',
-      top: '82px',
-      zIndex: 999
-    };
+const TOOLBAR_BUTTON_TYPES = {
+  COMMAND: 'command',
+  SET_TOOL_ACTIVE: 'setToolActive'
+};
 
-    return (
-      <div className="ToolbarModule">
-        <ConnectedToolbarSection />
-        <ToolbarButton
-          active={this.state.cineDialogOpen}
-          onClick={this.onClickCineToolbarButton}
-          text="CINE"
-          icon="youtube"
-        />
-        <div className="CineDialogContainer" style={cineDialogContainerStyle}>
-          <ConnectedCineDialog />
-        </div>
-      </div>
-    );
+const definitions = [
+  {
+    id: 'StackScroll',
+    label: 'Stack Scroll',
+    icon: 'bars',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'StackScroll' }
+  },
+  {
+    id: 'Zoom',
+    label: 'Zoom',
+    icon: 'search-plus',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Zoom' }
+  },
+  {
+    id: 'Wwwc',
+    label: 'Levels',
+    icon: 'level',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Wwwc' }
+  },
+  {
+    id: 'Pan',
+    label: 'Pan',
+    icon: 'arrows',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Pan' }
+  },
+  {
+    id: 'Length',
+    label: 'Length',
+    icon: 'measure-temp',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Length' }
+  },
+  {
+    id: 'Angle',
+    label: 'Angle',
+    icon: 'angle-left',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Angle' }
+  },
+  {
+    id: 'Reset',
+    label: 'Reset',
+    icon: 'reset',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'resetViewport'
   }
-}
+];
 
-export default ToolbarModule;
+export default {
+  definitions
+};

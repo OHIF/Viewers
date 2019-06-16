@@ -1,6 +1,6 @@
 import OHIFCornerstoneViewport from './OHIFCornerstoneViewport.js';
-import ToolbarModule from './ToolbarModule.js';
 import commandsModule from './commandsModule.js';
+import toolbarModule from './toolbarModule.js';
 
 /**
  *
@@ -15,7 +15,7 @@ export default {
     return OHIFCornerstoneViewport;
   },
   getToolbarModule() {
-    return ToolbarModule;
+    return toolbarModule;
   },
   getCommandsModule() {
     return commandsModule;
