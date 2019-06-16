@@ -4,16 +4,15 @@ import {
   CommandsManager,
   ExtensionManager,
   HotkeysManager,
-  redux,
   utils,
 } from 'ohif-core';
 import React, { Component } from 'react';
 import {
-  getDefaultToolbarButtons,
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js';
 
+import { I18nextProvider } from 'react-i18next';
 // import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 // import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
@@ -27,9 +26,8 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import appCommands from './appCommands';
-import setupTools from './setupTools';
 import i18n from '@ohif/i18n';
-import { I18nextProvider } from 'react-i18next';
+import setupTools from './setupTools';
 import store from './store';
 
 // ~~~~ APP SETUP
