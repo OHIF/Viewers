@@ -140,7 +140,7 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
             });
           }
         }}
-        isActive={activeButtons.includes(toolbarButtons.id)}
+        isActive={activeButtons.includes(button.id)}
       />
     );
   });
