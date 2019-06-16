@@ -13,7 +13,7 @@ export default class OHIFDicomHtmlExtension {
     return OHIFDicomHtmlViewport;
   }
 
-  getSopClassHandler() {
+  getSopClassHandlerModule() {
     return OHIFDicomHtmlSopClassHandler;
   }
 }
