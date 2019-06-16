@@ -101,12 +101,6 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    //
-    const defaultButtons = getDefaultToolbarButtons(this.props.routerBasename);
-    const buttonsAction = redux.actions.setAvailableButtons(defaultButtons);
-
-    store.dispatch(buttonsAction);
-
     if (this.props.oidc.length) {
       const firstOpenIdClient = this.props.oidc[0];
 

@@ -2,8 +2,6 @@ import { connect } from 'react-redux';
 import { ToolbarSection } from 'react-viewerbase';
 import OHIF from 'ohif-core';
 
-const { setToolActive } = OHIF.redux.actions;
-
 const mapStateToProps = state => {
   const activeButton = state.tools.buttons.find(tool => tool.active === true);
 
@@ -23,9 +21,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setToolActive: tool => {
-      //dispatch(setToolActive(tool.command))
-    }
+    setToolActive: tool => {}
   };
 };
 

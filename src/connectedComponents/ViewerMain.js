@@ -19,15 +19,6 @@ class ViewerMain extends Component {
   constructor(props) {
     super(props);
 
-    // Initialize hotkeys
-    // new OHIF.HotkeysUtil('viewer', {
-    //   setViewportSpecificData: props.setViewportSpecificData,
-    //   clearViewportSpecificData: props.clearViewportSpecificData,
-    //   setToolActive: props.setToolActive,
-    //   setActiveViewportSpecificData: props.setActiveViewportSpecificData,
-    // });
-    // hotkeys.init();
-
     this.state = {
       displaySets: [],
     };
