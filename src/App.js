@@ -17,7 +17,7 @@ import { I18nextProvider } from 'react-i18next';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 // import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 // import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-// import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
 import { OidcProvider } from 'redux-oidc';
@@ -63,7 +63,7 @@ extensionManager.registerExtensions([
   // new OHIFCornerstoneExtension({ children }),
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
-  // new OHIFDicomPDFExtension(),
+  OHIFDicomPDFExtension,
   // new OHIFDicomHtmlExtension(),
   // new OHIFDicomMicroscopyExtension(),
 ]);
