@@ -1,19 +1,16 @@
 import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
 import OHIFDicomPDFViewport from './OHIFDicomPDFViewport.js';
 
-export default class OHIFDicomPDFExtension {
+export default {
   /**
-   * Extension ID is a unique id, might be used for namespacing extension specific redux actions/reducers (?)
+   * Only required property. Should be a unique value across all extensions.
    */
-  getExtensionId() {
-    return 'pdf';
-  }
+  id: 'pdf',
 
   getViewportModule() {
     return OHIFDicomPDFViewport;
-  }
-
+  },
   getSopClassHandlerModule() {
     return OHIFDicomPDFSopClassHandler;
   }
-}
+};
