@@ -1,19 +1,16 @@
 import OHIFDicomHtmlSopClassHandler from './OHIFDicomHtmlSopClassHandler.js';
 import OHIFDicomHtmlViewport from './OHIFDicomHtmlViewport.js';
 
-export default class OHIFDicomHtmlExtension {
+export default {
   /**
-   * Extension ID is a unique id, might be used for namespacing extension specific redux actions/reducers (?)
+   * Only required property. Should be a unique value across all extensions.
    */
-  getExtensionId() {
-    return 'html';
-  }
+  id: 'html',
 
   getViewportModule() {
     return OHIFDicomHtmlViewport;
-  }
-
+  },
   getSopClassHandlerModule() {
     return OHIFDicomHtmlSopClassHandler;
   }
-}
+};

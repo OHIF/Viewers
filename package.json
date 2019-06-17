@@ -67,7 +67,6 @@
   "dependencies": {
     "@babel/runtime": "^7.4.5",
     "@ohif/extension-cornerstone": "file:.yalc/@ohif/extension-cornerstone",
-    "@ohif/extension-dicom-microscopy": "0.0.6",
     "@ohif/extension-vtk": "file:.yalc/@ohif/extension-vtk",
     "@ohif/i18n": "0.0.4",
     "classnames": "^2.2.6",
@@ -84,8 +83,6 @@
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
     "ohif-core": "file:.yalc/ohif-core",
-    "ohif-dicom-html-extension": "^0.0.2",
-    "ohif-dicom-pdf-extension": "^0.0.6",
     "oidc-client": "1.7.x",
     "prop-types": "^15.7.2",
     "react-i18next": "^10.11.0",
