@@ -26,6 +26,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import appCommands from './appCommands';
+import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools';
 import store from './store';
@@ -33,7 +34,7 @@ import store from './store';
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
-  getActiveContexts: () => store.getState().ui.activeContexts,
+  getActiveContexts: () => getActiveContexts(store.getState()),
 };
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
