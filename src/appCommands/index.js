@@ -2,7 +2,6 @@ import viewerCommandDefinitions from './viewer.js';
 
 const CONTEXTS = {
   viewer: 'VIEWER',
-  cornerstone: 'VIEWER::CORNERSTONE',
 };
 
 /**
