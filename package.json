@@ -66,9 +66,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
-    "@ohif/extension-cornerstone": "0.0.36",
+    "@ohif/extension-cornerstone": "file:.yalc/@ohif/extension-cornerstone",
     "@ohif/extension-dicom-microscopy": "0.0.6",
-    "@ohif/extension-vtk": "0.0.5",
+    "@ohif/extension-vtk": "file:.yalc/@ohif/extension-vtk",
     "@ohif/i18n": "0.0.4",
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.2.8",
@@ -83,7 +83,7 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
-    "ohif-core": "0.5.9",
+    "ohif-core": "file:.yalc/ohif-core",
     "ohif-dicom-html-extension": "^0.0.2",
     "ohif-dicom-pdf-extension": "^0.0.6",
     "oidc-client": "1.7.x",
@@ -93,11 +93,12 @@
     "react-resize-detector": "^4.2.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-viewerbase": "0.9.0",
+    "react-viewerbase": "file:.yalc/react-viewerbase",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-oidc": "3.1.x",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "reselect": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

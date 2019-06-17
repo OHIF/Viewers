@@ -49,17 +49,6 @@ appCommands.init(commandsManager);
 if (window.config.hotkeys) {
   hotkeysManager.setHotkeys(window.config.hotkeys, true);
 }
-
-// Force active contexts for now. These should be set in Viewer/ActiveViewer
-store.dispatch({
-  type: 'ADD_ACTIVE_CONTEXT',
-  item: 'VIEWER',
-});
-store.dispatch({
-  type: 'ADD_ACTIVE_CONTEXT',
-  item: 'ACTIVE_VIEWPORT::CORNERSTONE',
-});
-
 // ~~~~ END APP SETUP
 
 setupTools(store);

@@ -15,7 +15,7 @@ class ToolbarRow extends Component {
     rightSidebarOpen: PropTypes.bool.isRequired,
     setLeftSidebarOpen: PropTypes.func,
     setRightSidebarOpen: PropTypes.func,
-    pluginId: PropTypes.string,
+    activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
   static defaultProps = {
@@ -26,26 +26,30 @@ class ToolbarRow extends Component {
   constructor(props) {
     super(props);
 
-    const toolbarModules = extensionManager.modules[MODULE_TYPES.TOOLBAR];
-    const toolbarButtonDefinitions = toolbarModules[0].module.definitions;
-
+    const toolbarButtonDefinitions = _getVisibleToolbarButtons.call(this);
     // TODO:
-    // ToolbarSection for Each ToolbarButton
-    // Render buttons
-    // On click, depending on Type, pass props to registered command in commands manager?
     // If it's a tool that can be active... Mark it as active?
     // - Tools that are on/off?
     // - Tools that can be bound to multiple buttons?
 
     // Normal ToolbarButtons...
-    // Maybe filtered by the active context(s)?
-    // Buttons can handle their own clicks. No reason for the container to do it?
     // Just how high do we need to hoist this state?
     // Why ToolbarRow instead of just Toolbar? Do we have any others?
     this.state = {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    const activeContextsChanged =
+      prevProps.activeContexts !== this.props.activeContexts;
+
+    if (activeContextsChanged) {
+      this.setState({
+        toolbarButtons: _getVisibleToolbarButtons.call(this),
+      });
+    }
   }
 
   onLeftSidebarValueChanged = value => {
@@ -144,6 +148,28 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
       />
     );
   });
+}
+
+function _getVisibleToolbarButtons() {
+  const toolbarModules = extensionManager.modules[MODULE_TYPES.TOOLBAR];
+  const toolbarButtonDefinitions = [];
+
+  toolbarModules.forEach(extension => {
+    const { definitions, defaultContext } = extension.module;
+    definitions.forEach(definition => {
+      const context = definition.context || defaultContext;
+
+      console.log(context);
+      if (this.props.activeContexts.includes(context)) {
+        console.log('includes: ', definition.commandName);
+        toolbarButtonDefinitions.push(definition);
+      }
+    });
+
+    console.log(extension);
+  });
+
+  return toolbarButtonDefinitions;
 }
 
 export default ToolbarRow;

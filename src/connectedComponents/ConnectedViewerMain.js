@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 const {
   setViewportSpecificData,
   clearViewportSpecificData,
-  // setActiveViewportSpecificData,
 } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
@@ -27,9 +26,6 @@ const mapDispatchToProps = dispatch => {
     clearViewportSpecificData: () => {
       dispatch(clearViewportSpecificData());
     },
-    // setActiveViewportSpecificData: viewport => {
-    //   dispatch(setActiveViewportSpecificData(viewport));
-    // },
   };
 };
 
