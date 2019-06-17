@@ -159,14 +159,10 @@ function _getVisibleToolbarButtons() {
     definitions.forEach(definition => {
       const context = definition.context || defaultContext;
 
-      console.log(context);
       if (this.props.activeContexts.includes(context)) {
-        console.log('includes: ', definition.commandName);
         toolbarButtonDefinitions.push(definition);
       }
     });
-
-    console.log(extension);
   });
 
   return toolbarButtonDefinitions;
