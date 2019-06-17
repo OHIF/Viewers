@@ -4,6 +4,8 @@ import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 
 import { Dropdown } from 'react-viewerbase';
+import { withTranslation } from 'react-i18next';
+import './Header.css';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import PropTypes from 'prop-types';
 // import { UserPreferencesModal } from 'react-viewerbase';
@@ -14,6 +16,7 @@ class Header extends Component {
     home: PropTypes.bool.isRequired,
     location: PropTypes.object.isRequired,
     children: PropTypes.node,
+    t: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -41,16 +44,19 @@ class Header extends Component {
 
     // const onClick = this.toggleUserPreferences.bind(this);
 
+    this.loadOptions();
+  }
+
+  loadOptions() {
+    const { t } = this.props;
     this.options = [
       // {
-      //   title: 'Preferences ',
-      //   icon: {
-      //     name: 'user',
-      //   },
+      //   title: t('Preferences'),
+      //   icon: { name: 'user' },
       //   onClick: onClick,
       // },
       {
-        title: 'About',
+        title: t('About'),
         icon: {
           name: 'info',
         },
@@ -77,6 +83,7 @@ class Header extends Component {
   }
 
   render() {
+    const { t } = this.props;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">
@@ -85,7 +92,7 @@ class Header extends Component {
               to={this.props.location.studyLink}
               className="header-btn header-viewerLink"
             >
-              Back to Viewer
+              {t('Back to Viewer')}
             </Link>
           )}
 
@@ -99,26 +106,19 @@ class Header extends Component {
                 state: { studyLink: this.props.location.pathname },
               }}
             >
-              Study list
+              {t('Study list')}
             </Link>
           )}
         </div>
 
         <div className="header-menu">
-          <span className="research-use">INVESTIGATIONAL USE ONLY</span>
-          <Dropdown title="Options" list={this.options} align="right" />
-          {/* <UserPreferencesModal
-            isOpen={this.state.isUserPreferencesOpen}
-            onCancel={this.toggleUserPreferences.bind(this)}
-            onSave={this.toggleUserPreferences.bind(this)}
-            onResetToDefaults={this.toggleUserPreferences.bind(this)}
-            windowLevelData={{}}
-            hotKeysData={this.hotKeysData}
-          /> */}
+          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
+          <Dropdown title={t('Options')} list={this.options} align="right" />
+          {/* <ConnectedUserPreferencesModal /> */}
         </div>
       </div>
     );
   }
 }
 
-export default withRouter(Header);
+export default withTranslation('Header')(withRouter(Header));

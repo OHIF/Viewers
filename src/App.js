@@ -28,6 +28,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import appCommands from './appCommands';
 import setupTools from './setupTools';
+import i18n from '@ohif/i18n';
+import { I18nextProvider } from 'react-i18next';
 import store from './store';
 
 // ~~~~ APP SETUP
@@ -38,6 +40,9 @@ const commandsManagerConfig = {
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
+
+// TODO: @dannyrb will fix this
+window.commandsManager = commandsManager;
 
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
@@ -67,7 +72,7 @@ const children = {
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensions.ExtensionManager.registerExtensions(store, [
   new OHIFCornerstoneExtension({ children }),
-  new OHIFVTKExtension(),
+  new OHIFVTKExtension({ commandsManager }),
   new OHIFDicomPDFExtension(),
   new OHIFDicomHtmlExtension(),
   new OHIFDicomMicroscopyExtension(),
@@ -126,24 +131,30 @@ class App extends Component {
     if (userManager) {
       return (
         <Provider store={store}>
-          <OidcProvider store={store} userManager={userManager}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <OHIFStandaloneViewer userManager={userManager} />
-              </WhiteLabellingContext.Provider>
-            </Router>
-          </OidcProvider>
+          <I18nextProvider i18n={i18n}>
+            <OidcProvider store={store} userManager={userManager}>
+              <Router basename={this.props.routerBasename}>
+                <WhiteLabellingContext.Provider
+                  value={this.props.whiteLabelling}
+                >
+                  <OHIFStandaloneViewer userManager={userManager} />
+                </WhiteLabellingContext.Provider>
+              </Router>
+            </OidcProvider>
+          </I18nextProvider>
         </Provider>
       );
     }
 
     return (
       <Provider store={store}>
-        <Router basename={this.props.routerBasename}>
-          <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-            <OHIFStandaloneViewer />
-          </WhiteLabellingContext.Provider>
-        </Router>
+        <I18nextProvider i18n={i18n}>
+          <Router basename={this.props.routerBasename}>
+            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+              <OHIFStandaloneViewer />
+            </WhiteLabellingContext.Provider>
+          </Router>
+        </I18nextProvider>
       </Provider>
     );
   }

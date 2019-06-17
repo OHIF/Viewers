@@ -47,10 +47,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(setViewportSpecificData(viewportIndex, data));
     },
 
-    clearViewportSpecificData: () => {
-      dispatch(clearViewportSpecificData(viewportIndex));
-    },
-
     /**
      * Our component "enables" the underlying dom element on "componentDidMount"
      * It listens for that event, and then emits the enabledElement. We can grab

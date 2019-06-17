@@ -6,6 +6,7 @@ import pkg from './package.json';
 import postcss from 'rollup-plugin-postcss';
 import resolve from 'rollup-plugin-node-resolve';
 import url from 'rollup-plugin-url';
+import copy from 'rollup-plugin-copy';
 
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 
@@ -24,7 +25,8 @@ const globals = {
   dcmjs: 'dcmjs',
   'dicom-parser': 'dicomParser',
   'ohif-core': 'OHIF',
-  hammerjs: 'Hammer'
+  hammerjs: 'Hammer',
+  '@ohif/i18n': 'i18n'
 };
 
 export default {
@@ -55,6 +57,10 @@ export default {
       exclude: 'node_modules/**',
       externalHelpers: true,
       runtimeHelpers: true
+    }),
+    copy({
+      targets: ['src/locales'],
+      outputFolder: 'dist',
     }),
     resolve(),
     commonjs({
