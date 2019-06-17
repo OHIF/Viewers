@@ -61,7 +61,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('axial', {}, 'vtk');
+        commandsManager.runCommand('axial');
       },
     },
     {
@@ -69,7 +69,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('sagittal', {}, 'vtk');
+        commandsManager.runCommand('sagittal');
       },
     },
     {
@@ -77,7 +77,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('coronal', {}, 'vtk');
+        commandsManager.runCommand('coronal');
       },
     },*/
     {

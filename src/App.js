@@ -16,7 +16,7 @@ import { I18nextProvider } from 'react-i18next';
 // import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 // import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
-// import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
+import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
@@ -41,9 +41,6 @@ const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const extensionManager = new ExtensionManager({ commandsManager });
 
-// TODO: @dannyrb will fix this
-window.commandsManager = commandsManager;
-
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
 appCommands.init(commandsManager);
@@ -65,7 +62,7 @@ extensionManager.registerExtensions([
   OHIFVTKExtension,
   OHIFDicomPDFExtension,
   // new OHIFDicomHtmlExtension(),
-  // new OHIFDicomMicroscopyExtension(),
+  OHIFDicomMicroscopyExtension,
 ]);
 
 // TODO[react] Use a provider when the whole tree is React

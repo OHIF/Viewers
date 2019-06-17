@@ -1,19 +1,16 @@
 import DicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler.js';
 import DicomMicroscopyViewport from './DicomMicroscopyViewport.js';
 
-export default class OHIFDicomMicroscopyExtension {
+export default {
   /**
-   * Extension ID is a unique id, might be used for namespacing extension specific redux actions/reducers (?)
+   * Only required property. Should be a unique value across all extensions.
    */
-  getExtensionId() {
-    return 'microscopy';
-  }
+  id: 'microscopy',
 
   getViewportModule() {
     return DicomMicroscopyViewport;
-  }
-
+  },
   getSopClassHandlerModule() {
     return DicomMicroscopySopClassHandler;
   }
-}
+};

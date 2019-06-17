@@ -12,7 +12,6 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'enableCrosshairsTool',
     commandOptions: {}
-    // window.commandsManager.runCommand('enableCrosshairsTool', {}, 'vtk');
   },
   {
     id: 'WWWC',
@@ -22,7 +21,6 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'enableLevelTool',
     commandOptions: {}
-    // window.commandsManager.runCommand('enableLevelTool', {}, 'vtk');
   },
   {
     id: 'Rotate',
@@ -32,7 +30,6 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'enableRotateTool',
     commandOptions: {}
-    // window.commandsManager.runCommand('enableRotateTool', {}, 'vtk');
   }
 ];
 
