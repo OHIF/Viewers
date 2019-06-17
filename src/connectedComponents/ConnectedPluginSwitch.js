@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
-import PluginSwitch from './PluginSwitch.js';
 import OHIF from 'ohif-core';
+import PluginSwitch from './PluginSwitch.js';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 
@@ -84,7 +84,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('mpr2d', {}, 'vtk');
+        window.commandsManager.runCommand('mpr2d');
       },
     },
   ];
