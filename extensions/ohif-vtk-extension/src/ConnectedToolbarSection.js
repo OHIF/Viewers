@@ -1,27 +1,51 @@
-import { connect } from 'react-redux';
-import { ToolbarSection } from 'react-viewerbase';
 import OHIF from 'ohif-core';
+import { ToolbarSection } from 'react-viewerbase';
+import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
-  const activeButton = state.tools.buttons.find(tool => tool.active === true);
-
   return {
     buttons: [
+      {
+        command: 'Crosshairs',
+        type: 'tool',
+        text: 'Crosshairs',
+        icon: 'crosshairs',
+        active: true,
+        onClick: () => {
+          // TODO: Make these use setToolActive instead
+          window.commandsManager.runCommand('enableCrosshairsTool', {}, 'vtk');
+        }
+      },
+      {
+        command: 'WWWC',
+        type: 'tool',
+        text: 'WWWC',
+        icon: 'level',
+        active: true,
+        onClick: () => {
+          // TODO: Make these use setToolActive instead
+          window.commandsManager.runCommand('enableLevelTool', {}, 'vtk');
+        }
+      },
       {
         command: 'Rotate',
         type: 'tool',
         text: 'Rotate',
         icon: '3d-rotate',
-        active: true
+        active: false,
+        onClick: () => {
+          // TODO: Make these use setToolActive instead
+          window.commandsManager.runCommand('enableRotateTool', {}, 'vtk');
+        }
       }
-    ],
-    activeCommand: 'Rotate'
+    ]
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setToolActive: tool => {}
+    setToolActive: tool => {},
+    activeCommand: 'Crosshairs'
   };
 };
 

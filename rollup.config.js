@@ -43,7 +43,7 @@ export default {
     url(),
     svgr(),
     json(),
-    resolve(),
+    resolve({preferBuiltins: true}),
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true,
@@ -66,6 +66,7 @@ export default {
           'cornerstoneTools',
         ],
         'node_modules/dcmjs/build/dcmjs.js': ['data', 'adapters'],
+        'node_modules/prop-types/index.js': ['bool', 'number', 'string', 'shape', 'func', 'any', 'node']
       },
     }),
     builtins(),

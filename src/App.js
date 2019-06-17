@@ -40,6 +40,9 @@ const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const extensionManager = new ExtensionManager({ commandsManager });
 
+// TODO: @dannyrb will fix this
+window.commandsManager = commandsManager;
+
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
 appCommands.init(commandsManager);
@@ -69,7 +72,7 @@ setupTools(store);
 extensionManager.registerExtensions([
   OHIFCornerstoneExtension,
   // new OHIFCornerstoneExtension({ children }),
-  // new OHIFVTKExtension(),
+  // new OHIFVTKExtension(), // { commandsManager }
   // new OHIFDicomPDFExtension(),
   // new OHIFDicomHtmlExtension(),
   // new OHIFDicomMicroscopyExtension(),

@@ -10,8 +10,9 @@ import React from 'react';
 class ViewerMain extends Component {
   static propTypes = {
     activeViewportIndex: PropTypes.number.isRequired,
-    layout: PropTypes.object,
-    viewportSpecificData: PropTypes.object,
+    studies: PropTypes.array.isRequired,
+    viewportSpecificData: PropTypes.object.isRequired,
+    layout: PropTypes.object.isRequired,
     setViewportSpecificData: PropTypes.func.isRequired,
     clearViewportSpecificData: PropTypes.func.isRequired,
   };
