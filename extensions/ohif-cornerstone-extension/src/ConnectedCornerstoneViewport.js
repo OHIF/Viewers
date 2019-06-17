@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from 'ohif-core';
+import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 
 const {
@@ -10,7 +10,6 @@ const {
 } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const activeButton = state.tools.buttons.find(tool => tool.active === true);
   let dataFromStore;
 
   if (state.extensions && state.extensions.cornerstone) {
@@ -26,7 +25,9 @@ const mapStateToProps = (state, ownProps) => {
   return {
     layout: state.viewports.layout,
     isActive,
-    activeTool: activeButton && activeButton.command,
+    // TODO: Need a cleaner and more versatile way.
+    // Currently justing using escape hatch + commands
+    // activeTool: activeButton && activeButton.command,
     ...dataFromStore,
     enableStackPrefetch: isActive,
     //stack: viewportSpecificData.stack,
