@@ -90,5 +90,6 @@ const definitions = [
 ];
 
 export default {
-  definitions
+  definitions,
+  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
 };
