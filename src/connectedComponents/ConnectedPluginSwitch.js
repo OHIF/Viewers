@@ -1,5 +1,6 @@
 import OHIF from 'ohif-core';
 import PluginSwitch from './PluginSwitch.js';
+import { commandsManager } from './../App.js';
 import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
@@ -80,11 +81,10 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       },
     },*/
     {
-      text: '2D MPR',
+      label: '2D MPR',
       icon: 'cube',
-      active: false,
       onClick: () => {
-        window.commandsManager.runCommand('mpr2d');
+        commandsManager.runCommand('mpr2d');
       },
     },
   ];
