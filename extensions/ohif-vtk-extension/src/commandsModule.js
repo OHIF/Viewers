@@ -263,8 +263,12 @@ const definitions = {
   mpr2d: {
     commandFn: actions.mpr2d,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
+    context: 'VIEWER'
   }
 };
 
-export { definitions };
+export default {
+  definitions,
+  defaultContext: 'ACTIVE_VIEWPORT::VTK'
+};

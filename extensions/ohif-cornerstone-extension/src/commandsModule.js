@@ -182,5 +182,6 @@ function _getActiveViewportEnabledElement(viewports, activeIndex) {
 
 export default {
   actions,
-  definitions
+  definitions,
+  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
 };
