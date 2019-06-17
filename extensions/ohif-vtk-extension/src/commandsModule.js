@@ -1,16 +1,13 @@
 import {
-  vtkInteractorStyleMPRWindowLevel,
+  vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRSlice,
-  vtkInteractorStyleMPRCrosshairs
+  vtkInteractorStyleMPRWindowLevel
 } from 'react-vtkjs-viewport';
 
-import setViewportToVTK from './utils/setViewportToVTK.js';
 import setMPRLayout from './utils/setMPRLayout.js';
+import setViewportToVTK from './utils/setViewportToVTK.js';
 import vtkMath from 'vtk.js/Sources/Common/Core/Math';
 import vtkMatrixBuilder from 'vtk.js/Sources/Common/Core/MatrixBuilder';
-
-// TODO: Should be another way to get this
-const commandsManager = window.commandsManager;
 
 // TODO: Put this somewhere else
 let apis = {};
