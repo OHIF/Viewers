@@ -9,11 +9,11 @@ toolbar, or as complex as a new viewport capable of rendering volumes in 3D.
 - [Overview](#overview)
 - [Modules](#modules)
   - [Commands](#commands)
-  - [Toolbar](#toolbar)
-  - [SOP Class Handler](#sopclasshandler)
-  - [Panel](#panel)
   - [Hotkeys](#hotkeys)
+  - [Toolbar](#toolbar)
+  - [Panel](#panel)
   - [Viewport](#viewport)
+  - [SOP Class Handler](#sopclasshandler)
 
 ## Overview
 
@@ -29,26 +29,32 @@ export default {
     id: 'example-extension',
 
     /**
-     *
+     * Registers one or more named commands scoped to a context. Commands are
+     * the primary means for...
      */
     getCommandsModule() {
         return {
-              actions: {
-                // Store Contexts + Options
-                exampleAction: ({ viewports, param1 }) => {
-                    console.log(`There are ${viewports.length} viewports`);
-                    console.log(`param1's value is: ${param1}`);
-                },
-            },
-            definitions: {
-                exampleActionDef: {
-                    commandFn: this.actions.exampleAction,
-                    storeContexts: ['viewports'],
-                    options: { param1: 'hello world' },
-                },
-            },
+            defaultContext: 'VIEWER'
+            actions: { ... },
+            definitions: { ... }
         }
     },
+
+    /**
+     * Allows you to provide toolbar definitions that will be merged with any
+     * existing application toolbar configuration. Used to determine which
+     * buttons should be visible when, their order, what happens when they're
+     * clicked, etc.
+     */
+    getToolbarModule() {
+        return {
+            definitions: [ ... ],
+            defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
+        }
+    }
+
+    // Not yet used
+    getPanelModule: () => null,
 
     /**
      * Registers a ReactComponent that should be used to render data in a
@@ -58,20 +64,13 @@ export default {
     */
     getViewportModule: () => reactViewportComponent,
 
-    /** React component that adds buttons/behavior to the viewer Toolbar */
-    getToolbarModule: () => reactToolbarComponent,
-
     /** Provides a whitelist of SOPClassUIDs the viewport is capable of rendering.
      *  Can modify default behavior for methods like `getDisplaySetFromSeries` */
     getSopClassHandler: () => {
         id: 'some-other-unique-id',
-        type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
-        sopClassUids: ['string'],
-        getDisplaySetFromSeries: (series, study, dicomWebClient, authorizationHeaders) => ...
+        sopClassUids: [ ... ],
+        getDisplaySetFromSeries: (series, study, dicomWebClient, authorizationHeaders) => { ... }
     },
-
-    // Not yet used
-    getPanelModule: () => null;
 }
 ```
 
