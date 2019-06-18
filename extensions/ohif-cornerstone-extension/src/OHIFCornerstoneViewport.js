@@ -78,11 +78,11 @@ class OHIFCornerstoneViewport extends Component {
     }
 
     if (!studyInstanceUid) {
-      throw new Error('StudyInstanceUID not provided.')
+      throw new Error('StudyInstanceUID not provided.');
     }
 
     if (!displaySetInstanceUid) {
-      throw new Error('StudyInstanceUID not provided.')
+      throw new Error('StudyInstanceUID not provided.');
     }
 
     // Create shortcut to displaySet
@@ -125,7 +125,9 @@ class OHIFCornerstoneViewport extends Component {
       if (index > -1) {
         stack.currentImageIdIndex = index;
       } else {
-        console.warn('SOPInstanceUID provided was not found in specified DisplaySet');
+        console.warn(
+          'SOPInstanceUID provided was not found in specified DisplaySet'
+        );
       }
     }
 

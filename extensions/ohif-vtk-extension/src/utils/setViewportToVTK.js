@@ -14,7 +14,7 @@ export default function setViewportToVTK(
     }*/
 
     const data = {
-      plugin: 'vtk',
+      // plugin: 'vtk',
       vtk: {
         mode: 'mpr', // TODO: not used
         afterCreation: api => {
