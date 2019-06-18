@@ -15,7 +15,7 @@ import {
 import { I18nextProvider } from 'react-i18next';
 // import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-// import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
+import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
@@ -61,7 +61,7 @@ extensionManager.registerExtensions([
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
   OHIFDicomPDFExtension,
-  // new OHIFDicomHtmlExtension(),
+  OHIFDicomHtmlExtension,
   OHIFDicomMicroscopyExtension,
 ]);
 
