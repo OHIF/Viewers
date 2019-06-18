@@ -8,34 +8,58 @@ toolbar, or as complex as a new viewport capable of rendering volumes in 3D.
 
 - [Overview](#overview)
 - [Modules](#modules)
-  - [Viewport](#viewport)
+  - [Commands](#commands)
   - [Toolbar](#toolbar)
   - [SOP Class Handler](#sopclasshandler)
   - [Panel](#panel)
-  - [Commands](#commands)
   - [Hotkeys](#hotkeys)
+  - [Viewport](#viewport)
 
 ## Overview
 
-At a glance, an extension is a class or object that has a `getExtensionId()`
-method, and one or more "module" methods. You can find an abbreviated extension
-below, or
-[view the source](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/OHIFCornerstoneExtension.js#L32-L65)
-of our `cornerstone` viewport extension.
+At a glance, an extension is a javascript object that has an `id` property, and
+one or more "module" methods. You can find an abbreviated extension below, or
+[view the source][example-ext-src] of our example extension.
 
 ```js
-class myCustomExtension {
+export default {
+    /**
+     * Only required property. Should be a unique value across all extensions.
+     */
+    id: 'example-extension',
 
-    /** Required */
-    getExtensionId: () => 'my-extension-id';
+    /**
+     *
+     */
+    getCommandsModule() {
+        return {
+              actions: {
+                // Store Contexts + Options
+                exampleAction: ({ viewports, param1 }) => {
+                    console.log(`There are ${viewports.length} viewports`);
+                    console.log(`param1's value is: ${param1}`);
+                },
+            },
+            definitions: {
+                exampleActionDef: {
+                    commandFn: this.actions.exampleAction,
+                    storeContexts: ['viewports'],
+                    options: { param1: 'hello world' },
+                },
+            },
+        }
+    },
 
-    /** React component that receives props from ConnectLayoutManager
-     *  If more than one viewport module is registered, SopClassHandler
-     *  is used to help determine which component is used */
-    getViewportModule: () => reactViewportComponent;
+    /**
+     * Registers a ReactComponent that should be used to render data in a
+     * Viewport. The first registered viewport is our "default viewport". If
+     * more than one viewport is registered, we use `SopClassHandlers` to
+     * determine which viewport should be used.
+    */
+    getViewportModule: () => reactViewportComponent,
 
     /** React component that adds buttons/behavior to the viewer Toolbar */
-    getToolbarModule: () => reactToolbarComponent;
+    getToolbarModule: () => reactToolbarComponent,
 
     /** Provides a whitelist of SOPClassUIDs the viewport is capable of rendering.
      *  Can modify default behavior for methods like `getDisplaySetFromSeries` */
@@ -44,7 +68,7 @@ class myCustomExtension {
         type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
         sopClassUids: ['string'],
         getDisplaySetFromSeries: (series, study, dicomWebClient, authorizationHeaders) => ...
-    };
+    },
 
     // Not yet used
     getPanelModule: () => null;
@@ -159,3 +183,11 @@ top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions)
 directory.
 
 {% include "./_maintained-extensions-table.md" %}
+
+<!--
+    Links
+-->
+
+<!-- prettier-ignore-start -->
+[example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_ohif-example-extension/src/index.js)
+<!-- prettier-ignore-end -->
