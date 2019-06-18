@@ -53,7 +53,9 @@ export default {
         }
     }
 
-    // Not yet used
+    /**
+     * Not yet implemented
+     */
     getPanelModule: () => null,
 
     /**
@@ -76,12 +78,20 @@ export default {
 
 ### Modules
 
-There are a few different kinds of modules. Each kind of module allows us to
-extend the viewer in a different way, and provides a consistent API for us to do
-so. You can find a full list of the
-[different types of modules `in ohif-core`](https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6).
-Information on each type of module, it's API, and how we determine when/where it
-should be used is included below:
+There are a few different module types. Each module type allows us to extend the
+viewer in a different way, and provides a consistent API for us to do so. You
+can find a full list of the different types of modules
+[`in ohif-core`][module-types]. Information on each type of module, it's API,
+and how we determine when/where it should be used is included below.
+
+> NOTE: Modifying the extensions/modules registered to the OHIF Viewer currently
+> requires us to import and pass extensions to the ExtensionManager in
+> `src/App.js`, then rebuild the application. Long-term, we intend to make it
+> possible to accomplish this without a build step.
+
+#### Commands
+
+...
 
 #### Viewport
 
@@ -137,10 +147,6 @@ For a complete example implementation,
 
 > The panel module is not yet in use.
 
-#### Commands
-
-...
-
 #### Hotkeys
 
 ...
@@ -189,4 +195,5 @@ directory.
 
 <!-- prettier-ignore-start -->
 [example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_ohif-example-extension/src/index.js)
+[module-types]: https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6
 <!-- prettier-ignore-end -->
