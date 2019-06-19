@@ -35,8 +35,10 @@ For our purposes, we will be using `Orthanc`, but you can see a list of
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
 
-If you are using Docker Toolbox you need to change the _proxy_ parameter in
-_package.json_ to http://192.168.99.100:8042 or the ip docker-machine ip throws.
+> If you are using `Docker Toolbox` you need to change the _proxy_ parameter in
+> _package.json_ to http://192.168.99.100:8042 or the ip docker-machine ip
+> throws. This is the value [`react-scripts`][react-proxy]] uses to proxy
+> requests
 
 ### Running Orthanc
 
@@ -146,6 +148,7 @@ _Feel free to make a Pull Request if you want to add to this list._
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [storescu]: http://support.dcmtk.org/docs/storescu.html
 [cra-start]: https://github.com/facebook/create-react-app#npm-start-or-yarn-start
+[react-proxy]: https://facebook.github.io/create-react-app/docs/proxying-api-requests-in-development#configuring-the-proxy-manually
 <!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
