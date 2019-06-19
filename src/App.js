@@ -31,6 +31,8 @@ import setupTools from './setupTools';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import store from './store';
+// Imported flat feature since is not transpiled for old browser versions
+import 'core-js/features/array/flat';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {

@@ -33,7 +33,9 @@
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
     "dev:orthanc": "yarn run preBuild && cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
-    "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v"
+    "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v",
+    "cypress": "cypress open",
+    "cypress:all": "cypress run"
   },
   "husky": {
     "hooks": {
@@ -109,8 +111,10 @@
     "babel-eslint": "^10.0.1",
     "codecov": "3.5.0",
     "commitizen": "3.1.x",
+    "core-js": "^3.1.4",
     "cpx": "1.5.0",
     "cross-env": "^5.2.0",
+    "cypress": "^3.3.1",
     "cz-conventional-changelog": "2.1.0",
     "eslint": "5.16.0",
     "eslint-plugin-import": "^2.17.3",
