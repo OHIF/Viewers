@@ -4,64 +4,25 @@ import LngDetector from 'i18next-browser-languagedetector';
 import customDebug from './debugger';
 import pkg from '../package.json';
 import { debugMode, detectionOptions } from './config';
+import locales from './locales';
 
 let translate;
 
-function getNameSpaceString(key) {
-  const nameSpaceMatcher = key.match(/[^/]+$/g);
-  let finalNameSpace;
+function addLocales(newLocales) {
+  customDebug(`Adding locales ${newLocales}`, 'info');
 
-  if (nameSpaceMatcher !== null) {
-    finalNameSpace = nameSpaceMatcher[0].replace('.json', '');
-  }
+  let resourceBundle = [];
 
-  return finalNameSpace;
-}
-
-function getKeyForNameSpaces(key) {
-  const cleanedKey = key.match(/[/\\].+(?=[/\\])/);
-  let finalKey;
-
-  if (cleanedKey !== null) {
-    finalKey = cleanedKey[0].replace(/[/\\]/, '');
-    finalKey = finalKey.replace(/[/\\]/, '-');
-  }
-
-  return finalKey;
-}
-
-function getLocales() {
-  var isTestEnvironment = process.env.NODE_ENV === 'test';
-
-  // require.context is exclusive from webpack. This conditional is needed to escape while running tests
-  if (isTestEnvironment) {
-    return {};
-  }
-
-  const context = require.context(`./locales`, true, /\.json$/);
-  const locales = {};
-
-  context.keys().forEach(key => {
-    locales[getKeyForNameSpaces(key)] = {
-      ...locales[getKeyForNameSpaces(key)],
-      [getNameSpaceString(key)]: context(key),
-    };
+  Object.keys(newLocales).map(key => {
+    Object.keys(newLocales[key]).map(namespace => {
+      const locale = newLocales[key][namespace];
+      resourceBundle.push({ key, namespace, locale });
+      i18n.addResourceBundle(key, namespace, locale, true, true);
+    });
   });
 
-  return locales;
-}
-
-function addLocales(context) {
-  context.keys().forEach(key => {
-    i18n.addResourceBundle(
-      getKeyForNameSpaces(key),
-      getNameSpaceString(key),
-      context(key),
-      true,
-      true
-    );
-  });
   customDebug(`Locales added successfully`, 'info');
+  customDebug(resourceBundle, 'info');
 }
 
 function initI18n(detection = detectionOptions) {
@@ -69,7 +30,7 @@ function initI18n(detection = detectionOptions) {
     .use(LngDetector)
     .use(initReactI18next)
     .init({
-      resources: getLocales(),
+      resources: locales,
       debug: debugMode,
       keySeparator: false,
       interpolation: {

@@ -58,6 +58,10 @@
     "not ie <= 11",
     "not op_mini all"
   ],
+  "resolutions": {
+    "browserslist": "4.6.2",
+    "caniuse-lite": "1.0.30000974"
+  },
   "files": [
     "dist"
   ],
@@ -77,7 +81,7 @@
     "@ohif/extension-dicom-microscopy": "0.0.8",
     "@ohif/extension-dicom-pdf": "0.0.7",
     "@ohif/extension-vtk": "0.0.7",
-    "@ohif/i18n": "0.0.4",
+    "@ohif/i18n": "0.0.6",
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.2.8",
     "cornerstone-math": "^0.1.8",
@@ -115,7 +119,7 @@
     "@babel/preset-react": "^7.0.0",
     "@semantic-release/exec": "3.3.3",
     "@svgr/rollup": "^4.3.0",
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "10.0.1",
     "codecov": "3.5.0",
     "commitizen": "3.1.x",
     "core-js": "^3.1.4",

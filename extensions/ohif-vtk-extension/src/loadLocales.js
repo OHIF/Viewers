@@ -1,8 +1,8 @@
 import { addLocales } from '@ohif/i18n';
+import locales from './locales';
 
 function loadLocales() {
-  const context = require.context(`./locales`, true, /\.json$/);
-  addLocales(context);
+  addLocales(locales);
 }
 
 export default loadLocales;
