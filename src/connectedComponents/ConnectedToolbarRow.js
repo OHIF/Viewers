@@ -1,6 +1,10 @@
-import { connect } from 'react-redux';
+import {
+  setLeftSidebarOpen,
+  setRightSidebarOpen,
+} from './../store/layout/actions.js';
+
 import ToolbarRow from './ToolbarRow';
-import { setLeftSidebarOpen, setRightSidebarOpen } from '../redux/actions.js';
+import { connect } from 'react-redux';
 
 const defaultPlugin = 'cornerstone';
 

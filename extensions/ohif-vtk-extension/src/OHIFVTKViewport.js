@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
-import ConnectedVTKViewport from './ConnectedVTKViewport';
 import cornerstone from 'cornerstone-core';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
 import { getImageData, loadImageData } from 'react-vtkjs-viewport';
+
+import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
+import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
+import vtkImageData from 'vtk.js/Sources/Common/DataModel/ImageData';
+import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
+
+import ConnectedVTKViewport from './ConnectedVTKViewport';
+import handleSegmentationStorage from './handleSegmentationStorage.js';
 import LoadingIndicator from './LoadingIndicator.js';
 
 const { StackManager } = OHIF.utils;
@@ -27,9 +33,36 @@ specialCaseHandlers[
   SOP_CLASSES.SEGMENTATION_STORAGE
 ] = handleSegmentationStorage;
 
+// TODO: Figure out where we plan to put this long term
+const volumeCache = {};
+
+/**
+ * Create a labelmap image with the same dimensions as our background volume.
+ *
+ * @param backgroundImageData vtkImageData
+ */
+function createLabelMapImageData(backgroundImageData) {
+  const labelMapData = vtkImageData.newInstance(
+    backgroundImageData.get('spacing', 'origin', 'direction')
+  );
+  labelMapData.setDimensions(backgroundImageData.getDimensions());
+  labelMapData.computeTransforms();
+
+  const values = new Uint8Array(backgroundImageData.getNumberOfPoints());
+  const dataArray = vtkDataArray.newInstance({
+    numberOfComponents: 1, // labelmap with single component
+    values
+  });
+  labelMapData.getPointData().setScalars(dataArray);
+
+  return labelMapData;
+}
+
 class OHIFVTKViewport extends Component {
   state = {
-    viewportData: null
+    volumes: null,
+    paintFilterLabelMapImageData: null,
+    paintFilterBackgroundImageData: null
   };
 
   static propTypes = {
@@ -39,14 +72,14 @@ class OHIFVTKViewport extends Component {
     children: PropTypes.node
   };
 
-  static id = 'OHIFCornerstoneViewport';
+  static id = 'OHIFVTKViewport';
 
   static init() {
-    console.log('OHIFCornerstoneViewport init()');
+    console.log('OHIFVTKViewport init()');
   }
 
   static destroy() {
-    console.log('OHIFCornerstoneViewport destroy()');
+    console.log('OHIFVTKViewport destroy()');
     StackManager.clearStacks();
   }
 
@@ -97,22 +130,6 @@ class OHIFVTKViewport extends Component {
     return stack;
   }
 
-  static getViewportData = (
-    studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopInstanceUid,
-    frameIndex
-  ) => {
-    return OHIFVTKViewport.getCornerstoneStack(
-      studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopInstanceUid,
-      frameIndex
-    );
-  };
-
   getViewportData = (
     studies,
     studyInstanceUid,
@@ -121,63 +138,64 @@ class OHIFVTKViewport extends Component {
     sopInstanceUid,
     frameIndex
   ) => {
-    return new Promise((resolve, reject) => {
-      const stack = OHIFVTKViewport.getViewportData(
-        studies,
-        studyInstanceUid,
-        displaySetInstanceUid,
-        sopClassUid,
-        sopInstanceUid,
-        frameIndex
-      );
+    const stack = OHIFVTKViewport.getCornerstoneStack(
+      studies,
+      studyInstanceUid,
+      displaySetInstanceUid,
+      sopClassUid,
+      sopInstanceUid,
+      frameIndex
+    );
 
-      let imageDataObject;
-      let labelmapDataObject;
-      let doneLoadingCallback;
-      let callbacks;
+    let imageDataObject;
+    let labelmapDataObject;
 
-      switch (sopClassUid) {
-        case SOP_CLASSES.SEGMENTATION_STORAGE:
-          throw new Error("Not yet implemented");
+    switch (sopClassUid) {
+      case SOP_CLASSES.SEGMENTATION_STORAGE:
+        throw new Error('Not yet implemented');
 
-          const data = handleSegmentationStorage(stack.imageIds, displaySetInstanceUid, cornerstone);
-          imageDataObject = data.referenceDataObject;
-          labelmapDataObject = data.labelmapDataObject;
+        const data = handleSegmentationStorage(
+          stack.imageIds,
+          displaySetInstanceUid
+        );
 
-          doneLoadingCallback = () => {
-            resolve({
-              data: imageDataObject.vtkImageData,
-              labelmap: labelmapDataObject
-            });
+        imageDataObject = data.referenceDataObject;
+        labelmapDataObject = data.labelmapDataObject;
+
+        return loadImageData(imageDataObject).then(() => {
+          return {
+            data: imageDataObject.vtkImageData,
+            labelmap: labelmapDataObject
           };
+        });
+      default:
+        imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-          callbacks = [
-            doneLoadingCallback
-          ];
-
-          loadImageData(imageDataObject, callbacks, cornerstone);
-
-          break;
-        default:
-          imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid, cornerstone);
-          doneLoadingCallback = () => {
-            resolve({
-              data: imageDataObject.vtkImageData,
-            });
+        return loadImageData(imageDataObject).then(() => {
+          return {
+            data: imageDataObject.vtkImageData
           };
-
-          callbacks = [
-            doneLoadingCallback
-          ];
-
-          loadImageData(imageDataObject, callbacks, cornerstone);
-
-          break;
-      }
-    });
+        });
+    }
   };
 
-  setStateFromProps() {
+  getOrCreateVolume(data, displaySetInstanceUid) {
+    if (volumeCache[displaySetInstanceUid]) {
+      return volumeCache[displaySetInstanceUid];
+    }
+
+    const volumeActor = vtkVolume.newInstance();
+    const volumeMapper = vtkVolumeMapper.newInstance();
+
+    volumeActor.setMapper(volumeMapper);
+    volumeMapper.setInputData(data);
+
+    volumeCache[displaySetInstanceUid] = volumeActor;
+
+    return volumeActor;
+  }
+
+  async setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
       studyInstanceUid,
@@ -195,18 +213,25 @@ class OHIFVTKViewport extends Component {
 
     const sopClassUid = sopClassUids[0];
 
-    this.getViewportData(
+    let { data, labelmap } = await this.getViewportData(
       studies,
       studyInstanceUid,
       displaySetInstanceUid,
       sopClassUid,
       sopInstanceUid,
       frameIndex
-    ).then(({ data, labelmap })=> {
-      this.setState({
-        viewportData: data,
-        labelmap
-      });
+    );
+
+    if (!labelmap) {
+      labelmap = createLabelMapImageData(data);
+    }
+
+    const volumeActor = this.getOrCreateVolume(data, displaySetInstanceUid);
+
+    this.setState({
+      volumes: [volumeActor],
+      paintFilterBackgroundImageData: data,
+      paintFilterLabelMapImageData: labelmap
     });
   }
 
@@ -245,15 +270,22 @@ class OHIFVTKViewport extends Component {
 
     return (
       <>
-        {this.state.viewportData ? (
+        {this.state.volumes ? (
           <ConnectedVTKViewport
-            data={this.state.viewportData}
-            labelmap={this.state.labelmap}
+            volumes={this.state.volumes}
+            paintFilterLabelMapImageData={
+              this.state.paintFilterLabelMapImageData
+            }
+            paintFilterBackgroundImageData={
+              this.state.paintFilterBackgroundImageData
+            }
             viewportIndex={this.props.viewportIndex}
           />
-        ) : <div style={style}>
-          <LoadingIndicator/>
-        </div>}
+        ) : (
+          <div style={style}>
+            <LoadingIndicator />
+          </div>
+        )}
         {childrenWithProps}
       </>
     );

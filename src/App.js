@@ -1,8 +1,13 @@
 import './config';
 
-import { OidcProvider, reducer as oidcReducer } from 'redux-oidc';
+import {
+  CommandsManager,
+  HotkeysManager,
+  extensions,
+  redux,
+  utils,
+} from 'ohif-core';
 import React, { Component } from 'react';
-import { combineReducers, createStore } from 'redux';
 import {
   getDefaultToolbarButtons,
   getUserManagerForOpenIdConnectClient,
@@ -10,57 +15,75 @@ import {
 } from './utils/index.js';
 
 import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
-import OHIF from 'ohif-core';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
+import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
+import appCommands from './appCommands';
 import setupTools from './setupTools';
-import ui from './redux/ui.js';
+import i18n from '@ohif/i18n';
+import { I18nextProvider } from 'react-i18next';
+import store from './store';
 
-const { ExtensionManager } = OHIF.extensions;
-const { reducers, localStorage } = OHIF.redux;
+// ~~~~ APP SETUP
+const commandsManagerConfig = {
+  getAppState: () => store.getState(),
+  getActiveContexts: () => store.getState().ui.activeContexts,
+};
 
-reducers.ui = ui;
-reducers.oidc = oidcReducer;
+const commandsManager = new CommandsManager(commandsManagerConfig);
+const hotkeysManager = new HotkeysManager(commandsManager);
 
-const combined = combineReducers(reducers);
-const store = createStore(combined, localStorage.loadState());
+// TODO: @dannyrb will fix this
+window.commandsManager = commandsManager;
 
-store.subscribe(() => {
-  localStorage.saveState({
-    preferences: store.getState().preferences,
-  });
+// TODO: Should be done in extensions w/ commandsModule
+// ~~ ADD COMMANDS
+appCommands.init(commandsManager);
+if (window.config.hotkeys) {
+  hotkeysManager.setHotkeys(window.config.hotkeys, true);
+}
+
+// Force active contexts for now. These should be set in Viewer/ActiveViewer
+store.dispatch({
+  type: 'ADD_ACTIVE_CONTEXT',
+  item: 'VIEWER',
 });
+store.dispatch({
+  type: 'ADD_ACTIVE_CONTEXT',
+  item: 'VIEWER::CORNERSTONE',
+});
+
+// ~~~~ END APP SETUP
 
 setupTools(store);
 
 const children = {
-  viewport: [<ConnectedToolContextMenu />],
+  viewport: [<ConnectedToolContextMenu key="tool-context" />],
 };
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-const extensions = [
+extensions.ExtensionManager.registerExtensions(store, [
   new OHIFCornerstoneExtension({ children }),
-  new OHIFVTKExtension(),
+  new OHIFVTKExtension({ commandsManager }),
   new OHIFDicomPDFExtension(),
   new OHIFDicomHtmlExtension(),
   new OHIFDicomMicroscopyExtension(),
-];
-ExtensionManager.registerExtensions(store, extensions);
+]);
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
 
 function handleServers(servers) {
   if (servers) {
-    OHIF.utils.addServers(servers, store);
+    utils.addServers(servers, store);
   }
 }
 
@@ -83,9 +106,7 @@ class App extends Component {
 
     //
     const defaultButtons = getDefaultToolbarButtons(this.props.routerBasename);
-    const buttonsAction = OHIF.redux.actions.setAvailableButtons(
-      defaultButtons
-    );
+    const buttonsAction = redux.actions.setAvailableButtons(defaultButtons);
 
     store.dispatch(buttonsAction);
 
@@ -110,27 +131,35 @@ class App extends Component {
     if (userManager) {
       return (
         <Provider store={store}>
-          <OidcProvider store={store} userManager={userManager}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <OHIFStandaloneViewer userManager={userManager} />
-              </WhiteLabellingContext.Provider>
-            </Router>
-          </OidcProvider>
+          <I18nextProvider i18n={i18n}>
+            <OidcProvider store={store} userManager={userManager}>
+              <Router basename={this.props.routerBasename}>
+                <WhiteLabellingContext.Provider
+                  value={this.props.whiteLabelling}
+                >
+                  <OHIFStandaloneViewer userManager={userManager} />
+                </WhiteLabellingContext.Provider>
+              </Router>
+            </OidcProvider>
+          </I18nextProvider>
         </Provider>
       );
     }
 
     return (
       <Provider store={store}>
-        <Router basename={this.props.routerBasename}>
-          <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-            <OHIFStandaloneViewer />
-          </WhiteLabellingContext.Provider>
-        </Router>
+        <I18nextProvider i18n={i18n}>
+          <Router basename={this.props.routerBasename}>
+            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+              <OHIFStandaloneViewer />
+            </WhiteLabellingContext.Provider>
+          </Router>
+        </I18nextProvider>
       </Provider>
     );
   }
 }
 
 export default App;
+
+export { commandsManager, hotkeysManager };

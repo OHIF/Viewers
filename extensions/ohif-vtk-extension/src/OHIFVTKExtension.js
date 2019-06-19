@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import OHIFVTKViewport from './OHIFVTKViewport.js';
 import ToolbarModule from './ToolbarModule.js';
+import { definitions } from './commands';
 
 /**
  * Pass in 'children' to a React component. The purpose of this is to
@@ -13,7 +14,7 @@ import ToolbarModule from './ToolbarModule.js';
  */
 function withChildren(WrappedComponent, children) {
   return function(props) {
-    return <WrappedComponent children={children} { ...props } />;
+    return <WrappedComponent children={children} {...props} />;
   };
 }
 
@@ -21,8 +22,10 @@ function withChildren(WrappedComponent, children) {
 // https://github.com/whitecolor/yalc
 
 export default class OHIFVTKExtension {
-  constructor(children) {
+  constructor({ children, commandsManager }) {
     this.children = children;
+
+    _registerCommands(commandsManager, definitions, this.getExtensionId());
   }
 
   /**
@@ -51,4 +54,22 @@ export default class OHIFVTKExtension {
   getToolbarModule() {
     return ToolbarModule;
   }
+}
+
+/**
+ * Register all Viewer commands
+ *
+ * @private
+ */
+function _registerCommands(commandsManager, definitions, commandContext) {
+  commandsManager.createContext(commandContext);
+  Object.keys(definitions).forEach(commandName => {
+    const commandDefinition = definitions[commandName];
+
+    commandsManager.registerCommand(
+      commandContext,
+      commandName,
+      commandDefinition
+    );
+  });
 }
