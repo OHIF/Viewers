@@ -13,6 +13,7 @@
     "node": ">=8",
     "npm": ">=5"
   },
+  "proxy": "http://localhost:8042",
   "scripts": {
     "cm": "npx git-cz",
     "dev": "yarn run preBuild && cross-env PORT=5000 react-scripts start",

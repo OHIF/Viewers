@@ -58,6 +58,15 @@
       "contributions": [
         "question"
       ]
+    },
+    {
+      "login": "diego0020",
+      "name": "diego0020",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7297450?v=4",
+      "profile": "https://github.com/diego0020",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
