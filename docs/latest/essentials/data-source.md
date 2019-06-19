@@ -37,7 +37,7 @@ in command prompt or terminal_
 
 > If you are using `Docker Toolbox` you need to change the _proxy_ parameter in
 > _package.json_ to http://192.168.99.100:8042 or the ip docker-machine ip
-> throws. This is the value [`react-scripts`][react-proxy]] uses to proxy
+> throws. This is the value [`react-scripts`][react-proxy] uses to proxy
 > requests
 
 ### Running Orthanc
