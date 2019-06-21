@@ -51,7 +51,9 @@ jobs:
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
-          paths: .
+          paths:
+            - .
+            - ~/.cache/Cypress
 
   e2e_test:
     working_directory: ~/repo
