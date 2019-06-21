@@ -261,4 +261,5 @@ Links:
 [requests-feature]: https://github.com/OHIF/Viewers/labels/enhancement
 [good-first-issue]: https://github.com/OHIF/Viewers/labels/good%20first%20issue
 [google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform
+
 <!-- prettier-ignore-end -->
