@@ -12,5 +12,5 @@ export default {
   },
   getSopClassHandlerModule() {
     return DicomMicroscopySopClassHandler;
-  }
+  },
 };
