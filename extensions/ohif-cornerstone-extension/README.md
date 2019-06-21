@@ -1,5 +1,7 @@
 # @ohif/extension-cornerstone
 
+![npm (scoped)](https://img.shields.io/npm/v/@ohif/extension-cornerstone.svg?style=flat-square)
+
 This extension adds support for viewing and manipulating 2D medical images via a
 viewport. The underlying implementation wraps the
 `cornerstonejs/react-cornerstone-viewport`, and provides basic commands and
