@@ -98,6 +98,33 @@ hosted PACS and test data,
 [check out our Essential: Getting Started](https://docs.ohif.org/essentials/getting-started.html)
 guide.
 
+### E2E Tests
+
+Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check whether the application flow is performing correctly, ensuring that the integrated components are working as expected.
+
+#### Why Cypress?
+
+Cypress is a next generation front end testing tool built for the modern web.
+With Cypress is easy to set up, write, run and debug tests
+
+It allow us to write different types of tests:
+
+- End-to-End tests
+- Integration tests
+- Unit tets
+
+All tests must be in `./cypress/integration` folder.
+
+Commands to run the tests:
+
+```js
+// Open Cypress Dashboard that provides insight into what happened when your tests ran
+yarn run cypress
+
+// Run all tests using Electron browser headless
+yarn run cypress:all
+```
+
 ### Contributing
 
 > Large portions of the Viewer's functionality are maintained in other
