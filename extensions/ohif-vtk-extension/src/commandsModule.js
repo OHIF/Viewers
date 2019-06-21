@@ -1,25 +1,22 @@
 import {
-  vtkInteractorStyleMPRWindowLevel,
-  vtkInteractorStyleMPRSlice,
   vtkInteractorStyleMPRCrosshairs,
+  vtkInteractorStyleMPRSlice,
+  vtkInteractorStyleMPRWindowLevel,
   vtkSVGCrosshairsWidget,
-  vtkSVGWidgetManager
+  vtkSVGWidgetManager,
 } from 'react-vtkjs-viewport';
 
-import setViewportToVTK from './utils/setViewportToVTK.js';
 import setMPRLayout from './utils/setMPRLayout.js';
+import setViewportToVTK from './utils/setViewportToVTK.js';
+import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 import vtkMath from 'vtk.js/Sources/Common/Core/Math';
 import vtkMatrixBuilder from 'vtk.js/Sources/Common/Core/MatrixBuilder';
-import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
-
-// TODO: Should be another way to get this
-const commandsManager = window.commandsManager;
 
 // TODO: Put this somewhere else
 let apis = {};
 
 function getCrosshairCallbackForIndex(index) {
-  return ({worldPos}) => {
+  return ({ worldPos }) => {
     // Set camera focal point to world coordinate for linked views
     apis.forEach((api, viewportIndex) => {
       if (viewportIndex !== index) {
@@ -52,7 +49,10 @@ function getCrosshairCallbackForIndex(index) {
 
       const displayPosition = wPos.getComputedDisplayValue(renderer);
       const { svgWidgetManager } = api;
-      api.svgWidgets.crosshairsWidget.setPoint(displayPosition[0], displayPosition[1]);
+      api.svgWidgets.crosshairsWidget.setPoint(
+        displayPosition[0],
+        displayPosition[1]
+      );
       svgWidgetManager.render();
     });
   };
@@ -230,7 +230,7 @@ const actions = {
 
       api.svgWidgetManager = svgWidgetManager;
       api.svgWidgets = {
-        crosshairsWidget
+        crosshairsWidget,
       };
 
       switch (index) {
@@ -255,45 +255,49 @@ const actions = {
 
       renderWindow.render();
     });
-  }
+  },
 };
 
 const definitions = {
   axial: {
     commandFn: actions.axial,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   coronal: {
     commandFn: actions.coronal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   sagittal: {
     commandFn: actions.sagittal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableRotateTool: {
     commandFn: actions.enableRotateTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableCrosshairsTool: {
     commandFn: actions.enableCrosshairsTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableLevelTool: {
     commandFn: actions.enableLevelTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   mpr2d: {
     commandFn: actions.mpr2d,
     storeContexts: ['viewports'],
-    options: {}
-  }
+    options: {},
+    context: 'VIEWER',
+  },
 };
 
-export { definitions };
+export default {
+  definitions,
+  defaultContext: 'ACTIVE_VIEWPORT::VTK',
+};

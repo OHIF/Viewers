@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
 import { LayoutButton } from 'react-viewerbase';
 import OHIF from 'ohif-core';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 
@@ -22,7 +22,6 @@ const mapDispatchToProps = dispatch => {
         viewports.push({
           height: `${100 / rows}%`,
           width: `${100 / columns}%`,
-          plugin: 'cornerstone', // Temporary because right now switching back from VTK breaks things
         });
       }
       const layout = {

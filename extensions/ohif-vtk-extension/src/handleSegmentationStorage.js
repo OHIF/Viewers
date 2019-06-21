@@ -1,5 +1,6 @@
-import OHIF from 'ohif-core';
 import * as dcmjs from 'dcmjs';
+
+import OHIF from 'ohif-core';
 import { api } from 'dicomweb-client';
 
 const { StackManager } = OHIF.utils;
@@ -56,14 +57,14 @@ function retrieveDicomData(
 ) {
   const config = {
     url: wadoRoot,
-    headers: DICOMWeb.getAuthorizationHeader()
+    headers: DICOMWeb.getAuthorizationHeader(),
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
   const options = {
     studyInstanceUID,
     seriesInstanceUID,
-    sopInstanceUID
+    sopInstanceUID,
   };
 
   return dicomWeb.retrieveInstance(options);
@@ -136,13 +137,13 @@ async function handleSegmentationStorage(
 
   return {
     referenceDataObject,
-    labelmapDataObject
+    labelmapDataObject,
   };
 
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack
+    stack,
   };
 }
 

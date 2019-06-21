@@ -1,15 +1,15 @@
 import './Header.css';
+import './Header.css';
 
 import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 
 import { Dropdown } from 'react-viewerbase';
-import { withTranslation } from 'react-i18next';
-import './Header.css';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import PropTypes from 'prop-types';
 // import { UserPreferencesModal } from 'react-viewerbase';
 import { hotkeysManager } from './../../App.js';
+import { withTranslation } from 'react-i18next';
 
 class Header extends Component {
   static propTypes = {
@@ -25,8 +25,8 @@ class Header extends Component {
   };
 
   // onSave: data => {
-  //   const contextName = window.store.getState().commandContext.context;
-  //   const preferences = cloneDeep(window.store.getState().preferences);
+  //   const contextName = store.getState().commandContext.context;
+  //   const preferences = cloneDeep(store.getState().preferences);
   //   preferences[contextName] = data;
   //   dispatch(setUserPreferences(preferences));
   //   dispatch(setUserPreferencesModalOpen(false));

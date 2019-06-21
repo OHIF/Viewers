@@ -1,16 +1,11 @@
-import { connect } from 'react-redux';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from 'ohif-core';
+import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 
-const {
-  setViewportActive,
-  setViewportSpecificData,
-  clearViewportSpecificData
-} = OHIF.redux.actions;
+const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const activeButton = state.tools.buttons.find(tool => tool.active === true);
   let dataFromStore;
 
   if (state.extensions && state.extensions.cornerstone) {
@@ -26,12 +21,14 @@ const mapStateToProps = (state, ownProps) => {
   return {
     layout: state.viewports.layout,
     isActive,
-    activeTool: activeButton && activeButton.command,
+    // TODO: Need a cleaner and more versatile way.
+    // Currently justing using escape hatch + commands
+    // activeTool: activeButton && activeButton.command,
     ...dataFromStore,
     enableStackPrefetch: isActive,
     //stack: viewportSpecificData.stack,
     cineToolData: viewportSpecificData.cine,
-    viewport: viewportSpecificData.viewport
+    viewport: viewportSpecificData.viewport,
   };
 };
 
@@ -57,7 +54,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       const enabledElement = event.detail.element;
       dispatch(
         setViewportSpecificData(viewportIndex, {
-          dom: enabledElement
+          // TODO: Hack to make sure our plugin info is available from the outset
+          plugin: 'cornerstone',
+          dom: enabledElement,
         })
       );
     },
@@ -66,18 +65,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       const {
         onAdded,
         onRemoved,
-        onModified
+        onModified,
       } = OHIF.measurements.MeasurementHandlers;
       const actions = {
         added: onAdded,
         removed: onRemoved,
         modified: throttle(event => {
           return onModified(event);
-        }, 300)
+        }, 300),
       };
 
       return actions[action](event);
-    }
+    },
   };
 };
 

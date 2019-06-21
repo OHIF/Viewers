@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+
 import { api } from 'dicom-microscopy-viewer';
 
 const microscopyViewer = api.VLWholeSlideMicroscopyImageViewer;
 
 class DicomMicroscopyViewport extends Component {
   state = {
-    error: null
+    error: null,
   };
 
   constructor(props) {
@@ -21,7 +22,7 @@ class DicomMicroscopyViewport extends Component {
 
     const searchInstanceOptions = {
       studyInstanceUID: displaySet.studyInstanceUid,
-      seriesInstanceUID: displaySet.seriesInstanceUid
+      seriesInstanceUID: displaySet.seriesInstanceUid,
     };
 
     dicomWebClient
@@ -33,7 +34,7 @@ class DicomMicroscopyViewport extends Component {
           const retrieveInstanceOptions = {
             studyInstanceUID: displaySet.studyInstanceUid,
             seriesInstanceUID: displaySet.seriesInstanceUid,
-            sopInstanceUID
+            sopInstanceUID,
           };
 
           const promise = dicomWebClient
@@ -53,7 +54,7 @@ class DicomMicroscopyViewport extends Component {
 
         const viewer = new microscopyViewer({
           client: dicomWebClient,
-          metadata
+          metadata,
         });
 
         viewer.render({ container });

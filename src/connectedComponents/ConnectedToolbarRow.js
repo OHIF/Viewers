@@ -5,23 +5,11 @@ import {
 
 import ToolbarRow from './ToolbarRow';
 import { connect } from 'react-redux';
-
-const defaultPlugin = 'cornerstone';
+import { getActiveContexts } from './../store/layout/selectors.js';
 
 const mapStateToProps = state => {
-  const { layout, viewportSpecificData, activeViewportIndex } = state.viewports;
-  const pluginInLayout =
-    layout.viewports[activeViewportIndex] &&
-    layout.viewports[activeViewportIndex].plugin;
-  const pluginInViewportData =
-    viewportSpecificData[activeViewportIndex] &&
-    viewportSpecificData[activeViewportIndex].plugin;
-  const pluginInActiveViewport =
-    pluginInLayout || pluginInViewportData || defaultPlugin;
-  //     const extensionData = state.extensions[pluginInActiveViewport];
-
   return {
-    pluginId: pluginInActiveViewport,
+    activeContexts: getActiveContexts(state),
     leftSidebarOpen: state.ui.leftSidebarOpen,
     rightSidebarOpen: state.ui.rightSidebarOpen,
   };

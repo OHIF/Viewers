@@ -1,6 +1,6 @@
 {
-  "name": "ohif-dicom-html-extension",
-  "version": "0.0.2",
+  "name": "@ohif/extension-dicom-html",
+  "version": "0.0.3",
   "description": "OHIF extension for rendering structured reports to HTML",
   "author": "OHIF",
   "license": "MIT",
@@ -20,10 +20,13 @@
   },
   "peerDependencies": {
     "dcmjs": "^0.3.3",
-    "ohif-core": "^0.2.6",
+    "ohif-core": "^0.6.0",
     "prop-types": "^15.6.2",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -80,7 +83,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@babel/runtime": "^7.2.0"
+  "publishConfig": {
+    "access": "public"
   }
 }

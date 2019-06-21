@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
-import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import cornerstone from 'cornerstone-core';
 import './config';
+
+import React, { Component } from 'react';
+
+import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
+import OHIF from 'ohif-core';
+import PropTypes from 'prop-types';
+import cornerstone from 'cornerstone-core';
 import handleSegmentationStorage from './handleSegmentationStorage.js';
 
 const { StackManager } = OHIF.utils;
@@ -76,11 +78,11 @@ class OHIFCornerstoneViewport extends Component {
     }
 
     if (!studyInstanceUid) {
-      throw new Error('StudyInstanceUID not provided.')
+      throw new Error('StudyInstanceUID not provided.');
     }
 
     if (!displaySetInstanceUid) {
-      throw new Error('StudyInstanceUID not provided.')
+      throw new Error('StudyInstanceUID not provided.');
     }
 
     // Create shortcut to displaySet
@@ -123,7 +125,9 @@ class OHIFCornerstoneViewport extends Component {
       if (index > -1) {
         stack.currentImageIdIndex = index;
       } else {
-        console.warn('SOPInstanceUID provided was not found in specified DisplaySet');
+        console.warn(
+          'SOPInstanceUID provided was not found in specified DisplaySet'
+        );
       }
     }
 

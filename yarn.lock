@@ -1435,29 +1435,45 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
-"@ohif/extension-cornerstone@0.0.36":
-  version "0.0.36"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.36.tgz#a09a01d152bb9f850698b537b02355456425f8d1"
-  integrity sha512-FrR9L74vqjNsW2wOSHeDXQo/twJAf/kM0awCn2/zGXN4tNxEaZRq56gfij86CH0OBGl1Wdzb8Zl6xe0JCtsNrA==
+"@ohif/extension-cornerstone@0.0.37":
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.37.tgz#d9d31409ffbc773dde17767daa02b87f461cf11a"
+  integrity sha512-090WPGXOYIxZjQe0mIM7SipgR3ggUZpbtWpwg7huWC0PQObIM3Juy4L8mtss23OKaKsmrmVxUaFc5NRQhs+Z+w==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     lodash.throttle "^4.1.1"
     react-cornerstone-viewport "0.1.30"
 
-"@ohif/extension-dicom-microscopy@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.6.tgz#18e0c128689695a7af505bc3dd7ede97df7f8be2"
-  integrity sha512-5On3GdZgeyMse2CKI0sbxJJ269IqlFXZ0Wi+8+D9lsp0Wdt2AOx15ZmmFA9MJ6GGluMHNrrTY2gZBwLyLUZyRw==
+"@ohif/extension-dicom-html@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-html/-/extension-dicom-html-0.0.3.tgz#1d085f603379599cf07801ec003e3d5050e2d659"
+  integrity sha512-S+Mg9OFHNvllDDza55y4/NmBV1bFJ+NLbpcnsw45QyfgT3KAg8v/8ht1QYM9IcBGqhxMTJs8OqBuJI9sAiTWlw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+
+"@ohif/extension-dicom-microscopy@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.7.tgz#2ac78c2eef8915e43a81e82ff895c251ced0b441"
+  integrity sha512-QXf7+YE297owIWBMGJJsJwbMk6bfmmu0fBJQhYFwXQYBOToSiabdr21PBxNADf88ZC1kiBcULOcTBRypJtd31g==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     dicom-microscopy-viewer "^0.4.3"
 
-"@ohif/extension-vtk@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.6.tgz#a4100963d87f268190ecac7784ff131bd4350b20"
-  integrity sha512-IwXIpAQEOSRbPNXW0B6XfBMrp3k3LvdD/uyrOeEjI35hVjABf/9aGwqMk9wiw672AN26w/eZ04uXeKjRBsLzsQ==
+"@ohif/extension-dicom-pdf@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-pdf/-/extension-dicom-pdf-0.0.7.tgz#ba80a77235d43876e25485e1a964f36ebf104b94"
+  integrity sha512-uOevtxH6Vm2p+2xgo+ER3+oV1zfnUqHYoeqrICaKP3PKXGcVanWFE8W/RWiNZ+PS2/LNpSjJyLfuSxwZ3IBUVw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    lodash.isequal "^4.5.0"
+
+"@ohif/extension-vtk@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.7.tgz#5bad8e35cae65957b467a12cc17e027ce80ad40a"
+  integrity sha512-yEdtnk7ImIoM3YrDkXXFo9ClJAXbd3rc9si3GlrOY6ImeWtwTf5LvcHG3QCe1iIfEJ2Q8wkGfERddbSw3joIYQ==
   dependencies:
     "@babel/runtime" "^7.4.5"
     "@ohif/i18n" "0.0.4"
@@ -4502,6 +4518,11 @@ dedent@0.7.0, dedent@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
   integrity sha1-JJXduvbrh0q7Dhvp3yLS5aVEMmw=
+
+deep-diff@^0.3.5:
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/deep-diff/-/deep-diff-0.3.8.tgz#c01de63efb0eec9798801d40c7e0dae25b582c84"
+  integrity sha1-wB3mPvsO7JeYgB1Ax+Da4ltYLIQ=
 
 deep-equal@^1.0.1:
   version "1.0.1"
@@ -10266,10 +10287,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.5.9:
-  version "0.5.9"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.9.tgz#337835c82571bdc4935210273a6018c3af872adf"
-  integrity sha512-TvA/THiTpBnerRbv4FJlfwSMSyb4Tkn40ud14FP6JxLUQgCtLsTsaFhXIFBwZvBR/qVJwIlDluMxj/vqobCwkQ==
+ohif-core@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.6.0.tgz#9fea32d8d10da84b9030d2e4f76b30e431e14ac2"
+  integrity sha512-2Z/HTRZ21i7w056MifH1k0y4brhrZSUsmeqbMcPLSh1cztRGnLQBamBZ08SzWvktcNxLDuwJI9zNDkJ8Gw4Idw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -10279,22 +10300,6 @@ ohif-core@0.5.9:
     lodash.merge "^4.6.1"
     mousetrap "^1.6.3"
     validate.js "^0.12.0"
-
-ohif-dicom-html-extension@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/ohif-dicom-html-extension/-/ohif-dicom-html-extension-0.0.2.tgz#5dd80836ee8f12f6ddf6de2b88c72af96d8c347b"
-  integrity sha512-7/YkaKrgnydiypFl39mvWO5vxCoGecudkdyCFedgDnG10UvkDF4nBcgNvoBupwBtGKYhXTfqye6fPWxQO0NWyw==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-
-ohif-dicom-pdf-extension@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/ohif-dicom-pdf-extension/-/ohif-dicom-pdf-extension-0.0.6.tgz#5c1c1bf955d160dda01c36c4ed899d8e65384d63"
-  integrity sha512-MRBDnC78itsos3c8QMKjgaFp8tmXyGIq5qVLREr//osqCYirhWQbCFJv73eYR5+bRCdJfUMMpvnDSChFIhcT6A==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    lodash.isequal "^4.5.0"
 
 oidc-client@1.7.x:
   version "1.7.1"
@@ -12408,10 +12413,10 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.9.0.tgz#947ab61bf32e1d58836a637403d128247e175d2e"
-  integrity sha512-VeOGzno5fg9A0Ttx+O3CQ8KXPr1XbdEOVbA+JiLwcuycX3CmDsqLzODsjeXb8npfXDbQA+n/ZPCyxsB7JDEBlA==
+react-viewerbase@0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.10.0.tgz#4ac07649325759f8a58fc3be50dea4d1db8f13f8"
+  integrity sha512-pUt+HUGoEkDnVhxcg+gsoRzegEPVpsMPH8cnJINRoaATqbxc0jbt1N+3fTNTbPMMKZYMxC99L5bQ6OQ1QF+3qw==
   dependencies:
     "@babel/runtime" "7.2.0"
     "@ohif/i18n" "^0.0.4"
@@ -12710,12 +12715,24 @@ redeyed@~2.1.0:
   dependencies:
     esprima "~4.0.0"
 
+redux-logger@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/redux-logger/-/redux-logger-3.0.6.tgz#f7555966f3098f3c88604c449cf0baf5778274bf"
+  integrity sha1-91VZZvMJjzyIYExEnPC69XeCdL8=
+  dependencies:
+    deep-diff "^0.3.5"
+
 redux-oidc@3.1.x:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/redux-oidc/-/redux-oidc-3.1.2.tgz#31a771b0e05a65879626262e1e63ba70a0936ffd"
   integrity sha512-1kwm3SxzgUg4h1oFpPOOzofKyWJvwhVJ3BHnm/d+h29NjZ4BF3wfJbpdubnPUF0lMrl6KNOJTz8rVlkacj+f4g==
   optionalDependencies:
     immutable ">=3.6.0"
+
+redux-thunk@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
+  integrity sha512-km6dclyFnmcvxhAcrQV2AkZmPQjzPDjgVlQtR0EQjxZPyJ0BnMf3in1ryuR8A2qU0HldVRfxYXbFSKlI3N7Slw==
 
 redux@^4.0.1:
   version "4.0.1"
@@ -13027,6 +13044,11 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+
+reselect@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.0.0.tgz#f2529830e5d3d0e021408b246a206ef4ea4437f7"
+  integrity sha512-qUgANli03jjAyGlnbYVAV5vvnOmJnODyABz51RdBN7M4WaVu8mecZWgyQNkG8Yqe3KRGRt0l4K4B3XVEULC4CA==
 
 reserved-words@^0.1.2:
   version "0.1.2"

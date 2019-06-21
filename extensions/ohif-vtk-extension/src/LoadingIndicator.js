@@ -1,17 +1,18 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-
 import './LoadingIndicator.css';
+
+import React, { PureComponent } from 'react';
+
+import PropTypes from 'prop-types';
 
 class LoadingIndicator extends PureComponent {
   static propTypes = {
     percentComplete: PropTypes.number.isRequired,
-    error: PropTypes.object
+    error: PropTypes.object,
   };
 
   static defaultProps = {
     percentComplete: 0,
-    error: null
+    error: null,
   };
 
   render() {

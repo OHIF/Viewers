@@ -1,7 +1,8 @@
+import * as dcmjs from 'dcmjs';
+
 import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import * as dcmjs from 'dcmjs';
 
 const { StackManager } = OHIF.utils;
 
@@ -25,28 +26,6 @@ function getDisplaySetsBySeries(studies, studyInstanceUid, seriesInstanceUid) {
   return study.displaySets.filter(set => {
     return set.seriesInstanceUid === seriesInstanceUid;
   });
-}
-
-function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
-  const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
-  );
-
-  // Create shortcut to displaySet
-  const displaySet = getDisplaySet(
-    studies,
-    studyInstanceUid,
-    displaySetInstanceUid
-  );
-
-  // Get stack from Stack Manager
-  const stack = StackManager.findOrCreateStack(study, displaySet);
-
-  // Clone the stack here so we don't mutate it later
-  const stackClone = Object.assign({}, stack);
-  stackClone.currentImageIdIndex = 0;
-
-  return stackClone;
 }
 
 function parseSeg(arrayBuffer, imageIds) {
@@ -77,7 +56,7 @@ function retrieveDicomData(wadoUri) {
   // TODO: Authorization header depends on the server. If we ever have multiple servers
   // we will need to figure out how / when to pass this information in.
   return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
+    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   }).then(response => response.arrayBuffer());
 }
 
@@ -144,7 +123,7 @@ async function handleSegmentationStorage(
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack
+    stack,
   };
 }
 

@@ -1,7 +1,7 @@
-import dicomParser from 'dicom-parser';
+import OHIF from 'ohif-core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import OHIF from 'ohif-core';
+import dicomParser from 'dicom-parser';
 import version from './version.js';
 
 window.info = {
@@ -10,8 +10,10 @@ window.info = {
 };
 
 // For debugging
+//if (process.env.node_env === 'development') {
 window.cornerstone = cornerstone;
 window.cornerstoneWADOImageLoader = cornerstoneWADOImageLoader;
+//}
 
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser;

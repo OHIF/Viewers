@@ -1,7 +1,4 @@
-import OHIF from 'ohif-core';
-
-const { plugins, utils } = OHIF;
-const { PLUGIN_TYPES } = plugins;
+import { MODULE_TYPES, utils } from 'ohif-core';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
@@ -20,7 +17,7 @@ const sopClassUids = Object.values(SOP_CLASS_UIDS);
 // same SOP Class
 const OHIFDicomHtmlSopClassHandler = {
   id: 'OHIFDicomHtmlSopClassHandler',
-  type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
+  type: MODULE_TYPES.SOP_CLASS_HANDLER,
   sopClassUids,
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
     const instance = series.getFirstInstance();
