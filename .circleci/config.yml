@@ -71,6 +71,9 @@ jobs:
             - yarn-packages-v1-{{ .Branch }}-
             - yarn-packages-v1-
       # - run: $(yarn bin)/cypress run --record
+      # Shouldn't be needed if we're using a package cache that contains Cypress
+      # Could do a check here, if it doesn't exist, install cypress?
+      - run: yarn install
       - run: yarn run test:e2e:ci
 
   npm_publish:
