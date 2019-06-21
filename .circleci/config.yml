@@ -53,7 +53,7 @@ jobs:
           root: ~/repo
           paths:
             - .
-            - ~/.cache/Cypress
+            - ./.cache/Cypress
 
   e2e_test:
     working_directory: ~/repo
