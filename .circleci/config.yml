@@ -10,6 +10,7 @@ version: 2
 ###
 
 defaults: &defaults
+  working_directory: ~/repo
   docker:
     - image: circleci/node:10.15.1
 
@@ -20,7 +21,7 @@ jobs:
       # Download and cache dependencies
       - checkout
       - restore_cache:
-          name: Restore Yarn Package Cache
+          name: Restore Yarn and Cypress Package Cache
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -49,12 +50,11 @@ jobs:
           path: reports/junit
       # Persist :+1:
       - persist_to_workspace:
-          root: ~/
-          paths:
-            - .
-            - .cache/Cypress
+          root: ~/repo
+          paths: .
 
   e2e_test:
+    working_directory: ~/repo
     docker:
       - image: cypress/base:8
         environment:
@@ -62,14 +62,22 @@ jobs:
           TERM: xterm
     steps:
       - attach_workspace:
-          at: ~/
-      - run: $(yarn bin)/cypress run --record
+          at: ~/repo
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      # - run: $(yarn bin)/cypress run --record
+      - run: yarn run test:e2e:ci
 
   npm_publish:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - run:
           name: Avoid hosts unknown for github
           command:
@@ -82,14 +90,14 @@ jobs:
           command: npx semantic-release --debug
       # Persist :+1:
       - persist_to_workspace:
-          root: ~/
+          root: ~/repo
           paths: .
 
   docs_publish:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - run:
           name: Avoid hosts unknown for github
           command:
@@ -109,7 +117,7 @@ jobs:
     <<: *defaults
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
@@ -168,15 +176,16 @@ jobs:
             curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
       # Persist :+1:
       - persist_to_workspace:
-          root: ~/
+          root: ~/repo
           paths: .
 
   demo_site_publish:
+    working_directory: ~/repo
     docker:
       - image: google/cloud-sdk
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/repo
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
