@@ -22,7 +22,7 @@
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
   SET_TOOL_ACTIVE: 'setToolActive',
-  BUILT_IN: 'builtIn'
+  BUILT_IN: 'builtIn',
 };
 
 const definitions = [
@@ -33,7 +33,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'StackScroll' }
+    commandOptions: { toolName: 'StackScroll' },
   },
   {
     id: 'Zoom',
@@ -42,7 +42,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'Zoom' }
+    commandOptions: { toolName: 'Zoom' },
   },
   {
     id: 'Wwwc',
@@ -51,7 +51,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'Wwwc' }
+    commandOptions: { toolName: 'Wwwc' },
   },
   {
     id: 'Pan',
@@ -60,7 +60,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'Pan' }
+    commandOptions: { toolName: 'Pan' },
   },
   {
     id: 'Length',
@@ -69,7 +69,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'Length' }
+    commandOptions: { toolName: 'Length' },
   },
   {
     id: 'Angle',
@@ -78,7 +78,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
-    commandOptions: { toolName: 'Angle' }
+    commandOptions: { toolName: 'Angle' },
   },
   {
     id: 'Reset',
@@ -86,7 +86,7 @@ const definitions = [
     icon: 'reset',
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
-    commandName: 'resetViewport'
+    commandName: 'resetViewport',
   },
   {
     id: 'Cine',
@@ -95,12 +95,12 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
     options: {
-      behavior: 'CINE'
-    }
-  }
+      behavior: 'CINE',
+    },
+  },
 ];
 
 export default {
   definitions,
-  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
+  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE',
 };

@@ -56,7 +56,7 @@ function retrieveDicomData(wadoUri) {
   // TODO: Authorization header depends on the server. If we ever have multiple servers
   // we will need to figure out how / when to pass this information in.
   return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
+    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   }).then(response => response.arrayBuffer());
 }
 
@@ -123,7 +123,7 @@ async function handleSegmentationStorage(
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack
+    stack,
   };
 }
 

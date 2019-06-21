@@ -98,56 +98,54 @@ const actions = {
     //   if (!cornerstoneImageId || cornerstoneImageId === imageId)
     //     delete toolState[imageId];
     // });
-  }
+  },
 };
 
 const definitions = {
   rotateViewportCW: {
     commandFn: actions.rotateViewport,
     storeContexts: ['viewports'],
-    options: { rotation: 90 }
+    options: { rotation: 90 },
   },
   rotateViewportCCW: {
     commandFn: actions.rotateViewport,
     storeContexts: ['viewports'],
-    options: { rotation: -90 }
+    options: { rotation: -90 },
   },
   invertViewport: {
     commandFn: actions.invertViewport,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   flipViewportVertical: {
     commandFn: actions.flipViewportVertical,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   flipViewportHorizontal: {
     commandFn: actions.flipViewportHorizontal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   scaleUpViewport: {
-    keys: '',
     commandFn: actions.scaleViewport,
     storeContexts: ['viewports'],
-    options: { direction: 1 }
+    options: { direction: 1 },
   },
   scaleDownViewport: {
-    keys: '',
     commandFn: actions.scaleViewport,
     storeContexts: ['viewports'],
-    options: { direction: -1 }
+    options: { direction: -1 },
   },
   fitViewportToWindow: {
     commandFn: actions.scaleViewport,
     storeContexts: ['viewports'],
-    options: { direction: 0 }
+    options: { direction: 0 },
   },
   resetViewport: {
     commandFn: actions.resetViewport,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   // TODO: Clear Annotations
   // TODO: Next/Previous image
@@ -156,19 +154,19 @@ const definitions = {
   nextViewportDisplaySet: {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: [],
-    options: { direction: 1 }
+    options: { direction: 1 },
   },
   previousViewportDisplaySet: {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: [],
-    options: { direction: -1 }
+    options: { direction: -1 },
   },
   // TOOLS
   setToolActive: {
     commandFn: actions.setToolActive,
     storeContexts: [],
-    options: {}
-  }
+    options: {},
+  },
 };
 
 /**
@@ -183,5 +181,5 @@ function _getActiveViewportEnabledElement(viewports, activeIndex) {
 export default {
   actions,
   definitions,
-  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
+  defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE',
 };
