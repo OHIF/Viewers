@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -21,21 +21,27 @@
   },
   "peerDependencies": {
     "@ohif/i18n": "0.0.4",
-    "i18next": "^17.0.3",
-    "i18next-browser-languagedetector": "^3.0.1",
-    "react-i18next": "^10.11.0",
     "cornerstone-core": "^2.2.8",
     "cornerstone-wado-image-loader": "^2.2.3",
     "dcmjs": "^0.4.7",
     "dicom-parser": "^1.8.3",
-    "ohif-core": "^0.5.9",
+    "i18next": "^17.0.3",
+    "i18next-browser-languagedetector": "^3.0.1",
+    "ohif-core": "^0.6.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
     "react-resize-detector": "^4.2.0",
     "react-viewerbase": "^0.8.1",
     "redux": "^4.0.1"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.4.5",
+    "@ohif/i18n": "0.0.4",
+    "react-vtkjs-viewport": "0.0.9",
+    "vtk.js": "^8.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -44,9 +50,6 @@
     "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
-    "i18next": "^17.0.3",
-    "i18next-browser-languagedetector": "^3.0.1",
-    "react-i18next": "^10.11.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.6",
     "cornerstone-tools": "^3.13.0",
@@ -61,11 +64,14 @@
     "eslint-plugin-react": "^7.13.0",
     "gh-pages": "^2.0.1",
     "husky": "^2.4.1",
+    "i18next": "^17.0.3",
+    "i18next-browser-languagedetector": "^3.0.1",
     "lint-staged": "^8.2.0",
     "ohif-core": "^0.5.9",
     "prettier": "^1.18.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
     "react-viewerbase": "^0.8.1",
     "redux": "^4.0.1",
@@ -100,10 +106,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.4.5",
-    "@ohif/i18n": "0.0.4",
-    "react-vtkjs-viewport": "0.0.8"
   }
 }

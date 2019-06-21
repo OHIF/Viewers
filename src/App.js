@@ -2,23 +2,21 @@ import './config';
 
 import {
   CommandsManager,
+  ExtensionManager,
   HotkeysManager,
-  extensions,
-  redux,
   utils,
 } from 'ohif-core';
 import React, { Component } from 'react';
 import {
-  getDefaultToolbarButtons,
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js';
 
-import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
+import { I18nextProvider } from 'react-i18next';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFDicomHtmlExtension from 'ohif-dicom-html-extension';
+import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from 'ohif-dicom-pdf-extension';
+import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
 import { OidcProvider } from 'redux-oidc';
@@ -27,22 +25,20 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
 import appCommands from './appCommands';
-import setupTools from './setupTools';
+import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
-import { I18nextProvider } from 'react-i18next';
+import setupTools from './setupTools';
 import store from './store';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
-  getActiveContexts: () => store.getState().ui.activeContexts,
+  getActiveContexts: () => getActiveContexts(store.getState()),
 };
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
-
-// TODO: @dannyrb will fix this
-window.commandsManager = commandsManager;
+const extensionManager = new ExtensionManager({ commandsManager });
 
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
@@ -50,32 +46,21 @@ appCommands.init(commandsManager);
 if (window.config.hotkeys) {
   hotkeysManager.setHotkeys(window.config.hotkeys, true);
 }
-
-// Force active contexts for now. These should be set in Viewer/ActiveViewer
-store.dispatch({
-  type: 'ADD_ACTIVE_CONTEXT',
-  item: 'VIEWER',
-});
-store.dispatch({
-  type: 'ADD_ACTIVE_CONTEXT',
-  item: 'VIEWER::CORNERSTONE',
-});
-
 // ~~~~ END APP SETUP
 
 setupTools(store);
 
-const children = {
-  viewport: [<ConnectedToolContextMenu key="tool-context" />],
-};
+// const children = {
+//   viewport: [<ConnectedToolContextMenu key="tool-context" />],
+// };
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-extensions.ExtensionManager.registerExtensions(store, [
-  new OHIFCornerstoneExtension({ children }),
-  new OHIFVTKExtension({ commandsManager }),
-  new OHIFDicomPDFExtension(),
-  new OHIFDicomHtmlExtension(),
-  new OHIFDicomMicroscopyExtension(),
+extensionManager.registerExtensions([
+  OHIFCornerstoneExtension,
+  OHIFVTKExtension,
+  OHIFDicomPDFExtension,
+  OHIFDicomHtmlExtension,
+  OHIFDicomMicroscopyExtension,
 ]);
 
 // TODO[react] Use a provider when the whole tree is React
@@ -103,12 +88,6 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-
-    //
-    const defaultButtons = getDefaultToolbarButtons(this.props.routerBasename);
-    const buttonsAction = redux.actions.setAvailableButtons(defaultButtons);
-
-    store.dispatch(buttonsAction);
 
     if (this.props.oidc.length) {
       const firstOpenIdClient = this.props.oidc[0];
@@ -162,4 +141,5 @@ class App extends Component {
 
 export default App;
 
-export { commandsManager, hotkeysManager };
+// Make our managers accessible
+export { commandsManager, extensionManager, hotkeysManager };

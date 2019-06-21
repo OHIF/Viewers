@@ -13,6 +13,7 @@
     "node": ">=8",
     "npm": ">=5"
   },
+  "proxy": "http://localhost:8042",
   "scripts": {
     "cm": "npx git-cz",
     "dev": "yarn run preBuild && cross-env PORT=5000 react-scripts start",
@@ -66,9 +67,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
-    "@ohif/extension-cornerstone": "0.0.36",
-    "@ohif/extension-dicom-microscopy": "0.0.6",
-    "@ohif/extension-vtk": "0.0.5",
+    "@ohif/extension-cornerstone": "0.0.37",
+    "@ohif/extension-dicom-html": "0.0.3",
+    "@ohif/extension-dicom-microscopy": "0.0.7",
+    "@ohif/extension-dicom-pdf": "0.0.7",
+    "@ohif/extension-vtk": "0.0.7",
     "@ohif/i18n": "0.0.4",
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.2.8",
@@ -83,9 +86,7 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
-    "ohif-core": "0.5.9",
-    "ohif-dicom-html-extension": "^0.0.2",
-    "ohif-dicom-pdf-extension": "^0.0.6",
+    "ohif-core": "0.6.0",
     "oidc-client": "1.7.x",
     "prop-types": "^15.7.2",
     "react-i18next": "^10.11.0",
@@ -93,9 +94,12 @@
     "react-resize-detector": "^4.2.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-viewerbase": "0.9.0",
+    "react-viewerbase": "0.10.0",
     "redux": "^4.0.1",
-    "redux-oidc": "3.1.x"
+    "redux-logger": "^3.0.6",
+    "redux-oidc": "3.1.x",
+    "redux-thunk": "^2.3.0",
+    "reselect": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
-import cornerstone from 'cornerstone-core';
 import { getImageData, loadImageData } from 'react-vtkjs-viewport';
 
+import ConnectedVTKViewport from './ConnectedVTKViewport';
+import LoadingIndicator from './LoadingIndicator.js';
+import OHIF from 'ohif-core';
+import PropTypes from 'prop-types';
+import cornerstone from 'cornerstone-core';
+import handleSegmentationStorage from './handleSegmentationStorage.js';
+import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
+import vtkImageData from 'vtk.js/Sources/Common/DataModel/ImageData';
 import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
 import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
-import vtkImageData from 'vtk.js/Sources/Common/DataModel/ImageData';
-import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
-
-import ConnectedVTKViewport from './ConnectedVTKViewport';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
-import LoadingIndicator from './LoadingIndicator.js';
 
 const { StackManager } = OHIF.utils;
 
@@ -25,7 +24,7 @@ cornerstone.metaData.addProvider(
 StackManager.setMetadataProvider(metadataProvider);
 
 const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4'
+  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
 };
 
 const specialCaseHandlers = {};
@@ -51,7 +50,7 @@ function createLabelMapImageData(backgroundImageData) {
   const values = new Uint8Array(backgroundImageData.getNumberOfPoints());
   const dataArray = vtkDataArray.newInstance({
     numberOfComponents: 1, // labelmap with single component
-    values
+    values,
   });
   labelMapData.getPointData().setScalars(dataArray);
 
@@ -62,14 +61,14 @@ class OHIFVTKViewport extends Component {
   state = {
     volumes: null,
     paintFilterLabelMapImageData: null,
-    paintFilterBackgroundImageData: null
+    paintFilterBackgroundImageData: null,
   };
 
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
-    children: PropTypes.node
+    children: PropTypes.node,
   };
 
   static id = 'OHIFVTKViewport';
@@ -165,7 +164,7 @@ class OHIFVTKViewport extends Component {
         return loadImageData(imageDataObject).then(() => {
           return {
             data: imageDataObject.vtkImageData,
-            labelmap: labelmapDataObject
+            labelmap: labelmapDataObject,
           };
         });
       default:
@@ -173,7 +172,7 @@ class OHIFVTKViewport extends Component {
 
         return loadImageData(imageDataObject).then(() => {
           return {
-            data: imageDataObject.vtkImageData
+            data: imageDataObject.vtkImageData,
           };
         });
     }
@@ -202,7 +201,7 @@ class OHIFVTKViewport extends Component {
       displaySetInstanceUid,
       sopClassUids,
       sopInstanceUid,
-      frameIndex
+      frameIndex,
     } = displaySet;
 
     if (sopClassUids.length > 1) {
@@ -231,7 +230,7 @@ class OHIFVTKViewport extends Component {
     this.setState({
       volumes: [volumeActor],
       paintFilterBackgroundImageData: data,
-      paintFilterLabelMapImageData: labelmap
+      paintFilterLabelMapImageData: labelmap,
     });
   }
 
@@ -261,7 +260,7 @@ class OHIFVTKViewport extends Component {
       childrenWithProps = this.props.children.map((child, index) => {
         return React.cloneElement(child, {
           viewportIndex: this.props.viewportIndex,
-          key: index
+          key: index,
         });
       });
     }

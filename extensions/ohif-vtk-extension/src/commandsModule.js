@@ -1,47 +1,59 @@
 import {
-  vtkInteractorStyleMPRWindowLevel,
+  vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRSlice,
-  vtkInteractorStyleMPRCrosshairs
+  vtkInteractorStyleMPRWindowLevel,
+  vtkSVGCrosshairsWidget,
+  vtkSVGWidgetManager,
 } from 'react-vtkjs-viewport';
 
-import setViewportToVTK from './utils/setViewportToVTK.js';
 import setMPRLayout from './utils/setMPRLayout.js';
+import setViewportToVTK from './utils/setViewportToVTK.js';
+import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 import vtkMath from 'vtk.js/Sources/Common/Core/Math';
 import vtkMatrixBuilder from 'vtk.js/Sources/Common/Core/MatrixBuilder';
-
-// TODO: Should be another way to get this
-const commandsManager = window.commandsManager;
 
 // TODO: Put this somewhere else
 let apis = {};
 
 function getCrosshairCallbackForIndex(index) {
-  return worldPos => {
+  return ({ worldPos }) => {
     // Set camera focal point to world coordinate for linked views
     apis.forEach((api, viewportIndex) => {
-      if (viewportIndex === index) {
-        return;
+      if (viewportIndex !== index) {
+        // We are basically doing the same as getSlice but with the world coordinate
+        // that we want to jump to instead of the camera focal point.
+        // I would rather do the camera adjustment directly but I keep
+        // doing it wrong and so this is good enough for now.
+        const renderWindow = api.genericRenderWindow.getRenderWindow();
+
+        const istyle = renderWindow.getInteractor().getInteractorStyle();
+        const sliceNormal = istyle.getSliceNormal();
+        const transform = vtkMatrixBuilder
+          .buildFromDegree()
+          .identity()
+          .rotateFromDirections(sliceNormal, [1, 0, 0]);
+
+        const mutatedWorldPos = worldPos.slice();
+        transform.apply(mutatedWorldPos);
+        const slice = mutatedWorldPos[0];
+
+        istyle.setSlice(slice);
+
+        renderWindow.render();
       }
 
-      // We are basically doing the same as getSlice but with the world coordinate
-      // that we want to jump to instead of the camera focal point.
-      // I would rather do the camera adjustment directly but I keep
-      // doing it wrong and so this is good enough for now.
-      const renderWindow = api.genericRenderWindow.getRenderWindow();
-      const istyle = renderWindow.getInteractor().getInteractorStyle();
-      const sliceNormal = istyle.getSliceNormal();
-      const transform = vtkMatrixBuilder
-        .buildFromDegree()
-        .identity()
-        .rotateFromDirections(sliceNormal, [1, 0, 0]);
+      const renderer = api.genericRenderWindow.getRenderer();
+      const wPos = vtkCoordinate.newInstance();
+      wPos.setCoordinateSystemToWorld();
+      wPos.setValue(worldPos);
 
-      const mutatedWorldPos = worldPos.slice();
-      transform.apply(mutatedWorldPos);
-      const slice = mutatedWorldPos[0];
-
-      istyle.setSlice(slice);
-
-      renderWindow.render();
+      const displayPosition = wPos.getComputedDisplayValue(renderer);
+      const { svgWidgetManager } = api;
+      api.svgWidgets.crosshairsWidget.setPoint(
+        displayPosition[0],
+        displayPosition[1]
+      );
+      svgWidgetManager.render();
     });
   };
 }
@@ -207,6 +219,20 @@ const actions = {
       istyle.setVolumeMapper(api.volumes[0]);
       istyle.setCallback(getCrosshairCallbackForIndex(index));
 
+      const svgWidgetManager = vtkSVGWidgetManager.newInstance();
+      svgWidgetManager.setRenderer(renderer);
+      svgWidgetManager.setScale(1);
+
+      const crosshairsWidget = vtkSVGCrosshairsWidget.newInstance();
+
+      svgWidgetManager.addWidget(crosshairsWidget);
+      svgWidgetManager.render();
+
+      api.svgWidgetManager = svgWidgetManager;
+      api.svgWidgets = {
+        crosshairsWidget,
+      };
+
       switch (index) {
         default:
         case 0:
@@ -229,45 +255,49 @@ const actions = {
 
       renderWindow.render();
     });
-  }
+  },
 };
 
 const definitions = {
   axial: {
     commandFn: actions.axial,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   coronal: {
     commandFn: actions.coronal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   sagittal: {
     commandFn: actions.sagittal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableRotateTool: {
     commandFn: actions.enableRotateTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableCrosshairsTool: {
     commandFn: actions.enableCrosshairsTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableLevelTool: {
     commandFn: actions.enableLevelTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   mpr2d: {
     commandFn: actions.mpr2d,
     storeContexts: ['viewports'],
-    options: {}
-  }
+    options: {},
+    context: 'VIEWER',
+  },
 };
 
-export { definitions };
+export default {
+  definitions,
+  defaultContext: 'ACTIVE_VIEWPORT::VTK',
+};

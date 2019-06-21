@@ -8,57 +8,121 @@ toolbar, or as complex as a new viewport capable of rendering volumes in 3D.
 
 - [Overview](#overview)
 - [Modules](#modules)
-  - [Viewport](#viewport)
-  - [Toolbar](#toolbar)
-  - [SOP Class Handler](#sopclasshandler)
-  - [Panel](#panel)
   - [Commands](#commands)
   - [Hotkeys](#hotkeys)
+  - [Toolbar](#toolbar)
+  - [Panel](#panel)
+  - [Viewport](#viewport)
+  - [SOP Class Handler](#sopclasshandler)
 
 ## Overview
 
-At a glance, an extension is a class or object that has a `getExtensionId()`
-method, and one or more "module" methods. You can find an abbreviated extension
-below, or
-[view the source](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/OHIFCornerstoneExtension.js#L32-L65)
-of our `cornerstone` viewport extension.
+At a glance, an extension is a javascript object that has an `id` property, and
+one or more "module" methods. You can find an abbreviated extension below, or
+[view the source][example-ext-src] of our example extension.
 
 ```js
-class myCustomExtension {
+export default {
+    /**
+     * Only required property. Should be a unique value across all extensions.
+     */
+    id: 'example-extension',
 
-    /** Required */
-    getExtensionId: () => 'my-extension-id';
+    /**
+     * Registers one or more named commands scoped to a context. Commands are
+     * the primary means for...
+     */
+    getCommandsModule() {
+        return {
+            defaultContext: 'VIEWER'
+            actions: { ... },
+            definitions: { ... }
+        }
+    },
 
-    /** React component that receives props from ConnectLayoutManager
-     *  If more than one viewport module is registered, SopClassHandler
-     *  is used to help determine which component is used */
-    getViewportModule: () => reactViewportComponent;
+    /**
+     * Allows you to provide toolbar definitions that will be merged with any
+     * existing application toolbar configuration. Used to determine which
+     * buttons should be visible when, their order, what happens when they're
+     * clicked, etc.
+     */
+    getToolbarModule() {
+        return {
+            definitions: [ ... ],
+            defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
+        }
+    }
 
-    /** React component that adds buttons/behavior to the viewer Toolbar */
-    getToolbarModule: () => reactToolbarComponent;
+    /**
+     * Not yet implemented
+     */
+    getPanelModule: () => null,
+
+    /**
+     * Registers a ReactComponent that should be used to render data in a
+     * Viewport. The first registered viewport is our "default viewport". If
+     * more than one viewport is registered, we use `SopClassHandlers` to
+     * determine which viewport should be used.
+    */
+    getViewportModule: () => reactViewportComponent,
 
     /** Provides a whitelist of SOPClassUIDs the viewport is capable of rendering.
      *  Can modify default behavior for methods like `getDisplaySetFromSeries` */
     getSopClassHandler: () => {
         id: 'some-other-unique-id',
-        type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
-        sopClassUids: ['string'],
-        getDisplaySetFromSeries: (series, study, dicomWebClient, authorizationHeaders) => ...
-    };
-
-    // Not yet used
-    getPanelModule: () => null;
+        sopClassUids: [ ... ],
+        getDisplaySetFromSeries: (series, study, dicomWebClient, authorizationHeaders) => { ... }
+    },
 }
 ```
 
 ### Modules
 
-There are a few different kinds of modules. Each kind of module allows us to
-extend the viewer in a different way, and provides a consistent API for us to do
-so. You can find a full list of the
-[different types of modules `in ohif-core`](https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6).
-Information on each type of module, it's API, and how we determine when/where it
-should be used is included below:
+There are a few different module types. Each module type allows us to extend the
+viewer in a different way, and provides a consistent API for us to do so. You
+can find a full list of the different types of modules
+[`in ohif-core`][module-types]. Information on each type of module, it's API,
+and how we determine when/where it should be used is included below.
+
+> NOTE: Modifying the extensions/modules registered to the OHIF Viewer currently
+> requires us to import and pass extensions to the ExtensionManager in
+> `src/App.js`, then rebuild the application. Long-term, we intend to make it
+> possible to accomplish this without a build step.
+
+#### Commands
+
+The Commands Module allows us to register one or more commands scoped to
+specific contexts. Commands can be run by [hotkeys][#], [toolbar buttons][#],
+and any registered custom react component (like a [viewport][#] or [panel][#]).
+Here is a simple example commands module:
+
+```js
+{
+    getCommandsModule() {
+        return {
+            actions: {
+                speak: ({ viewports, words }) => {
+                    console.log(viewports, words);
+                },
+            },
+            definitions: {
+                rotateViewportCW: {
+                    commandFn: actions.rotateViewport,
+                    storeContexts: ['viewports'],
+                    options: { rotation: 90 }
+                },
+                rotateViewportCCW: {
+                    commandFn: actions.rotateViewport,
+                    storeContexts: ['viewports'],
+                    options: { rotation: -90 },
+                    context: 'ACTIVE_VIEWER::CORNERSTONE'
+                },
+            },
+            defaultContext: 'VIEWER'
+        }
+    }
+}
+```
 
 #### Viewport
 
@@ -114,10 +178,6 @@ For a complete example implementation,
 
 > The panel module is not yet in use.
 
-#### Commands
-
-...
-
 #### Hotkeys
 
 ...
@@ -159,3 +219,12 @@ top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions)
 directory.
 
 {% include "./_maintained-extensions-table.md" %}
+
+<!--
+    Links
+-->
+
+<!-- prettier-ignore-start -->
+[example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_ohif-example-extension/src/index.js)
+[module-types]: https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6
+<!-- prettier-ignore-end -->

@@ -1,7 +1,4 @@
-import OHIF from "ohif-core";
-
-const { plugins, utils } = OHIF;
-const { PLUGIN_TYPES } = plugins;
+import { MODULE_TYPES, utils } from 'ohif-core';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
@@ -10,10 +7,8 @@ const SOP_CLASS_UIDS = {
 
 const OHIFDicomPDFSopClassHandler = {
   id: 'OHIFDicomPDFSopClassHandlerPlugin',
-  type: PLUGIN_TYPES.SOP_CLASS_HANDLER,
-  sopClassUids: [
-    SOP_CLASS_UIDS.ENCAPSULATED_PDF
-  ],
+  type: MODULE_TYPES.SOP_CLASS_HANDLER,
+  sopClassUids: [SOP_CLASS_UIDS.ENCAPSULATED_PDF],
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
     const instance = series.getFirstInstance();
 
@@ -28,6 +23,6 @@ const OHIFDicomPDFSopClassHandler = {
       authorizationHeaders: authorizationHeaders
     };
   }
-}
+};
 
 export default OHIFDicomPDFSopClassHandler;
