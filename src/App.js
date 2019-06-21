@@ -13,7 +13,6 @@ import {
 } from './utils/index.js';
 
 import { I18nextProvider } from 'react-i18next';
-// import ConnectedToolContextMenu from './connectedComponents/ConnectedToolContextMenu';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
@@ -57,7 +56,6 @@ setupTools(store);
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
-  // new OHIFCornerstoneExtension({ children }),
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
   OHIFDicomPDFExtension,

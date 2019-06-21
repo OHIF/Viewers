@@ -20,14 +20,14 @@ const mapStateToProps = state => {
 
   const cineData = cine || {
     isPlaying: false,
-    cineFrameRate: 24
+    cineFrameRate: 24,
   };
 
   // New props we're creating?
   return {
     activeEnabledElement: dom,
     activeViewportCineData: cineData,
-    activeViewportIndex: state.viewports.activeViewportIndex
+    activeViewportIndex: state.viewports.activeViewportIndex,
   };
 };
 
@@ -35,7 +35,7 @@ const mapDispatchToProps = dispatch => {
   return {
     dispatchSetViewportSpecificData: (viewportIndex, data) => {
       dispatch(setViewportSpecificData(viewportIndex, data));
-    }
+    },
   };
 };
 
@@ -43,7 +43,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const {
     activeEnabledElement,
     activeViewportCineData,
-    activeViewportIndex
+    activeViewportIndex,
   } = propsFromState;
 
   return {
@@ -54,7 +54,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       cine.isPlaying = !cine.isPlaying;
 
       propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        cine
+        cine,
       });
     },
     onFrameRateChanged: frameRate => {
@@ -62,7 +62,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       cine.cineFrameRate = frameRate;
 
       propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
-        cine
+        cine,
       });
     },
     onClickNextButton: () => {
@@ -89,7 +89,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       if (!stackData || !stackData.data || !stackData.data.length) return;
       const lastIndex = stackData.data[0].imageIds.length - 1;
       scrollToIndex(activeEnabledElement, lastIndex);
-    }
+    },
   };
 };
 

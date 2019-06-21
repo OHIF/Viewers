@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { RoundedButtonGroup, ToolbarButton } from 'react-viewerbase';
 import { commandsManager, extensionManager } from './../App.js';
 
+import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from 'ohif-core';
@@ -38,7 +39,10 @@ class ToolbarRow extends Component {
     this.state = {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
+      isCineDialogOpen: false,
     };
+
+    this._handleBuiltIn = _handleBuiltIn.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -85,33 +89,47 @@ class ToolbarRow extends Component {
       ? rightSidebarToggle[0].value
       : null;
 
-    //const getButtonComponents = _getButtonComponents.bind(this);
     const buttonComponents = _getButtonComponents.call(
       this,
       this.state.toolbarButtons,
       this.state.activeButtons
     );
 
+    const cineDialogContainerStyle = {
+      display: this.state.isCineDialogOpen ? 'block' : 'none',
+      position: 'absolute',
+      top: '82px',
+      zIndex: 999,
+    };
+
     return (
-      <div className="ToolbarRow">
-        <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
-          <RoundedButtonGroup
-            options={leftSidebarToggle}
-            value={leftSidebarValue}
-            onValueChanged={this.onLeftSidebarValueChanged}
-          />
+      <>
+        <div className="ToolbarRow">
+          <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
+            <RoundedButtonGroup
+              options={leftSidebarToggle}
+              value={leftSidebarValue}
+              onValueChanged={this.onLeftSidebarValueChanged}
+            />
+          </div>
+          {buttonComponents}
+          <ConnectedLayoutButton />
+          <ConnectedPluginSwitch />
+          <div
+            className="pull-right m-t-1 rm-x-1"
+            style={{ marginLeft: 'auto' }}
+          >
+            <RoundedButtonGroup
+              options={rightSidebarToggle}
+              value={rightSidebarValue}
+              onValueChanged={this.onRightSidebarValueChanged}
+            />
+          </div>
         </div>
-        {buttonComponents}
-        <ConnectedLayoutButton />
-        <ConnectedPluginSwitch />
-        <div className="pull-right m-t-1 rm-x-1" style={{ marginLeft: 'auto' }}>
-          <RoundedButtonGroup
-            options={rightSidebarToggle}
-            value={rightSidebarValue}
-            onValueChanged={this.onRightSidebarValueChanged}
-          />
+        <div className="CineDialogContainer" style={cineDialogContainerStyle}>
+          <ConnectedCineDialog />
         </div>
-      </div>
+      </>
     );
   }
 }
@@ -142,6 +160,8 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
             this.setState({
               activeButtons: [button.id],
             });
+          } else if (button.type === 'builtIn') {
+            this._handleBuiltIn(button.options);
           }
         }}
         isActive={activeButtons.includes(button.id)}
@@ -166,6 +186,14 @@ function _getVisibleToolbarButtons() {
   });
 
   return toolbarButtonDefinitions;
+}
+
+function _handleBuiltIn({ behavior } = {}) {
+  if (behavior === 'CINE') {
+    this.setState({
+      isCineDialogOpen: !this.state.isCineDialogOpen,
+    });
+  }
 }
 
 export default ToolbarRow;

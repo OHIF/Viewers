@@ -21,7 +21,8 @@
 
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
-  SET_TOOL_ACTIVE: 'setToolActive'
+  SET_TOOL_ACTIVE: 'setToolActive',
+  BUILT_IN: 'builtIn'
 };
 
 const definitions = [
@@ -86,6 +87,16 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'resetViewport'
+  },
+  {
+    id: 'Cine',
+    label: 'CINE',
+    icon: 'youtube',
+    //
+    type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
+    options: {
+      behavior: 'CINE'
+    }
   }
 ];
 
