@@ -19,8 +19,8 @@ export default function setViewportToVTK(
         mode: 'mpr', // TODO: not used
         afterCreation: api => {
           resolve(api);
-        }
-      }
+        },
+      },
     };
 
     const updatedViewports = setSingleLayoutData(

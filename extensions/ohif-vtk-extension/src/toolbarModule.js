@@ -1,6 +1,6 @@
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
-  SET_TOOL_ACTIVE: 'setToolActive'
+  SET_TOOL_ACTIVE: 'setToolActive',
 };
 
 const definitions = [
@@ -11,7 +11,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'enableCrosshairsTool',
-    commandOptions: {}
+    commandOptions: {},
   },
   {
     id: 'WWWC',
@@ -20,7 +20,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'enableLevelTool',
-    commandOptions: {}
+    commandOptions: {},
   },
   {
     id: 'Rotate',
@@ -29,11 +29,11 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'enableRotateTool',
-    commandOptions: {}
-  }
+    commandOptions: {},
+  },
 ];
 
 export default {
   definitions,
-  defaultContext: 'ACTIVE_VIEWPORT::VTK'
+  defaultContext: 'ACTIVE_VIEWPORT::VTK',
 };

@@ -3,7 +3,7 @@ import {
   vtkInteractorStyleMPRSlice,
   vtkInteractorStyleMPRWindowLevel,
   vtkSVGCrosshairsWidget,
-  vtkSVGWidgetManager
+  vtkSVGWidgetManager,
 } from 'react-vtkjs-viewport';
 
 import setMPRLayout from './utils/setMPRLayout.js';
@@ -230,7 +230,7 @@ const actions = {
 
       api.svgWidgetManager = svgWidgetManager;
       api.svgWidgets = {
-        crosshairsWidget
+        crosshairsWidget,
       };
 
       switch (index) {
@@ -255,49 +255,49 @@ const actions = {
 
       renderWindow.render();
     });
-  }
+  },
 };
 
 const definitions = {
   axial: {
     commandFn: actions.axial,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   coronal: {
     commandFn: actions.coronal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   sagittal: {
     commandFn: actions.sagittal,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableRotateTool: {
     commandFn: actions.enableRotateTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableCrosshairsTool: {
     commandFn: actions.enableCrosshairsTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   enableLevelTool: {
     commandFn: actions.enableLevelTool,
     storeContexts: ['viewports'],
-    options: {}
+    options: {},
   },
   mpr2d: {
     commandFn: actions.mpr2d,
     storeContexts: ['viewports'],
     options: {},
-    context: 'VIEWER'
-  }
+    context: 'VIEWER',
+  },
 };
 
 export default {
   definitions,
-  defaultContext: 'ACTIVE_VIEWPORT::VTK'
+  defaultContext: 'ACTIVE_VIEWPORT::VTK',
 };
