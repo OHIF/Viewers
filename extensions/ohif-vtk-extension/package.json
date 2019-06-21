@@ -27,7 +27,7 @@
     "dicom-parser": "^1.8.3",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
-    "ohif-core": "^0.5.9",
+    "ohif-core": "^0.6.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
