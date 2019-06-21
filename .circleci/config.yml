@@ -40,7 +40,7 @@ jobs:
       # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn test:e2e:ci
+          command: yarn test:unit:ci
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
       # Store result
