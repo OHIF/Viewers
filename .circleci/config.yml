@@ -40,7 +40,7 @@ jobs:
       # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn test:ci
+          command: yarn test:e2e:ci
           environment:
             JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
       # Store result
@@ -52,6 +52,18 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
+
+  e2e_test:
+    working_directory: ~/repo
+    docker:
+      - image: cypress/base:8
+        environment:
+          ## this enables colors in the output
+          TERM: xterm
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: $(yarn bin)/cypress run --record
 
   npm_publish:
     <<: *defaults
@@ -121,6 +133,7 @@ jobs:
               docker push ohif/$IMAGE_NAME:$IMAGE_VERSION_FULL
               docker push ohif/$IMAGE_NAME:latest
             fi
+
   build_demo_site:
     <<: *defaults
     steps:
@@ -157,10 +170,11 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
+
   demo_site_publish:
     working_directory: ~/repo
     docker:
-    - image: google/cloud-sdk
+      - image: google/cloud-sdk
     steps:
       - attach_workspace:
           at: ~/repo
@@ -195,6 +209,9 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
+      - e2e_test:
+          requires:
+            - build_and_test
 
   # MERGE TO MASTER
   cut_release:
