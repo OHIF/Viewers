@@ -220,9 +220,6 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
-      - e2e_test:
-          requires:
-            - build_and_test
 
   # MERGE TO MASTER
   cut_release:
@@ -231,25 +228,25 @@ workflows:
           filters:
             branches:
               only: master
+      - e2e_test:
+          requires:
+            - build_and_test
+      # Update NPM
       - npm_publish:
           requires:
-            - build_and_test
+            - e2e_test
+      # Update docs.ohif.org
       - docs_publish:
           requires:
-            - build_and_test
+            - e2e_test
+      # Update hub.docker.org
       - docker_publish:
           requires:
-            - build_and_test
             - npm_publish
+      # Update viewer.ohif.org
       - build_demo_site:
           requires:
-            - build_and_test
-          filters:
-            branches:
-              only: master
+            - e2e_test
       - demo_site_publish:
           requires:
             - build_demo_site
-          filters:
-            branches:
-              only: master
