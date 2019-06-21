@@ -1,6 +1,6 @@
 {
-  "name": "ohif-dicom-pdf-extension",
-  "version": "0.0.6",
+  "name": "@ohif/extension-dicom-pdf",
+  "version": "0.0.7",
   "description": "OHIF extension for Dicom PDF",
   "author": "OHIF",
   "license": "MIT",
@@ -20,10 +20,15 @@
   },
   "peerDependencies": {
     "dicom-parser": "^1.8.3",
-    "ohif-core": "^0.3.4",
+    "ohif-core": "^0.6.0",
     "prop-types": "^15.6.2",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.2.0",
+    "classnames": "^2.2.6",
+    "lodash.isequal": "^4.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -80,9 +85,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@babel/runtime": "^7.2.0",
-    "classnames": "^2.2.6",
-    "lodash.isequal": "^4.5.0"
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -5,11 +5,7 @@ describe('utils', () => {
     const utilExports = Object.keys(utils).sort();
 
     expect(utilExports).toEqual(
-      [
-        'getDefaultToolbarButtons',
-        'getUserManagerForOpenIdConnectClient',
-        'initWebWorkers',
-      ].sort()
+      ['getUserManagerForOpenIdConnectClient', 'initWebWorkers'].sort()
     );
   });
 });

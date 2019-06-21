@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "dicom-parser": "^1.8.3",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
-    "ohif-core": "^0.5.9",
+    "ohif-core": "^0.6.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -36,6 +36,12 @@
     "react-resize-detector": "^4.2.0",
     "react-viewerbase": "^0.8.1",
     "redux": "^4.0.1"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.4.5",
+    "@ohif/i18n": "0.0.4",
+    "react-vtkjs-viewport": "0.0.9",
+    "vtk.js": "^8.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -100,11 +106,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.4.5",
-    "@ohif/i18n": "0.0.4",
-    "react-vtkjs-viewport": "0.0.9",
-    "vtk.js": "^8.9.1"
   }
 }

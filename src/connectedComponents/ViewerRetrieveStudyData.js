@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
-import ConnectedViewer from './ConnectedViewer.js';
+import { metadata, studies, utils } from 'ohif-core';
 
-const { createDisplaySets } = OHIF.utils;
+import ConnectedViewer from './ConnectedViewer.js';
+import PropTypes from 'prop-types';
+import { extensionManager } from './../App.js';
+
+const { OHIFStudyMetadata } = metadata;
+const { retrieveStudiesMetadata } = studies;
+const { studyMetadataManager, updateMetaDataManager } = utils;
 
 class ViewerRetrieveStudyData extends Component {
   static propTypes = {
@@ -17,32 +21,55 @@ class ViewerRetrieveStudyData extends Component {
     error: null,
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     // TODO: Avoid using timepoints here
     //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
     const { studyInstanceUids, seriesInstanceUids, server } = this.props;
-    const promise = OHIF.studies.retrieveStudiesMetadata(
-      server,
-      studyInstanceUids,
-      seriesInstanceUids
-    );
 
-    // Render the viewer when the data is ready
-    promise
-      .then(studies => {
-        const updatedStudies = createDisplaySets(studies);
+    try {
+      const studies = await retrieveStudiesMetadata(
+        server,
+        studyInstanceUids,
+        seriesInstanceUids
+      );
 
-        this.setState({
-          studies: updatedStudies,
-        });
-      })
-      .catch(error => {
-        this.setState({
-          error: true,
-        });
+      // Render the viewer when the data is ready
+      // TODO: CLEAR THIS SOMEWHERE ELSE
+      studyMetadataManager.purge();
 
-        throw new Error(error);
+      // Map studies to new format, update metadata manager?
+      const updatedStudies = studies.map(study => {
+        const studyMetadata = new OHIFStudyMetadata(
+          study,
+          study.studyInstanceUid
+        );
+        const sopClassHandlerModules =
+          extensionManager.modules['sopClassHandlerModule'];
+
+        study.displaySets =
+          study.displaySets ||
+          studyMetadata.createDisplaySets(sopClassHandlerModules);
+        studyMetadata.setDisplaySets(study.displaySets);
+
+        // Updates WADO-RS metaDataManager
+        updateMetaDataManager(study);
+
+        studyMetadataManager.add(studyMetadata);
+
+        return study;
       });
+
+      this.setState({
+        studies: updatedStudies,
+      });
+    } catch (err) {
+      this.setState({
+        error: true,
+      });
+
+      // TODO: Handle gracefully instead of throwing?
+      throw new Error(err);
+    }
   }
 
   render() {

@@ -1,15 +1,10 @@
-import { connect } from 'react-redux';
-import { View2D } from 'react-vtkjs-viewport';
 import OHIF from 'ohif-core';
+import { View2D } from 'react-vtkjs-viewport';
+import { connect } from 'react-redux';
 
-const {
-  setViewportActive,
-  setViewportSpecificData,
-  clearViewportSpecificData
-} = OHIF.redux.actions;
+const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const activeButton = state.tools.buttons.find(tool => tool.active === true);
   let dataFromStore;
 
   if (state.extensions && state.extensions.vtk) {
@@ -19,9 +14,6 @@ const mapStateToProps = (state, ownProps) => {
   // If this is the active viewport, enable prefetching.
   const { viewportIndex } = ownProps;
   const isActive = viewportIndex === state.viewports.activeViewportIndex;
-  const viewportSpecificData =
-    state.viewports.viewportSpecificData[viewportIndex] || {};
-
   const viewportLayout = state.viewports.layout.viewports[viewportIndex];
   const pluginDetails = viewportLayout.vtk || {};
 
@@ -29,9 +21,10 @@ const mapStateToProps = (state, ownProps) => {
     layout: state.viewports.layout,
     isActive,
     ...pluginDetails,
-    activeTool: activeButton && activeButton.command,
+    // Hopefully this doesn't break anything under the hood for this one
+    // activeTool: activeButton && activeButton.command,
     ...dataFromStore,
-    enableStackPrefetch: isActive
+    enableStackPrefetch: isActive,
   };
 };
 
@@ -45,13 +38,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
     setViewportSpecificData: data => {
       dispatch(setViewportSpecificData(viewportIndex, data));
-    }
+    },
   };
 };
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const { afterCreation } = propsFromState;
-  const { setViewportSpecificData } = propsFromDispatch;
 
   const props = {
     ...propsFromState,
@@ -74,7 +66,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       if (afterCreation && typeof afterCreation === 'function') {
         afterCreation(api);
       }
-    }
+    },
   };
   return props;
 };

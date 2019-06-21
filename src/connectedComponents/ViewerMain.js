@@ -2,8 +2,7 @@ import './ViewerMain.css';
 
 import { Component } from 'react';
 import ConnectedLayoutManager from './ConnectedLayoutManager.js';
-// import { OHIF } from 'ohif-core';
-//
+import ConnectedToolContextMenu from './ConnectedToolContextMenu.js';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -19,15 +18,6 @@ class ViewerMain extends Component {
 
   constructor(props) {
     super(props);
-
-    // Initialize hotkeys
-    // new OHIF.HotkeysUtil('viewer', {
-    //   setViewportSpecificData: props.setViewportSpecificData,
-    //   clearViewportSpecificData: props.clearViewportSpecificData,
-    //   setToolActive: props.setToolActive,
-    //   setActiveViewportSpecificData: props.setActiveViewportSpecificData,
-    // });
-    // hotkeys.init();
 
     this.state = {
       displaySets: [],
@@ -139,7 +129,10 @@ class ViewerMain extends Component {
           studies={this.props.studies}
           viewportData={this.getViewportData()}
           setViewportData={this.setViewportData}
-        />
+        >
+          {/* Children to add to each viewport that support children */}
+          <ConnectedToolContextMenu />
+        </ConnectedLayoutManager>
       </div>
     );
   }

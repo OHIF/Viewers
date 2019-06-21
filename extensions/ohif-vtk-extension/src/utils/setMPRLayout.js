@@ -11,14 +11,14 @@ export default function setMPRLayout(displaySet) {
     for (let i = 0; i < numViewports; i++) {
       viewports.push({
         height: `${100 / rows}%`,
-        width: `${100 / columns}%`
+        width: `${100 / columns}%`,
       });
 
       viewportSpecificData[i] = displaySet;
       viewportSpecificData[i].plugin = 'vtk';
     }
     const layout = {
-      viewports
+      viewports,
     };
 
     const viewportIndices = [0, 1, 2];
@@ -33,7 +33,7 @@ export default function setMPRLayout(displaySet) {
       }*/
 
       const data = {
-        plugin: 'vtk',
+        // plugin: 'vtk',
         vtk: {
           mode: 'mpr', // TODO: not used
           afterCreation: api => {
@@ -42,8 +42,8 @@ export default function setMPRLayout(displaySet) {
             if (apis.every(a => !!a)) {
               resolve(apis);
             }
-          }
-        }
+          },
+        },
       };
 
       updatedViewports = setSingleLayoutData(

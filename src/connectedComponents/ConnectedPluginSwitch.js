@@ -1,6 +1,7 @@
-import { connect } from 'react-redux';
-import PluginSwitch from './PluginSwitch.js';
 import OHIF from 'ohif-core';
+import PluginSwitch from './PluginSwitch.js';
+import { commandsManager } from './../App.js';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 
@@ -60,7 +61,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('axial', {}, 'vtk');
+        commandsManager.runCommand('axial');
       },
     },
     {
@@ -68,7 +69,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('sagittal', {}, 'vtk');
+        commandsManager.runCommand('sagittal');
       },
     },
     {
@@ -76,15 +77,14 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        window.commandsManager.runCommand('coronal', {}, 'vtk');
+        commandsManager.runCommand('coronal');
       },
     },*/
     {
-      text: '2D MPR',
+      label: '2D MPR',
       icon: 'cube',
-      active: false,
       onClick: () => {
-        window.commandsManager.runCommand('mpr2d', {}, 'vtk');
+        commandsManager.runCommand('mpr2d');
       },
     },
   ];
