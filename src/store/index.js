@@ -1,6 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 
-import { createLogger } from 'redux-logger';
+// import { createLogger } from 'redux-logger';
 import layoutReducers from './layout/reducers.js';
 import { reducer as oidcReducer } from 'redux-oidc';
 import { redux } from 'ohif-core';
@@ -9,7 +9,7 @@ import thunkMiddleware from 'redux-thunk';
 // Combine our ohif-core, ui, and oidc reducers
 // Set init data, using values found in localStorage
 const { reducers, localStorage } = redux;
-const loggerMiddleware = createLogger();
+// const loggerMiddleware = createLogger();
 
 reducers.ui = layoutReducers;
 reducers.oidc = oidcReducer;
@@ -19,8 +19,8 @@ const store = createStore(
   rootReducer,
   localStorage.loadState(), // preloadedState
   applyMiddleware(
-    thunkMiddleware, // Lets us dispatch() functions
-    loggerMiddleware // neat middleware that logs actions
+    thunkMiddleware // Lets us dispatch() functions
+    // loggerMiddleware // neat middleware that logs actions
   )
 );
 
