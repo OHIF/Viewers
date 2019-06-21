@@ -33,7 +33,7 @@ jobs:
       - save_cache:
           name: Save Yarn Package Cache
           paths:
-            - ~/.cache/yarn
+            - ~/.cache ## Cache yarn and Cypress
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Build & Test
       - run: yarn build:package:ci
