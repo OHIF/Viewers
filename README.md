@@ -20,6 +20,7 @@
 <hr />
 
 [![CircleCI][circleci-image]][circleci-url]
+[![Cypress][cypress-image]][cypress-url]
 [![codecov][codecov-image]][codecov-url]
 [![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors)
 [![code style: prettier][prettier-image]][prettier-url]
@@ -100,7 +101,9 @@ guide.
 
 ### E2E Tests
 
-Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check whether the application flow is performing correctly, ensuring that the integrated components are working as expected.
+Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check
+whether the application flow is performing correctly, ensuring that the
+integrated components are working as expected.
 
 #### Why Cypress?
 
@@ -148,10 +151,10 @@ When creating tests, place the test file "next to" the file you're testing.
 
 ```js
 // File
-index.js
+index.js;
 
 // Test for file
-index.test.js
+index.test.js;
 ```
 
 As you add and modify code, `jest` will watch for uncommitted changes and run
@@ -261,6 +264,8 @@ Links:
 [contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
 [circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
 [circleci-url]: https://circleci.com/gh/OHIF/Viewers
+[cypress-image]: https://img.shields.io/badge/Cypress-dashboard-brightgreen.svg?style=flat-square
+[cypress-url]: https://dashboard.cypress.io/#/projects/4oe38f/runs
 [codecov-image]: https://codecov.io/gh/OHIF/Viewers/branch/react/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/OHIF/Viewers/branch/react
 [prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
