@@ -26,7 +26,7 @@
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "test:unit": "jest",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
-    "test:e2e": "",
+    "test:e2e": "cypress open",
     "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
     "staticDeploy": "./generateStaticSite.sh",
     "docs:publish": "./publishStaticSite.sh",
@@ -37,9 +37,7 @@
     "dev:orthanc": "yarn run preBuild && cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
     "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v",
-    "cy": "cypress open",
-    "cy:run": "cypress run",
-    "cy:run:ci": "yarn run cy:run -- --record"
+    "cy:run:ci": "cypress run --record"
   },
   "husky": {
     "hooks": {
