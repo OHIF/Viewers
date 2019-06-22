@@ -76,6 +76,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jfmedeiros1820",
+      "name": "João Felipe de Medeiros Moreira",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2211708?v=4",
+      "profile": "https://github.com/jfmedeiros1820",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
