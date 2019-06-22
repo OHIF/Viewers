@@ -24,8 +24,10 @@
     "build:web:ci": "yarn run preBuild && cross-env PUBLIC_URL=/demo REACT_APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build && cpx 'build/**/*' docs/latest/_book/demo --verbose",
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/public_dicomweb.js react-scripts --max_old_space_size=4096 build",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
-    "test": "jest",
-    "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
+    "test:unit": "jest",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
+    "test:e2e": "",
+    "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
     "staticDeploy": "./generateStaticSite.sh",
     "docs:publish": "./publishStaticSite.sh",
     "start": "yarn run dev",
@@ -34,7 +36,10 @@
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
     "dev:orthanc": "yarn run preBuild && cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
-    "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v"
+    "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v",
+    "cy": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:ci": "yarn run cy:run -- --record"
   },
   "husky": {
     "hooks": {
@@ -113,8 +118,10 @@
     "babel-eslint": "^10.0.1",
     "codecov": "3.5.0",
     "commitizen": "3.1.x",
+    "core-js": "^3.1.4",
     "cpx": "1.5.0",
     "cross-env": "^5.2.0",
+    "cypress": "^3.3.1",
     "cz-conventional-changelog": "2.1.0",
     "eslint": "5.16.0",
     "eslint-plugin-import": "^2.17.3",
@@ -143,6 +150,7 @@
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-url": "^2.2.2",
     "semantic-release": "15.13.x",
+    "start-server-and-test": "^1.9.1",
     "stylelint": "^10.1.0"
   }
 }

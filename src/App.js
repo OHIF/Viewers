@@ -29,6 +29,8 @@ import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools';
 import store from './store';
+// Imported flat feature since is not transpiled for old browser versions
+import 'core-js/features/array/flat';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
