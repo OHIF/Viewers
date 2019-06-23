@@ -18,8 +18,8 @@ toolbar, or as complex as a new viewport capable of rendering volumes in 3D.
 ## Overview
 
 At a glance, an extension is a javascript object that has an `id` property, and
-one or more "module" methods. You can find an abbreviated extension below, or
-[view the source][example-ext-src] of our example extension.
+one or more "getModuleXXX" methods. You can find an abbreviated extension below,
+or [view the source][example-ext-src] of our example extension.
 
 ```js
 export default {
@@ -28,10 +28,6 @@ export default {
      */
     id: 'example-extension',
 
-    /**
-     * Registers one or more named commands scoped to a context. Commands are
-     * the primary means for...
-     */
     getCommandsModule() {
         return {
             defaultContext: 'VIEWER'
@@ -39,35 +35,17 @@ export default {
             definitions: { ... }
         }
     },
-
-    /**
-     * Allows you to provide toolbar definitions that will be merged with any
-     * existing application toolbar configuration. Used to determine which
-     * buttons should be visible when, their order, what happens when they're
-     * clicked, etc.
-     */
     getToolbarModule() {
         return {
             definitions: [ ... ],
             defaultContext: 'ACTIVE_VIEWPORT::CORNERSTONE'
         }
-    }
-
+    },
     /**
      * Not yet implemented
      */
     getPanelModule: () => null,
-
-    /**
-     * Registers a ReactComponent that should be used to render data in a
-     * Viewport. The first registered viewport is our "default viewport". If
-     * more than one viewport is registered, we use `SopClassHandlers` to
-     * determine which viewport should be used.
-    */
     getViewportModule: () => reactViewportComponent,
-
-    /** Provides a whitelist of SOPClassUIDs the viewport is capable of rendering.
-     *  Can modify default behavior for methods like `getDisplaySetFromSeries` */
     getSopClassHandler: () => {
         id: 'some-other-unique-id',
         sopClassUids: [ ... ],
@@ -78,8 +56,8 @@ export default {
 
 ### Modules
 
-There are a few different module types. Each module type allows us to extend the
-viewer in a different way, and provides a consistent API for us to do so. You
+There are different module types. Each module type allows us to extend the
+viewer in a different way while providing a consistent API for us to do so. You
 can find a full list of the different types of modules
 [`in ohif-core`][module-types]. Information on each type of module, it's API,
 and how we determine when/where it should be used is included below.
@@ -213,10 +191,8 @@ ExtensionManager.registerExtensions(store, extensions);
 ## OHIF Maintained Extensions
 
 A small number of powerful extensions for popular use cases are maintained by
-OHIF. They're co-located in the
-[`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react/) repository, in the
-top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions)
-directory.
+OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
+the top level [`extensions/`][extensions-dir] directory.
 
 {% include "./_maintained-extensions-table.md" %}
 
@@ -225,6 +201,8 @@ directory.
 -->
 
 <!-- prettier-ignore-start -->
-[example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_ohif-example-extension/src/index.js)
+[viewers-repo]: https://github.com/OHIF/Viewers/tree/master
+[extensions-dir]: https://github.com/OHIF/Viewers/tree/master/extensions
+[example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_ohif-example-extension/src/index.js
 [module-types]: https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6
 <!-- prettier-ignore-end -->
