@@ -1470,10 +1470,10 @@
   dependencies:
     "@babel/runtime" "^7.2.0"
 
-"@ohif/extension-dicom-microscopy@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.7.tgz#2ac78c2eef8915e43a81e82ff895c251ced0b441"
-  integrity sha512-QXf7+YE297owIWBMGJJsJwbMk6bfmmu0fBJQhYFwXQYBOToSiabdr21PBxNADf88ZC1kiBcULOcTBRypJtd31g==
+"@ohif/extension-dicom-microscopy@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.8.tgz#833f7b87f530fe801c08f2ba241d9862a61358cb"
+  integrity sha512-ALj3k327iiuJtHWD34gwlWfh0vgoda5mp1rqPeZron75gFefOJYP/vR4lnu46Ud2mpqpElqSgYPV0AY8PK570g==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
