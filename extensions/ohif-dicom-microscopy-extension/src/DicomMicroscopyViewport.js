@@ -57,7 +57,7 @@ class DicomMicroscopyViewport extends Component {
           metadata,
         });
 
-        viewer.render({ container });
+        viewer.render({ container, retrieveRendered: true });
       });
   }
 
