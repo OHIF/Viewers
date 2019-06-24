@@ -50,8 +50,10 @@ jobs:
           path: reports/junit
       # Persist :+1:
       - persist_to_workspace:
-          root: ~/repo
-          paths: .
+          root: ~/
+          paths:
+            - repo/*
+            - .cache/*
 
   e2e_test:
     working_directory: ~/repo
@@ -91,10 +93,6 @@ jobs:
       - run:
           name: Publish using Semantic Release
           command: npx semantic-release --debug
-      # Persist :+1:
-      - persist_to_workspace:
-          root: ~/repo
-          paths: .
 
   docs_publish:
     <<: *defaults
