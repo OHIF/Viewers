@@ -1,0 +1,44 @@
+.gcp-files-selector {
+  display: flex;
+  justify-content: space-between;
+}
+.gcp-files-selector__btn-dir,
+.gcp-files-selector__btn-file {
+  height: 80px !important;
+  width: 228px !important;
+  font-size: 14px;
+  border-radius: 8px;
+  margin: 0 !important;
+}
+.gcp-files-selector__btn-dir {
+  background-image: url('/assets/Button_Folder.svg');
+}
+.gcp-files-selector__btn-file {
+  background-image: url('/assets/Button_File.svg');
+}
+.gcp-invisible-input {
+  position: absolute;
+  display: none;
+  z-index: -1000;
+  max-width: 0 !important;
+  max-height: 0 !important;
+}
+.gcp-hidden {
+  display: none;
+}
+
+.gcp-picker--title {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 28px;
+  text-align: center;
+  margin: 20px auto;
+}
+
+.gcp-picker--path {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 28px;
+  text-align: leaft;
+  margin: 20px auto;
+}

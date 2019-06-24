@@ -5,12 +5,16 @@ import { withRouter } from 'react-router-dom';
 import { StudyList } from 'react-viewerbase';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
+import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
+import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 
 class StudyListWithData extends Component {
   state = {
     searchData: {},
-    studies: null,
+    studies: [],
     error: null,
+    modalComponentId: null,
+    showStudyList: true,
   };
 
   static propTypes = {
@@ -30,10 +34,28 @@ class StudyListWithData extends Component {
   static defaultStudyDateTo = new Date();
 
   componentDidMount() {
-    // TODO: Avoid using timepoints here
-    //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
+    if (!this.props.server) {
+      this.setState({
+        modalComponentId: 'DicomStorePicker',
+        showStudyList: false,
+      });
+    } else {
+      this.searchForStudies();
+    }
+  }
 
-    this.searchForStudies();
+  componentDidUpdate(prevProps) {
+    if (!this.state.searchData && !this.state.studies) {
+      this.searchForStudies();
+    }
+    if (this.props.server !== prevProps.server) {
+      this.setState({
+        modalComponentId: null,
+        showStudyList: true,
+        searchData: null,
+        studies: null,
+      });
+    }
   }
 
   searchForStudies = (
@@ -121,6 +143,17 @@ class StudyListWithData extends Component {
     //console.log('onImport');
   };
 
+  openModal = modalComponentId => {
+    this.setState({
+      modalComponentId,
+      showStudyList: false,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({ modalComponentId: null });
+  };
+
   onSelectItem = studyInstanceUID => {
     this.props.history.push(`/viewer/${studyInstanceUID}`);
   };
@@ -129,28 +162,72 @@ class StudyListWithData extends Component {
     this.searchForStudies(searchData);
   };
 
+  update = () => {
+    this.setState({
+      modalComponentId: null,
+      showStudyList: true,
+    });
+  };
+
   render() {
     if (this.state.error) {
       return <div>Error: {JSON.stringify(this.state.error)}</div>;
-    } else if (this.state.studies === null) {
+    } else if (this.state.studies === null && !this.state.modalComponentId) {
       return <div>Loading...</div>;
     }
 
+    let healthCare = '';
+    if (this.props.user) {
+      let modalContent = '';
+      if (this.state.modalComponentId === 'DicomStorePicker') {
+        modalContent = <ConnectedDicomStorePicker onClose={this.update} />;
+      } else if (this.state.modalComponentId === 'DicomFilesUploader') {
+        modalContent = <ConnectedDicomFilesUploader onClose={this.update} />;
+      }
+      healthCare = (
+        <>
+          <div className="form-inline form-group pull-right">
+            <button
+              className="btn btn-primary "
+              onClick={() => this.openModal('DicomStorePicker')}
+            >
+              Change Dicom Store
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => this.openModal('DicomFilesUploader')}
+            >
+              Upload Studies
+            </button>
+          </div>
+          \<div className="col-md-6 col-md-offset-3">{modalContent}</div>
+        </>
+      );
+    }
+    let studyList = <></>;
+    if (this.state.showStudyList) {
+      studyList = (
+        <div name="paginationArea">
+          <StudyList
+            studies={this.state.studies}
+            studyListFunctionsEnabled={false}
+            onImport={this.onImport}
+            onSelectItem={this.onSelectItem}
+            pageSize={this.rowsPerPage}
+            defaultSort={StudyListWithData.defaultSort}
+            studyListDateFilterNumDays={
+              StudyListWithData.studyListDateFilterNumDays
+            }
+            onSearch={this.onSearch}
+          />
+        </div>
+      );
+    }
     return (
       <>
         <ConnectedHeader home={true} user={this.props.user} />
-        <StudyList
-          studies={this.state.studies}
-          studyListFunctionsEnabled={false}
-          onImport={this.onImport}
-          onSelectItem={this.onSelectItem}
-          pageSize={this.rowsPerPage}
-          defaultSort={StudyListWithData.defaultSort}
-          studyListDateFilterNumDays={
-            StudyListWithData.studyListDateFilterNumDays
-          }
-          onSearch={this.onSearch}
-        />
+        {healthCare}
+        {studyList}
       </>
     );
   }
