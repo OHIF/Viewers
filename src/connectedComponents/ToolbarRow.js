@@ -12,10 +12,9 @@ import PropTypes from 'prop-types';
 
 class ToolbarRow extends Component {
   static propTypes = {
-    isLeftSidebarOpen: PropTypes.bool.isRequired,
-    isRightSidebarOpen: PropTypes.bool.isRequired,
-    setLeftSidebarOpen: PropTypes.func,
-    setRightSidebarOpen: PropTypes.func,
+    isLeftSidePanelOpen: PropTypes.bool.isRequired,
+    isRightSidePanelOpen: PropTypes.bool.isRequired,
+    handleSidePanelChange: PropTypes.func,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
@@ -38,6 +37,23 @@ class ToolbarRow extends Component {
     };
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
+
+    this.buttonGroups = {
+      left: [
+        {
+          value: 'studies',
+          icon: 'th-large',
+          bottomLabel: 'Series',
+        },
+      ],
+      right: [
+        {
+          value: 'measurements',
+          icon: 'list',
+          bottomLabel: 'Measurements',
+        },
+      ],
+    };
   }
 
   componentDidUpdate(prevProps) {
@@ -51,39 +67,7 @@ class ToolbarRow extends Component {
     }
   }
 
-  onLeftSidebarValueChanged = value => {
-    this.props.setLeftSidebarOpen(!!value);
-  };
-
-  onRightSidebarValueChanged = value => {
-    this.props.setRightSidebarOpen(!!value);
-  };
-
   render() {
-    const leftSidebarToggle = [
-      {
-        value: 'studies',
-        icon: 'th-large',
-        bottomLabel: 'Series',
-      },
-    ];
-
-    const rightSidebarToggle = [
-      {
-        value: 'measurements',
-        icon: 'list',
-        bottomLabel: 'Measurements',
-      },
-    ];
-
-    const leftSidebarValue = this.props.isLeftSidebarOpen
-      ? leftSidebarToggle[0].value
-      : null;
-
-    const rightSidebarValue = this.props.isRightSidebarOpen
-      ? rightSidebarToggle[0].value
-      : null;
-
     const buttonComponents = _getButtonComponents.call(
       this,
       this.state.toolbarButtons,
@@ -102,9 +86,9 @@ class ToolbarRow extends Component {
         <div className="ToolbarRow">
           <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
             <RoundedButtonGroup
-              options={leftSidebarToggle}
-              value={leftSidebarValue}
-              onValueChanged={this.onLeftSidebarValueChanged}
+              options={this.buttonGroups.left}
+              value={''}
+              onValueChanged={this.props.handleSidePanelChange}
             />
           </div>
           {buttonComponents}
@@ -115,9 +99,9 @@ class ToolbarRow extends Component {
             style={{ marginLeft: 'auto' }}
           >
             <RoundedButtonGroup
-              options={rightSidebarToggle}
-              value={rightSidebarValue}
-              onValueChanged={this.onRightSidebarValueChanged}
+              options={this.buttonGroups.right}
+              value={''}
+              onValueChanged={this.props.handleSidePanelChange}
             />
           </div>
         </div>

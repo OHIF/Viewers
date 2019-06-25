@@ -1,4 +1,4 @@
-import styles from './SidePanel.css';
+import './SidePanel.css';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -13,20 +13,17 @@ class SidePanel extends Component {
 
   constructor(props) {
     super(props);
-    console.log(props);
-    console.log(styles['sidebar-menu']);
   }
 
   render() {
+    const fromSideClass =
+      this.props.from === 'right' ? 'from-right' : 'from-left';
+
     return (
       <section
-        className={classNames(
-          'sidebar-menu',
-          styles[`from-${this.props.from}`],
-          {
-            'is-open': this.props.isOpen,
-          }
-        )}
+        className={classNames('sidepanel', fromSideClass, {
+          'is-open': this.props.isOpen,
+        })}
       >
         {this.props.children}
       </section>

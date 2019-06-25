@@ -1,17 +1,23 @@
-.sidebar {
+.sidepanel {
   flex: 1;
   height: 100%;
-  transition: var(--sidebar-transition);
+  transition: var(--sidepanel-transition);
 }
 
 .from-left {
   border-right: var(--ui-border-thickness) solid var(--ui-border-color);
-  margin-left: calc(var(--left-sidebar-menu-width) * -1);
-  max-width: var(--left-sidebar-menu-width);
-  order: 1;
+  margin-left: calc(var(--left-sidepanel-menu-width) * -1);
+  max-width: var(--left-sidepanel-menu-width);
 }
 
-.sidebar-left.sidebar-open {
+.from-right {
+  border-left: var(--ui-border-thickness) solid var(--ui-border-color);
+  margin-right: calc(var(--right-sidepanel-menu-width) * -1);
+  max-width: var(--right-sidepanel-menu-width);
+}
+
+.sidepanel.is-open {
+  margin-right: 0;
   margin-left: 0;
 }
 
@@ -20,16 +26,6 @@
   height: 100%;
   order: 2;
   overflow: hidden;
-  transition: var(--sidebar-transition);
+  transition: var(--sidepanel-transition);
   width: 100%;
-}
-
-.sidebar-right {
-  margin-right: calc(var(--right-sidebar-menu-width) * -1);
-  max-width: var(--right-sidebar-menu-width);
-  order: 3;
-}
-
-.sidebar-right.sidebar-open {
-  margin-right: 0;
 }

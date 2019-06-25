@@ -52,10 +52,6 @@ if (window.config.hotkeys) {
 
 setupTools(store);
 
-// const children = {
-//   viewport: [<ConnectedToolContextMenu key="tool-context" />],
-// };
-
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
   OHIFCornerstoneExtension,

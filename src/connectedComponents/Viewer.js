@@ -81,8 +81,8 @@ class Viewer extends Component {
   }
 
   state = {
-    isLeftSidebarOpen: false,
-    isRightSidebarOpen: false,
+    isLeftSidePanelOpen: false,
+    isRightSidePanelOpen: false,
     studiesForBrowser: [],
   };
 
@@ -252,30 +252,33 @@ class Viewer extends Component {
         </WhiteLabellingContext.Consumer>
 
         {/* TOOLBAR */}
-        <ConnectedToolbarRow />
+        <ConnectedToolbarRow
+          handleSidePanelChange={(a, b, c) => {
+            console.log(a, b, c);
+          }}
+        />
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
 
-        {/* VIEWPORTS + SIDEBARS */}
+        {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">
           {/* LEFT */}
-          <SidePanel from="left" isOpen={this.state.isLeftSidebarOpen}>
+          <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
             <ConnectedStudyBrowser studies={this.state.studiesForBrowser} />
           </SidePanel>
 
           {/* MAIN */}
-          <div className={classNames('main-content' /* sidebar-right-open */)}>
+          <div className={classNames('main-content')}>
             <ConnectedViewerMain studies={this.props.studies} />
           </div>
 
           {/* RIGHT */}
-          <SidePanel from="right" isOpen={this.state.isRightSidebarOpen}>
+          <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
             {/* <ConnectedMeasurementTable /> */}
           </SidePanel>
         </div>
         <ConnectedLabellingOverlay />
-        {/* </div> */}
       </>
     );
   }
