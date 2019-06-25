@@ -12,16 +12,11 @@ import PropTypes from 'prop-types';
 
 class ToolbarRow extends Component {
   static propTypes = {
-    leftSidebarOpen: PropTypes.bool.isRequired,
-    rightSidebarOpen: PropTypes.bool.isRequired,
+    isLeftSidebarOpen: PropTypes.bool.isRequired,
+    isRightSidebarOpen: PropTypes.bool.isRequired,
     setLeftSidebarOpen: PropTypes.func,
     setRightSidebarOpen: PropTypes.func,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
-  };
-
-  static defaultProps = {
-    leftSidebarOpen: false,
-    rightSidebarOpen: false,
   };
 
   constructor(props) {
@@ -81,11 +76,11 @@ class ToolbarRow extends Component {
       },
     ];
 
-    const leftSidebarValue = this.props.leftSidebarOpen
+    const leftSidebarValue = this.props.isLeftSidebarOpen
       ? leftSidebarToggle[0].value
       : null;
 
-    const rightSidebarValue = this.props.rightSidebarOpen
+    const rightSidebarValue = this.props.isRightSidebarOpen
       ? rightSidebarToggle[0].value
       : null;
 

@@ -120,7 +120,6 @@ Plugins
 /*"PUBLIC_SETTINGS": {
     "ui": {
       "studyListFunctionsEnabled": true,
-      "leftSidebarOpen": false,
       "displaySetNavigationLoopOverSeries": false,
       "displaySetNavigationMultipleViewports": true,
       "autoPositionMeasurementsTextCallOuts": "TRLB"
