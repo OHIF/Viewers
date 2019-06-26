@@ -1,3 +1,13 @@
+.FlexboxLayout {
+  display: flex;
+  flex: 1;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  height: calc(100% - var(--toolbar-height));
+  width: 100%;
+  overflow: hidden;
+}
+
 .sidepanel {
   flex: 1;
   height: 100%;
@@ -24,7 +34,6 @@
 .main-content {
   flex: 1;
   height: 100%;
-  order: 2;
   overflow: hidden;
   transition: var(--sidepanel-transition);
   width: 100%;

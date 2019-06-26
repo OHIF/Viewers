@@ -14,7 +14,6 @@ import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
-import './FlexboxLayout.css';
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -253,8 +252,15 @@ class Viewer extends Component {
 
         {/* TOOLBAR */}
         <ConnectedToolbarRow
-          handleSidePanelChange={(a, b, c) => {
-            console.log(a, b, c);
+          handleSidePanelChange={(side, value) => {
+            const magicSide = side && side[0].toUpperCase() + side.slice(1);
+            const key = `is${magicSide}SidePanelOpen`;
+            const original = this.state[key];
+
+            let updated = {};
+            updated[key] = !original;
+            console.log(updated);
+            this.setState(updated);
           }}
         />
 

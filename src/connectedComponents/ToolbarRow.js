@@ -81,6 +81,12 @@ class ToolbarRow extends Component {
       zIndex: 999,
     };
 
+    const onPress = (side, value) => {
+      this.props.handleSidePanelChange(side, value);
+    };
+    const onPressLeft = onPress.bind(this, 'left');
+    const onPressRight = onPress.bind(this, 'right');
+
     return (
       <>
         <div className="ToolbarRow">
@@ -88,7 +94,7 @@ class ToolbarRow extends Component {
             <RoundedButtonGroup
               options={this.buttonGroups.left}
               value={''}
-              onValueChanged={this.props.handleSidePanelChange}
+              onValueChanged={onPressLeft}
             />
           </div>
           {buttonComponents}
@@ -101,7 +107,7 @@ class ToolbarRow extends Component {
             <RoundedButtonGroup
               options={this.buttonGroups.right}
               value={''}
-              onValueChanged={this.props.handleSidePanelChange}
+              onValueChanged={onPressRight}
             />
           </div>
         </div>
