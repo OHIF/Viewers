@@ -1,7 +1,11 @@
 import './ToolbarRow.css';
 
 import React, { Component } from 'react';
-import { RoundedButtonGroup, ToolbarButton } from 'react-viewerbase';
+import {
+  RoundedButtonGroup,
+  ToolbarButton,
+  ExpandableToolMenu,
+} from 'react-viewerbase';
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
@@ -125,36 +129,64 @@ class ToolbarRow extends Component {
  */
 function _getButtonComponents(toolbarButtons, activeButtons) {
   return toolbarButtons.map((button, index) => {
-    // TODO: If `button.buttons`, use `ExpandedToolMenu`
-    // I don't believe any extensions currently leverage this
+    if (button.buttons) {
+      // Iterate over button definitions and update `onClick` behavior
+      const childButtons = button.buttons.map(childButton => {
+        childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
+        return childButton;
+      });
+
+      return (
+        <ExpandableToolMenu
+          key={button.id}
+          text={button.label}
+          icon={button.icon}
+          buttons={childButtons}
+        />
+      );
+    }
+
     return (
       <ToolbarButton
         key={button.id}
         label={button.label}
         icon={button.icon}
-        onClick={(evt, props) => {
-          if (button.commandName) {
-            const options = Object.assign({ evt }, button.commandOptions);
-            commandsManager.runCommand(button.commandName, options);
-          }
-
-          // TODO: Use Types ENUM
-          // TODO: We can update this to be a `getter` on the extension to query
-          //       For the active tools after we apply our updates?
-          if (button.type === 'setToolActive') {
-            this.setState({
-              activeButtons: [button.id],
-            });
-          } else if (button.type === 'builtIn') {
-            this._handleBuiltIn(button.options);
-          }
-        }}
+        onClick={_handleToolbarButtonClick.bind(this, button)}
         isActive={activeButtons.includes(button.id)}
       />
     );
   });
 }
 
+/**
+ * A handy way for us to handle different button types. IE. firing commands for
+ * buttons, or initiation built in behavior.
+ *
+ * @param {*} button
+ * @param {*} evt
+ * @param {*} props
+ */
+function _handleToolbarButtonClick(button, evt, props) {
+  if (button.commandName) {
+    const options = Object.assign({ evt }, button.commandOptions);
+    commandsManager.runCommand(button.commandName, options);
+  }
+
+  // TODO: Use Types ENUM
+  // TODO: We can update this to be a `getter` on the extension to query
+  //       For the active tools after we apply our updates?
+  if (button.type === 'setToolActive') {
+    this.setState({
+      activeButtons: [button.id],
+    });
+  } else if (button.type === 'builtIn') {
+    this._handleBuiltIn(button.options);
+  }
+}
+
+/**
+ *
+ */
 function _getVisibleToolbarButtons() {
   const toolbarModules = extensionManager.modules[MODULE_TYPES.TOOLBAR];
   const toolbarButtonDefinitions = [];
