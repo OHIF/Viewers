@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-//import OHIF from 'ohif-core';
-//import { CineDialog } from 'react-viewerbase';
 
+import { MODULE_TYPES } from 'ohif-core';
 import OHIF from 'ohif-core';
 import moment from 'moment';
 import WhiteLabellingContext from '../WhiteLabellingContext.js';
 import ConnectedHeader from './ConnectedHeader.js';
-// import ConnectedFlexboxLayout from './ConnectedFlexboxLayout.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
+import { extensionManager } from './../App.js';
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -82,7 +81,9 @@ class Viewer extends Component {
   state = {
     isLeftSidePanelOpen: false,
     isRightSidePanelOpen: false,
-    studiesForBrowser: [],
+    selectedRightSidePanel: '',
+    selectedLeftSidePanel: '',
+    thumbnails: [],
   };
 
   retrieveMeasurements = (patientId, timepointIds) => {
@@ -180,65 +181,25 @@ class Viewer extends Component {
     measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
     ////
-    const studiesForBrowser = this.getStudiesForBrowser();
+    const thumbnails = _mapStudiesToThumbnails(studies);
 
     this.setState({
-      studiesForBrowser,
+      thumbnails,
     });
   }
 
-  /**
-   *
-   */
-  getStudiesForBrowser = () => {
-    const { studies } = this.props;
-
-    // TODO[react]:
-    // - Add sorting of display sets
-    // - Add useMiddleSeriesInstanceAsThumbnail
-    // - Add showStackLoadingProgressBar option
-    return studies.map(study => {
-      const { studyInstanceUid } = study;
-
-      const thumbnails = study.displaySets.map(displaySet => {
-        const {
-          displaySetInstanceUid,
-          seriesDescription,
-          seriesNumber,
-          instanceNumber,
-          numImageFrames,
-          // TODO: This is undefined
-          // modality,
-        } = displaySet;
-
-        let imageId;
-        let altImageText = ' '; // modality
-
-        if (displaySet.images && displaySet.images.length) {
-          imageId = displaySet.images[0].getImageId();
-        } else {
-          altImageText = 'SR';
-        }
-
-        return {
-          imageId,
-          altImageText,
-          displaySetInstanceUid,
-          seriesDescription,
-          seriesNumber,
-          instanceNumber,
-          numImageFrames,
-        };
-      });
-
-      return {
-        studyInstanceUid,
-        thumbnails,
-      };
-    });
-  };
-
   render() {
+    let VisiblePanel;
+    const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
+
+    panelExtensions.forEach(panelExt => {
+      panelExt.module.components.forEach(comp => {
+        if (comp.id === this.state.selectedRightSidePanel) {
+          VisiblePanel = comp.component;
+        }
+      });
+    });
+
     return (
       <>
         {/* HEADER */}
@@ -252,15 +213,26 @@ class Viewer extends Component {
 
         {/* TOOLBAR */}
         <ConnectedToolbarRow
-          handleSidePanelChange={(side, value) => {
-            const magicSide = side && side[0].toUpperCase() + side.slice(1);
-            const key = `is${magicSide}SidePanelOpen`;
-            const original = this.state[key];
+          isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
+          isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+          handleSidePanelChange={(side, selectedPanel) => {
+            const sideClicked = side && side[0].toUpperCase() + side.slice(1);
+            const openKey = `is${sideClicked}SidePanelOpen`;
+            const selectedKey = `selected${sideClicked}SidePanel`;
+            const updatedState = Object.assign({}, this.state);
 
-            let updated = {};
-            updated[key] = !original;
-            console.log(updated);
-            this.setState(updated);
+            const isOpen = updatedState[openKey];
+            const prevSelectedPanel = updatedState[selectedKey];
+            const isSameSelectedPanel = prevSelectedPanel === selectedPanel;
+
+            updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
+
+            const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
+            if (isClosedOrShouldClose) {
+              updatedState[openKey] = !updatedState[openKey];
+            }
+
+            this.setState(updatedState);
           }}
         />
 
@@ -271,7 +243,7 @@ class Viewer extends Component {
         <div className="FlexboxLayout">
           {/* LEFT */}
           <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-            <ConnectedStudyBrowser studies={this.state.studiesForBrowser} />
+            <ConnectedStudyBrowser studies={this.state.thumbnails} />
           </SidePanel>
 
           {/* MAIN */}
@@ -282,6 +254,14 @@ class Viewer extends Component {
           {/* RIGHT */}
           <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
             {/* <ConnectedMeasurementTable /> */}
+            {VisiblePanel && (
+              <VisiblePanel
+                viewports={
+                  window.store.getState().viewports.viewportSpecificData
+                }
+                activeIndex={window.store.getState().activeViewportIndex}
+              />
+            )}
           </SidePanel>
         </div>
         <ConnectedLabellingOverlay />
@@ -291,3 +271,55 @@ class Viewer extends Component {
 }
 
 export default Viewer;
+
+/**
+ * What types are these? Why do we have "mapping" dropped in here instead of in
+ * a mapping layer?
+ *
+ * TODO[react]:
+ * - Add sorting of display sets
+ * - Add useMiddleSeriesInstanceAsThumbnail
+ * - Add showStackLoadingProgressBar option
+ *
+ * @param {Study[]} studies
+ * @param {DisplaySet[]} studies[].displaySets
+ */
+const _mapStudiesToThumbnails = function(studies) {
+  return studies.map(study => {
+    const { studyInstanceUid } = study;
+
+    const thumbnails = study.displaySets.map(displaySet => {
+      const {
+        displaySetInstanceUid,
+        seriesDescription,
+        seriesNumber,
+        instanceNumber,
+        numImageFrames,
+      } = displaySet;
+
+      let imageId;
+      let altImageText = ' '; // modality
+
+      if (displaySet.images && displaySet.images.length) {
+        imageId = displaySet.images[0].getImageId();
+      } else {
+        altImageText = 'SR';
+      }
+
+      return {
+        imageId,
+        altImageText,
+        displaySetInstanceUid,
+        seriesDescription,
+        seriesNumber,
+        instanceNumber,
+        numImageFrames,
+      };
+    });
+
+    return {
+      studyInstanceUid,
+      thumbnails,
+    };
+  });
+};

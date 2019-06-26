@@ -11,10 +11,6 @@ class SidePanel extends Component {
     children: PropTypes.node,
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const fromSideClass =
       this.props.from === 'right' ? 'from-right' : 'from-left';

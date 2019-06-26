@@ -1,3 +1,5 @@
+// TODO: REPLACE THIS WITH A CONTEXT PROVIDER
+// EVERYTHING IN `VIEWER.JS` COULD USE THIS FOR APPROPRIATE CONTEXT
 import ToolbarRow from './ToolbarRow';
 import { connect } from 'react-redux';
 import { getActiveContexts } from './../store/layout/selectors.js';

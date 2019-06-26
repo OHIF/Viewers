@@ -42,6 +42,27 @@ class ToolbarRow extends Component {
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
 
+    const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
+    const visibleMenuOptions = [];
+
+    panelModules.forEach(panelExtension => {
+      const panelModule = panelExtension.module;
+      const defaultContexts = Array.from(panelModule.defaultContext);
+
+      // MENU OPTIONS
+      panelModule.menuOptions.forEach(menuOption => {
+        const contexts = Array.from(menuOption.context || defaultContexts);
+
+        if (this.props.activeContexts.some(actx => contexts.includes(actx))) {
+          visibleMenuOptions.push({
+            value: menuOption.target,
+            icon: menuOption.icon,
+            bottomLabel: menuOption.label,
+          });
+        }
+      });
+    });
+
     this.buttonGroups = {
       left: [
         {
@@ -50,13 +71,7 @@ class ToolbarRow extends Component {
           bottomLabel: 'Series',
         },
       ],
-      right: [
-        {
-          value: 'measurements',
-          icon: 'list',
-          bottomLabel: 'Measurements',
-        },
-      ],
+      right: visibleMenuOptions,
     };
   }
 
@@ -108,11 +123,13 @@ class ToolbarRow extends Component {
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
           >
-            <RoundedButtonGroup
-              options={this.buttonGroups.right}
-              value={''}
-              onValueChanged={onPressRight}
-            />
+            {this.buttonGroups.right.length && (
+              <RoundedButtonGroup
+                options={this.buttonGroups.right}
+                value={''}
+                onValueChanged={onPressRight}
+              />
+            )}
           </div>
         </div>
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>

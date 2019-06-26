@@ -22,6 +22,7 @@ import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
+import OHIFSegmentationPlugin from 'ohif-segmentation-plugin';
 // ~~ EXTENSIONS
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
@@ -68,6 +69,7 @@ extensionManager.registerExtensions([
   OHIFDicomPDFExtension,
   OHIFDicomHtmlExtension,
   OHIFDicomMicroscopyExtension,
+  OHIFSegmentationPlugin,
 ]);
 
 // TODO[react] Use a provider when the whole tree is React
