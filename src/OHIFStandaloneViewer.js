@@ -10,6 +10,7 @@ import { withRouter } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from 'react-viewerbase';
+import CONFIG from './config/';
 
 import './OHIFStandaloneViewer.css';
 import './variables.css';
@@ -83,8 +84,12 @@ class OHIFStandaloneViewer extends Component {
       <Switch>
         <Route exact path="/silent-refresh.html" onEnter={reload} />
         <Route exact path="/logout-redirect.html" onEnter={reload} />
-        <Route exact path="/studylist" component={StudyListRouting} />
-        <Route exact path="/" component={StudyListRouting} />
+        {CONFIG.SHOW_STUDY_LIST && (
+          <Route exact path="/studylist" component={StudyListRouting} />
+        )}
+        {CONFIG.SHOW_STUDY_LIST && (
+          <Route exact path="/" component={StudyListRouting} />
+        )}
         <Route exact path="/viewer" component={StandaloneRouting} />
         <Route path="/viewer/:studyInstanceUids" component={ViewerRouting} />
         <Route

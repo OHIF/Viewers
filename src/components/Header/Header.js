@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { AboutModal } from 'react-viewerbase';
 import { hotkeysManager } from './../../App.js';
 import { withTranslation } from 'react-i18next';
+import CONFIG from '../../config/';
 
 class Header extends Component {
   static propTypes = {
@@ -85,7 +86,7 @@ class Header extends Component {
 
           {this.props.children}
 
-          {!this.props.home && (
+          {CONFIG.SHOW_STUDY_LIST && !this.props.home && (
             <Link
               className="header-btn header-studyListLinkSection"
               to={{
