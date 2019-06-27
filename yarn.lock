@@ -1244,29 +1244,28 @@
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
 
-"@ohif/extension-vtk@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.7.tgz#5bad8e35cae65957b467a12cc17e027ce80ad40a"
-  integrity sha512-yEdtnk7ImIoM3YrDkXXFo9ClJAXbd3rc9si3GlrOY6ImeWtwTf5LvcHG3QCe1iIfEJ2Q8wkGfERddbSw3joIYQ==
+"@ohif/extension-vtk@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.9.tgz#4974dc75c8dee900d32b25217f560d3277ab3538"
+  integrity sha512-rWXjdKy9zjSjhbkxY8eLCHnNUUZAFFv/Yyiq03ufcOVZtA8Ec9aezAODaYsUGYWnz2CqUsfmQZO0eQWpLRcv8A==
   dependencies:
     "@babel/runtime" "^7.4.5"
-    "@ohif/i18n" "0.0.4"
     react-vtkjs-viewport "0.0.9"
-    vtk.js "^8.9.1"
+    vtk.js "^8.11.0"
 
-"@ohif/i18n@0.0.4", "@ohif/i18n@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.4.tgz#e54176e7799e311dbaff37995f9d2745b58cbd0f"
-  integrity sha512-lW+S9weZbJS300yCRR8Ygb1KTULbD1Qx5ZGcYUXyseJIWr5jeJ4V/6FdS30w8u8ejiIVwF8rYOguHsmueQrkdw==
+"@ohif/i18n@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.1.0.tgz#71c43530822d6a43213adccf9109354407ee0d96"
+  integrity sha512-0LIbqlWtDc+FLI9Fkb5ZvMhbxY3oMuCBa0CXJ8+CAY+j4/GK4hFu5b4INjJjlLmJ9FNOj3YIJKHsjWF4RH0tOw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     rollup-plugin-json "^4.0.0"
 
-"@ohif/i18n@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.6.tgz#a9f606db58f00b583ed51fb1a768bb058c933914"
-  integrity sha512-/eFmodo0mgNlpIZIM4VlTbK2ZzADR36csSLyQB4s5K9UsecKc8JEmXqKivxRvzO04sc+1vUfz2o/PfBfq1MswA==
+"@ohif/i18n@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.4.tgz#e54176e7799e311dbaff37995f9d2745b58cbd0f"
+  integrity sha512-lW+S9weZbJS300yCRR8Ygb1KTULbD1Qx5ZGcYUXyseJIWr5jeJ4V/6FdS30w8u8ejiIVwF8rYOguHsmueQrkdw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -15411,10 +15410,10 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vtk.js@^8.9.1:
-  version "8.10.2"
-  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-8.10.2.tgz#3e98609cd7111680db2884ddfd19ac868584c6c8"
-  integrity sha512-yGSjLfKX+m5KXHQ4OnD20f4/IStmHdoInGVIb3DSFcIyvliGbRCfZBN6VdWh6IQdg38Dn9b/CnKNtz2zv2uh4w==
+vtk.js@^8.11.0:
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-8.11.0.tgz#9113815b1380792520b83c727adbed17a4d4bda4"
+  integrity sha512-0pHVp13AxTqLM41O8ygrlFBwOnN8jSNBa9ilKW4gbHkMxdOl6VvuNAhZmTutQpILeryNFrjNGjIbQLzcJRVOoQ==
   dependencies:
     base64-js "1.2.1"
     blueimp-md5 "2.10.0"
