@@ -1244,28 +1244,19 @@
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
 
-"@ohif/extension-vtk@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.0.9.tgz#4974dc75c8dee900d32b25217f560d3277ab3538"
-  integrity sha512-rWXjdKy9zjSjhbkxY8eLCHnNUUZAFFv/Yyiq03ufcOVZtA8Ec9aezAODaYsUGYWnz2CqUsfmQZO0eQWpLRcv8A==
+"@ohif/extension-vtk@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.1.0.tgz#9c028b998318090ba69714457ae3638e2da90a49"
+  integrity sha512-cG1XNpcJX3LyiR1GL92olnFGT8KCKflyP2bGu1vTwj2bjCrH8zpenhzC248k2VTpm+HyIZFdTNZ0pTIq39vdSw==
   dependencies:
     "@babel/runtime" "^7.4.5"
     react-vtkjs-viewport "0.0.9"
     vtk.js "^8.11.0"
 
-"@ohif/i18n@0.1.0":
+"@ohif/i18n@0.1.0", "@ohif/i18n@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.1.0.tgz#71c43530822d6a43213adccf9109354407ee0d96"
   integrity sha512-0LIbqlWtDc+FLI9Fkb5ZvMhbxY3oMuCBa0CXJ8+CAY+j4/GK4hFu5b4INjJjlLmJ9FNOj3YIJKHsjWF4RH0tOw==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    classnames "^2.2.6"
-    rollup-plugin-json "^4.0.0"
-
-"@ohif/i18n@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.4.tgz#e54176e7799e311dbaff37995f9d2745b58cbd0f"
-  integrity sha512-lW+S9weZbJS300yCRR8Ygb1KTULbD1Qx5ZGcYUXyseJIWr5jeJ4V/6FdS30w8u8ejiIVwF8rYOguHsmueQrkdw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -1480,6 +1471,15 @@
     "@svgr/plugin-jsx" "^4.1.0"
     "@svgr/plugin-svgo" "^4.0.3"
     loader-utils "^1.1.0"
+
+"@tanem/react-nprogress@^1.1.25":
+  version "1.1.25"
+  resolved "https://registry.yarnpkg.com/@tanem/react-nprogress/-/react-nprogress-1.1.25.tgz#1c8e75a30181d5f9da3f99f8c97414d25bd7d398"
+  integrity sha512-SpHAd1ln3KeJf1UWIioPKXclzZ82UrmIH0piGY0J3llx30OAROEML6EWbIpHledMg7qAuB4NpJbHG0uPldBJmg==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+    hoist-non-react-statics "^3.3.0"
+    prop-types "^15.7.2"
 
 "@types/babel__core@^7.1.0":
   version "7.1.2"
@@ -12518,13 +12518,23 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.10.0.tgz#4ac07649325759f8a58fc3be50dea4d1db8f13f8"
-  integrity sha512-pUt+HUGoEkDnVhxcg+gsoRzegEPVpsMPH8cnJINRoaATqbxc0jbt1N+3fTNTbPMMKZYMxC99L5bQ6OQ1QF+3qw==
+react-transition-group@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.1.1.tgz#16efe9ac8c68306f6bef59c7da5a96b4dfd9fb32"
+  integrity sha512-K/N1wqJ2GRP2yj3WBqEUYa0KV5fiaAWpUfU9SpHOHefeKvyrO+VrnMBML21M19QZoVbDZKmuQFHZYoMMi1xuJA==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+    dom-helpers "^3.4.0"
+    loose-envify "^1.4.0"
+    prop-types "^15.6.2"
+
+react-viewerbase@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.12.0.tgz#0315c4360ec51619e36defce403cebd29c430485"
+  integrity sha512-YTbin/rUzL0puHFqqyaHUL1ZZ0g0banK6ETfagoEsuCONP/NI2jGkXnYIrkm2rfX44GKeixsld6RN3cdniU/mw==
   dependencies:
     "@babel/runtime" "7.2.0"
-    "@ohif/i18n" "^0.0.4"
+    "@ohif/i18n" "^0.1.0"
     classnames "2.2.6"
     i18next "^17.0.3"
     i18next-browser-languagedetector "^3.0.1"
