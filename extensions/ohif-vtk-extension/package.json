@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}"
   },
   "peerDependencies": {
-    "@ohif/i18n": "0.0.4",
+    "@ohif/i18n": "0.0.6",
     "cornerstone-core": "^2.2.8",
     "cornerstone-wado-image-loader": "^2.2.3",
     "dcmjs": "^0.4.7",

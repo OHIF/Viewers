@@ -38,5 +38,7 @@
   "Manual": "Manual",
   "Save": "Guardar",
   "Reset to Defaults": "$t(Common:reset) por defectos",
-  "Cancel": "Cancelar"
+  "Cancel": "Cancelar",
+  "2D MPR": "2D MPR",
+  "WWWC": "WWWC"
 }

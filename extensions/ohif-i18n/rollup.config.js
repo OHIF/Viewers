@@ -7,7 +7,6 @@ import url from 'rollup-plugin-url';
 import pkg from './package.json';
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins';
-import copy from 'rollup-plugin-copy';
 import json from 'rollup-plugin-json';
 
 const globals = {
@@ -16,9 +15,9 @@ const globals = {
   'react-redux': 'ReactRedux',
   'react-resize-detector': 'ReactResizeDetector',
   'prop-types': 'PropTypes',
-  'i18next': 'i18next',
+  i18next: 'i18next',
   'react-i18next': 'react-i18next',
-  'i18next-browser-languagedetector': 'LngDetector'
+  'i18next-browser-languagedetector': 'LngDetector',
 };
 
 export default {
@@ -46,16 +45,12 @@ export default {
     postcss({
       modules: false,
     }),
-    copy({
-      targets: ['src/locales'],
-      outputFolder: 'dist',
-    }),
     json({
       // ignores indent and generates the smallest code
       compact: true, // Default: false
 
       // generate a named export for every property of the JSON object
-      namedExports: true // Default: true
+      namedExports: true, // Default: true
     }),
     url(),
     babel({
@@ -68,5 +63,5 @@ export default {
       include: ['node_modules/**', '.yalc/**'],
     }),
   ],
-  external: Object.keys(pkg.peerDependencies || {})
+  external: Object.keys(pkg.peerDependencies || {}),
 };
