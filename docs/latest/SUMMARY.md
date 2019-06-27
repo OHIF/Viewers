@@ -6,6 +6,7 @@
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
   - [Themeing](essentials/themeing.md)
+  - [Translating](essentials/translating.md)
   - [Troubleshooting](essentials/troubleshooting.md)
 - [Scope of Project](essentials/scope-of-project.md)
 

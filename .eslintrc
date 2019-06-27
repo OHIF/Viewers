@@ -1,16 +1,18 @@
 {
-  "extends": [
-    "react-app",
-    "eslint:recommended",
-    "plugin:react/recommended"
-  ],
+  "extends": ["react-app", "eslint:recommended", "plugin:react/recommended"],
   "parser": "babel-eslint",
   "env": {
     "jest": true
   },
   "settings": {
     "react": {
-      "version": "detect",
-    },
+      "version": "detect"
+    }
   },
+  "globals": {
+    "cy": true,
+    "context": true,
+    "Cypress": true,
+    "assert": true
+  }
 }

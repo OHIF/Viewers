@@ -3,27 +3,10 @@ const defaultState = {
   rightSidebarOpen: false,
   labelling: {},
   contextMenu: {},
-  activeContexts: [],
 };
 
 const ui = (state = defaultState, action) => {
   switch (action.type) {
-    // ~ ACTIVE CONTEXTS
-    // https://redux.js.org/recipes/structuring-reducers/immutable-update-patterns#inserting-and-removing-items-in-arrays
-    case 'ADD_ACTIVE_CONTEXT': {
-      const shallowCopy = Object.assign({}, state);
-      shallowCopy.activeContexts = [...shallowCopy.activeContexts, action.item];
-      return shallowCopy;
-    }
-    case 'REMOVE_ACTIVE_CONTEXT': {
-      const shallowCopy = Object.assign({}, state);
-      shallowCopy.activeContexts = shallowCopy.activeContexts.filter(
-        item => item !== action.item
-      );
-      return shallowCopy;
-    }
-    case 'CLEAR_ACTIVE_CONTEXTS':
-      return Object.assign({}, state, { activeContexts: [] });
     // ~ SIDEBAR
     case 'SET_LEFT_SIDEBAR_OPEN':
       return Object.assign({}, state, { leftSidebarOpen: action.state });

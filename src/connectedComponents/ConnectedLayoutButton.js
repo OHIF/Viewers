@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
 import { LayoutButton } from 'react-viewerbase';
 import OHIF from 'ohif-core';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 

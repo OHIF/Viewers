@@ -1,14 +1,16 @@
-import { connect } from 'react-redux';
-import PluginSwitch from './PluginSwitch.js';
 import OHIF from 'ohif-core';
+import PluginSwitch from './PluginSwitch.js';
+import { commandsManager } from './../App.js';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
-  const { activeViewportIndex, layout } = state.viewports;
+  const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
 
   return {
     activeViewportIndex,
+    viewportSpecificData,
     layout,
   };
 };
@@ -21,23 +23,23 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-function setSingleLayoutData(originalArray, viewportIndex, data) {
+/*function setSingleLayoutData(originalArray, viewportIndex, data) {
   const viewports = originalArray.slice();
   const layoutData = Object.assign({}, viewports[viewportIndex], data);
 
   viewports[viewportIndex] = layoutData;
 
   return viewports;
-}
+}*/
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  const { activeViewportIndex, layout } = propsFromState;
-  const { setLayout } = propsFromDispatch;
+  //const { activeViewportIndex, layout } = propsFromState;
+  //const { setLayout } = propsFromDispatch;
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
   const buttons = [
-    {
+    /*{
       text: 'Acquired',
       type: 'command',
       icon: 'bars',
@@ -59,22 +61,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        console.warn('Axial');
-        const data = {
-          plugin: 'vtk',
-          vtk: {
-            mode: 'mpr',
-            sliceNormal: [0, 0, 1],
-          },
-        };
-
-        const layoutData = setSingleLayoutData(
-          layout.viewports,
-          activeViewportIndex,
-          data
-        );
-
-        setLayout({ viewports: layoutData });
+        commandsManager.runCommand('axial');
       },
     },
     {
@@ -82,22 +69,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        console.warn('Sagittal');
-        const data = {
-          plugin: 'vtk',
-          vtk: {
-            mode: 'mpr',
-            sliceNormal: [1, 0, 0],
-          },
-        };
-
-        const layoutData = setSingleLayoutData(
-          layout.viewports,
-          activeViewportIndex,
-          data
-        );
-
-        setLayout({ viewports: layoutData });
+        commandsManager.runCommand('sagittal');
       },
     },
     {
@@ -105,41 +77,16 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       icon: 'cube',
       active: false,
       onClick: () => {
-        console.warn('Coronal');
-        const data = {
-          plugin: 'vtk',
-          vtk: {
-            mode: 'mpr',
-            sliceNormal: [0, 1, 0],
-          },
-        };
-
-        const layoutData = setSingleLayoutData(
-          layout.viewports,
-          activeViewportIndex,
-          data
-        );
-
-        setLayout({ viewports: layoutData });
+        commandsManager.runCommand('coronal');
+      },
+    },*/
+    {
+      label: '2D MPR',
+      icon: 'cube',
+      onClick: () => {
+        commandsManager.runCommand('mpr2d');
       },
     },
-    /*{
-      text: '3D',
-      icon: `#cube`,
-      onClick: (click) => {
-        console.warn('3D Perspective');
-        const data = {
-          plugin: 'vtk',
-          vtk: {
-            mode: '3d',
-          }
-        };
-
-        const layoutData = setSingleLayoutData(layout.viewports, activeViewportIndex, data);
-
-        setLayout({ viewports: layoutData });
-      }
-    }*/
   ];
 
   return {

@@ -1,5 +1,7 @@
-import OHIF from 'ohif-core';
 import * as dcmjs from 'dcmjs';
+
+import OHIF from 'ohif-core';
+import { api } from 'dicomweb-client';
 
 const { StackManager } = OHIF.utils;
 
@@ -47,12 +49,25 @@ function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
   return stackClone;
 }
 
-function retrieveDicomData(wadoUri) {
-  // TODO: Authorization header depends on the server. If we ever have multiple servers
-  // we will need to figure out how / when to pass this information in.
-  return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
-  }).then(response => response.arrayBuffer());
+function retrieveDicomData(
+  studyInstanceUID,
+  seriesInstanceUID,
+  sopInstanceUID,
+  wadoRoot
+) {
+  const config = {
+    url: wadoRoot,
+    headers: DICOMWeb.getAuthorizationHeader(),
+  };
+
+  const dicomWeb = new api.DICOMwebClient(config);
+  const options = {
+    studyInstanceUID,
+    seriesInstanceUID,
+    sopInstanceUID,
+  };
+
+  return dicomWeb.retrieveInstance(options);
 }
 
 async function handleSegmentationStorage(
@@ -68,8 +83,22 @@ async function handleSegmentationStorage(
     studyInstanceUid,
     displaySetInstanceUid
   );
-  const segWadoUri = displaySet.images[0].getData().wadouri;
-  const arrayBuffer = await retrieveDicomData(segWadoUri);
+
+  // TODO: This is terrible but we need to use WADO-RS or we can't retrieve the SEG
+  // from google cloud
+  const wadoRoot = displaySet.images[0].getData().wadoRoot;
+
+  const StudyInstanceUID = displaySet.images[0].getStudyInstanceUID();
+  const SeriesInstanceUID = displaySet.images[0].getSeriesInstanceUID();
+  const SOPInstanceUID = displaySet.images[0].getSOPInstanceUID();
+
+  const arrayBuffer = await retrieveDicomData(
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    wadoRoot
+  );
+
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
@@ -108,13 +137,13 @@ async function handleSegmentationStorage(
 
   return {
     referenceDataObject,
-    labelmapDataObject
-  }
+    labelmapDataObject,
+  };
 
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack
+    stack,
   };
 }
 

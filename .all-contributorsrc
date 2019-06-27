@@ -11,7 +11,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/607793?v=4",
       "profile": "https://github.com/swederik",
       "contributions": [
-        "code"
+        "code",
+        "infra"
       ]
     },
     {
@@ -38,7 +39,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/5797588?v=4",
       "profile": "http://dannyrb.com/",
       "contributions": [
-        "code"
+        "code",
+        "infra"
       ]
     },
     {
@@ -57,6 +59,33 @@
       "profile": "https://www.linkedin.com/in/siliconvalleynextgeneration/",
       "contributions": [
         "question"
+      ]
+    },
+    {
+      "login": "diego0020",
+      "name": "diego0020",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7297450?v=4",
+      "profile": "https://github.com/diego0020",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dlwire",
+      "name": "David Wire",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1167291?v=4",
+      "profile": "https://github.com/dlwire",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jfmedeiros1820",
+      "name": "João Felipe de Medeiros Moreira",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2211708?v=4",
+      "profile": "https://github.com/jfmedeiros1820",
+      "contributions": [
+        "test"
       ]
     }
   ],
