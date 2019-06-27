@@ -253,7 +253,6 @@ class Viewer extends Component {
 
           {/* RIGHT */}
           <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-            {/* <ConnectedMeasurementTable /> */}
             {VisiblePanel && (
               <VisiblePanel
                 viewports={

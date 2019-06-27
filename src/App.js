@@ -16,6 +16,7 @@ import { I18nextProvider } from 'react-i18next';
 import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
+import TestExtensions from './TestExtensions.js';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
@@ -54,9 +55,6 @@ const extensionManager = new ExtensionManager({ commandsManager });
 // TODO: Should be done in extensions w/ commandsModule
 // ~~ ADD COMMANDS
 appCommands.init(commandsManager);
-if (window.config.hotkeys) {
-  hotkeysManager.setHotkeys(window.config.hotkeys, true);
-}
 
 // CornerstoneTools and labeling/measurements?
 setupTools(store);
@@ -64,6 +62,7 @@ setupTools(store);
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
+  TestExtensions,
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
   OHIFDicomPDFExtension,
@@ -71,6 +70,11 @@ extensionManager.registerExtensions([
   OHIFDicomMicroscopyExtension,
   OHIFSegmentationPlugin,
 ]);
+
+// Must run after extension commands are registered
+if (window.config.hotkeys) {
+  hotkeysManager.setHotkeys(window.config.hotkeys, true);
+}
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
