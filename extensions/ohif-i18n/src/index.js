@@ -12,10 +12,14 @@ function addLocales(newLocales) {
   let resourceBundle = [];
 
   for (const key in newLocales) {
-    for (const namespace in newLocales[key]) {
-      const locale = newLocales[key][namespace];
-      resourceBundle.push({ key, namespace, locale });
-      i18n.addResourceBundle(key, namespace, locale, true, true);
+    if (newLocales.hasOwnProperty(key)) {
+      for (const namespace in newLocales[key]) {
+        if (newLocales[key].hasOwnProperty(namespace)) {
+          const locale = newLocales[key][namespace];
+          resourceBundle.push({ key, namespace, locale });
+          i18n.addResourceBundle(key, namespace, locale, true, true);
+        }
+      }
     }
   }
 
