@@ -755,10 +755,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@ohif/i18n@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.0.4.tgz#e54176e7799e311dbaff37995f9d2745b58cbd0f"
-  integrity sha512-lW+S9weZbJS300yCRR8Ygb1KTULbD1Qx5ZGcYUXyseJIWr5jeJ4V/6FdS30w8u8ejiIVwF8rYOguHsmueQrkdw==
+"@ohif/i18n@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.1.0.tgz#71c43530822d6a43213adccf9109354407ee0d96"
+  integrity sha512-0LIbqlWtDc+FLI9Fkb5ZvMhbxY3oMuCBa0CXJ8+CAY+j4/GK4hFu5b4INjJjlLmJ9FNOj3YIJKHsjWF4RH0tOw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
@@ -4650,10 +4650,10 @@ object.values@^1.0.4, object.values@^1.1.0:
     function-bind "^1.1.1"
     has "^1.0.3"
 
-ohif-core@^0.5.9:
-  version "0.5.9"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.5.9.tgz#337835c82571bdc4935210273a6018c3af872adf"
-  integrity sha512-TvA/THiTpBnerRbv4FJlfwSMSyb4Tkn40ud14FP6JxLUQgCtLsTsaFhXIFBwZvBR/qVJwIlDluMxj/vqobCwkQ==
+ohif-core@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.7.0.tgz#564a24209126652df48796da7f326dbae21c7889"
+  integrity sha512-BzsT55chrd2D1q8ZSCTrB12aroxFbWH9PUA2LjdgKkDWCsz0ydeiIJYVGA5TupDryY4+wBBCAvPPEgeLZxvqzw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -5439,13 +5439,13 @@ react-transition-group@^2.0.0, react-transition-group@^2.2.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react-viewerbase@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.8.1.tgz#bba780906e9eb6aff0cdf73728e61d348986643c"
-  integrity sha512-YTwcAAZE2zv6JATeEHOzAFsupzFYrvSp+HlrLs8AOQhZv1JkF8itjof0N3Os03jT5vh7lLhk3GHhInSE9wwYQw==
+react-viewerbase@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.12.0.tgz#0315c4360ec51619e36defce403cebd29c430485"
+  integrity sha512-YTbin/rUzL0puHFqqyaHUL1ZZ0g0banK6ETfagoEsuCONP/NI2jGkXnYIrkm2rfX44GKeixsld6RN3cdniU/mw==
   dependencies:
     "@babel/runtime" "7.2.0"
-    "@ohif/i18n" "^0.0.4"
+    "@ohif/i18n" "^0.1.0"
     classnames "2.2.6"
     i18next "^17.0.3"
     i18next-browser-languagedetector "^3.0.1"

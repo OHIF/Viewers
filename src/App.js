@@ -31,6 +31,8 @@ import setupTools from './setupTools';
 import store from './store';
 // Imported flat feature since is not transpiled for old browser versions
 import 'core-js/features/array/flat';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
