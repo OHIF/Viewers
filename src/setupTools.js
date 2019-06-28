@@ -147,7 +147,7 @@ export default function setupTools(store) {
     { name: 'Wwwc', mouseButtonMasks: [1] },
     {
       name: 'Bidirectional',
-      configuration: {
+      props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
         },
@@ -156,7 +156,7 @@ export default function setupTools(store) {
     },
     {
       name: 'Length',
-      configuration: {
+      props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
         },
@@ -165,7 +165,7 @@ export default function setupTools(store) {
     },
     {
       name: 'Angle',
-      configuration: {
+      props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
         },
@@ -185,7 +185,7 @@ export default function setupTools(store) {
     },
     {
       name: 'EllipticalRoi',
-      configuration: {
+      props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
         },
@@ -194,7 +194,7 @@ export default function setupTools(store) {
     },
     {
       name: 'CircleRoi',
-      configuration: {
+      props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
         },
@@ -203,7 +203,7 @@ export default function setupTools(store) {
     },
     {
       name: 'RectangleRoi',
-      configuration: {
+      props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
         },
