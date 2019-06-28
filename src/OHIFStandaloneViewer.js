@@ -14,7 +14,6 @@ import StandaloneRouting from './routes/StandaloneRouting.js';
 import CallbackPage from './routes/CallbackPage.js';
 import NotFound from './routes/NotFound.js';
 import { Bar, Container } from './components/LoadingBar/';
-import CONFIG from './config/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
@@ -115,7 +114,7 @@ class OHIFStandaloneViewer extends Component {
       },
     ];
 
-    if (CONFIG.SHOW_STUDY_LIST) {
+    if (window.config.showStudyList) {
       routes.push({
         path: '/studylist',
         Component: StudyListRouting,
