@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "OHIF extension for internationalization",
   "author": "OHIF",
   "license": "MIT",
@@ -48,7 +48,6 @@
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-copy": "^2.0.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",

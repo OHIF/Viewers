@@ -170,6 +170,7 @@ jobs:
           name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
           command: |
             yarn build:demo:ci
+            perl -i -pe 's#</head>#`cat .circleci/rollbar.html` #e' build/index.html
             export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
             export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
             export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)

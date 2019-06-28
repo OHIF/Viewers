@@ -35,7 +35,7 @@
     "gitbook-plugin-ga": "^2.0.0",
     "gitbook-plugin-github": "^3.0.0",
     "gitbook-plugin-sitemap": "^1.2.0",
-    "gitbook-plugin-theme-cornerstone": "^1.1.2",
+    "gitbook-plugin-theme-cornerstone": "^1.1.4",
     "gitbook-plugin-versions": "^2.1.4"
   },
   "devDependencies": {
