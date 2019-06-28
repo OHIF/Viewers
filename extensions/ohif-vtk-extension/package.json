@@ -39,10 +39,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
-    "css-loader": "^3.0.0",
-    "postcss-loader": "^3.0.0",
     "react-vtkjs-viewport": "0.0.9",
-    "style-loader": "^0.23.1",
     "vtk.js": "^8.11.0"
   },
   "devDependencies": {
