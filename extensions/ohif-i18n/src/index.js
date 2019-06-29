@@ -6,8 +6,6 @@ import pkg from '../package.json';
 import { debugMode, detectionOptions } from './config';
 import locales from './locales';
 
-let translate;
-
 function addLocales(newLocales) {
   customDebug(`Adding locales ${newLocales}`, 'info');
 
@@ -44,8 +42,8 @@ function initI18n(detection = detectionOptions) {
       },
     })
     .then(function(t) {
-      translate = t;
-      customDebug(`t function available.`, 'info');
+      i18n.T = t;
+      customDebug(`T function available.`, 'info');
     });
 }
 
@@ -53,6 +51,7 @@ customDebug(`version ${pkg.version} loaded.`, 'info');
 
 initI18n();
 
-export { translate as t, addLocales, initI18n };
+i18n.initI18n = initI18n;
+i18n.addLocales = addLocales;
 
 export default i18n;

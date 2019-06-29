@@ -115,9 +115,9 @@ When needed, you can also use available translations _without React_.
 E.g.
 
 ```js
-import { t } from '@ohif/i18n';
-console.log(t('my translated text'));
-console.log(t('$t(Common:Play) my translated text'));
+import { T } from '@ohif/i18n';
+console.log(T('my translated text'));
+console.log(T('$t(Common:Play) my translated text'));
 ```
 
 ---
