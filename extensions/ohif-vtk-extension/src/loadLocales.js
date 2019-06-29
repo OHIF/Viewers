@@ -1,8 +1,8 @@
-import { addLocales } from '@ohif/i18n';
+import i18n from '@ohif/i18n';
 import locales from './locales';
 
 function loadLocales() {
-  addLocales(locales);
+  i18n.addLocales(locales);
 }
 
 export default loadLocales;
