@@ -1249,22 +1249,37 @@
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
 
-"@ohif/extension-vtk@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.1.2.tgz#ac1ac54829396713591f5b30f4dca9fb870e3b88"
-  integrity sha512-ZKzihZzB+/9LLZhrMKfGZDpfrOThCXvWujcelky/TMBgpLqPamUzi+FUuSd6HFdkGVCNHwaSnxm6JZjhpeEzCw==
+"@ohif/extension-vtk@0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.1.3.tgz#21e27ef088a62ed25d5c62c871cefd0194b9c0b1"
+  integrity sha512-ZqX44/Wolhne1luAlZBTkSZ32Ox/ef3qbh87fGOLq8HAiG1Ae9or8pEfhLmz3ZBxxgW7hiQauCc4Wcu/L6B9GQ==
   dependencies:
     "@babel/runtime" "^7.4.5"
     react-vtkjs-viewport "0.0.9"
     vtk.js "^8.11.0"
 
-"@ohif/i18n@0.1.1", "@ohif/i18n@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.1.1.tgz#e4eee433a0a5fb15a41279910ad061e98a371c4c"
-  integrity sha512-ON1UzWDyi2RD79Z+632vvOh82tl6jglzLHZ1M2rQEm5FLP1PQyrwMEBjETA6jMx7mE1XIWQNiGpbln+7AaPSgg==
+"@ohif/i18n@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.2.1.tgz#cd3a157ef93946acfab69e7f95222ece099b66f2"
+  integrity sha512-0WDr5Zdnzi6V9snAlp8Zjmicn6FVD9ENJ+OptkfsjysT9D7tnmq7a984Jy2KSmng3Hb3wEg1DPQg6WEhLz3XOQ==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
+    i18next-locize-backend "^2.0.0"
+    locize-editor "^2.0.0"
+    locize-lastused "^1.1.0"
+    rollup-plugin-json "^4.0.0"
+
+"@ohif/i18n@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.2.2.tgz#dfb747d07d5cf009f72c3462d779413ebd16bf89"
+  integrity sha512-HYP0kOZ3oIEvWV6lYaorR9VQGtOUw9r3Z++EYbAAAapiq0IPZDbhVqDIr2RGxcrmEK0jIbyQEqotllf2KAj/nA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    classnames "^2.2.6"
+    i18next-locize-backend "^2.0.0"
+    locize-editor "^2.0.0"
+    locize-lastused "^1.1.0"
     rollup-plugin-json "^4.0.0"
 
 "@samverschueren/stream-to-observable@^0.3.0":
@@ -6790,6 +6805,13 @@ i18next-browser-languagedetector@^3.0.1:
   resolved "https://registry.yarnpkg.com/i18next-browser-languagedetector/-/i18next-browser-languagedetector-3.0.1.tgz#a47c43176e8412c91e808afb7c6eb5367649aa8e"
   integrity sha512-WFjPLNPWl62uu07AHY2g+KsC9qz0tyMq+OZEB/H7N58YKL/JLiCz9U709gaR20Mule/Ppn+uyfVx5REJJjn1HA==
 
+i18next-locize-backend@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/i18next-locize-backend/-/i18next-locize-backend-2.0.0.tgz#972e3568d84048e4e4da8287b996d46cb121288d"
+  integrity sha512-Ach/RPYC40qsCBA9wscw25qN46sNqQZXDVqtiX0p+GwrswQw7fkzXdT6K70i9Lg46wRUixblFnbLWQ7xegGYrw==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+
 i18next@^17.0.3:
   version "17.0.4"
   resolved "https://registry.yarnpkg.com/i18next/-/i18next-17.0.4.tgz#c690b9de0c950ff8abe626562d03c4144dd75030"
@@ -8867,6 +8889,18 @@ locate-path@^5.0.0:
   integrity sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==
   dependencies:
     p-locate "^4.1.0"
+
+locize-editor@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/locize-editor/-/locize-editor-2.0.0.tgz#3295e3a29950810bb273ca2c8eab2159a9ac30b9"
+  integrity sha512-EiYnuTV4p++nhCuriIcwngG0/09HDD7w9AZQCVdFvx5uTtjMidbdsH7ftrvmuyng/fqGdZWtMB9S7Lo6ix9BeQ==
+  dependencies:
+    "@babel/runtime" "^7.4.5"
+
+locize-lastused@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/locize-lastused/-/locize-lastused-1.1.0.tgz#f8fdb146faff2340ec8704115760cfb59e6dd8e3"
+  integrity sha512-5vaBRMPRzmrS28JLDLUjozgws173OFaWgQKpPFtjVF9dp3AXD7SrVOyPaIVPhsd6F1fPlZAlL0TBLqz/hm6ClQ==
 
 lock-verify@^2.0.2, lock-verify@^2.1.0:
   version "2.1.0"
@@ -12539,13 +12573,13 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-viewerbase@0.15.2:
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.15.2.tgz#27ffc0fd4f5124445a2c0592edbf2c3effdcc817"
-  integrity sha512-hV59o0gRgGo3HUy3kgfCjKj37Wrg2fFFwKraQSZrrTCmi2r+xU6sDG9xN5pMSpAvrrXxycQAJeF5sUHhAViwSQ==
+react-viewerbase@0.15.3:
+  version "0.15.3"
+  resolved "https://registry.yarnpkg.com/react-viewerbase/-/react-viewerbase-0.15.3.tgz#d2d263865dbb4fabc920b8b7c6f75f5dbb95011d"
+  integrity sha512-unGny2lE3Ahttyj+6+TK9LkNS/U/62wt+ojKNf0H71Vt2s0v7xqEbNQQPFpu5xLPZIr5rCO3PoveEzijlQqTzg==
   dependencies:
     "@babel/runtime" "7.2.0"
-    "@ohif/i18n" "^0.1.1"
+    "@ohif/i18n" "0.2.1"
     classnames "2.2.6"
     i18next "^17.0.3"
     i18next-browser-languagedetector "^3.0.1"
