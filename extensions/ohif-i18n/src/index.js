@@ -125,7 +125,7 @@ function initI18n(
       });
   }
 
-  initialized.then(function(t) {
+  return initialized.then(function(t) {
     i18n.T = t;
     customDebug(`T function available.`, 'info');
   });
@@ -133,8 +133,7 @@ function initI18n(
 
 customDebug(`version ${pkg.version} loaded.`, 'info');
 
-initI18n();
-
+i18n.initializing = initI18n();
 i18n.initI18n = initI18n;
 i18n.addLocales = addLocales;
 
