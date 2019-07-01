@@ -122,10 +122,13 @@ Commands to run the tests:
 
 ```js
 // Open Cypress Dashboard that provides insight into what happened when your tests ran
-yarn run cypress
+yarn run cy
 
 // Run all tests using Electron browser headless
-yarn run cypress:all
+yarn run cy:run
+
+// Run all tests in CI mode
+yarn run cy:run:ci
 ```
 
 ### Contributing

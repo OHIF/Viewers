@@ -1,10 +1,10 @@
 {
-  "reset": "Reiniciar",
-  "Previous": "Anterior",
-  "Next": "Próximo",
-  "Play": "Play",
-  "Stop": "Stop",
+  "Image": "Imagen",
   "Layout": "Esquema",
   "More": "Más",
-  "Image": "Imagen"
+  "Next": "Próximo",
+  "Play": "Play",
+  "Previous": "Anterior",
+  "Reset": "Reiniciar",
+  "Stop": "Stop"
 }
