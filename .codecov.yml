@@ -1,0 +1,11 @@
+# ABOUT:
+# https://docs.codecov.io/docs/codecov-yaml
+#
+#
+# COMMIT STATUS:
+# https://docs.codecov.io/docs/commit-status
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0.10%
