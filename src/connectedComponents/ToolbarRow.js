@@ -43,7 +43,14 @@ class ToolbarRow extends Component {
     this._handleBuiltIn = _handleBuiltIn.bind(this);
 
     const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
-    const visibleMenuOptions = [];
+    const visibleMenuOptionsLeft = [
+      {
+        value: 'studies',
+        icon: 'th-large',
+        bottomLabel: 'Series',
+      },
+    ];
+    const visibleMenuOptionsRight = [];
 
     panelModules.forEach(panelExtension => {
       const panelModule = panelExtension.module;
@@ -54,24 +61,26 @@ class ToolbarRow extends Component {
         const contexts = Array.from(menuOption.context || defaultContexts);
 
         if (this.props.activeContexts.some(actx => contexts.includes(actx))) {
-          visibleMenuOptions.push({
+          console.log(menuOption);
+
+          const menuOptionEntry = {
             value: menuOption.target,
             icon: menuOption.icon,
             bottomLabel: menuOption.label,
-          });
+          };
+
+          if (menuOption.from === 'left') {
+            visibleMenuOptionsLeft.push(menuOptionEntry);
+          } else {
+            visibleMenuOptionsRight.push(menuOptionEntry);
+          }
         }
       });
     });
 
     this.buttonGroups = {
-      left: [
-        {
-          value: 'studies',
-          icon: 'th-large',
-          bottomLabel: 'Series',
-        },
-      ],
-      right: visibleMenuOptions,
+      left: visibleMenuOptionsLeft,
+      right: visibleMenuOptionsRight,
     };
   }
 

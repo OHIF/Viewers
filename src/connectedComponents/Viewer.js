@@ -189,15 +189,16 @@ class Viewer extends Component {
   }
 
   render() {
-    let VisiblePanel,
-      visiblePanelInfo = {};
+    let VisiblePanelLeft;
+    let VisiblePanelRight;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
     panelExtensions.forEach(panelExt => {
       panelExt.module.components.forEach(comp => {
         if (comp.id === this.state.selectedRightSidePanel) {
-          visiblePanelInfo = comp;
-          VisiblePanel = comp.component;
+          VisiblePanelRight = comp.component;
+        } else if (comp.id === this.state.selectedLeftSidePanel) {
+          VisiblePanelLeft = comp.component;
         }
       });
     });
@@ -245,7 +246,18 @@ class Viewer extends Component {
         <div className="FlexboxLayout">
           {/* LEFT */}
           <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-            <ConnectedStudyBrowser studies={this.state.thumbnails} />
+            {VisiblePanelLeft ? (
+              <VisiblePanelLeft
+                viewports={
+                  window.store.getState().viewports.viewportSpecificData
+                }
+                activeIndex={
+                  window.store.getState().viewports.activeViewportIndex
+                }
+              />
+            ) : (
+              <ConnectedStudyBrowser studies={this.state.thumbnails} />
+            )}
           </SidePanel>
 
           {/* MAIN */}
@@ -254,17 +266,15 @@ class Viewer extends Component {
           </div>
 
           {/* RIGHT */}
-          <SidePanel
-            from="right"
-            width={visiblePanelInfo.width}
-            isOpen={this.state.isRightSidePanelOpen}
-          >
-            {VisiblePanel && (
-              <VisiblePanel
+          <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
+            {VisiblePanelRight && (
+              <VisiblePanelRight
                 viewports={
                   window.store.getState().viewports.viewportSpecificData
                 }
-                activeIndex={window.store.getState().activeViewportIndex}
+                activeIndex={
+                  window.store.getState().viewports.activeViewportIndex
+                }
               />
             )}
           </SidePanel>
