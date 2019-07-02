@@ -1,4 +1,8 @@
 import './config';
+// Imported flat feature since is not transpiled for old browser versions
+import 'core-js/features/array/flat';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 import {
   CommandsManager,
@@ -29,10 +33,6 @@ import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools';
 import store from './store';
-// Imported flat feature since is not transpiled for old browser versions
-import 'core-js/features/array/flat';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
@@ -51,6 +51,11 @@ if (window.config.hotkeys) {
   hotkeysManager.setHotkeys(window.config.hotkeys, true);
 }
 // ~~~~ END APP SETUP
+
+var dog = 'german';
+if (window.config) {
+  dog = 'poodle';
+}
 
 setupTools(store);
 
