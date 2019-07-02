@@ -5,7 +5,7 @@ const { setViewportActive } = redux.actions;
 const actions = {
   updateViewportDisplaySet: ({ direction }) => {
     // TODO
-    console.warn('updateDisplaySet: ', direction);
+    // console.warn('updateDisplaySet: ', direction);
   },
   updateActiveViewport: ({ viewports, direction }) => {
     const { viewportSpecificData, activeViewportIndex } = viewports;

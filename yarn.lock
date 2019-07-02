@@ -4089,10 +4089,10 @@ cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@^3.13.0:
-  version "3.13.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.13.0.tgz#c198f7d1a500e76db5fb5b0bd2ddeaf1a9a09160"
-  integrity sha512-7MUL1D0eSsYFw+K9YDcPZVKVovFqMYl84Vpix+1fb3N2EN/UOMpjzrYhdajvMR8qfoBUAMpyMkMnzM11Hb9Z+A==
+cornerstone-tools@^3.14.1:
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-3.14.1.tgz#9a15bca1c4ab96698e91b35f38b5cfa165d58032"
+  integrity sha512-gfYhRawZ7oZhft1klF2b6IcTciN3f05YM8v4AWT6sVcPiA+MkRPf9GVcrmUOUDsfUtg8RG0TAAO7lN9lRr92BQ==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
@@ -6024,11 +6024,12 @@ find-up@^2.0.0, find-up@^2.1.0:
     locate-path "^2.0.0"
 
 find-up@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/find-up/-/find-up-4.0.0.tgz#c367f8024de92efb75f2d4906536d24682065c3a"
-  integrity sha512-zoH7ZWPkRdgwYCDVoQTzqjG8JSPANhtvLhh4KVUHyKnaUJJrNeFmWIkTcNuJmR3GLMEmGYEf2S2bjgx26JTF+Q==
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/find-up/-/find-up-4.1.0.tgz#97afe7d6cdc0bc5928584b7c8d7b16e8a9aa5d19"
+  integrity sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
   dependencies:
     locate-path "^5.0.0"
+    path-exists "^4.0.0"
 
 find-versions@^3.0.0:
   version "3.1.0"
@@ -10630,10 +10631,10 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.6.0.tgz#9fea32d8d10da84b9030d2e4f76b30e431e14ac2"
-  integrity sha512-2Z/HTRZ21i7w056MifH1k0y4brhrZSUsmeqbMcPLSh1cztRGnLQBamBZ08SzWvktcNxLDuwJI9zNDkJ8Gw4Idw==
+ohif-core@0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.9.0.tgz#18d28cd50056703417169bc3a467cacffa07ddc6"
+  integrity sha512-UYVLAEuQowM78r0N94EVnYby9L+W1NwpdDFDZl3rVDwleHnZs0GpGTJKEjx8YnAieq1zboWP6mswTp1vFXaV9g==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
@@ -11084,6 +11085,11 @@ path-exists@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/path-exists/-/path-exists-3.0.0.tgz#ce0ebeaa5f78cb18925ea7d810d7b59b010fd515"
   integrity sha1-zg6+ql94yxiSXqfYENe1mwEP1RU=
+
+path-exists@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/path-exists/-/path-exists-4.0.0.tgz#513bdbe2d3b95d7762e8c1137efa195c6c61b5b3"
+  integrity sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==
 
 path-is-absolute@^1.0.0:
   version "1.0.1"
