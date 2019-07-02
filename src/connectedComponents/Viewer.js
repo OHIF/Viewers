@@ -189,12 +189,14 @@ class Viewer extends Component {
   }
 
   render() {
-    let VisiblePanel;
+    let VisiblePanel,
+      visiblePanelInfo = {};
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
     panelExtensions.forEach(panelExt => {
       panelExt.module.components.forEach(comp => {
         if (comp.id === this.state.selectedRightSidePanel) {
+          visiblePanelInfo = comp;
           VisiblePanel = comp.component;
         }
       });
@@ -252,7 +254,11 @@ class Viewer extends Component {
           </div>
 
           {/* RIGHT */}
-          <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
+          <SidePanel
+            from="right"
+            width={visiblePanelInfo.width}
+            isOpen={this.state.isRightSidePanelOpen}
+          >
             {VisiblePanel && (
               <VisiblePanel
                 viewports={
