@@ -1,4 +1,4 @@
-import ConnectedMeasurementTable from './connectedComponents/ConnectedMeasurementTable.js';
+import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 
 export default {
   id: 'measurements-table',
@@ -6,7 +6,7 @@ export default {
     return {
       menuOptions: [
         {
-          icon: 'circle',
+          icon: 'list',
           label: 'Measurements',
           target: 'measurement-panel',
         },

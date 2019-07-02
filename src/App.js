@@ -16,14 +16,13 @@ import { I18nextProvider } from 'react-i18next';
 import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
-import TestExtensions from './TestExtensions.js';
+import { MeasurementsPanel } from './appExtensions';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
-import OHIFSegmentationPlugin from 'ohif-segmentation-plugin';
 // ~~ EXTENSIONS
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
@@ -62,13 +61,12 @@ setupTools(store);
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
-  TestExtensions,
+  MeasurementsPanel,
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
   OHIFDicomPDFExtension,
   OHIFDicomHtmlExtension,
   OHIFDicomMicroscopyExtension,
-  OHIFSegmentationPlugin,
 ]);
 
 // Must run after extension commands are registered
