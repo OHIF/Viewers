@@ -16,7 +16,7 @@ import { I18nextProvider } from 'react-i18next';
 import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
-import { MeasurementsPanel } from './appExtensions';
+import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
@@ -29,7 +29,6 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
-import appCommands from './appCommands';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools.js';
@@ -51,17 +50,16 @@ const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const extensionManager = new ExtensionManager({ commandsManager });
 
-// TODO: Should be done in extensions w/ commandsModule
-// ~~ ADD COMMANDS
-appCommands.init(commandsManager);
-
 // CornerstoneTools and labeling/measurements?
 setupTools(store);
 // ~~~~ END APP SETUP
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
+  // Core
+  GenericViewerCommands,
   MeasurementsPanel,
+  //
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
   OHIFDicomPDFExtension,

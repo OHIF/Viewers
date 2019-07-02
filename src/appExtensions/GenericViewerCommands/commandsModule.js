@@ -1,5 +1,5 @@
 import { redux } from 'ohif-core';
-import store from './../store';
+import store from './../../store';
 const { setViewportActive } = redux.actions;
 
 const actions = {
@@ -33,4 +33,7 @@ const definitions = {
   },
 };
 
-export default definitions;
+export default {
+  definitions,
+  defaultContext: 'VIEWER',
+};
