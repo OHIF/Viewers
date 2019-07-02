@@ -110,7 +110,7 @@ class OHIFStandaloneViewer extends Component {
         Component: ViewerRouting,
       },
       {
-        path: '/study/:studyInstanceUid/series/:seriesInstanceUids',
+        path: '/study/:studyInstanceUids/series/:seriesInstanceUids',
         Component: ViewerRouting,
       },
       {
