@@ -52,11 +52,6 @@ if (window.config.hotkeys) {
 }
 // ~~~~ END APP SETUP
 
-var dog = 'german';
-if (window.config) {
-  dog = 'poodle';
-}
-
 setupTools(store);
 
 // const children = {
