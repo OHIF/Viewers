@@ -47,7 +47,22 @@ export default class LabellingFlow extends Component {
     this.descriptionInput = React.createRef();
 
     this.initialItems = OHIFLabellingData;
-    this.currentItems = cloneDeep(this.initialItems);
+    this.currentItems = this.includeInnerItems(cloneDeep(this.initialItems));
+  }
+
+  includeInnerItems(items) {
+    items.forEach(item => {
+      let relatedItems = [];
+      const label = item.label.toLowerCase();
+      items.forEach(innerItem => {
+        const innerLabel = innerItem.label.toLowerCase();
+        if (label.indexOf(innerLabel) !== -1) {
+          relatedItems.push(innerItem);
+        }
+      });
+      item.items = relatedItems;
+    });
+    return items;
   }
 
   componentDidUpdate = () => {
