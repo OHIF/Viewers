@@ -9,6 +9,7 @@ import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from 'ohif-core';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 
 class ToolbarRow extends Component {
   static propTypes = {
@@ -65,6 +66,8 @@ class ToolbarRow extends Component {
   };
 
   render() {
+    const { t } = this.props;
+
     const leftSidebarToggle = [
       {
         value: 'studies',
@@ -77,7 +80,7 @@ class ToolbarRow extends Component {
       {
         value: 'measurements',
         icon: 'list',
-        bottomLabel: 'Measurements',
+        bottomLabel: t('Measurements'),
       },
     ];
 
@@ -196,4 +199,4 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 }
 
-export default ToolbarRow;
+export default withTranslation(['ToolbarRow', 'Buttons'])(ToolbarRow);
