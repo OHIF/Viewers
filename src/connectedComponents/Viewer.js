@@ -56,6 +56,10 @@ class Viewer extends Component {
     studyInstanceUids: PropTypes.array,
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
+    // window.store.getState().viewports.viewportSpecificData
+    viewports: PropTypes.object.isRequired,
+    // window.store.getState().viewports.activeViewportIndex
+    activeViewportIndex: PropTypes.number.isRequired,
   };
 
   constructor(props) {
@@ -278,12 +282,8 @@ class Viewer extends Component {
           <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
             {VisiblePanelLeft ? (
               <VisiblePanelLeft
-                viewports={
-                  window.store.getState().viewports.viewportSpecificData
-                }
-                activeIndex={
-                  window.store.getState().viewports.activeViewportIndex
-                }
+                viewports={this.props.viewports}
+                activeIndex={this.props.activeViewportIndex}
               />
             ) : (
               <ConnectedStudyBrowser studies={this.state.thumbnails} />
@@ -299,12 +299,8 @@ class Viewer extends Component {
           <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
             {VisiblePanelRight && (
               <VisiblePanelRight
-                viewports={
-                  window.store.getState().viewports.viewportSpecificData
-                }
-                activeIndex={
-                  window.store.getState().viewports.activeViewportIndex
-                }
+                viewports={this.props.viewports}
+                activeIndex={this.props.activeViewportIndex}
               />
             )}
           </SidePanel>
