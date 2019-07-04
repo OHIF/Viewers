@@ -180,18 +180,16 @@ class Viewer extends Component {
     this.timepointApi = timepointApi;
     this.measurementApi = measurementApi;
 
-    let thumbnails = [];
     if (studies) {
       const patientId = studies[0] && studies[0].patientId;
-      thumbnails = _mapStudiesToThumbnails(studies);
 
       timepointApi.retrieveTimepoints({ patientId });
       measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-    }
 
-    this.setState({
-      thumbnails,
-    });
+      this.setState({
+        thumbnails: _mapStudiesToThumbnails(studies),
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -202,6 +200,10 @@ class Viewer extends Component {
 
       this.timepointApi.retrieveTimepoints({ patientId });
       this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+
+      this.setState({
+        thumbnails: _mapStudiesToThumbnails(studies),
+      });
     }
   }
 
