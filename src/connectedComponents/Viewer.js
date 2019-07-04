@@ -176,16 +176,33 @@ class Viewer extends Component {
       onMeasurementsUpdated: this.onMeasurementsUpdated,
     });
 
-    const patientId = studies[0] && studies[0].patientId;
-    timepointApi.retrieveTimepoints({ patientId });
-    measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+    this.currentTimepointId = currentTimepointId;
+    this.timepointApi = timepointApi;
+    this.measurementApi = measurementApi;
 
-    ////
-    const thumbnails = _mapStudiesToThumbnails(studies);
+    let thumbnails = [];
+    if (studies) {
+      const patientId = studies[0] && studies[0].patientId;
+      thumbnails = _mapStudiesToThumbnails(studies);
+
+      timepointApi.retrieveTimepoints({ patientId });
+      measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+    }
 
     this.setState({
       thumbnails,
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.studies !== prevProps.studies) {
+      const { studies } = this.props;
+      const patientId = studies[0] && studies[0].patientId;
+      const currentTimepointId = this.currentTimepointId;
+
+      this.timepointApi.retrieveTimepoints({ patientId });
+      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+    }
   }
 
   render() {
