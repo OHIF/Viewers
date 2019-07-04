@@ -3,7 +3,7 @@
   flex: 1;
   flex-flow: row nowrap;
   align-items: stretch;
-  height: calc(100% - var(--toolbar-height));
+  height: calc(100% - var(--toolbar-height) - var(--top-bar-height));
   width: 100%;
   overflow: hidden;
 }
