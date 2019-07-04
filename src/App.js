@@ -1,4 +1,8 @@
 import './config';
+// Imported flat feature since is not transpiled for old browser versions
+import 'core-js/features/array/flat';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 import {
   CommandsManager,
@@ -33,10 +37,6 @@ import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools.js';
 import store from './store';
-// Imported flat feature since is not transpiled for old browser versions
-import 'core-js/features/array/flat';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
