@@ -1,0 +1,282 @@
+@import './../../design/styles/common/form.styl'
+@import './../../design/styles/common/global.styl'
+
+$study-list-padding = 8%;
+$study-list-toolbar-height = 75px;
+$body-cell-height = 40px;
+
+$tablePaddingMediumScreen = 5px
+$tablePaddingBigScreen = 3%
+$tablePaddingLargeScreen = 5%
+
+// TODO: move this to a common mixin files
+placeholder-color(c)
+  &::-webkit-input-placeholder
+    color: c
+  &:-moz-placeholder
+    color: c
+  &::-moz-placeholder
+    color: c
+  &:-ms-input-placeholder
+    color: c
+
+.DateRangePicker
+  height: 40px
+  margin: 0 5px 20px 5px
+  cursor: pointer
+  border: none
+  position: block
+
+.studyListToolbar
+  background-color: var(--ui-gray-darker)
+  height: $study-list-toolbar-height
+  margin-bottom: 2px
+  padding: 0 $study-list-padding
+
+  &>div
+    display: inline-block
+
+  .header
+    font-size: 22px
+    font-weight: 300
+    color: var(--table-text-secondary-color)
+    line-height: $study-list-toolbar-height
+
+  .studylistToolbar
+    height: $study-list-toolbar-height
+    line-height: $study-list-toolbar-height
+
+  .studyCount
+    color: var(--large-numbers-color)
+    font-size: 40px
+    font-weight: 100
+    line-height: $study-list-toolbar-height
+
+.theadBackground
+  height: 121px
+  position: absolute
+  width: 100%
+
+  &:before, &:after
+    content: ''
+    display: block
+    left: 0
+    position: absolute
+    width: 100%
+
+  &:before
+    background-color: var(--ui-gray-darker)
+    height: 100%
+    top: 0
+    z-index: 1
+
+  &:after
+    background-color: var(--ui-border-color-active)
+    bottom: -1px
+    height: 1px
+    z-index: 2
+
+#studyListContainer
+  width: 100%
+  padding: 0 $study-list-padding
+  position: absolute
+  z-index: 2
+
+  .loading-text
+    color: var(--table-text-secondary-color)
+    font-size: 30px
+
+  .notFound
+    color: var(--table-text-secondary-color)
+    font-size: 30px
+    font-weight: 200
+    text-align: center
+
+  table#tblStudyList
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    border-spacing: 0;
+    border-collapse: collapse;
+
+    > tr
+      height: 20px
+
+    > thead
+      white-space: nowrap
+
+      tr
+        th
+          padding: 0
+          border-bottom: 1px solid var(--ui-border-color-active);
+          width: 100%;
+          text-align: left;
+          border-top: 0;
+
+          &.studyDate
+            min-width: 230px
+
+          .display-text
+            display: inline-block
+            cursor: pointer
+            width: 100%
+            min-width: 95px
+            margin: 0 auto
+            color: var(--table-text-primary-color)
+            font-weight: 400
+            padding: 20px
+            -webkit-user-select: none
+            -moz-user-select: none
+            -ms-user-select: none
+            user-select: none
+
+            span
+              font-size: 15px
+              float: left
+
+            i
+              margin: 0 5px
+
+            &:hover
+              color: var(--active-color)
+
+            &.active, &:active
+              color: var(--active-color)
+
+          input.studylist-search
+            height: 40px
+            margin: 0 5px 20px 5px
+            padding: 0 20px
+            cursor: pointer
+            border: none
+            background-color: var(--input-background-color)
+            color: var(--input-placeholder-color)
+            font-size: 10pt
+            font-weight: normal
+            width: calc(100% - 10px)
+            border-radius: 4px
+
+            transition(all 0.15s ease)
+            placeholder-color(var(--input-placeholder-color))
+
+            &.invisible
+              visibility: hidden
+
+            &:active, &:hover
+              background-color: var(--input-background-color)
+
+      ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+      ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+      ::-webkit-datetime-edit-day-field:not([aria-valuenow])
+        color: transparent
+
+    > tbody
+      tr
+        padding: 5px
+        background-color: black
+
+        &:nth-child(even)
+          background-color: var(--ui-gray-darker)
+
+        td
+          padding: 8px;
+          height: $body-cell-height
+          line-height: $body-cell-height
+          color: var(--table-text-primary-color)
+          font-weight: 300
+          border-top: 1px solid var(--ui-gray-lighter)
+          border-bottom: 1px solid var(--ui-gray-lighter)
+          white-space: nowrap
+          transition(all 0.1s ease)
+
+          &.emptyCell
+            color: #516873
+
+          &.emptyValue
+            color: var(--ui-gray-light)
+
+        &:hover, &:active, &.active
+          background-color: var(--table-hover-color)
+          color: var(--text-primary-color)
+
+          td
+            // This selector is necessary to override bootstrap's 'table' class
+            border-top: 1px solid var(--ui-gray-lighter)
+            border-bottom: 1px solid var(--ui-gray-lighter)
+            background-color: var(--table-hover-color)
+
+@media only screen and (max-width: 1362px)
+  #studyListContainer
+    padding: 0 $tablePaddingLargeScreen
+
+    table#tblStudyList
+      thead,
+      tbody
+        tr
+          th,
+          td
+            &:first-child
+              padding-left: $tablePaddingLargeScreen
+
+            &:last-child
+              padding-right: $tablePaddingLargeScreen
+
+@media only screen and (max-width: 1161px)
+  #studyListContainer
+    padding: 0 $tablePaddingBigWidth
+
+    table#tblStudyList
+      thead,
+      tbody
+        tr
+          th,
+          td
+            &:first-child
+              padding-left: $tablePaddingBigScreen
+
+            &:last-child
+              padding-right: $tablePaddingBigScreen
+
+@media only screen and (max-width: 1069px)
+  .theadBackground
+    height: 101px
+
+  .studylist-pagination > .row
+    margin-right: 0;
+
+  .studyListToolbar
+    padding: 0 $tablePaddingMediumScreen
+
+  #studyListContainer
+    padding: 0
+
+    table#tblStudyList
+      thead > tr > th
+
+        &:first-child
+          padding-left: $tablePaddingMediumScreen
+
+        &:last-child
+          padding-right: $tablePaddingMediumScreen
+
+        input.worklist-search
+          padding: 10px
+
+        .display-text
+          padding: 10px 5px
+
+          i
+            width: auto
+
+      tbody > tr > td
+
+        &:first-child
+          padding-left: $tablePaddingMediumScreen
+
+        &:last-child
+          padding-right: $tablePaddingMediumScreen
+
+    .worklistPagination
+      .row
+        margin-left: 0
+        margin-right: 0

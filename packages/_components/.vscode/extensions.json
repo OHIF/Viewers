@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "sysoev.language-stylus",
+    "silvenon.mdx",
+    "dbaeumer.vscode-eslint"
+  ]
+}

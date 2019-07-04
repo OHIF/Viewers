@@ -1,0 +1,21 @@
+# https://www.netlify.com/docs/continuous-deployment/#deploy-contexts
+#
+# Global settings applied to the whole site.  
+# 
+# “base” is the directory to change to before starting build. If you set base:
+#        that is where we will look for package.json/.nvmrc/etc, not repo root!
+# “command” is your build command.
+# “publish” is the directory to publish (relative to the root of your repo).
+
+# COMMENT: NODE_VERSION in root `.nvmrc` takes priority
+# COMMENT: Why we specify YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
+[build.environment]
+  NODE_VERSION = "10.15.3"
+  YARN_VERSION = "1.15.2"
+  YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+
+# COMMENT: This a rule for Single Page Applications
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

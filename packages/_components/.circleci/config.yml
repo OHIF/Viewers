@@ -1,0 +1,85 @@
+version: 2
+
+### ABOUT
+#
+# This configuration powers our Circleci.io integration
+#
+# Note:
+# Netlify works independently from this configuration to
+# create pull request previews and to update `https://react.ohif.org`
+###
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:10.15.1
+
+jobs:
+  build_and_test:
+    <<: *defaults
+    steps:
+      # Download and cache dependencies
+      - checkout
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+      # Build & Test
+      - run: yarn build
+      - run: yarn test
+
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  npm_publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Avoid hosts unknown for github
+          command:
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
+            no\n" > ~/.ssh/config
+      - run:
+          name: Publish using Semantic Release
+          command: npx semantic-release
+
+workflows:
+  version: 2
+
+  # PULL REQUESTS
+  pull_requests:
+    jobs:
+      - build_and_test:
+          filters:
+            branches:
+              ignore:
+                - master
+                - feature/*
+                - hotfix/*
+
+  # MERGE TO MASTER
+  cut_release:
+    jobs:
+      - build_and_test:
+          filters:
+            branches:
+              only: master
+      - npm_publish:
+          requires:
+            - build_and_test

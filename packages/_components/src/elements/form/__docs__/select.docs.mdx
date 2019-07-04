@@ -1,0 +1,39 @@
+---
+name: Form / Select
+menu: Elements
+route: /elements/form-select
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { Select } from './../index.js';
+
+# Select
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      options: [
+        {
+          key: 'Option1',
+          value: '1'
+        },
+        {
+          key: 'Option2',
+          value: '2'
+        }
+      ],
+      value:'2'
+    }}
+  >
+
+    {({ state, setState }) => <Select {...state} />}
+
+  </State>
+</Playground>
+
+## API
+
+<Props of={Select} />

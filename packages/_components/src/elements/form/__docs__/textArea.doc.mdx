@@ -1,0 +1,29 @@
+---
+name: Form / Text Area
+menu: Elements
+route: /elements/form-textArea
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { TextArea } from './../index.js';
+
+# Text Area
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      value: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
+      rows: 10,
+      cols: 50,
+    }}
+  >
+    {({ state, setState }) => <TextArea {...state} />}
+  </State>
+</Playground>
+
+## API
+
+<Props of={TextArea} />

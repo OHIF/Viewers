@@ -1,0 +1,44 @@
+/* Tip & Success "Call outs" */
+
+p.tip {
+  border-left-color: #f66;
+}
+p.success {
+  border-left-color: #42b983;
+}
+p.tip::before {
+  content: '!';
+  background-color: #f66;
+}
+p.success::before {
+  content: '\f00c';
+  font-family: FontAwesome;
+  background-color: #42b983;
+}
+p.tip,
+p.success {
+  padding: 12px 24px 12px 30px;
+  margin: 2em 0;
+  line-height: 1.6em;
+  border-left-width: 4px;
+  border-left-style: solid;
+  background-color: #f8f8f8;
+  position: relative;
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
+}
+p.tip::before,
+p.success::before {
+  position: absolute;
+  top: 14px;
+  left: -12px;
+  color: #fff;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  text-align: center;
+  line-height: 20px;
+  font-weight: bold;
+  font-family: 'Dosis', 'Source Sans Pro', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+}
