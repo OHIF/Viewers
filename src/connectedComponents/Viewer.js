@@ -52,7 +52,7 @@ OHIF.viewer.functionList = {
 
 class Viewer extends Component {
   static propTypes = {
-    studies: PropTypes.array.isRequired,
+    studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
@@ -79,7 +79,7 @@ class Viewer extends Component {
   }
 
   state = {
-    isLeftSidePanelOpen: false,
+    isLeftSidePanelOpen: true,
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
     selectedLeftSidePanel: '',
