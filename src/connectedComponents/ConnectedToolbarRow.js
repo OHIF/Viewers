@@ -1,8 +1,5 @@
-import {
-  setLeftSidebarOpen,
-  setRightSidebarOpen,
-} from './../store/layout/actions.js';
-
+// TODO: REPLACE THIS WITH A CONTEXT PROVIDER
+// EVERYTHING IN `VIEWER.JS` COULD USE THIS FOR APPROPRIATE CONTEXT
 import ToolbarRow from './ToolbarRow';
 import { connect } from 'react-redux';
 import { getActiveContexts } from './../store/layout/selectors.js';
@@ -10,25 +7,9 @@ import { getActiveContexts } from './../store/layout/selectors.js';
 const mapStateToProps = state => {
   return {
     activeContexts: getActiveContexts(state),
-    leftSidebarOpen: state.ui.leftSidebarOpen,
-    rightSidebarOpen: state.ui.rightSidebarOpen,
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setLeftSidebarOpen: state => {
-      dispatch(setLeftSidebarOpen(state));
-    },
-    setRightSidebarOpen: state => {
-      dispatch(setRightSidebarOpen(state));
-    },
-  };
-};
-
-const ConnectedToolbarRow = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ToolbarRow);
+const ConnectedToolbarRow = connect(mapStateToProps)(ToolbarRow);
 
 export default ConnectedToolbarRow;

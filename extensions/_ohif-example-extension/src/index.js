@@ -7,12 +7,28 @@ export default {
    */
   id: 'example-extension',
 
-  getViewportModule() {},
+  /**
+   * LIFECYCLE HOOKS
+   */
+
+  preRegistration(extensionConfiguration) {},
+
+  /**
+   * MODULE GETTERS
+   */
+
+  getViewportModule() {
+    return '... react component ...';
+  },
   getSopClassHandlerModule() {
     return sopClassHandlerModule;
   },
-  getPanelModule() {},
-  getToolbarModule() {},
+  getPanelModule() {
+    return panelModule;
+  },
+  getToolbarModule() {
+    return panelModule;
+  },
   getCommandsModule(/* store */) {
     return commandsModule;
   },
@@ -66,4 +82,24 @@ const sopClassHandlerModule = {
       authorizationHeaders,
     };
   },
+};
+
+/**
+ *
+ */
+const panelModule = {
+  menuOptions: [
+    {
+      icon: 'th-list',
+      label: 'Segments',
+      target: 'segment-panel',
+    },
+  ],
+  components: [
+    {
+      id: 'segment-panel',
+      component: '... react component ...',
+    },
+  ],
+  defaultContext: ['VIEWER'],
 };
