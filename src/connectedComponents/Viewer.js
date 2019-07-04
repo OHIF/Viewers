@@ -82,7 +82,7 @@ class Viewer extends Component {
     isLeftSidePanelOpen: true,
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
-    selectedLeftSidePanel: '',
+    selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
   };
 
@@ -208,8 +208,7 @@ class Viewer extends Component {
   }
 
   render() {
-    let VisiblePanelLeft;
-    let VisiblePanelRight;
+    let VisiblePanelLeft, VisiblePanelRight;
     const panelExtensions = extensionManager.modules[MODULE_TYPES.PANEL];
 
     panelExtensions.forEach(panelExt => {
@@ -237,6 +236,16 @@ class Viewer extends Component {
         <ConnectedToolbarRow
           isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
           isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+          selectedLeftSidePanel={
+            this.state.isLeftSidePanelOpen
+              ? this.state.selectedLeftSidePanel
+              : ''
+          }
+          selectedRightSidePanel={
+            this.state.isRightSidePanelOpen
+              ? this.state.selectedRightSidePanel
+              : ''
+          }
           handleSidePanelChange={(side, selectedPanel) => {
             const sideClicked = side && side[0].toUpperCase() + side.slice(1);
             const openKey = `is${sideClicked}SidePanelOpen`;
@@ -245,7 +254,9 @@ class Viewer extends Component {
 
             const isOpen = updatedState[openKey];
             const prevSelectedPanel = updatedState[selectedKey];
-            const isSameSelectedPanel = prevSelectedPanel === selectedPanel;
+            // RoundedButtonGroup returns `null` if selected button is clicked
+            const isSameSelectedPanel =
+              prevSelectedPanel === selectedPanel || selectedPanel === null;
 
             updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
 

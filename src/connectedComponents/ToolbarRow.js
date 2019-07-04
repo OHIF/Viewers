@@ -15,9 +15,13 @@ import { MODULE_TYPES } from 'ohif-core';
 import PropTypes from 'prop-types';
 
 class ToolbarRow extends Component {
+  // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
+  // closed if selected is null/undefined
   static propTypes = {
     isLeftSidePanelOpen: PropTypes.bool.isRequired,
     isRightSidePanelOpen: PropTypes.bool.isRequired,
+    selectedLeftSidePanel: PropTypes.string.isRequired,
+    selectedRightSidePanel: PropTypes.string.isRequired,
     handleSidePanelChange: PropTypes.func,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
@@ -117,7 +121,7 @@ class ToolbarRow extends Component {
           <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
             <RoundedButtonGroup
               options={this.buttonGroups.left}
-              value={''}
+              value={this.props.selectedLeftSidePanel || ''}
               onValueChanged={onPressLeft}
             />
           </div>
@@ -131,7 +135,7 @@ class ToolbarRow extends Component {
             {this.buttonGroups.right.length && (
               <RoundedButtonGroup
                 options={this.buttonGroups.right}
-                value={''}
+                value={this.props.selectedRightSidePanel || ''}
                 onValueChanged={onPressRight}
               />
             )}
