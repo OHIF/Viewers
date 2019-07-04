@@ -47,22 +47,7 @@ export default class LabellingFlow extends Component {
     this.descriptionInput = React.createRef();
 
     this.initialItems = OHIFLabellingData;
-    this.currentItems = this.includeInnerItems(cloneDeep(this.initialItems));
-  }
-
-  includeInnerItems(items) {
-    items.forEach(item => {
-      let relatedItems = [];
-      const label = item.label.toLowerCase();
-      items.forEach(innerItem => {
-        const innerLabel = innerItem.label.toLowerCase();
-        if (label.indexOf(innerLabel) !== -1) {
-          relatedItems.push(innerItem);
-        }
-      });
-      item.items = relatedItems;
-    });
-    return items;
+    this.currentItems = cloneDeep(this.initialItems);
   }
 
   componentDidUpdate = () => {
@@ -85,15 +70,18 @@ export default class LabellingFlow extends Component {
         displayComponent={this.state.displayComponent}
         onTransitionExit={this.props.labellingDoneCallback}
       >
-        <div
-          className={mainElementClassName}
-          style={style}
-          ref={this.mainElement}
-          onMouseLeave={this.fadeOutAndLeave}
-          onMouseEnter={this.clearFadeOutTimer}
-        >
-          {this.labellingStateFragment()}
-        </div>
+        <>
+          <div className="labellingComponent-overlay"></div>
+          <div
+            className={mainElementClassName}
+            style={style}
+            ref={this.mainElement}
+            onMouseLeave={this.fadeOutAndLeave}
+            onMouseEnter={this.clearFadeOutTimer}
+          >
+            {this.labellingStateFragment()}
+          </div>
+        </>
       </LabellingTransition>
     );
   }
