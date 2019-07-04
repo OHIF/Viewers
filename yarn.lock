@@ -1214,10 +1214,10 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
-"@ohif/extension-cornerstone@0.0.37":
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.37.tgz#d9d31409ffbc773dde17767daa02b87f461cf11a"
-  integrity sha512-090WPGXOYIxZjQe0mIM7SipgR3ggUZpbtWpwg7huWC0PQObIM3Juy4L8mtss23OKaKsmrmVxUaFc5NRQhs+Z+w==
+"@ohif/extension-cornerstone@0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-0.0.38.tgz#c1cdf2796bef441a293bcc045f9748c7b2c1395f"
+  integrity sha512-xWvK04s2xwjNlIvz4BpJ5pWP8wNmW9kpud1zkywR+TFYgthH2X64Tr01VZTOh8Mi+0Xkwe5IElb4Sw2aVA4SBg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
