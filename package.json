@@ -4,13 +4,69 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "start": "lerna run lerna:start --parallel",
+    "build": "lerna exec --parallel -- babel --root-mode upward src -d lib --ignore **/*.story.js,**/*.spec.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,md,yml}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
-    "lerna": "^3.15.0"
+    "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "copy-webpack-plugin": "^5.0.3",
+    "cross-env": "^5.2.0",
+    "css-loader": "^3.0.0",
+    "eslint": "^6.0.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.14.2",
+    "extract-css-chunks-webpack-plugin": "^4.5.4",
+    "html-webpack-plugin": "^3.2.0",
+    "husky": "^3.0.0",
+    "jest": "^24.8.0",
+    "jest-canvas-mock": "^2.1.0",
+    "jest-junit": "^6.4.0",
+    "lerna": "^3.15.0",
+    "lint-staged": "^9.0.2",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.6.0",
+    "prettier": "^1.18.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts": "^3.0.1",
+    "stylelint": "^10.1.0",
+    "stylelint-config-recommended": "^2.2.0",
+    "stylus": "^0.54.5",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2",
+    "webpack-hot-middleware": "^2.25.0",
+    "webpack-merge": "^4.2.1",
+    "workbox-webpack-plugin": "^4.3.1"
   }
 }

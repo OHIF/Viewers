@@ -15,9 +15,10 @@
   },
   "proxy": "http://localhost:8042",
   "scripts": {
+    "lerna:start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d",
     "cm": "npx git-cz",
-    "dev": "yarn run preBuild && cross-env PORT=5000 react-scripts start",
-    "dev:debug": "cross-env PORT=5000 react-scripts start",
+    "dev": "yarn run preBuild && react-scripts start",
+    "dev:debug": "react-scripts start",
     "build:package": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
     "build:package:ci": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
     "build:web": "yarn run preBuild && react-scripts --max_old_space_size=4096 build",
@@ -34,30 +35,13 @@
     "predeploy": "cd example && npm install && yarn run build:package",
     "preBuild": "yarn run version && yarn run copy:webworkers",
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
-    "dev:orthanc": "yarn run preBuild && cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
+    "dev:orthanc": "yarn run preBuild && cross-env REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
     "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v",
     "cy": "cypress open",
     "cy:run": "cypress run",
     "cy:run:ci": "yarn run cy:run -- --record"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,json,css}": [
-      "prettier --single-quote --write",
-      "git add"
-    ]
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "resolutions": {
     "browserslist": "4.6.2",
     "caniuse-lite": "1.0.30000974"
@@ -114,43 +98,17 @@
   },
   "devDependencies": {
     "@semantic-release/exec": "3.3.3",
-    "@svgr/rollup": "^4.3.0",
-    "babel-eslint": "10.0.1",
     "codecov": "3.5.0",
     "commitizen": "3.1.x",
     "core-js": "^3.1.4",
     "cpx": "1.5.0",
-    "cross-env": "^5.2.0",
     "cypress": "^3.3.1",
     "cz-conventional-changelog": "2.1.0",
-    "eslint": "5.16.0",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-react": "^7.13.0",
     "gh-pages": "2.0.1",
-    "husky": "2.4.x",
     "identity-obj-proxy": "3.0.x",
-    "jest-canvas-mock": "2.1.0",
-    "jest-junit": "6.4.x",
-    "lint-staged": "^8.2.1",
     "lodash": "4.17.11",
     "lodash.clonedeep": "4.5.0",
-    "prettier": "1.18.x",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "react-scripts": "^3.0.1",
-    "rollup": "^1.15.5",
-    "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-commonjs": "^10.0.0",
-    "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-resolve": "^5.0.2",
-    "rollup-plugin-peer-deps-external": "^2.2.0",
-    "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-url": "^2.2.2",
     "semantic-release": "15.13.x",
-    "start-server-and-test": "^1.9.1",
-    "stylelint": "^10.1.0"
+    "start-server-and-test": "^1.9.1"
   }
 }
