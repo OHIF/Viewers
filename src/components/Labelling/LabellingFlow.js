@@ -62,7 +62,12 @@ export default class LabellingFlow extends Component {
 
     const style = Object.assign({}, this.state.componentStyle);
     if (this.state.skipAddLabelButton) {
-      style.left -= 160;
+      style.left = '40%';
+    }
+
+    if (this.state.editLocation) {
+      style.top = '10%';
+      style.maxHeight = '80vh';
     }
 
     return (
@@ -270,6 +275,9 @@ export default class LabellingFlow extends Component {
     // SetTimeout for the css animation to end.
     setTimeout(() => {
       bounding(this.mainElement);
+      if (this.state.editLocation) {
+        this.mainElement.current.style.maxHeight = '80vh';
+      }
     }, 200);
   };
 }
