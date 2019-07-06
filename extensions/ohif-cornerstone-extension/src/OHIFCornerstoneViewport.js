@@ -20,7 +20,7 @@ cornerstone.metaData.addProvider(
 StackManager.setMetadataProvider(metadataProvider);
 
 const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4'
+  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
 };
 
 const specialCaseHandlers = {};
@@ -30,11 +30,11 @@ specialCaseHandlers[
 
 class OHIFCornerstoneViewport extends Component {
   state = {
-    viewportData: null
+    viewportData: null,
   };
 
   static defaultProps = {
-    customProps: {}
+    customProps: {},
   };
 
   static propTypes = {
@@ -42,7 +42,8 @@ class OHIFCornerstoneViewport extends Component {
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
-    customProps: PropTypes.object
+    isLoading: PropTypes.bool.isRequired,
+    customProps: PropTypes.object,
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -185,7 +186,7 @@ class OHIFCornerstoneViewport extends Component {
         viewportData = {
           studyInstanceUid,
           displaySetInstanceUid,
-          stack
+          stack,
         };
 
         break;
@@ -201,7 +202,7 @@ class OHIFCornerstoneViewport extends Component {
       displaySetInstanceUid,
       sopClassUids,
       sopInstanceUid,
-      frameIndex
+      frameIndex,
     } = displaySet;
 
     if (sopClassUids && sopClassUids.length > 1) {
@@ -221,7 +222,7 @@ class OHIFCornerstoneViewport extends Component {
       frameIndex
     ).then(viewportData => {
       this.setState({
-        viewportData
+        viewportData,
       });
     });
   }
@@ -252,7 +253,8 @@ class OHIFCornerstoneViewport extends Component {
       childrenWithProps = this.props.children.map((child, index) => {
         return React.cloneElement(child, {
           viewportIndex: this.props.viewportIndex,
-          key: index
+          isLoading: this.props.isLoading,
+          key: index,
         });
       });
     }
@@ -263,6 +265,7 @@ class OHIFCornerstoneViewport extends Component {
           <ConnectedCornerstoneViewport
             viewportData={this.state.viewportData}
             viewportIndex={this.props.viewportIndex}
+            isLoading={this.props.isLoading}
             {...this.props.customProps}
           />
         )}
