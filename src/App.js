@@ -17,24 +17,32 @@ import {
 } from './utils/index.js';
 
 import { I18nextProvider } from 'react-i18next';
+import initCornerstoneTools from './initCornerstoneTools.js';
+
+// ~~ EXTENSIONS
+import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 import OHIFVTKExtension from '@ohif/extension-vtk';
+// ~~ EXTENSIONS
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WhiteLabellingContext from './WhiteLabellingContext';
-import appCommands from './appCommands';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
-import setupTools from './setupTools';
+import setupTools from './setupTools.js';
 import store from './store';
 
 // ~~~~ APP SETUP
+initCornerstoneTools({
+  globalToolSyncEnabled: true,
+});
+
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
@@ -44,28 +52,27 @@ const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const extensionManager = new ExtensionManager({ commandsManager });
 
-// TODO: Should be done in extensions w/ commandsModule
-// ~~ ADD COMMANDS
-appCommands.init(commandsManager);
-if (window.config.hotkeys) {
-  hotkeysManager.setHotkeys(window.config.hotkeys, true);
-}
-// ~~~~ END APP SETUP
-
+// CornerstoneTools and labeling/measurements?
 setupTools(store);
-
-// const children = {
-//   viewport: [<ConnectedToolContextMenu key="tool-context" />],
-// };
+// ~~~~ END APP SETUP
 
 /** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
 extensionManager.registerExtensions([
+  // Core
+  GenericViewerCommands,
+  MeasurementsPanel,
+  //
   OHIFCornerstoneExtension,
   OHIFVTKExtension,
   OHIFDicomPDFExtension,
   OHIFDicomHtmlExtension,
   OHIFDicomMicroscopyExtension,
 ]);
+
+// Must run after extension commands are registered
+if (window.config.hotkeys) {
+  hotkeysManager.setHotkeys(window.config.hotkeys, true);
+}
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;

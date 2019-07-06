@@ -1,17 +1,10 @@
 const defaultState = {
-  leftSidebarOpen: true,
-  rightSidebarOpen: false,
   labelling: {},
   contextMenu: {},
 };
 
 const ui = (state = defaultState, action) => {
   switch (action.type) {
-    // ~ SIDEBAR
-    case 'SET_LEFT_SIDEBAR_OPEN':
-      return Object.assign({}, state, { leftSidebarOpen: action.state });
-    case 'SET_RIGHT_SIDEBAR_OPEN':
-      return Object.assign({}, state, { rightSidebarOpen: action.state });
     case 'SET_LABELLING_FLOW_DATA': {
       const labelling = Object.assign({}, action.labellingFlowData);
 

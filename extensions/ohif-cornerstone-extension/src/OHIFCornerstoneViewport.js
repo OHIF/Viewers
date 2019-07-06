@@ -1,5 +1,3 @@
-import './config';
-
 import React, { Component } from 'react';
 
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
@@ -42,8 +40,8 @@ class OHIFCornerstoneViewport extends Component {
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
-    isLoading: PropTypes.bool.isRequired,
     customProps: PropTypes.object,
+    isLoading: PropTypes.bool.isRequired,
   };
 
   static id = 'OHIFCornerstoneViewport';
@@ -253,8 +251,8 @@ class OHIFCornerstoneViewport extends Component {
       childrenWithProps = this.props.children.map((child, index) => {
         return React.cloneElement(child, {
           viewportIndex: this.props.viewportIndex,
-          isLoading: this.props.isLoading,
           key: index,
+          isLoading: this.props.isLoading,
         });
       });
     }

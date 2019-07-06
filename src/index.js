@@ -109,18 +109,9 @@ props.oidc = [
 };*/
 
 /*
-UI settings
-Plugins
-    - Custom tools / buttons
-    - Custom Sidebar module thing
-    - Custom Viewports
-    - Custom Sop Class Interpreters
-*/
-
 /*"PUBLIC_SETTINGS": {
     "ui": {
       "studyListFunctionsEnabled": true,
-      "leftSidebarOpen": false,
       "displaySetNavigationLoopOverSeries": false,
       "displaySetNavigationMultipleViewports": true,
       "autoPositionMeasurementsTextCallOuts": "TRLB"
