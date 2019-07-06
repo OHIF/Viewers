@@ -6,8 +6,10 @@
   "license": "MIT",
   "repository": "OHIF/ohif-core",
   "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "browser": "dist/index.umd.jd",
+  "module": "src/index.js",
+  "jsnext:main": "src/index.js",
+  "sideEffects": "false",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -15,6 +17,7 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "rollup -c",
+    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "dev": "jest --watch",
     "start": "rollup -c -w",
     "test": "jest",

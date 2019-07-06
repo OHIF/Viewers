@@ -1,0 +1,51 @@
+const path = require('path');
+const webpack = require('webpack');
+const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+
+const SRC_DIR = path.join(__dirname, '../src');
+const DIST_DIR = path.join(__dirname, '../dist');
+
+module.exports = (env, argv) => {
+  return {
+    entry: {
+      app: `${SRC_DIR}/index.js`,
+    },
+    context: SRC_DIR,
+    resolve: {
+      extensions: ['.js', '.jsx', '.json', '*'],
+      symlinks: true,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: [/node_modules/],
+          loader: 'babel-loader',
+          options: {
+            // Find babel.config.js in monorepo root
+            // https://babeljs.io/docs/en/options#rootmode
+            rootMode: 'upward',
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  // Do not transform ES6 modules to another format.
+                  // Webpack will take care of that.
+                  modules: false,
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+    plugins: [
+      new webpack.EnvironmentPlugin(['NODE_ENV']),
+      new ExtractCssChunks({
+        filename: '[name].css',
+        chunkFilename: '[id].css',
+        // hot: true /* only necessary if hot reloading not function*/
+      }),
+    ],
+  };
+};

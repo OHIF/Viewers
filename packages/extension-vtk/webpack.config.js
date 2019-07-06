@@ -13,15 +13,15 @@ const cssRules = [
       {
         loader: 'postcss-loader',
         options: {
-          plugins: () => [autoprefixer('last 2 version', 'ie >= 10')]
-        }
-      }
-    ]
+          plugins: () => [autoprefixer('last 2 version', 'ie >= 10')],
+        },
+      },
+    ],
   },
   {
     test: /\.glsl$/i,
     include: /vtk\.js[\/\\]Sources/,
-    loader: 'shader-loader'
+    loader: 'shader-loader',
   },
   {
     test: /\.worker\.js$/,
@@ -29,9 +29,9 @@ const cssRules = [
     use: [
       {
         loader: 'worker-loader',
-        options: { inline: true, fallback: false }
-      }
-    ]
+        options: { inline: true, fallback: false },
+      },
+    ],
   },
   {
     test: /\.css$/,
@@ -42,17 +42,17 @@ const cssRules = [
         loader: 'css-loader',
         options: {
           localIdentName: '[name]-[local]_[sha512:hash:base64:5]',
-          modules: true
-        }
+          modules: true,
+        },
       },
       {
         loader: 'postcss-loader',
         options: {
-          plugins: () => [autoprefixer('last 2 version', 'ie >= 10')]
-        }
-      }
-    ]
-  }
+          plugins: () => [autoprefixer('last 2 version', 'ie >= 10')],
+        },
+      },
+    ],
+  },
 ];
 
 var entry = path.join(__dirname, './src/index.js');
@@ -66,19 +66,40 @@ module.exports = {
     filename: 'index.umd.js',
     library: '@ohif/extension-vtk',
     libraryTarget: 'umd',
-    globalObject: 'this'
+    globalObject: 'this',
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
-      }
-    ].concat(cssRules)
+        loader: 'babel-loader',
+        options: {
+          // Find babel.config.js in monorepo root
+          // https://babeljs.io/docs/en/options#rootmode
+          rootMode: 'upward',
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                // Do not transform ES6 modules to another format.
+                // Webpack will take care of that.
+                modules: false,
+              },
+            ],
+          ],
+        },
+      },
+    ].concat(cssRules),
   },
   resolve: {
-    modules: [path.resolve(__dirname, 'node_modules'), sourcePath]
+    modules: [
+      // Modules specific to this package
+      path.resolve(__dirname, 'node_modules'),
+      // Hoisted Yarn Workspace Modules
+      path.resolve(__dirname, '../../node_modules'),
+      sourcePath,
+    ],
   },
   externals: [
     {
@@ -86,14 +107,14 @@ module.exports = {
         commonjs: 'cornerstone-core',
         commonjs2: 'cornerstone-core',
         amd: 'cornerstone-core',
-        root: 'cornerstone'
+        root: 'cornerstone',
       },
       'cornerstone-math': {
         commonjs: 'cornerstone-math',
         commonjs2: 'cornerstone-math',
         amd: 'cornerstone-math',
-        root: 'cornerstoneMath'
-      }
+        root: 'cornerstoneMath',
+      },
     },
     '@ohif/i18n',
     'ohif-core',
@@ -104,7 +125,7 @@ module.exports = {
     'react-redux', //: 'ReactRedux',
     'react-resize-detector', //: 'ReactResizeDetector',
     'react-viewerbase', //: 'reactViewerbase',
-    'prop-types' //: 'PropTypes'
+    'prop-types', //: 'PropTypes'
     /*/\b(vtk.js)/*/
-  ]
+  ],
 };

@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "start": "lerna run lerna:start --parallel",
+    "build:magic": "lerna run lerna:build --parallel",
     "build": "lerna exec --parallel -- babel --root-mode upward src -d lib --ignore **/*.story.js,**/*.spec.js"
   },
   "husky": {

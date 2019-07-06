@@ -13,5 +13,11 @@
     "react": {
       "version": "detect"
     }
+  },
+  "globals": {
+    "cy": true,
+    "context": true,
+    "Cypress": true,
+    "assert": true
   }
 }

@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "hello": "webpack --config config/webpack.prod.js -w -d",
+    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "prepublishOnly": "npm run build",
     "start": "rollup -c -w",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}"

@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "rollup -c",
+    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "prepublishOnly": "npm run build",
     "pullTranslations": "./pullTranslations.sh"
   },

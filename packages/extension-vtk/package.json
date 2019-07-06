@@ -11,13 +11,9 @@
     "npm": ">=5"
   },
   "scripts": {
-    "build": "webpack --progress --colors --mode development",
-    "build:release": "webpack --progress --colors --mode production",
-    "start": "webpack --watch --progress --colors --mode development",
-    "prepare": "yarn run build:release",
-    "predeploy": "cd example && yarn install && yarn run build:release",
-    "prepublishOnly": "yarn install && yarn run build:release",
-    "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}"
+    "lerna:build": "webpack --progress --colors --mode production",
+    "lerna:dev": "webpack --watch --progress --colors --mode development",
+    "prepublishOnly": "yarn install && yarn run lerna:build"
   },
   "peerDependencies": {
     "@ohif/i18n": "0.2.2",
