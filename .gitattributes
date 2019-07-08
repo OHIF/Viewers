@@ -37,3 +37,4 @@
 *.ez binary
 *.bz2 binary
 *.swp binary
+*.fig binary
