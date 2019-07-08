@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "description": "OHIF extension for internationalization",
   "author": "OHIF",
   "license": "MIT",
@@ -14,7 +14,8 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "pullTranslations": "./pullTranslations.sh"
   },
   "peerDependencies": {
     "i18next": "^17.0.3",
@@ -41,6 +42,7 @@
     "i18next": "^15.1.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "lint-staged": "^8.1.0",
+    "locize-cli": "^4.8.0",
     "prettier": "^1.15.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
@@ -80,6 +82,9 @@
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
+    "i18next-locize-backend": "^2.0.0",
+    "locize-editor": "^2.0.0",
+    "locize-lastused": "^1.1.0",
     "rollup-plugin-json": "^4.0.0"
   }
 }

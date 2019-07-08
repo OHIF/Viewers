@@ -5,12 +5,8 @@ import Header from './Header.json';
 import MeasurementTable from './MeasurementTable.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 
-/** Sublanguages */
-import en_US from './US';
-import en_UK from './UK';
-
 export default {
-  en: {
+  'en-US': {
     Buttons,
     CineDialog,
     Common,
@@ -18,6 +14,4 @@ export default {
     MeasurementTable,
     UserPreferencesModal,
   },
-  ...en_US,
-  ...en_UK,
 };

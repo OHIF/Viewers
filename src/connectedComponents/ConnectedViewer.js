@@ -4,6 +4,13 @@ import OHIF from 'ohif-core';
 
 const { setTimepoints, setMeasurements } = OHIF.redux.actions;
 
+const mapStateToProps = (state, ownProps) => {
+  return {
+    viewports: state.viewports.viewportSpecificData,
+    activeViewportIndex: state.viewports.activeViewportIndex,
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     onTimepointsUpdated: timepoints => {
@@ -16,7 +23,7 @@ const mapDispatchToProps = dispatch => {
 };
 
 const ConnectedViewer = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Viewer);
 

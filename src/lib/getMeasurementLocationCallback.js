@@ -12,6 +12,18 @@ export default function getMeasurementLocationCallback(
 
   const ToolInstance = cornerstoneTools.getToolForElement(element, toolType);
 
+  if (
+    !ToolInstance ||
+    !ToolInstance.configuration ||
+    !ToolInstance.configuration.getMeasurementLocationCallback
+  ) {
+    console.warn(
+      'Tool instance configuration is missing: getMeasurementLocationCallback'
+    );
+
+    return;
+  }
+
   ToolInstance.configuration.getMeasurementLocationCallback(
     tool,
     eventData,
