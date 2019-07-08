@@ -71,6 +71,10 @@ class Header extends Component {
 
   render() {
     const { t } = this.props;
+    const showStudyList =
+      window.config.showStudyList !== undefined
+        ? window.config.showStudyList
+        : true;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">
@@ -85,7 +89,7 @@ class Header extends Component {
 
           {this.props.children}
 
-          {window.config.showStudyList && !this.props.home && (
+          {showStudyList && !this.props.home && (
             <Link
               className="header-btn header-studyListLinkSection"
               to={{

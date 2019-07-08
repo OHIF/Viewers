@@ -114,7 +114,11 @@ class OHIFStandaloneViewer extends Component {
       },
     ];
 
-    if (window.config.showStudyList) {
+    const showStudyList =
+      window.config.showStudyList !== undefined
+        ? window.config.showStudyList
+        : true;
+    if (showStudyList) {
       routes.push({
         path: '/studylist',
         Component: StudyListRouting,
