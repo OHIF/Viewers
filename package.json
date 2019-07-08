@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "platform/*",
+    "extensions/*"
   ],
   "scripts": {
     "start": "lerna run lerna:start --parallel",
