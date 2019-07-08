@@ -2,9 +2,9 @@ import './ToolbarRow.css';
 
 import React, { Component } from 'react';
 import {
+  ExpandableToolMenu,
   RoundedButtonGroup,
   ToolbarButton,
-  ExpandableToolMenu,
 } from 'react-viewerbase';
 import { commandsManager, extensionManager } from './../App.js';
 
@@ -155,7 +155,7 @@ class ToolbarRow extends Component {
  */
 function _getButtonComponents(toolbarButtons, activeButtons) {
   return toolbarButtons.map((button, index) => {
-    if (button.buttons) {
+    if (button.buttons && button.buttons.length) {
       // Iterate over button definitions and update `onClick` behavior
       const childButtons = button.buttons.map(childButton => {
         childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
@@ -171,7 +171,6 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
         />
       );
     }
-
     return (
       <ToolbarButton
         key={button.id}
