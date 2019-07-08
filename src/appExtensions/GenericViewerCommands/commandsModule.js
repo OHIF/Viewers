@@ -1,11 +1,11 @@
 import { redux } from 'ohif-core';
-import store from './../store';
+import store from './../../store';
 const { setViewportActive } = redux.actions;
 
 const actions = {
   updateViewportDisplaySet: ({ direction }) => {
     // TODO
-    console.warn('updateDisplaySet: ', direction);
+    // console.warn('updateDisplaySet: ', direction);
   },
   updateActiveViewport: ({ viewports, direction }) => {
     const { viewportSpecificData, activeViewportIndex } = viewports;
@@ -33,4 +33,7 @@ const definitions = {
   },
 };
 
-export default definitions;
+export default {
+  definitions,
+  defaultContext: 'VIEWER',
+};

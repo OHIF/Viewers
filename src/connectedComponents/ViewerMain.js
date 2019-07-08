@@ -139,9 +139,9 @@ class ViewerMain extends Component {
       <div className="ViewerMain">
         {this.state.displaySets.length && (
           <ConnectedLayoutManager
-          studies={this.props.studies}
-          viewportData={this.getViewportData()}
-          setViewportData={this.setViewportData}
+            studies={this.props.studies}
+            viewportData={this.getViewportData()}
+            setViewportData={this.setViewportData}
           >
             {/* Children to add to each viewport that support children */}
             <ConnectedToolContextMenu />
