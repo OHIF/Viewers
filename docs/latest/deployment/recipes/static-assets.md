@@ -127,7 +127,7 @@ through the trouble of using AWS/GCP/Azure, it's more likely you're doing so to
 avoid using a proxy or to simplify authentication.
 
 If that is the case, check out some of our more advanced `docker` deployments
-that target these providers from the left-hand sidebar.
+that target these providers from the left-hand sidepanel.
 
 These guides can be a bit longer and a update more frequently. To provide
 accurate documentation, we will link to each provider's own recommended steps:
