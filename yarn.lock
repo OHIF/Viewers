@@ -1231,14 +1231,15 @@
   dependencies:
     "@babel/runtime" "^7.2.0"
 
-"@ohif/extension-dicom-microscopy@0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.8.tgz#833f7b87f530fe801c08f2ba241d9862a61358cb"
-  integrity sha512-ALj3k327iiuJtHWD34gwlWfh0vgoda5mp1rqPeZron75gFefOJYP/vR4lnu46Ud2mpqpElqSgYPV0AY8PK570g==
+"@ohif/extension-dicom-microscopy@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.9.tgz#23cfbc44e06a51d94ab0b08db8e051720dbc9017"
+  integrity sha512-vqx25gHcT+MK+j77qTocGjSV8CstjCwQ2RDs1RuHrR3rUHdHOSbBkkyAjqMDF5GZWp0UY5JZV85aNuPK/9saqg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
-    dicom-microscopy-viewer "^0.4.3"
+    dicom-microscopy-viewer "0.5.0"
+    lodash.debounce "^4.0.8"
 
 "@ohif/extension-dicom-pdf@0.0.7":
   version "0.0.7"
@@ -4514,10 +4515,10 @@ dezalgo@^1.0.0, dezalgo@~1.0.3:
     asap "^2.0.0"
     wrappy "1"
 
-dicom-microscopy-viewer@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.4.3.tgz#defaa821026765bcd109b97258742df72a9b92bb"
-  integrity sha512-PjT3qH0hv6dKOQzXFIHw4w/d8QCbiUOJOGZHvAkkRvnjeNRP7/ri8vbFvcSev+nYxKskNb1Tn0xd1+dsDpPGNw==
+dicom-microscopy-viewer@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.5.0.tgz#e4f74261337d8a78d51490af0d17edc63997e619"
+  integrity sha512-r3BPLBvexv9v/Rr/FBTgXgp7orIFKLWW5uYM6IsYpz36ttU84Edk7Z2GAyk6887QNsfEMLzYV+5ik6HRrMg0cA==
   dependencies:
     dicomweb-client "^0.4.2"
     ol "^5.3.0"
