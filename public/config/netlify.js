@@ -1,5 +1,6 @@
 window.config = {
   routerBasename: '/demo',
+  showStudyList: true,
   servers: {
     dicomWeb: [
       {
