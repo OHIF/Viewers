@@ -6,9 +6,7 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "browser": "dist/index.umd.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "module": "src/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"

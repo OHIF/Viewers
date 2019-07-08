@@ -6,6 +6,7 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
+  "module": "src/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"

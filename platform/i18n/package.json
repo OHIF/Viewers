@@ -6,11 +6,16 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "module": "src/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "rollup -c",
@@ -25,18 +30,6 @@
     "react-dom": "^16.0.0",
     "react-i18next": "^10.11.0"
   },
-  "devDependencies": {
-    "i18next": "^15.1.3",
-    "i18next-browser-languagedetector": "^3.0.1",
-    "locize-cli": "^4.8.0",
-    "react-i18next": "^10.11.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
@@ -44,5 +37,11 @@
     "locize-editor": "^2.0.0",
     "locize-lastused": "^1.1.0",
     "rollup-plugin-json": "^4.0.0"
+  },
+  "devDependencies": {
+    "i18next": "^15.1.3",
+    "i18next-browser-languagedetector": "^3.0.1",
+    "locize-cli": "^4.8.0",
+    "react-i18next": "^10.11.0"
   }
 }

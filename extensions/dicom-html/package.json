@@ -6,18 +6,15 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "module": "src/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
-    "build": "rollup -c",
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "prepublishOnly": "npm run build",
-    "start": "rollup -c -w",
-    "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}"
+    "start": "rollup -c -w"
   },
   "peerDependencies": {
     "dcmjs": "^0.3.3",
