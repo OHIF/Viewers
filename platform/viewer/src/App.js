@@ -22,11 +22,7 @@ import initCornerstoneTools from './initCornerstoneTools.js';
 // ~~ EXTENSIONS
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
-import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-import OHIFVTKExtension from '@ohif/extension-vtk';
 // ~~ EXTENSIONS
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
@@ -56,45 +52,28 @@ const extensionManager = new ExtensionManager({ commandsManager });
 setupTools(store);
 // ~~~~ END APP SETUP
 
-/** TODO: extensions should be passed in as prop as soon as we have the extensions as separate packages and then registered by ExtensionsManager */
-extensionManager.registerExtensions([
-  // Core
-  GenericViewerCommands,
-  MeasurementsPanel,
-  //
-  OHIFCornerstoneExtension,
-  OHIFVTKExtension,
-  OHIFDicomPDFExtension,
-  OHIFDicomHtmlExtension,
-  OHIFDicomMicroscopyExtension,
-]);
-
-// Must run after extension commands are registered
-if (window.config.hotkeys) {
-  hotkeysManager.setHotkeys(window.config.hotkeys, true);
-}
-
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
-
-function handleServers(servers) {
-  if (servers) {
-    utils.addServers(servers, store);
-  }
-}
 
 class App extends Component {
   static propTypes = {
     routerBasename: PropTypes.string.isRequired,
     relativeWebWorkerScriptsPath: PropTypes.string.isRequired,
     servers: PropTypes.object.isRequired,
+    //
     oidc: PropTypes.array,
     whiteLabelling: PropTypes.object,
+    extensions: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+      })
+    ),
   };
 
   static defaultProps = {
     whiteLabelling: {},
     oidc: [],
+    extensions: [],
   };
 
   constructor(props) {
@@ -108,7 +87,9 @@ class App extends Component {
         firstOpenIdClient
       );
     }
-    handleServers(this.props.servers);
+
+    _initExtensions(this.props.extensions);
+    _initServers(this.props.servers);
     initWebWorkers(
       this.props.routerBasename,
       this.props.relativeWebWorkerScriptsPath
@@ -147,6 +128,34 @@ class App extends Component {
         </I18nextProvider>
       </Provider>
     );
+  }
+}
+
+function _initExtensions(extensions) {
+  const defaultExtensions = [
+    GenericViewerCommands,
+    MeasurementsPanel,
+    OHIFCornerstoneExtension,
+  ];
+  const mergedExtensions = defaultExtensions.concat(extensions);
+  extensionManager.registerExtensions(mergedExtensions);
+
+  // [
+  //   OHIFVTKExtension,
+  //   OHIFDicomPDFExtension,
+  //   OHIFDicomHtmlExtension,
+  //   OHIFDicomMicroscopyExtension,
+  // ]
+
+  // Must run after extension commands are registered
+  if (window.config.hotkeys) {
+    hotkeysManager.setHotkeys(window.config.hotkeys, true);
+  }
+}
+
+function _initServers(servers) {
+  if (servers) {
+    utils.addServers(servers, store);
   }
 }
 

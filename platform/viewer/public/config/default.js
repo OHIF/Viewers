@@ -3,6 +3,7 @@ window.config = {
   routerBasename: '/',
   // default: ''
   relativeWebWorkerScriptsPath: '',
+  extensions: [],
   servers: {
     dicomWeb: [
       {
