@@ -42,6 +42,9 @@ class OHIFStandaloneViewer extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     user: PropTypes.object,
+    setContext: PropTypes.func,
+    userManager: PropTypes.object,
+    location: PropTypes.object,
   };
 
   componentDidMount() {
@@ -94,14 +97,6 @@ class OHIFStandaloneViewer extends Component {
      */
     const routes = [
       {
-        path: '/',
-        Component: StudyListRouting,
-      },
-      {
-        path: '/studylist',
-        Component: StudyListRouting,
-      },
-      {
         path: '/viewer',
         Component: StandaloneRouting,
       },
@@ -118,6 +113,21 @@ class OHIFStandaloneViewer extends Component {
         Component: IHEInvokeImageDisplay,
       },
     ];
+
+    const showStudyList =
+      window.config.showStudyList !== undefined
+        ? window.config.showStudyList
+        : true;
+    if (showStudyList) {
+      routes.push({
+        path: '/studylist',
+        Component: StudyListRouting,
+      });
+      routes.push({
+        path: '/',
+        Component: StudyListRouting,
+      });
+    }
 
     const currentPath = this.props.location.pathname;
     const noMatchingRoutes = !routes.find(r =>
