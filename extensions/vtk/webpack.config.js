@@ -56,13 +56,13 @@ const cssRules = [
 ];
 
 var entry = path.join(__dirname, './src/index.js');
-const sourcePath = path.join(__dirname, './src');
-const outputPath = path.join(__dirname, './dist');
+const SRC_DIR = path.join(__dirname, './src');
+const OUTPUT_DIR = path.join(__dirname, './dist');
 
 module.exports = {
   entry,
   output: {
-    path: outputPath,
+    path: OUTPUT_DIR,
     filename: 'index.umd.js',
     library: '@ohif/extension-vtk',
     libraryTarget: 'umd',
@@ -98,7 +98,7 @@ module.exports = {
       path.resolve(__dirname, 'node_modules'),
       // Hoisted Yarn Workspace Modules
       path.resolve(__dirname, '../../node_modules'),
-      sourcePath,
+      SRC_DIR,
     ],
   },
   externals: [

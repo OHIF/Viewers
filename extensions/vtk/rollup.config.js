@@ -10,7 +10,6 @@ import copy from 'rollup-plugin-copy';
 
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 
-
 const globals = {
   react: 'React',
   'react-dom': 'ReactDOM',
@@ -26,7 +25,7 @@ const globals = {
   'dicom-parser': 'dicomParser',
   'ohif-core': 'OHIF',
   hammerjs: 'Hammer',
-  '@ohif/i18n': 'i18n'
+  '@ohif/i18n': 'i18n',
 };
 
 export default {
@@ -37,26 +36,26 @@ export default {
       format: 'umd',
       name: 'ohif-vtk-extension',
       sourcemap: true,
-      globals
+      globals,
     },
     {
       file: pkg.module,
       format: 'es',
       sourcemap: true,
-      globals
-    }
+      globals,
+    },
   ],
   plugins: [
     builtins(),
     external(),
     postcss({
-      modules: false
+      modules: false,
     }),
     url(),
     babel({
       exclude: 'node_modules/**',
       externalHelpers: true,
-      runtimeHelpers: true
+      runtimeHelpers: true,
     }),
     copy({
       targets: ['src/locales'],
@@ -70,16 +69,10 @@ export default {
           'getImageData',
           'loadImageData',
           'VTKViewport',
-          'VTKMPRViewport'
+          'VTKMPRViewport',
         ],
-        '.yalc/react-vtkjs-viewport/dist/index.js': [
-          'getImageData',
-          'loadImageData',
-          'VTKViewport',
-          'VTKMPRViewport'
-        ]
-      }
-    })
+      },
+    }),
   ],
-  external: Object.keys(pkg.peerDependencies || {})
+  external: Object.keys(pkg.peerDependencies || {}),
 };

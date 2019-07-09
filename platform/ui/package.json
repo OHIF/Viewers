@@ -5,7 +5,7 @@
   "author": "OHIF Contributors",
   "license": "MIT",
   "repository": "OHIF/react-viewerbase",
-  "main": "dist/index.js",
+  "main": "dist/index.umd.js",
   "module": "src/index.js",
   "engines": {
     "node": ">=8",
@@ -19,6 +19,7 @@
     "dev": "docz dev",
     "test": "cross-env CI=1 react-scripts test --env=jsdom --transformIgnorePatterns \"node_modules/(?!react-dnd)/\"",
     "test:watch": "react-scripts test --env=jsdom --transformIgnorePatterns \"node_modules/(?!react-dnd)/\"",
+    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "build": "rollup -c",
     "start": "rollup -c -w",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
