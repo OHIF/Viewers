@@ -176,15 +176,28 @@ class StudyListWithData extends Component {
       return <div>Loading...</div>;
     }
 
-    let healthCareApi = '';
+    let healthCareApiButtons = '';
+    let healthCareApiWindows = '';
     if (window.config.enableGoogleCloudAdapter) {
-      let modalContent = '';
-      if (this.state.modalComponentId === 'DicomStorePicker') {
-        modalContent = <ConnectedDicomStorePicker onClose={this.update} />;
-      } else if (this.state.modalComponentId === 'DicomFilesUploader') {
-        modalContent = <ConnectedDicomFilesUploader onClose={this.update} />;
+      if (this.state.modalComponentId) {
+        if (this.state.modalComponentId === 'DicomStorePicker') {
+          healthCareApiWindows = (
+            <ConnectedDicomStorePicker onClose={this.update} />
+          );
+        } else if (this.state.modalComponentId === 'DicomFilesUploader') {
+          healthCareApiWindows = (
+            <ConnectedDicomFilesUploader onClose={this.update} />
+          );
+        }
+        healthCareApiWindows = (
+          <>
+            <div className="col-md-4 col-md-offset-2 layoutChooser pagination-area">
+              {healthCareApiWindows}
+            </div>
+          </>
+        );
       }
-      healthCareApi = (
+      healthCareApiButtons = (
         <>
           <div className="form-inline form-group pull-right">
             <button
@@ -200,33 +213,32 @@ class StudyListWithData extends Component {
               Upload Studies
             </button>
           </div>
-          \<div className="col-md-6 col-md-offset-3">{modalContent}</div>
         </>
       );
     }
     let studyList = <></>;
-    if (this.state.showStudyList) {
-      studyList = (
-        <div name="paginationArea">
-          <StudyList
-            studies={this.state.studies}
-            studyListFunctionsEnabled={false}
-            onImport={this.onImport}
-            onSelectItem={this.onSelectItem}
-            pageSize={this.rowsPerPage}
-            defaultSort={StudyListWithData.defaultSort}
-            studyListDateFilterNumDays={
-              StudyListWithData.studyListDateFilterNumDays
-            }
-            onSearch={this.onSearch}
-          />
-        </div>
-      );
-    }
+    studyList = (
+      <div name="paginationArea">
+        <StudyList
+          studies={this.state.studies}
+          studyListFunctionsEnabled={false}
+          onImport={this.onImport}
+          onSelectItem={this.onSelectItem}
+          pageSize={this.rowsPerPage}
+          defaultSort={StudyListWithData.defaultSort}
+          studyListDateFilterNumDays={
+            StudyListWithData.studyListDateFilterNumDays
+          }
+          onSearch={this.onSearch}
+        >
+          {healthCareApiButtons}
+          {healthCareApiWindows}
+        </StudyList>
+      </div>
+    );
     return (
       <>
         <ConnectedHeader home={true} user={this.props.user} />
-        {healthCareApi}
         {studyList}
       </>
     );

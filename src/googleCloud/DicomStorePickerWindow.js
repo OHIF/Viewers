@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DatasetSelector from './DatasetSelector';
+import './googleCloud.css';
 
 class DicomStorePickerWindow extends Component {
   static propTypes = {
@@ -39,7 +40,7 @@ class DicomStorePickerWindow extends Component {
 
   render() {
     return (
-      <>
+      <div className="gcp-window">
         <DatasetSelector
           setServers={this.handleEvent}
           oidcKey={this.props.oidcStorageKey}
@@ -48,7 +49,7 @@ class DicomStorePickerWindow extends Component {
         <button className="btn btn-primary" onClick={this.props.onClose}>
           close
         </button>
-      </>
+      </div>
     );
   }
 }

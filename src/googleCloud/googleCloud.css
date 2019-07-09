@@ -16,6 +16,11 @@
 .gcp-files-selector__btn-file {
   background-image: url('/assets/Button_File.svg');
 }
+
+.gcp-window {
+  background-color: #000000;
+}
+
 .gcp-invisible-input {
   position: absolute;
   display: none;

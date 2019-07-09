@@ -20,7 +20,7 @@ class DicomFileUploader extends Component {
   render() {
     if (this.props.url != null) {
       return (
-        <>
+        <div className="gcp-window">
           <DicomUploader
             url={this.props.url}
             oidcKey={this.props.oidcStorageKey}
@@ -28,7 +28,7 @@ class DicomFileUploader extends Component {
           <button className="btn btn-primary" onClick={this.props.onClose}>
             close
           </button>
-        </>
+        </div>
       );
     }
     return <></>;
