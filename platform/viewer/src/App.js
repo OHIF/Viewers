@@ -1,5 +1,5 @@
 import './config';
-// Imported flat feature since is not transpiled for old browser versions
+// Polyfills
 import 'core-js/features/array/flat';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -23,7 +23,6 @@ import initCornerstoneTools from './initCornerstoneTools.js';
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-// ~~ EXTENSIONS
 import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
@@ -131,6 +130,9 @@ class App extends Component {
   }
 }
 
+/**
+ * @param
+ */
 function _initExtensions(extensions) {
   const defaultExtensions = [
     GenericViewerCommands,
@@ -139,13 +141,6 @@ function _initExtensions(extensions) {
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
-
-  // [
-  //   OHIFVTKExtension,
-  //   OHIFDicomPDFExtension,
-  //   OHIFDicomHtmlExtension,
-  //   OHIFDicomMicroscopyExtension,
-  // ]
 
   // Must run after extension commands are registered
   if (window.config.hotkeys) {
@@ -160,6 +155,4 @@ function _initServers(servers) {
 }
 
 export default App;
-
-// Make our managers accessible
 export { commandsManager, extensionManager, hotkeysManager };
