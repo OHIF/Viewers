@@ -2,6 +2,7 @@ window.config = {
   // default: '/'
   routerBasename: '/',
   // default: ''
+  showStudyList: true,
   relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
