@@ -7,17 +7,21 @@ const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
 const SRC_DIR = path.join(__dirname, '../src');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const DIST_DIR = path.join(__dirname, '../dist');
-// console.log(process);
 
 module.exports = (env, argv) => {
-  // console.log(env);
-  // console.log(argv);
   return {
     entry: {
       app: `${SRC_DIR}/index.js`,
     },
     context: SRC_DIR,
     resolve: {
+      modules: [
+        // Modules specific to this package
+        path.resolve(__dirname, '../node_modules'),
+        // Hoisted Yarn Workspace Modules
+        path.resolve(__dirname, '../../../node_modules'),
+        SRC_DIR,
+      ],
       extensions: ['.js', '.jsx', '.json', '*'],
       symlinks: true,
     },
@@ -78,6 +82,10 @@ module.exports = (env, argv) => {
         chunkFilename: '[id].css',
         // hot: true /* only necessary if hot reloading not function*/
       }),
+      /**
+       * This generates our index.html file from the specified template.
+       * This is the easiest way to inject custom configuration and extensions.
+       */
       new HtmlWebpackPlugin({
         template: `${PUBLIC_DIR}/index.html`,
         filename: 'index.html',
