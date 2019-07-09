@@ -9515,7 +9515,7 @@ mime@1.6.0:
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
-mime@^2.0.3, mime@^2.4.2, mime@^2.4.3, mime@^2.4.4:
+mime@>=2.0.3, mime@^2.0.3, mime@^2.4.2, mime@^2.4.3, mime@^2.4.4:
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.4.tgz#bd7b91135fc6b01cde3e9bae33d659b63d8857e5"
   integrity sha512-LRxmNwziLPT828z+4YkNzloCFC2YM4wrB99k+AV5ZbEyfGNWfG8SO1FUXLmLDBSo89NrJZ4DIWeLjy1CHGhMGA==
@@ -10465,7 +10465,7 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-opener@^1.5.1:
+opener@1, opener@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.1.tgz#6d2f0e77f1a0af0032aca716c2c1fbb8e7e8abed"
   integrity sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
@@ -13412,6 +13412,14 @@ rollup-plugin-postcss@^2.0.3:
     resolve "^1.5.0"
     rollup-pluginutils "^2.0.1"
     style-inject "^0.3.0"
+
+rollup-plugin-serve@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-1.0.1.tgz#2da2a784a916c5564609c7696cd9dacdbf17f6cc"
+  integrity sha512-bni0pb4s1YLvn1xBmj+dH1OsLdp8gWA4zqh3yuEtT6/YHhg3nDneGU2GwMcRDQwY2tXzuI0uSeAlF1rY+ODitg==
+  dependencies:
+    mime ">=2.0.3"
+    opener "1"
 
 rollup-plugin-url@^2.2.2:
   version "2.2.2"
