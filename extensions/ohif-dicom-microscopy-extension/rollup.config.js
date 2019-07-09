@@ -10,6 +10,7 @@ import builtins from 'rollup-plugin-node-builtins';
 
 const globals = {
   react: 'React',
+  'react-resize-detector': 'ReactResizeDetector',
   'react-dom': 'ReactDOM',
   'ohif-core': 'OHIF'
 };
@@ -52,6 +53,15 @@ export default {
         ],
         '.yalc/dicom-microscopy-viewer/build/dicom-microscopy-viewer.js': [
           'api'
+        ],
+        'node_modules/react-resize-detector/node_modules/prop-types/index.js': [
+          'bool',
+          'number',
+          'string',
+          'shape',
+          'func',
+          'any',
+          'node'
         ]
       }
     })

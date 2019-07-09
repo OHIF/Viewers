@@ -12,6 +12,15 @@ const mapStateToProps = (state, ownProps) => {
     dataFromStore = state.extensions.cornerstone;
   }
 
+  // TODO: This should be extension configuration
+  // ...dataFromStore -->
+  // availableTools,
+  // onNewImage,
+  // onRightClick,
+  // onTouchPress,
+  // onTouchStart,
+  // onMouseClick,
+
   // If this is the active viewport, enable prefetching.
   const { viewportIndex } = ownProps; //.viewportData;
   const isActive = viewportIndex === state.viewports.activeViewportIndex;

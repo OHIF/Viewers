@@ -3,8 +3,10 @@ import { MeasurementTable } from 'react-viewerbase';
 import OHIF from 'ohif-core';
 import moment from 'moment';
 import cornerstone from 'cornerstone-core';
-import jumpToRowItem from '../lib/jumpToRowItem.js';
-import getMeasurementLocationCallback from '../lib/getMeasurementLocationCallback';
+
+//
+import jumpToRowItem from './jumpToRowItem.js';
+import getMeasurementLocationCallback from './../../lib/getMeasurementLocationCallback';
 
 const { setViewportSpecificData } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;
