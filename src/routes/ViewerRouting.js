@@ -11,7 +11,7 @@ function ViewerRouting({ match }) {
   if (studyInstanceUids && !seriesInstanceUids) {
     studyUIDs = studyInstanceUids.split(';');
   } else if (studyInstanceUids && seriesInstanceUids) {
-    studyUIDs = [match.params.studyInstanceUid];
+    studyUIDs = [studyInstanceUids];
     seriesUIDs = match.params.seriesInstanceUids.split(';');
   }
 
