@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { Dropdown } from 'react-viewerbase';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import PropTypes from 'prop-types';
-// import { UserPreferencesModal } from 'react-viewerbase';
+import { AboutModal } from 'react-viewerbase';
 import { hotkeysManager } from './../../App.js';
 import { withTranslation } from 'react-i18next';
 
@@ -40,9 +40,7 @@ class Header extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isUserPreferencesOpen: false };
-
-    // const onClick = this.toggleUserPreferences.bind(this);
+    this.state = { isUserPreferencesOpen: false, isOpen: false };
 
     this.loadOptions();
   }
@@ -50,29 +48,18 @@ class Header extends Component {
   loadOptions() {
     const { t } = this.props;
     this.options = [
-      // {
-      //   title: t('Preferences'),
-      //   icon: { name: 'user' },
-      //   onClick: onClick,
-      // },
       {
         title: t('About'),
-        icon: {
-          name: 'info',
+        icon: { name: 'info' },
+        onClick: () => {
+          this.setState({
+            isOpen: true,
+          });
         },
-        link: 'http://ohif.org',
       },
     ];
 
     this.hotKeysData = hotkeysManager.hotkeyDefinitions;
-  }
-
-  toggleUserPreferences() {
-    const isOpen = this.state.isUserPreferencesOpen;
-
-    this.setState({
-      isUserPreferencesOpen: !isOpen,
-    });
   }
 
   onUserPreferencesSave({ windowLevelData, hotKeysData }) {
@@ -84,6 +71,10 @@ class Header extends Component {
 
   render() {
     const { t } = this.props;
+    const showStudyList =
+      window.config.showStudyList !== undefined
+        ? window.config.showStudyList
+        : true;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">
@@ -98,7 +89,7 @@ class Header extends Component {
 
           {this.props.children}
 
-          {!this.props.home && (
+          {showStudyList && !this.props.home && (
             <Link
               className="header-btn header-studyListLinkSection"
               to={{
@@ -114,7 +105,14 @@ class Header extends Component {
         <div className="header-menu">
           <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
           <Dropdown title={t('Options')} list={this.options} align="right" />
-          {/* <ConnectedUserPreferencesModal /> */}
+          <AboutModal
+            {...this.state}
+            onCancel={() =>
+              this.setState({
+                isOpen: false,
+              })
+            }
+          />
         </div>
       </div>
     );

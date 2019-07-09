@@ -18,6 +18,7 @@ class StudyListWithData extends Component {
   };
 
   static propTypes = {
+    filters: PropTypes.object,
     patientId: PropTypes.string,
     server: PropTypes.object,
     user: PropTypes.object,
@@ -32,15 +33,27 @@ class StudyListWithData extends Component {
     .subtract(StudyListWithData.studyListDateFilterNumDays, 'days')
     .toDate();
   static defaultStudyDateTo = new Date();
+  static defaultSearchData = {
+    currentPage: 0,
+    rowsPerPage: StudyListWithData.rowsPerPage,
+    studyDateFrom: StudyListWithData.defaultStudyDateFrom,
+    studyDateTo: StudyListWithData.defaultStudyDateTo,
+    sortData: StudyListWithData.defaultSort,
+  };
 
   componentDidMount() {
+    // TODO: Avoid using timepoints here
+    //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
     if (!this.props.server && window.config.enableGoogleCloudAdapter) {
       this.setState({
         modalComponentId: 'DicomStorePicker',
         showStudyList: false,
       });
     } else {
-      this.searchForStudies();
+      this.searchForStudies({
+        ...StudyListWithData.defaultSearchData,
+        ...(this.props.filters || {}),
+      });
     }
   }
 
@@ -58,15 +71,7 @@ class StudyListWithData extends Component {
     }
   }
 
-  searchForStudies = (
-    searchData = {
-      currentPage: 0,
-      rowsPerPage: StudyListWithData.rowsPerPage,
-      studyDateFrom: StudyListWithData.defaultStudyDateFrom,
-      studyDateTo: StudyListWithData.defaultStudyDateTo,
-      sortData: StudyListWithData.defaultSort,
-    }
-  ) => {
+  searchForStudies = (searchData = StudyListWithData.defaultSearchData) => {
     const { server } = this.props;
     const filter = {
       patientId: searchData.patientId,

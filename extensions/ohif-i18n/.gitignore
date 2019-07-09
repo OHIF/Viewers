@@ -24,3 +24,6 @@ yarn-error.log*
 
 yalc.lock
 .yalc
+
+# Note: DO NOT include this file because it includes our API key
+.locize

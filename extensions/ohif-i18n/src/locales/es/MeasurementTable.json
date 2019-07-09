@@ -1,11 +1,9 @@
 {
   "Criteria nonconformities": "Criterios de no conformidades",
-  "Relabel": "Reetiquetar",
-  "Description": "Descripción",
   "Delete": "Borrar",
-  "Targets": "Objetivos",
-  "NonTargets": "NonObjetivos",
+  "Description": "Descripción",
   "MAX": "máximo",
-  "Chest Wall Posterior": "Pared pectoral posterior",
-  "Bone Extremity": "Extremidad ósea"
+  "NonTargets": "NonObjetivos",
+  "Relabel": "Reetiquetar",
+  "Targets": "Objetivos"
 }

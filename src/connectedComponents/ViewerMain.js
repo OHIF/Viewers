@@ -9,7 +9,7 @@ import React from 'react';
 class ViewerMain extends Component {
   static propTypes = {
     activeViewportIndex: PropTypes.number.isRequired,
-    studies: PropTypes.array.isRequired,
+    studies: PropTypes.array,
     viewportSpecificData: PropTypes.object.isRequired,
     layout: PropTypes.object.isRequired,
     setViewportSpecificData: PropTypes.func.isRequired,
@@ -59,11 +59,23 @@ class ViewerMain extends Component {
     //window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
     // Get all the display sets for the viewer studies
-    const displaySets = this.getDisplaySets(this.props.studies);
+    if (this.props.studies) {
+      const displaySets = this.getDisplaySets(this.props.studies);
 
-    this.setState({
-      displaySets,
-    });
+      this.setState({
+        displaySets,
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.studies !== prevProps.studies) {
+      const displaySets = this.getDisplaySets(this.props.studies);
+
+      this.setState({
+        displaySets,
+      });
+    }
   }
 
   getViewportData = () => {
@@ -125,14 +137,16 @@ class ViewerMain extends Component {
   render() {
     return (
       <div className="ViewerMain">
-        <ConnectedLayoutManager
-          studies={this.props.studies}
-          viewportData={this.getViewportData()}
-          setViewportData={this.setViewportData}
-        >
-          {/* Children to add to each viewport that support children */}
-          <ConnectedToolContextMenu />
-        </ConnectedLayoutManager>
+        {this.state.displaySets.length && (
+          <ConnectedLayoutManager
+            studies={this.props.studies}
+            viewportData={this.getViewportData()}
+            setViewportData={this.setViewportData}
+          >
+            {/* Children to add to each viewport that support children */}
+            <ConnectedToolContextMenu />
+          </ConnectedLayoutManager>
+        )}
       </div>
     );
   }
