@@ -76,7 +76,7 @@ export default {
     startServer && serve({
       open: true,
       // Multiple folders to serve from
-      contentBase: ['.', 'dist', 'cypress/support/script-tag'],
+      contentBase: ['.', 'dist', 'cypress/support/script-tag', 'public'],
       host: 'localhost',
       port: 5000,
     })
