@@ -1,6 +1,5 @@
 /**
- * Entry point index.js for rollup packaging
+ * Entry point index.js for UMD packaging
  */
-
 import App from './App.js';
 export { App };
