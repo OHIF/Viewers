@@ -72,7 +72,7 @@ class ToolbarRow extends Component {
       {
         value: 'studies',
         icon: 'th-large',
-        bottomLabel: 'Series',
+        bottomLabel: t('Series'),
       },
     ];
 
@@ -199,4 +199,4 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 }
 
-export default withTranslation(['ToolbarRow', 'Buttons'])(ToolbarRow);
+export default withTranslation('ToolbarRow')(ToolbarRow);

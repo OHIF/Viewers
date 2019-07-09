@@ -5,5 +5,7 @@
   "MAX": "máximo",
   "NonTargets": "NonObjetivos",
   "Relabel": "Reetiquetar",
-  "Targets": "Objetivos"
+  "Targets": "Objetivos",
+  "Measurements": "Medidas",
+  "StudyDate": "Fecha de estudo"
 }

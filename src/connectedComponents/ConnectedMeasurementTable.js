@@ -138,6 +138,7 @@ function convertTimepointsToTableData(timepoints) {
   return [
     {
       label: 'Study date:',
+      key: 'StudyDate',
       date: moment(timepoints[0].latestDate).format('DD-MMM-YY'),
     },
   ];

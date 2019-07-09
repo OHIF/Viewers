@@ -1,0 +1,10 @@
+{
+  "PatientName": "Patient Name",
+  "MRN": "MRN",
+  "Accession": "Accession #",
+  "StudyDate": "Study Date",
+  "Modality": "Modality",
+  "Description": "Description",
+  "Empty": "Empty",
+  "StudyList": "Study List"
+}
