@@ -18,6 +18,14 @@ class GoogleCloudApi {
     };
   }
 
+  get urlBase() {
+    return `https://healthcare.googleapis.com/v1beta1`;
+  }
+
+  get urlBaseProject() {
+    return this.urlBase + `/projects`;
+  }
+
   async doRequest(urlStr, config = {}, params = {}) {
     var url = new URL(urlStr);
     let data = null;
@@ -73,21 +81,17 @@ class GoogleCloudApi {
   }
 
   async loadLocations(projectId) {
-    return this.doRequest(
-      `https://healthcare.googleapis.com/v1beta1/projects/${projectId}/locations`
-    );
+    return this.doRequest(this.urlBaseProject + `/${projectId}/locations`);
   }
 
   async loadDatasets(projectId, locationId) {
     return this.doRequest(
-      `https://healthcare.googleapis.com/v1beta1/projects/${projectId}/locations/${locationId}/datasets`
+      this.urlBaseProject + `/${projectId}/locations/${locationId}/datasets`
     );
   }
 
   async loadDicomStores(dataset) {
-    return this.doRequest(
-      `https://healthcare.googleapis.com/v1beta1/${dataset}/dicomStores`
-    );
+    return this.doRequest(this.urlBase + `/${dataset}/dicomStores`);
   }
 }
 

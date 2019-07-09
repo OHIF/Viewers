@@ -34,7 +34,7 @@ class StudyListWithData extends Component {
   static defaultStudyDateTo = new Date();
 
   componentDidMount() {
-    if (!this.props.server) {
+    if (!this.props.server && window.config.enableGoogleCloudAdapter) {
       this.setState({
         modalComponentId: 'DicomStorePicker',
         showStudyList: false,
@@ -176,15 +176,15 @@ class StudyListWithData extends Component {
       return <div>Loading...</div>;
     }
 
-    let healthCare = '';
-    if (this.props.user) {
+    let healthCareApi = '';
+    if (window.config.enableGoogleCloudAdapter) {
       let modalContent = '';
       if (this.state.modalComponentId === 'DicomStorePicker') {
         modalContent = <ConnectedDicomStorePicker onClose={this.update} />;
       } else if (this.state.modalComponentId === 'DicomFilesUploader') {
         modalContent = <ConnectedDicomFilesUploader onClose={this.update} />;
       }
-      healthCare = (
+      healthCareApi = (
         <>
           <div className="form-inline form-group pull-right">
             <button
@@ -226,7 +226,7 @@ class StudyListWithData extends Component {
     return (
       <>
         <ConnectedHeader home={true} user={this.props.user} />
-        {healthCare}
+        {healthCareApi}
         {studyList}
       </>
     );

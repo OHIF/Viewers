@@ -4,6 +4,7 @@ import DicomStorePicker from './DicomStorePicker';
 import DatasetPicker from './DatasetPicker';
 import ProjectPicker from './ProjectPicker';
 import LocationPicker from './LocationPicker';
+import GoogleCloudApi from './api/GoogleCloudApi';
 import './googleCloud.css';
 
 export default class DatasetSelector extends Component {
@@ -15,14 +16,6 @@ export default class DatasetSelector extends Component {
       dataset: null,
       unloading: false,
     };
-
-    this.onProjectSelect = this.onProjectSelect.bind(this);
-    this.onLocationSelect = this.onLocationSelect.bind(this);
-    this.onDatasetSelect = this.onDatasetSelect.bind(this);
-    this.onDicomStoreSelect = this.onDicomStoreSelect.bind(this);
-    this.onProjectClick = this.onProjectClick.bind(this);
-    this.onLocationClick = this.onLocationClick.bind(this);
-    this.onDatasetClick = this.onDatasetClick.bind(this);
   }
 
   static propTypes = {
@@ -34,65 +27,59 @@ export default class DatasetSelector extends Component {
   };
   static defaultProps = {};
 
-  onProjectSelect(project) {
+  onProjectSelect = project => {
     this.setState({
       project: project,
     });
-  }
+  };
 
-  onLocationSelect(location) {
+  onLocationSelect = location => {
     this.setState({
       location: location,
     });
-  }
+  };
 
-  onDatasetSelect(dataset) {
+  onDatasetSelect = dataset => {
     this.setState({
       dataset: dataset,
     });
-  }
+  };
 
-  onProjectClick() {
+  onProjectClick = () => {
     this.setState({
       dataset: null,
-    });
-    this.setState({
       location: null,
-    });
-    this.setState({
       project: null,
     });
-  }
+  };
 
-  onLocationClick() {
+  onLocationClick = () => {
     this.setState({
       dataset: null,
-    });
-    this.setState({
       location: null,
     });
-  }
+  };
 
-  onDatasetClick() {
+  onDatasetClick = () => {
     this.setState({
       dataset: null,
     });
-  }
+  };
 
-  onDicomStoreSelect(dicomStoreJson) {
+  onDicomStoreSelect = dicomStoreJson => {
     const dicomStore = dicomStoreJson.name;
     const parts = dicomStore.split('/');
     const result = {
-      wadoUriRoot: `https://healthcare.googleapis.com/v1beta1/${dicomStore}/dicomWeb`,
-      qidoRoot: `https://healthcare.googleapis.com/v1beta1/${dicomStore}/dicomWeb`,
-      wadoRoot: `https://healthcare.googleapis.com/v1beta1/${dicomStore}/dicomWeb`,
+      wadoUriRoot: GoogleCloudApi.urlBase + `/${dicomStore}/dicomWeb`,
+      qidoRoot: GoogleCloudApi.urlBase + `/${dicomStore}/dicomWeb`,
+      wadoRoot: GoogleCloudApi.urlBase + `/${dicomStore}/dicomWeb`,
       project: parts[1],
       location: parts[3],
       dataset: parts[5],
       dicomStore: parts[7],
     };
     this.props.setServers(result);
-  }
+  };
 
   render() {
     const { project, location, dataset } = this.state;
@@ -110,15 +97,15 @@ export default class DatasetSelector extends Component {
         <span className="gcp-picker--title">Google Cloud Healthcare API</span>
         {project && (
           <div className="gcp-picker--path">
-            <span onClick={() => onProjectClick(null)}>{project.name}</span>
+            <span onClick={onProjectClick}>{project.name}</span>
             {project && location && (
               <>
-                <span onClick={() => onLocationClick(null)}>
+                <span onClick={onLocationClick}>
                   {' '}
                   -> {location.name.split('/')[3]}
                 </span>
                 {project && location && dataset && (
-                  <span onClick={() => onDatasetClick(null)}>
+                  <span onClick={onDatasetClick}>
                     {' '}
                     -> {dataset.name.split('/')[5]}
                   </span>
