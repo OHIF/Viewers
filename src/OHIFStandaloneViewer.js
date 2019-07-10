@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter, matchPath } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import { NProgress } from '@tanem/react-nprogress';
-import { CSSTransition } from 'react-transition-group';
+// import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from 'react-viewerbase';
 // import asyncComponent from './components/AsyncComponent.js'
@@ -159,22 +159,22 @@ class OHIFStandaloneViewer extends Component {
         {!noMatchingRoutes &&
           routes.map(({ path, Component }) => (
             <Route key={path} exact path={path}>
-              {({ match }) => (
-                <CSSTransition
-                  in={match !== null}
-                  timeout={300}
-                  classNames="fade"
-                  unmountOnExit
-                  onEnter={() => {
-                    this.setState({ isLoading: true });
-                  }}
-                  onEntered={() => {
-                    this.setState({ isLoading: false });
-                  }}
-                >
-                  {match === null ? <></> : <Component match={match} />}
-                </CSSTransition>
-              )}
+              {({ match }) =>
+                // <CSSTransition
+                //   in={match !== null}
+                //   timeout={300}
+                //   classNames="fade"
+                //   unmountOnExit
+                //   onEnter={() => {
+                //     this.setState({ isLoading: true });
+                //   }}
+                //   onEntered={() => {
+                //     this.setState({ isLoading: false });
+                //   }}
+                // >
+                match === null ? <></> : <Component match={match} />
+                // </CSSTransition>
+              }
             </Route>
           ))}
         {noMatchingRoutes && <NotFound />}

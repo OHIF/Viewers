@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { CSSTransition } from 'react-transition-group';
+// import { CSSTransition } from 'react-transition-group';
 
 import './LabellingTransition.css';
 
@@ -17,15 +17,15 @@ export default class LabellingTransition extends Component {
   };
   render() {
     return (
-      <CSSTransition
-        in={this.props.displayComponent}
-        appear={transitionOnAppear}
-        timeout={transitionDuration}
-        classNames={transitionClassName}
-        onExited={this.props.onTransitionExit}
-      >
-        {this.props.children}
-      </CSSTransition>
+      // <CSSTransition
+      //   in={this.props.displayComponent}
+      //   appear={transitionOnAppear}
+      //   timeout={transitionDuration}
+      //   classNames={transitionClassName}
+      //   onExited={this.props.onTransitionExit}
+      // >
+      this.props.children
+      // </CSSTransition>
     );
   }
 }
