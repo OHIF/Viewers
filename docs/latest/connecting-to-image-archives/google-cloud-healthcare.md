@@ -1,11 +1,5 @@
 # Google Cloud Healthcare
 
-> ATTENTION: The original documentation for this integration lives in the legacy
-> `version 1` Meteor documentation. You can
-> [find it here](/history/v1/connecting-to-image-archives/google-cloud-healthcare.html).
-> These docs will mirror the Meteor documentation until our `React`
-> implementation has been updated to work with Google Cloud Healthcare.
-
 > The [Google Cloud Healthcare API](https://cloud.google.com/healthcare/) is a
 > powerful option for storing medical imaging data in the cloud.
 
@@ -60,65 +54,29 @@ static site application.
 1. Run the OHIF Viewer using the oidc-googleCloud.json configuration file
 
 ```bash
-cd OHIFViewer
-METEOR_PACKAGE_DIRS="../Packages" meteor npm install
-METEOR_PACKAGE_DIRS="../Packages" meteor --settings ../config/oidc-googleCloud.json
+yarn install
+REACT_APP_CONFIG=config/google.js yarn run dev
 ```
 
 ## Running via Docker
 
-OHIF is also providing a Docker container which can connect to Google Cloud
-Healthcare with a Client ID which is provided at runtime. This is a very simple
-method to get up and running. Internally, the container is running
-[Nginx](https://nginx.org/) to serve the
-[Standalone Viewer](../standalone-viewer/usage.md).
+The OHIF Viewer Docker image can also be connected to Google Cloud Healthcare by modifying the default.js configuration file stored in the image. This is a very simple method to get up and running.
 
 1. Install Docker (https://www.docker.com/)
-1. Run the Docker container, providing a Client ID as an environment variable.
+1. Start the Docker container.
+1. Set your Client ID inside your config file.
    Client IDs look like `xyz.apps.googleusercontent.com`.
+1. Copy your config file into the container to overwrite the default configuration
 
 ```bash
-docker run --env CLIENT_ID=$CLIENT_ID --publish 3000:80 ohif/viewer-google-cloud:latest
-```
+# Run the container. It will default to the public DICOMWeb server
+docker run --publish 5000:80 ohif/viewer-google-cloud:latest
 
-## Building the ohif/viewer-google-cloud Docker Image
+# Obtain the container ID
+docker ps
 
-The
-[ohif/viewer-google-cloud](https://cloud.docker.com/u/ohif/repository/docker/ohif/viewer-google-cloud)
-Docker image is built as follows. The Dockerfile and nginx.conf are in the
-`/dockersupport/viewer-google-cloud` folder.
+# Use the container ID to copy your config file into the container
+docker cp ./public/config/google.js 4a3828ac3780:/usr/share/nginx/html/config/default.js
 
-1. [Install Meteor](https://www.meteor.com/install)
-1. Clone the repository
-
-```bash
-git clone https://github.com/OHIF/Viewers.git
-cd Viewers
-```
-
-1. Install meteor-build-client-fixed2 so you can build the Standalone Viewer
-
-```bash
-npm install -g meteor-build-client-fixed2
-```
-
-1. Build the Standalone client-only OHIF Viewer
-
-```bash
-cd OHIFViewer/
-METEOR_PACKAGE_DIRS="../Packages" meteor npm install
-METEOR_PACKAGE_DIRS="../Packages" meteor-build-client-fixed2 ../dockersupport/viewer-google-cloud/build -s ../config/oidc.json
-```
-
-1. Build the Docker image
-
-```bash
-cd ../dockersupport/viewer-google-cloud
-docker build -t ohif/viewer-google-cloud .
-```
-
-1. Run the Docker image using an OAuth Client ID
-
-```bash
-docker run --env CLIENT_ID={$someID}.apps.googleusercontent.com --publish 3000:80 ohif/viewer-google-cloud
+# Now refresh your browser
 ```
