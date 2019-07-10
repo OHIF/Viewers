@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import DicomStorePickerWindow from './DicomStorePickerWindow.js';
+import DicomStorePickerModal from './DicomStorePickerModal.js';
 
 const isActive = a => a.active === true;
 
@@ -29,6 +29,6 @@ const mapDispatchToProps = dispatch => {
 const ConnectedDicomStorePicker = connect(
   mapStateToProps,
   mapDispatchToProps
-)(DicomStorePickerWindow);
+)(DicomStorePickerModal);
 
 export default ConnectedDicomStorePicker;

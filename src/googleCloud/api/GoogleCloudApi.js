@@ -27,7 +27,7 @@ class GoogleCloudApi {
   }
 
   async doRequest(urlStr, config = {}, params = {}) {
-    var url = new URL(urlStr);
+    const url = new URL(urlStr);
     let data = null;
     url.search = new URLSearchParams(params);
 
@@ -40,7 +40,7 @@ class GoogleCloudApi {
         if (data.nextPageToken != null) {
           params.pageToken = data.nextPageToken;
           let subPage = await this.doRequest(urlStr, config, params);
-          for (var key in data) {
+          for (let key in data) {
             if (data.hasOwnProperty(key)) {
               data[key] = data[key].concat(subPage.data[key]);
             }
@@ -49,7 +49,7 @@ class GoogleCloudApi {
         return {
           isError: false,
           status: response.status,
-          data: data,
+          data,
         };
       } else {
         return {
@@ -81,17 +81,17 @@ class GoogleCloudApi {
   }
 
   async loadLocations(projectId) {
-    return this.doRequest(this.urlBaseProject + `/${projectId}/locations`);
+    return this.doRequest(`${this.urlBaseProject}/${projectId}/locations`);
   }
 
   async loadDatasets(projectId, locationId) {
     return this.doRequest(
-      this.urlBaseProject + `/${projectId}/locations/${locationId}/datasets`
+      `${this.urlBaseProject}/${projectId}/locations/${locationId}/datasets`
     );
   }
 
   async loadDicomStores(dataset) {
-    return this.doRequest(this.urlBase + `/${dataset}/dicomStores`);
+    return this.doRequest(`${this.urlBase}/${dataset}/dicomStores`);
   }
 }
 
