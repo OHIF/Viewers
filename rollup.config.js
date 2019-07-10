@@ -9,11 +9,14 @@ import svgr from '@svgr/rollup'
 import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins'
+import serve from 'rollup-plugin-serve'
 
 const globals = {
   react: 'React',
   'react-dom': 'ReactDOM',
 }
+
+const startServer = process.env.START_SERVER === 'true';
 
 export default {
   input: 'src/index_publish.js',
@@ -43,7 +46,7 @@ export default {
     url(),
     svgr(),
     json(),
-    resolve({preferBuiltins: true}),
+    resolve({ preferBuiltins: true }),
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true,
@@ -70,6 +73,13 @@ export default {
       },
     }),
     builtins(),
+    startServer && serve({
+      open: true,
+      // Multiple folders to serve from
+      contentBase: ['.', 'dist', 'cypress/support/script-tag', 'public'],
+      host: 'localhost',
+      port: 5000,
+    })
   ],
   external: Object.keys(pkg.peerDependencies || {}),
 }

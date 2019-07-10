@@ -203,6 +203,10 @@ class OHIFCornerstoneViewport extends Component {
       frameIndex,
     } = displaySet;
 
+    if (!studyInstanceUid || !displaySetInstanceUid) {
+      return;
+    }
+
     if (sopClassUids && sopClassUids.length > 1) {
       console.warn(
         'More than one SOPClassUid in the same series is not yet supported.'
