@@ -265,4 +265,4 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 }
 
-export default withTranslation('ToolbarRow')(ToolbarRow);
+export default withTranslation('Common')(ToolbarRow);
