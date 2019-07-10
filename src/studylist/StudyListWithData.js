@@ -5,11 +5,16 @@ import { withRouter } from 'react-router-dom';
 import { StudyList } from 'react-viewerbase';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
+import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
+import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 
 class StudyListWithData extends Component {
   state = {
-    studies: null,
+    searchData: {},
+    studies: [],
     error: null,
+    modalComponentId: null,
+    showStudyList: true,
   };
 
   static propTypes = {
@@ -39,11 +44,31 @@ class StudyListWithData extends Component {
   componentDidMount() {
     // TODO: Avoid using timepoints here
     //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
+    if (!this.props.server && window.config.enableGoogleCloudAdapter) {
+      this.setState({
+        modalComponentId: 'DicomStorePicker',
+        showStudyList: false,
+      });
+    } else {
+      this.searchForStudies({
+        ...StudyListWithData.defaultSearchData,
+        ...(this.props.filters || {}),
+      });
+    }
+  }
 
-    this.searchForStudies({
-      ...StudyListWithData.defaultSearchData,
-      ...(this.props.filters || {}),
-    });
+  componentDidUpdate(prevProps) {
+    if (!this.state.searchData && !this.state.studies) {
+      this.searchForStudies();
+    }
+    if (this.props.server !== prevProps.server) {
+      this.setState({
+        modalComponentId: null,
+        showStudyList: true,
+        searchData: null,
+        studies: null,
+      });
+    }
   }
 
   searchForStudies = (searchData = StudyListWithData.defaultSearchData) => {
@@ -123,6 +148,17 @@ class StudyListWithData extends Component {
     //console.log('onImport');
   };
 
+  openModal = modalComponentId => {
+    this.setState({
+      modalComponentId,
+      showStudyList: false,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({ modalComponentId: null });
+  };
+
   onSelectItem = studyInstanceUID => {
     this.props.history.push(`/viewer/${studyInstanceUID}`);
   };
@@ -131,16 +167,63 @@ class StudyListWithData extends Component {
     this.searchForStudies(searchData);
   };
 
+  update = () => {
+    this.setState({
+      modalComponentId: null,
+      showStudyList: true,
+    });
+  };
+
   render() {
     if (this.state.error) {
       return <div>Error: {JSON.stringify(this.state.error)}</div>;
-    } else if (this.state.studies === null) {
+    } else if (this.state.studies === null && !this.state.modalComponentId) {
       return <div>Loading...</div>;
     }
 
-    return (
-      <>
-        <ConnectedHeader home={true} user={this.props.user} />
+    let healthCareApiButtons = '';
+    let healthCareApiWindows = '';
+    if (window.config.enableGoogleCloudAdapter) {
+      if (this.state.modalComponentId) {
+        if (this.state.modalComponentId === 'DicomStorePicker') {
+          healthCareApiWindows = (
+            <ConnectedDicomStorePicker onClose={this.update} />
+          );
+        } else if (this.state.modalComponentId === 'DicomFilesUploader') {
+          healthCareApiWindows = (
+            <ConnectedDicomFilesUploader onClose={this.update} />
+          );
+        }
+        healthCareApiWindows = (
+          <>
+            <div className="col-md-4 col-md-offset-2 layoutChooser pagination-area">
+              {healthCareApiWindows}
+            </div>
+          </>
+        );
+      }
+      healthCareApiButtons = (
+        <>
+          <div className="form-inline form-group pull-right">
+            <button
+              className="btn btn-primary "
+              onClick={() => this.openModal('DicomStorePicker')}
+            >
+              Change Dicom Store
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => this.openModal('DicomFilesUploader')}
+            >
+              Upload Studies
+            </button>
+          </div>
+        </>
+      );
+    }
+    let studyList = <></>;
+    studyList = (
+      <div name="paginationArea">
         <StudyList
           studies={this.state.studies}
           studyListFunctionsEnabled={false}
@@ -152,7 +235,16 @@ class StudyListWithData extends Component {
             StudyListWithData.studyListDateFilterNumDays
           }
           onSearch={this.onSearch}
-        />
+        >
+          {healthCareApiButtons}
+          {healthCareApiWindows}
+        </StudyList>
+      </div>
+    );
+    return (
+      <>
+        <ConnectedHeader home={true} user={this.props.user} />
+        {studyList}
       </>
     );
   }
