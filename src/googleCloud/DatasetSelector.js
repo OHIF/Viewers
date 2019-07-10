@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import DicomStorePicker from './DicomStorePicker';
 import DatasetPicker from './DatasetPicker';
 import ProjectPicker from './ProjectPicker';
@@ -7,16 +8,13 @@ import LocationPicker from './LocationPicker';
 import GoogleCloudApi from './api/GoogleCloudApi';
 import './googleCloud.css';
 
-export default class DatasetSelector extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      project: null,
-      location: null,
-      dataset: null,
-      unloading: false,
-    };
-  }
+class DatasetSelector extends Component {
+  state = {
+    project: null,
+    location: null,
+    dataset: null,
+    unloading: false,
+  };
 
   static propTypes = {
     id: PropTypes.string,
@@ -25,23 +23,22 @@ export default class DatasetSelector extends Component {
     canClose: PropTypes.string,
     setServers: PropTypes.func.isRequired,
   };
-  static defaultProps = {};
 
   onProjectSelect = project => {
     this.setState({
-      project: project,
+      project,
     });
   };
 
   onLocationSelect = location => {
     this.setState({
-      location: location,
+      location,
     });
   };
 
   onDatasetSelect = dataset => {
     this.setState({
-      dataset: dataset,
+      dataset,
     });
   };
 
@@ -92,65 +89,68 @@ export default class DatasetSelector extends Component {
       onDatasetSelect,
       onDicomStoreSelect,
     } = this;
+
+    let projectBreadcrumbs = (
+      <div className="gcp-picker--path">
+        <span>{this.props.t('Select a Project')}</span>
+      </div>
+    );
+
+    if (project) {
+      projectBreadcrumbs = (
+        <div className="gcp-picker--path">
+          <span onClick={onProjectClick}>{project.name}</span>
+          {project && location && (
+            <span onClick={onLocationClick}>
+              {' '}
+              -> {location.name.split('/')[3]}
+            </span>
+          )}
+          {project && location && dataset && (
+            <span onClick={onDatasetClick}>
+              {' '}
+              -> {dataset.name.split('/')[5]}
+            </span>
+          )}
+        </div>
+      );
+    }
+
     return (
       <>
-        <span className="gcp-picker--title">Google Cloud Healthcare API</span>
-        {project && (
-          <div className="gcp-picker--path">
-            <span onClick={onProjectClick}>{project.name}</span>
-            {project && location && (
-              <>
-                <span onClick={onLocationClick}>
-                  {' '}
-                  -> {location.name.split('/')[3]}
-                </span>
-                {project && location && dataset && (
-                  <span onClick={onDatasetClick}>
-                    {' '}
-                    -> {dataset.name.split('/')[5]}
-                  </span>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
+        {projectBreadcrumbs}
         {!project && (
           <ProjectPicker
             oidcKey={this.props.oidcKey}
             onSelect={onProjectSelect}
-          ></ProjectPicker>
+          />
         )}
 
         {project && !location && (
-          <>
-            <LocationPicker
-              oidcKey={this.props.oidcKey}
-              project={project}
-              onSelect={onLocationSelect}
-            ></LocationPicker>
-          </>
+          <LocationPicker
+            oidcKey={this.props.oidcKey}
+            project={project}
+            onSelect={onLocationSelect}
+          />
         )}
         {project && location && !dataset && (
-          <>
-            <DatasetPicker
-              oidcKey={this.props.oidcKey}
-              project={project}
-              location={location}
-              onSelect={onDatasetSelect}
-            ></DatasetPicker>
-          </>
+          <DatasetPicker
+            oidcKey={this.props.oidcKey}
+            project={project}
+            location={location}
+            onSelect={onDatasetSelect}
+          />
         )}
         {project && location && dataset && (
-          <>
-            <DicomStorePicker
-              oidcKey={this.props.oidcKey}
-              dataset={dataset}
-              onSelect={onDicomStoreSelect}
-            ></DicomStorePicker>
-          </>
+          <DicomStorePicker
+            oidcKey={this.props.oidcKey}
+            dataset={dataset}
+            onSelect={onDicomStoreSelect}
+          />
         )}
       </>
     );
   }
 }
+
+export default withTranslation('Common')(DatasetSelector);
