@@ -6,25 +6,21 @@ import dicomUploader from './api/DicomUploadService';
 import './googleCloud.css';
 
 export default class DicomUploader extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      status: 'Upload',
-      isCancelled: false,
-      errorsCount: 0,
-      files: null,
-      uploadedVolume: null,
-      wholeVolumeStr: null,
-      isFilesListHidden: true,
-      timeLeft: null,
-      uploadedList: null,
-      totalCount: 0,
-      successfullyUploadedCount: 0,
-      lastFile: '',
-      uploadContext: null, // this is probably not needed, but we use this variable to destinguish between different downloads
-    };
-    this.uploadFiles = this.uploadFiles.bind(this);
-  }
+  state = {
+    status: 'Upload',
+    isCancelled: false,
+    errorsCount: 0,
+    files: null,
+    uploadedVolume: null,
+    wholeVolumeStr: null,
+    isFilesListHidden: true,
+    timeLeft: null,
+    uploadedList: null,
+    totalCount: 0,
+    successfullyUploadedCount: 0,
+    lastFile: '',
+    uploadContext: null, // this is probably not needed, but we use this variable to distinguish between different downloads
+  };
 
   static propTypes = {
     id: PropTypes.string,
@@ -32,7 +28,6 @@ export default class DicomUploader extends Component {
     url: PropTypes.string,
     oidcKey: PropTypes.string,
   };
-  static defaultProps = {};
 
   filesLeft() {
     return (
@@ -66,7 +61,7 @@ export default class DicomUploader extends Component {
     );
   }
 
-  uploadFiles(files) {
+  uploadFiles = files => {
     const filesArray = Array.from(files.target.files);
     const filesDict = {};
     filesArray.forEach((file, i) => {
@@ -107,14 +102,14 @@ export default class DicomUploader extends Component {
       uploadCallback,
       cancellationToken
     );
-  }
+  };
 
   uploadCallback(fileId, error) {
     const file = this.state.files[fileId];
     file.processed = true;
     if (!error) {
       let uploadedVolume = this.state.uploadedVolume + file.size;
-      this.setState({ uploadedVolume: uploadedVolume });
+      this.setState({ uploadedVolume });
     } else {
       file.error = error;
       this.setState({ errorsCount: this.state.errorsCount + 1 });
@@ -122,17 +117,13 @@ export default class DicomUploader extends Component {
     this.setState({ lastFile: file.name });
     let uploadedList = this.state.uploadedList;
     uploadedList.push(file);
-    this.setState({ uploadedList: uploadedList });
+    this.setState({ uploadedList });
   }
 
-  renderTableRow(file) {
-    let error = <></>;
-    if (file.error != null) {
-      error = (
-        <>
-          <font color="red">{file.error}</font>
-        </>
-      );
+  renderTableRow = file => {
+    let error = null;
+    if (file.error !== null) {
+      error = <p style={{ color: 'red' }}>{file.error}</p>;
     }
     return (
       <tr key={file.id}>
@@ -141,10 +132,10 @@ export default class DicomUploader extends Component {
         </td>
       </tr>
     );
-  }
+  };
 
   render() {
-    if (this.state.files == null) {
+    if (this.state.files === null) {
       return (
         <div className="gcp-dicom-uploader">
           <div className="button">
@@ -177,28 +168,21 @@ export default class DicomUploader extends Component {
           </div>
         </div>
       );
-    } else {
-      return (
-        <>
-          <table
-            id="tblProjectList"
-            className="studyListToolbar table noselect"
-          >
-            <thead>
-              <tr>
-                <th className="gcp-picker--path">
-                  {this.percents()}% {this.filesLeft()}
-                </th>
-              </tr>
-            </thead>
-            <tbody id="ProjectList">
-              {this.state.uploadedList.map(file => {
-                return this.renderTableRow(file);
-              })}
-            </tbody>
-          </table>
-        </>
-      );
     }
+
+    return (
+      <table id="tblProjectList" className="table noselect">
+        <thead>
+          <tr>
+            <th className="gcp-picker--path">
+              {this.percents()}% {this.filesLeft()}
+            </th>
+          </tr>
+        </thead>
+        <tbody id="ProjectList">
+          {this.state.uploadedList.map(this.renderTableRow)}
+        </tbody>
+      </table>
+    );
   }
 }

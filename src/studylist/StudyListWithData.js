@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 import { StudyList } from 'react-viewerbase';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
@@ -14,7 +15,6 @@ class StudyListWithData extends Component {
     studies: [],
     error: null,
     modalComponentId: null,
-    showStudyList: true,
   };
 
   static propTypes = {
@@ -47,7 +47,6 @@ class StudyListWithData extends Component {
     if (!this.props.server && window.config.enableGoogleCloudAdapter) {
       this.setState({
         modalComponentId: 'DicomStorePicker',
-        showStudyList: false,
       });
     } else {
       this.searchForStudies({
@@ -64,7 +63,6 @@ class StudyListWithData extends Component {
     if (this.props.server !== prevProps.server) {
       this.setState({
         modalComponentId: null,
-        showStudyList: true,
         searchData: null,
         studies: null,
       });
@@ -151,7 +149,6 @@ class StudyListWithData extends Component {
   openModal = modalComponentId => {
     this.setState({
       modalComponentId,
-      showStudyList: false,
     });
   };
 
@@ -167,10 +164,9 @@ class StudyListWithData extends Component {
     this.searchForStudies(searchData);
   };
 
-  update = () => {
+  closeModals = () => {
     this.setState({
       modalComponentId: null,
-      showStudyList: true,
     });
   };
 
@@ -181,49 +177,47 @@ class StudyListWithData extends Component {
       return <div>Loading...</div>;
     }
 
-    let healthCareApiButtons = '';
-    let healthCareApiWindows = '';
+    let healthCareApiButtons = null;
+    let healthCareApiWindows = null;
+
+    // TODO: This should probably be a prop
     if (window.config.enableGoogleCloudAdapter) {
-      if (this.state.modalComponentId) {
-        if (this.state.modalComponentId === 'DicomStorePicker') {
-          healthCareApiWindows = (
-            <ConnectedDicomStorePicker onClose={this.update} />
-          );
-        } else if (this.state.modalComponentId === 'DicomFilesUploader') {
-          healthCareApiWindows = (
-            <ConnectedDicomFilesUploader onClose={this.update} />
-          );
-        }
-        healthCareApiWindows = (
-          <>
-            <div className="col-md-4 col-md-offset-2 layoutChooser pagination-area">
-              {healthCareApiWindows}
-            </div>
-          </>
-        );
-      }
-      healthCareApiButtons = (
+      healthCareApiWindows = (
         <>
-          <div className="form-inline form-group pull-right">
-            <button
-              className="btn btn-primary "
-              onClick={() => this.openModal('DicomStorePicker')}
-            >
-              Change Dicom Store
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => this.openModal('DicomFilesUploader')}
-            >
-              Upload Studies
-            </button>
-          </div>
+          <ConnectedDicomStorePicker
+            isOpen={this.state.modalComponentId === 'DicomStorePicker'}
+            onClose={this.closeModals}
+          />
+          <ConnectedDicomFilesUploader
+            isOpen={this.state.modalComponentId === 'DicomFilesUploader'}
+            onClose={this.closeModals}
+          />
         </>
       );
+
+      healthCareApiButtons = (
+        <div
+          className="form-inline btn-group pull-right"
+          style={{ padding: '20px' }}
+        >
+          <button
+            className="btn btn-primary"
+            onClick={() => this.openModal('DicomStorePicker')}
+          >
+            {this.props.t('Change DICOM Store')}
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => this.openModal('DicomFilesUploader')}
+          >
+            {this.props.t('Upload Studies')}
+          </button>
+        </div>
+      );
     }
-    let studyList = <></>;
-    studyList = (
-      <div name="paginationArea">
+
+    const studyList = (
+      <div className="paginationArea">
         <StudyList
           studies={this.state.studies}
           studyListFunctionsEnabled={false}
@@ -250,4 +244,4 @@ class StudyListWithData extends Component {
   }
 }
 
-export default withRouter(StudyListWithData);
+export default withRouter(withTranslation('Common')(StudyListWithData));

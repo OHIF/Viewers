@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import DicomFileUploader from './DicomFileUploader.js';
+import DicomFileUploaderModal from './DicomFileUploaderModal.js';
 
 const isActive = a => a.active === true;
 
@@ -17,6 +17,6 @@ const mapStateToProps = state => {
 const ConnectedDicomFileUploader = connect(
   mapStateToProps,
   null
-)(DicomFileUploader);
+)(DicomFileUploaderModal);
 
 export default ConnectedDicomFileUploader;
