@@ -100,6 +100,7 @@
     "ohif-core": "0.9.1",
     "oidc-client": "1.7.x",
     "prop-types": "^15.7.2",
+    "react-dropzone": "^10.1.5",
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
     "react-resize-detector": "^4.2.0",
