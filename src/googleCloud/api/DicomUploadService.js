@@ -62,8 +62,8 @@ class DicomUploadService {
   }
 
   readFile(file) {
-    const promise = new Promise((resolve, reject) => {
-      var reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
       reader.onload = () => {
         resolve({
           name: file.name,
@@ -75,7 +75,6 @@ class DicomUploadService {
       reader.onerror = error => reject(error);
       reader.readAsArrayBuffer(file);
     });
-    return promise;
   }
 
   getClient(url) {

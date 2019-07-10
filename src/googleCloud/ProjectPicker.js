@@ -5,30 +5,33 @@ import ProjectsList from './ProjectsList';
 import './googleCloud.css';
 
 export default class ProjectPicker extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      loading: false,
-      projects: [],
-    };
-  }
+  state = {
+    error: null,
+    loading: true,
+    projects: [],
+  };
 
   static propTypes = {
     onSelect: PropTypes.func,
     oidcKey: PropTypes.string,
   };
-  static defaultProps = {};
 
   async componentDidMount() {
     api.setOidcStorageKey(this.props.oidcKey);
     const response = await api.loadProjects();
-    this.loading = false;
+
     if (response.isError) {
-      this.error = response.message;
+      this.setState({
+        error: response.message,
+      });
+
       return;
     }
-    this.setState({ projects: response.data.projects || [] });
+
+    this.setState({
+      projects: response.data.projects || [],
+      loading: false,
+    });
   }
 
   render() {
@@ -40,7 +43,7 @@ export default class ProjectPicker extends Component {
         loading={loading}
         error={error}
         onSelect={onSelect}
-      ></ProjectsList>
+      />
     );
   }
 }

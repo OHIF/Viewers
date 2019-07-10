@@ -5,14 +5,11 @@ import DatasetsList from './DatasetsList';
 import './googleCloud.css';
 
 export default class DatasetPicker extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      loading: false,
-      datasets: [],
-    };
-  }
+  state = {
+    error: null,
+    loading: true,
+    datasets: [],
+  };
 
   static propTypes = {
     project: PropTypes.object,
@@ -20,7 +17,6 @@ export default class DatasetPicker extends Component {
     onSelect: PropTypes.func,
     oidcKey: PropTypes.string,
   };
-  static defaultProps = {};
 
   async componentDidMount() {
     api.setOidcStorageKey(this.props.oidcKey);
@@ -29,12 +25,19 @@ export default class DatasetPicker extends Component {
       this.props.project.projectId,
       this.props.location.locationId
     );
-    this.loading = false;
+
     if (response.isError) {
-      this.error = response.message;
+      this.setState({
+        error: response.message,
+      });
+
       return;
     }
-    this.setState({ datasets: response.data.datasets || [] });
+
+    this.setState({
+      datasets: response.data.datasets || [],
+      loading: false,
+    });
   }
 
   render() {
@@ -46,7 +49,7 @@ export default class DatasetPicker extends Component {
         loading={loading}
         error={error}
         onSelect={onSelect}
-      ></DatasetsList>
+      />
     );
   }
 }

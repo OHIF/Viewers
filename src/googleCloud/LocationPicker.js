@@ -5,14 +5,11 @@ import LocationsList from './LocationsList';
 import './googleCloud.css';
 
 export default class LocationPicker extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      loading: false,
-      locations: [],
-    };
-  }
+  state = {
+    error: null,
+    loading: true,
+    locations: [],
+  };
 
   static propTypes = {
     project: PropTypes.object,
@@ -25,15 +22,19 @@ export default class LocationPicker extends Component {
 
     const response = await api.loadLocations(this.props.project.projectId);
 
-    this.loading = false;
     if (response.isError) {
-      this.error = response.message;
+      this.setState({
+        error: response.message,
+      });
+
       return;
     }
-    this.setState({ locations: response.data.locations || [] });
-  }
 
-  static defaultProps = {};
+    this.setState({
+      locations: response.data.locations || [],
+      loading: false,
+    });
+  }
 
   render() {
     const { locations, loading, error } = this.state;
@@ -44,7 +45,7 @@ export default class LocationPicker extends Component {
         loading={loading}
         error={error}
         onSelect={onSelect}
-      ></LocationsList>
+      />
     );
   }
 }
