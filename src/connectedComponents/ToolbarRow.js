@@ -1,7 +1,11 @@
 import './ToolbarRow.css';
 
 import React, { Component } from 'react';
-import { ExpandableToolMenu, RoundedButtonGroup, ToolbarButton } from 'react-viewerbase';
+import {
+  ExpandableToolMenu,
+  RoundedButtonGroup,
+  ToolbarButton,
+} from 'react-viewerbase';
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
