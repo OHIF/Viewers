@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Dropzone from 'react-dropzone';
 import OHIF from 'ohif-core';
 import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
@@ -8,6 +9,7 @@ import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
+import filesToStudies from '../lib/filesToStudies.js';
 
 class StudyListWithData extends Component {
   state = {
@@ -171,6 +173,19 @@ class StudyListWithData extends Component {
   };
 
   render() {
+    const onDrop = async acceptedFiles => {
+      // Do something with the files
+      console.warn(acceptedFiles);
+
+      try {
+        const studies = await filesToStudies(acceptedFiles);
+
+        this.setState({ studies });
+      } catch (error) {
+        this.setState({ error });
+      }
+    };
+
     if (this.state.error) {
       return <div>Error: {JSON.stringify(this.state.error)}</div>;
     } else if (this.state.studies === null && !this.state.modalComponentId) {
@@ -216,24 +231,44 @@ class StudyListWithData extends Component {
       );
     }
 
+    console.warn(this.state.studies);
+
     const studyList = (
-      <div className="paginationArea">
-        <StudyList
-          studies={this.state.studies}
-          studyListFunctionsEnabled={false}
-          onImport={this.onImport}
-          onSelectItem={this.onSelectItem}
-          pageSize={this.rowsPerPage}
-          defaultSort={StudyListWithData.defaultSort}
-          studyListDateFilterNumDays={
-            StudyListWithData.studyListDateFilterNumDays
-          }
-          onSearch={this.onSearch}
-        >
-          {healthCareApiButtons}
-          {healthCareApiWindows}
-        </StudyList>
-      </div>
+      <Dropzone onDrop={onDrop}>
+        {({ getRootProps, getInputProps }) => (
+          <div {...getRootProps()} className="paginationArea">
+            {this.state.studies ? (
+              <StudyList
+                studies={this.state.studies}
+                studyListFunctionsEnabled={false}
+                onImport={this.onImport}
+                onSelectItem={this.onSelectItem}
+                pageSize={this.rowsPerPage}
+                defaultSort={StudyListWithData.defaultSort}
+                studyListDateFilterNumDays={
+                  StudyListWithData.studyListDateFilterNumDays
+                }
+                onSearch={this.onSearch}
+              >
+                {healthCareApiButtons}
+                {healthCareApiWindows}
+              </StudyList>
+            ) : (
+              <div className={'drag-drop-instructions'}>
+                <h3>
+                  {this.props.t(
+                    'Drag and Drop DICOM files here to load them in the Viewer'
+                  )}
+                </h3>
+                <h4>
+                  {this.props.t("Or click to load the browser's file selector")}
+                </h4>
+                <input {...getInputProps()} style={{ display: 'none' }} />
+              </div>
+            )}
+          </div>
+        )}
+      </Dropzone>
     );
     return (
       <>
