@@ -1,5 +1,5 @@
 import { httpErrorToStr, getOidcToken, checkDicomFile } from '../utils/helpers';
-const DICOM = require('dicomweb-client');
+import { api } from 'dicomweb-client';
 
 class DicomUploadService {
   setOidcStorageKey(oidcStorageKey) {
@@ -81,7 +81,7 @@ class DicomUploadService {
     if (!this.oidcStorageKey) throw new Error('OIDC storage key is not set');
     const accessToken = getOidcToken(this.oidcStorageKey);
     if (!accessToken) throw new Error('OIDC access_token is not set');
-    return new DICOM.api.DICOMwebClient({
+    return new api.DICOMwebClient({
       url,
       headers: { Authorization: 'Bearer ' + accessToken },
     });
