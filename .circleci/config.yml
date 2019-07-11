@@ -75,6 +75,7 @@ jobs:
       # Could do a check here, if it doesn't exist, install cypress?
       - run: yarn install
       - run: yarn run test:e2e:ci
+      - run: yarn run test:e2e:scriptTag
 
   npm_publish:
     <<: *defaults
