@@ -12,10 +12,10 @@ export default class LabellingFlow extends Component {
   static propTypes = {
     eventData: PropTypes.object.isRequired,
     measurementData: PropTypes.object.isRequired,
-
     labellingDoneCallback: PropTypes.func.isRequired,
     updateLabelling: PropTypes.func.isRequired,
 
+    initialTopDistance: PropTypes.number,
     skipAddLabelButton: PropTypes.bool,
     editLocation: PropTypes.bool,
     editDescription: PropTypes.bool,
@@ -62,12 +62,22 @@ export default class LabellingFlow extends Component {
 
     const style = Object.assign({}, this.state.componentStyle);
     if (this.state.skipAddLabelButton) {
-      style.left = '40%';
+      if (style.left - 160 < 0) {
+        style.left = 0;
+      } else {
+        style.left -= 160;
+      }
     }
 
     if (this.state.editLocation) {
-      style.top = '10%';
-      style.maxHeight = '80vh';
+      style.maxHeight = '70vh';
+      if (!this.initialTopDistance) {
+        this.initialTopDistance = window.innerHeight - window.innerHeight * 0.3;
+        style.top = `${this.state.componentStyle.top -
+          this.initialTopDistance / 2}px`;
+      } else {
+        style.top = `${this.state.componentStyle.top}px`;
+      }
     }
 
     return (
@@ -181,9 +191,15 @@ export default class LabellingFlow extends Component {
     }
   };
 
-  relabel = () => {
+  relabel = event => {
+    const viewportTopPosition = this.mainElement.current.offsetParent.offsetTop;
+    const componentStyle = {
+      top: event.nativeEvent.y - viewportTopPosition - 55,
+      left: event.nativeEvent.x,
+    };
     this.setState({
       editLocation: true,
+      componentStyle,
     });
   };
 
@@ -221,7 +237,7 @@ export default class LabellingFlow extends Component {
     const viewportTopPosition = this.mainElement.current.offsetParent.offsetTop;
     const componentStyle = {
       top: event.nativeEvent.y - viewportTopPosition - 25,
-      left: this.state.componentStyle.left,
+      left: event.nativeEvent.x,
     };
 
     this.setState({
@@ -271,12 +287,27 @@ export default class LabellingFlow extends Component {
     clearTimeout(this.fadeOutTimer);
   };
 
+  calculateTopDistance = () => {
+    const height = window.innerHeight - window.innerHeight * 0.3;
+    let top = this.state.componentStyle.top - height / 2 + 55;
+    if (top < 0) {
+      top = 0;
+    } else {
+      if (top + height > window.innerHeight) {
+        top -= top + height - window.innerHeight;
+      }
+    }
+    return top;
+  };
+
   repositionComponent = () => {
     // SetTimeout for the css animation to end.
     setTimeout(() => {
       bounding(this.mainElement);
       if (this.state.editLocation) {
-        this.mainElement.current.style.maxHeight = '80vh';
+        this.mainElement.current.style.maxHeight = '70vh';
+        const top = this.calculateTopDistance();
+        this.mainElement.current.style.top = `${top}px`;
       }
     }, 200);
   };
