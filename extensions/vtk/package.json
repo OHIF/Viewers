@@ -6,14 +6,15 @@
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "sideEffects": true,
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
-    "lerna:build": "webpack --progress --colors --mode production",
-    "lerna:dev": "webpack --watch --progress --colors --mode development",
-    "prepublishOnly": "yarn install && yarn run lerna:build"
+    "build": "webpack --progress --colors --mode production",
+    "dev": "webpack --watch --progress --colors --mode development"
   },
   "peerDependencies": {
     "@ohif/i18n": "0.2.2",

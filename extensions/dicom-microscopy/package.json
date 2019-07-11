@@ -17,9 +17,9 @@
     "start": "rollup -c -w"
   },
   "peerDependencies": {
+    "ohif-core": "^0.6.0",
     "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0",
-    "ohif-core": "^0.6.0"
+    "react-dom": "^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
     "gh-pages": "^2.0.1"

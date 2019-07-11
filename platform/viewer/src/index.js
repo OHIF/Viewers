@@ -31,6 +31,8 @@ const appDefaults = {
   relativeWebWorkerScriptsPath: '',
 };
 
+console.log(OHIFVTKExtension);
+
 if (window) {
   config = window.config || {};
   config.extensions = [

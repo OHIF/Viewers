@@ -5,6 +5,7 @@ const common = require('./webpack.common');
 
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
+const INDEX = path.join(DIST_DIR, 'index.html');
 
 module.exports = (env, argv) => {
   const commonConfig = common(env, argv);
@@ -14,8 +15,8 @@ module.exports = (env, argv) => {
     devtool: 'cheap-module-source-map',
     output: {
       path: DIST_DIR,
-      filename: 'bundle.js',
-      publicPath: '/public/',
+      publicPath: '/',
+      filename: '[name].bundle.js',
     },
     module: {
       rules: [
@@ -46,12 +47,16 @@ module.exports = (env, argv) => {
     },
     plugins: [new webpack.HotModuleReplacementPlugin()],
     devServer: {
-      hot: true,
+      // hot: true,
       inline: true,
-      compress: true,
-      contentBase: DIST_DIR,
-      port: 3000,
+      compress: false,
+      // contentBase: DIST_DIR,
+      open: true,
+      port: 3001,
       writeToDisk: true,
+      historyApiFallback: {
+        index: '/',
+      },
     },
   });
 };

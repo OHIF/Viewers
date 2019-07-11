@@ -1,78 +1,57 @@
-var path = require('path');
-var webpack = require('webpack');
-
+const path = require('path');
+const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
-
-const cssRules = [
-  {
-    test: /\.css$/,
-    exclude: /\.module\.css$/,
-    use: [
-      'style-loader',
-      'css-loader',
-      {
-        loader: 'postcss-loader',
-        options: {
-          plugins: () => [autoprefixer('last 2 version', 'ie >= 10')],
-        },
-      },
-    ],
-  },
-  {
-    test: /\.glsl$/i,
-    include: /vtk\.js[\/\\]Sources/,
-    loader: 'shader-loader',
-  },
-  {
-    test: /\.worker\.js$/,
-    include: /vtk\.js[\/\\]Sources/,
-    use: [
-      {
-        loader: 'worker-loader',
-        options: { inline: true, fallback: false },
-      },
-    ],
-  },
-  {
-    test: /\.css$/,
-    include: /\.module\.css$/,
-    use: [
-      { loader: 'style-loader' },
-      {
-        loader: 'css-loader',
-        options: {
-          localIdentName: '[name]-[local]_[sha512:hash:base64:5]',
-          modules: true,
-        },
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          plugins: () => [autoprefixer('last 2 version', 'ie >= 10')],
-        },
-      },
-    ],
-  },
-];
-
-var entry = path.join(__dirname, './src/index.js');
+// const vtkHtmlRules = require('vtk.js/Utilities/config/dependency.js').webpack
+//   .core.rules;
+// Optional if you want to load *.css and *.module.css files
+// var cssRules = require('vtk.js/Utilities/config/dependency.js').webpack.css.rules;
 const SRC_DIR = path.join(__dirname, './src');
 const OUTPUT_DIR = path.join(__dirname, './dist');
 
 module.exports = {
-  entry,
+  mode: 'development',
+  entry: {
+    app: `${SRC_DIR}/index.js`,
+  },
+  context: SRC_DIR,
+  // ~~~ MODE
   output: {
     path: OUTPUT_DIR,
-    filename: 'index.umd.js',
-    library: '@ohif/extension-vtk',
+    library: 'ohifVtkExtension',
     libraryTarget: 'umd',
-    globalObject: 'this',
+    filename: 'index.umd.js',
+    auxiliaryComment: 'Text VTK Extension Comment',
+  },
+  stats: {
+    colors: true,
+    hash: true,
+    timings: true,
+    assets: true,
+    chunks: true,
+    chunkModules: true,
+    modules: true,
+    children: true,
+    warnings: true,
+  },
+  optimization: {
+    minimize: false,
+    sideEffects: true,
+  },
+  // ~~~ END MODE
+  resolve: {
+    modules: [
+      path.resolve(__dirname, 'node_modules'),
+      path.resolve(__dirname, '../../node_modules'),
+      SRC_DIR,
+    ],
+    extensions: ['.js', '.jsx', '.json', '*'],
+    symlinks: true,
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/],
         loader: 'babel-loader',
         options: {
           // Find babel.config.js in monorepo root
@@ -90,42 +69,71 @@ module.exports = {
           ],
         },
       },
-    ].concat(cssRules),
-  },
-  resolve: {
-    modules: [
-      // Modules specific to this package
-      path.resolve(__dirname, 'node_modules'),
-      // Hoisted Yarn Workspace Modules
-      path.resolve(__dirname, '../../node_modules'),
-      SRC_DIR,
+      /**
+       *
+       */
+      {
+        test: /\.css$/,
+        exclude: /\.module\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: () => [autoprefixer('last 2 version', 'ie >= 10')],
+            },
+          },
+        ],
+      },
+      /**
+       *
+       */
+      {
+        test: /\.glsl$/i,
+        include: /vtk\.js[\/\\]Sources/,
+        loader: 'shader-loader',
+      },
+      /**
+       *
+       */
+      {
+        test: /\.worker\.js$/,
+        include: /vtk\.js[\/\\]Sources/,
+        use: [
+          {
+            loader: 'worker-loader',
+            options: { inline: true, fallback: false },
+          },
+        ],
+      },
     ],
   },
-  externals: [
-    {
-      'cornerstone-core': {
-        commonjs: 'cornerstone-core',
-        commonjs2: 'cornerstone-core',
-        amd: 'cornerstone-core',
-        root: 'cornerstone',
-      },
-      'cornerstone-math': {
-        commonjs: 'cornerstone-math',
-        commonjs2: 'cornerstone-math',
-        amd: 'cornerstone-math',
-        root: 'cornerstoneMath',
-      },
-    },
-    '@ohif/i18n',
-    'ohif-core',
-    'dcmjs',
-    'react-viewerbase',
-    'react', //: 'React',
-    'react-dom', //: 'ReactDOM',
-    'react-redux', //: 'ReactRedux',
-    'react-resize-detector', //: 'ReactResizeDetector',
-    'react-viewerbase', //: 'reactViewerbase',
-    'prop-types', //: 'PropTypes'
-    /*/\b(vtk.js)/*/
-  ],
+  // externals: [
+  //   {
+  //     cornerstone: {
+  //       commonjs: 'cornerstone',
+  //       commonjs2: 'cornerstone',
+  //       amd: 'cornerstone',
+  //       root: 'cornerstone',
+  //     },
+  //     'cornerstone-math': {
+  //       commonjs: 'cornerstone-math',
+  //       commonjs2: 'cornerstone-math',
+  //       amd: 'cornerstone-math',
+  //       root: 'cornerstoneMath',
+  //     },
+  //   },
+  //   '@ohif/i18n',
+  //   'ohif-core',
+  //   'dcmjs',
+  //   'react-viewerbase',
+  //   'react', //: 'React',
+  //   'react-dom', //: 'ReactDOM',
+  //   'react-redux', //: 'ReactRedux',
+  //   'react-resize-detector', //: 'ReactResizeDetector',
+  //   'react-viewerbase', //: 'reactViewerbase',
+  //   'prop-types', //: 'PropTypes'
+  //   /*/\b(vtk.js)/*/
+  // ],
 };

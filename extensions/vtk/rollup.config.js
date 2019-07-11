@@ -10,23 +10,23 @@ import copy from 'rollup-plugin-copy';
 
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 
-const globals = {
-  react: 'React',
-  'react-dom': 'ReactDOM',
-  'react-redux': 'ReactRedux',
-  'react-resize-detector': 'ReactResizeDetector',
-  'react-viewerbase': 'reactViewerbase',
-  'prop-types': 'PropTypes',
-  'cornerstone-core': 'cornerstone',
-  'cornerstone-wado-image-loader': 'cornerstoneWADOImageLoader',
-  'cornerstone-math': 'cornerstoneMath',
-  'cornerstone-tools': 'cornerstoneTools',
-  dcmjs: 'dcmjs',
-  'dicom-parser': 'dicomParser',
-  'ohif-core': 'OHIF',
-  hammerjs: 'Hammer',
-  '@ohif/i18n': 'i18n',
-};
+// const globals = {
+//   react: 'React',
+//   'react-dom': 'ReactDOM',
+//   'react-redux': 'ReactRedux',
+//   'react-resize-detector': 'ReactResizeDetector',
+//   'react-viewerbase': 'reactViewerbase',
+//   'prop-types': 'PropTypes',
+//   'cornerstone-core': 'cornerstone',
+//   'cornerstone-wado-image-loader': 'cornerstoneWADOImageLoader',
+//   'cornerstone-math': 'cornerstoneMath',
+//   'cornerstone-tools': 'cornerstoneTools',
+//   dcmjs: 'dcmjs',
+//   'dicom-parser': 'dicomParser',
+//   'ohif-core': 'OHIF',
+//   hammerjs: 'Hammer',
+//   '@ohif/i18n': 'i18n',
+// };
 
 export default {
   input: 'src/index.js',
@@ -36,13 +36,13 @@ export default {
       format: 'umd',
       name: 'ohif-vtk-extension',
       sourcemap: true,
-      globals,
+      // globals,
     },
     {
       file: pkg.module,
       format: 'es',
       sourcemap: true,
-      globals,
+      // globals,
     },
   ],
   plugins: [
@@ -63,7 +63,7 @@ export default {
     }),
     resolve(),
     commonjs({
-      include: ['node_modules/**', '.yalc/**'],
+      include: ['node_modules/**'],
       namedExports: {
         'node_modules/react-vtkjs-viewport/dist/index.js': [
           'getImageData',

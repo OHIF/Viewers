@@ -1,10 +1,10 @@
 import OHIFVTKViewport from './OHIFVTKViewport.js';
 import commandsModule from './commandsModule.js';
-// This feels weird
-import loadLocales from './loadLocales';
 import toolbarModule from './toolbarModule.js';
+// This feels weird
+// import loadLocales from './loadLocales';
 
-export default {
+const vtkExtension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
@@ -21,4 +21,8 @@ export default {
   },
 };
 
-loadLocales();
+export default vtkExtension;
+
+export { vtkExtension };
+
+// loadLocales();
