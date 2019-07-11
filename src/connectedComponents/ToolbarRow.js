@@ -54,7 +54,7 @@ class ToolbarRow extends Component {
         {
           value: 'studies',
           icon: 'th-large',
-          bottomLabel: 'Series',
+          bottomLabel: this.props.t('Series'),
         },
       ],
       right: [],
@@ -97,32 +97,6 @@ class ToolbarRow extends Component {
   }
 
   render() {
-    const { t } = this.props;
-
-    const leftSidebarToggle = [
-      {
-        value: 'studies',
-        icon: 'th-large',
-        bottomLabel: t('Series'),
-      },
-    ];
-
-    const rightSidebarToggle = [
-      {
-        value: 'measurements',
-        icon: 'list',
-        bottomLabel: t('Measurements'),
-      },
-    ];
-
-    const leftSidebarValue = this.props.leftSidebarOpen
-      ? leftSidebarToggle[0].value
-      : null;
-
-    const rightSidebarValue = this.props.rightSidebarOpen
-      ? rightSidebarToggle[0].value
-      : null;
-
     const buttonComponents = _getButtonComponents.call(
       this,
       this.state.toolbarButtons,
