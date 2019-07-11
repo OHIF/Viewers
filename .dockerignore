@@ -1,5 +1,6 @@
 # Output
 dist/
+build/
 
 # Dependencies
 node_modules/
@@ -7,6 +8,7 @@ node_modules/
 # Root
 README.md
 Dockerfile
+dockerfile
 
 # Misc. Config
 .git
@@ -14,3 +16,8 @@ Dockerfile
 .gitignore
 .vscode
 .circleci
+
+# Unnecessary things to pull into container
+extensions
+docs
+cypress

@@ -27,22 +27,34 @@ FROM node:11.2.0-slim as builder
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-ENV GENERATE_SOURCEMAP=false
-
 COPY package.json /usr/src/app/package.json
 COPY yarn.lock /usr/src/app/yarn.lock
 
-ADD . /usr/src/app/
+# Run the install before copying the rest of the files
 RUN yarn install
+
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV GENERATE_SOURCEMAP=false
+ENV REACT_APP_CONFIG=config/default.js
+
+# White list instead of copying the whole directory
+COPY src /usr/src/app/src
+COPY public /usr/src/app/public
+COPY .babelrc /usr/src/app/.babelrc
+COPY .eslintrc /usr/src/app/.eslintrc
+
 RUN yarn run build:web
 
 # Stage 2: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
 FROM nginx:1.15.5-alpine
+RUN apk add --no-cache bash
 RUN rm -rf /etc/nginx/conf.d
 COPY docker/Viewer-v2.x /etc/nginx/conf.d
+COPY docker/Viewer-v2.x/entrypoint.sh /usr/src/
+RUN chmod 777 /usr/src/entrypoint.sh
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
 EXPOSE 443
+ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
