@@ -130,11 +130,19 @@ function datasetsToStudies(datasets) {
 export default async function filesToStudies(files) {
   const imagePromises = files.map(file => {
     const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-    return cornerstone.loadAndCacheImage(imageId);
+    return cornerstone
+      .loadAndCacheImage(imageId)
+      .catch(error => console.warn(error));
   });
 
   const images = await Promise.all(imagePromises);
-  const datasets = images.map(image => {
+  const datasets = [];
+
+  images.forEach(image => {
+    if (!image || !image.data) {
+      return;
+    }
+
     const arrayBuffer = image.data.byteArray.buffer;
     const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
     const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
@@ -145,7 +153,7 @@ export default async function filesToStudies(files) {
     );
     dataset.imageId = image.imageId;
 
-    return dataset;
+    datasets.push(dataset);
   });
 
   return datasetsToStudies(datasets);
