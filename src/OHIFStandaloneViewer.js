@@ -9,6 +9,7 @@ import { ViewerbaseDragDropContext } from 'react-viewerbase';
 // import asyncComponent from './components/AsyncComponent.js'
 import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
 import ViewerRouting from './routes/ViewerRouting.js';
+import ViewerLocalFileData from './connectedComponents/ViewerLocalFileData.js';
 import StudyListRouting from './studylist/StudyListRouting.js';
 import StandaloneRouting from './routes/StandaloneRouting.js';
 import CallbackPage from './routes/CallbackPage.js';
@@ -96,6 +97,10 @@ class OHIFStandaloneViewer extends Component {
      * See http://reactcommunity.org/react-transition-group/with-react-router/
      */
     const routes = [
+      {
+        path: '/local',
+        Component: ViewerLocalFileData,
+      },
       {
         path: '/viewer',
         Component: StandaloneRouting,

@@ -22,7 +22,7 @@
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
   SET_TOOL_ACTIVE: 'setToolActive',
-  BUILT_IN: 'builtIn'
+  BUILT_IN: 'builtIn',
 };
 
 const definitions = [

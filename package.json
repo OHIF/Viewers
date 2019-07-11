@@ -60,6 +60,7 @@
     "not op_mini all"
   ],
   "resolutions": {
+    "@babel/core": "^7.5.4",
     "browserslist": "4.6.2",
     "caniuse-lite": "1.0.30000974"
   },
@@ -100,13 +101,14 @@
     "ohif-core": "0.9.1",
     "oidc-client": "1.7.x",
     "prop-types": "^15.7.2",
+    "react-dropzone": "^10.1.5",
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
     "react-resize-detector": "^4.2.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-transition-group": "^4.1.1",
-    "react-viewerbase": "0.15.3",
+    "react-viewerbase": "0.17.0",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-oidc": "3.1.x",
