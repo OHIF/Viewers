@@ -21,7 +21,7 @@ import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
-import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+import OHIFCornerstoneExtension from './ohif-cornerstone-extension/src/index.js';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
