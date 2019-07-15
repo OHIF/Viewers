@@ -7,8 +7,7 @@
   ],
   "scripts": {
     "start": "lerna run lerna:start --parallel",
-    "build:magic": "lerna run lerna:build --parallel",
-    "build": "lerna exec --parallel -- babel --root-mode upward src -d lib --ignore **/*.story.js,**/*.spec.js"
+    "build": "lerna run lerna:build --parallel"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
@@ -44,6 +43,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "^3.0.1",
+    "shader-loader": "^1.3.1",
     "stylelint": "^10.1.0",
     "stylelint-config-recommended": "^2.2.0",
     "stylus": "^0.54.5",
@@ -53,7 +53,8 @@
     "webpack-dev-server": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.2.1",
-    "workbox-webpack-plugin": "^4.3.1"
+    "workbox-webpack-plugin": "^4.3.1",
+    "worker-loader": "^2.0.0"
   },
   "husky": {
     "hooks": {

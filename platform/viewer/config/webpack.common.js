@@ -63,6 +63,27 @@ module.exports = (env, argv) => {
             },
           ],
         },
+        /**
+        *
+        */
+        {
+          test: /\.glsl$/i,
+          include: /vtk\.js[\/\\]Sources/,
+          loader: 'shader-loader',
+        },
+        /**
+        *
+        */
+        {
+          test: /\.worker\.js$/,
+          include: /vtk\.js[\/\\]Sources/,
+          use: [
+            {
+              loader: 'worker-loader',
+              options: { inline: true, fallback: false },
+            },
+          ],
+        },
       ],
     },
     plugins: [
