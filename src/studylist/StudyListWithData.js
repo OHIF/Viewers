@@ -234,27 +234,27 @@ class StudyListWithData extends Component {
     console.warn(this.state.studies);
 
     const studyList = (
-      <Dropzone onDrop={onDrop}>
-        {({ getRootProps, getInputProps }) => (
-          <div {...getRootProps()} className="paginationArea">
-            {this.state.studies ? (
-              <StudyList
-                studies={this.state.studies}
-                studyListFunctionsEnabled={false}
-                onImport={this.onImport}
-                onSelectItem={this.onSelectItem}
-                pageSize={this.rowsPerPage}
-                defaultSort={StudyListWithData.defaultSort}
-                studyListDateFilterNumDays={
-                  StudyListWithData.studyListDateFilterNumDays
-                }
-                onSearch={this.onSearch}
-              >
-                {healthCareApiButtons}
-                {healthCareApiWindows}
-              </StudyList>
-            ) : (
-              <div className={'drag-drop-instructions'}>
+      <div className="paginationArea">
+        {this.state.studies ? (
+          <StudyList
+            studies={this.state.studies}
+            studyListFunctionsEnabled={false}
+            onImport={this.onImport}
+            onSelectItem={this.onSelectItem}
+            pageSize={this.rowsPerPage}
+            defaultSort={StudyListWithData.defaultSort}
+            studyListDateFilterNumDays={
+              StudyListWithData.studyListDateFilterNumDays
+            }
+            onSearch={this.onSearch}
+          >
+            {healthCareApiButtons}
+            {healthCareApiWindows}
+          </StudyList>
+        ) : (
+          <Dropzone onDrop={onDrop}>
+            {({ getRootProps, getInputProps }) => (
+              <div {...getRootProps()} className={'drag-drop-instructions'}>
                 <h3>
                   {this.props.t(
                     'Drag and Drop DICOM files here to load them in the Viewer'
@@ -266,9 +266,9 @@ class StudyListWithData extends Component {
                 <input {...getInputProps()} style={{ display: 'none' }} />
               </div>
             )}
-          </div>
+          </Dropzone>
         )}
-      </Dropzone>
+      </div>
     );
     return (
       <>
