@@ -344,7 +344,7 @@ const _mapStudiesToThumbnails = function(studies) {
       if (displaySet.images && displaySet.images.length) {
         imageId = displaySet.images[0].getImageId();
       } else {
-        altImageText = 'SR';
+        altImageText = displaySet.modality ? displaySet.modality : 'UN';
       }
 
       return {
