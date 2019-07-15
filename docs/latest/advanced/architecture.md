@@ -98,3 +98,10 @@ You can, but you will not be able to leverage as much of the existing code and
 components. `ohif-core` could still be used for business logic, and to provide a
 model for extensions. `react-viewerbase` would then become a guide for the
 components you would need to recreate.
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+<!-- prettier-ignore-end -->
