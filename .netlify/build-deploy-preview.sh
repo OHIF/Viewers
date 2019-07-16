@@ -13,9 +13,9 @@ npm root -g
 yarn global bin
 yarn config get prefix
 yarn config set prefix ~/.yarn
-export PATH="$PATH:`yarn global bin`"
-
-bash -l
+# export PATH="$PATH:`yarn global bin`"
+export PATH="$PATH:$(yarn global bin)"
+# export PATH
 
 # Make sure `node` can access globally installed binaries
 # export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
@@ -27,6 +27,7 @@ bash -l
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
 yarn global add gitbook-cli
+npm install -g gitbook-cli
 
 echo 'Running Gitbook installation'
 # Generate all version's GitBook output
