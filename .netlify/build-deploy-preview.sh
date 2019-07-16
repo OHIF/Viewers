@@ -7,7 +7,6 @@ cd "$(dirname "$0")"
 # Helpful to verify which versions we're using
 yarn -v
 node -v
-yarn config set workspaces-experimental true
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
@@ -25,8 +24,8 @@ for D in *; do
 
 			# Clear previous output, generate new
 			rm -rf _book
-			gitbook install
-			gitbook build
+			npx gitbook install
+			npx gitbook build
 
 			cd ..
 
@@ -61,7 +60,7 @@ mkdir ./docs/latest/_book/demo/
 
 # Install build deps and all monorepo package dependencies. Yarn Workspaces
 # should also symlink all projects appropriately
-yarn install --no-ignore-optional --pure-lockfile
+# yarn install --no-ignore-optional --pure-lockfile
 
 # Navigate to our Viewer project
 cd ./platform/viewer/
@@ -69,13 +68,13 @@ cd ./platform/viewer/
 # Create a Versions File
 node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js
 # Copy over wado-image-loader codecs and worker file
-npx cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v
+cp \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v
 # Build using react-scripts
 # npx cross-env PUBLIC_URL=/demo REACT_APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build
 # Build using WebPack
 # TODO: consume public/config correctly instead of hardcode
 npx cross-env NODE_ENV=production webpack-dev-server --config config/webpack.prod.js --mode production -w -d
 # Copy output to the folder that is our publish target
-npx cpx 'dist/**/*' ./../../docs/latest/_book/demo --verbose
+cp 'dist/**/*' ./../../docs/latest/_book/demo --verbose
 
 echo 'Nothing left to see here. Go home, folks.'

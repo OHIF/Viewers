@@ -18,8 +18,8 @@
 [build.environment]
   NODE_VERSION = "10.16.0"
   YARN_VERSION = "1.17.3"
+  RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
-
 
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
@@ -33,7 +33,7 @@
 [context.deploy-preview]
   base = ""
   publish = "docs/latest/_book/"
-  command = "chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
+  command = "yarn config set workspaces-experimental true && chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
 
 # Redirects and headers are GLOBAL for all builds – they do not get scoped to
 # contexts no matter where you define them in the file.
