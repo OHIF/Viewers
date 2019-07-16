@@ -8,12 +8,13 @@
   "engines": {
     "node": "^10.0.0",
     "npm": "^6.0.0",
-    "yarn": "^1.17.0"
+    "yarn": "^1.16.0"
   },
   "scripts": {
     "start": "lerna run lerna:start --parallel",
     "build": "lerna run lerna:build --parallel",
     "test:unit": "lerna run lerna:test:unit --parallel",
+    "new-version": "lerna version --conventional-commits --yes",
     "build:pwa:ci": ""
   },
   "devDependencies": {
