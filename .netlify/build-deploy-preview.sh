@@ -7,11 +7,11 @@ cd "$(dirname "$0")"
 # Helpful to verify which versions we're using
 yarn -v
 node -v
-echo 'help ~~~~~~~~~~~~'
-npm --help
-echo 'root ~~~~~~~~~~~~'
+echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
 npm root -g
-# export PATH=$PATH:/opt
+
+# Make sure `node` can access globally installed binaries
+export PATH=$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
