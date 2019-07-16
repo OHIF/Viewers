@@ -5,6 +5,11 @@
     "platform/*",
     "extensions/*"
   ],
+  "engines": {
+    "node": "^10.0.0",
+    "npm": "^6.0.0",
+    "yarn": "^1.17.0"
+  },
   "scripts": {
     "start": "lerna run lerna:start --parallel",
     "build": "lerna run lerna:build --parallel"

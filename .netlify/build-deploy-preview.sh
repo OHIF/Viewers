@@ -11,7 +11,10 @@ echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
 npm root -g
 
 # Make sure `node` can access globally installed binaries
-export PATH=$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules
+export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules"
+source ~/.profile
+source ~/.bashrc
+
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
@@ -29,14 +32,22 @@ for D in *; do
 
 			# Clear previous output, generate new
 			rm -rf _book
+			echo "~~~ try 1"
 			node gitbook install
 			node gitbook gitbook build
+			echo "~~~ try 2"
+			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/gitbook install
+			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/gitbook gitbook build
 			# /usr/lib/node_modules/gitbook-cli/
 
 			cd ..
 
 		fi
 done
+
+cd /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/
+ls
+cd "$(dirname "$0")"
 
 # Move CNAME File into `latest`
 cp CNAME ./latest/_book/CNAME
