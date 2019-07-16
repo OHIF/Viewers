@@ -77,7 +77,8 @@ yarn install --no-ignore-optional --pure-lockfile
 cd ./platform/viewer/
 
 # Create a Versions File
-node -p -e '"export default "' + require(\"./../package.json\").version + '";"' > src/version.js
+# node -p -e '"export default "' + require(\"./../package.json\").version + '";"' > src/version.js
+yarn run version
 # Copy over wado-image-loader codecs and worker file
 cp ./../../node_modules/cornerstone-wado-image-loader/dist/*.min.js* public -v
 # Build using react-scripts
