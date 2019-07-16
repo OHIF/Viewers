@@ -11,9 +11,10 @@ echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
 npm root -g
 
 # Make sure `node` can access globally installed binaries
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules"
-source ~/.profile
-source ~/.bashrc
+# source ~/.profile
+# source ~/.bashrc
 
 
 # Install GitBook CLI
