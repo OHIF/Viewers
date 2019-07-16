@@ -1,5 +1,8 @@
 # OHIF Medical Imaging Platform
 
+[![lerna][lerna-image]][lerna-url]
+[![Netlify Status][netlify-image]][netlify-url]
+
 ## The Problem
 
 ...
@@ -54,12 +57,12 @@ more about it in our [Architecture Documentation](#todo).
 ### Getting Started
 
 1. [Fork this repository][how-to-fork]
-1. [Clone your forked repository][how-to-clone]
+2. [Clone your forked repository][how-to-clone]
    - `git clone https://github.com/YOUR-USERNAME/Viewers.git`
-1. Navigate to the cloned project's directory
-1. Add this repo as a `remote` named `upstream`
+3. Navigate to the cloned project's directory
+4. Add this repo as a `remote` named `upstream`
    - `git remote add upstream https://github.com/OHIF/Viewers.git`
-1. `yarn install` to restore dependencies and link projects
+5. `yarn install` to restore dependencies and link projects
 
 #### To Develop
 
@@ -109,7 +112,12 @@ PWA builds go through
   -->
 
 <!-- prettier-ignore-start -->
-
+<!-- Badges -->
+[lerna-image]: https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg
+[lerna-url]: https://lerna.js.org/
+[netlify-image]: https://api.netlify.com/api/v1/badges/a5d369ab-18a6-41c3-bcde-83805205ac7f/deploy-status
+[netlify-url]: https://app.netlify.com/sites/ohif/deploys
+<!-- Links -->
 [monorepo]: https://en.wikipedia.org/wiki/Monorepo
 [how-to-fork]: https://help.github.com/en/articles/fork-a-repo
 [how-to-clone]: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork

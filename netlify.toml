@@ -1,0 +1,70 @@
+# Netlify Config
+#
+# TOML Reference:
+# https://www.netlify.com/docs/netlify-toml-reference/
+#
+
+# Settings in the [build] context are global and are applied to all contexts
+# unless otherwise overridden by more specific contexts.
+[build]
+  # Directory to change to before starting a build.
+  # This is where we will look for package.json/.nvmrc/etc.
+  base = ""
+  publish = "project/build-output/"
+
+
+# NODE_VERSION in root `.nvmrc` takes priority
+# YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
+[build.environment]
+  NODE_VERSION = "10.16.0"
+  YARN_VERSION = "1.17.3"
+  YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+
+
+# Production context: all deploys from the Production branch set in your site's
+# deploy contexts will inherit these settings.
+# [context.production]
+#   publish = "project/output/"
+#   command = "make publish"
+#   environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
+
+# Deploy Preview context: all deploys generated from a pull/merge request will
+# inherit these settings.
+[context.deploy-preview]
+  base = ""
+  publish = "docs/latest/_book/"
+  command = ".netlify/build-deploy-preview.sh"
+
+# Redirects and headers are GLOBAL for all builds – they do not get scoped to
+# contexts no matter where you define them in the file.
+# For context-specific rules, use _headers or _redirects files, which are
+# PER-DEPLOY.
+# The following redirect is intended for use with most SPAs that handle
+# routing internally.
+# By default, redirects won't be applied if there's a file with the same
+# path as the one defined in the `from` property. Setting `force` to `true`
+# will make the redirect rule take precedence over any existing files.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/demo/*"
+  to = "/demo/index.html"
+  status = 200
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+    # Multi-key header rules are expressed with multi-line strings.
+    cache-control = '''
+    max-age=0,
+    no-cache,
+    no-store,
+    must-revalidate'''
