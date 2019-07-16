@@ -8,17 +8,6 @@ cd "$(dirname "$0")"
 yarn -v
 node -v
 
-# echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
-# npm root -g
-# yarn global bin
-# yarn config set prefix ~/.yarn
-# export PATH="$PATH:`yarn global bin`"
-# export PATH="$PATH:$(yarn global bin)"
-# export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/bin"
-# export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin"
-
-
-
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
 yarn global add gitbook-cli
@@ -87,6 +76,6 @@ cp ./../../node_modules/cornerstone-wado-image-loader/dist/*.min.js* public -v
 # TODO: consume public/config correctly instead of hardcode
 npx webpack --config config/webpack.prod.js --mode production --env.production
 # Copy output to the folder that is our publish target
-cp dist/**/* ./../../docs/latest/_book/demo --verbose
+npx cpx "dist/**/*" ./../../docs/latest/_book/demo --verbose
 
 echo 'Nothing left to see here. Go home, folks.'
