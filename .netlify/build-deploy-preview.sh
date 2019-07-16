@@ -7,6 +7,11 @@ cd "$(dirname "$0")"
 # Helpful to verify which versions we're using
 yarn -v
 node -v
+echo 'help ~~~~~~~~~~~~'
+npm --help
+echo 'root ~~~~~~~~~~~~'
+npm root -g
+# export PATH=$PATH:/opt
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
@@ -24,8 +29,9 @@ for D in *; do
 
 			# Clear previous output, generate new
 			rm -rf _book
-			npx gitbook install
-			npx gitbook build
+			node gitbook install
+			node gitbook gitbook build
+			# /usr/lib/node_modules/gitbook-cli/
 
 			cd ..
 
