@@ -12,7 +12,10 @@ npm root -g
 
 yarn global bin
 yarn config get prefix
+yarn config set prefix ~/.yarn
 export PATH="$PATH:`yarn global bin`"
+
+exec bash
 
 # Make sure `node` can access globally installed binaries
 # export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
