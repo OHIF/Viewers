@@ -12,7 +12,9 @@
   },
   "scripts": {
     "start": "lerna run lerna:start --parallel",
-    "build": "lerna run lerna:build --parallel"
+    "build": "lerna run lerna:build --parallel",
+    "test:unit": "lerna run lerna:test:unit --parallel",
+    "build:pwa:ci": ""
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

@@ -77,15 +77,15 @@ yarn install --no-ignore-optional --pure-lockfile
 cd ./platform/viewer/
 
 # Create a Versions File
-node -p -e "export default require('./package.json').version;" > src/version.js
+node -p -e "'export default require(\'./package.json\').version;'" > src/version.js
 # Copy over wado-image-loader codecs and worker file
-cp './../../node_modules/cornerstone-wado-image-loader/dist/*.min.js*' public -v
+cp ./../../node_modules/cornerstone-wado-image-loader/dist/*.min.js* public -v
 # Build using react-scripts
 # npx cross-env PUBLIC_URL=/demo REACT_APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build
 # Build using WebPack
 # TODO: consume public/config correctly instead of hardcode
 npx webpack --config config/webpack.prod.js --mode production --env.production
 # Copy output to the folder that is our publish target
-cp 'dist/**/*' ./../../docs/latest/_book/demo --verbose
+cp dist/**/* ./../../docs/latest/_book/demo --verbose
 
 echo 'Nothing left to see here. Go home, folks.'

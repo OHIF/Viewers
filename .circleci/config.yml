@@ -10,16 +10,19 @@ version: 2
 ###
 
 defaults: &defaults
-  working_directory: ~/repo
   docker:
-    - image: circleci/node:10.15.1
+    - image: circleci/node:10.16.0
+  working_directory: ~/repo
 
 jobs:
-  build_and_test:
+  unit_tests:
     <<: *defaults
     steps:
-      # Download and cache dependencies
-      - checkout
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -27,27 +30,32 @@ jobs:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - yarn-packages-v1-{{ .Branch }}-
             - yarn-packages-v1-
+
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
+
       - save_cache:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache ## Cache yarn and Cypress
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      # Build & Test
-      - run: yarn build:package:ci
+
+      # Test
+      # TODO: lerna:tests
       # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
       - run:
-          name: 'JavaScript Test Suite'
-          command: yarn test:unit:ci
+          name: "JavaScript Test Suite"
+          command: yarn run test:unit
           environment:
-            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+
       # Store result
       - store_test_results:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
+
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -167,7 +175,7 @@ jobs:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Build & Test
       - run:
-          name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
+          name: "Build Demo Site, Upload SourceMaps, Send Deploy Notification"
           command: |
             yarn build:demo:ci
             perl -i -pe 's#</head>#`cat .circleci/rollbar.html` #e' build/index.html
@@ -214,7 +222,7 @@ workflows:
   # PULL REQUESTS
   pull_requests:
     jobs:
-      - build_and_test:
+      - unit_tests:
           filters:
             branches:
               ignore:
@@ -225,13 +233,13 @@ workflows:
   # MERGE TO MASTER
   cut_release:
     jobs:
-      - build_and_test:
+      - unit_tests:
           filters:
             branches:
               only: master
       - e2e_test:
           requires:
-            - build_and_test
+            - unit_tests
       # Update NPM
       - npm_publish:
           requires:

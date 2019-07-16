@@ -14,6 +14,7 @@
   "proxy": "http://localhost:8042",
   "scripts": {
     "lerna:start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d",
+    "lerna:test:unit": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "cm": "npx git-cz",
     "dev": "yarn run preBuild && react-scripts start",
     "dev:debug": "react-scripts start",
@@ -23,7 +24,6 @@
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "test:unit": "jest",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
     "start": "yarn run dev",
     "predeploy": "cd example && npm install && yarn run build:package",
