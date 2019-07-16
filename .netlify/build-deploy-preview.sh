@@ -7,16 +7,17 @@ cd "$(dirname "$0")"
 # Helpful to verify which versions we're using
 yarn -v
 node -v
-echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
-npm root -g
 
-yarn global bin
-yarn config get prefix
-yarn config set prefix ~/.yarn
+# echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
+# npm root -g
+# yarn global bin
+# yarn config set prefix ~/.yarn
 # export PATH="$PATH:`yarn global bin`"
-export PATH="$PATH:$(yarn global bin)"
-export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/bin"
-export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin"
+# export PATH="$PATH:$(yarn global bin)"
+# export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/bin"
+# export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin"
+
+
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
@@ -35,22 +36,12 @@ for D in *; do
 
 			# Clear previous output, generate new
 			rm -rf _book
-			echo "~~~ try 1"
-			node gitbook install
-			node gitbook build
-			echo "~~~ try 2"
 			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin/gitbook.js install
 			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin/gitbook.js build
-			# /usr/lib/node_modules/gitbook-cli/
-
 			cd ..
 
 		fi
 done
-
-cd /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/
-ls
-cd "$(dirname "$0")"
 
 # Move CNAME File into `latest`
 cp CNAME ./latest/_book/CNAME
