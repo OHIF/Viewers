@@ -1,0 +1,43 @@
+# ABOUT:
+# https://docs.codecov.io/docs/codecov-yaml
+#
+#
+# COMMIT STATUS:
+# https://docs.codecov.io/docs/commit-status
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0.10%
+    patch: off
+#
+flags:
+  # PLATFORM
+  core:
+    paths:
+      - platform/core/src
+  i18n:
+    paths:
+      - platform/i18n/src
+  ui:
+    paths:
+      - platform/ui/src
+  viewer:
+    paths:
+      - platform/viewer/src
+  # EXTENSIONS
+  cornerstone:
+    paths:
+      - extensions/cornerstone/src
+  dicom-html:
+    paths:
+      - extensions/dicom-html/src
+  dicom-microscopy:
+    paths:
+      - extensions/dicom-microscopy/src
+  dicom-pdf:
+    paths:
+      - extensions/dicom-pdf/src
+  vtk:
+    paths:
+      - extensions/vtk/src
