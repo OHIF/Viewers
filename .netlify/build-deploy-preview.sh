@@ -15,14 +15,8 @@ yarn config get prefix
 yarn config set prefix ~/.yarn
 # export PATH="$PATH:`yarn global bin`"
 export PATH="$PATH:$(yarn global bin)"
-# export PATH
-
-# Make sure `node` can access globally installed binaries
-# export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-# export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules"
-# source ~/.profile
-# source ~/.bashrc
-
+export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/bin"
+export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin"
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
@@ -43,10 +37,10 @@ for D in *; do
 			rm -rf _book
 			echo "~~~ try 1"
 			node gitbook install
-			node gitbook gitbook build
+			node gitbook build
 			echo "~~~ try 2"
-			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/gitbook install
-			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/gitbook gitbook build
+			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin/gitbook.js install
+			node /opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules/gitbook-cli/bin/gitbook.js build
 			# /usr/lib/node_modules/gitbook-cli/
 
 			cd ..
