@@ -10,9 +10,13 @@ node -v
 echo '~~~~~~~~~~ root ~~~~~~~~~~~~'
 npm root -g
 
+yarn global bin
+yarn config get prefix
+export PATH="$PATH:`yarn global bin`"
+
 # Make sure `node` can access globally installed binaries
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules"
+# export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+# export PATH="$PATH:/opt/buildhome/.nvm/versions/node/v10.16.0/lib/node_modules"
 # source ~/.profile
 # source ~/.bashrc
 
