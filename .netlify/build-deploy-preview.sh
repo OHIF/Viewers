@@ -7,6 +7,7 @@ cd "$(dirname "$0")"
 # Helpful to verify which versions we're using
 yarn -v
 node -v
+yarn config set workspaces-experimental true
 
 # Install GitBook CLI
 echo 'Installing Gitbook CLI'
@@ -60,7 +61,7 @@ mkdir ./docs/latest/_book/demo/
 
 # Install build deps and all monorepo package dependencies. Yarn Workspaces
 # should also symlink all projects appropriately
-yarn install
+yarn install --no-ignore-optional --pure-lockfile
 
 # Navigate to our Viewer project
 cd ./platform/viewer/
