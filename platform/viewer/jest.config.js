@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   verbose: true,
   testMatch: ["<rootDir>/src/**/*.test.js"],

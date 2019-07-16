@@ -18,6 +18,9 @@ jobs:
   unit_tests:
     <<: *defaults
     steps:
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+
       # Checkout code and ALL Git Tags
       - checkout:
           post:
