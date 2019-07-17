@@ -1,13 +1,13 @@
+const base = require('../../jest.config.base.js');
+const pkg = require('./package');
+
 module.exports = {
-  verbose: true,
-  testPathIgnorePatterns: ["<rootDir>/node_modules/"],
-  testMatch: ["<rootDir>/src/**/*.test.js"],
-  //
-  collectCoverage: false,
-  collectCoverageFrom: [
-    "**/*.{js,jsx}",
-    "!**/node_modules/**",
-    "!<rootDir>/dist/**"
-  ],
-  reporters: ["default", "jest-junit"]
+  ...base,
+  name: pkg.name,
+  displayName: pkg.name,
+  // rootDir: "../.."
+  // testMatch: [
+  //   //`<rootDir>/platform/${pack.name}/**/*.spec.js`
+  //   "<rootDir>/platform/viewer/**/*.test.js"
+  // ]
 };
