@@ -156,10 +156,17 @@ class ToolbarRow extends Component {
  */
 function _getButtonComponents(toolbarButtons, activeButtons) {
   return toolbarButtons.map((button, index) => {
+    let activeCommand = undefined;
+
     if (button.buttons && button.buttons.length) {
       // Iterate over button definitions and update `onClick` behavior
       const childButtons = button.buttons.map(childButton => {
         childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
+
+        if (activeButtons.indexOf(childButton.id) > -1) {
+          activeCommand = childButton.id;
+        }
+
         return childButton;
       });
 
@@ -169,6 +176,7 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
           text={button.label}
           icon={button.icon}
           buttons={childButtons}
+          activeCommand={activeCommand}
         />
       );
     }
