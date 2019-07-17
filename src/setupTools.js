@@ -219,7 +219,6 @@ export default function setupTools(store) {
     { name: 'StackScrollMultiTouch' },
     {
       name: 'ArrowAnnotate',
-      mouseButtonMasks: [1],
       props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,
