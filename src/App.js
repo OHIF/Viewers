@@ -41,6 +41,7 @@ import store from './store';
 // ~~~~ APP SETUP
 initCornerstoneTools({
   globalToolSyncEnabled: true,
+  showSVGCursors: true,
 });
 
 const commandsManagerConfig = {
