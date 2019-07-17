@@ -217,6 +217,14 @@ export default function setupTools(store) {
     { name: 'ZoomTouchPinch' },
     { name: 'StackScrollMouseWheel' },
     { name: 'StackScrollMultiTouch' },
+    {
+      name: 'ArrowAnnotate',
+      props: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+    },
   ];
 
   const onRightClick = getOnRightClickCallback(store);
