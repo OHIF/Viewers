@@ -87,6 +87,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "pavertomato",
+      "name": "Egor Lezhnin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/878990?v=4",
+      "profile": "http://egor.lezhn.in",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
