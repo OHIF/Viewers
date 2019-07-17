@@ -217,7 +217,7 @@ export default function setupTools(store) {
     { name: 'ZoomTouchPinch' },
     { name: 'StackScrollMouseWheel' },
     { name: 'StackScrollMultiTouch' },
-    { name: 'Eraser', mouseButtonMasks: [1] },
+    { name: 'Eraser' },
   ];
 
   const onRightClick = getOnRightClickCallback(store);
