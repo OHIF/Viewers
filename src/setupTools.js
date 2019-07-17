@@ -218,6 +218,14 @@ export default function setupTools(store) {
     { name: 'StackScrollMouseWheel' },
     { name: 'StackScrollMultiTouch' },
     { name: 'Eraser' },
+    {
+      name: 'ArrowAnnotate',
+      props: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
+      },
+    },
   ];
 
   const onRightClick = getOnRightClickCallback(store);
