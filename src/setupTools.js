@@ -217,6 +217,7 @@ export default function setupTools(store) {
     { name: 'ZoomTouchPinch' },
     { name: 'StackScrollMouseWheel' },
     { name: 'StackScrollMultiTouch' },
+    { name: 'Eraser' },
     {
       name: 'ArrowAnnotate',
       props: {
