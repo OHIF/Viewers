@@ -37,8 +37,8 @@ Images can even be transcoded on the fly if this is desired.
     [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
   - Add your domain (e.g. `http://localhost:3000`) to Authorized JavaScript
     origins.
-  - Add your domain, plus `_oauth/google` (e.g.
-    `http://localhost:3000/_oauth/google`) to Authorized Redirect URIs.
+  - Add your domain, plus `callback` (e.g.
+    `http://localhost:3000/callback`) to Authorized Redirect URIs.
   - Save your Client ID for later.
 
 - (Optional): Enable Public Datasets that are being hosted by Google:
