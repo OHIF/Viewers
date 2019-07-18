@@ -1273,14 +1273,14 @@
     classnames "^2.2.6"
     lodash.isequal "^4.5.0"
 
-"@ohif/extension-vtk@0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.1.3.tgz#21e27ef088a62ed25d5c62c871cefd0194b9c0b1"
-  integrity sha512-ZqX44/Wolhne1luAlZBTkSZ32Ox/ef3qbh87fGOLq8HAiG1Ae9or8pEfhLmz3ZBxxgW7hiQauCc4Wcu/L6B9GQ==
+"@ohif/extension-vtk@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-vtk/-/extension-vtk-0.1.5.tgz#0e7e8eb4f9b9860fd30b08611ecdf454b68626e1"
+  integrity sha512-KLeXxVvZ3ryLqbq9LjbBsKBxQJtFS1y7tmj5fKAUnfRCLypQ95T/zQf0v71caEITavxZxxe8O6G+nb5zdroxrg==
   dependencies:
     "@babel/runtime" "^7.4.5"
-    react-vtkjs-viewport "0.0.9"
-    vtk.js "^8.11.0"
+    react-vtkjs-viewport "0.0.11"
+    vtk.js "^8.13.0"
 
 "@ohif/i18n@0.2.1":
   version "0.2.1"
@@ -12719,10 +12719,10 @@ react-viewerbase@0.17.0:
     react-i18next "^10.11.0"
     react-with-direction "1.3.0"
 
-react-vtkjs-viewport@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.0.9.tgz#da79aa66f52dcd731bcc5abd2587cbb120a25331"
-  integrity sha512-VwRCY2DPxWMhix4v3PAtdENp3U1p+Z9nKf1Ch5+KWRKF6fWeA+B2glYKMYNpPnP4bULzVz9iwV+Zeojt3gEibA==
+react-vtkjs-viewport@0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.0.11.tgz#cedd993ca226502bf0417a3748a5b2f806522519"
+  integrity sha512-ttWw7bU/lL/nJuaaKdtAc8448vMJmlRQzpkpuP/J+3lTzIQbQPCPU40LqgONjr7LvL5++61N2GJ8m+PRgHyfxQ==
   dependencies:
     moment "^2.24.0"
 
@@ -15600,7 +15600,7 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vtk.js@^8.11.0:
+vtk.js@^8.13.0:
   version "8.13.0"
   resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-8.13.0.tgz#d22bbe3403d86f979703506f9be83ab8e5099248"
   integrity sha512-uoq2U0Yu2XjuKeeduuGRXlphHR6cdIvtZ5useNMJ8FobK9dpeFTT4ncoyPXx77KvwOMSueT8W+ngm/e9+FGZtA==
