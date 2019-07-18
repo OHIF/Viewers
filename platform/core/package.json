@@ -15,13 +15,12 @@
     "npm": ">=5"
   },
   "scripts": {
-    "cm": "npx git-cz",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage && codecov -F core",
     "build": "rollup -c",
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "dev": "jest --watch",
     "start": "rollup -c -w",
     "test": "jest",
-    "test:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
     "prepublishOnly": "npm run build"
   },

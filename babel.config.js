@@ -45,6 +45,6 @@ module.exports = {
     build: {
       ignore: ["**/*.test.jsx", "**/*.test.js", "__snapshots__", "__tests__"]
     }
-  },
-  ignore: ["node_modules"]
+  }
+  // ignore: ["node_modules"]
 };

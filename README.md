@@ -15,6 +15,13 @@
 
 ...
 
+## Commands
+
+| Commands       |     |                                                       |
+| -------------- | --- | ----------------------------------------------------- |
+| `test:unit`    |     | Jest multi-project test runner; overall coverage      |
+| `test:unit:ci` |     | Runs tests in parallel. Reports coverage per project. |
+
 ## Developing
 
 The OHIF Medical Image Viewing Platform is maintained as a
