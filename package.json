@@ -18,7 +18,7 @@
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel",
     "test:e2e": "",
-    "test:e2e:ci": "lerna run lerna:test:e2e --parallel",
+    "test:e2e:ci": "lerna run lerna:test:e2e --parallel && codecov",
     "new-version": "lerna version --conventional-commits --yes",
     "build:pwa:ci": ""
   },
