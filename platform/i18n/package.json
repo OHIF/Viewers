@@ -18,6 +18,7 @@
     "access": "public"
   },
   "scripts": {
+    "test:unit": "echo 'platform/i18n: missing unit tests'",
     "test:unit:ci": "echo 'platform/i18n: missing unit tests'",
     "build": "rollup -c",
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",

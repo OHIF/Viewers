@@ -15,9 +15,9 @@
     "dist"
   ],
   "scripts": {
+    "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests && codecov -F ui",
     "dev": "docz dev",
-    "test:watch": "react-scripts test --env=jsdom --transformIgnorePatterns \"node_modules/(?!react-dnd)/\"",
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "build": "rollup -c",
     "start": "rollup -c -w",

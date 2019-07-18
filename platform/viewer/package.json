@@ -14,6 +14,7 @@
   "proxy": "http://localhost:8042",
   "scripts": {
     "lerna:start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d",
+    "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage && codecov -F viewer",
     "dev": "yarn run preBuild && react-scripts start",
     "dev:debug": "react-scripts start",
@@ -21,7 +22,6 @@
     "build:package:ci": "yarn run preBuild && node --max-old-space-size=4096 node_modules/rollup/bin/rollup -c",
     "build:web": "yarn run preBuild && react-scripts --max_old_space_size=4096 build",
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
-    "test:unit": "jest",
     "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
     "start": "yarn run dev",
     "predeploy": "cd example && npm install && yarn run build:package",
