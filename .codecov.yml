@@ -7,7 +7,18 @@
 coverage:
   status:
     project:
-      default:
+      default: off
+      core:
+        flags: core
+        threshold: 0.10%
+      i18n:
+        flags: i18n
+        threshold: 0.10%
+      ui:
+        flags: ui
+        threshold: 0.10%
+      viewer:
+        flags: viewer
         threshold: 0.10%
     patch: off
 #
