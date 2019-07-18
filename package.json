@@ -15,7 +15,7 @@
     "start": "lerna run lerna:start --parallel",
     "build": "lerna run lerna:build --parallel",
     "test:ci": "",
-    "test:unit": "jest --ci --runInBand --collectCoverage && codecov",
+    "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel",
     "test:e2e": "",
     "test:e2e:ci": "lerna run lerna:test:e2e --parallel",

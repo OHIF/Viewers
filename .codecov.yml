@@ -7,23 +7,18 @@
 coverage:
   status:
     project:
-      default: off
+      default:
+        threshold: 0.10%
       core:
         flags: core
-        threshold: 0.10%
       i18n:
         flags: i18n
-        threshold: 0.10%
       ui:
         flags: ui
-        threshold: 0.10%
       viewer:
         flags: viewer
-        threshold: 0.10%
     patch: off
-#
 flags:
-  # PLATFORM
   core:
     paths:
       - platform/core/src
@@ -36,7 +31,6 @@ flags:
   viewer:
     paths:
       - platform/viewer/src
-  # EXTENSIONS
   cornerstone:
     paths:
       - extensions/cornerstone/src
