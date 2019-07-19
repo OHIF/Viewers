@@ -16,6 +16,7 @@ const DicomMicroscopySopClassHandler = {
 
     return {
       plugin: 'microscopy',
+      modality: 'SM',
       displaySetInstanceUid: utils.guid(),
       dicomWebClient,
       sopInstanceUid: instance.getSOPInstanceUID(),
