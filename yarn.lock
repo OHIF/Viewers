@@ -1247,27 +1247,27 @@
     lodash.throttle "^4.1.1"
     react-cornerstone-viewport "0.1.31"
 
-"@ohif/extension-dicom-html@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-html/-/extension-dicom-html-0.0.3.tgz#1d085f603379599cf07801ec003e3d5050e2d659"
-  integrity sha512-S+Mg9OFHNvllDDza55y4/NmBV1bFJ+NLbpcnsw45QyfgT3KAg8v/8ht1QYM9IcBGqhxMTJs8OqBuJI9sAiTWlw==
+"@ohif/extension-dicom-html@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-html/-/extension-dicom-html-0.0.4.tgz#f547b0778f127e873fee0dba0bfb2806da12bbb9"
+  integrity sha512-5HbDG/1Q0CHQRAPhgvmXTNfwoaGPkl8T5+pSvUvkTHWxLfnUVJltuHny4OKjYdprrYstfbB+Sj8TxA5gjyQYwA==
   dependencies:
     "@babel/runtime" "^7.2.0"
 
-"@ohif/extension-dicom-microscopy@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.9.tgz#23cfbc44e06a51d94ab0b08db8e051720dbc9017"
-  integrity sha512-vqx25gHcT+MK+j77qTocGjSV8CstjCwQ2RDs1RuHrR3rUHdHOSbBkkyAjqMDF5GZWp0UY5JZV85aNuPK/9saqg==
+"@ohif/extension-dicom-microscopy@0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-microscopy/-/extension-dicom-microscopy-0.0.10.tgz#630797e28ff6ae00bfa0e7e1f51278cdb172dce6"
+  integrity sha512-r5ebKJsr4I+N5bIzRHMUHRIR/Al2VLuuyAhQOs7YYqrltqA+Fk1O8/sUqvr4kXiFNx8PrEeKIifs2vamUf64EA==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
     dicom-microscopy-viewer "0.5.0"
     lodash.debounce "^4.0.8"
 
-"@ohif/extension-dicom-pdf@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-pdf/-/extension-dicom-pdf-0.0.7.tgz#ba80a77235d43876e25485e1a964f36ebf104b94"
-  integrity sha512-uOevtxH6Vm2p+2xgo+ER3+oV1zfnUqHYoeqrICaKP3PKXGcVanWFE8W/RWiNZ+PS2/LNpSjJyLfuSxwZ3IBUVw==
+"@ohif/extension-dicom-pdf@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-dicom-pdf/-/extension-dicom-pdf-0.0.8.tgz#7d9cca5b0532e05279638ab5ba592e1e9f0bd8b3"
+  integrity sha512-I+PL2ZdvZQw9VzunjloHm4wsP6+OtFPjEkaAFwD4IijnP2+PXcA90ckBUjgVA3BUnHU4iZltJWEVxQpUEbisBQ==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
