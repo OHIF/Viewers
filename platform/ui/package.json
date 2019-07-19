@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "test:unit": "jest --watch",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests  && codecov --flags=ui",
     "dev": "docz dev",
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "build": "rollup -c",

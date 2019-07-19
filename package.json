@@ -13,12 +13,12 @@
   "scripts": {
     "cm": "npx git-cz",
     "start": "lerna run lerna:start --parallel",
-    "build": "lerna run lerna:build --parallel",
+    "build:package": "lerna run build:package --parallel",
     "test:ci": "",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel",
     "test:e2e": "",
-    "test:e2e:ci": "lerna run lerna:test:e2e --parallel && codecov",
+    "test:e2e:ci": "lerna run lerna:test:e2e --parallel",
     "new-version": "lerna version --conventional-commits --yes",
     "build:pwa:ci": ""
   },
