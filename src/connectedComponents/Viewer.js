@@ -319,7 +319,6 @@ export default Viewer;
  *
  * TODO[react]:
  * - Add sorting of display sets
- * - Add useMiddleSeriesInstanceAsThumbnail
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
@@ -342,7 +341,9 @@ const _mapStudiesToThumbnails = function(studies) {
       let altImageText = ' '; // modality
 
       if (displaySet.images && displaySet.images.length) {
-        imageId = displaySet.images[0].getImageId();
+        const imageIndex = Math.floor(displaySet.images.length / 2);
+
+        imageId = displaySet.images[imageIndex].getImageId();
       } else {
         altImageText = displaySet.modality ? displaySet.modality : 'UN';
       }
