@@ -99,7 +99,7 @@
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
     "ohif-core": "0.10.2",
-    "oidc-client": "1.7.x",
+    "oidc-client": "1.8.x",
     "prop-types": "^15.7.2",
     "react-dropzone": "^10.1.5",
     "react-i18next": "^10.11.0",
