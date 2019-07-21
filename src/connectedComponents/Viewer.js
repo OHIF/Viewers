@@ -13,6 +13,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
+import UserManagerContext from '../UserManagerContext';
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -230,9 +231,14 @@ class Viewer extends Component {
         {/* HEADER */}
         <WhiteLabellingContext.Consumer>
           {whiteLabelling => (
-            <ConnectedHeader home={false}>
-              {whiteLabelling.logoComponent}
-            </ConnectedHeader>
+            <UserManagerContext.Consumer>
+              { userManager => (
+                  <ConnectedHeader home={false} userManager={userManager}>
+                    {whiteLabelling.logoComponent}
+                  </ConnectedHeader>
+                )
+              }
+            </UserManagerContext.Consumer>
           )}
         </WhiteLabellingContext.Consumer>
 

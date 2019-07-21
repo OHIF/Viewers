@@ -17,6 +17,7 @@ class Header extends Component {
     location: PropTypes.object.isRequired,
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
+    userManager: PropTypes.object
   };
 
   static defaultProps = {
@@ -58,6 +59,16 @@ class Header extends Component {
         },
       },
     ];
+
+    if (this.props.user && this.props.userManager) {
+      this.options.push({
+        title: t('Logout'),
+          icon: { name: 'power-off' },
+          onClick: () => {
+            this.props.userManager.signoutRedirect();
+          },
+      });
+    }
 
     this.hotKeysData = hotkeysManager.hotkeyDefinitions;
   }

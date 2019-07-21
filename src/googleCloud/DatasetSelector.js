@@ -19,7 +19,7 @@ class DatasetSelector extends Component {
   static propTypes = {
     id: PropTypes.string,
     event: PropTypes.string,
-    oidcKey: PropTypes.string,
+    user: PropTypes.object,
     canClose: PropTypes.string,
     setServers: PropTypes.func.isRequired,
   };
@@ -79,6 +79,8 @@ class DatasetSelector extends Component {
   };
 
   render() {
+    const accessToken = this.props.user.access_token;
+
     const { project, location, dataset } = this.state;
     const {
       onProjectClick,
@@ -121,21 +123,21 @@ class DatasetSelector extends Component {
         {projectBreadcrumbs}
         {!project && (
           <ProjectPicker
-            oidcKey={this.props.oidcKey}
+            accessToken={accessToken}
             onSelect={onProjectSelect}
           />
         )}
 
         {project && !location && (
           <LocationPicker
-            oidcKey={this.props.oidcKey}
+            accessToken={accessToken}
             project={project}
             onSelect={onLocationSelect}
           />
         )}
         {project && location && !dataset && (
           <DatasetPicker
-            oidcKey={this.props.oidcKey}
+            accessToken={accessToken}
             project={project}
             location={location}
             onSelect={onDatasetSelect}
@@ -143,7 +145,7 @@ class DatasetSelector extends Component {
         )}
         {project && location && dataset && (
           <DicomStorePicker
-            oidcKey={this.props.oidcKey}
+            accessToken={accessToken}
             dataset={dataset}
             onSelect={onDicomStoreSelect}
           />

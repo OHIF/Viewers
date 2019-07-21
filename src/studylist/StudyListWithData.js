@@ -10,6 +10,8 @@ import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 import filesToStudies from '../lib/filesToStudies.js';
+import UserManagerContext from '../UserManagerContext';
+import WhiteLabellingContext from '../WhiteLabellingContext';
 
 class StudyListWithData extends Component {
   state = {
@@ -272,7 +274,18 @@ class StudyListWithData extends Component {
     );
     return (
       <>
-        <ConnectedHeader home={true} user={this.props.user} />
+        <WhiteLabellingContext.Consumer>
+          {whiteLabelling => (
+            <UserManagerContext.Consumer>
+              { userManager => (
+                <ConnectedHeader home={true} user={this.props.user} userManager={userManager}>
+                  {whiteLabelling.logoComponent}
+                </ConnectedHeader>
+              )
+              }
+            </UserManagerContext.Consumer>
+          )}
+        </WhiteLabellingContext.Consumer>
         {studyList}
       </>
     );
