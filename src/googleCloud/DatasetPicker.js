@@ -15,11 +15,11 @@ export default class DatasetPicker extends Component {
     project: PropTypes.object,
     location: PropTypes.object,
     onSelect: PropTypes.func,
-    oidcKey: PropTypes.string,
+    accessToken: PropTypes.string,
   };
 
   async componentDidMount() {
-    api.setOidcStorageKey(this.props.oidcKey);
+    api.setAccessToken(this.props.accessToken);
 
     const response = await api.loadDatasets(
       this.props.project.projectId,

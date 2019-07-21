@@ -14,11 +14,11 @@ export default class LocationPicker extends Component {
   static propTypes = {
     project: PropTypes.object,
     onSelect: PropTypes.func,
-    oidcKey: PropTypes.string,
+    accessToken: PropTypes.string,
   };
 
   async componentDidMount() {
-    api.setOidcStorageKey(this.props.oidcKey);
+    api.setAccessToken(this.props.accessToken);
 
     const response = await api.loadLocations(this.props.project.projectId);
 

@@ -8,7 +8,7 @@ import { withTranslation } from 'react-i18next';
 class DicomStorePickerModal extends Component {
   static propTypes = {
     url: PropTypes.string,
-    oidcStorageKey: PropTypes.string.isRequired,
+    user: PropTypes.object.isRequired,
     setServers: PropTypes.func.isRequired,
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
@@ -55,7 +55,7 @@ class DicomStorePickerModal extends Component {
         <Modal.Body>
           <DatasetSelector
             setServers={this.handleEvent}
-            oidcKey={this.props.oidcStorageKey}
+            user={this.props.user}
             url={this.props.url}
           />
         </Modal.Body>

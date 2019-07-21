@@ -13,11 +13,11 @@ export default class ProjectPicker extends Component {
 
   static propTypes = {
     onSelect: PropTypes.func,
-    oidcKey: PropTypes.string,
+    accessToken: PropTypes.string,
   };
 
   async componentDidMount() {
-    api.setOidcStorageKey(this.props.oidcKey);
+    api.setAccessToken(this.props.accessToken);
     const response = await api.loadProjects();
 
     if (response.isError) {

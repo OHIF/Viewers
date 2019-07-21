@@ -15,12 +15,12 @@ export default class DicomStorePicker extends Component {
   static propTypes = {
     dataset: PropTypes.object,
     onSelect: PropTypes.func,
+    accessToken: PropTypes.string.isRequired
   };
 
   async componentDidMount() {
-    const { authority, client_id } = window.config.oidc[0];
-    const oidcStorageKey = `oidc.user:${authority}:${client_id}`;
-    api.setOidcStorageKey(oidcStorageKey);
+    api.setAccessToken(this.props.accessToken);
+
     const response = await api.loadDicomStores(this.props.dataset.name);
 
     if (response.isError) {

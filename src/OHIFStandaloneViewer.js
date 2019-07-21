@@ -5,6 +5,7 @@ import { Route, Switch } from 'react-router-dom';
 import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
+import { SignoutCallbackComponent } from 'redux-oidc';
 import { ViewerbaseDragDropContext } from 'react-viewerbase';
 // import asyncComponent from './components/AsyncComponent.js'
 import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
@@ -74,14 +75,29 @@ class OHIFStandaloneViewer extends Component {
       return (
         <Switch>
           <Route exact path="/silent-refresh.html" onEnter={reload} />
-          <Route exact path="/logout-redirect.html" onEnter={reload} />
+          <Route exact path="/logout-redirect" render={() =>
+            <SignoutCallbackComponent
+              userManager={userManager}
+              successCallback={() => console.log('Signout successful')}
+              errorCallback={(error) => {
+                console.warn(error);
+                console.warn('Signout failed');
+              }}
+            />
+          }/>
           <Route
             path="/callback"
             render={() => <CallbackPage userManager={userManager} />}
           />
           <Route
             component={() => {
-              userManager.signinRedirect();
+              userManager.getUser().then(user => {
+                if (user) {
+                  userManager.signinSilent();
+                } else {
+                  userManager.signinRedirect();
+                }
+              });
 
               return null;
             }}
