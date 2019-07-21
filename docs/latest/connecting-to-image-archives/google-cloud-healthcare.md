@@ -35,10 +35,10 @@ Images can even be transcoded on the fly if this is desired.
   - Choose the "Web Application" type
   - Set up an
     [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
-  - Add your domain (e.g. `http://localhost:3000`) to Authorized JavaScript
+  - Add your domain (e.g. `http://localhost:5000`) to Authorized JavaScript
     origins.
   - Add your domain, plus `callback` (e.g.
-    `http://localhost:3000/callback`) to Authorized Redirect URIs.
+    `http://localhost:5000/callback`) to Authorized Redirect URIs.
   - Save your Client ID for later.
 
 - (Optional): Enable Public Datasets that are being hosted by Google:
@@ -67,5 +67,5 @@ method to get up and running.
    Client IDs look like `xyz.apps.googleusercontent.com`.
 
 ```bash
-docker run --env CLIENT_ID=$CLIENT_ID --publish 3000:80 ohif/viewer:latest
+docker run --env CLIENT_ID=$CLIENT_ID --publish 5000:80 ohif/viewer:latest
 ```
