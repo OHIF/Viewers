@@ -1617,18 +1617,18 @@ des.js@^1.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
-dicom-microscopy-viewer@0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.6.0.tgz#d0208f6ee795594a6676ef451a0349a0e9903ddf"
-  integrity sha512-HGK3xsWBSX7/UdtPnNSY64dN2+zpfHQmls7lzBcx1OguIyWz5mqy1x/0aRrfjhMRYrtaID+RcnW1vcDbLO5b6w==
+dicom-microscopy-viewer@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/dicom-microscopy-viewer/-/dicom-microscopy-viewer-0.6.1.tgz#7b593da241d048154a9c1ebcbccf389742c2af18"
+  integrity sha512-ZQ1QsQswAh7Yw01ba3LZXCIh7WnEYDjhSxJt9vdfRZ5iHlbgW2ghvUHR7GP80UnWJg335scNmIcqJvwxVjlIsg==
   dependencies:
-    dicomweb-client "^0.5.1"
+    dicomweb-client "^0.5.2"
     ol "^5.3.0"
 
-dicomweb-client@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.1.tgz#eeb80ac51df1fbdd80058984a0634c4f0f86af04"
-  integrity sha512-/4h84Nda6lWsVnAsWFuWv0mJPSDzZDda3KNcpMmbQcK7XVvGnwvG3dKwDuRh++9YOC+xbqgk2PkULlStV0X3RQ==
+dicomweb-client@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.2.tgz#aa5a4a6a5044b0702bb0a8a2662c86cd16901951"
+  integrity sha512-e11n2+g7HfBuMyopWq76W11eSZJ707g4U1XiO8URA+23aoe0g1kGAtlPB29NKXl7zX7RznTJ7wfRBxFkW6EJDA==
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
