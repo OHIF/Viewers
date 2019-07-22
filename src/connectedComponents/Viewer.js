@@ -13,6 +13,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
+import UserManagerContext from '../UserManagerContext';
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
@@ -230,9 +231,14 @@ class Viewer extends Component {
         {/* HEADER */}
         <WhiteLabellingContext.Consumer>
           {whiteLabelling => (
-            <ConnectedHeader home={false}>
-              {whiteLabelling.logoComponent}
-            </ConnectedHeader>
+            <UserManagerContext.Consumer>
+              { userManager => (
+                  <ConnectedHeader home={false} userManager={userManager}>
+                    {whiteLabelling.logoComponent}
+                  </ConnectedHeader>
+                )
+              }
+            </UserManagerContext.Consumer>
           )}
         </WhiteLabellingContext.Consumer>
 
@@ -319,7 +325,6 @@ export default Viewer;
  *
  * TODO[react]:
  * - Add sorting of display sets
- * - Add useMiddleSeriesInstanceAsThumbnail
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
@@ -339,10 +344,17 @@ const _mapStudiesToThumbnails = function(studies) {
       } = displaySet;
 
       let imageId;
-      let altImageText = ' '; // modality
+      let altImageText;
 
-      if (displaySet.images && displaySet.images.length) {
-        imageId = displaySet.images[0].getImageId();
+      if (displaySet.modality && displaySet.modality === 'SEG') {
+        // TODO: We want to replace this with a thumbnail showing
+        // the segmentation map on the image, but this is easier
+        // and better than what we have right now.
+        altImageText = 'SEG';
+      } else if (displaySet.images && displaySet.images.length) {
+        const imageIndex = Math.floor(displaySet.images.length / 2);
+
+        imageId = displaySet.images[imageIndex].getImageId();
       } else {
         altImageText = displaySet.modality ? displaySet.modality : 'UN';
       }

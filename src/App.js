@@ -37,6 +37,7 @@ import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools.js';
 import store from './store';
+import UserManagerContext from './UserManagerContext';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
@@ -84,6 +85,23 @@ function handleServers(servers) {
   }
 }
 
+function isAbsoluteUrl(url) {
+  return url.includes('http://') || url.includes('https://');
+}
+
+function makeAbsoluteIfNecessary(url, base_url) {
+  if (isAbsoluteUrl(url)) {
+    return url;
+  }
+
+  // Make sure base_url and url are not duplicating slashes
+  if (base_url[base_url.length - 1] === "/") {
+    base_url = base_url.slice(0, base_url.length - 1);
+  }
+
+  return base_url + url;
+}
+
 class App extends Component {
   static propTypes = {
     routerBasename: PropTypes.string.isRequired,
@@ -104,9 +122,23 @@ class App extends Component {
     if (this.props.oidc.length) {
       const firstOpenIdClient = this.props.oidc[0];
 
+      const { protocol, host } = window.location;
+      const { routerBasename } = this.props;
+      const baseUri = `${protocol}//${host}${routerBasename}`;
+
+      const redirect_uri = firstOpenIdClient.redirect_uri || '/callback';
+      const silent_redirect_uri = firstOpenIdClient.silent_redirect_uri || '/silent-refresh.html';
+      const post_logout_redirect_uri = firstOpenIdClient.post_logout_redirect_uri || '/';
+
+      const openIdConnectConfiguration = Object.assign({}, firstOpenIdClient, {
+        redirect_uri: makeAbsoluteIfNecessary(redirect_uri, baseUri),
+        silent_redirect_uri: makeAbsoluteIfNecessary(silent_redirect_uri, baseUri),
+        post_logout_redirect_uri: makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
+      });
+
       this.userManager = getUserManagerForOpenIdConnectClient(
         store,
-        firstOpenIdClient
+        openIdConnectConfiguration,
       );
     }
     handleServers(this.props.servers);
@@ -124,13 +156,15 @@ class App extends Component {
         <Provider store={store}>
           <I18nextProvider i18n={i18n}>
             <OidcProvider store={store} userManager={userManager}>
-              <Router basename={this.props.routerBasename}>
-                <WhiteLabellingContext.Provider
-                  value={this.props.whiteLabelling}
-                >
-                  <OHIFStandaloneViewer userManager={userManager} />
-                </WhiteLabellingContext.Provider>
-              </Router>
+              <UserManagerContext.Provider value={userManager}>
+                <Router basename={this.props.routerBasename}>
+                  <WhiteLabellingContext.Provider
+                    value={this.props.whiteLabelling}
+                  >
+                    <OHIFStandaloneViewer userManager={userManager} />
+                  </WhiteLabellingContext.Provider>
+                </Router>
+              </UserManagerContext.Provider>
             </OidcProvider>
           </I18nextProvider>
         </Provider>

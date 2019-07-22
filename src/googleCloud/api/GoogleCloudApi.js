@@ -1,19 +1,15 @@
-import { getOidcToken } from '../utils/helpers';
-
 class GoogleCloudApi {
-  setOidcStorageKey(oidcStorageKey) {
-    if (!oidcStorageKey) console.error('OIDC storage key is empty');
-    this.oidcStorageKey = oidcStorageKey;
+  setAccessToken(accessToken) {
+    if (!accessToken) console.error('Access token is empty');
+    this.accessToken = accessToken;
   }
 
   get fetchConfig() {
-    if (!this.oidcStorageKey) throw new Error('OIDC storage key is not set');
-    const accessToken = getOidcToken(this.oidcStorageKey);
-    if (!accessToken) throw new Error('OIDC access_token is not set');
+    if (!this.accessToken) throw new Error('OIDC access_token is not set');
     return {
       method: 'GET',
       headers: {
-        Authorization: 'Bearer ' + accessToken,
+        Authorization: 'Bearer ' + this.accessToken,
       },
     };
   }
