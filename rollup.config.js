@@ -61,9 +61,14 @@ export default {
         'node_modules/redux-oidc/dist/redux-oidc.js': [
           'reducer',
           'CallbackComponent',
+          'SignoutCallbackComponent',
           'loadUser',
           'OidcProvider',
           'createUserManager',
+        ],
+        'node_modules/oidc-client/lib/oidc-client.min.js': [
+          'WebStorageStateStore',
+          'InMemoryWebStorage',
         ],
         'node_modules/cornerstoneTools/dist/cornerstoneTools.min.js': [
           'cornerstoneTools',

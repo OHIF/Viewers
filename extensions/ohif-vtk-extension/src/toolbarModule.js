@@ -31,6 +31,43 @@ const definitions = [
     commandName: 'enableRotateTool',
     commandOptions: {},
   },
+  {
+    id: 'setBlendModeToComposite',
+    label: 'Disable MIP',
+    icon: 'times',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'setBlendModeToComposite',
+    commandOptions: {},
+  },
+  {
+    id: 'setBlendModeToMaximumIntensity',
+    label: 'Enable MIP',
+    icon: 'soft-tissue',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'setBlendModeToMaximumIntensity',
+    commandOptions: {},
+  },
+
+  {
+    id: 'increaseSlabThickness',
+    label: 'Increase Slab Thickness',
+    icon: 'caret-up',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'increaseSlabThickness',
+    commandOptions: {},
+  },
+  {
+    id: 'decreaseSlabThickness',
+    label: 'Decrease Slab Thickness',
+    icon: 'caret-down',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'decreaseSlabThickness',
+    commandOptions: {},
+  },
 ];
 
 export default {

@@ -1,7 +1,7 @@
 import {
   vtkInteractorStyleMPRCrosshairs,
-  vtkInteractorStyleMPRSlice,
   vtkInteractorStyleMPRWindowLevel,
+  vtkInteractorStyleMPRSlice,
   vtkSVGCrosshairsWidget,
   vtkSVGWidgetManager,
 } from 'react-vtkjs-viewport';
@@ -11,9 +11,13 @@ import setViewportToVTK from './utils/setViewportToVTK.js';
 import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 import vtkMath from 'vtk.js/Sources/Common/Core/Math';
 import vtkMatrixBuilder from 'vtk.js/Sources/Common/Core/MatrixBuilder';
+import Constants from 'vtk.js/Sources/Rendering/Core/VolumeMapper/Constants.js';
+
+const { BlendMode } = Constants;
 
 // TODO: Put this somewhere else
 let apis = {};
+let currentSlabThickness = 0.1;
 
 function getCrosshairCallbackForIndex(index) {
   return ({ worldPos }) => {
@@ -96,26 +100,24 @@ function _setView(api, sliceNormal, viewUp) {
   istyle.setSliceNormal(...sliceNormal);
   camera.setViewUp(...viewUp);
 
-  api.volumes[0].getMapper().setSampleDistance(5.0);
-  api.volumes[0].getMapper().setMaximumSamplesPerRay(2000);
-
   renderWindow.render();
 }
 
 function switchMPRInteractors(api, istyle) {
   const renderWindow = api.genericRenderWindow.getRenderWindow();
+  const renderer = api.genericRenderWindow.getRenderer();
+  const camera = renderer.getActiveCamera();
+  const currentIStyle = renderWindow.getInteractor().getInteractorStyle();
 
   let currentNormal;
-  if (istyle.getSliceNormal) {
-    currentNormal = istyle.getSliceNormal();
+  if (currentIStyle.getSliceNormal && istyle.getSliceNormal) {
+    currentNormal = currentIStyle.getSliceNormal();
   }
 
-  // TODO: This is a hacky workaround because disabling the vtkInteractorStyleMPRSlice is currently
-  // broken. The camera.onModified is never removed. (https://github.com/Kitware/vtk-js/issues/1110)
-  renderWindow
-    .getInteractor()
-    .getInteractorStyle()
-    .setInteractor(null);
+  let currentSlabThickness;
+  if (currentIStyle.getSlabThickness && istyle.getSlabThickness) {
+    currentSlabThickness = currentIStyle.getSlabThickness();
+  }
 
   renderWindow.getInteractor().setInteractorStyle(istyle);
 
@@ -126,6 +128,11 @@ function switchMPRInteractors(api, istyle) {
     if (currentNormal) {
       istyle.setSliceNormal(currentNormal);
     }
+
+    if (currentSlabThickness) {
+      istyle.setSlabThickness(currentSlabThickness);
+    }
+
     istyle.setVolumeMapper(api.volumes[0]);
   }
 }
@@ -152,14 +159,14 @@ const actions = {
 
     _setView(api, [0, 1, 0], [0, 0, 1]);
   },
-  enableRotateTool: async ({ viewports }) => {
+  enableRotateTool: () => {
     apis.forEach(api => {
       const istyle = vtkInteractorStyleMPRSlice.newInstance();
 
       switchMPRInteractors(api, istyle);
     });
   },
-  enableCrosshairsTool: async ({ viewports }) => {
+  enableCrosshairsTool: () => {
     apis.forEach((api, index) => {
       const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
 
@@ -168,11 +175,59 @@ const actions = {
       istyle.setCallback(getCrosshairCallbackForIndex(index));
     });
   },
-  enableLevelTool: async ({ viewports }) => {
+  enableLevelTool: () => {
     apis.forEach(api => {
       const istyle = vtkInteractorStyleMPRWindowLevel.newInstance();
 
       switchMPRInteractors(api, istyle);
+    });
+  },
+  setSlabThickness: slabThickness => {
+    currentSlabThickness = slabThickness;
+
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const istyle = renderWindow.getInteractor().getInteractorStyle();
+
+      if (istyle.setSlabThickness) {
+        istyle.setSlabThickness(currentSlabThickness);
+
+        // TODO: Do this inside the interactors in a setSlabThickness function instead
+        const renderer = api.genericRenderWindow.getRenderer();
+        const camera = renderer.getActiveCamera();
+        const dist = camera.getDistance();
+        const near = dist - currentSlabThickness / 2;
+        const far = dist + currentSlabThickness / 2;
+
+        camera.setClippingRange(near, far);
+      }
+
+      renderWindow.render();
+    });
+  },
+  changeSlabThickness: ({ change }) => {
+    currentSlabThickness += change;
+    currentSlabThickness = Math.max(currentSlabThickness, 0.1);
+
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const istyle = renderWindow.getInteractor().getInteractorStyle();
+
+      if (istyle.setSlabThickness) {
+        istyle.setSlabThickness(currentSlabThickness);
+      }
+
+      renderWindow.render();
+    });
+  },
+  setBlendMode: ({ blendMode }) => {
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const istyle = renderWindow.getInteractor().getInteractorStyle();
+
+      api.volumes[0].getMapper().setBlendMode(blendMode);
+
+      renderWindow.render();
     });
   },
   mpr2d: async ({ viewports }) => {
@@ -199,19 +254,10 @@ const actions = {
       });
     });*/
 
-    apis[0].volumes[0].getMapper().setSampleDistance(1.5);
-
     apiByViewport.forEach((api, index) => {
       const renderWindow = api.genericRenderWindow.getRenderWindow();
       const renderer = api.genericRenderWindow.getRenderer();
       const camera = renderer.getActiveCamera();
-
-      // TODO: This is a hacky workaround because disabling the vtkInteractorStyleMPRSlice is currently
-      // broken. The camera.onModified is never removed. (https://github.com/Kitware/vtk-js/issues/1110)
-      renderWindow
-        .getInteractor()
-        .getInteractorStyle()
-        .setInteractor(null);
 
       const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
       renderWindow.getInteractor().setInteractorStyle(istyle);
@@ -258,6 +304,8 @@ const actions = {
   },
 };
 
+window.vtkActions = actions;
+
 const definitions = {
   axial: {
     commandFn: actions.axial,
@@ -276,18 +324,58 @@ const definitions = {
   },
   enableRotateTool: {
     commandFn: actions.enableRotateTool,
-    storeContexts: ['viewports'],
+    storeContexts: [],
     options: {},
   },
   enableCrosshairsTool: {
     commandFn: actions.enableCrosshairsTool,
-    storeContexts: ['viewports'],
+    storeContexts: [],
     options: {},
   },
   enableLevelTool: {
     commandFn: actions.enableLevelTool,
-    storeContexts: ['viewports'],
+    storeContexts: [],
     options: {},
+  },
+  setBlendModeToComposite: {
+    commandFn: actions.setBlendMode,
+    storeContexts: [],
+    options: { blendMode: BlendMode.COMPOSITE_BLEND },
+  },
+  setBlendModeToMaximumIntensity: {
+    commandFn: actions.setBlendMode,
+    storeContexts: [],
+    options: { blendMode: BlendMode.MAXIMUM_INTENSITY_BLEND },
+  },
+  setBlendModeToMinimumIntensity: {
+    commandFn: actions.setBlendMode,
+    storeContexts: [],
+    options: { blendMode: BlendMode.MINIMUM_INTENSITY_BLEND },
+  },
+  setBlendModeToAverageIntensity: {
+    commandFn: actions.setBlendMode,
+    storeContexts: [],
+    options: { blendMode: BlendMode.AVERAGE_INTENSITY_BLEND },
+  },
+  setSlabThickness: {
+    // TODO: How do we pass in a function argument?
+    commandFn: actions.setSlabThickness,
+    storeContexts: [],
+    options: {},
+  },
+  increaseSlabThickness: {
+    commandFn: actions.changeSlabThickness,
+    storeContexts: [],
+    options: {
+      change: 3,
+    },
+  },
+  decreaseSlabThickness: {
+    commandFn: actions.changeSlabThickness,
+    storeContexts: [],
+    options: {
+      change: -3,
+    },
   },
   mpr2d: {
     commandFn: actions.mpr2d,
