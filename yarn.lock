@@ -4575,6 +4575,11 @@ dicomweb-client@^0.5.1:
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.1.tgz#eeb80ac51df1fbdd80058984a0634c4f0f86af04"
   integrity sha512-/4h84Nda6lWsVnAsWFuWv0mJPSDzZDda3KNcpMmbQcK7XVvGnwvG3dKwDuRh++9YOC+xbqgk2PkULlStV0X3RQ==
 
+dicomweb-client@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.2.tgz#aa5a4a6a5044b0702bb0a8a2662c86cd16901951"
+  integrity sha512-e11n2+g7HfBuMyopWq76W11eSZJ707g4U1XiO8URA+23aoe0g1kGAtlPB29NKXl7zX7RznTJ7wfRBxFkW6EJDA==
+
 diff-sequences@^24.3.0:
   version "24.3.0"
   resolved "https://registry.yarnpkg.com/diff-sequences/-/diff-sequences-24.3.0.tgz#0f20e8a1df1abddaf4d9c226680952e64118b975"
@@ -10501,14 +10506,14 @@ octokit-pagination-methods@^1.1.0:
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
 
-ohif-core@0.10.2:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.10.2.tgz#8093b6f7beaf006068b2cf9c1c009f11407fc76f"
-  integrity sha512-dYD8QnFH6dRYrYPrqWDotVq223wOaY+EqXwWm9Iy2S3+g0cIR+uf87/qlEwZS+9E0BLhB4aZKypwkAVug+yYWQ==
+ohif-core@0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/ohif-core/-/ohif-core-0.10.5.tgz#597a27e7b5f1e2c480dc703c232e2460b95c4200"
+  integrity sha512-qVVQIk44Tox5VQ3CBx7p88xrn/q2Upej4VSrhlL3JLRg2QJ3H0+03z07IXmAHmewTYVZu4ZL67rX41rhQejogg==
   dependencies:
     "@babel/runtime" "^7.2.0"
     ajv "^6.10.0"
-    dicomweb-client "^0.5.1"
+    dicomweb-client "^0.5.2"
     isomorphic-base64 "^1.0.2"
     lodash.clonedeep "^4.5.0"
     lodash.merge "^4.6.1"
