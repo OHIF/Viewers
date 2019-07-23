@@ -145,6 +145,22 @@ const actions = {
       });
     });
   },
+  nextImage: ({ viewports }) => {
+    const enabledElement = _getActiveViewportEnabledElement(
+      viewports.viewportSpecificData,
+      viewports.activeViewportIndex
+    );
+
+    cornerstoneTools.scroll(enabledElement, 1);
+  },
+  previousImage: ({ viewports }) => {
+    const enabledElement = _getActiveViewportEnabledElement(
+      viewports.viewportSpecificData,
+      viewports.activeViewportIndex
+    );
+
+    cornerstoneTools.scroll(enabledElement, -1);
+  }
 };
 
 const definitions = {
@@ -198,7 +214,16 @@ const definitions = {
     storeContexts: ['viewports'],
     options: {},
   },
-  // TODO: Next/Previous image
+  nextImage: {
+    commandFn: actions.nextImage,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  previousImage: {
+    commandFn: actions.previousImage,
+    storeContexts: ['viewports'],
+    options: {},
+  },
   // TODO: First/Last image
   // Next/Previous series/DisplaySet
   nextViewportDisplaySet: {
