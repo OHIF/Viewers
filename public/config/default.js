@@ -54,8 +54,8 @@ window.config = {
     { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
     { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
     // clearAnnotations
-    { commandName: 'nextImage', label: 'Next Image', keys: ['up'] },
-    { commandName: 'previousImage', label: 'Previous Image', keys: ['down'] },
+    { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
+    { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
     // firstImage
     // lastImage
     {
