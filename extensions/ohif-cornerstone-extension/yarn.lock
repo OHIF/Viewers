@@ -4421,10 +4421,10 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-cornerstone-viewport@0.1.31:
-  version "0.1.31"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.31.tgz#ded8a688dad273846078b3336b72f59f134f30f2"
-  integrity sha512-e2A4FkoSpZiB2iwnYjC2UI98+KPY03ODp2jKmuJDE3pn3cIE581Bg/0NQyCKoAnRMO/TUsZSoq/GYTw/1C3kUg==
+react-cornerstone-viewport@0.1.32:
+  version "0.1.32"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-0.1.32.tgz#0777d1f3497b27b017aa5eae3d1d4c078383219b"
+  integrity sha512-NdFsRq4kMgE6zpZo+DEnlQzC2B6OxOgFTkLCTDTYif0IxoXzKhngXP4xujwrUGjud98mTQKtiJOM0ah/fns3og==
   dependencies:
     lodash.debounce "^4.0.8"
     moment "^2.23.0"
