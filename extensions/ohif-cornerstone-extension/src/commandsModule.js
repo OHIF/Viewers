@@ -1,6 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from 'ohif-core';
+const scroll = cornerstoneTools.import('util/scroll');
 
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
@@ -151,7 +152,7 @@ const actions = {
       viewports.activeViewportIndex
     );
 
-    cornerstoneTools.scroll(enabledElement, 1);
+    scroll(enabledElement, 1);
   },
   previousImage: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
@@ -159,7 +160,7 @@ const actions = {
       viewports.activeViewportIndex
     );
 
-    cornerstoneTools.scroll(enabledElement, -1);
+    scroll(enabledElement, -1);
   }
 };
 
