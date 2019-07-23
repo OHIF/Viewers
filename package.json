@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
-    "@ohif/extension-cornerstone": "0.0.42",
+    "@ohif/extension-cornerstone": "0.0.43",
     "@ohif/extension-dicom-html": "0.0.4",
     "@ohif/extension-dicom-microscopy": "0.0.12",
     "@ohif/extension-dicom-pdf": "0.0.8",
