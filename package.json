@@ -98,7 +98,7 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
-    "ohif-core": "0.10.5",
+    "ohif-core": "0.10.6",
     "oidc-client": "1.8.x",
     "prop-types": "^15.7.2",
     "react-dropzone": "^10.1.5",
