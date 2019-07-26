@@ -1,15 +1,18 @@
 import { connect } from 'react-redux';
 import DicomFileUploaderModal from './DicomFileUploaderModal.js';
+import OHIF from 'ohif-core';
 
 const isActive = a => a.active === true;
 
 const mapStateToProps = state => {
   const activeServer = state.servers.servers.find(isActive);
-  const { authority, client_id } = window.config.oidc[0];
-  const oidcStorageKey = `oidc.user:${authority}:${client_id}`;
+
+  // TODO: Not sure I like this approach since it means we are recreating
+  // this function every time redux changes
+  const retrieveAuthHeaderFunction = () => OHIF.DICOMWeb.getAuthorizationHeader(activeServer);
 
   return {
-    oidcStorageKey,
+    retrieveAuthHeaderFunction,
     url: activeServer && activeServer.qidoRoot,
   };
 };

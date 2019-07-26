@@ -7,7 +7,7 @@ import { withTranslation } from 'react-i18next';
 class DicomFileUploaderModal extends Component {
   static propTypes = {
     url: PropTypes.string,
-    oidcStorageKey: PropTypes.string.isRequired,
+    retrieveAuthHeaderFunction: PropTypes.func,
     onClose: PropTypes.func,
   };
 
@@ -32,13 +32,13 @@ class DicomFileUploaderModal extends Component {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {this.props.t('Google Cloud Healthcare API - DICOM Upload')}
+            {this.props.t('Upload DICOM Files')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <DicomUploader
             url={this.props.url}
-            oidcKey={this.props.oidcStorageKey}
+            retrieveAuthHeaderFunction={this.props.retrieveAuthHeaderFunction}
           />
         </Modal.Body>
       </Modal>
