@@ -21,4 +21,5 @@ window.config = {
       },
     ],
   },
+  studyListFunctionsEnabled: true,
 }

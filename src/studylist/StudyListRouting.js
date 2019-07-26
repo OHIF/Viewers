@@ -24,7 +24,14 @@ function getFilters({ search }) {
 function StudyListRouting({ location }) {
   const filters = location ? getFilters(location) : undefined;
 
-  return <ConnectedStudyList filters={filters} />;
+  let studyListFunctionsEnabled = false;
+  if (window.config && window.config.studyListFunctionsEnabled) {
+    studyListFunctionsEnabled = window.config.studyListFunctionsEnabled;
+  }
+  return <ConnectedStudyList
+    filters={filters}
+    studyListFunctionsEnabled={studyListFunctionsEnabled}
+  />;
 }
 
 StudyListRouting.propTypes = {
