@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "0.0.41",
+  "version": "0.0.43",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "0.1.31"
+    "react-cornerstone-viewport": "0.1.32"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
