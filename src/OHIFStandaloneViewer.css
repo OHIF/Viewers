@@ -13,6 +13,11 @@ body,
     Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
 }
 
+body {
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+
 #root .fade-enter {
   opacity: 0;
 }
