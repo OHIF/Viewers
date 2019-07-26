@@ -1,23 +1,16 @@
-import { httpErrorToStr, getOidcToken, checkDicomFile } from '../utils/helpers';
+import { httpErrorToStr, checkDicomFile } from '../utils/helpers';
 import { api } from 'dicomweb-client';
 
 class DicomUploadService {
-  setOidcStorageKey(oidcStorageKey) {
-    /* eslint-disable */
-    if (!oidcStorageKey) console.error('OIDC storage key is empty');
-    this.oidcStorageKey = oidcStorageKey;
-  }
-
-  async smartUpload(files, url, authToken, uploadCallback, cancellationToken) {
-    /* eslint-disable */
+  async smartUpload(files, url, uploadCallback, cancellationToken) {
     const CHUNK_SIZE = 1; // Only one file per request is supported so far
     const MAX_PARALLEL_JOBS = 50; // FIXME: tune MAX_PARALLEL_JOBS number
-    //
+
     let filesArray = Array.from(files);
     if (filesArray.length === 0) {
-      console.warn('No files are supplied for uploading');
-      return;
+      throw new Error('No files were provided.');
     }
+
     let parallelJobsCount = Math.min(filesArray.length, MAX_PARALLEL_JOBS);
     let completed = false;
 
@@ -30,7 +23,7 @@ class DicomUploadService {
         try {
           if (chunk.length > 1) throw new Error('Not implemented');
           if (chunk.length === 1)
-            await this.simpleUpload(chunk[0], url, authToken);
+            await this.simpleUpload(chunk[0], url);
         } catch (err) {
           // It looks like a stupid bug of Babel that err is not an actual Exception object
           error = httpErrorToStr(err);
@@ -51,13 +44,13 @@ class DicomUploadService {
     });
   }
 
-  async simpleUpload(file, url, authToken) {
-    /* eslint-disable */
+  async simpleUpload(file, url) {
     const client = this.getClient(url);
     const loadedFile = await this.readFile(file);
     const content = loadedFile.content;
     if (!checkDicomFile(content))
-      throw new Error('The file has a wrong DICOM header');
+      throw new Error('This is not a valid DICOM file.');
+
     await client.storeInstances({ datasets: [content] });
   }
 
@@ -77,13 +70,17 @@ class DicomUploadService {
     });
   }
 
+  setRetrieveAuthHeaderFunction(func) {
+    this.retrieveAuthHeaderFunc = func;
+  }
+
   getClient(url) {
-    if (!this.oidcStorageKey) throw new Error('OIDC storage key is not set');
-    const accessToken = getOidcToken(this.oidcStorageKey);
-    if (!accessToken) throw new Error('OIDC access_token is not set');
+    const headers = this.retrieveAuthHeaderFunc();
+
+    // TODO: a bit weird we are creating a new dicomweb client instance for every upload
     return new api.DICOMwebClient({
       url,
-      headers: { Authorization: 'Bearer ' + accessToken },
+      headers
     });
   }
 }
