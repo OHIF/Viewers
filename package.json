@@ -72,10 +72,6 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "peerDependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
-  },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
     "@ohif/extension-cornerstone": "0.0.43",
@@ -101,6 +97,8 @@
     "ohif-core": "0.10.6",
     "oidc-client": "1.8.x",
     "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.5",
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
@@ -146,8 +144,6 @@
     "lodash": "4.17.11",
     "lodash.clonedeep": "4.5.0",
     "prettier": "1.18.x",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
     "react-scripts": "^3.0.1",
     "rollup": "^1.15.5",
     "rollup-plugin-babel": "^4.3.2",
@@ -157,6 +153,7 @@
     "rollup-plugin-node-resolve": "^5.0.2",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-url": "^2.2.2",
     "semantic-release": "15.13.x",

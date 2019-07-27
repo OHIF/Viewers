@@ -9,12 +9,8 @@ import svgr from '@svgr/rollup'
 import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins'
+import replace from 'rollup-plugin-replace';
 import serve from 'rollup-plugin-serve'
-
-const globals = {
-  react: 'React',
-  'react-dom': 'ReactDOM',
-}
 
 const startServer = process.env.START_SERVER === 'true';
 
@@ -28,18 +24,19 @@ export default {
       exports: 'named',
       name: 'OHIFStandaloneViewer',
       esModule: false,
-      globals,
     },
     {
       file: pkg.module,
       format: 'es',
       exports: 'named',
       sourcemap: true,
-      globals,
     },
   ],
   plugins: [
     external(),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
     postcss({
       modules: false,
     }),
@@ -54,6 +51,32 @@ export default {
     commonjs({
       include: 'node_modules/**',
       namedExports: {
+        'node_modules/react/index.js': [
+          'createContext',
+          'createElement',
+          'createRef',
+          'cloneElement',
+          'Children',
+          'Fragment',
+          'forwardRef',
+          'useCallback',
+          'isValidElement',
+          'memo',
+          'useContext',
+          'useState',
+          'useEffect',
+          'useLayoutEffect',
+          'Component',
+          'PureComponent',
+          'useRef',
+          'useReducer',
+          'useMemo',
+        ],
+        'node_modules/react-dom/index.js': [
+          'unstable_batchedUpdates',
+          'findDOMNode',
+          'render',
+        ],
         'node_modules/react-is/index.js': [
           'isValidElementType',
           'isContextConsumer',
@@ -74,7 +97,7 @@ export default {
           'cornerstoneTools',
         ],
         'node_modules/dcmjs/build/dcmjs.js': ['data', 'adapters'],
-        'node_modules/prop-types/index.js': ['bool', 'number', 'string', 'shape', 'func', 'any', 'node']
+        'node_modules/prop-types/index.js': ['oneOfType', 'element', 'bool', 'number', 'string', 'shape', 'func', 'any', 'node']
       },
     }),
     builtins(),
