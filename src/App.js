@@ -105,7 +105,6 @@ function makeAbsoluteIfNecessary(url, base_url) {
 class App extends Component {
   static propTypes = {
     routerBasename: PropTypes.string.isRequired,
-    relativeWebWorkerScriptsPath: PropTypes.string.isRequired,
     servers: PropTypes.object.isRequired,
     oidc: PropTypes.array,
     whiteLabelling: PropTypes.object,

@@ -11,7 +11,6 @@ export { App };
 window.config = window.config || {};
 const applicationDefaults = {
   routerBasename: '/',
-  relativeWebWorkerScriptsPath: '',
 };
 const applicationProps = Object.assign({}, applicationDefaults, window.config);
 const app = React.createElement(App, applicationProps, null);
