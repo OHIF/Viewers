@@ -72,7 +72,7 @@ extensionManager.registerExtensions([
 ]);
 
 // Must run after extension commands are registered
-if (window.config.hotkeys) {
+if (window.config && window.config.hotkeys) {
   hotkeysManager.setHotkeys(window.config.hotkeys, true);
 }
 
