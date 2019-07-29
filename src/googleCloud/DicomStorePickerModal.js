@@ -30,6 +30,7 @@ class DicomStorePickerModal extends Component {
         wadoRoot: data.wadoRoot,
         wadoUriRoot: data.wadoUriRoot,
         active: true,
+        supportsFuzzyMatching: false,
       },
     ];
 
