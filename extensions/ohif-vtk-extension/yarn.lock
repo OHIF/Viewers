@@ -6974,10 +6974,10 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vtk.js@^8.13.0:
-  version "8.13.0"
-  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-8.13.0.tgz#d22bbe3403d86f979703506f9be83ab8e5099248"
-  integrity sha512-uoq2U0Yu2XjuKeeduuGRXlphHR6cdIvtZ5useNMJ8FobK9dpeFTT4ncoyPXx77KvwOMSueT8W+ngm/e9+FGZtA==
+vtk.js@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-9.0.1.tgz#fa769e2f14c2e4546a205417ae861cc9d715e5ff"
+  integrity sha512-4GG2xu9gVXoL6Q0yyKMCIs09/yJcVLinDvHY33MBeMslKf3u6dO3qVMIh0lAXYJQcVKi/mFrMfary3PPF/JmDA==
   dependencies:
     base64-js "1.2.1"
     blueimp-md5 "2.10.0"
