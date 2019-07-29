@@ -3,7 +3,7 @@ import Common from "./Common.json";
 import Header from "./Header.json";
 
 export default { 
-  'nl': {
+  'zh': {
     Buttons,
     Common,
     Header,

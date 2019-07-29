@@ -1,8 +1,8 @@
 {
-  "Next image": "$t(Common:Play) $t(Common:Image)",
-  "Play / Stop": "$t(Common:Play) / $t(Common:Stop)",
-  "Previous image": "$t(Common:Previous) $t(Common:Image)",
-  "Skip to first image": "Avanza para la primera $t(Common:Image)",
-  "Skip to last image": "Pular para la ultima $t(Common:Image)",
-  "fps": "fps"
+  "Next image": " $t(Common:Image) $t(Common:Next)",
+  "Play / Stop": "$t(Common:Play) / Stop",
+  "Previous image": "$t(Common:Image) $t(Common:Previous)",
+  "Skip to first image": "Ir a la primera $t(Common:Image)",
+  "Skip to last image": "Ir a la última $t(Common:Image)",
+  "fps": "imágenes/seg."
 }
