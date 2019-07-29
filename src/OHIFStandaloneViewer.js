@@ -136,7 +136,7 @@ class OHIFStandaloneViewer extends Component {
     ];
 
     const showStudyList =
-      window.config.showStudyList !== undefined
+      window.config && window.config.showStudyList !== undefined
         ? window.config.showStudyList
         : true;
     if (showStudyList) {
