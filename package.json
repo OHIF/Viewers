@@ -79,7 +79,7 @@
     "@ohif/extension-dicom-microscopy": "0.0.12",
     "@ohif/extension-dicom-pdf": "0.0.8",
     "@ohif/extension-vtk": "0.1.5",
-    "@ohif/i18n": "0.2.2",
+    "@ohif/i18n": "0.2.3",
     "@tanem/react-nprogress": "^1.1.25",
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.2.8",
