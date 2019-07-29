@@ -25,12 +25,11 @@
 
   <div id="root"></div>
 
+  <script src="/dist/index.umd.js" crossorigin></script>
   <script>
     window.config = {
       // default: '/'
       routerBasename: '/',
-      // default: ''
-      relativeWebWorkerScriptsPath: '',
       servers: {
         dicomWeb: [
           {
@@ -45,10 +44,7 @@
         ],
       },
     }
-  </script>
 
-  <script src="/dist/index.umd.js" crossorigin></script>
-  <script>
     window.OHIFStandaloneViewer.installViewer(window.config);
   </script>
 </body>
