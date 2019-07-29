@@ -142,10 +142,7 @@ class App extends Component {
       );
     }
     handleServers(this.props.servers);
-    initWebWorkers(
-      this.props.routerBasename,
-      this.props.relativeWebWorkerScriptsPath
-    );
+    initWebWorkers();
   }
 
   render() {
