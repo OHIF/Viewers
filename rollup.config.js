@@ -12,6 +12,11 @@ import builtins from 'rollup-plugin-node-builtins'
 import replace from 'rollup-plugin-replace';
 import serve from 'rollup-plugin-serve'
 
+const globals = {
+  react: 'React',
+  'react-dom': 'ReactDOM',
+};
+
 const startServer = process.env.START_SERVER === 'true';
 
 export default {
@@ -24,12 +29,14 @@ export default {
       exports: 'named',
       name: 'OHIFStandaloneViewer',
       esModule: false,
+      globals,
     },
     {
       file: pkg.module,
       format: 'es',
       exports: 'named',
       sourcemap: true,
+      globals,
     },
   ],
   plugins: [
