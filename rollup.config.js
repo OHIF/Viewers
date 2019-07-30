@@ -16,6 +16,7 @@ const startServer = process.env.START_SERVER === 'true';
 
 export default {
   input: 'src/index_publish.js',
+  perf: true,
   output: [
     {
       file: pkg.main,
