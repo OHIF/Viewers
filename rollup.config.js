@@ -50,12 +50,14 @@ export default {
     url(),
     svgr(),
     json(),
-    resolve({ preferBuiltins: true }),
+    builtins(),
+    resolve(),
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true,
     }),
     commonjs({
+      sourceMap: false,
       include: 'node_modules/**',
       namedExports: {
         'node_modules/react/index.js': [
@@ -107,7 +109,6 @@ export default {
         'node_modules/prop-types/index.js': ['oneOfType', 'element', 'bool', 'number', 'string', 'shape', 'func', 'any', 'node']
       },
     }),
-    builtins(),
     startServer && serve({
       open: true,
       // Multiple folders to serve from

@@ -88,7 +88,6 @@ _/public/config/default.js_
 ```js
 window.config = {
   routerBasename: '/',
-  relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
       {

@@ -50,8 +50,6 @@ include tags. Here's how it works:
 window.config = {
   // default: '/'
   routerBasename: '/',
-  // default: ''
-  relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
       {

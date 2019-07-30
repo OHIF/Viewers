@@ -3848,12 +3848,13 @@ cornerstone-tools@^3.16.0:
     cornerstone-math "0.1.7"
     debug "4.1.1"
 
-cornerstone-wado-image-loader@^2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-2.2.3.tgz#2d4c06b5c87cd9198b52906c48e2d9dd145de986"
-  integrity sha512-0N5ykSEVoUx3zzfGn5Oaa7OJL/EHOthPUI2Kv8gSnMgf6ipcz5TcK8xGMOfu6grMkKlNb0SFJ/cEqsHR7bddKQ==
+cornerstone-wado-image-loader@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-3.0.0.tgz#250ba435379096815de52ed80629d6407e016841"
+  integrity sha512-T18aPcLBkYn2dg2qVbIgA6FQUVvwJVmyDlBdWXHdfOZgQnhbxd7Gz1V0hHqpGAfAv8mH1nlNzZ9ipFsNYHvXdA==
   dependencies:
-    dicom-parser "^1.8.1"
+    dicom-parser "^1.8.3"
+    pako "^1.0.10"
 
 cosmiconfig@^5.0.0, cosmiconfig@^5.0.1, cosmiconfig@^5.2.0, cosmiconfig@^5.2.1:
   version "5.2.1"
@@ -4565,7 +4566,7 @@ dicom-microscopy-viewer@0.6.1:
     dicomweb-client "^0.5.2"
     ol "^5.3.0"
 
-dicom-parser@^1.8.1, dicom-parser@^1.8.3:
+dicom-parser@^1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/dicom-parser/-/dicom-parser-1.8.3.tgz#6e4b862898112304db30143147562011c1ce6a4d"
   integrity sha512-CMeUr+jea7Ml70N+/Z5Pd2MYtvLp6IU+TnvdLe6VRVKzZuTeYLYyuAQa9R+sFK4v4N39hig+hKHN+Wfi9sQ6GA==
@@ -10830,7 +10831,7 @@ pako@1.0.6:
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
   integrity sha512-lQe48YPsMJAig+yngZ87Lus+NF+3mtu7DVOBu6b/gHO1YpKwIj5AWjZ/TOS7i46HD/UixzWb1zeWDZfGZ3iYcg==
 
-pako@~1.0.2, pako@~1.0.5:
+pako@^1.0.10, pako@~1.0.2, pako@~1.0.5:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
   integrity sha512-0DTvPVU3ed8+HNXOu5Bs+o//Mbdj9VNQMUOe9oKCwh8l0GNwpTDMKCWbRjgtD291AWnkAgkqA/LOnQS8AmS1tw==

@@ -3,10 +3,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 describe('initWebWorkers', () => {
   it("initializes cornerstoneWADOImageLoader's web workers", () => {
-    const basePath = '/';
-    const relativeWebWorkerScriptsPath = '';
-
-    initWebWorkers(basePath, relativeWebWorkerScriptsPath);
+    initWebWorkers();
 
     expect(
       cornerstoneWADOImageLoader.webWorkerManager.initialize
