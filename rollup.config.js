@@ -57,7 +57,6 @@ export default {
       runtimeHelpers: true,
     }),
     commonjs({
-      sourceMap: false,
       include: 'node_modules/**',
       namedExports: {
         'node_modules/react/index.js': [
