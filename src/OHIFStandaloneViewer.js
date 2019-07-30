@@ -188,7 +188,7 @@ class OHIFStandaloneViewer extends Component {
                     this.setState({ isLoading: false });
                   }}
                 >
-                  {match === null ? <></> : <Component match={match} />}
+                  {match === null ? <></> : <Component match={match} location={this.props.location}/>}
                 </CSSTransition>
               )}
             </Route>
