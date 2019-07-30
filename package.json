@@ -72,6 +72,10 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
     "@ohif/extension-cornerstone": "0.0.43",
@@ -97,8 +101,6 @@
     "ohif-core": "0.11.0",
     "oidc-client": "1.8.x",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.5",
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
@@ -144,6 +146,8 @@
     "lodash": "4.17.11",
     "lodash.clonedeep": "4.5.0",
     "prettier": "1.18.x",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-scripts": "^3.0.1",
     "rollup": "^1.15.5",
     "rollup-plugin-babel": "^4.3.2",
