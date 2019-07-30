@@ -10,14 +10,11 @@ import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins'
 import replace from 'rollup-plugin-replace';
-import serve from 'rollup-plugin-serve'
 
 const globals = {
   react: 'React',
   'react-dom': 'ReactDOM',
 };
-
-const startServer = process.env.START_SERVER === 'true';
 
 export default {
   input: 'src/index_publish.js',
@@ -108,13 +105,6 @@ export default {
         'node_modules/dcmjs/build/dcmjs.js': ['data', 'adapters'],
         'node_modules/prop-types/index.js': ['oneOfType', 'element', 'bool', 'number', 'string', 'shape', 'func', 'any', 'node']
       },
-    }),
-    startServer && serve({
-      open: true,
-      // Multiple folders to serve from
-      contentBase: ['.', 'dist', 'cypress/support/script-tag', 'public'],
-      host: 'localhost',
-      port: 5000,
     })
   ],
   external: Object.keys(pkg.peerDependencies || {}),

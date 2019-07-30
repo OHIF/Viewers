@@ -28,7 +28,9 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit && codecov",
     "test:e2e": "start-server-and-test start http://localhost:5000 cy:run",
     "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
-    "test:e2e:scriptTag": "cross-env START_SERVER=true start-server-and-test http-get://localhost:5000/index.umd.js cy:run",
+    "make-script-tag-example": "rm -rf script-tag-test && mkdir script-tag-test && cp dist/index.umd.* script-tag-test && cp -R public/* script-tag-test && cp -R cypress/support/script-tag/* script-tag-test",
+    "start-server-script-tag": "yarn run make-script-tag-example && serve -l 5000 -s script-tag-test",
+    "test:e2e:scriptTag": "start-server-and-test start-server-script-tag http-get://localhost:5000/index.umd.js cy:run",
     "staticDeploy": "./generateStaticSite.sh",
     "docs:publish": "./publishStaticSite.sh",
     "start": "yarn run dev",
@@ -157,9 +159,9 @@
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-url": "^2.2.2",
     "semantic-release": "15.13.x",
+    "serve": "^11.1.0",
     "start-server-and-test": "^1.9.1",
     "stylelint": "^10.1.0"
   }
