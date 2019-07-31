@@ -1,3 +1,10 @@
 {
-  "Play": "播放"
+  "Image": "图像",
+  "Layout": "显示窗口",
+  "More": "更多",
+  "Next": "下一个",
+  "Play": "播放",
+  "Previous": "上一个",
+  "Reset": "复原",
+  "Stop": "停止"
 }
