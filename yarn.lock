@@ -1294,10 +1294,10 @@
     locize-lastused "^1.1.0"
     rollup-plugin-json "^4.0.0"
 
-"@ohif/i18n@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.2.4.tgz#9394c315e33e8d2ee9c0bcf417806ca66796ecb0"
-  integrity sha512-dJB90r+l2OUEVVmlKq1XR01VSDZMEvk0P/Mkfm31e32em4In17qtgZgcbB52jyVr1msdE7bH7ldICKrpxSx0MQ==
+"@ohif/i18n@0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.2.5.tgz#2b92a78109823ce0f50dd590201d980a5fd64974"
+  integrity sha512-jgP8HN/9APyWU16ZoTrLgQoiWZZIVsJxl9PK2KPDYMBhpmNyxYGCfjkGUCC2dfsd/UAjx2Y6TRp/F3cMsYATsA==
   dependencies:
     "@babel/runtime" "^7.2.0"
     classnames "^2.2.6"
