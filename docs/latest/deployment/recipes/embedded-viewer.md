@@ -18,7 +18,7 @@ include tags. Here's how it works:
   </li>
   <li>
     <a href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700&display=swap">
-      <code>Google Fonts, Sanchez & Roboto</code>
+      <code>Google Fonts Roboto</code>
     </a>
   </li>
   <li>
