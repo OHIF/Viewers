@@ -21,28 +21,28 @@ coverage:
 flags:
   core:
     paths:
-      - platform/core/src
+      - platform/core
   i18n:
     paths:
-      - platform/i18n/src
+      - platform/i18n
   ui:
     paths:
-      - platform/ui/src
+      - platform/ui
   viewer:
     paths:
-      - platform/viewer/src
+      - platform/viewer
   cornerstone:
     paths:
-      - extensions/cornerstone/src
+      - extensions/cornerstone
   dicom-html:
     paths:
-      - extensions/dicom-html/src
+      - extensions/dicom-html
   dicom-microscopy:
     paths:
-      - extensions/dicom-microscopy/src
+      - extensions/dicom-microscopy
   dicom-pdf:
     paths:
-      - extensions/dicom-pdf/src
+      - extensions/dicom-pdf
   vtk:
     paths:
-      - extensions/vtk/src
+      - extensions/vtk
