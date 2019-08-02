@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { formatFileSize } from './utils/helpers';
 import CancellationToken from './utils/CancellationToken';
 import dicomUploader from './api/DicomUploadService';
-import './googleCloud.css';
+import './DicomUploader.css';
 
 export default class DicomUploader extends Component {
   state = {
@@ -26,7 +26,7 @@ export default class DicomUploader extends Component {
     id: PropTypes.string,
     event: PropTypes.string,
     url: PropTypes.string,
-    oidcKey: PropTypes.string,
+    retrieveAuthHeaderFunction: PropTypes.func,
   };
 
   filesLeft() {
@@ -94,11 +94,12 @@ export default class DicomUploader extends Component {
     const uploadCallback = (fileId, error) =>
       uploadContext === this.state.uploadContext &&
       this.uploadCallback.call(this, fileId, error);
-    dicomUploader.setOidcStorageKey(this.props.oidcKey);
+
+    dicomUploader.setRetrieveAuthHeaderFunction(this.props.retrieveAuthHeaderFunction);
+
     dicomUploader.smartUpload(
       files.target.files,
       this.props.url,
-      this.props.oidcKey,
       uploadCallback,
       cancellationToken
     );
@@ -137,14 +138,13 @@ export default class DicomUploader extends Component {
   render() {
     if (this.state.files === null) {
       return (
-        <div className="gcp-dicom-uploader">
+        <div className="dicom-uploader">
           <div className="button">
             <label htmlFor="file">
               <img src="./assets/Button_File.svg" alt="upload file"></img>
             </label>
             <input
-              className="gcp-invisible-input"
-              accept=".dcm"
+              className="invisible-input"
               onChange={this.uploadFiles}
               type="file"
               id="file"
@@ -157,7 +157,7 @@ export default class DicomUploader extends Component {
               <img src="./assets/Button_Folder.svg" alt="upload folder"></img>
             </label>
             <input
-              className="gcp-invisible-input"
+              className="invisible-input"
               type="file"
               onChange={this.uploadFiles}
               id="folder"
@@ -174,7 +174,7 @@ export default class DicomUploader extends Component {
       <table id="tblProjectList" className="table noselect">
         <thead>
           <tr>
-            <th className="gcp-picker--path">
+            <th className="table-header">
               {this.percents()}% {this.filesLeft()}
             </th>
           </tr>
