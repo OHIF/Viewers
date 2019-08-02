@@ -52,6 +52,9 @@ export default class LabellingFlow extends Component {
 
   componentDidUpdate = () => {
     this.repositionComponent();
+    if (this.state.editDescription) {
+      this.descriptionInput.current.focus();
+    }
   };
 
   render() {

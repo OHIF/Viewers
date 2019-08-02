@@ -17,7 +17,7 @@ class SimpleDialog extends Component {
         ref={this.props.componentRef}
         style={this.props.componentStyle}
       >
-        <form>
+        <form onSubmit={this.props.onConfirm}>
           <div className="header">
             <span className="closeBtn" onClick={this.props.onClose}>
               <span className="closeIcon">x</span>
