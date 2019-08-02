@@ -222,6 +222,9 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
+      - e2e_test:
+          requires:
+            - build_and_test
 
   # MERGE TO MASTER
   cut_release:

@@ -136,7 +136,7 @@ class OHIFStandaloneViewer extends Component {
     ];
 
     const showStudyList =
-      window.config.showStudyList !== undefined
+      window.config && window.config.showStudyList !== undefined
         ? window.config.showStudyList
         : true;
     if (showStudyList) {
@@ -188,7 +188,7 @@ class OHIFStandaloneViewer extends Component {
                     this.setState({ isLoading: false });
                   }}
                 >
-                  {match === null ? <></> : <Component match={match} />}
+                  {match === null ? <></> : <Component match={match} location={this.props.location}/>}
                 </CSSTransition>
               )}
             </Route>

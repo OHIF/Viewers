@@ -4,9 +4,15 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
 import version from './version.js';
 
+let homepage;
+const { process } = window;
+if (process && process.env && process.env.PUBLIC_URL) {
+  homepage = process.env.PUBLIC_URL;
+}
+
 window.info = {
   version,
-  homepage: `${process.env.PUBLIC_URL}`,
+  homepage,
 };
 
 // For debugging

@@ -72,7 +72,7 @@ extensionManager.registerExtensions([
 ]);
 
 // Must run after extension commands are registered
-if (window.config.hotkeys) {
+if (window.config && window.config.hotkeys) {
   hotkeysManager.setHotkeys(window.config.hotkeys, true);
 }
 
@@ -105,7 +105,6 @@ function makeAbsoluteIfNecessary(url, base_url) {
 class App extends Component {
   static propTypes = {
     routerBasename: PropTypes.string.isRequired,
-    relativeWebWorkerScriptsPath: PropTypes.string.isRequired,
     servers: PropTypes.object.isRequired,
     oidc: PropTypes.array,
     whiteLabelling: PropTypes.object,
@@ -142,10 +141,7 @@ class App extends Component {
       );
     }
     handleServers(this.props.servers);
-    initWebWorkers(
-      this.props.routerBasename,
-      this.props.relativeWebWorkerScriptsPath
-    );
+    initWebWorkers();
   }
 
   render() {

@@ -9,14 +9,12 @@ import svgr from '@svgr/rollup'
 import pkg from './package.json'
 // Deal with https://github.com/rollup/rollup-plugin-commonjs/issues/297
 import builtins from 'rollup-plugin-node-builtins'
-import serve from 'rollup-plugin-serve'
+import replace from 'rollup-plugin-replace';
 
 const globals = {
   react: 'React',
   'react-dom': 'ReactDOM',
-}
-
-const startServer = process.env.START_SERVER === 'true';
+};
 
 export default {
   input: 'src/index_publish.js',
@@ -40,20 +38,51 @@ export default {
   ],
   plugins: [
     external(),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
     postcss({
       modules: false,
     }),
     url(),
     svgr(),
     json(),
-    resolve({ preferBuiltins: true }),
+    builtins(),
+    resolve(),
     babel({
       exclude: 'node_modules/**',
       runtimeHelpers: true,
     }),
     commonjs({
+      sourceMap: false,
       include: 'node_modules/**',
       namedExports: {
+        'node_modules/react/index.js': [
+          'createContext',
+          'createElement',
+          'createRef',
+          'cloneElement',
+          'Children',
+          'Fragment',
+          'forwardRef',
+          'useCallback',
+          'isValidElement',
+          'memo',
+          'useContext',
+          'useState',
+          'useEffect',
+          'useLayoutEffect',
+          'Component',
+          'PureComponent',
+          'useRef',
+          'useReducer',
+          'useMemo',
+        ],
+        'node_modules/react-dom/index.js': [
+          'unstable_batchedUpdates',
+          'findDOMNode',
+          'render',
+        ],
         'node_modules/react-is/index.js': [
           'isValidElementType',
           'isContextConsumer',
@@ -74,16 +103,8 @@ export default {
           'cornerstoneTools',
         ],
         'node_modules/dcmjs/build/dcmjs.js': ['data', 'adapters'],
-        'node_modules/prop-types/index.js': ['bool', 'number', 'string', 'shape', 'func', 'any', 'node']
+        'node_modules/prop-types/index.js': ['oneOfType', 'element', 'bool', 'number', 'string', 'shape', 'func', 'any', 'node']
       },
-    }),
-    builtins(),
-    startServer && serve({
-      open: true,
-      // Multiple folders to serve from
-      contentBase: ['.', 'dist', 'cypress/support/script-tag', 'public'],
-      host: 'localhost',
-      port: 5000,
     })
   ],
   external: Object.keys(pkg.peerDependencies || {}),

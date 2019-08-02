@@ -1,10 +1,15 @@
 {
   "Image": "Imagen",
-  "Layout": "Esquema",
+  "Layout": "Disposición",
+  "Measurements": "Medidas",
   "More": "Más",
-  "Next": "Próximo",
+  "Next": "Siguiente",
   "Play": "Play",
   "Previous": "Anterior",
-  "Reset": "Reiniciar",
-  "Stop": "Stop"
+  "Reset": "Resetear",
+  "RowsPerPage": "filas por página",
+  "Series": "Secuencia",
+  "Show": "Mostrar",
+  "Stop": "Detener",
+  "StudyDate": "Fecha de estudo"
 }
