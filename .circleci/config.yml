@@ -65,9 +65,10 @@ jobs:
             cat ~/repo/platform/viewer/coverage/lcov.info >> ~/repo/platform/viewer/coverage/reports
             echo "\<<\<<\<< EOF" >> ~/repo/platform/viewer/coverage/reports
 
+      - run: cat ~/repo/platform/viewer/coverage/reports
+
       - codecov/upload:
-          conf: "home/circleci/repo/.codecov.yml"
-          file: "home/circleci/repo/platform/viewer/coverage/reports"
+          file: "/home/circleci/repo/platform/viewer/coverage/reports"
           flags: "viewer"
 
       # - run:
