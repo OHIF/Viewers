@@ -60,7 +60,7 @@ jobs:
           name: "Combine report output"
           command: |
             touch ~/repo/platform/viewer/coverage/reports
-            cat ~/repo/platform/viewer/coverage/coverage.xml >> ~/repo/platform/viewer/coverage/reports
+            cat ~/repo/platform/viewer/coverage/clover.xml >> ~/repo/platform/viewer/coverage/reports
             echo "\<<\<<\<< EOF" >> ~/repo/platform/viewer/coverage/reports
             cat ~/repo/platform/viewer/coverage/lcov.info >> ~/repo/platform/viewer/coverage/reports
             echo "\<<\<<\<< EOF" >> ~/repo/platform/viewer/coverage/reports
