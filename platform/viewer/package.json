@@ -1,5 +1,5 @@
 {
-  "name": "ohif-viewer",
+  "name": "@ohif/viewer",
   "version": "0.0.21",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
@@ -7,6 +7,9 @@
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -51,6 +54,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.5",
+    "@ohif/core": "^0.11.0",
+    "@ohif/ui": "0.15.3",
     "@ohif/extension-cornerstone": "0.0.38",
     "@ohif/extension-dicom-html": "0.0.3",
     "@ohif/extension-dicom-microscopy": "0.0.8",
@@ -71,7 +76,6 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
-    "ohif-core": "0.9.1",
     "oidc-client": "1.7.x",
     "prop-types": "^15.7.2",
     "react-i18next": "^10.11.0",
@@ -80,7 +84,6 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-transition-group": "^4.1.1",
-    "react-viewerbase": "0.15.3",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-oidc": "3.1.x",

@@ -1,15 +1,16 @@
 {
-  "name": "ohif-core",
-  "version": "0.4.0",
+  "name": "@ohif/core",
+  "version": "0.11.0",
   "description": "Useful functions and classes for building web-based medical imaging applications",
-  "author": "OHIF",
+  "author": "OHIF Contributors",
   "license": "MIT",
-  "repository": "OHIF/ohif-core",
+  "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
-  "browser": "dist/index.umd.jd",
   "module": "src/index.js",
-  "jsnext:main": "src/index.js",
   "sideEffects": "false",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8",
     "npm": ">=5"
@@ -72,23 +73,6 @@
     "stylelint-config-recommended": "^2.1.0",
     "stylus": "^0.54.5"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,json,css}": [
-      "prettier --single-quote --write",
-      "git add"
-    ]
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
   "files": [
     "dist"
   ],

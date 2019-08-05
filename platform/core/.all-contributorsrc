@@ -62,7 +62,7 @@
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "ohif-core",
+  "projectName": "@ohif/core",
   "projectOwner": "OHIF",
   "repoType": "github",
   "repoHost": "https://github.com"

@@ -1,12 +1,15 @@
 {
-  "name": "react-viewerbase",
+  "name": "@ohif/ui",
   "version": "0.2.17",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
-  "repository": "OHIF/react-viewerbase",
+  "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8",
     "npm": ">=5"

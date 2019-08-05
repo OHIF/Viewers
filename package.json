@@ -16,8 +16,7 @@
     "build:package": "lerna run build:package --parallel",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel",
-    "test:e2e": "",
-    "test:e2e:ci": "lerna run lerna:test:e2e --parallel",
+    "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",
     "new-version": "lerna version --conventional-commits --yes",
     "build:pwa:ci": ""
   },
