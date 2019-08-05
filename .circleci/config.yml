@@ -57,20 +57,20 @@ jobs:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
 
       - codecov/upload:
-          conf: ~/repo/.codecov.yml
-          file: ~/repo/platform/viewer/coverage/clover.xml
+          conf: "home/circleci/repo/.codecov.yml"
+          file: "/home/circleci/repo/platform/viewer/coverage/clover.xml"
           flags: "viewer"
 
       - codecov/upload:
-          conf: ~/repo/.codecov.yml
-          file: ~/repo/platform/core/coverage/clover.xml
+          conf: "home/circleci/repo/.codecov.yml"
+          file: "/home/circleci/repo/platform/viewer/coverage/clover.xml"
           flags: "core"
 
       # Store result
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
+      # - store_test_results:
+      #     path: reports/junit
+      # - store_artifacts:
+      #     path: reports/junit
 
       # Persist :+1:
       - persist_to_workspace:
