@@ -53,11 +53,10 @@ jobs:
       - run:
           name: "JavaScript Test Suite"
           command: yarn run test:unit:ci
-          environment:
-            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
 
+      # PLATFORM/VIEWER
       - run:
-          name: "Combine report output"
+          name: "VIEWER: Combine report output"
           command: |
             touch ~/repo/platform/viewer/coverage/reports
             cat ~/repo/platform/viewer/coverage/clover.xml >> ~/repo/platform/viewer/coverage/reports
@@ -65,31 +64,23 @@ jobs:
             cat ~/repo/platform/viewer/coverage/lcov.info >> ~/repo/platform/viewer/coverage/reports
             echo "\<<\<<\<< EOF" >> ~/repo/platform/viewer/coverage/reports
 
-      - run: cat ~/repo/platform/viewer/coverage/reports
-
       - codecov/upload:
           file: "/home/circleci/repo/platform/viewer/coverage/reports"
           flags: "viewer"
 
-      # - run:
-      #     name: "Combine report output"
-      #     command: |
-      #       touch /home/circleci/repo/platform/core/coverage/reports
-      #       cat /home/circleci/repo/platform/core/coverage/coverage.xml \>> reports
-      #       echo '<<<<<< EOF' \>> reports
-      #       cat /home/circleci/repo/platform/core/coverage/lcov.info \>> reports
-      #       echo '<<<<<< EOF' \>> reports
+      # PLATFORM/CORE
+      - run:
+          name: "CORE: Combine report output"
+          command: |
+            touch ~/repo/platform/core/coverage/reports
+            cat ~/repo/platform/core/coverage/clover.xml >> ~/repo/platform/core/coverage/reports
+            echo "\<<\<<\<< EOF" >> ~/repo/platform/core/coverage/reports
+            cat ~/repo/platform/core/coverage/lcov.info >> ~/repo/platform/core/coverage/reports
+            echo "\<<\<<\<< EOF" >> ~/repo/platform/core/coverage/reports
 
-      # - codecov/upload:
-      #     conf: "home/circleci/repo/.codecov.yml"
-      #     file: "home/circleci/repo/platform/core/coverage/reports"
-      #     flags: "core"
-
-      # Store result
-      # - store_test_results:
-      #     path: reports/junit
-      # - store_artifacts:
-      #     path: reports/junit
+      - codecov/upload:
+          file: "/home/circleci/repo/platform/core/coverage/reports"
+          flags: "core"
 
       # Persist :+1:
       - persist_to_workspace:
