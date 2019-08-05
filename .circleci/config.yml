@@ -59,12 +59,11 @@ jobs:
       - run:
           name: "Combine report output"
           command: |
-            cd "/home/circleci/repo/platform/viewer/coverage" && \
-            touch reports && \
-            cat coverage.xml >> reports && \
-            echo "\<<\<<\<< EOF" >> reports && \
-            cat lcov.info >> reports && \
-            echo "\<<\<<\<< EOF" >> reports
+            touch "/home/circleci/repo/platform/viewer/coverage/reports"
+            cat "/home/circleci/repo/platform/viewer/coverage/coverage.xml" >> "/home/circleci/repo/platform/viewer/coverage/reports"
+            echo "\<<\<<\<< EOF" >> "/home/circleci/repo/platform/viewer/coverage/reports"
+            cat "/home/circleci/repo/platform/viewer/coverage/lcov.info" >> "/home/circleci/repo/platform/viewer/coverage/reports"
+            echo "\<<\<<\<< EOF" >> "/home/circleci/repo/platform/viewer/coverage/reports"
 
       - codecov/upload:
           conf: "home/circleci/repo/.codecov.yml"
