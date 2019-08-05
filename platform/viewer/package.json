@@ -16,7 +16,7 @@
     "lerna:start": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d",
     "build:package": "webpack --config config/webpack.prod.js",
     "test:unit": "jest --watch",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage && codecov --flags=viewer",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
     "dev": "yarn run preBuild && react-scripts start",
     "dev:debug": "react-scripts start",
     "build:web": "yarn run preBuild && react-scripts --max_old_space_size=4096 build",
@@ -89,7 +89,6 @@
   },
   "devDependencies": {
     "@semantic-release/exec": "3.3.3",
-    "codecov": "3.5.0",
     "commitizen": "3.1.x",
     "core-js": "^3.1.4",
     "cpx": "1.5.0",

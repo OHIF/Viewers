@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test:unit": "jest --watch",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage  && codecov --flags=core",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
     "build": "rollup -c",
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "dev": "jest --watch",
@@ -44,7 +44,6 @@
     "@svgr/rollup": "^4.1.0",
     "babel-eslint": "10.0.1",
     "babel-jest": "^24.7.1",
-    "codecov": "^3.3.0",
     "commitizen": "3.1.x",
     "cross-env": "^5.2.0",
     "cz-conventional-changelog": "2.1.x",
