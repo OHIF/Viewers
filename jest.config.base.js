@@ -17,7 +17,16 @@ module.exports = {
   // Setup
   // setupFiles: ["jest-canvas-mock/lib/index.js"],
   // Coverage
-  reporters: ["default", "jest-junit"],
+  reporters: [
+    "default",
+    // Docs: https://www.npmjs.com/package/jest-junit
+    [
+      "jest-junit",
+      {
+        addFileAttribute: true // CircleCI Only
+      }
+    ]
+  ],
   collectCoverage: false,
   collectCoverageFrom: [
     "<rootDir>/src/**/*.{js,jsx}",

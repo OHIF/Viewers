@@ -9,6 +9,9 @@ version: 2
 # create pull request previews and to update `https://docs.ohif.org`
 ###
 
+orbs:
+  codecov: codecov/codecov@1.0.5
+
 defaults: &defaults
   docker:
     - image: circleci/node:10.16.0
@@ -52,6 +55,11 @@ jobs:
           command: yarn run test:unit:ci
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+
+      - codecov/upload:
+          conf: "/home/circleci/repo/.codecov.yml"
+          file: "/home/circleci/repo/platform/viewer/coverage/lcov.info"
+          flags: "viewer"
 
       # Store result
       - store_test_results:
