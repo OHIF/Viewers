@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "0.11.0",
+  "version": "0.11.1-alpha.0",
   "description": "Useful functions and classes for building web-based medical imaging applications",
   "author": "OHIF Contributors",
   "license": "MIT",
