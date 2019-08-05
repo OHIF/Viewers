@@ -58,11 +58,12 @@ jobs:
       - run:
           name: "VIEWER: Combine report output"
           command: |
-            touch ~/repo/platform/viewer/coverage/reports
-            cat ~/repo/platform/viewer/coverage/clover.xml >> ~/repo/platform/viewer/coverage/reports
-            echo "\<<\<<\<< EOF" >> ~/repo/platform/viewer/coverage/reports
-            cat ~/repo/platform/viewer/coverage/lcov.info >> ~/repo/platform/viewer/coverage/reports
-            echo "\<<\<<\<< EOF" >> ~/repo/platform/viewer/coverage/reports
+            viewerCov="~/repo/platform/viewer/coverage"
+            touch "${viewerCov}/reports"
+            cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+            cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
 
       - codecov/upload:
           file: "/home/circleci/repo/platform/viewer/coverage/reports"
