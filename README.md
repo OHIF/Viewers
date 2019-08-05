@@ -124,6 +124,10 @@ PWA builds go through
 > lighter bundles via tree shaking if users are only consuming certain parts of
 > the library.
 
+## Notes
+
+Lerna requires `GH_TOKEN` for GitHub authentication token
+
 <!--
   Links
   -->
