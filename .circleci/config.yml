@@ -68,7 +68,7 @@ jobs:
       - run:
           name: "CORE: Combine report output"
           command: |
-            coreCov="/home/circleci/repo/platform/viewer/coverage"
+            coreCov="/home/circleci/repo/platform/core/coverage"
             touch "${coreCov}/reports"
             cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
@@ -128,7 +128,7 @@ jobs:
       - run:
           name: "CORE: Combine report output"
           command: |
-            coreCov="/home/circleci/repo/platform/viewer/coverage"
+            coreCov="/home/circleci/repo/platform/core/coverage"
             touch "${coreCov}/reports"
             cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
