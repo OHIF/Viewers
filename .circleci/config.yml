@@ -63,7 +63,7 @@ jobs:
 
       - codecov/upload:
           conf: "home/circleci/repo/.codecov.yml"
-          file: "/home/circleci/repo/platform/viewer/coverage/clover.xml"
+          file: "/home/circleci/repo/platform/core/coverage/clover.xml"
           flags: "core"
 
       # Store result
