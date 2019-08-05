@@ -62,9 +62,9 @@ jobs:
             cd "/home/circleci/repo/platform/viewer/coverage"
             touch reports
             cat coverage.xml >> reports
-            echo "<<<<<< EOF" >> reports
+            echo "\<<\<<\<< EOF" >> reports
             cat lcov.info >> reports
-            echo "<<<<<< EOF" >> reports
+            echo "\<<\<<\<< EOF" >> reports
 
       - codecov/upload:
           conf: "home/circleci/repo/.codecov.yml"
