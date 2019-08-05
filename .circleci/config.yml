@@ -56,14 +56,32 @@ jobs:
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
 
-      - codecov/upload:
-          conf: "home/circleci/repo/.codecov.yml"
-          file: "/home/circleci/repo/platform/viewer/coverage/clover.xml"
-          flags: "viewer"
+      - run:
+          name: "Combine report output"
+          command: |
+            touch /home/circleci/repo/platform/viewer/coverage/reports
+            cat /home/circleci/repo/platform/viewer/coverage/coverage.xml >> reports
+            echo '<<<<<< EOF' >> reports
+            cat /home/circleci/repo/platform/viewer/coverage/lcov.info >> reports
+            echo '<<<<<< EOF' >> reports
 
       - codecov/upload:
           conf: "home/circleci/repo/.codecov.yml"
-          file: "/home/circleci/repo/platform/core/coverage/clover.xml"
+          file: "home/circleci/repo/platform/viewer/coverage/reports"
+          flags: "viewer"
+
+      - run:
+          name: "Combine report output"
+          command: |
+            touch /home/circleci/repo/platform/core/coverage/reports
+            cat /home/circleci/repo/platform/core/coverage/coverage.xml >> reports
+            echo '<<<<<< EOF' >> reports
+            cat /home/circleci/repo/platform/core/coverage/lcov.info >> reports
+            echo '<<<<<< EOF' >> reports
+
+      - codecov/upload:
+          conf: "home/circleci/repo/.codecov.yml"
+          file: "home/circleci/repo/platform/core/coverage/reports"
           flags: "core"
 
       # Store result
