@@ -7,6 +7,8 @@
 coverage:
   status:
     project:
+      default:
+        threshold: 0.10%
       core:
         flags: core
       viewer:
