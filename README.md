@@ -127,6 +127,7 @@ PWA builds go through
 ## Notes
 
 Lerna requires `GH_TOKEN` for GitHub authentication token
+`git remote update` 1st call, need to verify host key
 
 <!--
   Links
