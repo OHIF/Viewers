@@ -57,9 +57,14 @@ jobs:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
 
       - codecov/upload:
-          conf: "/home/circleci/repo/.codecov.yml"
-          file: "/home/circleci/repo/platform/viewer/coverage/lcov.info"
+          conf: ~/repo/.codecov.yml
+          file: ~/repo/platform/viewer/coverage/clover.xml
           flags: "viewer"
+
+      - codecov/upload:
+          conf: ~/repo/.codecov.yml
+          file: ~/repo/platform/core/coverage/clover.xml
+          flags: "core"
 
       # Store result
       - store_test_results:
