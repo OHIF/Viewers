@@ -30,6 +30,7 @@
     "cy": "cypress open",
     "cy:run": "cypress run",
     "cy:run:ci": "yarn run cy:run -- --record",
+    "build:package": "echo 'VIEWER: No package'",
     "build:viewer": "webpack --config config/webpack.prod.js",
     "dev:viewer": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d"
   },

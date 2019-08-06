@@ -18,17 +18,12 @@
     "dist"
   ],
   "scripts": {
+    "dev": "docz dev",
+    "docs": "docz build",
+    "build:package": "webpack --config config/webpack.prod.js -d",
     "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests",
-    "dev": "docz dev",
-    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
-    "build": "rollup -c",
-    "start": "rollup -c -w",
-    "prepare": "yarn build",
-    "prepublishOnly": "yarn build",
-    "generateStaticSite": "docz build",
-    "contributors:add": "all-contributors add",
-    "contributors:generate": "all-contributors generate"
+    "dev:ui": "yarn run dev"
   },
   "peerDependencies": {
     "@ohif/i18n": "0.2.1",
@@ -56,21 +51,12 @@
   },
   "devDependencies": {
     "@mdx-js/tag": "^0.20.3",
-    "all-contributors-cli": "6.7.0",
     "autoprefixer": "^9.6.0",
-    "commitizen": "3.0.7",
-    "cz-conventional-changelog": "2.1.0",
     "docz": "1.2.0",
     "docz-core": "1.2.0",
     "docz-plugin-css": "0.11.0",
     "docz-theme-default": "1.2.0",
     "lodash.clonedeep": "^4.5.0",
-    "react-powerplug": "1.0.0",
-    "semantic-release": "15.13.x"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "react-powerplug": "1.0.0"
   }
 }
