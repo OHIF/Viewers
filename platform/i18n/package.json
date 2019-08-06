@@ -1,7 +1,7 @@
 {
   "name": "@ohif/i18n",
   "version": "0.2.3-alpha.0",
-  "description": "OHIF extension for internationalization",
+  "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
@@ -12,7 +12,8 @@
     "npm": ">=5"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
@@ -20,9 +21,11 @@
   "scripts": {
     "test:unit": "echo 'platform/i18n: missing unit tests'",
     "test:unit:ci": "echo 'platform/i18n: missing unit tests'",
-    "build": "rollup -c",
-    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
-    "prepublishOnly": "npm run build",
+    "dev": "webpack --config config/webpack.prod.js -w -d",
+    "dev:i18n": "yarn run dev",
+    "prepublishOnly": "yarn run build",
+    "build": "webpack --config config/webpack.prod.js -d",
+    "build:package": "yarn run build",
     "pullTranslations": "./pullTranslations.sh"
   },
   "peerDependencies": {
