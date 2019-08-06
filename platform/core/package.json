@@ -1,8 +1,8 @@
 {
   "name": "@ohif/core",
   "version": "0.11.1-alpha.0",
-  "description": "Useful functions and classes for building web-based medical imaging applications",
-  "author": "OHIF Contributors",
+  "description": "Generic business logic for web-based medical imaging applications",
+  "author": "OHIF Core Team",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
@@ -16,14 +16,15 @@
     "npm": ">=5"
   },
   "scripts": {
+    "start": "yarn run dev",
+    "dev": "jest --watch",
+    "dev:core": "yarn run dev",
     "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "build": "rollup -c",
-    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
-    "dev": "jest --watch",
-    "start": "rollup -c -w",
+    "build": "webpack --config config/webpack.prod.js -d",
+    "build:package": "yarn run build",
     "lint": "eslint -c .eslintrc --fix src && prettier --single-quote --write src/**/*.{js,jsx,json,css}",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn run build"
   },
   "peerDependencies": {
     "cornerstone-core": "^2.2.8",
@@ -41,44 +42,8 @@
     "mousetrap": "^1.6.3",
     "validate.js": "^0.12.0"
   },
-  "devDependencies": {
-    "@svgr/rollup": "^4.1.0",
-    "babel-eslint": "10.0.1",
-    "babel-jest": "^24.7.1",
-    "commitizen": "3.1.x",
-    "cross-env": "^5.2.0",
-    "cz-conventional-changelog": "2.1.x",
-    "eslint": "5.13.0",
-    "eslint-config-prettier": "^4.3.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "husky": "^1.2.1",
-    "jest": "^24.7.1",
-    "jest-junit": "^6.3.0",
-    "lint-staged": "^8.1.0",
-    "prettier": "^1.15.3",
-    "redux-testkit": "^1.0.6",
-    "rollup": "^1.1.2",
-    "rollup-plugin-babel": "^4.1.0",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-peer-deps-external": "^2.2.0",
-    "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-url": "^2.1.0",
-    "semantic-release": "15.13.x",
-    "stylelint": "^9.9.0",
-    "stylelint-config-recommended": "^2.1.0",
-    "stylus": "^0.54.5"
-  },
   "files": [
-    "dist"
-  ],
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+    "dist",
+    "README.md"
+  ]
 }

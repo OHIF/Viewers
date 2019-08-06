@@ -1,20 +1,15 @@
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <div align="center">
-  <h1>ohif-core</h1>
-  <p><strong>ohif-core</strong> is a collection of useful functions and classes for building web-based medical imaging applications. This library helps power OHIF's <a href="https://github.com/OHIF/Viewers">zero-footprint DICOM viewer</a>.</p>
+  <h1>@ohif/core</h1>
+  <p><strong>@ohif/core</strong> is a collection of useful functions and classes for building web-based medical imaging applications. This library helps power OHIF's <a href="https://github.com/OHIF/Viewers">zero-footprint DICOM viewer</a>.</p>
 </div>
 
 <hr />
 
-[![CircleCI][circleci-image]][circleci-url]
-[![codecov][codecov-image]][codecov-url]
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
-[![code style: prettier][prettier-image]][prettier-url]
-[![semantic-release][semantic-image]][semantic-url]
-
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
 [![MIT License][license-image]][license-url]
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
@@ -53,10 +48,10 @@ implementation][react-viewer].
 
 ```
 // with npm
-npm i ohif-core --save-exact
+npm i @ohif/core --save-exact
 
 // with yarn
-yarn add ohif-core --exact
+yarn add @ohif/core --exact
 ```
 
 ### Usage
@@ -105,31 +100,6 @@ your tests, reporting the results to your terminal. Make a pull request with
 your changes to `master`, and a core team member will review your work. If you
 have any questions, please don't hesitate to reach out via a GitHub issue.
 
-## Issues
-
-_Looking to contribute? Look for the [Good First Issue][good-first-issue]
-label._
-
-### 🐛 Bugs
-
-Please file an issue for bugs, missing documentation, or unexpected behavior.
-
-[**See Bugs**][bugs]
-
-### 💡 Feature Requests
-
-Please file an issue to suggest new features. Vote on feature requests by adding
-a 👍. This helps maintainers prioritize what to work on.
-
-[**See Feature Requests**][requests-feature]
-
-### ❓ Questions
-
-For questions related to using the library, please visit our support community,
-or file an issue on GitHub.
-
-[Google Group][google-group]
-
 ## Contributors
 
 Thanks goes to these wonderful people
@@ -155,27 +125,13 @@ Links:
 
 <!-- prettier-ignore-start -->
 <!-- ROW -->
-[all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/ohif-core/blob/master/CONTRIBUTING.md
-[circleci-image]: https://circleci.com/gh/OHIF/ohif-core.svg?style=svg
-[circleci-url]: https://circleci.com/gh/OHIF/ohif-core
-[codecov-image]: https://codecov.io/gh/OHIF/ohif-core/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/OHIF/ohif-core
-[prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
-[prettier-url]: https://github.com/prettier/prettier
-[semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
-[semantic-url]: https://github.com/semantic-release/semantic-release
-<!-- ROW -->
 [npm-url]: https://npmjs.org/package/ohif-core
 [npm-downloads-image]: https://img.shields.io/npm/dm/ohif-core.svg?style=flat-square
 [npm-version-image]: https://img.shields.io/npm/v/ohif-core.svg?style=flat-square
+[all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
+[contributing-url]: https://github.com/OHIF/ohif-core/blob/master/CONTRIBUTING.md
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- Misc. -->
 [react-viewer]: https://github.com/OHIF/Viewers/tree/react
-<!-- Issue Boilerplate -->
-[bugs]: https://github.com/OHIF/ohif-core/labels/bug
-[requests-feature]: https://github.com/OHIF/ohif-core/labels/enhancement
-[good-first-issue]: https://github.com/OHIF/ohif-core/labels/good%20first%20issue
-[google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform
 <!-- prettier-ignore-end -->
