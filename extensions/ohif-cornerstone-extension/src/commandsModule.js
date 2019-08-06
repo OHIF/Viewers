@@ -161,6 +161,19 @@ const actions = {
     );
 
     scroll(enabledElement, -1);
+  },
+  toggleReferenceLines: ({ viewports, toolName }) => {
+
+    const tool = cornerstoneTools[`${toolName}Tool`];
+    cornerstoneTools.addTool(tool)
+    cornerstoneTools.setToolEnabled(toolName);
+
+    const enabledElement = _getActiveViewportEnabledElement(
+      viewports.viewportSpecificData,
+      viewports.activeViewportIndex
+    );
+
+    scroll(enabledElement, -1);
   }
 };
 
