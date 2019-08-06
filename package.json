@@ -13,11 +13,8 @@
   "scripts": {
     "cm": "npx git-cz",
     "dev": ".scripts/dev.sh",
-    "dev:core": "",
-    "dev:ui": "",
-    "build": "",
+    "build": "lerna run build:viewer",
     "build:package": "lerna run build:package --parallel",
-    "build:pwa:ci": "",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel",
     "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",

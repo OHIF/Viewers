@@ -16,7 +16,6 @@
   },
   "proxy": "http://localhost:8042",
   "scripts": {
-    "build:package": "webpack --config config/webpack.prod.js",
     "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
     "dev": "yarn run preBuild && react-scripts start",
@@ -34,6 +33,7 @@
     "cy": "cypress open",
     "cy:run": "cypress run",
     "cy:run:ci": "yarn run cy:run -- --record",
+    "build:viewer": "webpack --config config/webpack.prod.js",
     "dev:viewer": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d"
   },
   "resolutions": {

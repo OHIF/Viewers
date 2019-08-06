@@ -1,4 +1,6 @@
 #!/bin/bash
+# https://github.com/shelljs/shelljs
+# https://github.com/shelljs/shelljs#exclude-options
 PROJECT=$1
 
 if [ -z "$PROJECT" ]
