@@ -14,3 +14,5 @@ yarn add --dev -W package-name
 - Patch status for PRs (we care about threshold only)
   - Allows us to use multiproject test runner
 - Flags per project for merged coverage; easier to break down coverage per project
+- Remove all-contributors bot; install CLI per project and add per project commands
+-
