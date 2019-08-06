@@ -12,7 +12,10 @@
   },
   "scripts": {
     "cm": "npx git-cz",
-    "start": "lerna run lerna:start --parallel",
+    "dev": ".scripts/dev.sh",
+    "dev:core": "",
+    "dev:ui": "",
+    "build": "",
     "build:package": "lerna run build:package --parallel",
     "build:pwa:ci": "",
     "test:unit": "jest --collectCoverage",
