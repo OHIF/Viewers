@@ -18,9 +18,6 @@
   "scripts": {
     "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "dev": "yarn run preBuild && react-scripts start",
-    "dev:debug": "react-scripts start",
-    "build:web": "yarn run preBuild && react-scripts --max_old_space_size=4096 build",
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
     "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
     "start": "yarn run dev",
