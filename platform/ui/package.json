@@ -20,9 +20,9 @@
   "scripts": {
     "dev": "docz dev",
     "docs": "docz build",
-    "build:package": "webpack --config config/webpack.prod.js -d",
     "test:unit": "jest --watch",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests",
+    "build:package": "webpack --config config/webpack.prod.js -d",
     "dev:ui": "yarn run dev"
   },
   "peerDependencies": {

@@ -1,9 +1,9 @@
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <div align="center">
-  <h1>react-viewerbase</h1>
+  <h1>@ohif/ui</h1>
 
-  <p><strong>React Viewerbase is a collection of components and utilities</strong> that power OHIF's <a href="https://github.com/OHIF/Viewers">zero-footprint DICOM viewer</a>.</p>
+  <p><strong>@ohif/ui</strong> is a collection of components and utilities that power OHIF's <a href="https://github.com/OHIF/Viewers">zero-footprint DICOM viewer</a>.</p>
 </div>
 
 <div align="center">
@@ -14,13 +14,9 @@
 
 <hr />
 
-[![CircleCI][circleci-image]][circleci-url]
-[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
-[![code style: prettier][prettier-image]][prettier-url]
-[![semantic-release][semantic-image]][semantic-url]
-
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
 [![MIT License][license-image]][license-url]
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
@@ -44,17 +40,17 @@ For full installation instructions, be sure to check out our
 
 ```bash
 // with npm
-npm i react-viewerbase --save-exact
+npm i @ohif/ui --save-exact
 
 // with yarn
-yarn add react-viewerbase --exact
+yarn add @ohif/ui --exact
 ```
 
 ## Usage
 
 ```jsx
-import React, { Component } from 'react';
-import { LayoutButton } from 'react-viewerbase';
+import React, { Component } from "react";
+import { LayoutButton } from "@ohif/ui";
 
 class Example extends Component {
   constructor(props) {
@@ -62,10 +58,10 @@ class Example extends Component {
 
     this.state = {
       selectedCell: {
-        className: 'hover',
+        className: "hover",
         col: 1,
-        row: 1,
-      },
+        row: 1
+      }
     };
   }
 
@@ -80,20 +76,21 @@ class Example extends Component {
 }
 ```
 
-## Running Locally
+## Developing Locally
 
 _Restore dependencies after cloning:_
 
-1. `cd react-viewerbase`
-2. `yarn install`
+```bash
+# Restore workspace dependencies (from repository root)
+yarn install
 
-_Develop w/ Hot Reloading:_
+# From project root
+yarn run dev:ui
 
-`yarn dev`
+# OR from this project's directory
+yarn run dev
 
-_Build for Production:_
-
-`yarn build`
+```
 
 ## Contributors ✨
 
@@ -110,31 +107,6 @@ This project follows the
 [all-contributors](https://github.com/all-contributors/all-contributors)
 specification. Contributions of any kind welcome!
 
-## Issues
-
-_Looking to contribute? Look for the [Good First Issue][good-first-issue]
-label._
-
-### 🐛 Bugs
-
-Please file an issue for bugs, missing documentation, or unexpected behavior.
-
-[**See Bugs**][bugs]
-
-### 💡 Feature Requests
-
-Please file an issue to suggest new features. Vote on feature requests by adding
-a 👍. This helps maintainers prioritize what to work on.
-
-[**See Feature Requests**][requests-feature]
-
-### ❓ Questions
-
-For questions related to using the library, please visit our support community,
-or file an issue on GitHub.
-
-[Google Group][google-group]
-
 ## License
 
 MIT © [OHIF](https://github.com/OHIF)
@@ -146,20 +118,9 @@ Links:
 <!-- prettier-ignore-start -->
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
 [contributing-url]: https://github.com/OHIF/react-viewerbase/blob/master/CONTRIBUTING.md
-[circleci-image]: https://circleci.com/gh/OHIF/react-viewerbase.svg?style=svg
-[circleci-url]: https://circleci.com/gh/OHIF/react-viewerbase
-[prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
-[prettier-url]: https://github.com/prettier/prettier
 [npm-url]: https://npmjs.org/package/react-viewerbase
 [npm-downloads-image]: https://img.shields.io/npm/dm/react-viewerbase.svg?style=flat-square
 [npm-version-image]: https://img.shields.io/npm/v/react-viewerbase.svg?style=flat-square
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
-[semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
-[semantic-url]: https://github.com/semantic-release/semantic-release
-<!-- -->
-[bugs]: https://github.com/OHIF/react-viewerbase/labels/bug
-[requests-feature]: https://github.com/OHIF/react-viewerbase/labels/enhancement
-[good-first-issue]: https://github.com/OHIF/react-viewerbase/labels/good%20first%20issue
-[google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform
 <!-- prettier-ignore-end -->
