@@ -122,12 +122,13 @@ These commands are available from the root directory. Each project directory als
 
 | Yarn Commands        | Description                                                   |
 | -------------------- | ------------------------------------------------------------- |
-| `dev`                | Default development experience for Viewer package             |
+| **Develop**          |                                                               |
+| `dev` or `start`     | Default development experience for Viewer                     |
 | `dev:<package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
+| `test:unit`          | Jest multi-project test runner; overall coverage              |
+| **Deploy**           |                                                               |
 | `build`*             | Builds production output for our PWA Viewer                   |
 | `build:package`*     | Builds commonjs bundles for all projects                      |
-| `test:unit`          | Jest multi-project test runner; overall coverage              |
-| `start`              | Alias for `dev`                                               |
 
 
 \* - For more information on our different builds, check out our [Deploy Docs][deployment-docs]
@@ -254,14 +255,14 @@ MIT © [OHIF](https://github.com/OHIF)
 [configuration-url]: https://docs.ohif.org/essentials/configuration.html
 [extensions-url]: https://docs.ohif.org/advanced/extensions.html
 <!-- Platform -->
-[platform-core]: https://google.com
-[platform-i18n]: https://google.com
-[platform-ui]: https://google.com
-[platform-viewer]: https://google.com
+[platform-core]: platform/core/README.md
+[platform-i18n]: platform/i18n/README.md
+[platform-ui]: platform/ui/README.md
+[platform-viewer]: platform/viewer/README.md
 <!-- Extensions -->
-[extension-cornerstone]: https://google.com
-[extension-dicom-html]: https://google.com
-[extension-dicom-microscopy]: https://google.com
-[extension-dicom-pdf]: https://google.com
-[extension-vtk]: https://google.com
+[extension-cornerstone]: extensions/cornerstone/README.md
+[extension-dicom-html]: extensions/dicom-html/README.md
+[extension-dicom-microscopy]: extensions/dicom-microscopy/README.md
+[extension-dicom-pdf]: extensions/dicom-pdf/README.md
+[extension-vtk]: extensions/vtk/README.md
 <!-- prettier-ignore-end -->
