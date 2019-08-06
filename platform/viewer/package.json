@@ -59,7 +59,7 @@
     "@ohif/extension-dicom-pdf": "^0.0.8-alpha.0",
     "@ohif/extension-vtk": "^0.1.4-alpha.0",
     "@ohif/i18n": "^0.2.3-alpha.0",
-    "@ohif/ui": "^0.2.18",
+    "@ohif/ui": "^0.2.18-alpha.0",
     "@tanem/react-nprogress": "^1.1.25",
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.2.8",

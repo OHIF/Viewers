@@ -1,8 +1,8 @@
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <div align="center">
-  <h1>ohif-viewer</h1>
-  <p><strong>ohif-viewer</strong> is a zero-footprint medical image viewer provided by the <a href="http://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
+  <h1>@ohif/viewer</h1>
+  <p><strong>@ohif/viewer</strong> is a zero-footprint medical image viewer provided by the <a href="http://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
 </div>
 
 
@@ -19,15 +19,10 @@
 
 <hr />
 
-[![CircleCI][circleci-image]][circleci-url]
-[![codecov][codecov-image]][codecov-url]
-[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors)
-[![code style: prettier][prettier-image]][prettier-url]
-[![semantic-release][semantic-image]][semantic-url]
-
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
 [![Pulls][docker-pulls-img]][docker-image-url]
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors)
 [![MIT License][license-image]][license-url]
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
@@ -162,31 +157,6 @@ your tests, reporting the results to your terminal. Make a pull request with
 your changes to `master`, and a core team member will review your work. If you
 have any questions, please don't hesitate to reach out via a GitHub issue.
 
-## Issues
-
-_Looking to contribute? Look for the [Good First Issue][good-first-issue]
-label._
-
-### 🐛 Bugs
-
-Please file an issue for bugs, missing documentation, or unexpected behavior.
-
-[**See Bugs**][bugs]
-
-### 💡 Feature Requests
-
-Please file an issue to suggest new features. Vote on feature requests by adding
-a 👍. This helps maintainers prioritize what to work on.
-
-[**See Feature Requests**][requests-feature]
-
-### ❓ Questions
-
-For questions related to using the library, please visit our support community,
-or file an issue on GitHub.
-
-[Google Group][google-group]
-
 ## Roadmap
 
 If you want to know what's planned for the very near future,
@@ -232,50 +202,18 @@ specification. Contributions of any kind welcome!
 
 MIT © [OHIF](https://github.com/OHIF)
 
-## Acknowledgments
-
-To acknowledge the OHIF Viewer in an academic publication, please cite
-
-> _LesionTracker: Extensible Open-Source Zero-Footprint Web Viewer for Cancer
-> Imaging Research and Clinical Trials_
->
-> Trinity Urban, Erik Ziegler, Rob Lewis, Chris Hafey, Cheryl Sadow, Annick D.
-> Van den Abbeele and Gordon J. Harris
->
-> _Cancer Research_, November 1 2017 (77) (21) e119-e122 DOI:
-> [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
-
-**Note:** If you use or find this repository helpful, please take the time to
-star this repository on Github. This is an easy way for us to assess adoption
-and it can help us obtain future funding for the project.
-
-This work is supported primarily by the National Institutes of Health, National
-Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
-under a
-[grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
-
 <!--
 Links:
 -->
 
 <!-- prettier-ignore-start -->
-<!-- ROW -->
-[all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
-[circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
-[circleci-url]: https://circleci.com/gh/OHIF/Viewers
-[codecov-image]: https://codecov.io/gh/OHIF/Viewers/branch/react/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/OHIF/Viewers/branch/react
-[prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
-[prettier-url]: https://github.com/prettier/prettier
-[semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
-[semantic-url]: https://github.com/semantic-release/semantic-release
-<!-- ROW -->
 [npm-url]: https://npmjs.org/package/ohif-viewer
 [npm-downloads-image]: https://img.shields.io/npm/dm/ohif-viewer.svg?style=flat-square
 [npm-version-image]: https://img.shields.io/npm/v/ohif-viewer.svg?style=flat-square
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
+[all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
+[contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- DOCS -->
