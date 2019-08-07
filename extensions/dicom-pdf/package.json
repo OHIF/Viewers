@@ -19,9 +19,11 @@
     "README.md"
   ],
   "scripts": {
-    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
+    "dev": "webpack --config config/webpack.prod.js -w -d",
+    "build": "webpack --config config/webpack.prod.js -d",
+    "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "start": "rollup -c -w"
+    "start": "yarn run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^0.11.1-alpha.0",
@@ -35,5 +37,5 @@
     "classnames": "^2.2.6",
     "lodash.isequal": "^4.5.0"
   },
-  "gitHead": "d9d9aa1728479153f5b5050b385073390ed32a0a"
+  "gitHead": "23372fbfbdd8ddaf39bebc5e9d7784e943f93f23"
 }
