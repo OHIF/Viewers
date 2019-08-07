@@ -8,13 +8,19 @@
   "main": "dist/index.umd.js",
   "module": "src/index.js",
   "sideEffects": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
     "build": "webpack --progress --colors --mode production",
-    "lerna:build": "webpack --watch --progress --colors --mode development"
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "dev": "webpack --watch --progress --colors --mode development",
+    "start": "yarn run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^0.11.1-alpha.0",
@@ -56,8 +62,5 @@
   "files": [
     "dist",
     "README.md"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+  ]
 }

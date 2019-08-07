@@ -7,28 +7,28 @@
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
-    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
-    "prepublishOnly": "npm run build",
-    "start": "rollup -c -w"
+    "build": "webpack --config config/webpack.prod.js -d",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "dev": "webpack --config config/webpack.prod.js -w -d",
+    "start": "yarn run dev"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "peerDependencies": {
     "@ohif/core": "^0.11.1-alpha.0",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
-  },
-  "devDependencies": {
-    "gh-pages": "^2.0.1"
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",

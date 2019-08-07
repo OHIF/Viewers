@@ -7,10 +7,17 @@
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
   "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "lerna:build": "webpack --config config/webpack.prod.js -w -d",
     "prepublishOnly": "yarn run build",
@@ -27,15 +34,5 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "lodash.isequal": "^4.5.0"
-  },
-  "devDependencies": {
-    "gh-pages": "^2.0.1",
-    "lodash.clonedeep": "^4.5.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
   }
 }

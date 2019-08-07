@@ -19,10 +19,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rollup -c",
-    "lerna:build": "webpack --config config/webpack.prod.js -w -d",
+    "build": "webpack --config config/webpack.prod.js -d",
+    "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "start": "rollup -c -w"
+    "dev": "webpack --config config/webpack.prod.js -w -d",
+    "start": "yarn run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^0.11.1-alpha.0",
