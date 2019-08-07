@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
 
+//
 const SRC_DIR = path.join(__dirname, '../src');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -64,16 +65,16 @@ module.exports = (env, argv) => {
           ],
         },
         /**
-        *
-        */
+         *
+         */
         {
           test: /\.glsl$/i,
           include: /vtk\.js[\/\\]Sources/,
           loader: 'shader-loader',
         },
         /**
-        *
-        */
+         *
+         */
         {
           test: /\.worker\.js$/,
           include: /vtk\.js[\/\\]Sources/,
