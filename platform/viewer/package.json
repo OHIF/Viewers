@@ -101,5 +101,6 @@
     "lodash.clonedeep": "4.5.0",
     "semantic-release": "15.13.x",
     "start-server-and-test": "^1.9.1"
-  }
+  },
+  "gitHead": "d9d9aa1728479153f5b5050b385073390ed32a0a"
 }

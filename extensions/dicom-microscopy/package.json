@@ -34,5 +34,6 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "dicom-microscopy-viewer": "^0.4.3"
-  }
+  },
+  "gitHead": "d9d9aa1728479153f5b5050b385073390ed32a0a"
 }
