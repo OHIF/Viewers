@@ -1,12 +1,12 @@
-import { LayoutButton } from 'react-viewerbase';
-import OHIF from 'ohif-core';
-import { connect } from 'react-redux';
+import { LayoutButton } from "react-viewerbase";
+import OHIF from "@ohif/core";
+import { connect } from "react-redux";
 
 const { setLayout } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
   return {
-    currentLayout: state.viewports.layout,
+    currentLayout: state.viewports.layout
   };
 };
 
@@ -21,15 +21,15 @@ const mapDispatchToProps = dispatch => {
       for (let i = 0; i < numViewports; i++) {
         viewports.push({
           height: `${100 / rows}%`,
-          width: `${100 / columns}%`,
+          width: `${100 / columns}%`
         });
       }
       const layout = {
-        viewports,
+        viewports
       };
 
       dispatch(setLayout(layout));
-    },
+    }
   };
 };
 

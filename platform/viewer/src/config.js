@@ -1,12 +1,12 @@
-import OHIF from 'ohif-core';
-import cornerstone from 'cornerstone-core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-import dicomParser from 'dicom-parser';
-import version from './version.js';
+import OHIF from "@ohif/core";
+import cornerstone from "cornerstone-core";
+import cornerstoneWADOImageLoader from "cornerstone-wado-image-loader";
+import dicomParser from "dicom-parser";
+import version from "./version.js";
 
 window.info = {
   version,
-  homepage: `${process.env.PUBLIC_URL}`,
+  homepage: `${process.env.PUBLIC_URL}`
 };
 
 // For debugging
@@ -33,7 +33,7 @@ cornerstoneWADOImageLoader.configure({
     const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
     if (headers.Authorization) {
-      xhr.setRequestHeader('Authorization', headers.Authorization);
+      xhr.setRequestHeader("Authorization", headers.Authorization);
     }
-  },
+  }
 });

@@ -1,12 +1,12 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import OHIF from 'ohif-core';
+import { Component } from "react";
+import PropTypes from "prop-types";
+import OHIF from "@ohif/core";
 
 class StudyLoadingMonitor extends Component {
   static propTypes = {
     studies: PropTypes.array.isRequired,
     setStudyLoadingProgress: PropTypes.func.isRequired,
-    clearStudyLoadingProgress: PropTypes.func.isRequired,
+    clearStudyLoadingProgress: PropTypes.func.isRequired
   };
 
   componentDidMount() {
@@ -20,7 +20,7 @@ class StudyLoadingMonitor extends Component {
       },
       _clearProgressById: progressId => {
         this.props.clearStudyLoadingProgress(progressId);
-      },
+      }
     };
 
     const { StudyLoadingListener } = OHIF.classes;

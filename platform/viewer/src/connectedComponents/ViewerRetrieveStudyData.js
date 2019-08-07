@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { metadata, studies, utils } from 'ohif-core';
+import React, { Component } from "react";
+import { metadata, studies, utils } from "@ohif/core";
 
-import ConnectedViewer from './ConnectedViewer.js';
-import PropTypes from 'prop-types';
-import { extensionManager } from './../App.js';
+import ConnectedViewer from "./ConnectedViewer.js";
+import PropTypes from "prop-types";
+import { extensionManager } from "./../App.js";
 
 const { OHIFStudyMetadata } = metadata;
 const { retrieveStudiesMetadata } = studies;
@@ -13,12 +13,12 @@ class ViewerRetrieveStudyData extends Component {
   static propTypes = {
     studyInstanceUids: PropTypes.array.isRequired,
     seriesInstanceUids: PropTypes.array,
-    server: PropTypes.object,
+    server: PropTypes.object
   };
 
   state = {
     studies: null,
-    error: null,
+    error: null
   };
 
   async componentDidMount() {
@@ -44,7 +44,7 @@ class ViewerRetrieveStudyData extends Component {
           study.studyInstanceUid
         );
         const sopClassHandlerModules =
-          extensionManager.modules['sopClassHandlerModule'];
+          extensionManager.modules["sopClassHandlerModule"];
 
         study.displaySets =
           study.displaySets ||
@@ -60,11 +60,11 @@ class ViewerRetrieveStudyData extends Component {
       });
 
       this.setState({
-        studies: updatedStudies,
+        studies: updatedStudies
       });
     } catch (err) {
       this.setState({
-        error: true,
+        error: true
       });
 
       // TODO: Handle gracefully instead of throwing?

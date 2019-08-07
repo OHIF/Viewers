@@ -1,10 +1,10 @@
-import OHIF from 'ohif-core';
-import updateTableWithNewMeasurementData from './lib/updateTableWithNewMeasurementData';
+import OHIF from "@ohif/core";
+import updateTableWithNewMeasurementData from "./lib/updateTableWithNewMeasurementData";
 
 function getToolLabellingFlowCallback(store) {
   const setLabellingFlowDataAction = labellingFlowData => ({
-    type: 'SET_LABELLING_FLOW_DATA',
-    labellingFlowData,
+    type: "SET_LABELLING_FLOW_DATA",
+    labellingFlowData
   });
 
   const setLabellingFlowData = labellingFlowData => {
@@ -47,7 +47,7 @@ function getToolLabellingFlowCallback(store) {
       editResponse: options.editResponse,
       editDescriptionOnDialog: options.editDescriptionOnDialog,
       labellingDoneCallback,
-      updateLabelling,
+      updateLabelling
     };
 
     setLabellingFlowData(labellingFlowData);
@@ -55,14 +55,14 @@ function getToolLabellingFlowCallback(store) {
 }
 
 const resetLabellingAndContextMenuAction = state => ({
-  type: 'RESET_LABELLING_AND_CONTEXT_MENU',
-  state,
+  type: "RESET_LABELLING_AND_CONTEXT_MENU",
+  state
 });
 
 const setToolContextMenuDataAction = (viewportIndex, toolContextMenuData) => ({
-  type: 'SET_TOOL_CONTEXT_MENU_DATA',
+  type: "SET_TOOL_CONTEXT_MENU_DATA",
   viewportIndex,
-  toolContextMenuData,
+  toolContextMenuData
 });
 
 function getOnRightClickCallback(store) {
@@ -76,7 +76,7 @@ function getOnRightClickCallback(store) {
   const getOnCloseCallback = viewportIndex => {
     return function onClose() {
       const toolContextMenuData = {
-        visible: false,
+        visible: false
       };
 
       store.dispatch(
@@ -92,7 +92,7 @@ function getOnRightClickCallback(store) {
     const toolContextMenuData = {
       eventData,
       isTouchEvent: false,
-      onClose: getOnCloseCallback(viewportIndex),
+      onClose: getOnCloseCallback(viewportIndex)
     };
 
     setToolContextMenuData(viewportIndex, toolContextMenuData);
@@ -110,7 +110,7 @@ function getOnTouchPressCallback(store) {
   const getOnCloseCallback = viewportIndex => {
     return function onClose() {
       const toolContextMenuData = {
-        visible: false,
+        visible: false
       };
 
       store.dispatch(
@@ -126,7 +126,7 @@ function getOnTouchPressCallback(store) {
     const toolContextMenuData = {
       eventData,
       isTouchEvent: true,
-      onClose: getOnCloseCallback(viewportIndex),
+      onClose: getOnCloseCallback(viewportIndex)
     };
 
     setToolContextMenuData(viewportIndex, toolContextMenuData);
@@ -142,78 +142,78 @@ function getResetLabellingAndContextMenu(store) {
 export default function setupTools(store) {
   const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
   const availableTools = [
-    { name: 'Pan', mouseButtonMasks: [1, 4] },
-    { name: 'Zoom', mouseButtonMasks: [1, 2] },
-    { name: 'Wwwc', mouseButtonMasks: [1] },
+    { name: "Pan", mouseButtonMasks: [1, 4] },
+    { name: "Zoom", mouseButtonMasks: [1, 2] },
+    { name: "Wwwc", mouseButtonMasks: [1] },
     {
-      name: 'Bidirectional',
+      name: "Bidirectional",
       props: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
     {
-      name: 'Length',
+      name: "Length",
       props: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
     {
-      name: 'Angle',
+      name: "Angle",
       props: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
-    { name: 'StackScroll', mouseButtonMasks: [1] },
-    { name: 'Brush', mouseButtonMasks: [1] },
+    { name: "StackScroll", mouseButtonMasks: [1] },
+    { name: "Brush", mouseButtonMasks: [1] },
     {
-      name: 'FreehandMouse',
+      name: "FreehandMouse",
       configuration: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
     {
-      name: 'EllipticalRoi',
+      name: "EllipticalRoi",
       props: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
     {
-      name: 'CircleRoi',
+      name: "CircleRoi",
       props: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
     {
-      name: 'RectangleRoi',
+      name: "RectangleRoi",
       props: {
         configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
+          getMeasurementLocationCallback: toolLabellingFlowCallback
+        }
       },
-      mouseButtonMasks: [1],
+      mouseButtonMasks: [1]
     },
-    { name: 'PanMultiTouch' },
-    { name: 'ZoomTouchPinch' },
-    { name: 'StackScrollMouseWheel' },
-    { name: 'StackScrollMultiTouch' },
+    { name: "PanMultiTouch" },
+    { name: "ZoomTouchPinch" },
+    { name: "StackScrollMouseWheel" },
+    { name: "StackScrollMultiTouch" }
   ];
 
   const onRightClick = getOnRightClickCallback(store);
@@ -221,13 +221,13 @@ export default function setupTools(store) {
   const onNewImage = getResetLabellingAndContextMenu(store);
   const onMouseClick = getResetLabellingAndContextMenu(store);
   const onTouchStart = getResetLabellingAndContextMenu(store);
-  const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
+  const toolAction = OHIF.redux.actions.setExtensionData("cornerstone", {
     availableTools,
     onNewImage,
     onRightClick,
     onTouchPress,
     onTouchStart,
-    onMouseClick,
+    onMouseClick
   });
 
   store.dispatch(toolAction);

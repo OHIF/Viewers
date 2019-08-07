@@ -1,7 +1,7 @@
-import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF from 'ohif-core';
-import { connect } from 'react-redux';
-import throttle from 'lodash.throttle';
+import CornerstoneViewport from "react-cornerstone-viewport";
+import OHIF from "@ohif/core";
+import { connect } from "react-redux";
+import throttle from "lodash.throttle";
 
 const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
 
@@ -37,7 +37,7 @@ const mapStateToProps = (state, ownProps) => {
     enableStackPrefetch: isActive,
     //stack: viewportSpecificData.stack,
     cineToolData: viewportSpecificData.cine,
-    viewport: viewportSpecificData.viewport,
+    viewport: viewportSpecificData.viewport
   };
 };
 
@@ -64,8 +64,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(
         setViewportSpecificData(viewportIndex, {
           // TODO: Hack to make sure our plugin info is available from the outset
-          plugin: 'cornerstone',
-          dom: enabledElement,
+          plugin: "cornerstone",
+          dom: enabledElement
         })
       );
     },
@@ -74,18 +74,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       const {
         onAdded,
         onRemoved,
-        onModified,
+        onModified
       } = OHIF.measurements.MeasurementHandlers;
       const actions = {
         added: onAdded,
         removed: onRemoved,
         modified: throttle(event => {
           return onModified(event);
-        }, 300),
+        }, 300)
       };
 
       return actions[action](event);
-    },
+    }
   };
 };
 

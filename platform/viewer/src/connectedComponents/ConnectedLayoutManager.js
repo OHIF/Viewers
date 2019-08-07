@@ -1,7 +1,7 @@
-import { LayoutManager } from 'react-viewerbase';
-import { MODULE_TYPES } from 'ohif-core';
-import { connect } from 'react-redux';
-import { extensionManager } from './../App.js';
+import { LayoutManager } from "react-viewerbase";
+import { MODULE_TYPES } from "@ohif/core";
+import { connect } from "react-redux";
+import { extensionManager } from "./../App.js";
 
 const mapStateToProps = state => {
   const availableViewportModules = {};
@@ -24,7 +24,7 @@ const mapStateToProps = state => {
     // TODO: rename `availableViewportModules`
     availablePlugins: availableViewportModules,
     // TODO: rename `defaultViewportModule`
-    defaultPlugin,
+    defaultPlugin
   };
 };
 

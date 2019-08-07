@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import OHIF from 'ohif-core';
-import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
+import ConnectedCornerstoneViewport from "./ConnectedCornerstoneViewport";
+import OHIF from "@ohif/core";
+import PropTypes from "prop-types";
+import cornerstone from "cornerstone-core";
+import handleSegmentationStorage from "./handleSegmentationStorage.js";
 
 const { StackManager } = OHIF.utils;
 
@@ -18,7 +18,7 @@ cornerstone.metaData.addProvider(
 StackManager.setMetadataProvider(metadataProvider);
 
 const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
+  SEGMENTATION_STORAGE: "1.2.840.10008.5.1.4.1.1.66.4"
 };
 
 const specialCaseHandlers = {};
@@ -28,11 +28,11 @@ specialCaseHandlers[
 
 class OHIFCornerstoneViewport extends Component {
   state = {
-    viewportData: null,
+    viewportData: null
   };
 
   static defaultProps = {
-    customProps: {},
+    customProps: {}
   };
 
   static propTypes = {
@@ -40,17 +40,17 @@ class OHIFCornerstoneViewport extends Component {
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
-    customProps: PropTypes.object,
+    customProps: PropTypes.object
   };
 
-  static id = 'OHIFCornerstoneViewport';
+  static id = "OHIFCornerstoneViewport";
 
   static init() {
-    console.log('OHIFCornerstoneViewport init()');
+    console.log("OHIFCornerstoneViewport init()");
   }
 
   static destroy() {
-    console.log('OHIFCornerstoneViewport destroy()');
+    console.log("OHIFCornerstoneViewport destroy()");
     StackManager.clearStacks();
   }
 
@@ -72,15 +72,15 @@ class OHIFCornerstoneViewport extends Component {
     frameIndex = 0
   ) {
     if (!studies || !studies.length) {
-      throw new Error('Studies not provided.');
+      throw new Error("Studies not provided.");
     }
 
     if (!studyInstanceUid) {
-      throw new Error('StudyInstanceUID not provided.');
+      throw new Error("StudyInstanceUID not provided.");
     }
 
     if (!displaySetInstanceUid) {
-      throw new Error('StudyInstanceUID not provided.');
+      throw new Error("StudyInstanceUID not provided.");
     }
 
     // Create shortcut to displaySet
@@ -89,7 +89,7 @@ class OHIFCornerstoneViewport extends Component {
     );
 
     if (!study) {
-      throw new Error('Study not found.');
+      throw new Error("Study not found.");
     }
 
     const displaySet = study.displaySets.find(set => {
@@ -97,7 +97,7 @@ class OHIFCornerstoneViewport extends Component {
     });
 
     if (!displaySet) {
-      throw new Error('Display Set not found.');
+      throw new Error("Display Set not found.");
     }
 
     // Get stack from Stack Manager
@@ -110,7 +110,7 @@ class OHIFCornerstoneViewport extends Component {
     if (sopInstanceUid) {
       const index = stack.imageIds.findIndex(imageId => {
         const sopCommonModule = cornerstone.metaData.get(
-          'sopCommonModule',
+          "sopCommonModule",
           imageId
         );
         if (!sopCommonModule) {
@@ -124,7 +124,7 @@ class OHIFCornerstoneViewport extends Component {
         stack.currentImageIdIndex = index;
       } else {
         console.warn(
-          'SOPInstanceUID provided was not found in specified DisplaySet'
+          "SOPInstanceUID provided was not found in specified DisplaySet"
         );
       }
     }
@@ -183,7 +183,7 @@ class OHIFCornerstoneViewport extends Component {
         viewportData = {
           studyInstanceUid,
           displaySetInstanceUid,
-          stack,
+          stack
         };
 
         break;
@@ -199,12 +199,12 @@ class OHIFCornerstoneViewport extends Component {
       displaySetInstanceUid,
       sopClassUids,
       sopInstanceUid,
-      frameIndex,
+      frameIndex
     } = displaySet;
 
     if (sopClassUids && sopClassUids.length > 1) {
       console.warn(
-        'More than one SOPClassUid in the same series is not yet supported.'
+        "More than one SOPClassUid in the same series is not yet supported."
       );
     }
 
@@ -219,7 +219,7 @@ class OHIFCornerstoneViewport extends Component {
       frameIndex
     ).then(viewportData => {
       this.setState({
-        viewportData,
+        viewportData
       });
     });
   }
@@ -250,7 +250,7 @@ class OHIFCornerstoneViewport extends Component {
       childrenWithProps = this.props.children.map((child, index) => {
         return React.cloneElement(child, {
           viewportIndex: this.props.viewportIndex,
-          key: index,
+          key: index
         });
       });
     }

@@ -1,4 +1,4 @@
-import { measurements, utils } from 'ohif-core';
+import { measurements, utils } from "@ohif/core";
 
 const { MeasurementApi } = measurements;
 const { studyMetadataManager } = utils;
@@ -82,7 +82,7 @@ export default function jumpToRowItem(
 
     const study = studyMetadataManager.get(data.studyInstanceUid);
     if (!study) {
-      throw new Error('Study not found.');
+      throw new Error("Study not found.");
     }
 
     const displaySet = study.findDisplaySet(displaySet => {
@@ -90,7 +90,7 @@ export default function jumpToRowItem(
     });
 
     if (!displaySet) {
-      throw new Error('Display set not found.');
+      throw new Error("Display set not found.");
     }
 
     displaySet.sopInstanceUid = data.sopInstanceUid;
@@ -100,12 +100,12 @@ export default function jumpToRowItem(
 
     viewportSpecificData.push({
       viewportIndex,
-      displaySet,
+      displaySet
     });
   });
 
   return {
     viewportSpecificData,
-    layout: [], // TODO: if we need to change layout, we should return this here
+    layout: [] // TODO: if we need to change layout, we should return this here
   };
 }

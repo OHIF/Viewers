@@ -62,13 +62,13 @@ Usage is dependent on the feature(s) you want to leverage. The bulk of
 _Example: retrieving study metadata from a server_
 
 ```js
-import { studies } from 'ohif-core'
+import { studies } from "@ohif/core";
 
 const studiesMetadata = await studies.retrieveStudiesMetadata(
   server, // Object
   studyInstanceUids, // Array
   seriesInstanceUids // Array (optional)
-)
+);
 ```
 
 ### Contributing
@@ -89,10 +89,10 @@ When creating tests, place the test file "next to" the file you're testing.
 
 ```js
 // File
-index.js
+index.js;
 
 // Test for file
-index.test.js
+index.test.js;
 ```
 
 As you add and modify code, `jest` will watch for uncommitted changes and run

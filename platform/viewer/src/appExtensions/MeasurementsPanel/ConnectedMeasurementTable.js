@@ -1,12 +1,12 @@
-import { connect } from 'react-redux';
-import { MeasurementTable } from 'react-viewerbase';
-import OHIF from 'ohif-core';
-import moment from 'moment';
-import cornerstone from 'cornerstone-core';
+import { connect } from "react-redux";
+import { MeasurementTable } from "react-viewerbase";
+import OHIF from "@ohif/core";
+import moment from "moment";
+import cornerstone from "cornerstone-core";
 
 //
-import jumpToRowItem from './jumpToRowItem.js';
-import getMeasurementLocationCallback from './../../lib/getMeasurementLocationCallback';
+import jumpToRowItem from "./jumpToRowItem.js";
+import getMeasurementLocationCallback from "./../../lib/getMeasurementLocationCallback";
 
 const { setViewportSpecificData } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;
@@ -30,7 +30,7 @@ function getAllTools() {
 
 function getMeasurementText(measurementData) {
   const { location, description } = measurementData;
-  let text = '...';
+  let text = "...";
   if (location) {
     text = location;
     if (description) {
@@ -50,7 +50,7 @@ function getDataForEachMeasurementNumber(
   measurementNumberList.forEach(measurement => {
     timepoints.forEach(timepoint => {
       const eachData = {
-        displayText: '...',
+        displayText: "..."
       };
       if (measurement.timepointId === timepoint.timepointId) {
         eachData.displayText = displayFunction(measurement);
@@ -71,7 +71,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
     return {
       groupName: toolGroup.name,
       groupId: toolGroup.id,
-      measurements: [],
+      measurements: []
     };
   });
 
@@ -81,7 +81,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
     const { displayFunction } = tool.options.measurementTable;
 
     // Group by measurementNumber so we can display then all in the same line
-    const groupedMeasurements = groupBy(toolMeasurements, 'measurementNumber');
+    const groupedMeasurements = groupBy(toolMeasurements, "measurementNumber");
 
     Object.keys(groupedMeasurements).forEach(groupedMeasurementsIndex => {
       const measurementNumberList =
@@ -90,7 +90,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
       const {
         measurementNumber,
         lesionNamingNumber,
-        toolType,
+        toolType
       } = measurementData;
       const measurementId = measurementData._id;
 
@@ -103,14 +103,14 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
         lesionNamingNumber,
         toolType,
         hasWarnings: false, //TODO
-        warningTitle: '', //TODO
+        warningTitle: "", //TODO
         isSplitLesion: false, //TODO
         warningList: [], //TODO
         data: getDataForEachMeasurementNumber(
           measurementNumberList,
           timepoints,
           displayFunction
-        ),
+        )
       };
 
       // find the group object for the tool
@@ -139,9 +139,9 @@ function convertTimepointsToTableData(timepoints) {
 
   return [
     {
-      label: 'Study date:',
-      date: moment(timepoints[0].latestDate).format('DD-MMM-YY'),
-    },
+      label: "Study date:",
+      date: moment(timepoints[0].latestDate).format("DD-MMM-YY")
+    }
   ];
 }
 
@@ -154,7 +154,7 @@ const mapStateToProps = state => {
       timepoints
     ),
     timepointManager: state.timepointManager,
-    viewports: state.viewports,
+    viewports: state.viewports
   };
 };
 
@@ -166,7 +166,7 @@ const mapDispatchToProps = dispatch => {
 
       const enabledElements = cornerstone.getEnabledElements();
       if (!enabledElements || enabledElements.length <= activeViewportIndex) {
-        OHIF.log.error('Failed to find the enabled element');
+        OHIF.log.error("Failed to find the enabled element");
         return;
       }
 
@@ -175,9 +175,9 @@ const mapDispatchToProps = dispatch => {
       const eventData = {
         event: {
           clientX: event.clientX,
-          clientY: event.clientY,
+          clientY: event.clientY
         },
-        element,
+        element
       };
 
       const { toolType, measurementId } = measurementData;
@@ -187,7 +187,7 @@ const mapDispatchToProps = dispatch => {
 
       const options = {
         skipAddLabelButton: true,
-        editLocation: true,
+        editLocation: true
       };
 
       // Clone the tool not to set empty location initially
@@ -200,7 +200,7 @@ const mapDispatchToProps = dispatch => {
 
       const enabledElements = cornerstone.getEnabledElements();
       if (!enabledElements || enabledElements.length <= activeViewportIndex) {
-        OHIF.log.error('Failed to find the enabled element');
+        OHIF.log.error("Failed to find the enabled element");
         return;
       }
 
@@ -209,9 +209,9 @@ const mapDispatchToProps = dispatch => {
       const eventData = {
         event: {
           clientX: event.clientX,
-          clientY: event.clientY,
+          clientY: event.clientY
         },
-        element,
+        element
       };
 
       const { toolType, measurementId } = measurementData;
@@ -220,7 +220,7 @@ const mapDispatchToProps = dispatch => {
       });
 
       const options = {
-        editDescriptionOnDialog: true,
+        editDescriptionOnDialog: true
       };
 
       getMeasurementLocationCallback(eventData, tool, options);
@@ -285,7 +285,7 @@ const mapDispatchToProps = dispatch => {
       //dispatch(setActiveMeasurement(measurementData.measurementId))
 
       // (later): Needs to set some property on state.extensions.cornerstone to synchronize viewport scrolling
-    },
+    }
   };
 };
 
@@ -307,7 +307,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       // TODO: childToolKey should come from the measurement table when it supports child tools
       const options = {
         invertViewportTimepointsOrder: false,
-        childToolKey: null,
+        childToolKey: null
       };
 
       propsFromDispatch.dispatchJumpToRowItem(
@@ -338,11 +338,11 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
           measurementData: {
             _id: measurementData.measurementId,
             lesionNamingNumber: measurementData.lesionNamingNumber,
-            measurementNumber: measurementData.measurementNumber,
-          },
-        },
+            measurementNumber: measurementData.measurementNumber
+          }
+        }
       });
-    },
+    }
   };
 };
 

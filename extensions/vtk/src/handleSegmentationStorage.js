@@ -1,7 +1,7 @@
-import * as dcmjs from 'dcmjs';
+import * as dcmjs from "dcmjs";
 
-import OHIF from 'ohif-core';
-import { api } from 'dicomweb-client';
+import OHIF from "@ohif/core";
+import { api } from "dicomweb-client";
 
 const { StackManager } = OHIF.utils;
 
@@ -57,14 +57,14 @@ function retrieveDicomData(
 ) {
   const config = {
     url: wadoRoot,
-    headers: DICOMWeb.getAuthorizationHeader(),
+    headers: DICOMWeb.getAuthorizationHeader()
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
   const options = {
     studyInstanceUID,
     seriesInstanceUID,
-    sopInstanceUID,
+    sopInstanceUID
   };
 
   return dicomWeb.retrieveInstance(options);
@@ -117,7 +117,7 @@ async function handleSegmentationStorage(
 
   if (displaySets.length > 1) {
     console.warn(
-      'More than one display set with the same seriesInstanceUid. This is not supported yet...'
+      "More than one display set with the same seriesInstanceUid. This is not supported yet..."
     );
   }
 
@@ -125,7 +125,7 @@ async function handleSegmentationStorage(
   const imageIds = referenceDisplaySet.images.map(image => image.getImageId());
 
   if (!results) {
-    throw new Error('Fractional segmentations are not supported');
+    throw new Error("Fractional segmentations are not supported");
   }
 
   const cachedStack = StackManager.findOrCreateStack(
@@ -137,13 +137,13 @@ async function handleSegmentationStorage(
 
   return {
     referenceDataObject,
-    labelmapDataObject,
+    labelmapDataObject
   };
 
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack,
+    stack
   };
 }
 

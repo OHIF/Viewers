@@ -1,26 +1,26 @@
-const path = require('path');
-const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
+const path = require("path");
+const webpack = require("webpack");
+const autoprefixer = require("autoprefixer");
 // const vtkHtmlRules = require('vtk.js/Utilities/config/dependency.js').webpack
 //   .core.rules;
 // Optional if you want to load *.css and *.module.css files
 // var cssRules = require('vtk.js/Utilities/config/dependency.js').webpack.css.rules;
-const SRC_DIR = path.join(__dirname, './src');
-const OUTPUT_DIR = path.join(__dirname, './dist');
+const SRC_DIR = path.join(__dirname, "./src");
+const OUTPUT_DIR = path.join(__dirname, "./dist");
 
 module.exports = {
-  mode: 'development',
+  mode: "development",
   entry: {
-    app: `${SRC_DIR}/index.js`,
+    app: `${SRC_DIR}/index.js`
   },
   context: SRC_DIR,
   // ~~~ MODE
   output: {
     path: OUTPUT_DIR,
-    library: 'ohifVtkExtension',
-    libraryTarget: 'umd',
-    filename: 'index.umd.js',
-    auxiliaryComment: 'Text VTK Extension Comment',
+    library: "ohifVtkExtension",
+    libraryTarget: "umd",
+    filename: "index.umd.js",
+    auxiliaryComment: "Text VTK Extension Comment"
   },
   stats: {
     colors: true,
@@ -31,43 +31,43 @@ module.exports = {
     chunkModules: true,
     modules: true,
     children: true,
-    warnings: true,
+    warnings: true
   },
   optimization: {
     minimize: false,
-    sideEffects: true,
+    sideEffects: true
   },
   // ~~~ END MODE
   resolve: {
     modules: [
-      path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, '../../node_modules'),
-      SRC_DIR,
+      path.resolve(__dirname, "node_modules"),
+      path.resolve(__dirname, "../../node_modules"),
+      SRC_DIR
     ],
-    extensions: ['.js', '.jsx', '.json', '*'],
-    symlinks: true,
+    extensions: [".js", ".jsx", ".json", "*"],
+    symlinks: true
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: [/node_modules/],
-        loader: 'babel-loader',
+        loader: "babel-loader",
         options: {
           // Find babel.config.js in monorepo root
           // https://babeljs.io/docs/en/options#rootmode
-          rootMode: 'upward',
+          rootMode: "upward",
           presets: [
             [
-              '@babel/preset-env',
+              "@babel/preset-env",
               {
                 // Do not transform ES6 modules to another format.
                 // Webpack will take care of that.
-                modules: false,
-              },
-            ],
-          ],
-        },
+                modules: false
+              }
+            ]
+          ]
+        }
       },
       /**
        *
@@ -76,15 +76,15 @@ module.exports = {
         test: /\.css$/,
         exclude: /\.module\.css$/,
         use: [
-          'style-loader',
-          'css-loader',
+          "style-loader",
+          "css-loader",
           {
-            loader: 'postcss-loader',
+            loader: "postcss-loader",
             options: {
-              plugins: () => [autoprefixer('last 2 version', 'ie >= 10')],
-            },
-          },
-        ],
+              plugins: () => [autoprefixer("last 2 version", "ie >= 10")]
+            }
+          }
+        ]
       },
       /**
        *
@@ -92,7 +92,7 @@ module.exports = {
       {
         test: /\.glsl$/i,
         include: /vtk\.js[\/\\]Sources/,
-        loader: 'shader-loader',
+        loader: "shader-loader"
       },
       /**
        *
@@ -102,13 +102,13 @@ module.exports = {
         include: /vtk\.js[\/\\]Sources/,
         use: [
           {
-            loader: 'worker-loader',
-            options: { inline: true, fallback: false },
-          },
-        ],
-      },
-    ],
-  },
+            loader: "worker-loader",
+            options: { inline: true, fallback: false }
+          }
+        ]
+      }
+    ]
+  }
   // externals: [
   //   {
   //     cornerstone: {
@@ -125,7 +125,7 @@ module.exports = {
   //     },
   //   },
   //   '@ohif/i18n',
-  //   'ohif-core',
+  //   '@ohif/core',
   //   'dcmjs',
   //   'react-viewerbase',
   //   'react', //: 'React',

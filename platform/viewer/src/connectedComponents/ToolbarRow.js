@@ -1,18 +1,18 @@
-import './ToolbarRow.css';
+import "./ToolbarRow.css";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   RoundedButtonGroup,
   ToolbarButton,
-  ExpandableToolMenu,
-} from 'react-viewerbase';
-import { commandsManager, extensionManager } from './../App.js';
+  ExpandableToolMenu
+} from "react-viewerbase";
+import { commandsManager, extensionManager } from "./../App.js";
 
-import ConnectedCineDialog from './ConnectedCineDialog';
-import ConnectedLayoutButton from './ConnectedLayoutButton';
-import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
-import { MODULE_TYPES } from 'ohif-core';
-import PropTypes from 'prop-types';
+import ConnectedCineDialog from "./ConnectedCineDialog";
+import ConnectedLayoutButton from "./ConnectedLayoutButton";
+import ConnectedPluginSwitch from "./ConnectedPluginSwitch.js";
+import { MODULE_TYPES } from "@ohif/core";
+import PropTypes from "prop-types";
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -23,7 +23,7 @@ class ToolbarRow extends Component {
     selectedLeftSidePanel: PropTypes.string.isRequired,
     selectedRightSidePanel: PropTypes.string.isRequired,
     handleSidePanelChange: PropTypes.func,
-    activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired
   };
 
   constructor(props) {
@@ -41,7 +41,7 @@ class ToolbarRow extends Component {
     this.state = {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
-      isCineDialogOpen: false,
+      isCineDialogOpen: false
     };
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
@@ -51,12 +51,12 @@ class ToolbarRow extends Component {
       left: [
         // TODO: This should come from extensions, instead of being baked in
         {
-          value: 'studies',
-          icon: 'th-large',
-          bottomLabel: 'Series',
-        },
+          value: "studies",
+          icon: "th-large",
+          bottomLabel: "Series"
+        }
       ],
-      right: [],
+      right: []
     };
 
     panelModules.forEach(panelExtension => {
@@ -74,9 +74,9 @@ class ToolbarRow extends Component {
           const menuOptionEntry = {
             value: menuOption.target,
             icon: menuOption.icon,
-            bottomLabel: menuOption.label,
+            bottomLabel: menuOption.label
           };
-          const from = menuOption.from || 'right';
+          const from = menuOption.from || "right";
 
           this.buttonGroups[from].push(menuOptionEntry);
         }
@@ -90,7 +90,7 @@ class ToolbarRow extends Component {
 
     if (activeContextsChanged) {
       this.setState({
-        toolbarButtons: _getVisibleToolbarButtons.call(this),
+        toolbarButtons: _getVisibleToolbarButtons.call(this)
       });
     }
   }
@@ -103,25 +103,25 @@ class ToolbarRow extends Component {
     );
 
     const cineDialogContainerStyle = {
-      display: this.state.isCineDialogOpen ? 'block' : 'none',
-      position: 'absolute',
-      top: '82px',
-      zIndex: 999,
+      display: this.state.isCineDialogOpen ? "block" : "none",
+      position: "absolute",
+      top: "82px",
+      zIndex: 999
     };
 
     const onPress = (side, value) => {
       this.props.handleSidePanelChange(side, value);
     };
-    const onPressLeft = onPress.bind(this, 'left');
-    const onPressRight = onPress.bind(this, 'right');
+    const onPressLeft = onPress.bind(this, "left");
+    const onPressRight = onPress.bind(this, "right");
 
     return (
       <>
         <div className="ToolbarRow">
-          <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
+          <div className="pull-left m-t-1 p-y-1" style={{ padding: "10px" }}>
             <RoundedButtonGroup
               options={this.buttonGroups.left}
-              value={this.props.selectedLeftSidePanel || ''}
+              value={this.props.selectedLeftSidePanel || ""}
               onValueChanged={onPressLeft}
             />
           </div>
@@ -130,12 +130,12 @@ class ToolbarRow extends Component {
           <ConnectedPluginSwitch />
           <div
             className="pull-right m-t-1 rm-x-1"
-            style={{ marginLeft: 'auto' }}
+            style={{ marginLeft: "auto" }}
           >
             {this.buttonGroups.right.length && (
               <RoundedButtonGroup
                 options={this.buttonGroups.right}
-                value={this.props.selectedRightSidePanel || ''}
+                value={this.props.selectedRightSidePanel || ""}
                 onValueChanged={onPressRight}
               />
             )}
@@ -201,11 +201,11 @@ function _handleToolbarButtonClick(button, evt, props) {
   // TODO: Use Types ENUM
   // TODO: We can update this to be a `getter` on the extension to query
   //       For the active tools after we apply our updates?
-  if (button.type === 'setToolActive') {
+  if (button.type === "setToolActive") {
     this.setState({
-      activeButtons: [button.id],
+      activeButtons: [button.id]
     });
-  } else if (button.type === 'builtIn') {
+  } else if (button.type === "builtIn") {
     this._handleBuiltIn(button.options);
   }
 }
@@ -232,9 +232,9 @@ function _getVisibleToolbarButtons() {
 }
 
 function _handleBuiltIn({ behavior } = {}) {
-  if (behavior === 'CINE') {
+  if (behavior === "CINE") {
     this.setState({
-      isCineDialogOpen: !this.state.isCineDialogOpen,
+      isCineDialogOpen: !this.state.isCineDialogOpen
     });
   }
 }

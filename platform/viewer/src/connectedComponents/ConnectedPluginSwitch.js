@@ -1,7 +1,7 @@
-import OHIF from 'ohif-core';
-import PluginSwitch from './PluginSwitch.js';
-import { commandsManager } from './../App.js';
-import { connect } from 'react-redux';
+import OHIF from "@ohif/core";
+import PluginSwitch from "./PluginSwitch.js";
+import { commandsManager } from "./../App.js";
+import { connect } from "react-redux";
 
 const { setLayout } = OHIF.redux.actions;
 
@@ -11,7 +11,7 @@ const mapStateToProps = state => {
   return {
     activeViewportIndex,
     viewportSpecificData,
-    layout,
+    layout
   };
 };
 
@@ -19,7 +19,7 @@ const mapDispatchToProps = dispatch => {
   return {
     setLayout: data => {
       dispatch(setLayout(data));
-    },
+    }
   };
 };
 
@@ -81,16 +81,16 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       },
     },*/
     {
-      label: '2D MPR',
-      icon: 'cube',
+      label: "2D MPR",
+      icon: "cube",
       onClick: () => {
-        commandsManager.runCommand('mpr2d');
-      },
-    },
+        commandsManager.runCommand("mpr2d");
+      }
+    }
   ];
 
   return {
-    buttons,
+    buttons
   };
 };
 
