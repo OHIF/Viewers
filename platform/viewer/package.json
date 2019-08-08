@@ -21,11 +21,9 @@
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
     "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
     "start": "yarn run dev",
-    "predeploy": "cd example && npm install && yarn run build:package",
-    "preBuild": "yarn run version && yarn run copy:webworkers",
+    "preBuild": "yarn run copy:webworkers",
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
     "dev:orthanc": "yarn run preBuild && cross-env REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
-    "version": "node -p -e \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.js",
     "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v",
     "cy": "cypress open",
     "cy:run": "cypress run",
@@ -39,7 +37,8 @@
     "caniuse-lite": "1.0.30000974"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "config": {
     "commitizen": {

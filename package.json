@@ -20,7 +20,7 @@
     "test:unit:ci": "lerna run test:unit:ci --parallel",
     "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",
     "see-changed": "lerna changed",
-    "release": "lerna publish --canary --dist-tag canary"
+    "release": "npx lerna version prerelease --force-publish && lerna publish --canary --dist-tag canary"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
