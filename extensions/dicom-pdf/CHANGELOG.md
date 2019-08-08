@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.8-alpha.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-pdf@0.0.8-alpha.6...@ohif/extension-dicom-pdf@0.0.8-alpha.7) (2019-08-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-pdf
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [0.0.8-alpha.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-pdf@0.0.8-alpha.5...@ohif/extension-dicom-pdf@0.0.8-alpha.6) (2019-08-08)
 
 **Note:** Version bump only for package @ohif/extension-dicom-pdf

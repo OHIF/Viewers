@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.22-alpha.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.0.22-alpha.7...@ohif/viewer@0.0.22-alpha.8) (2019-08-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [0.0.22-alpha.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.0.22-alpha.6...@ohif/viewer@0.0.22-alpha.7) (2019-08-08)
 
 **Note:** Version bump only for package @ohif/viewer
