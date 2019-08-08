@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3-alpha.5](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.2.3-alpha.4...@ohif/i18n@0.2.3-alpha.5) (2019-08-08)
+
+**Note:** Version bump only for package @ohif/i18n
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [0.2.3-alpha.4](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.2.3-alpha.3...@ohif/i18n@0.2.3-alpha.4) (2019-08-08)
 
 **Note:** Version bump only for package @ohif/i18n
