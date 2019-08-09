@@ -16,7 +16,7 @@ yarn install --no-ignore-optional --pure-lockfile
 yarn run build
 
 # Copy output to the folder that is our publish target
-npx cpx "./platform/viewer/dist/**/*" ./netlify/dist/pwa --verbose
+npx cpx "./platform/viewer/dist/**/*" ./netlify/www/pwa --verbose
 
 echo 'Nothing left to see here. Go home, folks.'
 
