@@ -128,7 +128,8 @@ These commands are available from the root directory. Each project directory als
 | `test:unit`          | Jest multi-project test runner; overall coverage              |
 | **Deploy**           |                                                               |
 | `build`*             | Builds production output for our PWA Viewer                   |
-| `build:package`*     | Builds commonjs bundles for all projects                      |
+| `build:package`*             | Builds production `commonjs` output for our Viewer                 |
+| `build:package-all`*     | Builds commonjs bundles for all projects                      |
 
 
 \* - For more information on our different builds, check out our [Deploy Docs][deployment-docs]
