@@ -37,7 +37,7 @@
 # inherit these settings.
 [context.deploy-preview]
   base = ""
-  publish = ".netlify/dist/"
+  publish = "./.netlify/dist/"
   command = "yarn config set workspaces-experimental true && chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
 
 # Redirects and headers are GLOBAL for all builds – they do not get scoped to
