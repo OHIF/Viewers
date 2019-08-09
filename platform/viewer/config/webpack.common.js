@@ -1,8 +1,9 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // Stylus: https://gist.github.com/mburakerman/e5e8328dc88085396adbff3804a1fb51
 
@@ -12,95 +13,7 @@ const DIST_DIR = path.join(__dirname, '../dist');
 
 module.exports = (env, argv) => {
   return {
-    entry: {
-      app: `${SRC_DIR}/index.js`,
-    },
-    context: SRC_DIR,
-    resolve: {
-      modules: [
-        // Modules specific to this package
-        path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
-        path.resolve(__dirname, '../../../node_modules'),
-        SRC_DIR,
-      ],
-      extensions: ['.js', '.jsx', '.json', '*'],
-      symlinks: true,
-    },
-    module: {
-      rules: [
-        {
-          test: /\.jsx?$/,
-          exclude: [/node_modules/, /packages\\extension/],
-          loader: 'babel-loader',
-          options: {
-            // Find babel.config.js in monorepo root
-            // https://babeljs.io/docs/en/options#rootmode
-            rootMode: 'upward',
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  // Do not transform ES6 modules to another format.
-                  // Webpack will take care of that.
-                  modules: false,
-                },
-              ],
-            ],
-          },
-        },
-        /**
-         * Stylus to CSS
-         * CSS to CommonJS
-         * Style nodes from JS Strings
-         */
-        {
-          test: /\.styl$/,
-          use: [
-            { loader: 'style-loader' },
-            { loader: 'css-loader' },
-            { loader: 'stylus-loader' },
-          ],
-        },
-        {
-          test: /\.css$/,
-          use: [
-            'style-loader',
-            ExtractCssChunks.loader,
-            { loader: 'css-loader', options: { importLoaders: 1 } },
-            {
-              loader: 'postcss-loader',
-              options: {
-                config: {
-                  path: './postcss.config.js',
-                },
-              },
-            },
-          ],
-        },
-        /**
-         *
-         */
-        {
-          test: /\.glsl$/i,
-          include: /vtk\.js[\/\\]Sources/,
-          loader: 'shader-loader',
-        },
-        /**
-         *
-         */
-        {
-          test: /\.worker\.js$/,
-          include: /vtk\.js[\/\\]Sources/,
-          use: [
-            {
-              loader: 'worker-loader',
-              options: { inline: true, fallback: false },
-            },
-          ],
-        },
-      ],
-    },
+    //
     plugins: [
       // "Public" Folder
       new CopyWebpackPlugin([

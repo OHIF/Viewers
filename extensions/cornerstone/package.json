@@ -19,10 +19,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "webpack --config config/webpack.prod.js -d",
+    "build": "webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "dev": "webpack --config config/webpack.prod.js -w -d",
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "start": "yarn run dev"
   },
   "peerDependencies": {
@@ -47,6 +47,5 @@
     "classnames": "^2.2.6",
     "lodash.throttle": "^4.1.1",
     "react-cornerstone-viewport": "0.1.30"
-  },
-  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+  }
 }
