@@ -15,11 +15,10 @@ yarn install --no-ignore-optional --pure-lockfile
 
 # Build && Move PWA Output
 yarn run build
-mv platform/viewer/dist/ netlify/www/pwa/ -v
+mv platform/viewer/dist/ .netlify/www/pwa/ -v
 
 # Build && Move script output
 yarn run build:package
-
 
 echo 'Nothing left to see here. Go home, folks.'
 
