@@ -1,31 +1,31 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import OHIF from "@ohif/core";
-import { withRouter } from "react-router-dom";
-import { StudyList } from "react-viewerbase";
-import ConnectedHeader from "../connectedComponents/ConnectedHeader.js";
-import moment from "moment";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import OHIF from '@ohif/core';
+import { withRouter } from 'react-router-dom';
+import { StudyList } from '@ohif/ui';
+import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
+import moment from 'moment';
 
 class StudyListWithData extends Component {
   state = {
     searchData: {},
     studies: null,
-    error: null
+    error: null,
   };
 
   static propTypes = {
     patientId: PropTypes.string,
     server: PropTypes.object,
     user: PropTypes.object,
-    history: PropTypes.object
+    history: PropTypes.object,
   };
 
   static rowsPerPage = 25;
-  static defaultSort = { field: "patientName", order: "desc" };
+  static defaultSort = { field: 'patientName', order: 'desc' };
 
   static studyListDateFilterNumDays = 25000; // TODO: put this in the settings
   static defaultStudyDateFrom = moment()
-    .subtract(StudyListWithData.studyListDateFilterNumDays, "days")
+    .subtract(StudyListWithData.studyListDateFilterNumDays, 'days')
     .toDate();
   static defaultStudyDateTo = new Date();
 
@@ -42,7 +42,7 @@ class StudyListWithData extends Component {
       rowsPerPage: StudyListWithData.rowsPerPage,
       studyDateFrom: StudyListWithData.defaultStudyDateFrom,
       studyDateTo: StudyListWithData.defaultStudyDateTo,
-      sortData: StudyListWithData.defaultSort
+      sortData: StudyListWithData.defaultSort,
     }
   ) => {
     const { server } = this.props;
@@ -55,7 +55,7 @@ class StudyListWithData extends Component {
       studyDateFrom: searchData.studyDateFrom,
       studyDateTo: searchData.studyDateTo,
       limit: searchData.rowsPerPage,
-      offset: searchData.currentPage * searchData.rowsPerPage
+      offset: searchData.currentPage * searchData.rowsPerPage,
     };
 
     // TODO: add sorting
@@ -70,9 +70,9 @@ class StudyListWithData extends Component {
 
         const { field, order } = searchData.sortData;
         let sortedStudies = studies.map(study => {
-          if (!moment(study.studyDate, "MMM DD, YYYY", true).isValid()) {
-            study.studyDate = moment(study.studyDate, "YYYYMMDD").format(
-              "MMM DD, YYYY"
+          if (!moment(study.studyDate, 'MMM DD, YYYY', true).isValid()) {
+            study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
+              'MMM DD, YYYY'
             );
           }
           return study;
@@ -81,11 +81,11 @@ class StudyListWithData extends Component {
         sortedStudies.sort(function(a, b) {
           let fieldA = a[field];
           let fieldB = b[field];
-          if (field === "studyDate") {
+          if (field === 'studyDate') {
             fieldA = moment(fieldA).toISOString();
             fieldB = moment(fieldB).toISOString();
           }
-          if (order === "desc") {
+          if (order === 'desc') {
             if (fieldA < fieldB) {
               return -1;
             }
@@ -105,12 +105,12 @@ class StudyListWithData extends Component {
         });
 
         this.setState({
-          studies: sortedStudies
+          studies: sortedStudies,
         });
       })
       .catch(error => {
         this.setState({
-          error: true
+          error: true,
         });
 
         throw new Error(error);

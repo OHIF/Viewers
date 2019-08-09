@@ -1,4 +1,4 @@
-import { Icon, SelectTree } from 'react-viewerbase';
+import { Icon, SelectTree } from '@ohif/ui';
 import React, { Component } from 'react';
 
 import LabellingTransition from './LabellingTransition.js';

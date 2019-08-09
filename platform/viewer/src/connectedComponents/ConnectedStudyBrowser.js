@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { StudyBrowser } from 'react-viewerbase';
+import { StudyBrowser } from '@ohif/ui';
 import cloneDeep from 'lodash.clonedeep';
 
 // TODO

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ExpandableToolMenu } from 'react-viewerbase';
+import { ExpandableToolMenu } from '@ohif/ui';
 import './PluginSwitch.css';
 
 class PluginSwitch extends Component {

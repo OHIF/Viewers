@@ -4,10 +4,10 @@ import './Header.css';
 import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 
-import { Dropdown } from 'react-viewerbase';
+import { Dropdown } from '@ohif/ui';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import PropTypes from 'prop-types';
-import { AboutModal } from 'react-viewerbase';
+import { AboutModal } from '@ohif/ui';
 import { hotkeysManager } from './../../App.js';
 import { withTranslation } from 'react-i18next';
 

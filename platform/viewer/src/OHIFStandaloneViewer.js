@@ -5,7 +5,7 @@ import { Route, Switch } from 'react-router-dom';
 import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { ViewerbaseDragDropContext } from 'react-viewerbase';
+import { ViewerbaseDragDropContext } from '@ohif/ui';
 // import asyncComponent from './components/AsyncComponent.js'
 import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
 import ViewerRouting from './routes/ViewerRouting.js';

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ConnectedStudyList from './ConnectedStudyList';
 
-// TODO: Move to react-viewerbase
+// TODO: Move to @ohif/ui
 
 function StudyListRouting({ match }) {
   // TODO: Figure out which filters we want to pass in via a URL

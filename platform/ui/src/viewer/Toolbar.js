@@ -4,7 +4,7 @@ import SimpleToolbarButton from './SimpleToolbarButton';
 import PlayClipButton from './PlayClipButton';
 import { LayoutButton } from './../components/layoutButton';
 
-// TODO: This should not be built in the `react-viewerbase` component
+// TODO: This should not be built in the `@ohif/ui` component
 function getDefaultButtonData() {
   var buttonData = [
     {

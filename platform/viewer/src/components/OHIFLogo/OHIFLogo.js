@@ -1,6 +1,6 @@
 import './OHIFLogo.css';
 
-import { Icon } from 'react-viewerbase';
+import { Icon } from '@ohif/ui';
 import React from 'react';
 
 function OHIFLogo() {

@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'react-viewerbase',
+      library: '@ohif/ui',
       libraryTarget: 'umd',
       filename: pkg.main,
       auxiliaryComment: 'Test Comment',
