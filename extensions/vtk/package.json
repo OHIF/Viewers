@@ -45,7 +45,7 @@
     "redux": "^4.0.1"
   },
   "dependencies": {
-    "@babel/runtime": "^7.4.5",
+    "@babel/runtime": "^7.5.5",
     "react-vtkjs-viewport": "0.0.9",
     "vtk.js": "^8.11.0"
   },

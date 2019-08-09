@@ -25,6 +25,9 @@
     "lerna:version": "npx lerna version prerelease --force-publish",
     "lerna:publish": "lerna publish from-package --canary --dist-tag canary"
   },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5"
+  },
   "devDependencies": {
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
@@ -89,6 +92,8 @@
       "prettier --write",
       "git add"
     ]
+  "resolutions": {
+    "**/@babel/runtime": "7.5.5"
   },
   "browserslist": [
     ">0.2%",

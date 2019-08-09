@@ -15,7 +15,8 @@
     "npm": ">=5"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "dev": "docz dev",
@@ -33,7 +34,7 @@
     "react-i18next": "^10.11.0"
   },
   "dependencies": {
-    "@babel/runtime": "7.2.0",
+    "@babel/runtime": "^7.5.5",
     "@ohif/i18n": "^0.2.3",
     "classnames": "2.2.6",
     "i18next": "^17.0.3",
@@ -58,6 +59,5 @@
     "docz-theme-default": "1.2.0",
     "lodash.clonedeep": "^4.5.0",
     "react-powerplug": "1.0.0"
-  },
-  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+  }
 }

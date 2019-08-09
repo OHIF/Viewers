@@ -50,7 +50,7 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@babel/runtime": "^7.4.5",
+    "@babel/runtime": "^7.5.5",
     "@ohif/core": "^0.11.1-alpha.7",
     "@ohif/extension-cornerstone": "^0.0.39-alpha.7",
     "@ohif/extension-dicom-html": "^0.0.4-alpha.7",

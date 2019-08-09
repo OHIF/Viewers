@@ -1,6 +1,6 @@
 const merge = require('webpack-merge');
 const path = require('path');
-const common = require('./webpack.common');
+const webpackCommon = require('./../../../.webpack/webpack.common.js');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -8,19 +8,21 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
 module.exports = (env, argv) => {
-  const commonConfig = common(env, argv);
+  const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
   return merge(commonConfig, {
+    // https://webpack.js.org/configuration/mode/#mode-production
     mode: 'production',
+    devtool: 'source-map',
     stats: {
-      colors: false,
+      colors: true,
       hash: true,
       timings: true,
       assets: true,
-      chunks: true,
-      chunkModules: true,
-      modules: true,
-      children: true,
+      chunks: false,
+      chunkModules: false,
+      modules: false,
+      children: false,
       warnings: true,
     },
     optimization: {
@@ -29,10 +31,9 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohifCore',
+      library: 'ohifI18n',
       libraryTarget: 'umd',
       filename: pkg.main,
-      auxiliaryComment: 'Test Comment',
     },
   });
 };
