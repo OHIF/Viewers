@@ -4,6 +4,8 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
 
+// Stylus: https://gist.github.com/mburakerman/e5e8328dc88085396adbff3804a1fb51
+
 const SRC_DIR = path.join(__dirname, '../src');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const DIST_DIR = path.join(__dirname, '../dist');
@@ -46,6 +48,19 @@ module.exports = (env, argv) => {
               ],
             ],
           },
+        },
+        /**
+         * Stylus to CSS
+         * CSS to CommonJS
+         * Style nodes from JS Strings
+         */
+        {
+          test: /\.styl$/,
+          use: [
+            { loader: 'style-loader' },
+            { loader: 'css-loader' },
+            { loader: 'stylus-loader' },
+          ],
         },
         {
           test: /\.css$/,
