@@ -31,3 +31,15 @@ NOTES:
 
 Issue: lerna info lifecycle root@undefined~publish: Failed to exec publish
 script lerna ERR! lifecycle "publish" errored in "root", exiting 1
+
+Use Env options to set config:
+
+- https://webpack.js.org/api/cli/#environment-options
+
+## Bundling
+
+- Extensions must bundle all assets into a single file for UMD
+- The umd build for Viewer must bundle all of it's assets, and baked-in
+  extension assets
+  - The "skinny" umd build for viewer only needs to bundle it's own assets
+- The PWA build for Viewer can code-split to it's heart's content
