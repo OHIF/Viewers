@@ -19,10 +19,10 @@
     "access": "public"
   },
   "scripts": {
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "build": "webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "start": "yarn run dev"
   },
   "peerDependencies": {

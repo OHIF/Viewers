@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+const autoprefixer = require("autoprefixer");
+// const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   return {
@@ -50,7 +51,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           test: /\.css$/,
           use: [
             'style-loader',
-            ExtractCssChunks.loader,
+            // ExtractCssChunks.loader,
             { loader: 'css-loader', options: { importLoaders: 1 } },
             {
               loader: 'postcss-loader',
@@ -58,6 +59,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
                 config: {
                   path: './postcss.config.js',
                 },
+                plugins: () => [autoprefixer("last 2 version", "ie >= 10")]
               },
             },
           ],

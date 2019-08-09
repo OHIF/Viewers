@@ -11,9 +11,16 @@
     "node": ">=8",
     "npm": ">=5"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "dev": "webpack --config config/webpack.prod.js -w -d",
-    "build": "webpack --config config/webpack.prod.js -d",
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "build": "webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "start": "yarn run dev"
@@ -27,13 +34,5 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+  }
 }

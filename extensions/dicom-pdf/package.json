@@ -19,8 +19,8 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "webpack --config config/webpack.prod.js -w -d",
-    "build": "webpack --config config/webpack.prod.js -d",
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "build": "webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "start": "yarn run dev"

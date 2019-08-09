@@ -10,21 +10,21 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
-    "build": "webpack --config config/webpack.prod.js -d",
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "build": "webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "dev": "webpack --config config/webpack.prod.js -w -d",
     "start": "yarn run dev"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "peerDependencies": {
     "@ohif/core": "^0.11.1-alpha.0",
     "react": "^15.0.0 || ^16.0.0",
@@ -34,6 +34,5 @@
     "@babel/runtime": "^7.2.0",
     "classnames": "^2.2.6",
     "dicom-microscopy-viewer": "^0.4.3"
-  },
-  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+  }
 }

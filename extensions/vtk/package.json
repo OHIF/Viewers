@@ -11,15 +11,19 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "engines": {
     "node": ">=8",
     "npm": ">=5"
   },
   "scripts": {
-    "build": "webpack --progress --colors --mode production",
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "build": "webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "dev": "webpack --watch --progress --colors --mode development",
     "start": "yarn run dev"
   },
   "peerDependencies": {
@@ -58,10 +62,5 @@
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
     "redux": "^4.0.1"
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+  }
 }
