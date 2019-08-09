@@ -16,7 +16,7 @@ yarn install --no-ignore-optional --pure-lockfile
 yarn run build
 
 # Copy output to the folder that is our publish target
-mv ./platform/viewer/dist/* ./netlify/www/pwa/ -v
+mv platform/viewer/dist/ netlify/www/pwa/ -v
 
 echo 'Nothing left to see here. Go home, folks.'
 
