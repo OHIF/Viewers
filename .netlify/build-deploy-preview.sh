@@ -3,6 +3,7 @@
 # Set directory to location of this script
 # https://stackoverflow.com/a/3355423/1867984
 cd "$(dirname "$0")"
+cd .. # Up to project root
 
 # Helpful to verify which versions we're using
 yarn -v
