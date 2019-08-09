@@ -16,18 +16,6 @@ yarn install --no-ignore-optional --pure-lockfile
 # Build PWA
 yarn run build
 
-dir
-ls
-cd platform
-dir
-ls
-cd viewer
-dir
-ls
-cd dist
-dir
-ls
-
 # Copy output to the folder that is our publish target
 mv platform/viewer/dist/ netlify/www/pwa/ -v
 
