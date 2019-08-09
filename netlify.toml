@@ -3,6 +3,10 @@
 # TOML Reference:
 # https://www.netlify.com/docs/netlify-toml-reference/
 #
+# We use Netlify for deploy previews and deploy previews only.
+# https://viewer.ohif.org is created using a different process that is
+# managed by CircleCI and deployed to our Google Hosting
+#
 
 # Settings in the [build] context are global and are applied to all contexts
 # unless otherwise overridden by more specific contexts.
@@ -33,7 +37,7 @@
 # inherit these settings.
 [context.deploy-preview]
   base = ""
-  publish = "docs/latest/_book/"
+  publish = ".netlify/dist/"
   command = "yarn config set workspaces-experimental true && chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
 
 # Redirects and headers are GLOBAL for all builds – they do not get scoped to
@@ -51,8 +55,8 @@
   status = 200
 
 [[redirects]]
-  from = "/demo/*"
-  to = "/demo/index.html"
+  from = "/pwa/*"
+  to = "/pwa/index.html"
   status = 200
 
 [[headers]]
