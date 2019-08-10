@@ -20,11 +20,13 @@
   ],
   "scripts": {
     "dev": "docz dev",
+    "dev:ui": "yarn run dev",
     "docs": "docz build",
-    "test:unit": "jest --watch",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests",
-    "build:package": "webpack --config config/webpack.prod.js -d",
-    "dev:ui": "yarn run dev"
+    "build": "webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
     "@ohif/i18n": "^0.2.3",
