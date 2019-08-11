@@ -180,6 +180,9 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
         />
       );
     }
+    if (activeButtons.includes(button.id)) {
+      _runCommandNameWithOptions(button, {});
+    }
     return (
       <ToolbarButton
         key={button.id}
@@ -201,10 +204,7 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
  * @param {*} props
  */
 function _handleToolbarButtonClick(button, evt, props) {
-  if (button.commandName) {
-    const options = Object.assign({ evt }, button.commandOptions);
-    commandsManager.runCommand(button.commandName, options);
-  }
+  _runCommandNameWithOptions(button, evt);
 
   // TODO: Use Types ENUM
   // TODO: We can update this to be a `getter` on the extension to query
@@ -215,6 +215,13 @@ function _handleToolbarButtonClick(button, evt, props) {
     });
   } else if (button.type === 'builtIn') {
     this._handleBuiltIn(button.options);
+  }
+}
+
+function _runCommandNameWithOptions(button, evt) {
+  if (button.commandName) {
+    const options = Object.assign({ evt }, button.commandOptions);
+    commandsManager.runCommand(button.commandName, options);
   }
 }
 
