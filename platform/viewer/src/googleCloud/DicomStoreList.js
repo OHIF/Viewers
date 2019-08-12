@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './googleCloud.css';
 import { withTranslation } from 'react-i18next';
-import { Icon } from 'react-viewerbase';
+import { Icon } from '@ohif/ui';
 
 class DicomStoreList extends Component {
   state = {

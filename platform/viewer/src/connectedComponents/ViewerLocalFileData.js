@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { metadata, utils } from 'ohif-core';
+import { metadata, utils } from '@ohif/core';
 
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
