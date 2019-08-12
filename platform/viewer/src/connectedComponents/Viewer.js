@@ -1,27 +1,9 @@
-<<<<<<< HEAD:platform/viewer/src/connectedComponents/Viewer.js
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
-
-import { MODULE_TYPES } from "@ohif/core";
-import OHIF from "@ohif/core";
-import moment from "moment";
-import WhiteLabellingContext from "../WhiteLabellingContext.js";
-import ConnectedHeader from "./ConnectedHeader.js";
-import ConnectedToolbarRow from "./ConnectedToolbarRow.js";
-import ConnectedLabellingOverlay from "./ConnectedLabellingOverlay";
-import ConnectedStudyBrowser from "./ConnectedStudyBrowser.js";
-import ConnectedViewerMain from "./ConnectedViewerMain.js";
-import SidePanel from "./../components/SidePanel.js";
-import { extensionManager } from "./../App.js";
-import "./Viewer.css";
-=======
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import { MODULE_TYPES } from 'ohif-core';
-import OHIF from 'ohif-core';
+import { MODULE_TYPES } from '@ohif/core';
+import OHIF from '@ohif/core';
 import moment from 'moment';
 import WhiteLabellingContext from '../WhiteLabellingContext.js';
 import ConnectedHeader from './ConnectedHeader.js';
@@ -31,9 +13,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
-import UserManagerContext from '../UserManagerContext';
 import './Viewer.css';
->>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/connectedComponents/Viewer.js
 /**
  * Inits OHIF Hanging Protocol's onReady.
  * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
@@ -79,7 +59,7 @@ class Viewer extends Component {
     // window.store.getState().viewports.viewportSpecificData
     viewports: PropTypes.object.isRequired,
     // window.store.getState().viewports.activeViewportIndex
-    activeViewportIndex: PropTypes.number.isRequired
+    activeViewportIndex: PropTypes.number.isRequired,
   };
 
   constructor(props) {
@@ -87,8 +67,8 @@ class Viewer extends Component {
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
         retrieve: this.retrieveMeasurements,
-        store: this.storeMeasurements
-      }
+        store: this.storeMeasurements,
+      },
     });
 
     OHIF.measurements.TimepointApi.setConfiguration({
@@ -97,41 +77,41 @@ class Viewer extends Component {
         store: this.storeTimepoints,
         remove: this.removeTimepoint,
         update: this.updateTimepoint,
-        disassociate: this.disassociateStudy
-      }
+        disassociate: this.disassociateStudy,
+      },
     });
   }
 
   state = {
     isLeftSidePanelOpen: true,
     isRightSidePanelOpen: false,
-    selectedRightSidePanel: "",
-    selectedLeftSidePanel: "studies", // TODO: Don't hardcode this
-    thumbnails: []
+    selectedRightSidePanel: '',
+    selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
+    thumbnails: [],
   };
 
   retrieveMeasurements = (patientId, timepointIds) => {
-    OHIF.log.info("retrieveMeasurements");
+    OHIF.log.info('retrieveMeasurements');
     // TODO: Retrieve the measurements from the latest available SR
     return Promise.resolve();
   };
 
   storeMeasurements = (measurementData, timepointIds) => {
-    OHIF.log.info("storeMeasurements");
+    OHIF.log.info('storeMeasurements');
     // TODO: Store the measurements into a new SR sent to the active server
     return Promise.resolve();
   };
 
   retrieveTimepoints = filter => {
-    OHIF.log.info("retrieveTimepoints");
+    OHIF.log.info('retrieveTimepoints');
 
     // Get the earliest and latest study date
     let earliestDate = new Date().toISOString();
     let latestDate = new Date().toISOString();
     if (this.props.studies) {
-      latestDate = new Date("1000-01-01").toISOString();
+      latestDate = new Date('1000-01-01').toISOString();
       this.props.studies.forEach(study => {
-        const studyDate = moment(study.studyDate, "YYYYMMDD").toISOString();
+        const studyDate = moment(study.studyDate, 'YYYYMMDD').toISOString();
         if (studyDate < earliestDate) {
           earliestDate = studyDate;
         }
@@ -144,34 +124,34 @@ class Viewer extends Component {
     // Return a generic timepoint
     return Promise.resolve([
       {
-        timepointType: "baseline",
-        timepointId: "TimepointId",
+        timepointType: 'baseline',
+        timepointId: 'TimepointId',
         studyInstanceUids: this.props.studyInstanceUids,
         patientId: filter.patientId,
         earliestDate,
         latestDate,
-        isLocked: false
-      }
+        isLocked: false,
+      },
     ]);
   };
 
   storeTimepoints = timepointData => {
-    OHIF.log.info("storeTimepoints");
+    OHIF.log.info('storeTimepoints');
     return Promise.resolve();
   };
 
   updateTimepoint = (timepointData, query) => {
-    OHIF.log.info("updateTimepoint");
+    OHIF.log.info('updateTimepoint');
     return Promise.resolve();
   };
 
   removeTimepoint = timepointId => {
-    OHIF.log.info("removeTimepoint");
+    OHIF.log.info('removeTimepoint');
     return Promise.resolve();
   };
 
   disassociateStudy = (timepointIds, studyInstanceUid) => {
-    OHIF.log.info("disassociateStudy");
+    OHIF.log.info('disassociateStudy');
     return Promise.resolve();
   };
 
@@ -190,14 +170,14 @@ class Viewer extends Component {
   componentDidMount() {
     const { studies } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
-    const currentTimepointId = "TimepointId";
+    const currentTimepointId = 'TimepointId';
 
     const timepointApi = new TimepointApi(currentTimepointId, {
-      onTimepointsUpdated: this.onTimepointsUpdated
+      onTimepointsUpdated: this.onTimepointsUpdated,
     });
 
     const measurementApi = new MeasurementApi(timepointApi, {
-      onMeasurementsUpdated: this.onMeasurementsUpdated
+      onMeasurementsUpdated: this.onMeasurementsUpdated,
     });
 
     this.currentTimepointId = currentTimepointId;
@@ -211,7 +191,7 @@ class Viewer extends Component {
       measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies)
+        thumbnails: _mapStudiesToThumbnails(studies),
       });
     }
   }
@@ -226,7 +206,7 @@ class Viewer extends Component {
       this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies)
+        thumbnails: _mapStudiesToThumbnails(studies),
       });
     }
   }
@@ -251,12 +231,11 @@ class Viewer extends Component {
         <WhiteLabellingContext.Consumer>
           {whiteLabelling => (
             <UserManagerContext.Consumer>
-              { userManager => (
-                  <ConnectedHeader home={false} userManager={userManager}>
-                    {whiteLabelling.logoComponent}
-                  </ConnectedHeader>
-                )
-              }
+              {userManager => (
+                <ConnectedHeader home={false} userManager={userManager}>
+                  {whiteLabelling.logoComponent}
+                </ConnectedHeader>
+              )}
             </UserManagerContext.Consumer>
           )}
         </WhiteLabellingContext.Consumer>
@@ -268,12 +247,12 @@ class Viewer extends Component {
           selectedLeftSidePanel={
             this.state.isLeftSidePanelOpen
               ? this.state.selectedLeftSidePanel
-              : ""
+              : ''
           }
           selectedRightSidePanel={
             this.state.isRightSidePanelOpen
               ? this.state.selectedRightSidePanel
-              : ""
+              : ''
           }
           handleSidePanelChange={(side, selectedPanel) => {
             const sideClicked = side && side[0].toUpperCase() + side.slice(1);
@@ -316,7 +295,7 @@ class Viewer extends Component {
           </SidePanel>
 
           {/* MAIN */}
-          <div className={classNames("main-content")}>
+          <div className={classNames('main-content')}>
             <ConnectedViewerMain studies={this.props.studies} />
           </div>
 
@@ -359,15 +338,11 @@ const _mapStudiesToThumbnails = function(studies) {
         seriesDescription,
         seriesNumber,
         instanceNumber,
-        numImageFrames
+        numImageFrames,
       } = displaySet;
 
       let imageId;
-<<<<<<< HEAD:platform/viewer/src/connectedComponents/Viewer.js
-      let altImageText = " "; // modality
-=======
       let altImageText;
->>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/connectedComponents/Viewer.js
 
       if (displaySet.modality && displaySet.modality === 'SEG') {
         // TODO: We want to replace this with a thumbnail showing
@@ -379,11 +354,7 @@ const _mapStudiesToThumbnails = function(studies) {
 
         imageId = displaySet.images[imageIndex].getImageId();
       } else {
-<<<<<<< HEAD:platform/viewer/src/connectedComponents/Viewer.js
-        altImageText = "SR";
-=======
         altImageText = displaySet.modality ? displaySet.modality : 'UN';
->>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/connectedComponents/Viewer.js
       }
 
       return {
@@ -393,13 +364,13 @@ const _mapStudiesToThumbnails = function(studies) {
         seriesDescription,
         seriesNumber,
         instanceNumber,
-        numImageFrames
+        numImageFrames,
       };
     });
 
     return {
       studyInstanceUid,
-      thumbnails
+      thumbnails,
     };
   });
 };

@@ -1,16 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-<<<<<<< HEAD:platform/viewer/src/studylist/StudyListWithData.js
+import Dropzone from 'react-dropzone';
 import OHIF from '@ohif/core';
 import { withRouter } from 'react-router-dom';
-import { StudyList } from '@ohif/ui';
-=======
-import Dropzone from 'react-dropzone';
-import OHIF from 'ohif-core';
-import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import { StudyList } from 'react-viewerbase';
->>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/studylist/StudyListWithData.js
+import { StudyList } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';

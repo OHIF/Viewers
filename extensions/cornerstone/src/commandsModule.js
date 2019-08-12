@@ -1,6 +1,6 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import OHIF from 'ohif-core';
+import OHIF from '@ohif/core';
 const scroll = cornerstoneTools.import('util/scroll');
 
 const actions = {
@@ -161,7 +161,7 @@ const actions = {
     );
 
     scroll(enabledElement, -1);
-  }
+  },
 };
 
 const definitions = {
