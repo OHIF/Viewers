@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
   return {
+    user: state.oidc && state.oidc.user,
     isOpen: state.ui.userPreferencesModalOpen,
   };
 };

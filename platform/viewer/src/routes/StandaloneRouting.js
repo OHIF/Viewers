@@ -90,7 +90,12 @@ class StandaloneRouting extends Component {
 
   async componentDidMount() {
     try {
-      const query = qs.parse(this.props.location.search);
+      let { search } = this.props.location;
+
+      // Remove ? prefix which is included for some reason
+      search = search.slice(1, search.length);
+
+      const query = qs.parse(search);
       const studies = await StandaloneRouting.parseQueryAndFetchStudies(query);
 
       studyMetadataManager.purge();

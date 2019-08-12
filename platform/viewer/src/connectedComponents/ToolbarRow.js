@@ -2,9 +2,9 @@ import './ToolbarRow.css';
 
 import React, { Component } from 'react';
 import {
+  ExpandableToolMenu,
   RoundedButtonGroup,
   ToolbarButton,
-  ExpandableToolMenu,
 } from '@ohif/ui';
 import { commandsManager, extensionManager } from './../App.js';
 
@@ -13,6 +13,7 @@ import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from '@ohif/core';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -53,7 +54,7 @@ class ToolbarRow extends Component {
         {
           value: 'studies',
           icon: 'th-large',
-          bottomLabel: 'Series',
+          bottomLabel: this.props.t('Series'),
         },
       ],
       right: [],
@@ -155,10 +156,17 @@ class ToolbarRow extends Component {
  */
 function _getButtonComponents(toolbarButtons, activeButtons) {
   return toolbarButtons.map((button, index) => {
-    if (button.buttons) {
+    let activeCommand = undefined;
+
+    if (button.buttons && button.buttons.length) {
       // Iterate over button definitions and update `onClick` behavior
       const childButtons = button.buttons.map(childButton => {
         childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
+
+        if (activeButtons.indexOf(childButton.id) > -1) {
+          activeCommand = childButton.id;
+        }
+
         return childButton;
       });
 
@@ -168,10 +176,10 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
           text={button.label}
           icon={button.icon}
           buttons={childButtons}
+          activeCommand={activeCommand}
         />
       );
     }
-
     return (
       <ToolbarButton
         key={button.id}
@@ -239,4 +247,4 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 }
 
-export default ToolbarRow;
+export default withTranslation('Common')(ToolbarRow);

@@ -6,9 +6,11 @@ import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from '@ohif/ui';
+import { SignoutCallbackComponent } from 'redux-oidc';
 // import asyncComponent from './components/AsyncComponent.js'
 import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
 import ViewerRouting from './routes/ViewerRouting.js';
+import ViewerLocalFileData from './connectedComponents/ViewerLocalFileData.js';
 import StudyListRouting from './studylist/StudyListRouting.js';
 import StandaloneRouting from './routes/StandaloneRouting.js';
 import CallbackPage from './routes/CallbackPage.js';
@@ -42,6 +44,9 @@ class OHIFStandaloneViewer extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     user: PropTypes.object,
+    setContext: PropTypes.func,
+    userManager: PropTypes.object,
+    location: PropTypes.object,
   };
 
   componentDidMount() {
@@ -70,14 +75,33 @@ class OHIFStandaloneViewer extends Component {
       return (
         <Switch>
           <Route exact path="/silent-refresh.html" onEnter={reload} />
-          <Route exact path="/logout-redirect.html" onEnter={reload} />
+          <Route
+            exact
+            path="/logout-redirect"
+            render={() => (
+              <SignoutCallbackComponent
+                userManager={userManager}
+                successCallback={() => console.log('Signout successful')}
+                errorCallback={error => {
+                  console.warn(error);
+                  console.warn('Signout failed');
+                }}
+              />
+            )}
+          />
           <Route
             path="/callback"
             render={() => <CallbackPage userManager={userManager} />}
           />
           <Route
             component={() => {
-              userManager.signinRedirect();
+              userManager.getUser().then(user => {
+                if (user) {
+                  userManager.signinSilent();
+                } else {
+                  userManager.signinRedirect();
+                }
+              });
 
               return null;
             }}
@@ -94,12 +118,8 @@ class OHIFStandaloneViewer extends Component {
      */
     const routes = [
       {
-        path: '/',
-        Component: StudyListRouting,
-      },
-      {
-        path: '/studylist',
-        Component: StudyListRouting,
+        path: '/local',
+        Component: ViewerLocalFileData,
       },
       {
         path: '/viewer',
@@ -110,7 +130,7 @@ class OHIFStandaloneViewer extends Component {
         Component: ViewerRouting,
       },
       {
-        path: '/study/:studyInstanceUid/series/:seriesInstanceUids',
+        path: '/study/:studyInstanceUids/series/:seriesInstanceUids',
         Component: ViewerRouting,
       },
       {
@@ -118,6 +138,21 @@ class OHIFStandaloneViewer extends Component {
         Component: IHEInvokeImageDisplay,
       },
     ];
+
+    const showStudyList =
+      window.config && window.config.showStudyList !== undefined
+        ? window.config.showStudyList
+        : true;
+    if (showStudyList) {
+      routes.push({
+        path: '/studylist',
+        Component: StudyListRouting,
+      });
+      routes.push({
+        path: '/',
+        Component: StudyListRouting,
+      });
+    }
 
     const currentPath = this.props.location.pathname;
     const noMatchingRoutes = !routes.find(r =>
@@ -157,7 +192,11 @@ class OHIFStandaloneViewer extends Component {
                     this.setState({ isLoading: false });
                   }}
                 >
-                  {match === null ? <></> : <Component match={match} />}
+                  {match === null ? (
+                    <></>
+                  ) : (
+                    <Component match={match} location={this.props.location} />
+                  )}
                 </CSSTransition>
               )}
             </Route>

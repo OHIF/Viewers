@@ -104,7 +104,6 @@ like:
 ```js
 window.config = {
   routerBasename: '/',
-  relativeWebWorkerScriptsPath: '',
   servers: {
     dicomWeb: [
       {

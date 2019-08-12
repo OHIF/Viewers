@@ -33,10 +33,12 @@ import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools.js';
 import store from './store';
+import UserManagerContext from './UserManagerContext';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
   globalToolSyncEnabled: true,
+  showSVGCursors: true,
 });
 
 const commandsManagerConfig = {
@@ -58,7 +60,6 @@ window.store = store;
 class App extends Component {
   static propTypes = {
     routerBasename: PropTypes.string.isRequired,
-    relativeWebWorkerScriptsPath: PropTypes.string.isRequired,
     servers: PropTypes.object.isRequired,
     //
     oidc: PropTypes.array,
@@ -82,18 +83,37 @@ class App extends Component {
     if (this.props.oidc.length) {
       const firstOpenIdClient = this.props.oidc[0];
 
+      const { protocol, host } = window.location;
+      const { routerBasename } = this.props;
+      const baseUri = `${protocol}//${host}${routerBasename}`;
+
+      const redirect_uri = firstOpenIdClient.redirect_uri || '/callback';
+      const silent_redirect_uri =
+        firstOpenIdClient.silent_redirect_uri || '/silent-refresh.html';
+      const post_logout_redirect_uri =
+        firstOpenIdClient.post_logout_redirect_uri || '/';
+
+      const openIdConnectConfiguration = Object.assign({}, firstOpenIdClient, {
+        redirect_uri: _makeAbsoluteIfNecessary(redirect_uri, baseUri),
+        silent_redirect_uri: _makeAbsoluteIfNecessary(
+          silent_redirect_uri,
+          baseUri
+        ),
+        post_logout_redirect_uri: _makeAbsoluteIfNecessary(
+          post_logout_redirect_uri,
+          baseUri
+        ),
+      });
+
       this.userManager = getUserManagerForOpenIdConnectClient(
         store,
-        firstOpenIdClient
+        openIdConnectConfiguration
       );
     }
 
     _initExtensions(this.props.extensions);
     _initServers(this.props.servers);
-    initWebWorkers(
-      this.props.routerBasename,
-      this.props.relativeWebWorkerScriptsPath
-    );
+    initWebWorkers();
   }
 
   render() {
@@ -104,13 +124,15 @@ class App extends Component {
         <Provider store={store}>
           <I18nextProvider i18n={i18n}>
             <OidcProvider store={store} userManager={userManager}>
-              <Router basename={this.props.routerBasename}>
-                <WhiteLabellingContext.Provider
-                  value={this.props.whiteLabelling}
-                >
-                  <OHIFStandaloneViewer userManager={userManager} />
-                </WhiteLabellingContext.Provider>
-              </Router>
+              <UserManagerContext.Provider value={userManager}>
+                <Router basename={this.props.routerBasename}>
+                  <WhiteLabellingContext.Provider
+                    value={this.props.whiteLabelling}
+                  >
+                    <OHIFStandaloneViewer userManager={userManager} />
+                  </WhiteLabellingContext.Provider>
+                </Router>
+              </UserManagerContext.Provider>
             </OidcProvider>
           </I18nextProvider>
         </Provider>
@@ -153,6 +175,23 @@ function _initServers(servers) {
   if (servers) {
     utils.addServers(servers, store);
   }
+}
+
+function _isAbsoluteUrl(url) {
+  return url.includes('http://') || url.includes('https://');
+}
+
+function _makeAbsoluteIfNecessary(url, base_url) {
+  if (_isAbsoluteUrl(url)) {
+    return url;
+  }
+
+  // Make sure base_url and url are not duplicating slashes
+  if (base_url[base_url.length - 1] === '/') {
+    base_url = base_url.slice(0, base_url.length - 1);
+  }
+
+  return base_url + url;
 }
 
 export default App;

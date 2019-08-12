@@ -1,22 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import queryString from 'query-string';
 import ConnectedStudyList from './ConnectedStudyList';
 
 // TODO: Move to @ohif/ui
 
-function StudyListRouting({ match }) {
-  // TODO: Figure out which filters we want to pass in via a URL
-  //const { patientId } = match.params;
+function toLowerCaseFirstLetter(word) {
+  return word[0].toLowerCase() + word.slice(1);
+}
 
-  return <ConnectedStudyList />;
+function getFilters({ search }) {
+  const searchParameters = queryString.parse(search);
+  const filters = {};
+
+  Object.entries(searchParameters).forEach(([key, value]) => {
+    filters[toLowerCaseFirstLetter(key)] = value;
+  });
+
+  return filters;
+}
+
+function StudyListRouting({ location }) {
+  const filters = location ? getFilters(location) : undefined;
+
+  let studyListFunctionsEnabled = false;
+  if (window.config && window.config.studyListFunctionsEnabled) {
+    studyListFunctionsEnabled = window.config.studyListFunctionsEnabled;
+  }
+  return <ConnectedStudyList
+    filters={filters}
+    studyListFunctionsEnabled={studyListFunctionsEnabled}
+  />;
 }
 
 StudyListRouting.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      patientIds: PropTypes.string,
-    }),
-  }),
+  location: PropTypes.shape({
+    search: PropTypes.string,
+  }).isRequired,
 };
 
-export default StudyListRouting;
+export default withRouter(StudyListRouting);

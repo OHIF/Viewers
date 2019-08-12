@@ -17,6 +17,7 @@ class Header extends Component {
     location: PropTypes.object.isRequired,
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
+    userManager: PropTypes.object
   };
 
   static defaultProps = {
@@ -59,6 +60,16 @@ class Header extends Component {
       },
     ];
 
+    if (this.props.user && this.props.userManager) {
+      this.options.push({
+        title: t('Logout'),
+          icon: { name: 'power-off' },
+          onClick: () => {
+            this.props.userManager.signoutRedirect();
+          },
+      });
+    }
+
     this.hotKeysData = hotkeysManager.hotkeyDefinitions;
   }
 
@@ -71,6 +82,10 @@ class Header extends Component {
 
   render() {
     const { t } = this.props;
+    const showStudyList =
+      window.config.showStudyList !== undefined
+        ? window.config.showStudyList
+        : true;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">
@@ -85,7 +100,7 @@ class Header extends Component {
 
           {this.props.children}
 
-          {!this.props.home && (
+          {showStudyList && !this.props.home && (
             <Link
               className="header-btn header-studyListLinkSection"
               to={{

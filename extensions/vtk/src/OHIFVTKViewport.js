@@ -189,6 +189,18 @@ class OHIFVTKViewport extends Component {
     volumeActor.setMapper(volumeMapper);
     volumeMapper.setInputData(data);
 
+    // TODO: Should look into implementing autoAdjustSampleDistance in vtk
+    const sampleDistance =
+      1.2 *
+      Math.sqrt(
+        data
+          .getSpacing()
+          .map((v) => v * v)
+          .reduce((a, b) => a + b, 0)
+      );
+
+    volumeMapper.setSampleDistance(sampleDistance);
+
     volumeCache[displaySetInstanceUid] = volumeActor;
 
     return volumeActor;

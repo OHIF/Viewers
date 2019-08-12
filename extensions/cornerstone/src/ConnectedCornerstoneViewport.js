@@ -1,9 +1,24 @@
-import CornerstoneViewport from "react-cornerstone-viewport";
-import OHIF from "@ohif/core";
-import { connect } from "react-redux";
-import throttle from "lodash.throttle";
+import CornerstoneViewport from 'react-cornerstone-viewport';
+import OHIF from '@ohif/core';
+import { connect } from 'react-redux';
+import throttle from 'lodash.throttle';
 
 const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
+const {
+  onAdded,
+  onRemoved,
+  onModified,
+} = OHIF.measurements.MeasurementHandlers;
+
+// TODO: Transition to enums for the action names so that we can ensure they stay up to date
+// everywhere they're used.
+const MEASUREMENT_ACTION_MAP = {
+  added: onAdded,
+  removed: onRemoved,
+  modified: throttle(event => {
+    return onModified(event);
+  }, 300),
+};
 
 const mapStateToProps = (state, ownProps) => {
   let dataFromStore;
@@ -37,7 +52,7 @@ const mapStateToProps = (state, ownProps) => {
     enableStackPrefetch: isActive,
     //stack: viewportSpecificData.stack,
     cineToolData: viewportSpecificData.cine,
-    viewport: viewportSpecificData.viewport
+    viewport: viewportSpecificData.viewport,
   };
 };
 
@@ -64,28 +79,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(
         setViewportSpecificData(viewportIndex, {
           // TODO: Hack to make sure our plugin info is available from the outset
-          plugin: "cornerstone",
-          dom: enabledElement
+          plugin: 'cornerstone',
+          dom: enabledElement,
         })
       );
     },
 
     onMeasurementsChanged: (event, action) => {
-      const {
-        onAdded,
-        onRemoved,
-        onModified
-      } = OHIF.measurements.MeasurementHandlers;
-      const actions = {
-        added: onAdded,
-        removed: onRemoved,
-        modified: throttle(event => {
-          return onModified(event);
-        }, 300)
-      };
-
-      return actions[action](event);
-    }
+      return MEASUREMENT_ACTION_MAP[action](event);
+    },
   };
 };
 

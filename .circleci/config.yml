@@ -165,6 +165,7 @@ jobs:
       # Could do a check here, if it doesn't exist, install cypress?
       - run: yarn install
       - run: yarn run test:e2e:ci
+      - run: yarn run test:e2e:scriptTag
 
   npm_publish:
     <<: *defaults
@@ -311,6 +312,9 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
+      - e2e_test:
+          requires:
+            - build_and_test
 
   # MERGE TO MASTER
   cut_release:

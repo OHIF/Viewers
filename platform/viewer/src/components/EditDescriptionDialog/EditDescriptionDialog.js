@@ -72,7 +72,8 @@ export default class EditDescriptionDialog extends Component {
     this.props.onCancel();
   };
 
-  onConfirm = () => {
+  onConfirm = e => {
+    e.preventDefault();
     this.props.onUpdate(this.state.description);
   };
 

@@ -1,10 +1,15 @@
 {
   "Image": "Image",
   "Layout": "Layout",
+  "Measurements": "Measurements",
   "More": "More",
   "Next": "Next",
   "Play": "Play",
   "Previous": "Previous",
   "Reset": "Reset",
-  "Stop": "Stop"
+  "RowsPerPage": "rows per page",
+  "Series": "Series",
+  "Show": "Show",
+  "Stop": "Stop",
+  "StudyDate": "Study Date"
 }

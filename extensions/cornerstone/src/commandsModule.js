@@ -1,5 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
+import OHIF from 'ohif-core';
+const scroll = cornerstoneTools.import('util/scroll');
 
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
@@ -89,16 +91,77 @@ const actions = {
     // TODO
     console.warn('updateDisplaySet: ', direction);
   },
-  clearAnnotations: () => {
-    console.warn('clearAnnotations: not yet implemented');
-    // const toolState =
-    //   cornerstoneTools.globalImageIdSpecificToolStateManager.toolState;
-    // if (!toolState) return;
-    // Object.keys(toolState).forEach(imageId => {
-    //   if (!cornerstoneImageId || cornerstoneImageId === imageId)
-    //     delete toolState[imageId];
-    // });
+  clearAnnotations: ({ viewports }) => {
+    const element = _getActiveViewportEnabledElement(
+      viewports.viewportSpecificData,
+      viewports.activeViewportIndex
+    );
+    if (!element) {
+      return;
+    }
+
+    const enabledElement = cornerstone.getEnabledElement(element);
+    if (!enabledElement || !enabledElement.image) {
+      return;
+    }
+
+    const {
+      toolState,
+    } = cornerstoneTools.globalImageIdSpecificToolStateManager;
+    if (
+      !toolState ||
+      toolState.hasOwnProperty(enabledElement.image.imageId) === false
+    ) {
+      return;
+    }
+
+    const imageIdToolState = toolState[enabledElement.image.imageId];
+
+    const measurementsToRemove = [];
+
+    Object.keys(imageIdToolState).forEach(toolType => {
+      const { data } = imageIdToolState[toolType];
+
+      data.forEach(measurementData => {
+        const { _id, lesionNamingNumber, measurementNumber } = measurementData;
+        if (!_id) {
+          return;
+        }
+
+        measurementsToRemove.push({
+          toolType,
+          _id,
+          lesionNamingNumber,
+          measurementNumber,
+        });
+      });
+    });
+
+    measurementsToRemove.forEach(measurementData => {
+      OHIF.measurements.MeasurementHandlers.onRemoved({
+        detail: {
+          toolType: measurementData.toolType,
+          measurementData,
+        },
+      });
+    });
   },
+  nextImage: ({ viewports }) => {
+    const enabledElement = _getActiveViewportEnabledElement(
+      viewports.viewportSpecificData,
+      viewports.activeViewportIndex
+    );
+
+    scroll(enabledElement, 1);
+  },
+  previousImage: ({ viewports }) => {
+    const enabledElement = _getActiveViewportEnabledElement(
+      viewports.viewportSpecificData,
+      viewports.activeViewportIndex
+    );
+
+    scroll(enabledElement, -1);
+  }
 };
 
 const definitions = {
@@ -147,8 +210,21 @@ const definitions = {
     storeContexts: ['viewports'],
     options: {},
   },
-  // TODO: Clear Annotations
-  // TODO: Next/Previous image
+  clearAnnotations: {
+    commandFn: actions.clearAnnotations,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  nextImage: {
+    commandFn: actions.nextImage,
+    storeContexts: ['viewports'],
+    options: {},
+  },
+  previousImage: {
+    commandFn: actions.previousImage,
+    storeContexts: ['viewports'],
+    options: {},
+  },
   // TODO: First/Last image
   // Next/Previous series/DisplaySet
   nextViewportDisplaySet: {

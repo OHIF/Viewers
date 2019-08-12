@@ -1,6 +1,6 @@
 window.config = {
   routerBasename: '/',
-  relativeWebWorkerScriptsPath: '',
+  showStudyList: true,
   servers: {
     // This is an array, but we'll only use the first entry for now
     dicomWeb: [

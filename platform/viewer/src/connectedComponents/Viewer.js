@@ -1,3 +1,4 @@
+<<<<<<< HEAD:platform/viewer/src/connectedComponents/Viewer.js
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
@@ -14,6 +15,25 @@ import ConnectedViewerMain from "./ConnectedViewerMain.js";
 import SidePanel from "./../components/SidePanel.js";
 import { extensionManager } from "./../App.js";
 import "./Viewer.css";
+=======
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+
+import { MODULE_TYPES } from 'ohif-core';
+import OHIF from 'ohif-core';
+import moment from 'moment';
+import WhiteLabellingContext from '../WhiteLabellingContext.js';
+import ConnectedHeader from './ConnectedHeader.js';
+import ConnectedToolbarRow from './ConnectedToolbarRow.js';
+import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
+import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
+import ConnectedViewerMain from './ConnectedViewerMain.js';
+import SidePanel from './../components/SidePanel.js';
+import { extensionManager } from './../App.js';
+import UserManagerContext from '../UserManagerContext';
+import './Viewer.css';
+>>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/connectedComponents/Viewer.js
 /**
  * Inits OHIF Hanging Protocol's onReady.
  * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
@@ -230,9 +250,14 @@ class Viewer extends Component {
         {/* HEADER */}
         <WhiteLabellingContext.Consumer>
           {whiteLabelling => (
-            <ConnectedHeader home={false}>
-              {whiteLabelling.logoComponent}
-            </ConnectedHeader>
+            <UserManagerContext.Consumer>
+              { userManager => (
+                  <ConnectedHeader home={false} userManager={userManager}>
+                    {whiteLabelling.logoComponent}
+                  </ConnectedHeader>
+                )
+              }
+            </UserManagerContext.Consumer>
           )}
         </WhiteLabellingContext.Consumer>
 
@@ -319,7 +344,6 @@ export default Viewer;
  *
  * TODO[react]:
  * - Add sorting of display sets
- * - Add useMiddleSeriesInstanceAsThumbnail
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
@@ -339,12 +363,27 @@ const _mapStudiesToThumbnails = function(studies) {
       } = displaySet;
 
       let imageId;
+<<<<<<< HEAD:platform/viewer/src/connectedComponents/Viewer.js
       let altImageText = " "; // modality
+=======
+      let altImageText;
+>>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/connectedComponents/Viewer.js
 
-      if (displaySet.images && displaySet.images.length) {
-        imageId = displaySet.images[0].getImageId();
+      if (displaySet.modality && displaySet.modality === 'SEG') {
+        // TODO: We want to replace this with a thumbnail showing
+        // the segmentation map on the image, but this is easier
+        // and better than what we have right now.
+        altImageText = 'SEG';
+      } else if (displaySet.images && displaySet.images.length) {
+        const imageIndex = Math.floor(displaySet.images.length / 2);
+
+        imageId = displaySet.images[imageIndex].getImageId();
       } else {
+<<<<<<< HEAD:platform/viewer/src/connectedComponents/Viewer.js
         altImageText = "SR";
+=======
+        altImageText = displaySet.modality ? displaySet.modality : 'UN';
+>>>>>>> cac911f08eafe981a93a4937ccff1e1cd7653af7:src/connectedComponents/Viewer.js
       }
 
       return {
