@@ -1,9 +1,10 @@
 const path = require('path');
 const merge = require('webpack-merge');
+const webpack = require('webpack');
 const webpackCommon = require('./../../../.webpack/webpack.common.js');
-const pkg = require('./../package.json');
+//
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // const
-const ROOT_DIR = path.join(__dirname, './..');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 
@@ -30,10 +31,10 @@ module.exports = (env, argv) => {
       sideEffects: true,
     },
     output: {
-      path: ROOT_DIR,
+      path: DIST_DIR,
       library: 'ohifViewer',
       libraryTarget: 'umd',
-      filename: pkg.main,
+      filename: 'index.umd.js',
     },
     /**
      * For CommonJS, we want to bundle whatever font we've landed on. This allows
@@ -57,5 +58,11 @@ module.exports = (env, argv) => {
         },
       ],
     },
+    plugins: [
+      // Longer build. Let's report progress
+      new webpack.ProgressPlugin(),
+      // Clean output.path
+      new CleanWebpackPlugin(),
+    ],
   });
 };
