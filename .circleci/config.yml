@@ -47,12 +47,12 @@ jobs:
 
       # RUN TESTS
       - run:
-          name: "JavaScript Test Suite"
+          name: 'JavaScript Test Suite'
           command: yarn run test:unit:ci
 
       # PLATFORM/VIEWER
       - run:
-          name: "VIEWER: Combine report output"
+          name: 'VIEWER: Combine report output'
           command: |
             viewerCov="/home/circleci/repo/platform/viewer/coverage"
             touch "${viewerCov}/reports"
@@ -61,12 +61,12 @@ jobs:
             cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
       - codecov/upload:
-          file: "/home/circleci/repo/platform/viewer/coverage/reports"
-          flags: "viewer"
+          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          flags: 'viewer'
 
       # PLATFORM/CORE
       - run:
-          name: "CORE: Combine report output"
+          name: 'CORE: Combine report output'
           command: |
             coreCov="/home/circleci/repo/platform/core/coverage"
             touch "${coreCov}/reports"
@@ -75,8 +75,8 @@ jobs:
             cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
       - codecov/upload:
-          file: "/home/circleci/repo/platform/core/coverage/reports"
-          flags: "core"
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
 
   MERGE_UNIT_TESTS:
     <<: *defaults
@@ -107,12 +107,12 @@ jobs:
 
       # RUN TESTS
       - run:
-          name: "JavaScript Test Suite"
+          name: 'JavaScript Test Suite'
           command: yarn run test:unit:ci
 
       # PLATFORM/VIEWER
       - run:
-          name: "VIEWER: Combine report output"
+          name: 'VIEWER: Combine report output'
           command: |
             viewerCov="/home/circleci/repo/platform/viewer/coverage"
             touch "${viewerCov}/reports"
@@ -121,12 +121,12 @@ jobs:
             cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
             echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
       - codecov/upload:
-          file: "/home/circleci/repo/platform/viewer/coverage/reports"
-          flags: "viewer"
+          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          flags: 'viewer'
 
       # PLATFORM/CORE
       - run:
-          name: "CORE: Combine report output"
+          name: 'CORE: Combine report output'
           command: |
             coreCov="/home/circleci/repo/platform/core/coverage"
             touch "${coreCov}/reports"
@@ -135,8 +135,8 @@ jobs:
             cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
             echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
       - codecov/upload:
-          file: "/home/circleci/repo/platform/core/coverage/reports"
-          flags: "core"
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
 
       # Persist :+1:
       - persist_to_workspace:
@@ -258,7 +258,7 @@ jobs:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
       # Build & Test
       - run:
-          name: "Build Demo Site, Upload SourceMaps, Send Deploy Notification"
+          name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
           command: |
             yarn build:demo:ci
             perl -i -pe 's#</head>#`cat .circleci/rollbar.html` #e' build/index.html
@@ -314,7 +314,7 @@ workflows:
                 - hotfix/*
       - e2e_test:
           requires:
-            - build_and_test
+            - PR_UNIT_TESTS
 
   # MERGE TO MASTER
   cut_release:

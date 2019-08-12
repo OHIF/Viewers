@@ -84,7 +84,6 @@
     "reselect": "^4.0.0"
   },
   "devDependencies": {
-    "cpx": "1.5.0",
     "cypress": "^3.3.1",
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
