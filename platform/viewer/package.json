@@ -18,6 +18,7 @@
   "scripts": {
     "build:package": "webpack --config .webpack/commonjs.prod.js",
     "build:viewer": "yarn run preBuild && webpack --config .webpack/pwa.prod.js",
+    "build:viewer:package": "yarn run build:package",
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
     "dev": "yarn run preBuild && webpack-dev-server --config .webpack/all.dev.js --mode development -w -d",
     "dev:orthanc": "yarn run preBuild && cross-env REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
