@@ -6,7 +6,6 @@
  * We do still need to generate the "index.html" and copy over files from
  * "public/" so our `webpack-dev-server` can _serve_ them for us :+1:
  */
-
 const path = require('path');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
@@ -19,15 +18,6 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
-// Dev... DevServer
-// Prod...
-// - PWA
-// - CommonJS
-// TODO: In-progress. Merging these
-// LINKS:
-// https://webpack.js.org/guides/development/
-// https://webpack.js.org/configuration/dev-server/
-// https://www.prohipaa.com/en/training
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
@@ -61,6 +51,7 @@ module.exports = (env, argv) => {
         },
       }),
     ],
+    // https://webpack.js.org/configuration/dev-server/
     devServer: {
       open: true,
       port: 3000,
