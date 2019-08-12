@@ -16,21 +16,21 @@
   },
   "proxy": "http://localhost:8042",
   "scripts": {
-    "test:unit": "jest --watch",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
+    "build:package": "echo 'VIEWER: No package'",
+    "build:viewer": "webpack --config config/webpack.prod.js",
     "build:demo:ci": "yarn run preBuild && cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
-    "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci",
+    "dev:orthanc": "yarn run preBuild && cross-env REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
+    "dev:viewer": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d",
     "start": "yarn run dev",
     "preBuild": "yarn run copy:webworkers",
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
-    "dev:orthanc": "yarn run preBuild && cross-env REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "copy:webworkers": "cpx \"node_modules/cornerstone-wado-image-loader/dist/*.min.js*\" \"public\" -v",
     "cy": "cypress open",
     "cy:run": "cypress run",
     "cy:run:ci": "yarn run cy:run -- --record",
-    "build:package": "echo 'VIEWER: No package'",
-    "build:viewer": "webpack --config config/webpack.prod.js",
-    "dev:viewer": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.dev.js --mode development -w -d"
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
+    "test:e2e:ci": "start-server-and-test start http://localhost:5000 cy:run:ci"
   },
   "resolutions": {
     "browserslist": "4.6.2",
@@ -40,11 +40,6 @@
     "dist",
     "README.md"
   ],
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "peerDependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
@@ -100,6 +95,5 @@
     "lodash.clonedeep": "4.5.0",
     "semantic-release": "15.13.x",
     "start-server-and-test": "^1.9.1"
-  },
-  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+  }
 }

@@ -82,16 +82,6 @@
     "workbox-webpack-plugin": "^4.3.1",
     "worker-loader": "^2.0.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,json,md,yml}": [
-      "prettier --write",
-      "git add"
-    ]
   "resolutions": {
     "**/@babel/runtime": "7.5.5"
   },

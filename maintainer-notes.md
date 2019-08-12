@@ -43,3 +43,17 @@ Use Env options to set config:
   extension assets
   - The "skinny" umd build for viewer only needs to bundle it's own assets
 - The PWA build for Viewer can code-split to it's heart's content
+
+Verify all have "dev:package-name" command Should we include `package.json` and
+`src` as output?
+
+- For ESM/Module builds
+- Not dissimilar from VTK.js consumption
+- jest --watchAll for individual packages?
+
+WebPack 5: https://github.com/webpack/webpack/issues/6386#issue-291757876
+
+Flattened ESM: Less efficient, not as great at code splitting? From source? More
+loaders, added complexity, slower builds, better output
+
+CleanWebpack Plugin: https://github.com/johnagan/clean-webpack-plugin
