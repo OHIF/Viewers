@@ -57,3 +57,8 @@ Flattened ESM: Less efficient, not as great at code splitting? From source? More
 loaders, added complexity, slower builds, better output
 
 CleanWebpack Plugin: https://github.com/johnagan/clean-webpack-plugin
+
+- Don't load/bundle a font at any layer other than Application/Viewer
+- It gets to decide if it should be bundled/cached/external
+
+- Remove preBuild step in viewer after @3 wado image loader

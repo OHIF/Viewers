@@ -124,7 +124,7 @@ These commands are available from the root directory. Each project directory als
 | -------------------- | ------------------------------------------------------------- |
 | **Develop**          |                                                               |
 | `dev` or `start`     | Default development experience for Viewer                     |
-| `dev:<package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
+| `dev:project <package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
 | `test:unit`          | Jest multi-project test runner; overall coverage              |
 | **Deploy**           |                                                               |
 | `build`*             | Builds production output for our PWA Viewer                   |

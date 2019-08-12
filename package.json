@@ -12,7 +12,8 @@
   },
   "scripts": {
     "cm": "npx git-cz",
-    "dev": ".scripts/dev.sh",
+    "dev": "lerna run dev:viewer",
+    "dev:project": ".scripts/dev.sh",
     "build": "lerna run build:viewer",
     "build:package": "learn run build:viewer:package",
     "build:package-all": "lerna run build:package --parallel",
@@ -26,7 +27,8 @@
     "lerna:publish": "lerna publish from-package --canary --dist-tag canary"
   },
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "^7.5.5",
+    "core-js": "^3.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

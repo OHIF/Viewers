@@ -1,46 +1,47 @@
-import "./config";
+import './config';
 // Polyfills
-import "core-js/features/array/flat";
-import "core-js/stable";
-import "regenerator-runtime/runtime";
+// PWA Only?
+import 'core-js/features/array/flat';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 import {
   CommandsManager,
   ExtensionManager,
   HotkeysManager,
-  utils
-} from "@ohif/core";
-import React, { Component } from "react";
+  utils,
+} from '@ohif/core';
+import React, { Component } from 'react';
 import {
   getUserManagerForOpenIdConnectClient,
-  initWebWorkers
-} from "./utils/index.js";
+  initWebWorkers,
+} from './utils/index.js';
 
-import { I18nextProvider } from "react-i18next";
-import initCornerstoneTools from "./initCornerstoneTools.js";
+import { I18nextProvider } from 'react-i18next';
+import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
-import { GenericViewerCommands, MeasurementsPanel } from "./appExtensions";
-import OHIFCornerstoneExtension from "@ohif/extension-cornerstone";
-import OHIFStandaloneViewer from "./OHIFStandaloneViewer";
-import { OidcProvider } from "redux-oidc";
-import PropTypes from "prop-types";
-import { Provider } from "react-redux";
-import { BrowserRouter as Router } from "react-router-dom";
-import WhiteLabellingContext from "./WhiteLabellingContext";
-import { getActiveContexts } from "./store/layout/selectors.js";
-import i18n from "@ohif/i18n";
-import setupTools from "./setupTools.js";
-import store from "./store";
+import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
+import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+import OHIFStandaloneViewer from './OHIFStandaloneViewer';
+import { OidcProvider } from 'redux-oidc';
+import PropTypes from 'prop-types';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import WhiteLabellingContext from './WhiteLabellingContext';
+import { getActiveContexts } from './store/layout/selectors.js';
+import i18n from '@ohif/i18n';
+import setupTools from './setupTools.js';
+import store from './store';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
-  globalToolSyncEnabled: true
+  globalToolSyncEnabled: true,
 });
 
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
-  getActiveContexts: () => getActiveContexts(store.getState())
+  getActiveContexts: () => getActiveContexts(store.getState()),
 };
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -64,15 +65,15 @@ class App extends Component {
     whiteLabelling: PropTypes.object,
     extensions: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired
+        id: PropTypes.string.isRequired,
       })
-    )
+    ),
   };
 
   static defaultProps = {
     whiteLabelling: {},
     oidc: [],
-    extensions: []
+    extensions: [],
   };
 
   constructor(props) {
@@ -137,7 +138,7 @@ function _initExtensions(extensions) {
   const defaultExtensions = [
     GenericViewerCommands,
     MeasurementsPanel,
-    OHIFCornerstoneExtension
+    OHIFCornerstoneExtension,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
