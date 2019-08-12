@@ -17,7 +17,11 @@ yarn add --dev -W package-name
   project
 - Remove all-contributors bot; install CLI per project and add per project
   commands
--
+- Verify all have "dev:package-name" command
+  - Should we include `package.json` and `src` as output? (build from ESM)
+  - Should we remove `dev:package-name` commands and suggest navigating to
+    package root?
+- Fix broken peer dependencies?
 
 NOTES:
 
@@ -28,9 +32,6 @@ NOTES:
 # Releases based on package.json differences from NPM
 
 - `npx lerna publish from-package --dist-tag canary`
-
-Issue: lerna info lifecycle root@undefined~publish: Failed to exec publish
-script lerna ERR! lifecycle "publish" errored in "root", exiting 1
 
 Use Env options to set config:
 
@@ -43,22 +44,18 @@ Use Env options to set config:
   extension assets
   - The "skinny" umd build for viewer only needs to bundle it's own assets
 - The PWA build for Viewer can code-split to it's heart's content
+- Don't load/bundle a font at any layer other than Application/Viewer
+- It gets to decide if it should be bundled/cached/external
 
-Verify all have "dev:package-name" command Should we include `package.json` and
-`src` as output?
-
-- For ESM/Module builds
-- Not dissimilar from VTK.js consumption
-- jest --watchAll for individual packages?
+* For ESM/Module builds
+* Not dissimilar from VTK.js consumption
+* jest --watchAll for individual packages?
 
 WebPack 5: https://github.com/webpack/webpack/issues/6386#issue-291757876
 
 Flattened ESM: Less efficient, not as great at code splitting? From source? More
 loaders, added complexity, slower builds, better output
 
-CleanWebpack Plugin: https://github.com/johnagan/clean-webpack-plugin
-
-- Don't load/bundle a font at any layer other than Application/Viewer
-- It gets to decide if it should be bundled/cached/external
+Notes:
 
 - Remove preBuild step in viewer after @3 wado image loader
