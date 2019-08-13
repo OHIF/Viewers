@@ -6,7 +6,9 @@ import getImageIdForImagePath from '../lib/getImageIdForImagePath';
 import guid from '../../utils/guid';
 import studyMetadataManager from '../../utils/studyMetadataManager';
 
-const configuration = {};
+const configuration = {
+  measurementTools: [],
+};
 
 export default class MeasurementApi {
   static Instance;
