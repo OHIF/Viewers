@@ -6,10 +6,10 @@ function getWADORSImageUrl(instance, frame) {
   }
 
   // We need to sum 1 because WADO-RS frame number is 1-based
-  frame = (frame || 0) + 1;
+  frame = frame ? parseInt(frame) + 1 : 1;
 
   // Replaces /frame/1 by /frame/{frame}
-  wadorsuri = wadorsuri.replace(/(%2Fframes%2F)(\d+)/, `$1${frame}`);
+  wadorsuri = wadorsuri.replace(/frames\/(\d+)/, `frames/${frame}`);
 
   return wadorsuri;
 }
@@ -18,6 +18,7 @@ function getWADORSImageUrl(instance, frame) {
  * Obtain an imageId for Cornerstone based on the WADO-RS scheme
  *
  * @param {object} instanceMetada metadata object (InstanceMetadata)
+ * @param {(string\|number)} [frame] the frame number
  * @returns {string} The imageId to be used by Cornerstone
  */
 export default function getWADORSImageId(instance, frame) {

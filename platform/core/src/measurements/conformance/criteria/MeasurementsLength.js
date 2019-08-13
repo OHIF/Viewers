@@ -63,6 +63,10 @@ export const MeasurementsLengthSchema = {
       minItems: 1,
       uniqueItems: true,
     },
+    isNodal: {
+      label: 'Filter to evaluate only nodal or extranodal measurements',
+      type: 'boolean'
+    },
     message: {
       label: 'Message to be displayed in case of nonconformity',
       type: 'string',
@@ -89,6 +93,7 @@ export const MeasurementsLengthSchema = {
  *   modalityNotIn: Filter to evaluate only measurements without the specified modalities
  *   locationIn: Filter to evaluate only measurements with the specified locations
  *   locationNotIn: Filter to evaluate only measurements without the specified locations
+ *   isNodal: Filter to evaluate only nodal or extranodal measurements
  *   message: Message to be displayed in case of nonconformity
  */
 export class MeasurementsLengthCriterion extends BaseCriterion {
@@ -107,7 +112,7 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
       const { metadata, measurement } = item;
       const { location } = measurement;
 
-      let { longestDiameter, shortestDiameter } = measurement;
+      let { longestDiameter, shortestDiameter, isNodal } = measurement;
       if (measurement.childToolsCount) {
         const child = measurement.bidirectional;
         longestDiameter = (child && child.longestDiameter) || 0;
@@ -118,6 +123,8 @@ export class MeasurementsLengthCriterion extends BaseCriterion {
       const modality = (metadata.getRawValue('x00080060') || '').toUpperCase();
 
       // Stop here if the measurement does not match the modality and location filters
+      if (typeof isNodal === 'boolean' && typeof options.isNodal === 'boolean' && options.isNodal !== isNodal)
+        return;
       if (options.locationIn && options.locationIn.indexOf(location) === -1)
         return;
       if (options.modalityIn && options.modalityIn.indexOf(modality) === -1)

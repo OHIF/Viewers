@@ -164,9 +164,10 @@ function getPaletteColor(server, instance, tag, lutDescriptor) {
     return byteArray[position] + byteArray[position + 1] * 256;
   };
 
-  const arrayBufferToPaletteColorLUT = arraybuffer => {
-    const byteArray = new Uint8Array(arraybuffer);
-    const lut = [];
+  const arrayBufferToPaletteColorLUT = result => {
+    const arraybuffer = result[0]
+    const byteArray = new Uint8Array(arraybuffer)
+    const lut = []
 
     for (let i = 0; i < numLutEntries; i++) {
       if (bits === 16) {
@@ -390,6 +391,7 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
           DICOMWeb.getString(instance['00181065'])
         ),
         sliceThickness: DICOMWeb.getNumber(instance['00180050']),
+        spacingBetweenSlices: DICOMWeb.getString(instance['00180088']),
         lossyImageCompression: DICOMWeb.getString(instance['00282110']),
         derivationDescription: DICOMWeb.getString(instance['00282111']),
         lossyImageCompressionRatio: DICOMWeb.getString(instance['00282112']),

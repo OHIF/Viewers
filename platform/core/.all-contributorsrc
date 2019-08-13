@@ -59,6 +59,34 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "igoroctaviano",
+      "name": "Igor Octaviano",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/13886933?v=4",
+      "profile": "http://igoroctaviano.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dlwire",
+      "name": "David Wire",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1167291?v=4",
+      "profile": "https://github.com/dlwire",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "pavertomato",
+      "name": "Egor Lezhnin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/878990?v=4",
+      "profile": "http://egor.lezhn.in",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -635,7 +635,17 @@ function _getDisplaySetFromSopClassModule(
     headers,
   });
 
-  return plugin.getDisplaySetFromSeries(series, study, dicomWebClient, headers);
+  let displaySet = plugin.getDisplaySetFromSeries(
+    series,
+    study,
+    dicomWebClient,
+    headers
+  );
+  if (displaySet && !displaySet.modality) {
+    const instance = series.getFirstInstance();
+    displaySet.modality = instance.getRawValue('x00080060');
+  }
+  return displaySet;
 }
 
 /**

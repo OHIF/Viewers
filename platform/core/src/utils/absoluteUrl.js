@@ -1,5 +1,7 @@
-export default function absoluteUrl(path) {
+const absoluteUrl = path => {
   let absolutePath = '/';
+
+  if (!path) return absolutePath;
 
   // TODO: Find another way to get root url
   const absoluteUrl = window.location.origin;
@@ -13,4 +15,6 @@ export default function absoluteUrl(path) {
   }
 
   return absolutePath.replace(/\/\/+/g, '/');
-}
+};
+
+export default absoluteUrl;

@@ -1,5 +1,9 @@
 // TODO: figure out where else to put this function
-export default function addServers(servers, store) {
+const addServers = (servers, store) => {
+  if (!servers || !store) {
+    throw new Error('The servers and store must be defined');
+  }
+
   Object.keys(servers).forEach(serverType => {
     const endpoints = servers[serverType];
     endpoints.forEach(endpoint => {
@@ -12,4 +16,6 @@ export default function addServers(servers, store) {
       });
     });
   });
-}
+};
+
+export default addServers;

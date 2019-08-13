@@ -12,6 +12,14 @@ export const MaxTargetsPerOrganSchema = {
       label: 'Flag to evaluate only new targets',
       type: 'boolean',
     },
+    isNodal: {
+      label: 'Filter to evaluate only nodal or extranodal measurements',
+      type: 'boolean'
+    },
+    message: {
+      label: 'Message to be displayed in case of nonconformity',
+      type: 'string',
+    }
   },
   required: ['limit'],
 };
@@ -22,6 +30,8 @@ export const MaxTargetsPerOrganSchema = {
  * Options:
  *   limit: Max targets allowed in study
  *   newTarget: Flag to evaluate only new targets (must be evaluated on both)
+ *   isNodal: Filter to evaluate only nodal or extranodal measurements
+ *   message: Message to be displayed in case of nonconformity
  */
 export class MaxTargetsPerOrganCriterion extends BaseCriterion {
   constructor(...props) {
@@ -36,9 +46,13 @@ export class MaxTargetsPerOrganCriterion extends BaseCriterion {
     const newTargetNumbers = this.getNewTargetNumbers(data);
     data.targets.forEach(target => {
       const { measurement } = target;
-      const { location, measurementNumber, isSplitLesion } = measurement;
+      const { location, measurementNumber, isSplitLesion, isNodal } = measurement;
 
-      if (isSplitLesion) return;
+      if (isSplitLesion)
+        return;
+
+      if (typeof isNodal === 'boolean' && typeof options.isNodal === 'boolean' && options.isNodal !== isNodal)
+        return;
 
       if (!targetsPerOrgan[location]) {
         targetsPerOrgan[location] = new Set();
@@ -59,7 +73,7 @@ export class MaxTargetsPerOrganCriterion extends BaseCriterion {
       message =
         options.message ||
         `Each organ should not have more than ${
-          options.limit
+        options.limit
         } ${increment}targets.`;
     }
 

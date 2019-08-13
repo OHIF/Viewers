@@ -23,7 +23,7 @@ export default function getAttribute(element, defaultValue) {
 
 function convertToInt(input) {
   function padFour(input) {
-    var l = input.length;
+    const l = input.length;
 
     if (l == 0) return '0000';
     if (l == 1) return '000' + input;
@@ -33,9 +33,9 @@ function convertToInt(input) {
     return input;
   }
 
-  var output = '';
-  for (var i = 0; i < input.length; i++) {
-    for (var j = 0; j < input[i].length; j++) {
+  let output = '';
+  for (let i = 0; i < input.length; i++) {
+    for (let j = 0; j < input[i].length; j++) {
       output += padFour(input[i].charCodeAt(j).toString(16));
     }
   }

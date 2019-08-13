@@ -42,6 +42,7 @@ function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
     ModalitiesInStudy: filter.modalitiesInStudy,
     limit: filter.limit,
     offset: filter.offset,
+    fuzzymatching: filter.fuzzymatching,
     includefield: serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
   };
 

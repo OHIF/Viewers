@@ -9,7 +9,11 @@ const studySearchPromises = new Map();
  * @returns {Promise} resolved with an array of studies information or rejected with an error
  */
 export default function searchStudies(server, filter) {
-  const promiseKey = JSON.stringify(filter);
+  const promiseKeyObj = {
+    qidoRoot: server.qidoRoot,
+    filter,
+  };
+  const promiseKey = JSON.stringify(promiseKeyObj);
   if (studySearchPromises.has(promiseKey)) {
     return studySearchPromises.get(promiseKey);
   } else {
