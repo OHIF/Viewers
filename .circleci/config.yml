@@ -316,7 +316,8 @@ workflows:
                 - hotfix/*
       - cypress/run:
           pre-steps:
-            - run: 'curl -o- -L https://yarnpkg.com/install.sh | bash'
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v'
+            # - run: 'curl -o- -L https://yarnpkg.com/install.sh | bash'
           yarn: true
           record: true
           store_artifacts: true
