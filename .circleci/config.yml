@@ -315,11 +315,14 @@ workflows:
                 - feature/*
                 - hotfix/*
       - cypress/run:
+          pre-steps:
+            - run: 'curl -o- -L https://yarnpkg.com/install.sh | bash'
           yarn: true
           record: true
           store_artifacts: true
           start: yarn run dev
           wait-on: 'http://localhost:5000'
+          no-workspace: true # Don't persist workspace
           # working_directory: ~/repo
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           post-steps:
