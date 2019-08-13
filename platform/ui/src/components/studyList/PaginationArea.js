@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import './PaginationArea.styl';
+import { withTranslation } from '../../utils/LanguageProvider';
 
 class PaginationArea extends PureComponent {
   static defaultProps = {
@@ -35,7 +36,7 @@ class PaginationArea extends PureComponent {
     return (
       <div className="col-xs-8 col-sm-9 col-md-9">
         <div className="form-inline form-group page-buttons noselect">
-          <label>
+          <React.Fragment>
             <ul className="pagination-control no-margins">
               <li className="page-item prev">
                 <button
@@ -43,7 +44,7 @@ class PaginationArea extends PureComponent {
                   disabled={this.props.currentPage === 0}
                   className="btn page-link"
                 >
-                  Previous
+                  {this.props.t('Previous')}
                 </button>
               </li>
               <li className="page-item next">
@@ -55,11 +56,11 @@ class PaginationArea extends PureComponent {
                   }
                   className="btn page-link"
                 >
-                  Next
+                  {this.props.t('Next')}
                 </button>
               </li>
             </ul>
-          </label>
+          </React.Fragment>
         </div>
       </div>
     );
@@ -68,7 +69,7 @@ class PaginationArea extends PureComponent {
   renderRowsPerPageDropdown() {
     return (
       <div className="form-inline form-group rows-per-page">
-        <span>Show</span>
+        <span>{this.props.t('Show')}</span>
         <select
           onChange={this.onRowsPerPageChange}
           defaultValue={this.props.rowsPerPage}
@@ -81,7 +82,7 @@ class PaginationArea extends PureComponent {
             );
           })}
         </select>
-        <span>rows per page</span>
+        <span>{this.props.t('RowsPerPage')}</span>
       </div>
     );
   }
@@ -91,10 +92,10 @@ class PaginationArea extends PureComponent {
       <div name="paginationArea">
         <div className="pagination-area">
           <div className="row">
-            <div className="col-xs-4 col-sm-3 col-md-3">
+            <div className="rows-dropdown">
               {this.renderRowsPerPageDropdown()}
             </div>
-            <div className="col-xs-8 col-sm-9 col-md-9">
+            <div className="pagination-buttons">
               <div className="form-inline form-group page-number pull-right">
                 {this.renderPaginationButtons()}
               </div>
@@ -106,4 +107,5 @@ class PaginationArea extends PureComponent {
   }
 }
 
-export { PaginationArea };
+const connectedComponent = withTranslation('Common')(PaginationArea);
+export { connectedComponent as PaginationArea };

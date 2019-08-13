@@ -3,7 +3,6 @@
   margin-right: 10px;
   cursor: pointer;
   position: relative;
-  z-index: 999;
 }
 
 .dd-title {
@@ -30,6 +29,7 @@
   top: 100%;
   margin-top: 10px;
   background: white;
+  z-index: 999;
   border-radius: 5px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;

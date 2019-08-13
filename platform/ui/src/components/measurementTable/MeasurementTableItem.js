@@ -96,7 +96,10 @@ class MeasurementTableItem extends Component {
       >
         <div>
           <div className="measurementLocation">
-            {this.props.t(this.props.measurementData.label)}
+            {this.props.t(this.props.measurementData.label, {
+              keySeparator: '>',
+              nsSeparator: '|',
+            })}
           </div>
           <div>{this.getDataDisplayText()}</div>
           <div className="rowActions">{actionButtons}</div>

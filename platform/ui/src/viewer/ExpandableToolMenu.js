@@ -8,8 +8,8 @@ import { Tooltip } from '../components/tooltip';
 
 class ExpandableToolMenu extends React.Component {
   static propTypes = {
-    /** Button label/text */
-    text: PropTypes.string.isRequired,
+    /** Button label */
+    label: PropTypes.string.isRequired,
     /** Array of buttons to render when expanded */
     buttons: PropTypes.arrayOf(
       PropTypes.shape({
@@ -36,7 +36,7 @@ class ExpandableToolMenu extends React.Component {
   static defaultProps = {
     buttons: [],
     icon: 'ellipse-circle',
-    text: 'More',
+    label: 'More',
   };
 
   constructor(props) {
@@ -81,6 +81,17 @@ class ExpandableToolMenu extends React.Component {
     return isActive;
   };
 
+  activeIcon = () => {
+    if (this.props.activeCommand) {
+      return (
+        this.props.buttons.find(btn => this.props.activeCommand === btn.id)
+          .icon || this.props.icon
+      );
+    }
+
+    return this.props.icon;
+  };
+
   onExpandableToolClick = () => {
     if (this.props.onGroupMenuClick) {
       this.props.onGroupMenuClick();
@@ -110,8 +121,8 @@ class ExpandableToolMenu extends React.Component {
         <ToolbarButton
           key="menu-button"
           type="tool"
-          label={this.props.text}
-          icon={this.props.icon}
+          label={this.props.label}
+          icon={this.activeIcon()}
           className={'toolbar-button expandableToolMenu'}
           isActive={this.isActive()}
           isExpandable={true}

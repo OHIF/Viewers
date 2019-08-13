@@ -7,36 +7,26 @@ import PropTypes from 'prop-types';
 
 class StudylistToolbar extends PureComponent {
   static propTypes = {
-    studyListFunctionsEnabled: PropTypes.bool.isRequired,
     onImport: PropTypes.func,
   };
 
-  static defaultProps = {
-    studyListFunctionsEnabled: true,
+  onImport = event => {
+    if (this.props.onImport) {
+      this.props.onImport(event);
+    }
   };
 
-  clear(e) {
-    e.target.value = null;
-  }
-
   getImportTool() {
-    if (this.props.onImport && this.props.studyListFunctionsEnabled) {
+    if (this.props.onImport) {
       return (
         <div className="addNewStudy btn-file">
-          <label htmlFor="btnImport" style={{ width: '18px' }}>
+          <label
+            htmlFor="btnImport"
+            style={{ width: '18px' }}
+            onClick={this.onImport}
+          >
             <Icon name="plus" />
-            Import study
           </label>
-          <input
-            id="btnImport"
-            onChange={this.props.onImport}
-            onClick={this.clear}
-            className="js-import-files"
-            type="file"
-            webkitdirectory="true"
-            directory="true"
-            multiple={true}
-          />
         </div>
       );
     }

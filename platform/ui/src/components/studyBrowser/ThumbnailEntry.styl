@@ -1,3 +1,5 @@
+@import './../../design/styles/common/global.styl'
+
 :root {
   --series-count-background-color: #678696;
 }
@@ -36,7 +38,7 @@
     line-height: 1.3em
     margin-top: 5px
     margin-left: 1rem
-    margin-right: 1rem
+    margin-right: 0.5rem
     max-width: 217px
     min-height: 36px
     position: relative
@@ -104,13 +106,13 @@
         &:after
           background-color: var(--active-color);
           box-shadow: 1px 1px rgba(0, 0, 0, .115)
-          left: -5px
+          left: -4px
           position: absolute
-          top: -5px
+          top: -4px
 
         &
         &:after
-          border: 1px solid var(--series-count-background-color)
+          border: 0px solid var(--series-count-background-color)
           content: ''
           display: inline-block
           height: 11px

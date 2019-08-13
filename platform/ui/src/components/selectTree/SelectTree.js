@@ -79,25 +79,35 @@ export class SelectTree extends Component {
     return labelClass;
   };
 
+  filterItems() {
+    const filteredItems = [];
+    const rawItems = cloneDeep(this.props.items);
+    rawItems.forEach(item => {
+      if (Array.isArray(item.items)) {
+        item.items.forEach(item => {
+          const label = item.label.toLowerCase();
+          const searchTerm = this.state.searchTerm.toLowerCase();
+          if (label.indexOf(searchTerm) !== -1) {
+            filteredItems.push(item);
+          }
+        });
+      } else {
+        const label = item.label.toLowerCase();
+        const searchTerm = this.state.searchTerm.toLowerCase();
+        if (label.indexOf(searchTerm) !== -1) {
+          filteredItems.push(item);
+        }
+      }
+    });
+    return filteredItems;
+  }
+
   getTreeItems() {
     const storageKey = 'SelectTree';
     let treeItems;
 
     if (this.state.searchTerm) {
-      const filteredItems = [];
-      const rawItems = cloneDeep(this.props.items);
-      rawItems.forEach(item => {
-        if (Array.isArray(item.items)) {
-          item.items.forEach(item => {
-            const label = item.label.toLowerCase();
-            const searchTerm = this.state.searchTerm.toLowerCase();
-            if (label.indexOf(searchTerm) !== -1) {
-              filteredItems.push(item);
-            }
-          });
-        }
-      });
-      treeItems = filteredItems;
+      treeItems = this.filterItems();
     } else if (this.state.currentNode) {
       treeItems = cloneDeep(this.state.currentNode.items);
     } else {
@@ -166,12 +176,12 @@ export class SelectTree extends Component {
         currentNode: null,
         value: null,
       });
-      return this.props.onSelected(event, item);
     } else {
       this.setState({
         currentNode: item,
       });
     }
+    return this.props.onSelected(event, item);
   };
 
   onBreadcrumbSelected = () => {

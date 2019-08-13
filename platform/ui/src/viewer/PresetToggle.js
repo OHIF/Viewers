@@ -14,7 +14,7 @@ export default class PresetToggle extends Component {
   static propTypes = {
     buttons: PropTypes.arrayOf(
       PropTypes.shape({
-        text: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
         icon: PropTypes.oneOfType([
           PropTypes.string,
           PropTypes.shape({
@@ -62,7 +62,7 @@ export default class PresetToggle extends Component {
         <div className="tools">{toolItems}</div>
         <span className="presetSelected">
           LEVELS:
-          {selectedButton ? selectedButton.text : 'Manual'}
+          {selectedButton ? selectedButton.label : 'Manual'}
         </span>
       </div>
     );

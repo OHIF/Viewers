@@ -12,7 +12,7 @@ class RoundedButtonGroup extends Component {
     options: PropTypes.arrayOf(
       PropTypes.shape({
         value: PropTypes.any,
-        text: PropTypes.string,
+        label: PropTypes.string,
         icon: PropTypes.oneOfType([
           PropTypes.string,
           PropTypes.shape({
@@ -54,7 +54,7 @@ class RoundedButtonGroup extends Component {
         active: this.props.value === option.value,
       });
 
-      const optionText = option.text && <span>{option.text}</span>;
+      const optionText = option.label && <span>{option.label}</span>;
       const iconProps =
         typeof option.icon === 'string' ? { name: option.icon } : option.icon;
 

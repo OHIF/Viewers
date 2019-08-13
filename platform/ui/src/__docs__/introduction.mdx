@@ -3,9 +3,9 @@ name: Introduction
 route: /
 ---
 
-import { Playground, Props } from 'docz';
-import { State } from 'react-powerplug';
-import { TableList, TableListItem } from './../index.js';
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { TableList, TableListItem } from './../index.js'
 
 # Introduction
 
@@ -25,11 +25,11 @@ OHIF's [zero-footprint DICOM viewer](https://github.com/OHIF/Viewers)
 > version in your projects to prevent issues caused by loose versioning.
 
 ```js
-// Add '@ohif/ui' as a dependency
-yarn add @ohif/ui
+// Add 'react-viewerbase' as a dependency
+yarn add react-viewerbase
 
 // Import and use components
-import { TableList } from '@ohif/ui'
+import { TableList } from 'react-viewerbase'
 ```
 
 <Playground>
@@ -56,7 +56,7 @@ import { TableList } from '@ohif/ui'
             >
               <label>{item.label}</label>
             </TableListItem>
-          );
+          )
         })}
       </TableList>
     )}

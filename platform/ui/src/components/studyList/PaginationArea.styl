@@ -11,6 +11,22 @@
         background-color: var(--primary-background-color)
         color: white
 
+  .row
+    display: flex;
+
+    .rows-dropdown
+      width: 25%;
+      padding-right: 15px;
+      padding-left: 15px;
+
+    .pagination-buttons
+      width: 75%;
+      padding-right: 15px;
+      padding-left: 15px;
+
+    .form-group
+      margin-bottom: 15px;
+
   .rows-per-page label.wrapperLabel
     display: inline-table !important
     margin: 0 4px
@@ -22,30 +38,27 @@
   .page-buttons
     margin: 0
     text-align: right
+    font-weight: normal
+    ul.pagination-control
+      margin: 0
 
-    label
-      font-weight: normal
+      li
+        display: table-cell
+        padding: 5px 2px
 
-      ul.pagination-control
-        margin: 0
+        button
+          padding: 4px 8px
+          background-color: var(--primary-background-color)
+          border-color: var(--ui-gray)
+          color: var(--ui-gray-darkest)
+          color: white
+          text-decoration: none
 
-        li
-          display: table-cell
-          padding: 5px 2px
+          &:hover:enabled
+            color: var(--active-color)
 
+        .active
           button
-            padding: 4px 8px
-            background-color: var(--primary-background-color)
-            border-color: var(--ui-gray)
-            color: var(--ui-gray-darkest)
+            background-color: var(--ui-gray)
+            border-color: #ddd
             color: white
-            text-decoration: none
-
-            &:hover:enabled
-              color: var(--active-color)
-
-          .active
-            button
-              background-color: var(--ui-gray)
-              border-color: #ddd
-              color: white
