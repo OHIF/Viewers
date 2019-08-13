@@ -13,12 +13,16 @@ node -v
 # should also symlink all projects appropriately
 yarn install --no-ignore-optional --pure-lockfile
 
+dir
+ls
+
 # Build && Move PWA Output
 yarn run build:ci
-mv platform/viewer/dist/* .netlify/www/pwa/ -v
+mkdir -p ./.netlify/www/pwa
+mv platform/viewer/dist/* .netlify/www/pwa -v
 
 # Build && Move script output
-yarn run build:package
+# yarn run build:package
 
 echo 'Nothing left to see here. Go home, folks.'
 
