@@ -14,6 +14,9 @@ module.exports = (env, argv) => {
   return merge(commonConfig, {
     // https://webpack.js.org/configuration/mode/#mode-production
     mode: 'production',
+    entry: {
+      bundle: `${SRC_DIR}/index-umd.js`,
+    },
     devtool: 'source-map',
     stats: {
       colors: true,
