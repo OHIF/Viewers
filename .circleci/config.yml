@@ -314,15 +314,15 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
+      # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v'
-            # - run: 'curl -o- -L https://yarnpkg.com/install.sh | bash'
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
           yarn: true
           record: true
           store_artifacts: true
           start: yarn run dev
-          wait-on: 'http://localhost:5000'
+          wait-on: 'http://localhost:3000'
           no-workspace: true # Don't persist workspace
           # working_directory: ~/repo
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
