@@ -320,7 +320,7 @@ workflows:
           store_artifacts: true
           start: yarn run dev
           wait-on: 'http://localhost:5000'
-          working_directory: ~/repo
+          # working_directory: ~/repo
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           post-steps:
             - store_test_results:
