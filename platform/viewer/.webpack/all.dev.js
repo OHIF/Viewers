@@ -17,6 +17,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
+const ASSET_PATH = process.env.ASSET_PATH || '/';
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
@@ -26,10 +27,13 @@ module.exports = (env, argv) => {
     mode: 'development',
     output: {
       path: DIST_DIR, // push to common?
-      publicPath: '/',
+      publicPath: ASSET_PATH,
       // filename: '[name].bundle.js',
     },
     plugins: [
+      // new webpack.DefinePlugin({
+      //   'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
+      // }),
       new webpack.HotModuleReplacementPlugin(),
       // Copy "Public" Folder to Dist
       new CopyWebpackPlugin([
@@ -55,7 +59,9 @@ module.exports = (env, argv) => {
     devServer: {
       open: true,
       port: 3000,
-      historyApiFallback: true,
+      historyApiFallback: {
+        disableDotRule: true,
+      },
     },
   });
 };
