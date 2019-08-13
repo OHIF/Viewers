@@ -319,7 +319,6 @@ workflows:
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
           yarn: true
-          record: true
           store_artifacts: true
           start: yarn run dev
           wait-on: 'http://localhost:3000'
@@ -339,13 +338,16 @@ workflows:
           filters:
             branches:
               only: master
+      # Cypress job added by `cypress-io` orb
       - cypress/run:
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
           yarn: true
           record: true
           store_artifacts: true
           start: yarn run dev
-          wait-on: 'http://localhost:5000'
-          working_directory: ~/repo
+          wait-on: 'http://localhost:3000'
+          working_directory: platform/viewer
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           post-steps:
             - store_test_results:

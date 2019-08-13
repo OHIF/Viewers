@@ -25,12 +25,9 @@
     "dev:viewer": "yarn run dev",
     "start": "yarn run dev",
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
-    "cy": "cypress open",
-    "cy:run": "cypress run",
-    "cy:run:ci": "yarn run cy:run -- --record",
+    "test:e2e": "cypress open",
     "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run:ci"
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
   "resolutions": {
     "browserslist": "4.6.2",
@@ -89,7 +86,6 @@
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.11",
-    "lodash.clonedeep": "4.5.0",
-    "start-server-and-test": "^1.9.1"
+    "lodash.clonedeep": "4.5.0"
   }
 }
