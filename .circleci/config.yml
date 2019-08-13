@@ -151,20 +151,23 @@ jobs:
           root: ~/repo
           paths: .
 
-  e2e_test:
-    <<: *defaults
+  # e2e_test:
+  #   <<: *defaults
 
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - cypress/run:
-          yarn: true
-          record: true
-          store_artifacts: true
-          start: yarn run dev
-          wait-on: 'http://localhost:5000'
-          working_directory: ~/repo
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/repo
+  #     - cypress/run:
+  #         yarn: true
+  #         record: true
+  #         store_artifacts: true
+  #         start: yarn run dev
+  #         wait-on: 'http://localhost:5000'
+  #         working_directory: ~/repo
+  #         cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+  #         post-steps:
+  #           - store_test_results:
+  #               path: cypress/results
 
   npm_publish:
     <<: *defaults
@@ -311,7 +314,17 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
-      - e2e_test:
+      - cypress/run:
+          yarn: true
+          record: true
+          store_artifacts: true
+          start: yarn run dev
+          wait-on: 'http://localhost:5000'
+          working_directory: ~/repo
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          post-steps:
+            - store_test_results:
+                path: cypress/results
           requires:
             - PR_UNIT_TESTS
 
@@ -322,17 +335,27 @@ workflows:
           filters:
             branches:
               only: master
-      - e2e_test:
+      - cypress/run:
+          yarn: true
+          record: true
+          store_artifacts: true
+          start: yarn run dev
+          wait-on: 'http://localhost:5000'
+          working_directory: ~/repo
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          post-steps:
+            - store_test_results:
+                path: cypress/results
           requires:
             - MERGE_UNIT_TESTS
       # Update NPM
       - npm_publish:
           requires:
-            - e2e_test
+            - cypress/run
       # Update docs.ohif.org
       - docs_publish:
           requires:
-            - e2e_test
+            - cypress/run
       # Update hub.docker.org
       - docker_publish:
           requires:
@@ -340,7 +363,7 @@ workflows:
       # Update viewer.ohif.org
       - build_demo_site:
           requires:
-            - e2e_test
+            - cypress/run
       - demo_site_publish:
           requires:
             - build_demo_site
