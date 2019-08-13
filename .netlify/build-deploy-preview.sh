@@ -14,7 +14,7 @@ node -v
 yarn install --no-ignore-optional --pure-lockfile
 
 # Build && Move PWA Output
-yarn run build
+yarn run build:ci
 mv platform/viewer/dist/* .netlify/www/pwa/ -v
 
 # Build && Move script output

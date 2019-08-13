@@ -151,24 +151,6 @@ jobs:
           root: ~/repo
           paths: .
 
-  # e2e_test:
-  #   <<: *defaults
-
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/repo
-  #     - cypress/run:
-  #         yarn: true
-  #         record: true
-  #         store_artifacts: true
-  #         start: yarn run dev
-  #         wait-on: 'http://localhost:5000'
-  #         working_directory: ~/repo
-  #         cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
-  #         post-steps:
-  #           - store_test_results:
-  #               path: cypress/results
-
   npm_publish:
     <<: *defaults
     steps:

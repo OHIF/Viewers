@@ -18,6 +18,9 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const ASSET_PATH = process.env.ASSET_PATH || '/';
+// Env Vars
+const PUBLIC_URL = process.env.PUBLIC_URL || '';
+const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
@@ -31,9 +34,6 @@ module.exports = (env, argv) => {
       // filename: '[name].bundle.js',
     },
     plugins: [
-      // new webpack.DefinePlugin({
-      //   'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
-      // }),
       new webpack.HotModuleReplacementPlugin(),
       // Copy "Public" Folder to Dist
       new CopyWebpackPlugin([
@@ -50,8 +50,8 @@ module.exports = (env, argv) => {
         template: `${PUBLIC_DIR}/index.html`,
         filename: 'index.html',
         templateParameters: {
-          PUBLIC_URL: '',
-          REACT_APP_CONFIG: 'config/default.js',
+          PUBLIC_URL: PUBLIC_URL,
+          APP_CONFIG: APP_CONFIG,
         },
       }),
     ],

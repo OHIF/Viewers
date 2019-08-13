@@ -18,10 +18,10 @@
   "scripts": {
     "build:package": "webpack --config .webpack/commonjs.prod.js",
     "build:viewer": "webpack --config .webpack/pwa.prod.js",
+    "build:viewer:ci": "cross-env PUBLIC_URL=/pwa APP_CONFIG=config/netlify.js webpack --config .webpack/pwa.prod.js",
     "build:viewer:package": "yarn run build:package",
-    "build:demo:ci": "cross-env PUBLIC_URL=/ REACT_APP_CONFIG=config/demo.js react-scripts --max_old_space_size=4096 build",
     "dev": "webpack-dev-server --config .webpack/all.dev.js -w",
-    "dev:orthanc": "cross-env REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
+    "dev:orthanc": "cross-env APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
     "dev:viewer": "yarn run dev",
     "start": "yarn run dev",
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
