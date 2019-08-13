@@ -324,7 +324,7 @@ workflows:
           start: yarn run dev
           wait-on: 'http://localhost:3000'
           no-workspace: true # Don't persist workspace
-          # working_directory: ~/repo
+          working_directory: platform/viewer
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           post-steps:
             - store_test_results:
