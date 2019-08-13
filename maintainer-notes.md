@@ -22,6 +22,17 @@ yarn add --dev -W package-name
   - Should we remove `dev:package-name` commands and suggest navigating to
     package root?
 - Fix broken peer dependencies?
+- Lingering core-js resolution issues when building for Viewer PWA (from project
+  directory)
+
+## ORBS
+
+- Cypress: https://circleci.com/orbs/registry/orb/cypress-io/cypress
+- Slack: https://circleci.com/orbs/registry/orb/circleci/slack
+- GCP: https://circleci.com/orbs/registry/orb/circleci/gcp-cli
+- Browser Tools: https://circleci.com/orbs/registry/orb/circleci/browser-tools
+- Multi-Repo: https://circleci.com/orbs/registry/orb/dnephin/multirepo
+- PR Comment: https://circleci.com/orbs/registry/orb/benjlevesque/pr-comment
 
 NOTES:
 
