@@ -1,0 +1,42 @@
+---
+name: About Modal
+menu: Components
+route: /components/about-modal
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { AboutModal } from './../index.js'
+
+# About  Modal
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        isOpen: false
+    }}>
+
+        {({ state, setState }) => (
+            <React.Fragment>
+                <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={ () => setState({ isOpen: true }) }
+                >
+                    Open about modal
+                </button>
+                <AboutModal
+                    {...state}
+                    onCancel={() => setState({ isOpen: false })}
+                />
+            </React.Fragment>
+        )}
+
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={AboutModal} />

@@ -8,6 +8,7 @@ docs/_book
 src/version.js
 junit.xml
 coverage/
+.docz/
 
 # YALC (for Erik)
 .yalc

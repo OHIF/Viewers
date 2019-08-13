@@ -1,0 +1,33 @@
+---
+name: Form / Range
+menu: Elements
+route: /elements/form-range
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { Range } from './../index.js';
+
+# Range
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      value: 50,
+      min: 0,
+      max: 100,
+    }}
+  >
+    {({ state, setState }) => (
+      <div className="range-example">
+        <Range {...state} />
+      </div>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={Range} />

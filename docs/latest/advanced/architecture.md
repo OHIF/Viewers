@@ -12,17 +12,13 @@ architected, and the role each of it's dependent libraries plays.
 
 ## Overview
 
-The [`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react) repository
-contains the source code for the OHIF Medical Imaging Viewer. It is effectively
-a React
-[progressive web app](https://developers.google.com/web/progressive-web-apps/)
-(PWA) that combines the business logic housed in
-[`OHIF/ohif-core`](https://github.com/OHIF/ohif-core) and the components in our
-React Component library
-[`OHIF/react-viewerbase`](https://github.com/OHIF/react-viewerbase). It provides
-customization for common use cases through
-[configuration](../essentials/configuration.md) and for adding functionality via
-[extensions](./extensions.md).
+The [`OHIF/Viewers`][viewers-project] project contains the source code for the
+OHIF Medical Imaging Viewer. It is effectively a React [progressive web
+app][pwa] (PWA) that combines the business logic housed in
+[`OHIF/ohif-core`][core] and the components in our React Component library
+[`OHIF/react-viewerbase`][component-library]. It provides customization for
+common use cases through [configuration][configuration] and for adding
+functionality via [extensions][extensions].
 
 ### Business Logic
 
@@ -71,13 +67,13 @@ looking for ways to improve our extensibility ^\_^
 
 This diagram is a conceptual illustration of how the Viewer is architected.
 
-0. (optional) `extensions` can be registered with `ohif-core`'s extension
+1. (optional) `extensions` can be registered with `ohif-core`'s extension
    manager
-1. `ohif-core` provides bussiness logic and a way for `viewer` to access
+2. `ohif-core` provides bussiness logic and a way for `viewer` to access
    registered extensions
-1. The `viewer` composes and provides data to components from our component
+3. The `viewer` composes and provides data to components from our component
    library (`react-viewerbase`)
-1. The `viewer` can be built and served as a stand-alone PWA, or as an
+4. The `viewer` can be built and served as a stand-alone PWA, or as an
    embeddable package
    ([`ohif-viewer`](https://www.npmjs.com/package/ohif-viewer))
 
@@ -98,3 +94,16 @@ You can, but you will not be able to leverage as much of the existing code and
 components. `ohif-core` could still be used for business logic, and to provide a
 model for extensions. `react-viewerbase` would then become a guide for the
 components you would need to recreate.
+
+<!--
+  Links
+  -->
+
+<!-- prettier-ignore-start -->
+[viewers-project]: https://github.com/OHIF/Viewers
+[pwa]: https://developers.google.com/web/progressive-web-apps/
+[core]: https://github.com/OHIF/ohif-core
+[component-library]: https://github.com/OHIF/react-viewerbase
+[configuration]: ../essentials/configuration.md
+[extensions]: ./extensions.m
+<!-- prettier-ignore-end -->

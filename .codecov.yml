@@ -9,4 +9,15 @@ coverage:
     project:
       default:
         threshold: 0.10%
+      core:
+        flags: core
+      viewer:
+        flags: viewer
     patch: off
+flags:
+  core:
+    paths:
+      - platform/core
+  viewer:
+    paths:
+      - platform/viewer

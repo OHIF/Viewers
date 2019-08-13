@@ -1,0 +1,62 @@
+.ohif-radio-button-container {
+  --radio-button-dim: 20px;
+}
+
+.ohif-radio-button-container input {
+  position: absolute;
+  opacity: 0;
+  z-index: 10000;
+  cursor: pointer;
+  height: inherit;
+  width: inherit;
+}
+
+.ohif-radio-button-container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.ohif-radio-button {
+  width: var(--radio-button-dim);
+  height: var(--radio-button-dim);
+  position: absolute;
+  top: 25%;
+  left: 0;
+  background-color: var(--ui-gray-lighter);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.ohif-radio-button:hover {
+  background-color: var(--default-color);
+  border-radius: 100%;
+}
+
+.ohif-radio-button:after {
+  content: '';
+  position: absolute;
+  display: none;
+  width: 70%;
+  height: 70%;
+}
+
+.ohif-radio-button-container .ohif-radio-button.ohif-selected:after {
+  display: block;
+  top: 14%;
+  left: 14%;
+  border-radius: 50%;
+  background: white;
+}
+
+.ohif-radio-button-label {
+  font-size: 12px;
+  font-weight: 500;
+}

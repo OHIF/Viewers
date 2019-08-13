@@ -1,0 +1,39 @@
+{
+  "name": "@ohif/extension-dicom-microscopy",
+  "version": "0.0.9-alpha.7",
+  "description": "OHIF extension for Dicom Microscopy",
+  "author": "OHIF",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "scripts": {
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev:dicom-microscopy": "yarn run dev",
+    "build": "webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^0.11.1-alpha.0",
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "classnames": "^2.2.6",
+    "dicom-microscopy-viewer": "^0.4.3"
+  }
+}

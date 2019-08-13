@@ -1,0 +1,57 @@
+---
+name: CINE Dialog
+menu: Components
+route: /components/cine-dialog
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { CineDialog } from './../index'
+import NameSpace from '../../../__docs__/NameSpace'
+
+# CINE Dialog
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      isPlaying: false,
+      cineFrameRate: 24,
+      isLoopEnabled: true,
+      lastChange: '',
+    }}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
+        <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+          <CineDialog
+            {...state}
+            onClickSkipToStart={() =>
+              setState({ lastChange: 'Clicked SkipToStart' })
+            }
+            onClickSkipToEnd={() =>
+              setState({ lastChange: 'Clicked SkipToEnd' })
+            }
+            onClickNextButton={() => setState({ lastChange: 'Clicked Next' })}
+            onClickBackButton={() => setState({ lastChange: 'Clicked Back' })}
+            onLoopChanged={value => setState({ isLoopEnabled: value })}
+            onFrameRateChanged={value => setState({ cineFrameRate: value })}
+            onPlayPauseChanged={() => setState({ isPlaying: !state.isPlaying })}
+          />
+        </div>
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={CineDialog} />
+
+## Translation Namespace
+
+<NameSpace name="CineDialog" />

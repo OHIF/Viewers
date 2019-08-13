@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 ### ABOUT
 #
@@ -9,17 +9,29 @@ version: 2
 # create pull request previews and to update `https://docs.ohif.org`
 ###
 
+orbs:
+  codecov: codecov/codecov@1.0.5
+  cypress: cypress-io/cypress@1.8.0
+
 defaults: &defaults
-  working_directory: ~/repo
   docker:
-    - image: circleci/node:10.15.1
+    - image: circleci/node:10.16.0
+      environment:
+        TERM: xterm # Enable colors in term
+  working_directory: ~/repo
 
 jobs:
-  build_and_test:
+  PR_UNIT_TESTS:
     <<: *defaults
+
     steps:
-      # Download and cache dependencies
-      - checkout
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -35,34 +47,56 @@ jobs:
           paths:
             - ~/.cache ## Cache yarn and Cypress
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      # Build & Test
-      - run: yarn build:package:ci
-      # https://www.viget.com/articles/using-junit-on-circleci-2-0-with-jest-and-eslint/
+
+      # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn test:unit:ci
-          environment:
-            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
-      # Store result
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
+          command: yarn run test:unit:ci
+
+      # PLATFORM/VIEWER
+      - run:
+          name: 'VIEWER: Combine report output'
+          command: |
+            viewerCov="/home/circleci/repo/platform/viewer/coverage"
+            touch "${viewerCov}/reports"
+            cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+            cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          flags: 'viewer'
+
+      # PLATFORM/CORE
+      - run:
+          name: 'CORE: Combine report output'
+          command: |
+            coreCov="/home/circleci/repo/platform/core/coverage"
+            touch "${coreCov}/reports"
+            cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+            cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
+
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
           paths: .
 
-  e2e_test:
-    working_directory: ~/repo
-    docker:
-      - image: cypress/base:8
-        environment:
-          ## this enables colors in the output
-          TERM: xterm
+  MERGE_UNIT_TESTS:
+    <<: *defaults
+
     steps:
-      - attach_workspace:
-          at: ~/repo
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -70,12 +104,52 @@ jobs:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - yarn-packages-v1-{{ .Branch }}-
             - yarn-packages-v1-
-      # - run: $(yarn bin)/cypress run --record
-      # Shouldn't be needed if we're using a package cache that contains Cypress
-      # Could do a check here, if it doesn't exist, install cypress?
-      - run: yarn install
-      - run: yarn run test:e2e:ci
-      - run: yarn run test:e2e:scriptTag
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache ## Cache yarn and Cypress
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+      # RUN TESTS
+      - run:
+          name: 'JavaScript Test Suite'
+          command: yarn run test:unit:ci
+
+      # PLATFORM/VIEWER
+      - run:
+          name: 'VIEWER: Combine report output'
+          command: |
+            viewerCov="/home/circleci/repo/platform/viewer/coverage"
+            touch "${viewerCov}/reports"
+            cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+            cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          flags: 'viewer'
+
+      # PLATFORM/CORE
+      - run:
+          name: 'CORE: Combine report output'
+          command: |
+            coreCov="/home/circleci/repo/platform/core/coverage"
+            touch "${coreCov}/reports"
+            cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+            cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
+
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
 
   npm_publish:
     <<: *defaults
@@ -87,11 +161,14 @@ jobs:
           command:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
             no\n" > ~/.ssh/config
-      # --no-ci argument is not ideal; however, semantic-rlease thinks we're
-      # attempting to run it from a `pr`, which is not the case
+      # - run:
+      #     name: Publish using Semantic Release
+      #     command: npx semantic-release --debug
       - run:
-          name: Publish using Semantic Release
-          command: npx semantic-release --debug
+          npx lerna version --allow-branch monorepo --conventional-commits
+          --conventional-prerelease=* --create-release github
+      - run: npx lerna publish from-package --canary --dist-tag canary
+
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -215,43 +292,70 @@ workflows:
   # PULL REQUESTS
   pull_requests:
     jobs:
-      - build_and_test:
+      - PR_UNIT_TESTS:
           filters:
             branches:
               ignore:
                 - master
                 - feature/*
                 - hotfix/*
-      - e2e_test:
+      # Cypress job added by `cypress-io` orb
+      - cypress/run:
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+          yarn: true
+          store_artifacts: true
+          start: yarn run dev
+          wait-on: 'http://localhost:3000'
+          no-workspace: true # Don't persist workspace
+          working_directory: platform/viewer
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          post-steps:
+            - store_test_results:
+                path: cypress/results
           requires:
-            - build_and_test
+            - PR_UNIT_TESTS
 
   # MERGE TO MASTER
   cut_release:
     jobs:
-      - build_and_test:
+      - MERGE_UNIT_TESTS:
           filters:
             branches:
-              only: master
-      - e2e_test:
+              only: monorepo
+              # only: master
+      # Cypress job added by `cypress-io` orb
+      - cypress/run:
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+          yarn: true
+          record: true
+          store_artifacts: true
+          start: yarn run dev
+          wait-on: 'http://localhost:3000'
+          working_directory: platform/viewer
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          post-steps:
+            - store_test_results:
+                path: cypress/results
           requires:
-            - build_and_test
+            - MERGE_UNIT_TESTS
       # Update NPM
       - npm_publish:
           requires:
-            - e2e_test
+            - cypress/run
       # Update docs.ohif.org
-      - docs_publish:
-          requires:
-            - e2e_test
+      # - docs_publish:
+      #     requires:
+      #       - cypress/run
       # Update hub.docker.org
-      - docker_publish:
-          requires:
-            - npm_publish
+      # - docker_publish:
+      #     requires:
+      #       - npm_publish
       # Update viewer.ohif.org
-      - build_demo_site:
-          requires:
-            - e2e_test
-      - demo_site_publish:
-          requires:
-            - build_demo_site
+      # - build_demo_site:
+      #     requires:
+      #       - cypress/run
+      # - demo_site_publish:
+      #     requires:
+      #       - build_demo_site

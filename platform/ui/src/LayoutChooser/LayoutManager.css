@@ -1,0 +1,22 @@
+.viewport-container {
+  float: left;
+  position: relative;
+  border: var(--viewport-border-thickness) solid var(--ui-border-color);
+}
+
+.viewport-container.active {
+  border: var(--viewport-border-thickness) solid var(--active-color);
+}
+
+.EmptyViewport {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--text-secondary-color);
+}
+
+.LayoutPanel {
+  width: 100%;
+  height: 100%;
+}

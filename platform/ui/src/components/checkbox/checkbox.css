@@ -1,0 +1,56 @@
+.ohif-check-container {
+  --check-button-dim: 15px;
+}
+
+.ohif-check-container input {
+  position: absolute;
+  opacity: 0;
+  height: inherit;
+  width: inherit;
+  cursor: default;
+}
+
+.ohif-check-container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.ohif-checkbox {
+  width: var(--check-button-dim);
+  height: var(--check-button-dim);
+  position: absolute;
+  top: 20%;
+  left: 5%;
+  cursor: pointer;
+  background-color: var(--ui-gray-lighter);
+}
+
+.ohif-checkbox:hover {
+  background-color: var(--default-color);
+}
+
+.ohif-checkbox:after {
+  content: '';
+  position: absolute;
+  width: 70%;
+  height: 70%;
+}
+
+.ohif-checkbox.ohif-checked:after {
+  display: block;
+  top: 14%;
+  left: 14%;
+  background: white;
+}
+
+.ohif-check-label {
+  font-size: 12px;
+  font-weight: 500;
+}
