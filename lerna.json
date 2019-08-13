@@ -5,14 +5,14 @@
   "useWorkspaces": true,
   "command": {
     "publish": {
-      "ignoreChanges": ["*.md"],
+      "ignoreChanges": ["*.md", "*.yml", "*.spec.js", "*.test.js"],
       "message": "chore(release): publish"
     },
     "version": {
       "conventionalCommits": true,
       "createRelease": "github",
       "yes": true,
-      "message": "chore(release): publish %s [skip ci]"
+      "message": "chore(release): publish [skip ci]"
     }
   }
 }

@@ -161,11 +161,14 @@ jobs:
           command:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
             no\n" > ~/.ssh/config
-      # --no-ci argument is not ideal; however, semantic-rlease thinks we're
-      # attempting to run it from a `pr`, which is not the case
+      # - run:
+      #     name: Publish using Semantic Release
+      #     command: npx semantic-release --debug
       - run:
-          name: Publish using Semantic Release
-          command: npx semantic-release --debug
+          npx lerna version --allow-branch monorepo --conventional-commits
+          --conventional-prerelease=* --create-release github
+      - run: npx lerna publish from-package --canary --dist-tag canary
+
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -319,7 +322,8 @@ workflows:
       - MERGE_UNIT_TESTS:
           filters:
             branches:
-              only: master
+              only: monorepo
+              # only: master
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
@@ -341,17 +345,17 @@ workflows:
           requires:
             - cypress/run
       # Update docs.ohif.org
-      - docs_publish:
-          requires:
-            - cypress/run
+      # - docs_publish:
+      #     requires:
+      #       - cypress/run
       # Update hub.docker.org
-      - docker_publish:
-          requires:
-            - npm_publish
+      # - docker_publish:
+      #     requires:
+      #       - npm_publish
       # Update viewer.ohif.org
-      - build_demo_site:
-          requires:
-            - cypress/run
-      - demo_site_publish:
-          requires:
-            - build_demo_site
+      # - build_demo_site:
+      #     requires:
+      #       - cypress/run
+      # - demo_site_publish:
+      #     requires:
+      #       - build_demo_site
