@@ -116,5 +116,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       }),
     ],
+    // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
+    // For issue in cornerstone-wado-image-loader
+    node: {
+      fs: 'empty',
+    },
   };
 };
