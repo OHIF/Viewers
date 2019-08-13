@@ -11,10 +11,13 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.0.5
+  cypress: cypress-io/cypress@1.8.0
 
 defaults: &defaults
   docker:
     - image: circleci/node:10.16.0
+      environment:
+        TERM: xterm # Enable colors in term
   working_directory: ~/repo
 
 jobs:
@@ -149,28 +152,19 @@ jobs:
           paths: .
 
   e2e_test:
-    working_directory: ~/repo
-    docker:
-      - image: cypress/base:8
-        environment:
-          ## this enables colors in the output
-          TERM: xterm
+    <<: *defaults
+
     steps:
       - attach_workspace:
           at: ~/repo
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-v1-
-      # - run: $(yarn bin)/cypress run --record
-      # Shouldn't be needed if we're using a package cache that contains Cypress
-      # Could do a check here, if it doesn't exist, install cypress?
-      - run: yarn install
-      - run: yarn run test:e2e:ci
-      - run: yarn run test:e2e:scriptTag
+      - cypress/run:
+          yarn: true
+          record: true
+          store_artifacts: true
+          start: yarn run dev
+          wait-on: 'http://localhost:5000'
+          working_directory: ~/repo
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
 
   npm_publish:
     <<: *defaults
