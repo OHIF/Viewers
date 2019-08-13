@@ -78,6 +78,11 @@ jobs:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
 
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
   MERGE_UNIT_TESTS:
     <<: *defaults
 
