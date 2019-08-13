@@ -161,9 +161,8 @@ jobs:
           command:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
             no\n" > ~/.ssh/config
-      # - run:
-      #     name: Publish using Semantic Release
-      #     command: npx semantic-release --debug
+      - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+      - run: git config --global user.name "ohif-bot"
       - run:
           npx lerna version --allow-branch monorepo --conventional-commits
           --conventional-prerelease=* --create-release github
@@ -184,8 +183,8 @@ jobs:
           command:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
             no\n" > ~/.ssh/config
-      - run: git config --global user.email "gh-pages@localhost"
-      - run: git config --global user.name "npm gh-pages"
+      - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+      - run: git config --global user.name "ohif-bot"
       - run: yarn global add gh-pages
       - run:
           name: Generate Docs
