@@ -4,7 +4,6 @@ about: Create a report to help us improve
 title: ''
 labels: 'Bug Report :bug:'
 assignees: ''
-
 ---
 
 **Before Creating an issue**
@@ -15,7 +14,7 @@ assignees: ''
 
 **Describe the bug**
 
-*A clear and concise description of what the bug is.*
+_A clear and concise description of what the bug is._
 
 **Steps To Reproduce**
 
@@ -29,12 +28,12 @@ Please use code blocks to show formatted errors or code snippets
 
 **Expected behavior**
 
-*A clear and concise description of what you expected to happen.*
-
+_A clear and concise description of what you expected to happen._
 
 **Environment**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+
+- OS: [e.g. iOS]
+- Browser [e.g. chrome, safari]
+- Version [e.g. 22]
 
 **Additional context**
