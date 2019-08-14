@@ -27,12 +27,13 @@ yarn add --dev -W package-name
 
 ## ORBS
 
-- Cypress: https://circleci.com/orbs/registry/orb/cypress-io/cypress
 - Slack: https://circleci.com/orbs/registry/orb/circleci/slack
 - GCP: https://circleci.com/orbs/registry/orb/circleci/gcp-cli
 - Browser Tools: https://circleci.com/orbs/registry/orb/circleci/browser-tools
 - Multi-Repo: https://circleci.com/orbs/registry/orb/dnephin/multirepo
 - PR Comment: https://circleci.com/orbs/registry/orb/benjlevesque/pr-comment
+
+Debug Note: `http://localhost:3000/webpack-dev-server`
 
 NOTES:
 

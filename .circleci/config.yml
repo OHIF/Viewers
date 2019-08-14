@@ -167,10 +167,8 @@ jobs:
           name: Authenticate with registry
           command:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run:
-          npx lerna version --allow-branch monorepo --conventional-commits
-          --conventional-prerelease=* --create-release github
-      - run: npx lerna publish from-package --canary --dist-tag canary
+      - run: npx lerna version
+      - run: npx lerna publish from-package
 
       # Persist :+1:
       - persist_to_workspace:
