@@ -11,8 +11,9 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=8",
-    "npm": ">=5"
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
   },
   "proxy": "http://localhost:8042",
   "scripts": {
