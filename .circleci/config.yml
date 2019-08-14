@@ -222,26 +222,11 @@ jobs:
               docker push ohif/$IMAGE_NAME:latest
             fi
 
-  build_demo_site:
+  deploy_demo_site:
     <<: *defaults
     steps:
-      # Download and cache dependencies
-      - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-v1-
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - attach_workspace:
+          at: ~/repo
       # Build & Test
       - run:
           name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
