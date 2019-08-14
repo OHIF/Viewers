@@ -1,6 +1,6 @@
 {
   "name": "@ohif/i18n",
-  "version": "0.50.0-alpha.11",
+  "version": "0.50.0",
   "description": "Internationalization library for The OHIF Viewer",
   "author": "OHIF",
   "license": "MIT",
@@ -8,8 +8,9 @@
   "main": "dist/index.umd.js",
   "module": "src/index.js",
   "engines": {
-    "node": ">=8",
-    "npm": ">=5"
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
   },
   "files": [
     "dist",
