@@ -197,9 +197,9 @@ would like included at startup.
 _app.js_
 
 ```js
-import { createStore, combineReducers } from 'redux';
-import OHIF from 'ohif-core';
-import OHIFCornerstoneExtension from 'ohif-cornerstone-extension';
+import { createStore, combineReducers } from "redux";
+import OHIF from "@ohif/core";
+import OHIFCornerstoneExtension from "ohif-cornerstone-extension";
 
 const combined = combineReducers(OHIF.redux.reducers);
 const store = createStore(combined);

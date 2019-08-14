@@ -1,0 +1,172 @@
+@import './../../design/styles/common/global.styl'
+@import './../../design/styles/common/form.styl'
+
+.CineDialog
+  background: var(--ui-gray-darkest);
+  color: var(--text-secondary-color);
+  filter: drop-shadow(0 0 3px var(--ui-gray-darkest))
+  border: none
+  border-radius: 8px
+  width: inherit;
+
+  h5
+    font-size: 20px
+    line-height: 35px
+    margin: 0
+
+  h5, label
+    font-weight: 400
+
+  .cine-navigation, .cine-controls, .cine-options
+    cursor: default
+
+  .fps-section
+    input[type="range"]
+      background-color: transparent
+      border: 0 none
+      outline: 0 none
+
+      &::-ms-tooltip
+        display: none
+
+  .double-row-style
+    box-sizing: border-box
+    width: 290px
+    height: 70px
+    padding: 10px
+    top: 2%
+    left: 35%
+
+    .cine-navigation
+      position: absolute
+      right: 16px
+      top: 10px
+
+      .btn
+        padding: 0 4px
+
+        i
+          font-size: 32px
+          line-height: 32px
+
+    .cine-controls
+      left: 0px
+
+    .cine-options
+      padding: 0px 0
+
+      .fps-section
+        width: 175px
+        float: left
+
+      .fps
+        float: right
+
+
+  .single-row-style
+    box-sizing: content-box
+    width: 425px
+    height: 45px
+    padding: 4px 8px
+    top: 2%
+    left: 35%
+
+    .cine-navigation
+      float: right
+      overflow: hidden
+      padding-right: 12px
+      position: relative
+
+      .btn
+        padding: 0 2px
+        margin: 0 0 0 2px
+        border: 0 none
+        &:first-of-type
+          margin-left: 0
+
+        i
+          font-size: 32px
+          line-height: 45px
+
+    .cine-controls
+      position: relative
+      float: left
+      overflow: hidden
+
+      .btn
+        font-size: 22px
+        line-height: 45px
+        min-width: 28px
+        padding: 0 0px
+        margin: 0 4px
+        border: 0 none
+
+    .cine-options
+      display: block
+      position: relative
+      width: 150px
+      float: left
+      overflow: hidden
+      padding: 0
+      margin: 0 0 0 10px
+
+      .fps-section
+        display: block
+        float: left
+        width: 80px
+        input[type="range"]
+          line-height: 45px
+          height: 45px
+
+      .fps
+        display: block
+        width: 68px
+        float: left
+        padding: 0
+        margin: 0 0 0 2px
+        text-align: center
+        line-height: 45px
+        font-size: 14px;
+        line-height: 1.42857143;
+
+  .btn
+    color: var(--text-secondary-color);
+    background-color: transparent
+    border: 0
+    border-radius: 4px
+    font-size: 15px
+    width: 45px
+    font-weight: normal
+    height: 37px
+    line-height: 37px
+    padding: 0 12px
+
+    &:hover, &:active, &.active
+      color: var(--hover-color);
+
+    &[disabled]
+      &:hover
+        color: inherit
+      &:active
+        color: var(--text-secondary-color);
+
+    &.btn-primary, &.btn-secondary, &.btn-danger
+      transition: background-color 0.3s ease
+
+      &:hover, &:active, &:focus
+        opacity: 0.8
+
+    &.btn-primary
+      background-color: var(--active-color);
+      color: var(--primary-background-color)
+
+    &.btn-secondary
+      background-color: var(--text-secondary-color);
+      color: var(--primary-background-color)
+
+    &.btn-danger
+      background-color: var(--text-destructive-color);
+      color: var(--text-primary-color);
+
+    &.active
+      box-shadow: inset 1px 1px 2px var(--ui-gray-darkest)

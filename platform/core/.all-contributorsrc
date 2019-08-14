@@ -1,0 +1,97 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "swederik",
+      "name": "Erik Ziegler",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/607793?v=4",
+      "profile": "https://github.com/swederik",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "evren217",
+      "name": "Evren Ozkan",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4920551?v=4",
+      "profile": "https://github.com/evren217",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "galelis",
+      "name": "Gustavo André Lelis",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2378326?v=4",
+      "profile": "https://github.com/galelis",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dannyrb",
+      "name": "Danny Brown",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5797588?v=4",
+      "profile": "http://dannyrb.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "allcontributors",
+      "name": "allcontributors[bot]",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/46843839?v=4",
+      "profile": "https://github.com/all-contributors/all-contributors-bot",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "ivan-aksamentov",
+      "name": "Ivan Aksamentov",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/9403403?v=4",
+      "profile": "https://github.com/ivan-aksamentov",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "igoroctaviano",
+      "name": "Igor Octaviano",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/13886933?v=4",
+      "profile": "http://igoroctaviano.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dlwire",
+      "name": "David Wire",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1167291?v=4",
+      "profile": "https://github.com/dlwire",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "pavertomato",
+      "name": "Egor Lezhnin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/878990?v=4",
+      "profile": "http://egor.lezhn.in",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "@ohif/core",
+  "projectOwner": "OHIF",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
