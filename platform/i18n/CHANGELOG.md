@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.50.0-alpha.11](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.50.0-alpha.10...@ohif/i18n@0.50.0-alpha.11) (2019-08-14)
+
+
+### Bug Fixes
+
+* Update i18n locales to include Japanese ([da725a8](https://github.com/OHIF/Viewers/commit/da725a8))
+
+
+
+
+
 # [0.50.0-alpha.10](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.2.3-alpha.9...@ohif/i18n@0.50.0-alpha.10) (2019-08-14)
 
 **Note:** Version bump only for package @ohif/i18n
