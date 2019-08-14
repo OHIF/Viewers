@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "0.0.9-alpha.9",
+  "version": "0.50.0-alpha.9",
   "description": "OHIF extension for Dicom Microscopy",
   "author": "OHIF",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^0.11.1-alpha.0",
+    "@ohif/core": "^0.50.0-alpha.0",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
   },
