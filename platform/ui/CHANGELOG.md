@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.50.0-alpha.10](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.2.18-alpha.9...@ohif/ui@0.50.0-alpha.10) (2019-08-14)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 ## [0.2.18-alpha.9](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.2.18-alpha.8...@ohif/ui@0.2.18-alpha.9) (2019-08-14)
 
 **Note:** Version bump only for package @ohif/ui
