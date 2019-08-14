@@ -276,7 +276,7 @@ workflows:
   version: 2
 
   # PULL REQUESTS
-  pull_requests:
+  PR_CHECKS:
     jobs:
       - PR_UNIT_TESTS:
           filters:
@@ -303,13 +303,12 @@ workflows:
             - PR_UNIT_TESTS
 
   # MERGE TO MASTER
-  cut_release:
+  RELEASE:
     jobs:
       - MERGE_UNIT_TESTS:
           filters:
             branches:
-              only: monorepo
-              # only: master
+              only: master
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
